@@ -7,12 +7,12 @@ angular, but advanced users who want more control over the initialization proces
 the manual bootstrapping method instead.
 
 The best way to get started with manual bootstrapping is to look at the what happens when you use
-{@link api/angular.module.ng.$compileProvider.directive.ng:app ng:app}, by showing each step of the process
+{@link api/angular.module.ng.$compileProvider.directive.ng-app ng-app}, by showing each step of the process
 explicitly.
 
 <pre>
 <!doctype html>
-<html xmlns:ng="http://angularjs.org">
+<html>
 <head>
   <script src="http://code.angularjs.org/angular.js"></script>
   <script>

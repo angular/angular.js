@@ -1,6 +1,13 @@
 'use strict';
 
 
+var nullFormCtrl = {
+  $addControl: noop,
+  $removeControl: noop,
+  $setValidity: noop,
+  $setDirty: noop
+}
+
 /**
  * @ngdoc object
  * @name angular.module.ng.$compileProvider.directive.form.FormController
@@ -24,14 +31,36 @@
  * of `FormController`.
  *
  */
-FormController.$inject = ['name', '$element'];
-function FormController(name, element) {
+FormController.$inject = ['name', '$element', '$attrs'];
+function FormController(name, element, attrs) {
   var form = this,
-      parentForm = element.parent().inheritedData('$formController'),
+      parentForm = element.parent().inheritedData('$formController') || nullFormCtrl,
+      invalidCount = 0, // used to easily determine if we are valid
       errors = form.$error = {};
+
+  // init state
+  form.$name = attrs.name;
+  form.$dirty = false;
+  form.$pristine = true;
+  form.$valid = true;
+  form.$invalid = false;
 
   // publish the form into scope
   name(this);
+
+  parentForm.$addControl(form);
+
+  // Setup initial state of the control
+  element.addClass(PRISTINE_CLASS);
+  toggleValidCss(true);
+
+  // convenience method for easy toggling of classes
+  function toggleValidCss(isValid, validationErrorKey) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+    element.
+      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
+      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+  }
 
   if (parentForm) {
     parentForm.$addControl(form);
@@ -41,7 +70,7 @@ function FormController(name, element) {
     if (control.$name && !form.hasOwnProperty(control.$name)) {
       form[control.$name] = control;
     }
-  }
+  };
 
   form.$removeControl = function(control) {
     if (control.$name && form[control.$name] === control) {
@@ -54,11 +83,15 @@ function FormController(name, element) {
     if (isValid) {
       cleanupControlErrors(errors[validationToken], validationToken, control);
 
-      if (equals(errors, {})) {
+      if (!invalidCount) {
+        toggleValidCss(isValid);
         form.$valid = true;
         form.$invalid = false;
       }
     } else {
+      if (!invalidCount) {
+        toggleValidCss(isValid);
+      }
       addControlError(validationToken, control);
 
       form.$valid = false;
@@ -67,30 +100,20 @@ function FormController(name, element) {
   };
 
   form.$setDirty = function() {
+    element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
-  }
-
-  // init state
-  form.$dirty = false;
-  form.$pristine = true;
-  form.$valid = true;
-  form.$invalid = false;
+  };
 
   function cleanupControlErrors(queue, validationToken, control) {
     if (queue) {
       control = control || this; // so that we can be used in forEach;
-      for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === control) {
-          queue.splice(i, 1);
-          if (!queue.length) {
-            delete errors[validationToken];
-
-            if (parentForm) {
-              parentForm.$setValidity(validationToken, true, form);
-            }
-          }
-        }
+      arrayRemove(queue, control);
+      if (!queue.length) {
+        invalidCount--;
+        errors[validationToken] = false;
+        toggleValidCss(true, validationToken);
+        parentForm.$setValidity(validationToken, true, form);
       }
     }
   }
@@ -98,17 +121,12 @@ function FormController(name, element) {
   function addControlError(validationToken, control) {
     var queue = errors[validationToken];
     if (queue) {
-      for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === control) {
-          return;
-        }
-      }
+      if (includes(queue, control)) return;
     } else {
       errors[validationToken] = queue = [];
-
-      if (parentForm) {
-        parentForm.$setValidity(validationToken, false, form);
-      }
+      invalidCount++;
+      toggleValidCss(false, validationToken);
+      parentForm.$setValidity(validationToken, false, form);
     }
     queue.push(control);
   }
@@ -204,30 +222,32 @@ function FormController(name, element) {
       </doc:scenario>
     </doc:example>
  */
-var formDirective = [function() {
-  return {
-    name: 'form',
-    restrict: 'E',
-    inject: {
-      name: 'accessor'
-    },
-    controller: FormController,
-    compile: function() {
-      return {
-        pre: function(scope, formElement, attr, controller) {
-          formElement.bind('submit', function(event) {
-            if (!attr.action) event.preventDefault();
-          });
+var formDirectiveDev = {
+  name: 'form',
+  restrict: 'E',
+  inject: {
+    name: 'accessor'
+  },
+  controller: FormController,
+  compile: function() {
+    return {
+      pre: function(scope, formElement, attr, controller) {
+        formElement.bind('submit', function(event) {
+          if (!attr.action) event.preventDefault();
+        });
 
-          forEach(['valid', 'invalid', 'dirty', 'pristine'], function(name) {
-            scope.$watch(function() {
-              return controller['$' + name];
-            }, function(value) {
-              formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
-            });
+        var parentFormCtrl = formElement.parent().inheritedData('$formController');
+        if (parentFormCtrl) {
+          formElement.bind('$destroy', function() {
+            parentFormCtrl.$removeControl(controller);
+            if (attr.name) delete scope[attr.name];
+            extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
           });
         }
-      };
-    }
-  };
-}];
+      }
+    };
+  }
+};
+
+var formDirective = valueFn(formDirectiveDev);
+var ngFormDirective = valueFn(extend(copy(formDirectiveDev), {restrict:'EAC'}));

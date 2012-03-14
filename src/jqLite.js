@@ -310,6 +310,14 @@ var BOOLEAN_ATTR = {};
 forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
+var BOOLEAN_ELEMENTS = {};
+forEach('input,select,option,textarea,button'.split(','), function(value) {
+  BOOLEAN_ELEMENTS[uppercase(value)] = true;
+});
+
+function isBooleanAttr(element, name) {
+  return BOOLEAN_ELEMENTS[element.nodeName] && BOOLEAN_ATTR[name.toLowerCase()];
+}
 
 forEach({
   data: JQLiteData,

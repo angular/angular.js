@@ -27,7 +27,6 @@ directives}
 ## Related Topics
 
 * {@link dev_guide.compiler Angular HTML Compiler}
-* {@link dev_guide.compiler.extending_compiler Extending the Angular Compiler}
 * {@link dev_guide.compiler.testing_dom_element Testing a New DOM Element}
 
 ## Related API

@@ -1,8 +1,5 @@
-- The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#1.0.0rc1">1.0.0rc1 moiré-vision</a>
-
 <a name="1.0.0rc1"></a>
-# 1.0.0rc1 moiré-vision (in-progress)
+# 1.0.0rc1 moiré-vision (2012-03-13)
 
 ## $compile rewrite
 
@@ -208,6 +205,11 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
   - before: `scope.$watch('expression', function(scope, newVal, oldVal) {})`
   - after: `scope.$watch('expression', function(newVal, oldVal, scope) {}, true)`
+
+- `scope.$destroy` doesn't cause the `$destroy` event to be emitted any more - this event was
+   primarily used by the old forms implementation and is not needed any more. We are considering
+   broadcasting this event in the future, which could then be used by directives and child scopes to
+   be notified of their scope destruction.
 
 
 ## New directives:
@@ -980,7 +982,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
 
 ### Features
-- new [`ng:view`](http://docs.angularjs.org/#!/api/angular.widget.ng:view) widget to simplify integration
+- new [`ng:view`](http://docs.angularjs.org/#!/api/angular.widget.ng-view) widget to simplify integration
 with the `$route` service
 - the content of all standard HTML widgets is now being processed
   (e.g. `<button>{{foo}}</button>` works now) (commit 1d7b9d56)
@@ -1301,20 +1303,20 @@ with the `$route` service
 [element]: http://docs.angularjs.org/#!/api/angular.element
 [widget]: http://docs.angularjs.org/#!/api/angular.widget
 [ng:repeat]: http://docs.angularjs.org/#!/api/angular.widget.@ng:repeat
-[ng:view]: http://docs.angularjs.org/#!/api/angular.widget.ng:view
-[ng:include]: http://docs.angularjs.org/#!/api/angular.widget.ng:include
-[ng:options]: http://docs.angularjs.org/#!/api/angular.directive.ng:options
-[ng:disabled]: http://docs.angularjs.org/#!/api/angular.directive.ng:disabled
-[ng:selected]: http://docs.angularjs.org/#!/api/angular.directive.ng:selected
-[ng:checked]: http://docs.angularjs.org/#!/api/angular.directive.ng:checked
-[ng:multiple]: http://docs.angularjs.org/#!/api/angular.directive.ng:multiple
-[ng:readonly]: http://docs.angularjs.org/#!/api/angular.directive.ng:readonly
-[ng:show]: http://docs.angularjs.org/#!/api/angular.directive.ng:show
-[ng:hide]: http://docs.angularjs.org/#!/api/angular.directive.ng:hide
-[ng:class]: http://docs.angularjs.org/#!/api/angular.directive.ng:class
-[ng:src]: http://docs.angularjs.org/#!/api/angular.directive.ng:src
-[ng:href]: http://docs.angularjs.org/#!/api/angular.directive.ng:href
-[ng:style]: http://docs.angularjs.org/#!/api/angular.directive.ng:style
+[ng:view]: http://docs.angularjs.org/#!/api/angular.widget.ng-view
+[ng:include]: http://docs.angularjs.org/#!/api/angular.widget.ng-include
+[ng:options]: http://docs.angularjs.org/#!/api/angular.directive.ng-options
+[ng:disabled]: http://docs.angularjs.org/#!/api/angular.directive.ng-disabled
+[ng:selected]: http://docs.angularjs.org/#!/api/angular.directive.ng-selected
+[ng:checked]: http://docs.angularjs.org/#!/api/angular.directive.ng-checked
+[ng:multiple]: http://docs.angularjs.org/#!/api/angular.directive.ng-multiple
+[ng:readonly]: http://docs.angularjs.org/#!/api/angular.directive.ng-readonly
+[ng:show]: http://docs.angularjs.org/#!/api/angular.directive.ng-show
+[ng:hide]: http://docs.angularjs.org/#!/api/angular.directive.ng-hide
+[ng:class]: http://docs.angularjs.org/#!/api/angular.directive.ng-class
+[ng:src]: http://docs.angularjs.org/#!/api/angular.directive.ng-src
+[ng:href]: http://docs.angularjs.org/#!/api/angular.directive.ng-href
+[ng:style]: http://docs.angularjs.org/#!/api/angular.directive.ng-style
 [$defer]: http://docs.angularjs.org/#!/api/angular.module.ng.$defer
 [$cookies]: http://docs.angularjs.org/#!/api/angular.module.ng.$cookies
 [$xhr]: http://docs.angularjs.org/#!/api/angular.module.ng.$xhr
@@ -1326,7 +1328,7 @@ with the `$route` service
 [number]: http://docs.angularjs.org/#!/api/angular.filter.number
 [currency]: http://docs.angularjs.org/#!/api/angular.filter.currency
 [directive]: http://docs.angularjs.org/#!/api/angular.directive
-[ng:autobind]: http://docs.angularjs.org/#!/api/angular.directive.ng:autobind
+[ng:autobind]: http://docs.angularjs.org/#!/api/angular.directive.ng-autobind
 [guide.di]: http://docs.angularjs.org/#!/guide/dev_guide.di
 [downloading]: http://docs.angularjs.org/#!/misc/downloading
 [contribute]: http://docs.angularjs.org/#!/misc/contribute
@@ -1334,9 +1336,9 @@ with the `$route` service
 [angular.version]: http://docs.angularjs.org/#!/api/angular.version
 [Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
 [i18n]: http://docs-next.angularjs.org/#!/guide/dev_guide.i18n
-[ng:pluralize]: http://docs-next.angularjs.org/#!/api/angular.widget.ng:pluralize
+[ng:pluralize]: http://docs-next.angularjs.org/#!/api/angular.widget.ng-pluralize
 [ng:form]: http://docs-next.angularjs.org/api/angular.widget.form
-[ng:cloak]: http://docs-next.angularjs.org/#!/api/angular.directive.ng:cloak
+[ng:cloak]: http://docs-next.angularjs.org/#!/api/angular.directive.ng-cloak
 [$on]: http://docs-next.angularjs.org/#!/api/angular.scope.$on
 [$emit]: http://docs-next.angularjs.org/#!/api/angular.scope.$emit
 [$broadcast]: http://docs-next.angularjs.org/#!/api/angular.scope.$broadcast
@@ -1354,7 +1356,7 @@ with the `$route` service
 [$cacheFactory]: http://docs-next.angularjs.org/api/angular.module.ng.$cacheFactory
 [bootstrapping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
 [angular.copy]: http://docs-next.angularjs.org/api/angular.copy
-[ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng:app
+[ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng-app
 [$compile]: http://docs-next.angularjs.org/api/angular.module.ng.$compile
 [$filterProvider]: http://docs-next.angularjs.org/api/angular.module.ng.$filterProvider
 [angular.Module]: http://docs-next.angularjs.org/api/angular.Module

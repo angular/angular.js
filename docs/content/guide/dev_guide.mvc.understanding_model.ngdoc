@@ -28,26 +28,26 @@ occurs in controllers:
 
 * Use an {@link dev_guide.expressions angular expression} with an assignment operator in templates:
 
-         <button ng:click="{{foos='ball'}}">Click me</button>
+         <button ng-click="{{foos='ball'}}">Click me</button>
 
-* Use {@link api/angular.module.ng.$compileProvider.directive.ng:init ng:init directive} in templates (for toy/example apps
+* Use {@link api/angular.module.ng.$compileProvider.directive.ng-init ng-init directive} in templates (for toy/example apps
 only, not recommended for real applications):
 
-         <body ng:init=" foo = 'bar' ">
+         <body ng-init=" foo = 'bar' ">
 
 Angular creates models implicitly (by creating a scope property and assigning it a suitable value)
 when processing the following template constructs:
 
 * Form input, select, textarea and other form elements:
 
-         <input ng:model="query" value="fluffy cloud">
+         <input ng-model="query" value="fluffy cloud">
 
    The code above creates a model called "query" on the current scope with the value set to "fluffy
 cloud".
 
-* An iterator declaration in {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeater}:
+* An iterator declaration in {@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeater}:
 
-         <p ng:repeat="phone in phones"></p>
+         <p ng-repeat="phone in phones"></p>
 
    The code above creates one child scope for each item in the "phones" array and creates a "phone"
 object (model) on each of these scopes with its value set to the value of "phone" in the array.

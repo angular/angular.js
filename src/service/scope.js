@@ -450,15 +450,12 @@ function $RootScopeProvider(){
        * scope and its children. Removal also implies that the current scope is eligible for garbage
        * collection.
        *
-       * The destructing scope emits an `$destroy` {@link angular.module.ng.$rootScope.Scope#$emit event}.
-       *
        * The `$destroy()` is usually used by directives such as
        * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} for managing the unrolling of the loop.
        *
        */
       $destroy: function() {
         if (this.$root == this) return; // we can't remove the root node;
-        this.$emit('$destroy');
         var parent = this.$parent;
 
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;

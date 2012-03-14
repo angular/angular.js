@@ -503,13 +503,12 @@ function size(obj, ownPropsOnly) {
 
 
 function includes(array, obj) {
-  for ( var i = 0; i < array.length; i++) {
-    if (obj === array[i]) return true;
-  }
-  return false;
+  return indexOf(array, obj) != -1;
 }
 
 function indexOf(array, obj) {
+  if (array.indexOf) return array.indexOf(obj);
+
   for ( var i = 0; i < array.length; i++) {
     if (obj === array[i]) return i;
   }

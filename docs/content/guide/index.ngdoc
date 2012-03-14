@@ -33,10 +33,7 @@ of the following documents before returning here to the Developer Guide:
 
 ## {@link dev_guide.compiler Angular HTML Compiler}
 
-* {@link dev_guide.compiler.directives Understanding Angular Directives}
-* {@link dev_guide.compiler.widgets Understanding Angular Widgets}
-* {@link dev_guide.compiler.directives_widgets Comparing Directives and Widgets}
-* {@link dev_guide.compiler.markup Understanding Angular Markup}
+* {@link api/angular.module.ng.$compileProvider.directive Understanding Angular Directives}
 
 ## {@link dev_guide.templates Angular Templates}
 

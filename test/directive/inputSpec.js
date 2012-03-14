@@ -1,21 +1,35 @@
 'use strict';
 
 describe('NgModelController', function() {
-  var ctrl, scope, ngModelAccessor;
+  var ctrl, scope, ngModelAccessor, element, parentFormCtrl;
 
   beforeEach(inject(function($rootScope, $controller) {
     var attrs = {name: 'testAlias'};
 
+    parentFormCtrl = {
+      $setValidity: jasmine.createSpy('$setValidity'),
+      $setDirty: jasmine.createSpy('$setDirty')
+    }
+
+    element = jqLite('<form><input></form>');
+    element.data('$formController', parentFormCtrl);
+
     scope = $rootScope;
     ngModelAccessor = jasmine.createSpy('ngModel accessor');
-    ctrl = $controller(NgModelController, {$scope: scope, ngModel: ngModelAccessor, $attrs: attrs});
-
+    ctrl = $controller(NgModelController, {
+      $scope: scope, $element: element.find('input'), ngModel: ngModelAccessor, $attrs: attrs
+    });
     // mock accessor (locals)
     ngModelAccessor.andCallFake(function(val) {
       if (isDefined(val)) scope.value = val;
       return scope.value;
     });
   }));
+
+
+  afterEach(function() {
+    dealoc(element);
+  });
 
 
   it('should init the properties', function() {
@@ -37,58 +51,54 @@ describe('NgModelController', function() {
   describe('setValidity', function() {
 
     it('should propagate invalid to the parent form only when valid', function() {
-      var spy = jasmine.createSpy('setValidity');
-      ctrl.$form = {$setValidity: spy};
-
+      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
       ctrl.$setValidity('ERROR', false);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
 
-      spy.reset();
+      parentFormCtrl.$setValidity.reset();
       ctrl.$setValidity('ERROR', false);
-      expect(spy).not.toHaveBeenCalled();
+      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
     });
 
 
     it('should set and unset the error', function() {
-      ctrl.$setValidity('REQUIRED', false);
-      expect(ctrl.$error.REQUIRED).toBe(true);
+      ctrl.$setValidity('required', false);
+      expect(ctrl.$error.required).toBe(true);
 
-      ctrl.$setValidity('REQUIRED', true);
-      expect(ctrl.$error.REQUIRED).toBeUndefined();
+      ctrl.$setValidity('required', true);
+      expect(ctrl.$error.required).toBe(false);
     });
 
 
     it('should set valid/invalid', function() {
-      ctrl.$setValidity('FIRST', false);
+      ctrl.$setValidity('first', false);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('SECOND', false);
+      ctrl.$setValidity('second', false);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('SECOND', true);
+      ctrl.$setValidity('second', true);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('FIRST', true);
+      ctrl.$setValidity('first', true);
       expect(ctrl.$valid).toBe(true);
       expect(ctrl.$invalid).toBe(false);
     });
 
 
     it('should emit $valid only when $invalid', function() {
-      var spy = jasmine.createSpy('setValidity');
-      ctrl.$form = {$setValidity: spy};
+      ctrl.$setValidity('error', true);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
+      parentFormCtrl.$setValidity.reset();
 
-      ctrl.$setValidity('ERROR', true);
-      expect(spy).not.toHaveBeenCalled();
-
-      ctrl.$setValidity('ERROR', false);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
-      spy.reset();
-      ctrl.$setValidity('ERROR', true);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', true, ctrl);
+      ctrl.$setValidity('error', false);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', false, ctrl);
+      parentFormCtrl.$setValidity.reset();
+      ctrl.$setValidity('error', true);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
     });
   });
 
@@ -143,24 +153,21 @@ describe('NgModelController', function() {
       ctrl.$parsers.push(function() {return undefined;});
       expect(ctrl.$modelValue).toBe('aaaa');
       ctrl.$setViewValue('bbbb');
-      expect(ctrl.$modelValue).toBeUndefined;
+      expect(ctrl.$modelValue).toBeUndefined();
     });
 
 
-    it('should call parentForm.setDirty only when pristine', function() {
-      var spy = jasmine.createSpy('setDirty');
-      ctrl.$form = {$setDirty: spy};
-
+    it('should call parentForm.$setDirty only when pristine', function() {
       ctrl.$setViewValue('');
       expect(ctrl.$pristine).toBe(false);
       expect(ctrl.$dirty).toBe(true);
-      expect(spy).toHaveBeenCalledOnce();
+      expect(parentFormCtrl.$setDirty).toHaveBeenCalledOnce();
 
-      spy.reset();
+      parentFormCtrl.$setDirty.reset();
       ctrl.$setViewValue('');
       expect(ctrl.$pristine).toBe(false);
       expect(ctrl.$dirty).toBe(true);
-      expect(spy).not.toHaveBeenCalled();
+      expect(parentFormCtrl.$setDirty).not.toHaveBeenCalled();
     });
   });
 
@@ -235,22 +242,30 @@ describe('ng-model', function() {
     $rootScope.$digest();
     expect(element).toBeValid();
     expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
 
     $rootScope.$apply(function() {
       $rootScope.value = 'invalid-email';
     });
     expect(element).toBeInvalid();
     expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('invalid-again');
     browserTrigger(element, 'blur');
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('vojta@google.com');
     browserTrigger(element, 'blur');
     expect(element).toBeValid();
     expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
 
     dealoc(element);
   }));
@@ -296,10 +311,10 @@ describe('input', function() {
     compileInput('<input ng-model="name" name="alias" required>');
 
     scope.$apply();
-    expect(scope.form.$error.REQUIRED.length).toBe(1);
+    expect(scope.form.$error.required.length).toBe(1);
 
     inputElm.remove();
-    expect(scope.form.$error.REQUIRED).toBeUndefined();
+    expect(scope.form.$error.required).toBe(false);
   });
 
 
@@ -535,12 +550,12 @@ describe('input', function() {
         changeInputValueTo('1');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.MIN).toBeTruthy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
 
         changeInputValueTo('100');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(100);
-        expect(scope.form.alias.$error.MIN).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
 
@@ -554,12 +569,12 @@ describe('input', function() {
         changeInputValueTo('20');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.MAX).toBeTruthy();
+        expect(scope.form.alias.$error.max).toBeTruthy();
 
         changeInputValueTo('0');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.MAX).toBeFalsy();
+        expect(scope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -572,7 +587,7 @@ describe('input', function() {
         changeInputValueTo('0');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.REQUIRED).toBeFalsy();
+        expect(scope.form.alias.$error.required).toBeFalsy();
       });
 
       it('should be valid even if value 0 is set from model', function() {
@@ -584,7 +599,7 @@ describe('input', function() {
 
         expect(inputElm).toBeValid();
         expect(inputElm.val()).toBe('0')
-        expect(scope.form.alias.$error.REQUIRED).toBeFalsy();
+        expect(scope.form.alias.$error.required).toBeFalsy();
       });
     });
   });
@@ -599,12 +614,12 @@ describe('input', function() {
 
       expect(scope.email).toBe('vojta@google.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.EMAIL).toBeUndefined();
+      expect(widget.$error.email).toBe(false);
 
       changeInputValueTo('invalid@');
       expect(scope.email).toBeUndefined();
       expect(inputElm).toBeInvalid();
-      expect(widget.$error.EMAIL).toBeTruthy();
+      expect(widget.$error.email).toBeTruthy();
     });
 
 
@@ -627,12 +642,12 @@ describe('input', function() {
       changeInputValueTo('http://www.something.com');
       expect(scope.url).toBe('http://www.something.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.URL).toBeUndefined();
+      expect(widget.$error.url).toBe(false);
 
       changeInputValueTo('invalid.com');
       expect(scope.url).toBeUndefined();
       expect(inputElm).toBeInvalid();
-      expect(widget.$error.URL).toBeTruthy();
+      expect(widget.$error.url).toBeTruthy();
     });
 
 
@@ -855,6 +870,28 @@ describe('input', function() {
 
       changeInputValueTo('');
       expect(scope.list).toEqual([]);
+    });
+
+
+    it('should allow custom separator', function() {
+      compileInput('<input type="text" ng-model="list" ng-list=":" />');
+
+      changeInputValueTo('a,a');
+      expect(scope.list).toEqual(['a,a']);
+
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
+    });
+
+
+    it('should allow regexp as a separator', function() {
+      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
+
+      changeInputValueTo('a,b');
+      expect(scope.list).toEqual(['a', 'b']);
+
+      changeInputValueTo('a,b: c');
+      expect(scope.list).toEqual(['a', 'b', 'c']);
     });
   });
 

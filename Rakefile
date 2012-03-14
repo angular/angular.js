@@ -20,7 +20,7 @@ task :init do
                       new(match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : ''),
                           match[1].split('.')[0],
                           match[1].split('.')[1],
-                          match[1].split('.')[2],
+                          match[1].split('.')[2].sub(/\D+.*$/, ''),
                           v['codename'])
 end
 

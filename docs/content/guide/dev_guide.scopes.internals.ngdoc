@@ -47,7 +47,7 @@ recursively check the parent scope, grandparent scope, etc. all the way to the r
 defaulting to undefined.
 
 {@link api/angular.module.ng.$compileProvider.directive directives} associated with elements
-(ng:controller, ng:repeat, ng:include, etc.) create new child scopes that inherit properties from
+(ng-controller, ng-repeat, ng-include, etc.) create new child scopes that inherit properties from
 the current parent scope. Any code in Angular is free to create a new scope. Whether or not your
 code does so is an implementation detail of the directive, that is, you can decide when or if this
 happens. Inheritance typically mimics HTML DOM element nesting, but does not do so with the same
@@ -123,8 +123,8 @@ usually fall into one of two categories:
     expressions `{{expression}}`, register listeners using the {@link
     api/angular.module.ng.$rootScope.Scope#$watch $watch()} method. This type of directive needs to
     be notified whenever the expression changes so that it can update the view.
-   -  Listener directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng:click
-   ng:click}, register a listener with the DOM. When the DOM listener fires, the directive executes
+   -  Listener directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng-click
+   ng-click}, register a listener with the DOM. When the DOM listener fires, the directive executes
    the associated expression and updates the view using  the {@link
    api/angular.module.ng.$rootScope.Scope#$apply $apply()} method.
 3. When an external event (such as a user action, timer or XHR) is received, the associated {@link
@@ -134,8 +134,8 @@ api/angular.module.ng.$rootScope.Scope#$apply $apply()} method so that all liste
 
 ### Directives that create scopes
 In most cases, {@link api/angular.module.ng.$compileProvider.directive directives} and scopes interact but do not create new
-instances of scope. However, some directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng:controller
-ng:controller} and {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat}, create new child scopes using
+instances of scope. However, some directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng-controller
+ng-controller} and {@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}, create new child scopes using
 the {@link api/angular.module.ng.$rootScope.Scope#$new $new()} method and then attach the child scope to the
 corresponding DOM element. You can retrieve a scope for any DOM element by using an
 `angular.element(aDomElement).scope()` method call.)
@@ -144,7 +144,7 @@ corresponding DOM element. You can retrieve a scope for any DOM element by using
 ### Controllers and scopes
 Scopes and controllers interact with each other in the following situations:
    - Controllers use scopes to expose controller methods to templates (see {@link
-api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller}).
+api/angular.module.ng.$compileProvider.directive.ng-controller ng-controller}).
    - Controllers define methods (behavior) that can mutate the model (properties on the scope).
    - Controllers may register {@link api/angular.module.ng.$rootScope.Scope#$watch watches} on the model. These watches
 execute immediately after the controller behavior executes, but before the DOM gets updated.
@@ -170,7 +170,7 @@ $watch-ers firing and view getting updated. Similarly, when a request to fetch d
 is made and the response comes back, the data is written into the model (scope) within an $apply,
 which then pushes updates through to the view and any other dependents.
 
-A widget that creates scopes (such as {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat}) via `$new`,
+A widget that creates scopes (such as {@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}) via `$new`,
 doesn't need to worry about propagating the `$digest` call from the parent scope to child scopes.
 This happens automatically.
 

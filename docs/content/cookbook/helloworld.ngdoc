@@ -9,8 +9,8 @@
       $scope.name = 'World';
     }
   </script>
-  <div ng:controller="HelloCntl">
-    Your name: <input type="text" ng:model="name" value="World"/>
+  <div ng-controller="HelloCntl">
+    Your name: <input type="text" ng-model="name" value="World"/>
     <hr/>
     Hello {{name}}!
   </div>
