@@ -79,12 +79,10 @@ easier a web developer's life can if they're using angular:
 Try out the Live Preview above, and then let's walk through the example and describe what's going
 on.
 
-In the `<html>` tag, we add an attribute to let the browser know about the angular namespace.
-This ensures angular runs nicely in all major browsers. We also specify that it is an angular
-application with the `ng-app` directive. The `ng-app' will cause the angular to {@link
-dev_guide.bootstrap auto initialize} your application.
+In the `<html>` tag we specify that this is an angular application with the `ng-app` directive.
+The `ng-app' will cause the angular to {@link dev_guide.bootstrap auto initialize} your application.
 
-        <html ng-ng-app>
+        <html ng-app>
 
 We load the angular using the  `<script>` tag:
 
@@ -111,12 +109,12 @@ And finally, the mysterious `{{ double curly braces }}`:
 
          Total: {{qty * cost | currency}}
 
-This notation, `{{ _expression_ }}`, is a bit of built-in angular {@link http://localhost:8000/build/docs/api/angular.module.ng.$interpolate
-markup}, a shortcut for displaying data to the user. The expression within curly braces gets
-transformed by the angular compiler into an angular directive ({@link api/angular.module.ng.$compileProvider.directive.ng-bind
-ng-bind}). The expression itself can be a combination of both an expression and a {@link
-dev_guide.templates.filters filter}: `{{ expression | filter }}`. Angular provides filters for
-formatting display data.
+This notation, `{{ _expression_ }}`, is a bit of built-in angular binding markup, a shortcut for
+displaying data to the user. The expression within curly braces is monitored and its evaluated value
+is updated into the view by angular's template compiler. Alternatively, one could use angular's
+{@link api/angular.module.ng.$compileProvider.directive.ng-bind ng-bind}) directive. The expression
+itself can be a combination of both an expression and a {@link dev_guide.templates.filters filter}:
+`{{ expression | filter }}`. Angular provides filters for formatting display data.
 
 In the example above, the expression in double-curly braces directs angular to, "Bind the data we
 got from the input widgets to the display, multiply them together, and format the resulting number

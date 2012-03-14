@@ -12,7 +12,7 @@ explicitly.
 
 <pre>
 <!doctype html>
-<html xmlns:ng="http://angularjs.org">
+<html>
 <head>
   <script src="http://code.angularjs.org/angular.js"></script>
   <script>

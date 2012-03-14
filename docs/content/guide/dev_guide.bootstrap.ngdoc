@@ -29,11 +29,11 @@ and manage the whole page. You do this as follows:
 
         <html xmlns:ng="http://angularjs.org">
 
-You need to declare the angular namespace declaration in the following cases:
-
-* For all types of browser if you are using XHTML.
-* For Internet Explorer older than version 9 (because older versions of IE do not render namespace
-properly for either HTML or XHTML).
+You need to add the angular namespace declaration if you use `ng:something` style of declaring
+angular directives and you write your templates as XHTML. Or when you are targeting Internet
+Explorer older than version 9 (because older versions of IE do not render namespace
+properly for either HTML or XHTML). For more info please read {@link ie Internet Explorer
+Compatibility} doc.
 
 
 ## Creating Your Own Namespaces

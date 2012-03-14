@@ -21,14 +21,13 @@ A great way for you to get started with AngularJS is to create the tradtional
 
 The resulting web page should look something like the following:
 
-<img class="center" src="img/helloworld.png" border="1" />
+<img class="center" src="img/helloworld.png" border="1">
 
 Now let's take a closer look at that code, and see what is going on behind
 the scenes.
 
-The first line of interest defines the `ng` namespace, which makes
-AngularJS work across all browsers (especially important for IE). The
-`ng-app` tags tells angular to process the entire HTML when it is loaded:
+The `ng-app` tags tells angular to process the entire HTML page and bootstrap the app when the page
+is loaded:
 
 <pre>
     <html ng-app>
@@ -37,7 +36,7 @@ AngularJS work across all browsers (especially important for IE). The
 The next line downloads the angular script:
 
 <pre>
-    <script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
+    <script src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
 </pre>
 
 (For details on what happens when angular processes an HTML page,

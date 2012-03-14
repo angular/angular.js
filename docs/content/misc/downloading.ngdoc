@@ -16,14 +16,14 @@ development.
 production.
 
 To point your code to an angular script on the angular server, use the following template.  This
-example points to (non-minified) version 0.9.12:
+example points to (non-minified) version 0.10.6:
 
 <pre>
   <!doctype html>
-  <html xmlns:ng="http://angularjs.org" ng-app>
+  <html ng-app>
     <head>
       <title>My Angular App</title>
-      <script src="http://code.angularjs.org/angular-0.9.12.js"></script>
+      <script src="http://code.angularjs.org/angular-0.10.6.js"></script>
     </head>
     <body>
     </body>
