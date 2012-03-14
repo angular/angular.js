@@ -32,7 +32,7 @@ describe('ngdoc', function() {
 
       it('should have shortName', function() {
         var d1 = new Doc('@name a.b.c').parse();
-        var d2 = new Doc('@name a.b.ng:c').parse();
+        var d2 = new Doc('@name a.b.ng-c').parse();
         var d3 = new Doc('@name some text: more text').parse();
         expect(ngdoc.metadata([d1])[0].shortName).toEqual('c');
         expect(ngdoc.metadata([d2])[0].shortName).toEqual('ng:c');
@@ -41,7 +41,7 @@ describe('ngdoc', function() {
 
       it('should have depth information', function() {
         var d1 = new Doc('@name a.b.c').parse();
-        var d2 = new Doc('@name a.b.ng:c').parse();
+        var d2 = new Doc('@name a.b.ng-c').parse();
         var d3 = new Doc('@name some text: more text').parse();
         expect(ngdoc.metadata([d1])[0].depth).toEqual(2);
         expect(ngdoc.metadata([d2])[0].depth).toEqual(2);
@@ -458,7 +458,7 @@ describe('ngdoc', function() {
             'dad{@link angular.foo}\n\n' +
             'external{@link http://angularjs.org}\n\n' +
             'external{@link ./static.html}\n\n' +
-            '{@link angular.directive.ng:foo ng:foo}');
+            '{@link angular.directive.ng-foo ng:foo}');
 
         doc.section = 'api';
         doc.parse();
@@ -470,7 +470,7 @@ describe('ngdoc', function() {
         expect(doc.description).
           toContain('dad<a href="api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('<a href="api/angular.directive.ng:foo"><code>ng:foo</code></a>');
+          toContain('<a href="api/angular.directive.ng-foo"><code>ng:foo</code></a>');
         expect(doc.description).
           toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
         expect(doc.description).

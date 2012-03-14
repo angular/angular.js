@@ -21,8 +21,8 @@ code, observe how the value of `name` changes, based on the HTML element it is d
 
 <doc:example>
 <doc:source>
- <ul ng:init="name='Hank'; names=['Igor', 'Misko', 'Gail', 'Kai']">
-   <li ng:repeat="name in names">
+ <ul ng-init="name='Hank'; names=['Igor', 'Misko', 'Gail', 'Kai']">
+   <li ng-repeat="name in names">
            Name = {{name}}!
    </li>
  </ul>
@@ -45,7 +45,7 @@ code, observe how the value of `name` changes, based on the HTML element it is d
 </doc:scenario>
 </doc:example>
 
-The angular {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat} directive creates a new scope for each
+The angular {@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} directive creates a new scope for each
 element that it repeats (in this example the elements are list items). In the `<ul>` element, we
 initialized `name` to "Hank", and we created an array called `names` to use as the data source for
 the list items. In each `<li>` element, `name` is overridden. Outside of the `<li>` repeater, the

@@ -774,6 +774,7 @@ function merge(docs){
       if (link[0] == '#') {
         link = doc.section + '/' + doc.id.split('#').shift() + link;
       }
+      link = link.split('#').shift();
       if (!byFullId[link]) {
         console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
       }
