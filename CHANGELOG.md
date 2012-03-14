@@ -1,8 +1,5 @@
-- The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#1.0.0rc1">1.0.0rc1 moiré-vision</a>
-
 <a name="1.0.0rc1"></a>
-# 1.0.0rc1 moiré-vision (in-progress)
+# 1.0.0rc1 moiré-vision (2012-03-13)
 
 ## $compile rewrite
 
