@@ -28,10 +28,10 @@ the scenes.
 
 The first line of interest defines the `ng` namespace, which makes
 AngularJS work across all browsers (especially important for IE). The
-`ng:app` tags tells angular to process the entire HTML when it is loaded:
+`ng-app` tags tells angular to process the entire HTML when it is loaded:
 
 <pre>
-    <html xmlns:ng="http://angularjs.org" ng:app>
+    <html ng-app>
 </pre>
 
 The next line downloads the angular script:
@@ -66,7 +66,7 @@ This example demonstrates angular's two-way data binding:
 
 <doc:example>
  <doc:source>
-  Your name: <input type="text" ng:model="yourname" value="World"/>
+  Your name: <input type="text" ng-model="yourname" value="World"/>
   <hr/>
   Hello {{yourname}}!
  </doc:source>

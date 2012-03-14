@@ -48,7 +48,7 @@ easier a web developer's life can if they're using angular:
      $scope.cost = 19.95;
    }
  </script>
- <div ng:controller="InvoiceCntl">
+ <div ng-controller="InvoiceCntl">
    <b>Invoice:</b>
    <br />
    <br />
@@ -56,8 +56,8 @@ easier a web developer's life can if they're using angular:
     <tr><td> </td><td> </td>
     <tr><td>Quantity</td><td>Cost</td></tr>
     <tr>
-      <td><input type="integer" min="0" ng:model="qty" required ></td>
-      <td><input type="number" ng:model="cost" required ></td>
+      <td><input type="integer" min="0" ng-model="qty" required ></td>
+      <td><input type="number" ng-model="cost" required ></td>
     </tr>
    </table>
    <hr />
@@ -81,20 +81,20 @@ on.
 
 In the `<html>` tag, we add an attribute to let the browser know about the angular namespace.
 This ensures angular runs nicely in all major browsers. We also specify that it is an angular
-application with the `ng:app` directive. The `ng:app' will cause the angular to {@link
+application with the `ng-app` directive. The `ng-app' will cause the angular to {@link
 dev_guide.bootstrap auto initialize} your application.
 
-        <html xmlns:ng="http://angularjs.org" ng:app>
+        <html ng-ng-app>
 
 We load the angular using the  `<script>` tag:
 
     <script src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
 
-From the `ng:model` attribute of the `<input>` tags, angular automatically sets up two-way data
+From the `ng-model` attribute of the `<input>` tags, angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
-        Quantity: <input type="integer" min="0" ng:model="qty" required >
-        Cost: <input type="number" ng:model="cost" required >
+        Quantity: <input type="integer" min="0" ng-model="qty" required >
+        Cost: <input type="number" ng-model="cost" required >
 
 These input widgets look normal enough, but consider these points:
 
@@ -111,10 +111,10 @@ And finally, the mysterious `{{ double curly braces }}`:
 
          Total: {{qty * cost | currency}}
 
-This notation, `{{ _expression_ }}`, is a bit of built-in angular {@link dev_guide.compiler.markup
+This notation, `{{ _expression_ }}`, is a bit of built-in angular {@link http://localhost:8000/build/docs/api/angular.module.ng.$interpolate
 markup}, a shortcut for displaying data to the user. The expression within curly braces gets
-transformed by the angular compiler into an angular directive ({@link api/angular.module.ng.$compileProvider.directive.ng:bind
-ng:bind}). The expression itself can be a combination of both an expression and a {@link
+transformed by the angular compiler into an angular directive ({@link api/angular.module.ng.$compileProvider.directive.ng-bind
+ng-bind}). The expression itself can be a combination of both an expression and a {@link
 dev_guide.templates.filters filter}: `{{ expression | filter }}`. Angular provides filters for
 formatting display data.
 

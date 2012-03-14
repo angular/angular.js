@@ -316,8 +316,8 @@ When a user clicks on this link,
 In cases like the following, links are not rewritten; instead, the browser will perform a full page
 reload to the original link.
 
-- Links with an `ng:ext-link` directive<br />
-  Example: `<a href="/ext/link?a=b" ng:ext-link>link</a>`
+- Links with an `ng-ext-link` directive<br />
+  Example: `<a href="/ext/link?a=b" ng-ext-link>link</a>`
 - Links that contain `target="_blank"`<br />
   Example: `<a href="/ext/link?a=b" target="_blank">link</a>`
 - Absolute links that go to a different domain<br />
@@ -369,10 +369,10 @@ In this examples we use `<base href="/base/index.html" />`
 <doc:example>
 <doc:source source="false">
 
-<div ng:non-bindable class="html5-hashbang-example">
-  <div id="html5-mode" ng:controller="Html5Cntl">
+<div ng-non-bindable class="html5-hashbang-example">
+  <div id="html5-mode" ng-controller="Html5Cntl">
     <h3>Browser with History API</h3>
-    <ng:address-bar browser="html5"></ng:address-bar><br /><br />
+    <ng-address-bar browser="html5"></ng-address-bar><br /><br />
     $location.protocol() = {{$location.protocol()}}<br />
     $location.host() = {{$location.host()}}<br />
     $location.port() = {{$location.port()}}<br />
@@ -381,12 +381,12 @@ In this examples we use `<base href="/base/index.html" />`
     $location.hash() = {{$location.hash()}}<br />
     <a href="/base/first?a=b">/base/first?a=b</a> |
     <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
-    <a href="/base/another?search" ng:ext-link>external</a>
+    <a href="/base/another?search" ng-ext-link>external</a>
   </div>
 
-  <div id="hashbang-mode" ng:controller="HashbangCntl">
+  <div id="hashbang-mode" ng-controller="HashbangCntl">
     <h3>Browser without History API</h3>
-    <ng:address-bar browser="hashbang"></ng:address-bar><br /><br />
+    <ng-address-bar browser="hashbang"></ng-address-bar><br /><br />
     $location.protocol() = {{$location.protocol()}}<br />
     $location.host() = {{$location.host()}}<br />
     $location.port() = {{$location.port()}}<br />
@@ -395,7 +395,7 @@ In this examples we use `<base href="/base/index.html" />`
     $location.hash() = {{$location.hash()}}<br />
     <a href="/base/first?a=b">/base/first?a=b</a> |
     <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
-    <a href="/base/another?search" ng:ext-link>external</a>
+    <a href="/base/another?search" ng-ext-link>external</a>
   </div>
 </div>
 
@@ -614,7 +614,7 @@ https://github.com/angular/angular.js/issues/404 issue}).  If you should require
 you will need to specify an extra property that has two watchers. For example:
 <pre>
 <!-- html -->
-<input type="text" ng:model="locationPath" />
+<input type="text" ng-model="locationPath" />
 </pre>
 <pre>
 // js - controller

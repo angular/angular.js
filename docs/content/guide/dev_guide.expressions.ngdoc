@@ -63,14 +63,14 @@ You can try evaluating different expressions here:
      };
    }
  </script>
- <div ng:controller="Cntl2" class="expressions">
+ <div ng-controller="Cntl2" class="expressions">
    Expression:
-   <input type='text' ng:model="expr" size="80"/>
-   <button ng:click="addExp(expr)">Evaluate</button>
+   <input type='text' ng-model="expr" size="80"/>
+   <button ng-click="addExp(expr)">Evaluate</button>
    <ul>
-    <li ng:repeat="expr in exprs">
-      [ <a href="" ng:click="removeExp($index)">X</a> ]
-      <tt>{{expr}}</tt> => <span ng:bind="$parent.$eval(expr)"></span>
+    <li ng-repeat="expr in exprs">
+      [ <a href="" ng-click="removeExp($index)">X</a> ]
+      <tt>{{expr}}</tt> => <span ng-bind="$parent.$eval(expr)"></span>
      </li>
    </ul>
  </div>
@@ -105,9 +105,9 @@ the global state (a common source of subtle bugs).
      }
    }
  </script>
- <div class="example2" ng:controller="Cntl1">
-   Name: <input ng:model="name" type="text"/>
-   <button ng:click="greet()">Greet</button>
+ <div class="example2" ng-controller="Cntl1">
+   Name: <input ng-model="name" type="text"/>
+   <button ng-click="greet()">Greet</button>
  </div>
 </doc:source>
 <doc:scenario>
@@ -173,19 +173,19 @@ Extensions: You can further extend the expression vocabulary by adding new metho
 
 <doc:example>
 <doc:source>
- <div ng:init="friends = [
+ <div ng-init="friends = [
    {name:'John', phone:'555-1212'},
    {name:'Mary', phone:'555-9876'},
    {name:'Mike', phone:'555-4321'},
    {name:'Adam', phone:'555-5678'},
    {name:'Julie', phone:'555-8765'}]"></div>
- Search: <input ng:model="searchText"/>
+ Search: <input ng-model="searchText"/>
  <table class="example3">
    <thead>
      <tr><th>Name</th><th>Phone</th><tr>
    </thead>
    <tbody>
-     <tr ng:repeat="friend in friends | filter:searchText">
+     <tr ng-repeat="friend in friends | filter:searchText">
        <td>{{friend.name}}</td>
        <td>{{friend.phone}}</td>
      </tr>
@@ -235,11 +235,6 @@ property and then we would have a collision. This problem exists because angular
 objects with additional behavior. By prefixing its additions with $ we are reserving our namespace
 so that angular developers and developers who use angular can develop in harmony without collisions.
 
-
-## Related Topics
-
-* {@link dev_guide.compiler.markup Understanding Angular Markup}
-* {@link dev_guide.templates.filters Understanding Angular Filters}
 
 ## Related API
 

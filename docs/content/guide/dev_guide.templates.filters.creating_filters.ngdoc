@@ -39,8 +39,8 @@ text upper-case and assigns color.
   }
 </script>
 
-<div ng:controller="Ctrl">
-  <input ng:model="greeting" type="greeting"><br>
+<div ng-controller="Ctrl">
+  <input ng-model="greeting" type="greeting"><br>
   No filter: {{greeting}}<br>
   Reverse: {{greeting|reverse}}<br>
   Reverse + uppercase: {{greeting|reverse:true}}<br>

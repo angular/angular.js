@@ -3,11 +3,11 @@
 @description
 
 Angular initializes automatically when you load the angular script into your page that contains an element
-with `ng:app` directive:
+with `ng-app` directive:
 
 <pre>
 <!doctype html>
-<html ng:app>
+<html ng-app>
   <head>
     <script src="angular.js"></script>
   </head>
@@ -22,16 +22,16 @@ From a high-level view, this is what happens during angular's automatic initiali
 1. The browser loads the page, and then runs the angular script. Angular waits for the
 `DOMContentLoaded` (or 'Load') event to attempt to bootstrap.
 
-2. Angular looks for the `ng:app` directive. If found it then proceeds to compile the DOM element and its children.
-Optionally the `ng:app` may specify a {@link api/angular.module module} to load before the compilation. For details on
+2. Angular looks for the `ng-app` directive. If found it then proceeds to compile the DOM element and its children.
+Optionally the `ng-app` may specify a {@link api/angular.module module} to load before the compilation. For details on
 how the compiler works, see {@link dev_guide.compiler Angular HTML Compiler}.
 
 
 ## Initialization Options
 
-The reason why `ng:app` exists is because angular should not assume that the entire HTML
+The reason why `ng-app` exists is because angular should not assume that the entire HTML
 document should be processed just because the `angular.js` script is included. In order to compile
-only a part of the document set the `ng:app` on the root element of this portion.
+only a part of the document set the `ng-app` on the root element of this portion.
 
 ## Global Angular Object
 
