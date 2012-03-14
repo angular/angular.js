@@ -421,8 +421,8 @@ Doc.prototype = {
         } else {
           dom.text(BOOLEAN_ATTR[param.name] ? '' : infix );
           dom.text(('{' + param.type + '}').replace(/^\{\'(.*)\'\}$/, '$1'));
-          dom.text(param.optional ? ']' : '');
           dom.text(suffix);
+          dom.text(param.optional && !skip ? ']' : '');
         }
       });
     }
