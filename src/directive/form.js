@@ -31,10 +31,10 @@ var nullFormCtrl = {
  * of `FormController`.
  *
  */
-FormController.$inject = ['name', '$element', '$attrs'];
-function FormController(name, element, attrs) {
+FormController.$inject = ['$element', '$attrs'];
+function FormController(element, attrs) {
   var form = this,
-      parentForm = element.parent().inheritedData('$formController') || nullFormCtrl,
+      parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
       errors = form.$error = {};
 
@@ -44,9 +44,6 @@ function FormController(name, element, attrs) {
   form.$pristine = true;
   form.$valid = true;
   form.$invalid = false;
-
-  // publish the form into scope
-  name(this);
 
   parentForm.$addControl(form);
 
@@ -131,8 +128,23 @@ function FormController(name, element, attrs) {
 
 /**
  * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng-form
+ * @restrict EAC
+ *
+ * @description
+ * Nestable alias of {@link angular.module.ng.$compileProvider.directive.form `form`} directive. HTML
+ * does not allow nesting of form elements. It is useful to nest forms, for example if the validity of a
+ * sub-group of controls needs to be determined.
+ *
+ * @param {string=} ng-form|name Name of the form. If specified, the form controller will be published into
+ *                       related scope, under this name.
+ *
+ */
+
+ /**
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.form
- * @restrict EA
+ * @restrict E
  *
  * @description
  * Directive that instantiates
@@ -141,12 +153,12 @@ function FormController(name, element, attrs) {
  * If `name` attribute is specified, the form controller is published onto the current scope under
  * this name.
  *
- * # Alias: `ng-form`
+ * # Alias: {@link angular.module.ng.$compileProvider.directive.ng-form `ng-form`}
  *
  * In angular forms can be nested. This means that the outer form is valid when all of the child
  * forms are valid as well. However browsers do not allow nesting of `<form>` elements, for this
- * reason angular provides `<ng-form>` alias which behaves identical to `<form>` but allows
- * element nesting.
+ * reason angular provides {@link angular.module.ng.$compileProvider.directive.ng-form `ng-form`} alias
+ * which behaves identical to `<form>` but allows form nesting.
  *
  *
  * # CSS classes
@@ -218,25 +230,31 @@ function FormController(name, element, attrs) {
       </doc:scenario>
     </doc:example>
  */
-var formDirectiveDev = {
+var formDirectiveDir = {
   name: 'form',
   restrict: 'E',
-  inject: {
-    name: 'accessor'
-  },
   controller: FormController,
   compile: function() {
     return {
       pre: function(scope, formElement, attr, controller) {
-        formElement.bind('submit', function(event) {
-          if (!attr.action) event.preventDefault();
-        });
+        if (!attr.action) {
+          formElement.bind('submit', function(event) {
+            event.preventDefault();
+          });
+        }
 
-        var parentFormCtrl = formElement.parent().inheritedData('$formController');
+        var parentFormCtrl = formElement.parent().controller('form'),
+            alias = attr.name || attr.ngForm;
+
+        if (alias) {
+          scope[alias] = controller;
+        }
         if (parentFormCtrl) {
           formElement.bind('$destroy', function() {
             parentFormCtrl.$removeControl(controller);
-            if (attr.name) delete scope[attr.name];
+            if (alias) {
+              scope[alias] = undefined;
+            }
             extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
           });
         }
@@ -245,5 +263,5 @@ var formDirectiveDev = {
   }
 };
 
-var formDirective = valueFn(formDirectiveDev);
-var ngFormDirective = valueFn(extend(copy(formDirectiveDev), {restrict:'EAC'}));
+var formDirective = valueFn(formDirectiveDir);
+var ngFormDirective = valueFn(extend(copy(formDirectiveDir), {restrict: 'EAC'}));
