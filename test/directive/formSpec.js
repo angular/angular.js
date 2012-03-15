@@ -33,9 +33,9 @@ describe('form', function() {
 
   it('should remove the widget when element removed', function() {
     doc = $compile(
-        '<form name="myForm">' +
-          '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
-        '</form>')(scope);
+      '<form name="myForm">' +
+        '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
 
     var form = scope.myForm;
     control.$setValidity('required', false);
@@ -45,6 +45,17 @@ describe('form', function() {
     doc.find('input').remove();
     expect(form.$error.required).toBe(false);
     expect(form.alias).toBeUndefined();
+  });
+
+
+  it('should use ng-form as form name', function() {
+    doc = $compile(
+      '<div ng-form="myForm">' +
+        '<input type="text" name="alias" ng-model="value"/>' +
+      '</div>')(scope);
+
+    expect(scope.myForm).toBeDefined();
+    expect(scope.myForm.alias).toBeDefined();
   });
 
 
@@ -89,8 +100,7 @@ describe('form', function() {
   it('should allow form name to be an expression', function() {
     doc = $compile('<form name="obj.myForm"></form>')(scope);
 
-    expect(scope.obj).toBeDefined();
-    expect(scope.obj.myForm).toBeTruthy();
+    expect(scope['obj.myForm']).toBeTruthy();
   });
 
 
