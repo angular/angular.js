@@ -928,6 +928,7 @@ function bindJQuery() {
     jqLite = jQuery;
     extend(jQuery.fn, {
       scope: JQLitePrototype.scope,
+      controller: JQLitePrototype.controller,
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });

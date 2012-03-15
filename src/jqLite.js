@@ -60,9 +60,13 @@
  *
  * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
- * - `scope()` - retrieves the current Angular scope of the element.
- * - `injector()` - retrieves the Angular injector associated with application that the element is
- *   part of.
+ * - `controller(name)` - retrieves the controller of the current element or its parent. By default
+ *   retrieves controller associated with the `ng-controller` directive. If `name` is provided as
+ *   camelCase directive name, then the controller for this directive will be retrieved (e.g.
+ *   `'ngModel'`).
+ * - `injector()` - retrieves the injector of the current element or its parent.
+ * - `scope()` - retrieves the {@link api/angular.module.ng.$rootScope.Scope scope} of the current
+ *   element or its parent.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
@@ -268,6 +272,18 @@ function JQLiteAddNodes(root, elements) {
   }
 }
 
+function JQLiteController(element, name) {
+  return JQLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
+}
+
+function JQLiteInheritedData(element, name, value) {
+  element = jqLite(element);
+  while (element.length) {
+    if (value = element.data(name)) return value;
+    element = element.parent();
+  }
+}
+
 //////////////////////////////////////////
 // Functions which are declared directly.
 //////////////////////////////////////////
@@ -321,20 +337,16 @@ function isBooleanAttr(element, name) {
 
 forEach({
   data: JQLiteData,
-  inheritedData: function(element, name, value) {
-    element = jqLite(element);
-    while (element.length) {
-      if (value = element.data(name)) return value;
-      element = element.parent();
-    }
-  },
+  inheritedData: JQLiteInheritedData,
 
   scope: function(element) {
-    return jqLite(element).inheritedData('$scope');
+    return JQLiteInheritedData(element, '$scope');
   },
 
+  controller: JQLiteController ,
+
   injector: function(element) {
-      return jqLite(element).inheritedData('$injector');
+    return JQLiteInheritedData(element, '$injector');
   },
 
   removeAttr: function(element,name) {
@@ -449,7 +461,7 @@ forEach({
 
     // JQLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
     // in a way that survives minification.
-    if (((fn.length == 2 && fn !== JQLiteHasClass) ? arg1 : arg2) === undefined) {
+    if (((fn.length == 2 && (fn !== JQLiteHasClass && fn !== JQLiteController)) ? arg1 : arg2) === undefined) {
       if (isObject(arg1)) {
         // we are a write, but the object properties are the key/values
         for(i=0; i < this.length; i++) {
