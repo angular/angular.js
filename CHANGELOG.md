@@ -31,7 +31,7 @@ docs. The biggest improvements and changes are listed below.
   `ng:foo`. The new compiler doesn't distinguish between these and other name styles (all of them
   are [equally supported](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)),
   the main difference is that `ng-foo` is easier to select with css selectors. Check out the
-  [Internet Explorer Compatibility](http://docs-next.angularjs.org/guide/ie.ngdoc)
+  [Internet Explorer Compatibility](http://docs-next.angularjs.org/guide/ie)
   doc to learn about various IE-related requirements for different directive naming styles.
 
 - `angular.directive`, `angular.widget`, `angular.attrWidget` were merged into a single concept: a
@@ -256,7 +256,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
 ## Docs
 
-- new [Modules dev guide article](http://docs-next.angularjs.org/guide/module.ngdoc)
+- new [Modules dev guide article](http://docs-next.angularjs.org/guide/module)
 
 
 ## Small bug fixes
