@@ -140,12 +140,33 @@ describe('jqLite', function() {
   describe('injector', function() {
     it('should retrieve injector attached to the current element or its parent', function() {
       var template = jqLite('<div><span></span></div>'),
-          span = template.children().eq(0),
-          injector = angular.bootstrap(template);
+        span = template.children().eq(0),
+        injector = angular.bootstrap(template);
 
 
       expect(span.injector()).toBe(injector);
       dealoc(template);
+    });
+  });
+
+
+  describe('controller', function() {
+    it('should retrieve controller attached to the current element or its parent', function() {
+      var div = jqLite('<div><span></span></div>'),
+          span = div.find('span');
+
+      div.data('$ngControllerController', 'ngController');
+      span.data('$otherController', 'other');
+
+      expect(span.controller()).toBe('ngController');
+      expect(span.controller('ngController')).toBe('ngController');
+      expect(span.controller('other')).toBe('other');
+
+      expect(div.controller()).toBe('ngController');
+      expect(div.controller('ngController')).toBe('ngController');
+      expect(div.controller('other')).toBe(undefined);
+
+      dealoc(div);
     });
   });
 
