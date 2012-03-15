@@ -408,4 +408,33 @@ describe('ng-view', function() {
       expect($rootScope.load).toHaveBeenCalledOnce();
     });
   })
+
+
+  it('should set $scope and $controllerController on the view', function() {
+    function MyCtrl($scope) {
+      $scope.state = 'WORKS';
+      $scope.ctrl = this;
+    }
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {template: 'tpl.html', controller: MyCtrl});
+    });
+
+    inject(function($templateCache, $location, $rootScope, $route) {
+      $templateCache.put('tpl.html', [200, '<div>{{state}}</div>', {}]);
+
+      $location.url('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('WORKS');
+
+      var div = element.find('div');
+      expect(nodeName_(div.parent())).toEqual('NG:VIEW');
+
+      expect(div.scope()).toBe($route.current.scope);
+      expect(div.scope().hasOwnProperty('state')).toBe(true);
+      expect(div.scope().state).toEqual('WORKS');
+
+      expect(div.controller()).toBe($route.current.scope.ctrl);
+    });
+  });
 });
