@@ -102,7 +102,15 @@ describe('select', function() {
         scope.selection = ['A'];
       });
 
-      expect(element[0].childNodes[0].selected).toEqual(true);
+      expect(element.find('option')[0].selected).toEqual(true);
+      expect(element.find('option')[1].selected).toEqual(false);
+
+      scope.$apply(function() {
+        scope.selection.push('B');
+      });
+
+      expect(element.find('option')[0].selected).toEqual(true);
+      expect(element.find('option')[1].selected).toEqual(true);
     });
 
 
