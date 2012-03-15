@@ -31,7 +31,7 @@ docs. The biggest improvements and changes are listed below.
   `ng:foo`. The new compiler doesn't distinguish between these and other name styles (all of them
   are [equally supported](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)),
   the main difference is that `ng-foo` is easier to select with css selectors. Check out the
-  [Internet Explorer Compatibility](http://docs-next.angularjs.org/guide/ie.ngdoc)
+  [Internet Explorer Compatibility](http://docs-next.angularjs.org/guide/ie)
   doc to learn about various IE-related requirements for different directive naming styles.
 
 - `angular.directive`, `angular.widget`, `angular.attrWidget` were merged into a single concept: a
@@ -136,7 +136,7 @@ function MyCtrl() {
 
 <pre>
 function MyCtrl($scope) {
-  $scope.mode = 'some model of any type';
+  $scope.model = 'some model of any type';
 
   $scope.fnUsedFromTemplate = function() {
     someApiThatTakesCallback(function() {
@@ -256,7 +256,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
 ## Docs
 
-- new [Modules dev guide article](http://docs-next.angularjs.org/guide/module.ngdoc)
+- new [Modules dev guide article](http://docs-next.angularjs.org/guide/module)
 
 
 ## Small bug fixes
@@ -267,7 +267,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
   ([commit](https://github.com/angular/angular.js/commit/7da2bdb82a72dffc8c72c1becf6f62aae52d32ce),
    [commit](https://github.com/angular/angular.js/commit/39b3297fc34b6b15bb3487f619ad1e93c4480741))
 - `$http` should not json-serialize File objects, instead just send them raw
-  ([commit](https://github.com/angular/angular.js/commit/5b0d0683584e304db30462f3448d9f090120c444)
+  ([commit](https://github.com/angular/angular.js/commit/5b0d0683584e304db30462f3448d9f090120c444))
 - `$compile` should ignore content of style and script elements
   ([commit](https://github.com/angular/angular.js/commit/4c1c50fd9bfafaa89cdc66dfde818a3f8f4b0c6b),
    [commit](https://github.com/angular/angular.js/commit/d656d11489a0dbce0f549b20006052b215c4b500))
