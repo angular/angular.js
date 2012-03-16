@@ -800,21 +800,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
 
     if (isValid) {
       if ($error[validationErrorKey]) invalidCount--;
-      $error[validationErrorKey] = false;
-      toggleValidCss(isValid);
       if (!invalidCount) {
-        toggleValidCss(isValid, validationErrorKey);
+        toggleValidCss(true);
         this.$valid = true;
         this.$invalid = false;
       }
     } else {
-      if (!$error[validationErrorKey]) invalidCount++;
-      $error[validationErrorKey] = true;
-      toggleValidCss(isValid)
-      toggleValidCss(isValid, validationErrorKey);
+      toggleValidCss(false)
       this.$invalid = true;
       this.$valid = false;
+      invalidCount++;
     }
+
+    $error[validationErrorKey] = !isValid;
+    toggleValidCss(isValid, validationErrorKey);
 
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };
