@@ -225,7 +225,10 @@ function $CompileProvider($provide) {
     //================================
 
     function compile(templateElement, transcludeFn, maxPriority) {
-      templateElement = jqLite(templateElement);
+      if (!(templateElement instanceof jqLite)) {
+        // jquery always rewraps, where as we need to preserve the original selector so that we can modify it.
+        templateElement = jqLite(templateElement);
+      }
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
       forEach(templateElement, function(node, index){
@@ -488,7 +491,7 @@ function $CompileProvider($provide) {
             template = jqLite(templateNode);
             templateNode = (element = templateAttrs.$element = jqLite(
                 '<!-- ' + directiveName + ': ' + templateAttrs[directiveName]  + ' -->'))[0];
-            template.replaceWith(templateNode);
+            replaceWith(rootElement, jqLite(template[0]), templateNode);
             childTranscludeFn = compile(template, transcludeFn, terminalPriority);
           } else {
             template = jqLite(JQLiteClone(templateNode));

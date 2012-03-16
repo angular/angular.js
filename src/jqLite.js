@@ -168,17 +168,18 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
 }
 
 /////////////////////////////////////////////
-function jqLiteWrap(element) {
-  if (isString(element) && element.charAt(0) != '<') {
-    throw new Error('selectors not implemented');
-  }
-  return new JQLite(element);
-}
-
 function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
-  } else if (isString(element)) {
+  }
+  if (!(this instanceof JQLite)) {
+    if (isString(element) && element.charAt(0) != '<') {
+      throw Error('selectors not implemented');
+    }
+    return new JQLite(element);
+  }
+
+  if (isString(element)) {
     var div = document.createElement('div');
     // Read about the NoScope elements here:
     // http://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
@@ -299,7 +300,7 @@ var JQLitePrototype = JQLite.prototype = {
 
     this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
     // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-    jqLiteWrap(window).bind('load', trigger); // fallback to window.onload for others
+    JQLite(window).bind('load', trigger); // fallback to window.onload for others
   },
   toString: function() {
     var value = [];

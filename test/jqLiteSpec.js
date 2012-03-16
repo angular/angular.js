@@ -39,7 +39,7 @@ describe('jqLite', function() {
 
 
   it('should be jqLite when jqLiteMode is on, otherwise jQuery', function() {
-    expect(jqLite).toBe(_jqLiteMode ? jqLiteWrap : _jQuery);
+    expect(jqLite).toBe(_jqLiteMode ? JQLite : _jQuery);
   });
 
 
