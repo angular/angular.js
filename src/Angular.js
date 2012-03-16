@@ -61,7 +61,7 @@ var $boolean          = 'boolean',
     $undefined        = 'undefined',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
-    msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
+    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -203,6 +203,10 @@ function extend(dst) {
     }
   });
   return dst;
+}
+
+function int(str) {
+  return parseInt(str, 10);
 }
 
 

@@ -326,7 +326,7 @@ function dateFilter($locale) {
     format = $locale.DATETIME_FORMATS[format] || format;
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
-        date = parseInt(date, 10);
+        date = int(date);
       } else {
         date = jsonStringToDate(date);
       }
