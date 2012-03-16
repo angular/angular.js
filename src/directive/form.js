@@ -62,10 +62,6 @@ function FormController(name, element, attrs) {
       addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
-  if (parentForm) {
-    parentForm.$addControl(form);
-  }
-
   form.$addControl = function(control) {
     if (control.$name && !form.hasOwnProperty(control.$name)) {
       form[control.$name] = control;
