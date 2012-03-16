@@ -56,7 +56,7 @@
 function limitToFilter(){
   return function(array, limit) {
     if (!(array instanceof Array)) return array;
-    limit = parseInt(limit, 10);
+    limit = int(limit);
     var out = [],
       i, n;
 

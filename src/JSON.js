@@ -74,9 +74,6 @@ function jsonStringToDate(string){
     return date;
   }
   return string;
-  function int(str) {
-    return parseInt(str, 10);
-  }
 }
 
 function jsonDateToString(date){
