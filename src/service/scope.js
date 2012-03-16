@@ -136,7 +136,6 @@ function $RootScopeProvider(){
       this.$$phase = this.$parent = this.$$watchers =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
-      this.$destructor = noop;
       this['this'] = this.$root =  this;
       this.$$asyncQueue = [];
       this.$$listeners = {};
@@ -457,6 +456,8 @@ function $RootScopeProvider(){
       $destroy: function() {
         if (this.$root == this) return; // we can't remove the root node;
         var parent = this.$parent;
+
+        this.$broadcast('$destroy');
 
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;

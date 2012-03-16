@@ -2,6 +2,9 @@
 
 describe('Scope', function() {
 
+  beforeEach(module(provideLog));
+
+
   describe('$root', function() {
     it('should point to itself', inject(function($rootScope) {
       expect($rootScope.$root).toEqual($rootScope);
@@ -392,6 +395,15 @@ describe('Scope', function() {
       last.$destroy();
       $rootScope.$digest();
       expect(log).toEqual('12');
+    }));
+
+
+    it('should broadcast the $destroy event', inject(function($rootScope, log) {
+      first.$on('$destroy', log.fn('first'));
+      first.$new().$on('$destroy', log.fn('first-child'));
+
+      first.$destroy();
+      expect(log).toEqual('first; first-child');
     }));
   });
 
