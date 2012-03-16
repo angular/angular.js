@@ -47,7 +47,7 @@ function fromJson(json, useNative) {
   // TODO make forEach optionally recursive and remove this function
   // TODO(misko): remove this once the $http service is checked in.
   function transformDates(obj) {
-    if (isString(obj) && obj.length === DATE_ISOSTRING_LN) {
+    if (isString(obj) && 15 <= obj.length && obj.length <= 24) {
       return jsonStringToDate(obj);
     } else if (isArray(obj) || isObject(obj)) {
       forEach(obj, function(val, name) {
@@ -58,16 +58,25 @@ function fromJson(json, useNative) {
   }
 }
 
-var R_ISO8061_STR = /^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d)(?:\:(\d\d)(?:\:(\d\d)(?:\.(\d{3}))?)?)?Z)?$/;
+var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
 function jsonStringToDate(string){
   var match;
-  if (isString(string) && (match = string.match(R_ISO8061_STR))){
-    var date = new Date(0);
-    date.setUTCFullYear(match[1], match[2] - 1, match[3]);
-    date.setUTCHours(match[4]||0, match[5]||0, match[6]||0, match[7]||0);
+  if (match = string.match(R_ISO8061_STR)) {
+    var date = new Date(0),
+        tzHour = 0,
+        tzMin  = 0;
+    if (match[9]) {
+      tzHour = int(match[9] + match[10]);
+      tzMin = int(match[9] + match[11]);
+    }
+    date.setUTCFullYear(int(match[1]), int(match[2]) - 1, int(match[3]));
+    date.setUTCHours(int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
     return date;
   }
   return string;
+  function int(str) {
+    return parseInt(str, 10);
+  }
 }
 
 function jsonDateToString(date){

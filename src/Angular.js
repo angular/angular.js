@@ -73,8 +73,7 @@ var $boolean          = 'boolean',
     angularModule,
     /** @name angular.module.ng */
     nodeName_,
-    uid               = ['0', '0', '0'],
-    DATE_ISOSTRING_LN = 24;
+    uid               = ['0', '0', '0'];
 
 /**
  * @ngdoc function
