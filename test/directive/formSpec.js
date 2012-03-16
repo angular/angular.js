@@ -41,10 +41,34 @@ describe('form', function() {
     control.$setValidity('required', false);
     expect(form.alias).toBe(control);
     expect(form.$error.required).toEqual([control]);
+    expect(form.$controls).toEqual([control]);
 
     doc.find('input').remove();
     expect(form.$error.required).toBe(false);
     expect(form.alias).toBeUndefined();
+    expect(form.$controls).toEqual([]);
+  });
+
+
+  it('should store controls in an array, if multiple with same alias', function() {
+    doc = $compile(
+        '<form name="myForm">' +
+          '<input type="text" name="alias" ng-model="a" />' +
+          '<input type="text" name="alias" ng-model="b" />' +
+          '<input type="text" name="other" ng-model="c" />' +
+        '</form>')(scope);
+
+    var form = scope.myForm,
+        controlA = doc.find('input').eq(0).data('$ngModelController'),
+        controlB = doc.find('input').eq(1).data('$ngModelController'),
+        controlC = doc.find('input').eq(2).data('$ngModelController');
+
+    expect(form.alias).toEqual([controlA, controlB]);
+    expect(form.$controls).toEqual([controlA, controlB, controlC]);
+
+    doc.find('input').eq(0).remove();
+    expect(form.alias).toBe(controlB);
+    expect(form.$controls).toEqual([controlB, controlC]);
   });
 
 
