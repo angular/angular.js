@@ -4,7 +4,7 @@
 
   publishExternalAPI(angular);
 
-  jqLiteWrap(document).ready(function() {
+  JQLite(document).ready(function() {
     angularInit(document, bootstrap);
   });
 

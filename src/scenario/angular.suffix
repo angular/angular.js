@@ -14,7 +14,7 @@ angular.forEach(script.attributes, function(attr) {
 });
 
 if (config.autotest) {
-  jqLiteWrap(document).ready(function() {
+  JQLite(document).ready(function() {
     angular.scenario.setUpAndRun(config);
   });
 }

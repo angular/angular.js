@@ -936,7 +936,7 @@ function bindJQuery() {
     JQLitePatchJQueryRemove('empty');
     JQLitePatchJQueryRemove('html');
   } else {
-    jqLite = jqLiteWrap;
+    jqLite = JQLite;
   }
   angular.element = jqLite;
 }

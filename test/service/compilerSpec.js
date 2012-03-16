@@ -1751,5 +1751,27 @@ describe('$compile', function() {
       });
     });
 
+
+    it('should support transcluded element on root content', function() {
+      var comment;
+      module(function($compileProvider) {
+        $compileProvider.directive('transclude', valueFn({
+          transclude: 'element',
+          compile: function(element, attr, linker) {
+            return function(scope, element, attr) {
+              comment = element;
+            };
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        var element = jqLite('<div>before<div transclude></div>after</div>').contents();
+        expect(element.length).toEqual(3);
+        expect(nodeName_(element[1])).toBe('DIV');
+        $compile(element)($rootScope);
+        expect(nodeName_(element[1])).toBe('#comment');
+        expect(nodeName_(comment)).toBe('#comment');
+      });
+    });
   });
 });
