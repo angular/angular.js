@@ -62,7 +62,7 @@ describe('ng-switch', function() {
   }));
 
 
-  it('should properly create and destory child scopes', inject(function($rootScope, $compile) {
+  it('should properly create and destroy child scopes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="url">' +
         '<div ng-switch-when="a">{{name}}</div>' +
