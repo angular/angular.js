@@ -147,6 +147,12 @@ describe('injector', function() {
     });
 
 
+    it('should strip leading and trailing underscores from arg name during inference', function() {
+      function beforeEachFn(_foo_) { /* foo = _foo_ */ };
+      expect(inferInjectionArgs(beforeEachFn)).toEqual(['foo']);
+    });
+
+
     it('should handle no arg functions', function() {
       function $f_n0() {}
       expect(inferInjectionArgs($f_n0)).toEqual([]);
