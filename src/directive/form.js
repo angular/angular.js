@@ -44,6 +44,7 @@ function FormController(name, element, attrs) {
   form.$pristine = true;
   form.$valid = true;
   form.$invalid = false;
+  form.$controls = [];
 
   // publish the form into scope
   name(this);
@@ -63,15 +64,33 @@ function FormController(name, element, attrs) {
   }
 
   form.$addControl = function(control) {
-    if (control.$name && !form.hasOwnProperty(control.$name)) {
-      form[control.$name] = control;
+    var alias = control.$name;
+
+    if (alias) {
+      if (form.hasOwnProperty(alias)) {
+        if (!isArray(form[alias])) form[alias] = [form[alias]];
+        form[alias].push(control);
+      } else {
+        form[alias] = control;
+      }
     }
+
+    form.$controls.push(control);
   };
 
   form.$removeControl = function(control) {
-    if (control.$name && form[control.$name] === control) {
-      delete form[control.$name];
+    var alias = control.$name;
+
+    if (alias) {
+      if (form[alias] === control) {
+        delete form[alias];
+      } else {
+        arrayRemove(form[alias], control);
+        if (form[alias].length === 1) form[alias] = form[alias][0];
+      }
     }
+
+    arrayRemove(form.$controls, control);
     forEach(errors, cleanupControlErrors, control);
   };
 
