@@ -269,6 +269,15 @@ describe('ng-model', function() {
 
     dealoc(element);
   }));
+
+
+  it('should set invalid classes on init', inject(function($compile, $rootScope) {
+    var element = $compile('<input type="email" ng-model="value" required />')($rootScope);
+    $rootScope.$digest();
+
+    expect(element).toBeInvalid();
+    expect(element).toHaveClass('ng-invalid-required');
+  }));
 });
 
 
