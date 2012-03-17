@@ -64,12 +64,19 @@ describe('ng-repeat', function() {
   }));
 
 
-  it('should error on wrong parsing of ng-repeat', inject(function($rootScope, $compile, $log) {
+  it('should error on wrong parsing of ng-repeat', inject(function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse"></li></ul>')($rootScope);
     }).toThrow("Expected ng-repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+  }));
 
-    $log.error.logs.shift();
+
+  it("should throw error when left-hand-side of ng-repeat can't be parsed", inject(
+      function($rootScope, $compile) {
+    expect(function() {
+      element = $compile('<ul><li ng-repeat="i dont parse in foo"></li></ul>')($rootScope);
+    }).toThrow("'item' in 'item in collection' should be identifier or (key, value) but got " +
+               "'i dont parse'.");
   }));
 
 
