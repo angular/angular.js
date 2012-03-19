@@ -26,7 +26,7 @@
          }
        </script>
        <div ng-controller="Ctrl">
-         Enter name: <input type="text" ng-model="name"> <br/>
+         Enter name: <input type="text" ng-model="name" ng-model-instant><br>
          Hello <span ng-bind="name"></span>!
        </div>
      </doc:source>
@@ -122,8 +122,8 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
          }
        </script>
        <div ng-controller="Ctrl">
-        Salutation: <input type="text" ng-model="salutation"><br/>
-        Name: <input type="text" ng-model="name"><br/>
+        Salutation: <input type="text" ng-model="salutation" ng-model-instant><br>
+        Name: <input type="text" ng-model="name" ng-model-instant><br>
         <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
        </div>
      </doc:source>
@@ -210,7 +210,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
        </script>
        <div ng-controller="Ctrl">
         Google for:
-        <input type="text" ng-model="query"/>
+        <input type="text" ng-model="query" ng-model-instant>
         <a ng-bind-attr='{"href":"http://www.google.com/search?q={{query}}"}'>
           Google
         </a> (ng-bind-attr) |
