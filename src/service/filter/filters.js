@@ -23,8 +23,8 @@
          }
        </script>
        <div ng-controller="Ctrl">
-         <input type="number" ng-model="amount"/> <br/>
-         default currency symbol ($): {{amount | currency}}<br/>
+         <input type="number" ng-model="amount" ng-model-instant> <br>
+         default currency symbol ($): {{amount | currency}}<br>
          custom currency identifier (USD$): {{amount | currency:"USD$"}}
        </div>
      </doc:source>
@@ -74,9 +74,9 @@ function currencyFilter($locale) {
          }
        </script>
        <div ng-controller="Ctrl">
-         Enter number: <input ng-model='val'><br/>
-         Default formatting: {{val | number}}<br/>
-         No fractions: {{val | number:0}}<br/>
+         Enter number: <input ng-model='val' ng-model-instant><br>
+         Default formatting: {{val | number}}<br>
+         No fractions: {{val | number:0}}<br>
          Negative number: {{-val | number:4}}
        </div>
      </doc:source>
@@ -297,11 +297,11 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
    <doc:example>
      <doc:source>
        <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
-           {{1288323623006 | date:'medium'}}<br/>
+           {{1288323623006 | date:'medium'}}<br>
        <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-          {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br/>
+          {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br>
        <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
-          {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
+          {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br>
      </doc:source>
      <doc:scenario>
        it('should format date', function() {
@@ -446,7 +446,7 @@ var uppercaseFilter = valueFn(uppercase);
          }
        </script>
        <div ng-controller="Ctrl">
-       Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
+       Snippet: <textarea ng-model="snippet" ng-model-instant cols="60" rows="3"></textarea>
        <table>
          <tr>
            <td>Filter</td>
@@ -456,7 +456,7 @@ var uppercaseFilter = valueFn(uppercase);
          <tr id="linky-filter">
            <td>linky filter</td>
            <td>
-             <pre>&lt;div ng-bind-html="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
+             <pre>&lt;div ng-bind-html="snippet | linky"&gt;<br>&lt;/div&gt;</pre>
            </td>
            <td>
              <div ng-bind-html="snippet | linky"></div>
@@ -464,7 +464,7 @@ var uppercaseFilter = valueFn(uppercase);
          </tr>
          <tr id="escaped-html">
            <td>no filter</td>
-           <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><pre>&lt;div ng-bind="snippet"&gt;<br>&lt;/div&gt;</pre></td>
            <td><div ng-bind="snippet"></div></td>
          </tr>
        </table>
