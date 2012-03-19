@@ -503,12 +503,13 @@ function $RootScopeProvider(){
        * @param {(string|function())=} expression An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
-       *    - `function(scope)`: execute the function with the current `scope` parameter.
+       *    - `function(scope, locals)`: execute the function with the current `scope` parameter.
+       * @param {Object=} locals Hash object of local variables for the expression.
        *
        * @returns {*} The result of evaluating the expression.
        */
-      $eval: function(expr) {
-        return $parse(expr)(this);
+      $eval: function(expr, locals) {
+        return $parse(expr)(this, locals);
       },
 
       /**
