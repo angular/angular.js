@@ -328,7 +328,7 @@ forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), funct
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
 var BOOLEAN_ELEMENTS = {};
-forEach('input,select,option,textarea,button'.split(','), function(value) {
+forEach('input,select,option,textarea,button,form'.split(','), function(value) {
   BOOLEAN_ELEMENTS[uppercase(value)] = true;
 });
 
@@ -394,8 +394,7 @@ forEach({
         }
       } else {
         return (element[name] ||
-                 element.getAttribute(name) !== null &&
-                 (msie < 9 ? element.getAttribute(name) !== '' : true))
+                 (element.attributes.getNamedItem(name)|| noop).specified)
                ? lowercasedName
                : undefined;
       }

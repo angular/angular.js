@@ -268,6 +268,13 @@ describe('jqLite', function() {
       var elm = jqLite('<div class="any">a</div>');
       expect(elm.attr('non-existing')).toBeUndefined();
     });
+
+    it('should return undefined for non-existing attributes on input', function() {
+      var elm = jqLite('<input>');
+      expect(elm.attr('readonly')).toBeUndefined();
+      expect(elm.attr('readOnly')).toBeUndefined();
+      expect(elm.attr('disabled')).toBeUndefined();
+    });
   });
 
 
