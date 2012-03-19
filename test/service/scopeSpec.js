@@ -416,7 +416,18 @@ describe('Scope', function() {
       $rootScope.$eval(function(self) {self.b=2;});
       expect($rootScope.b).toEqual(2);
     }));
+
+
+    it('should allow passing locals to the expression', inject(function($rootScope) {
+      expect($rootScope.$eval('a+1', {a: 2})).toBe(3);
+
+      $rootScope.$eval(function(scope, locals) {
+        scope.c = locals.b + 4;
+      }, {b: 3});
+      expect($rootScope.c).toBe(7);
+    }));
   });
+
 
   describe('$evalAsync', function() {
 
