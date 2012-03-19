@@ -1,17 +1,18 @@
 'use strict';
 
 describe('$log', function() {
-  var $window;
-  var logger;
+  var $window, logger, log, warn, info, error;
 
-  function log() { logger+= 'log;'; }
-  function warn() { logger+= 'warn;'; }
-  function info() { logger+= 'info;'; }
-  function error() { logger+= 'error;'; }
+
 
   beforeEach(module(function($provide){
     $window = {};
     logger = '';
+    log = function() { logger+= 'log;'; };
+    warn = function() { logger+= 'warn;'; };
+    info = function() { logger+= 'info;'; };
+    error = function() { logger+= 'error;'; };
+
     $provide.provider('$log', $LogProvider);
     $provide.value('$exceptionHandler', angular.mock.rethrow);
     $provide.value('$window', $window);
@@ -56,6 +57,28 @@ describe('$log', function() {
       $log.error();
     }
   ));
+
+
+  it("should work in IE where console.error doesn't have apply method", inject(
+      function() {
+        log.apply = log.call =
+            warn.apply = warn.call =
+            info.apply = info.call =
+            error.apply = error.call = null;
+
+        $window.console = {log: log,
+                           warn: warn,
+                           info: info,
+                           error: error};
+      },
+      function($log) {
+        $log.log.apply($log);
+        $log.warn.apply($log);
+        $log.info.apply($log);
+        $log.error.apply($log);
+        expect(logger).toEqual('log;warn;info;error;');
+      })
+  );
 
 
   describe('$log.error', function() {
