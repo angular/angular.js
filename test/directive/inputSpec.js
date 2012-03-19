@@ -316,6 +316,29 @@ describe('input', function() {
   });
 
 
+  it('should not set readonly or disabled property on ie7', function() {
+    this.addMatchers({
+      toBeOff: function(attributeName) {
+        var actualValue = this.actual.attr(attributeName);
+        this.message = function() {
+          return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
+            "' in: " + angular.mock.dump(this.actual);
+        }
+
+        return !actualValue || actualValue == 'false';
+      }
+    });
+
+    compileInput('<input type="text" ng-model="name" name="alias"/>');
+    expect(inputElm.prop('readOnly')).toBe(false);
+    expect(inputElm.prop('disabled')).toBe(false);
+
+    expect(inputElm).toBeOff('readOnly');
+    expect(inputElm).toBeOff('readonly');
+    expect(inputElm).toBeOff('disabled');
+  });
+
+
   it('should cleanup it self from the parent form', function() {
     compileInput('<input ng-model="name" name="alias" required>');
 
