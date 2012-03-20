@@ -18,7 +18,10 @@ function $RouteProvider(){
    * @name angular.module.ng.$routeProvider#when
    * @methodOf angular.module.ng.$routeProvider
    *
-   * @param {string} path Route path (matched against `$location.hash`)
+   * @param {string} path Route path (matched against `$location.path`). If `$location.path`
+   *    contains redudant trailing slash or is missing one, the route will still match and the
+   *    `$location.path` will be updated to add or drop the trailing slash to exacly match the
+   *    route definition.
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
    *
@@ -57,6 +60,16 @@ function $RouteProvider(){
     var routeDef = routes[path];
     if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
     if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
+
+    // create redirection for trailing slashes
+    if (path) {
+      var redirectPath = (path[path.length-1] == '/')
+          ? path.substr(0, path.length-1)
+          : path +'/';
+
+      routes[redirectPath] = {redirectTo: path};
+    }
+
     return routeDef;
   };
 
