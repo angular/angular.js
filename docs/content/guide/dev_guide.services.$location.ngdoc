@@ -372,13 +372,13 @@ In this examples we use `<base href="/base/index.html" />`
 <div ng-non-bindable class="html5-hashbang-example">
   <div id="html5-mode" ng-controller="Html5Cntl">
     <h3>Browser with History API</h3>
-    <ng-address-bar browser="html5"></ng-address-bar><br /><br />
-    $location.protocol() = {{$location.protocol()}}<br />
-    $location.host() = {{$location.host()}}<br />
-    $location.port() = {{$location.port()}}<br />
-    $location.path() = {{$location.path()}}<br />
-    $location.search() = {{$location.search()}}<br />
-    $location.hash() = {{$location.hash()}}<br />
+    <div ng-address-bar browser="html5"></div><br><br>
+    $location.protocol() = {{$location.protocol()}}<br>
+    $location.host() = {{$location.host()}}<br>
+    $location.port() = {{$location.port()}}<br>
+    $location.path() = {{$location.path()}}<br>
+    $location.search() = {{$location.search()}}<br>
+    $location.hash() = {{$location.hash()}}<br>
     <a href="/base/first?a=b">/base/first?a=b</a> |
     <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/base/another?search" ng-ext-link>external</a>
@@ -386,13 +386,13 @@ In this examples we use `<base href="/base/index.html" />`
 
   <div id="hashbang-mode" ng-controller="HashbangCntl">
     <h3>Browser without History API</h3>
-    <ng-address-bar browser="hashbang"></ng-address-bar><br /><br />
-    $location.protocol() = {{$location.protocol()}}<br />
-    $location.host() = {{$location.host()}}<br />
-    $location.port() = {{$location.port()}}<br />
-    $location.path() = {{$location.path()}}<br />
-    $location.search() = {{$location.search()}}<br />
-    $location.hash() = {{$location.hash()}}<br />
+    <div ng-address-bar browser="hashbang"></div><br><br>
+    $location.protocol() = {{$location.protocol()}}<br>
+    $location.host() = {{$location.host()}}<br>
+    $location.port() = {{$location.port()}}<br>
+    $location.path() = {{$location.path()}}<br>
+    $location.search() = {{$location.search()}}<br>
+    $location.hash() = {{$location.hash()}}<br>
     <a href="/base/first?a=b">/base/first?a=b</a> |
     <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/base/another?search" ng-ext-link>external</a>
@@ -417,7 +417,6 @@ In this examples we use `<base href="/base/index.html" />`
       return baseHref;
     };
 
-    this.hover = angular.noop;
     this.notifyWhenOutstandingRequests = angular.noop;
   }
 
@@ -426,20 +425,19 @@ In this examples we use `<base href="/base/index.html" />`
     hashbang: new FakeBrowser('http://www.host.com/base/index.html#!/path?a=b#h', '/base/index.html')
   };
 
-  function Html5Cntl($location) {
-    this.$location = $location;
+  function Html5Cntl($scope, $location) {
+    $scope.$location = $location;
   }
 
-  function HashbangCntl($location) {
-    this.$location = $location;
+  function HashbangCntl($scope, $location) {
+    $scope.$location = $location;
   }
 
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
     angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
-      $locationProvider.html5Mode = true;
-      $locationProvider.hashPrefix = '!';
-      
+      $locationProvider.html5Mode(true).hashPrefix('!');
+
       $provide.value('$browser', browsers[name]);
       $provide.value('$document', root);
       $provide.value('$sniffer', {history: name == 'html5'});
