@@ -246,7 +246,7 @@ function $RouteProvider(){
     function switchRouteMatcher(on, when) {
       // TODO(i): this code is convoluted and inefficient, we should construct the route matching
       //   regex only once and then reuse it
-      var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
+      var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1").replace(/\/$/, '') + '/?$',
           params = [],
           dst = {};
       forEach(when.split(/\W/), function(param) {

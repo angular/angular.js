@@ -168,6 +168,32 @@ describe('$route', function() {
   });
 
 
+  it('should match route with and without trailing slash', function() {
+    module(function($routeProvider){
+      $routeProvider.when('/foo', {template: 'foo.html'});
+      $routeProvider.when('/bar/', {template: 'bar.html'});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('foo.html');
+
+      $location.path('/foo/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('foo.html');
+
+      $location.path('/bar');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('bar.html');
+
+      $location.path('/bar/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('bar.html');
+    });
+  });
+
+
   describe('redirection', function() {
     it('should support redirection via redirectTo property by updating $location', function() {
       module(function($routeProvider) {
