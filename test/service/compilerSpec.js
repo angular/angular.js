@@ -391,7 +391,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should merge attributes', inject(function($compile, $rootScope) {
+        it('should merge attributes including style attr', inject(function($compile, $rootScope) {
           element = $compile(
             '<div><div replace class="medium-log" style="height: 20px" ></div><div>')
             ($rootScope);
@@ -430,6 +430,39 @@ describe('$compile', function() {
             '</div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Hello: 1; Hello: 2; ');
+        }));
+
+
+        it('should merge interpolated css class', inject(function($compile, $rootScope) {
+          element = $compile('<div class="one {{cls}} three" replace></div>')($rootScope);
+
+          $rootScope.$apply(function() {
+            $rootScope.cls = 'two';
+          });
+
+          expect(element).toHaveClass('one');
+          expect(element).toHaveClass('two'); // interpolated
+          expect(element).toHaveClass('three');
+          expect(element).toHaveClass('log'); // merged from replace directive template
+        }));
+
+
+        it('should merge interpolated css class with ng-repeat',
+            inject(function($compile, $rootScope) {
+          element = $compile(
+              '<div>' +
+                '<div ng-repeat="i in [1]" class="one {{cls}} three" replace></div>' +
+              '</div>')($rootScope);
+
+          $rootScope.$apply(function() {
+            $rootScope.cls = 'two';
+          });
+
+          var child = element.find('div').eq(0);
+          expect(child).toHaveClass('one');
+          expect(child).toHaveClass('two'); // interpolated
+          expect(child).toHaveClass('three');
+          expect(child).toHaveClass('log'); // merged from replace directive template
         }));
       });
 
