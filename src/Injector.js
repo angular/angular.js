@@ -40,7 +40,7 @@
 
 var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
-var FN_ARG = /^\s*(.+?)\s*$/;
+var FN_ARG = /^\s*(_?)(.+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 function inferInjectionArgs(fn) {
   assertArgFn(fn);
@@ -49,7 +49,7 @@ function inferInjectionArgs(fn) {
     var fnText = fn.toString().replace(STRIP_COMMENTS, '');
     var argDecl = fnText.match(FN_ARGS);
     forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-      arg.replace(FN_ARG, function(all, name){
+      arg.replace(FN_ARG, function(all, underscore, name){
         args.push(name);
       });
     });

@@ -41,7 +41,7 @@ angular.scenario.output('xml', function(context, runner, model) {
          stepContext.attr('status', step.status);
          it.append(stepContext);
          if (step.error) {
-           var error = $('<error></error');
+           var error = $('<error></error>');
            stepContext.append(error);
            error.text(formatException(stepContext.error));
          }

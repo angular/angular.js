@@ -415,7 +415,7 @@ function textInputType(scope, element, attr, ctrl) {
 
   // min length validator
   if (attr.ngMinlength) {
-    var minlength = parseInt(attr.ngMinlength, 10);
+    var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
       if (!isEmpty(value) && value.length < minlength) {
         ctrl.$setValidity('minlength', false);
@@ -432,7 +432,7 @@ function textInputType(scope, element, attr, ctrl) {
 
   // max length validator
   if (attr.ngMaxlength) {
-    var maxlength = parseInt(attr.ngMaxlength, 10);
+    var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
       if (!isEmpty(value) && value.length > maxlength) {
         ctrl.$setValidity('maxlength', false);
@@ -560,6 +560,8 @@ function radioInputType(scope, element, attr, ctrl) {
     var value = attr.value;
     element[0].checked = isDefined(value) && (value == ctrl.$viewValue);
   };
+
+  attr.$observe('value', ctrl.$render);
 }
 
 function checkboxInputType(scope, element, attr, ctrl) {
@@ -800,21 +802,20 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
 
     if (isValid) {
       if ($error[validationErrorKey]) invalidCount--;
-      $error[validationErrorKey] = false;
-      toggleValidCss(isValid);
       if (!invalidCount) {
-        toggleValidCss(isValid, validationErrorKey);
+        toggleValidCss(true);
         this.$valid = true;
         this.$invalid = false;
       }
     } else {
-      if (!$error[validationErrorKey]) invalidCount++;
-      $error[validationErrorKey] = true;
-      toggleValidCss(isValid)
-      toggleValidCss(isValid, validationErrorKey);
+      toggleValidCss(false)
       this.$invalid = true;
       this.$valid = false;
+      invalidCount++;
     }
+
+    $error[validationErrorKey] = !isValid;
+    toggleValidCss(isValid, validationErrorKey);
 
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };

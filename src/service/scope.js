@@ -136,7 +136,6 @@ function $RootScopeProvider(){
       this.$$phase = this.$parent = this.$$watchers =
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
-      this.$destructor = noop;
       this['this'] = this.$root =  this;
       this.$$asyncQueue = [];
       this.$$listeners = {};
@@ -438,6 +437,17 @@ function $RootScopeProvider(){
         this.$root.$$phase = null;
       },
 
+
+      /**
+       * @ngdoc event
+       * @name angular.module.$rootScope.Scope#$destroy
+       * @eventOf angular.module.ng.$rootScope.Scope
+       * @eventType broadcast on scope being destroyed
+       *
+       * @description
+       * Broadcasted when a scope and its children are being destroyed.
+       */
+
       /**
        * @ngdoc function
        * @name angular.module.ng.$rootScope.Scope#$destroy
@@ -446,17 +456,23 @@ function $RootScopeProvider(){
        *
        * @description
        * Remove the current scope (and all of its children) from the parent scope. Removal implies
-       * that calls to {@link angular.module.ng.$rootScope.Scope#$digest $digest()} will no longer propagate to the current
-       * scope and its children. Removal also implies that the current scope is eligible for garbage
-       * collection.
+       * that calls to {@link angular.module.ng.$rootScope.Scope#$digest $digest()} will no longer
+       * propagate to the current scope and its children. Removal also implies that the current
+       * scope is eligible for garbage collection.
        *
        * The `$destroy()` is usually used by directives such as
-       * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} for managing the unrolling of the loop.
+       * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} for managing the
+       * unrolling of the loop.
        *
+       * Just before a scope is destroyed a `$destroy` event is broadcasted on this scope.
+       * Application code can register a `$destroy` event handler that will give it chance to
+       * perform any necessary cleanup.
        */
       $destroy: function() {
         if (this.$root == this) return; // we can't remove the root node;
         var parent = this.$parent;
+
+        this.$broadcast('$destroy');
 
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
@@ -487,12 +503,13 @@ function $RootScopeProvider(){
        * @param {(string|function())=} expression An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
-       *    - `function(scope)`: execute the function with the current `scope` parameter.
+       *    - `function(scope, locals)`: execute the function with the current `scope` parameter.
+       * @param {Object=} locals Hash object of local variables for the expression.
        *
        * @returns {*} The result of evaluating the expression.
        */
-      $eval: function(expr) {
-        return $parse(expr)(this);
+      $eval: function(expr, locals) {
+        return $parse(expr)(this, locals);
       },
 
       /**

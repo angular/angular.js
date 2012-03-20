@@ -61,7 +61,7 @@ var $boolean          = 'boolean',
     $undefined        = 'undefined',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
-    msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
+    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -73,8 +73,7 @@ var $boolean          = 'boolean',
     angularModule,
     /** @name angular.module.ng */
     nodeName_,
-    uid               = ['0', '0', '0'],
-    DATE_ISOSTRING_LN = 24;
+    uid               = ['0', '0', '0'];
 
 /**
  * @ngdoc function
@@ -204,6 +203,10 @@ function extend(dst) {
     }
   });
   return dst;
+}
+
+function int(str) {
+  return parseInt(str, 10);
 }
 
 
@@ -928,6 +931,7 @@ function bindJQuery() {
     jqLite = jQuery;
     extend(jQuery.fn, {
       scope: JQLitePrototype.scope,
+      controller: JQLitePrototype.controller,
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
@@ -935,7 +939,7 @@ function bindJQuery() {
     JQLitePatchJQueryRemove('empty');
     JQLitePatchJQueryRemove('html');
   } else {
-    jqLite = jqLiteWrap;
+    jqLite = JQLite;
   }
   angular.element = jqLite;
 }

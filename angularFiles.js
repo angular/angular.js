@@ -5,7 +5,6 @@ angularFiles = {
     'src/AngularPublic.js',
     'src/JSON.js',
     'src/Injector.js',
-    'src/Resource.js',
     'src/jqLite.js',
     'src/apis.js',
     'src/service/anchorScroll.js',

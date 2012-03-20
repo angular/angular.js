@@ -225,7 +225,10 @@ function $CompileProvider($provide) {
     //================================
 
     function compile(templateElement, transcludeFn, maxPriority) {
-      templateElement = jqLite(templateElement);
+      if (!(templateElement instanceof jqLite)) {
+        // jquery always rewraps, where as we need to preserve the original selector so that we can modify it.
+        templateElement = jqLite(templateElement);
+      }
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
       forEach(templateElement, function(node, index){
@@ -375,17 +378,19 @@ function $CompileProvider($provide) {
           for (var attr, name, nName, value, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             attr = nAttrs[j];
-            name = attr.name;
-            nName = directiveNormalize(name.toLowerCase());
-            attrsMap[nName] = name;
-            attrs[nName] = value = trim((msie && name == 'href')
+            if (attr.specified) {
+              name = attr.name;
+              nName = directiveNormalize(name.toLowerCase());
+              attrsMap[nName] = name;
+              attrs[nName] = value = trim((msie && name == 'href')
                 ? decodeURIComponent(node.getAttribute(name, 2))
                 : attr.value);
-            if (isBooleanAttr(node, nName)) {
-              attrs[nName] = true; // presence means true
+              if (isBooleanAttr(node, nName)) {
+                attrs[nName] = true; // presence means true
+              }
+              addAttrInterpolateDirective(node, directives, value, nName)
+              addDirective(directives, nName, 'A', maxPriority);
             }
-            addAttrInterpolateDirective(node, directives, value, nName)
-            addDirective(directives, nName, 'A', maxPriority);
           }
 
           // use class as directive
@@ -488,7 +493,7 @@ function $CompileProvider($provide) {
             template = jqLite(templateNode);
             templateNode = (element = templateAttrs.$element = jqLite(
                 '<!-- ' + directiveName + ': ' + templateAttrs[directiveName]  + ' -->'))[0];
-            template.replaceWith(templateNode);
+            replaceWith(rootElement, jqLite(template[0]), templateNode);
             childTranscludeFn = compile(template, transcludeFn, terminalPriority);
           } else {
             template = jqLite(JQLiteClone(templateNode));
@@ -724,6 +729,9 @@ function $CompileProvider($provide) {
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
+          if (src[key]) {
+            value += (key === 'style' ? ';' : ' ') + src[key];
+          }
           dst.$set(key, value, srcAttr[key]);
         }
       });
@@ -853,31 +861,42 @@ function $CompileProvider($provide) {
 
 
     function addAttrInterpolateDirective(node, directives, value, name) {
-      var interpolateFn = $interpolate(value, true);
-      if (SIDE_EFFECT_ATTRS[name]) {
-        name = SIDE_EFFECT_ATTRS[name];
-        if (isBooleanAttr(node, name)) {
-          value = true;
-        }
-      } else if (!interpolateFn) {
-        // we are not a side-effect attr, and we have no side-effects -> ignore
+      var interpolateFn = $interpolate(value, true),
+          realName = SIDE_EFFECT_ATTRS[name],
+          specialAttrDir = (realName && (realName !== name));
+
+      realName = realName || name;
+
+      if (specialAttrDir && isBooleanAttr(node, name)) {
+        value = true;
+      }
+
+      // no interpolation found and we are not a side-effect attr -> ignore
+      if (!interpolateFn && !specialAttrDir) {
         return;
       }
+
       directives.push({
         priority: 100,
         compile: function(element, attr) {
           if (interpolateFn) {
             return function(scope, element, attr) {
+              if (name === 'class') {
+                // we need to interpolate classes again, in the case the element was replaced
+                // and therefore the two class attrs got merged - we want to interpolate the result
+                interpolateFn = $interpolate(attr[name], true);
+              }
+
               // we define observers array only for interpolated attrs
               // and ignore observers for non interpolated attrs to save some memory
-              attr.$observers[name] = [];
-              attr[name] = undefined;
+              attr.$observers[realName] = [];
+              attr[realName] = undefined;
               scope.$watch(interpolateFn, function(value) {
-                attr.$set(name, value);
+                attr.$set(realName, value);
               });
             };
           } else {
-            attr.$set(name, value);
+            attr.$set(realName, value);
           }
         }
       });

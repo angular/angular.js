@@ -2,6 +2,9 @@
 
 describe('Scope', function() {
 
+  beforeEach(module(provideLog));
+
+
   describe('$root', function() {
     it('should point to itself', inject(function($rootScope) {
       expect($rootScope.$root).toEqual($rootScope);
@@ -393,6 +396,15 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(log).toEqual('12');
     }));
+
+
+    it('should broadcast the $destroy event', inject(function($rootScope, log) {
+      first.$on('$destroy', log.fn('first'));
+      first.$new().$on('$destroy', log.fn('first-child'));
+
+      first.$destroy();
+      expect(log).toEqual('first; first-child');
+    }));
   });
 
 
@@ -404,7 +416,18 @@ describe('Scope', function() {
       $rootScope.$eval(function(self) {self.b=2;});
       expect($rootScope.b).toEqual(2);
     }));
+
+
+    it('should allow passing locals to the expression', inject(function($rootScope) {
+      expect($rootScope.$eval('a+1', {a: 2})).toBe(3);
+
+      $rootScope.$eval(function(scope, locals) {
+        scope.c = locals.b + 4;
+      }, {b: 3});
+      expect($rootScope.c).toBe(7);
+    }));
   });
+
 
   describe('$evalAsync', function() {
 

@@ -87,6 +87,103 @@ minifiers/obfuscators. In the future, we may provide a pre-processor which will 
 code and insert the `$inject` into the source code so that it can be minified/obfuscated.
 
 
+### Dependency inference and variable name shadowing
+
+During inference, the injector considers argument names with leading and trailing underscores to be
+equivivalent to the name without these underscores. For example `_fooSvc_` argument name is treated
+as if it was `fooSvc`, this is useful especially in tests where variable name shadowing can cause
+some friction. This is best illustrated on examples:
+
+When testing a service, it's common to need a reference to it in every single test. This can be
+done in jasmine with DI inference like this:
+
+<pre>
+describe('fooSvc', function() {
+  it('should do this thing', inject(function(fooSvc) {
+    //test fooSvc
+  }));
+
+  it('should do that thing', inject(function(fooSvc) {
+    //test fooSvc
+  }));
+
+  // more its
+});
+</pre>
+
+... but having to inject the service over and over gets easily tiresome.
+
+It's likely better to rewrite these tests with a use of jasmine's `beforeEach`:
+
+<pre>
+describe('fooSvc', function() {
+  var fooSvc;
+
+  beforeEach(inject(function(fooSvc) {
+    fooSvc = fooSvc; // DOESN'T WORK! outer fooSvc is being shadowed
+  }));
+
+  it('should do this thing', function() {
+    //test fooSvc
+  });
+
+  it('should do that thing', function() {
+    //test fooSvc
+  });
+
+  // more its
+});
+</pre>
+
+This obviously won't work because `fooSvc` variable in the describe block is being shadowed by the
+`fooSvc` argument of the beforeEach function. So we have to resort to alternative solutions, like
+for example use of array notation to annotate the beforeEach fn:
+
+<pre>
+describe('fooSvc', function() {
+  var fooSvc;
+
+  beforeEach(inject(['fooSvc', function(fooSvc_) {
+    fooSvc = fooSvc_;
+  }]));
+
+  it('should do this thing', function() {
+    //test fooSvc
+  });
+
+  it('should do that thing', function() {
+    //test fooSvc
+  });
+});
+</pre>
+
+
+That's better, but it's still annoying, especially if you have many services to inject.
+
+To resolve this shadowing problem, the injector considers `_fooSvc_` argument names equal to
+`fooSvc`, so the test can be rewritten like this:
+
+<pre>
+ describe('fooSvc', function() {
+   var fooSvc;
+
+   beforeEach(inject(function(_fooSvc_) {
+     fooSvc = _fooSvc_;
+   }));
+
+   it('should do this thing', function() {
+     //test fooSvc
+   });
+
+   it('should do that thing', function() {
+     //test fooSvc
+   });
+
+   // more its
+ });
+</pre>
+
+
 ## Related Topics
 
 * {@link dev_guide.services Angular Services}

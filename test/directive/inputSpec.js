@@ -269,6 +269,15 @@ describe('ng-model', function() {
 
     dealoc(element);
   }));
+
+
+  it('should set invalid classes on init', inject(function($compile, $rootScope) {
+    var element = $compile('<input type="email" ng-model="value" required />')($rootScope);
+    $rootScope.$digest();
+
+    expect(element).toBeInvalid();
+    expect(element).toHaveClass('ng-invalid-required');
+  }));
 });
 
 
@@ -304,6 +313,29 @@ describe('input', function() {
     });
 
     expect(inputElm.val()).toBe('misko');
+  });
+
+
+  it('should not set readonly or disabled property on ie7', function() {
+    this.addMatchers({
+      toBeOff: function(attributeName) {
+        var actualValue = this.actual.attr(attributeName);
+        this.message = function() {
+          return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
+            "' in: " + angular.mock.dump(this.actual);
+        }
+
+        return !actualValue || actualValue == 'false';
+      }
+    });
+
+    compileInput('<input type="text" ng-model="name" name="alias"/>');
+    expect(inputElm.prop('readOnly')).toBe(false);
+    expect(inputElm.prop('disabled')).toBe(false);
+
+    expect(inputElm).toBeOff('readOnly');
+    expect(inputElm).toBeOff('readonly');
+    expect(inputElm).toBeOff('disabled');
   });
 
 
@@ -688,18 +720,30 @@ describe('input', function() {
     });
 
 
-    // TODO(vojta): change interpolate ?
-    xit('should allow {{expr}} as value', function() {
+    it('should allow {{expr}} as value', function() {
       scope.some = 11;
       compileInput(
           '<input type="radio" ng-model="value" value="{{some}}" />' +
           '<input type="radio" ng-model="value" value="{{other}}" />');
 
-      browserTrigger(inputElm[0]);
-      expect(scope.value).toBe(true);
+      scope.$apply(function() {
+        scope.value = 'blue';
+        scope.some = 'blue';
+        scope.other = 'red';
+      });
+
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
 
       browserTrigger(inputElm[1]);
-      expect(scope.value).toBe(false);
+      expect(scope.value).toBe('red');
+
+      scope.$apply(function() {
+        scope.other = 'non-red';
+      });
+
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm[1].checked).toBe(false);
     });
   });
 
