@@ -560,6 +560,8 @@ function radioInputType(scope, element, attr, ctrl) {
     var value = attr.value;
     element[0].checked = isDefined(value) && (value == ctrl.$viewValue);
   };
+
+  attr.$observe('value', ctrl.$render);
 }
 
 function checkboxInputType(scope, element, attr, ctrl) {
