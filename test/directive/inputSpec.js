@@ -720,18 +720,30 @@ describe('input', function() {
     });
 
 
-    // TODO(vojta): change interpolate ?
-    xit('should allow {{expr}} as value', function() {
+    it('should allow {{expr}} as value', function() {
       scope.some = 11;
       compileInput(
           '<input type="radio" ng-model="value" value="{{some}}" />' +
           '<input type="radio" ng-model="value" value="{{other}}" />');
 
-      browserTrigger(inputElm[0]);
-      expect(scope.value).toBe(true);
+      scope.$apply(function() {
+        scope.value = 'blue';
+        scope.some = 'blue';
+        scope.other = 'red';
+      });
+
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
 
       browserTrigger(inputElm[1]);
-      expect(scope.value).toBe(false);
+      expect(scope.value).toBe('red');
+
+      scope.$apply(function() {
+        scope.other = 'non-red';
+      });
+
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm[1].checked).toBe(false);
     });
   });
 
