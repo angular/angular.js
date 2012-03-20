@@ -861,16 +861,21 @@ function $CompileProvider($provide) {
 
 
     function addAttrInterpolateDirective(node, directives, value, name) {
-      var interpolateFn = $interpolate(value, true);
-      if (SIDE_EFFECT_ATTRS[name]) {
-        name = SIDE_EFFECT_ATTRS[name];
-        if (isBooleanAttr(node, name)) {
-          value = true;
-        }
-      } else if (!interpolateFn) {
-        // we are not a side-effect attr, and we have no side-effects -> ignore
+      var interpolateFn = $interpolate(value, true),
+          realName = SIDE_EFFECT_ATTRS[name],
+          specialAttrDir = (realName && (realName !== name));
+
+      realName = realName || name;
+
+      if (specialAttrDir && isBooleanAttr(node, name)) {
+        value = true;
+      }
+
+      // no interpolation found and we are not a side-effect attr -> ignore
+      if (!interpolateFn && !specialAttrDir) {
         return;
       }
+
       directives.push({
         priority: 100,
         compile: function(element, attr) {
@@ -884,14 +889,14 @@ function $CompileProvider($provide) {
 
               // we define observers array only for interpolated attrs
               // and ignore observers for non interpolated attrs to save some memory
-              attr.$observers[name] = [];
-              attr[name] = undefined;
+              attr.$observers[realName] = [];
+              attr[realName] = undefined;
               scope.$watch(interpolateFn, function(value) {
-                attr.$set(name, value);
+                attr.$set(realName, value);
               });
             };
           } else {
-            attr.$set(name, value);
+            attr.$set(realName, value);
           }
         }
       });
