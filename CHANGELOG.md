@@ -1,3 +1,53 @@
+<a name="v1.0.0rc2"></a>
+# v1.0.0rc2 (2012-02-02)
+
+## Features
+
+- **$route:** when matching consider trailing slash as optional
+  ([a4fe51da](https://github.com/angular/angular.js/commit/a4fe51da3ba0dc297ecd389e230d6664f250c9a6))
+- **jqLite:** add .controller() method
+  ([6c5a05ad](https://github.com/angular/angular.js/commit/6c5a05ad49a1e083570c3dfe331403398f899dbe))
+- **scope.$eval:** allow passing locals to the expression
+  ([192ff61f](https://github.com/angular/angular.js/commit/192ff61f5d61899e667c6dbce4d3e6e399429d8b))
+- **input[type=radio]:** allow the value attribute to be interpolated
+  ([ade6c452](https://github.com/angular/angular.js/commit/ade6c452753145c84884d17027a7865bf4b34b0c))
+
+
+## Bug Fixes
+
+- **$http:** don't send Content-Type header when no data
+  ([1a5bebd9](https://github.com/angular/angular.js/commit/1a5bebd927ecd22f9c34617642fdf58fe3f62efb),
+   [#749](https://github.com/angular/angular.js/issues/749))
+- **$resource:** support escaping of ':' in resource url
+  ([6d6f8753](https://github.com/angular/angular.js/commit/6d6f875345e01f2c6c63ef95164f6f39e923da15))
+- **$compile:**
+  - don't touch static element attributes
+    ([9cb2195e](https://github.com/angular/angular.js/commit/9cb2195e61a78e99020ec19d687a221ca88b5900))
+  - merge interpolated css class when replacing an element
+    ([f49eaf8b](https://github.com/angular/angular.js/commit/f49eaf8bf2df5f4e0e82d6c89e849a4f82c8d414))
+  - allow transclusion of root elements
+    ([9918b748](https://github.com/angular/angular.js/commit/9918b748be01266eb10db39d51b4d3098d54ab66))
+- **$log:** avoid console.log.apply calls in IE
+  ([15213ec2](https://github.com/angular/angular.js/commit/15213ec212769837cb2b7e781ffc5bfd598d27ca),
+    [#805](https://github.com/angular/angular.js/issues/805))
+- **json:** added support for iso8061 timezone
+  ([5ac14f63](https://github.com/angular/angular.js/commit/5ac14f633a69f49973b5512780c6ec7752405967))
+- **e2e runner:** fix typo that caused errors on IE8
+  ([ee5a5352](https://github.com/angular/angular.js/commit/ee5a5352fd4b94cedee6ef20d4bf2d43ce77e00b),
+   [#806](https://github.com/angular/angular.js/issues/806))
+- **directives:**
+  - **select:** multiselect failes to update view on selection insert
+    ([6ecac8e7](https://github.com/angular/angular.js/commit/6ecac8e71a84792a434d21db2c245b3648c55f18))
+  - **ngForm:** alias name||ngForm
+    ([823adb23](https://github.com/angular/angular.js/commit/823adb231995e917bc060bfa49453e2a96bac2b6))
+  - **ngView:** publish the controller
+    ([21e74c2d](https://github.com/angular/angular.js/commit/21e74c2d2e8e985b23711785287feb59965cbd90))
+  - **ngRepeat:** correct variable reference in error message
+    ([935c1018](https://github.com/angular/angular.js/commit/935c1018da05dbf3124b2dd33619c4a3c82d7a2a))
+  - various doc fixes (some contributed by Daniel Zen)
+
+
+
 <a name="1.0.0rc1"></a>
 # 1.0.0rc1 moiré-vision (2012-03-13)
 
