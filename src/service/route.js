@@ -62,11 +62,13 @@ function $RouteProvider(){
     if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
 
     // create redirection for trailing slashes
-    var redirectPath = (path[path.length-1] == '/')
-        ? path.substr(0, path.length-1)
-        : path +'/';
+    if (path) {
+      var redirectPath = (path[path.length-1] == '/')
+          ? path.substr(0, path.length-1)
+          : path +'/';
 
-    routes[redirectPath] = {redirectTo: path};
+      routes[redirectPath] = {redirectTo: path};
+    }
 
     return routeDef;
   };
