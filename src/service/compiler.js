@@ -729,6 +729,9 @@ function $CompileProvider($provide) {
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
+          if (src[key]) {
+            value += (key === 'style' ? ';' : ' ') + src[key];
+          }
           dst.$set(key, value, srcAttr[key]);
         }
       });
@@ -873,6 +876,12 @@ function $CompileProvider($provide) {
         compile: function(element, attr) {
           if (interpolateFn) {
             return function(scope, element, attr) {
+              if (name === 'class') {
+                // we need to interpolate classes again, in the case the element was replaced
+                // and therefore the two class attrs got merged - we want to interpolate the result
+                interpolateFn = $interpolate(attr[name], true);
+              }
+
               // we define observers array only for interpolated attrs
               // and ignore observers for non interpolated attrs to save some memory
               attr.$observers[name] = [];
