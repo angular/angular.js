@@ -65,15 +65,15 @@ This example demonstrates angular's two-way data binding:
 
 <doc:example>
  <doc:source>
-  Your name: <input type="text" ng-model="yourname" value="World"/>
-  <hr/>
-  Hello {{yourname}}!
+  Your name: <input type="text" ng-model="yourname" ng-model-instant placeholder="World">
+  <hr>
+  Hello {{yourname || 'World'}}!
  </doc:source>
 </doc:example>
 
 After the refresh, the page should look something like this:
 
-<img class="left" src="img/helloworld_2way.png" border="1" />
+<img class="left" src="img/helloworld_2way.png" border="1" >
 
 These are some of the important points to note from this example:
 
