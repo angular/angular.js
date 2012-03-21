@@ -51,17 +51,19 @@ $rootScope.myState: {{myState}}
 </doc:source>
 </doc:example>
 
-Let's look at how to test this code, paying special attention to scoping. We have employed a
-common technique of using the directive name as a variable, thus we see `myState` within the scope.
-Additionally we have used the same name for the variable being passed in from the rootScope.
-So, in this code, we have three items named `myState`:
+Let's look at how to test this code, paying special attention to scoping. Note the `scope`
+attribute in the directive definition object. This means a new 'isolate' scope is created for
+this directive. Also, we have employed a common technique of using the directive name as a variable,
+thus we see `myState` within the scope. Additionally we have used the same name for the variable
+being passed in from the rootScope. So, in this code, we have three items named `myState`:
 
 * The directive, referenced with the attribute `my-state`
 * The variable in the root scope, declared in `ng-init`
-* The variable in the directive scope, declared as an `accessor` function within the directive.
+* The variable in the directive isolate scope, declared as an `accessor` function within the
+directive.
 
 These last two variables require us to be especially attentive when setting up the scope of our
-tests. In the rootScope `myState` is an object, but in the directive's scope,
+tests. In the rootScope `myState` is an object, but in the directive's isolate scope,
 `myState' is a function!
 
 <pre>
@@ -71,7 +73,8 @@ describe('directives', function() {
     beforeEach(module('myModule'));  // Define the module context for the test
 
     it('myState', inject(function($rootScope, $compile) {
-        directiveScope = $rootScope.$new(); // The directive's scope is a child of the $rootScope
+        var isolate = true;
+        directiveScope = $rootScope.$new(isolate); // The directive has isolate scope
         $rootScope.myState = {              //
             over: false,                    // Set the values in $rootScope before $compile
             selected: true                  //
@@ -83,9 +86,9 @@ describe('directives', function() {
 });
 </pre>
 
-If we had not setup the proper scoping above, and instead compiled and called `$apply` in the
-`$rootScope`, the directive would have overwritten the `myState` object with the accessor
-function, and the test would not be accurate.
+If we had not created a separate directiveScope for the test above, and instead compiled and called
+`$apply` in the `$rootScope`, the directive would have overwritten the `myState` object with the
+accessor function, and the test would not be accurate.
 
 
 ## Related Topics
