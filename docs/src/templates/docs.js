@@ -104,7 +104,7 @@ function DocsController(scope, $location, $window, $cookies, $filter) {
 
   function loadDisqus(currentPageId) {
     // http://docs.disqus.com/help/2/
-    window.disqus_shortname = 'angularjs';
+    window.disqus_shortname = 'angularjs-next';
     window.disqus_identifier = currentPageId;
     window.disqus_url = 'http://docs-next.angularjs.org' + currentPageId;
 
