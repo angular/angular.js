@@ -107,6 +107,20 @@ describe('jqLite', function() {
       expect(deepChild.inheritedData('myData')).toBeFalsy();
       dealoc(element);
     });
+
+
+    it('should work with the child html element instead if the current element is the document obj',
+      function() {
+        var item = {},
+            doc = jqLite(document),
+            html = doc.find('html');
+
+        html.data('item', item);
+        expect(doc.inheritedData('item')).toBe(item);
+        expect(html.inheritedData('item')).toBe(item);
+        dealoc(doc);
+      }
+    );
   });
 
 
@@ -118,6 +132,18 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
+    it('should retrieve scope attached to the html element if its requested on the document',
+        function() {
+      var doc = jqLite(document),
+          html = doc.find('html'),
+          scope = {};
+
+      html.data('$scope', scope);
+
+      expect(doc.scope()).toBe(scope);
+      expect(html.scope()).toBe(scope);
+      dealoc(doc);
+    });
 
     it('should walk up the dom to find scope', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
@@ -145,6 +171,27 @@ describe('jqLite', function() {
 
 
       expect(span.injector()).toBe(injector);
+      dealoc(template);
+    });
+
+
+    it('should retrieve injector attached to the html element if its requested on document',
+        function() {
+      var doc = jqLite(document),
+          html = doc.find('html'),
+          injector = {};
+
+      html.data('$injector', injector);
+
+      expect(doc.injector()).toBe(injector);
+      expect(html.injector()).toBe(injector);
+      dealoc(doc);
+    });
+
+
+    it('should do nothing with a noncompiled template', function() {
+      var template = jqLite('<div><span></span></div>');
+      expect(template.injector()).toBeUndefined();
       dealoc(template);
     });
   });
