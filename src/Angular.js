@@ -117,8 +117,11 @@ function forEach(obj, iterator, context) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
-      for (key in obj)
-        iterator.call(context, obj[key], key);
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          iterator.call(context, obj[key], key);
+        }
+      }
     }
   }
   return obj;
