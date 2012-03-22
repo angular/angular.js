@@ -234,6 +234,25 @@ describe('angular', function() {
     });
   });
 
+
+  describe('forEach', function() {
+    it('should iterate over *own* object properties', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+      };
+      MyObj.prototype.foo = 'fooVal';
+
+      var obj = new MyObj(),
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+
+      expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+  });
+
+
   describe('sortedKeys', function() {
     it('should collect keys from object', function() {
       expect(sortedKeys({c:0, b:0, a:0})).toEqual(['a', 'b', 'c']);
