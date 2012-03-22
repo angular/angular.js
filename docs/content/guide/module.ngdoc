@@ -232,7 +232,7 @@ describe('myApp', function() {
     $provide.value('$window', {
       alert: jasmine.createSpy('alert')
     });
-  });
+  }));
 
   // The inject() will create the injector and inject the greet and
   // $window into the tests. The test need not concern itself with
@@ -251,7 +251,7 @@ describe('myApp', function() {
     });
     inject(function(greet) {
       greet('World');
-      expect(alertSpy).toHaveBeenCalledWith('World');
+      expect(alertSpy).toHaveBeenCalledWith('Hello World!');
     });
   });
 });
