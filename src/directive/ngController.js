@@ -95,9 +95,9 @@
      </doc:scenario>
    </doc:example>
  */
-var ngControllerDirective = ['$controller', '$window', function($controller, $window) {
+var ngControllerDirective = [function() {
   return {
     scope: true,
     controller: '@'
-  }
+  };
 }];
