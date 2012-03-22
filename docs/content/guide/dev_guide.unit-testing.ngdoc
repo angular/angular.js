@@ -92,8 +92,8 @@ State & Singletons}
 
 The class above is hard to test since we have to change global state:
 <pre>
-var oldXHR = glabal.xhr;
-glabal.xhr = function mockXHR() {};
+var oldXHR = global.xhr;
+global.xhr = function mockXHR() {};
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
@@ -126,12 +126,12 @@ there is only one global variable to be reset).
 
 The class above is hard to test since we have to change global state:
 <pre>
-var oldServiceLocator = glabal.serviceLocator;
-glabal.serviceLocator.set('xhr', function mockXHR() {});
+var oldServiceLocator = global.serviceLocator;
+global.serviceLocator.set('xhr', function mockXHR() {});
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
-glabal.serviceLocator = oldServiceLocator; // if you forget this bad things will happen
+global.serviceLocator = oldServiceLocator; // if you forget this bad things will happen
 </pre>
 
 
