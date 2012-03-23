@@ -130,7 +130,7 @@
     <doc:example>
       <doc:source>
         Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
-        <button ng-model="button" ng-disabled="{{checked}}">Button</button>
+        <button ng-model="button" ng-disabled="checked">Button</button>
       </doc:source>
       <doc:scenario>
         it('should toggle button', function() {
@@ -142,7 +142,7 @@
     </doc:example>
  *
  * @element INPUT
- * @param {template} ng-disabled any string which can contain '{{}}' markup.
+ * @param {string} expression Angular expression that will be evaluated.
  */
 
 
@@ -160,7 +160,7 @@
     <doc:example>
       <doc:source>
         Check me to check both: <input type="checkbox" ng-model="master"><br/>
-        <input id="checkSlave" type="checkbox" ng-checked="{{master}}">
+        <input id="checkSlave" type="checkbox" ng-checked="master">
       </doc:source>
       <doc:scenario>
         it('should check both checkBoxes', function() {
@@ -172,7 +172,7 @@
     </doc:example>
  *
  * @element INPUT
- * @param {template} ng-checked any string which can contain '{{}}' markup.
+ * @param {string} expression Angular expression that will be evaluated.
  */
 
 
@@ -191,7 +191,7 @@
      <doc:example>
        <doc:source>
          Check me check multiple: <input type="checkbox" ng-model="checked"><br/>
-         <select id="select" ng-multiple="{{checked}}">
+         <select id="select" ng-multiple="checked">
            <option>Misko</option>
            <option>Igor</option>
            <option>Vojta</option>
@@ -208,7 +208,7 @@
      </doc:example>
  *
  * @element SELECT
- * @param {template} ng-multiple any string which can contain '{{}}' markup.
+ * @param {string} expression Angular expression that will be evaluated.
  */
 
 
@@ -226,7 +226,7 @@
     <doc:example>
       <doc:source>
         Check me to make text readonly: <input type="checkbox" ng-model="checked"><br/>
-        <input type="text" ng-readonly="{{checked}}" value="I'm Angular"/>
+        <input type="text" ng-readonly="checked" value="I'm Angular"/>
       </doc:source>
       <doc:scenario>
         it('should toggle readonly attr', function() {
@@ -238,7 +238,7 @@
     </doc:example>
  *
  * @element INPUT
- * @param {template} ng-readonly any string which can contain '{{}}' markup.
+ * @param {string} expression Angular expression that will be evaluated.
  */
 
 
@@ -255,35 +255,60 @@
  * @example
     <doc:example>
       <doc:source>
-        Check me to select: <input type="checkbox" ng-model="checked"><br/>
+        Check me to select: <input type="checkbox" ng-model="selected"><br/>
         <select>
           <option>Hello!</option>
-          <option id="greet" ng-selected="{{checked}}">Greetings!</option>
+          <option id="greet" ng-selected="selected">Greetings!</option>
         </select>
       </doc:source>
       <doc:scenario>
         it('should select Greetings!', function() {
           expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
-          input('checked').check();
+          input('selected').check();
           expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
+ *
  * @element OPTION
- * @param {template} ng-selected any string which can contain '{{}}' markup.
+ * @param {string} expression Angular expression that will be evaluated.
  */
- 
 
-function ngAttributeAliasDirective(propName, attrName) {
-  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = valueFn(
-    function(scope, element, attr) {
-      attr.$observe(directiveNormalize('ng-' + attrName), function(value) {
-        attr.$set(attrName, value);
-      });
-    }
-  );
-}
 
 var ngAttributeAliasDirectives = {};
-forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
-ngAttributeAliasDirective(null, 'src');
+
+
+// boolean attrs are evaluated
+forEach(BOOLEAN_ATTR, function(propName, attrName) {
+  var normalized = directiveNormalize('ng-' + attrName);
+  ngAttributeAliasDirectives[normalized] = function() {
+    return {
+      compile: function(tpl, attr) {
+        attr.$observers[attrName] = [];
+        return function(scope, element, attr) {
+          scope.$watch(attr[normalized], function(value) {
+            attr.$set(attrName, value);
+          });
+        };
+      }
+    };
+  };
+});
+
+
+// ng-src, ng-href are interpolated
+forEach(['src', 'href'], function(attrName) {
+  var normalized = directiveNormalize('ng-' + attrName);
+  ngAttributeAliasDirectives[normalized] = function() {
+    return {
+      compile: function(tpl, attr) {
+        attr.$observers[attrName] = [];
+        return function(scope, element, attr) {
+          attr.$observe(normalized, function(value) {
+            attr.$set(attrName, value);
+          });
+        };
+      }
+    };
+  };
+});

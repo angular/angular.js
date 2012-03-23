@@ -780,7 +780,7 @@ describe('select', function() {
         createSelect({
           'ng-model': 'value',
           'ng-options': 'item.name for item in values',
-          'ng-required': '{{required}}'
+          'ng-required': 'required'
         }, true);
 
 

@@ -941,8 +941,8 @@ describe('input', function() {
 
   describe('required', function() {
 
-    it('should allow bindings on required', function() {
-      compileInput('<input type="text" ng-model="value" required="{{required}}" />');
+    it('should allow bindings on ng-required', function() {
+      compileInput('<input type="text" ng-model="value" ng-required="required" />');
 
       scope.$apply(function() {
         scope.required = false;
