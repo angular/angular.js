@@ -128,13 +128,7 @@ function $CompileProvider($provide) {
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
       CONTENT_REGEXP = /\<\<content\>\>/i,
-      HAS_ROOT_ELEMENT = /^\<[\s\S]*\>$/,
-      SIDE_EFFECT_ATTRS = {};
-
-  forEach('src,href,multiple,selected,checked,disabled,readonly,required'.split(','), function(name) {
-    SIDE_EFFECT_ATTRS[name] = name;
-    SIDE_EFFECT_ATTRS[directiveNormalize('ng_' + name)] = name;
-  });
+      HAS_ROOT_ELEMENT = /^\<[\s\S]*\>$/;
 
 
   this.directive = function registerDirective(name, directiveFactory) {
@@ -861,44 +855,29 @@ function $CompileProvider($provide) {
 
 
     function addAttrInterpolateDirective(node, directives, value, name) {
-      var interpolateFn = $interpolate(value, true),
-          realName = SIDE_EFFECT_ATTRS[name],
-          specialAttrDir = (realName && (realName !== name));
+      var interpolateFn = $interpolate(value, true);
 
-      realName = realName || name;
 
-      if (specialAttrDir && isBooleanAttr(node, name)) {
-        value = true;
-      }
-
-      // no interpolation found and we are not a side-effect attr -> ignore
-      if (!interpolateFn && !specialAttrDir) {
-        return;
-      }
+      // no interpolation found -> ignore
+      if (!interpolateFn) return;
 
       directives.push({
         priority: 100,
-        compile: function(element, attr) {
-          if (interpolateFn) {
-            return function(scope, element, attr) {
-              if (name === 'class') {
-                // we need to interpolate classes again, in the case the element was replaced
-                // and therefore the two class attrs got merged - we want to interpolate the result
-                interpolateFn = $interpolate(attr[name], true);
-              }
-
-              // we define observers array only for interpolated attrs
-              // and ignore observers for non interpolated attrs to save some memory
-              attr.$observers[realName] = [];
-              attr[realName] = undefined;
-              scope.$watch(interpolateFn, function(value) {
-                attr.$set(realName, value);
-              });
-            };
-          } else {
-            attr.$set(realName, value);
+        compile: valueFn(function(scope, element, attr) {
+          if (name === 'class') {
+            // we need to interpolate classes again, in the case the element was replaced
+            // and therefore the two class attrs got merged - we want to interpolate the result
+            interpolateFn = $interpolate(attr[name], true);
           }
-        }
+
+          // we define observers array only for interpolated attrs
+          // and ignore observers for non interpolated attrs to save some memory
+          attr.$observers[name] = [];
+          attr[name] = undefined;
+          scope.$watch(interpolateFn, function(value) {
+            attr.$set(name, value);
+          });
+        })
       });
     }
 
@@ -945,14 +924,11 @@ function $CompileProvider($provide) {
       var booleanKey = isBooleanAttr(this.$element[0], key.toLowerCase());
 
       if (booleanKey) {
-        value = toBoolean(value);
         this.$element.prop(key, value);
-        this[key] = value;
-        attrName = key = booleanKey;
-        value = value ? booleanKey : undefined;
-      } else {
-        this[key] = value;
+        attrName = booleanKey;
       }
+
+      this[key] = value;
 
       // translate normalized key to actual key
       if (attrName) {

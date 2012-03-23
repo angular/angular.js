@@ -1411,22 +1411,6 @@ describe('$compile', function() {
       });
 
 
-      it('should set boolean attributes', function() {
-        attr.$set('disabled', 'true');
-        attr.$set('readOnly', 'true');
-        expect(element.attr('disabled')).toEqual('disabled');
-        expect(element.attr('readonly')).toEqual('readonly');
-
-        attr.$set('disabled', 'false');
-        expect(element.attr('disabled')).toEqual(undefined);
-
-        attr.$set('disabled', false);
-        attr.$set('readOnly', false);
-        expect(element.attr('disabled')).toEqual(undefined);
-        expect(element.attr('readonly')).toEqual(undefined);
-      });
-
-
       it('should remove attribute', function() {
         attr.$set('ngMyAttr', 'value');
         expect(element.attr('ng-my-attr')).toEqual('value');
