@@ -132,6 +132,26 @@ describe('$http', function() {
     // TODO(vojta): test passing timeout
 
 
+    describe('params', function() {
+      it('should do basic request with params and encode', inject(function($httpBackend, $http) {
+        $httpBackend.expect('GET', '/url?a%3D=%3F%26&b=2').respond('');
+        $http({url: '/url', params: {'a=':'?&', b:2}, method: 'GET'});
+      }));
+
+
+      it('should merge params if url contains some already', inject(function($httpBackend, $http) {
+        $httpBackend.expect('GET', '/url?c=3&a=1&b=2').respond('');
+        $http({url: '/url?c=3', params: {a:1, b:2}, method: 'GET'});
+      }));
+
+
+      it('should jsonify objects in params map', inject(function($httpBackend, $http) {
+        $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22%3A3%7D').respond('');
+        $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
+      }));
+    });
+
+
     describe('callbacks', function() {
 
       it('should pass in the response object when a request is successful', function() {
