@@ -190,7 +190,7 @@ modules require it.
 Modules are a way of managing $injector configuration, and have nothing to do with loading of
 scripts into a VM. There are existing projects which deal with script loading, which may be used
 with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
-and thus script loaders can take advantage of this property and paralyze the loading process.
+and thus script loaders can take advantage of this property and parallelize the loading process.
 
 
 # Unit Testing
