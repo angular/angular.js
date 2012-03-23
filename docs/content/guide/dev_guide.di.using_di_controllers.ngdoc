@@ -6,18 +6,17 @@ The most common place to use dependency injection in angular applications is in 
 dev_guide.mvc.understanding_controller controllers}. Here is a simple example:
 
 <pre>
-function MyController($route){
- // configure the route service
- $route.when(...);
+function MyController($location){
+ // do stuff with the $location service
 }
-MyController.$inject = ['$route'];
+MyController.$inject = ['$location'];
 </pre>
 
 In this example, the `MyController` constructor function takes one argument, the {@link
-api/angular.module.ng.$route $route} service. Angular is then responsible for supplying the instance
-of `$route` to the controller when the constructor is instantiated. There are two ways to cause
-controller instantiation – by configuring routes with the `$route` service, or by referencing the
-controller from the HTML template, as follows:
+api/angular.module.ng.$location $location} service. Angular is then responsible for supplying the
+instance of `$location` to the controller when the constructor is instantiated. There are two ways
+to cause controller instantiation – by configuring routes with the `$location` service, or by
+referencing the controller from the HTML template, as follows:
 
 <pre>
 <!doctype html>
@@ -35,7 +34,7 @@ we have to supply this information to angular in the form of an additional prope
 controller constructor function called `$inject`. Think of it as annotations for JavaScript.
 
 <pre>
-MyController.$inject = ['$route'];
+MyController.$inject = ['$location'];
 </pre>
 
 The information in `$inject` is then used by the {@link api/angular.injector injector} to call the
