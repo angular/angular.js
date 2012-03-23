@@ -49,20 +49,6 @@ describe('Binder', function() {
     expect(element.text()).toBe('123');
   }));
 
-  it('AttributesNoneBound', inject(function($rootScope, $compile) {
-    var a = $compile('<a href="abc" foo="def"></a>')($rootScope);
-    expect(a[0].nodeName).toBe('A');
-    expect(a.attr('ng-bind-attr')).toBeFalsy();
-  }));
-
-  it('AttributesAreEvaluated', inject(function($rootScope, $compile) {
-    var a = $compile('<a ng-bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>')($rootScope);
-    $rootScope.$eval('a=1;b=2');
-    $rootScope.$apply();
-    expect(a.attr('a')).toBe('a');
-    expect(a.attr('b')).toBe('a+b=3');
-  }));
-
   it('InputTypeButtonActionExecutesInScope', inject(function($rootScope, $compile) {
     var savedCalled = false;
     element = $compile(
@@ -412,29 +398,6 @@ describe('Binder', function() {
 
     expect(optionC.attr('value')).toEqual('C');
     expect(optionC.text()).toEqual('C');
-  }));
-
-  it('DeleteAttributeIfEvaluatesFalse', inject(function($rootScope, $compile) {
-    element = $compile(
-      '<div>' +
-        '<input ng-model="a0" ng-bind-attr="{disabled:\'{{true}}\'}">' +
-        '<input ng-model="a1" ng-bind-attr="{disabled:\'{{false}}\'}">' +
-        '<input ng-model="b0" ng-bind-attr="{disabled:\'{{1}}\'}">' +
-        '<input ng-model="b1" ng-bind-attr="{disabled:\'{{0}}\'}">' +
-        '<input ng-model="c0" ng-bind-attr="{disabled:\'{{[0]}}\'}">' +
-        '<input ng-model="c1" ng-bind-attr="{disabled:\'{{[]}}\'}">' +
-      '</div>')($rootScope);
-    $rootScope.$apply();
-    function assertChild(index, disabled) {
-      expect(!!childNode(element, index).attr('disabled')).toBe(disabled);
-    }
-
-    assertChild(0, true);
-    assertChild(1, false);
-    assertChild(2, true);
-    assertChild(3, false);
-    assertChild(4, true);
-    assertChild(5, false);
   }));
 
   it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {

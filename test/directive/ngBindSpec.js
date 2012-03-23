@@ -77,37 +77,4 @@ describe('ng-bind-*', function() {
       expect(fromJson(element.text())).toEqual({key:'value'});
     }));
   });
-
-
-  describe('ng-bind-attr', function() {
-    it('should bind attributes', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>')($rootScope);
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://localhost/mysrc');
-      expect(element.attr('alt')).toEqual('myalt');
-    }));
-
-    it('should not pretty print JSON in attributes', inject(function($rootScope, $compile) {
-      element = $compile('<img alt="{{ {a:1} }}"/>')($rootScope);
-      $rootScope.$digest();
-      expect(element.attr('alt')).toEqual('{"a":1}');
-    }));
-
-    it('should remove special attributes on false', inject(function($rootScope, $compile) {
-      element = $compile('<input ng-bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>')($rootScope);
-      var input = element[0];
-      expect(input.disabled).toEqual(false);
-      expect(input.readOnly).toEqual(false);
-      expect(input.checked).toEqual(false);
-
-      $rootScope.disabled = true;
-      $rootScope.readonly = true;
-      $rootScope.checked = true;
-      $rootScope.$digest();
-
-      expect(input.disabled).toEqual(true);
-      expect(input.readOnly).toEqual(true);
-      expect(input.checked).toEqual(true);
-    }));
-  });
 });
