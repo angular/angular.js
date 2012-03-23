@@ -676,6 +676,14 @@ describe('q', function() {
 
 
   describe('all', function() {
+    it('should resolve all of nothing', function() {
+      var result;
+      q.all([]).then(function(r) { result = r; });
+      mockNextTick.flush();
+      expect(result).toEqual([]);
+    });
+
+
     it('should take an array of promises and return a promise for an array of results', function() {
       var deferred1 = defer(),
           deferred2 = defer();

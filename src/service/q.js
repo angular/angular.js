@@ -364,16 +364,20 @@ function qFactory(nextTick, exceptionHandler) {
         counter = promises.length,
         results = [];
 
-    forEach(promises, function(promise, index) {
-      promise.then(function(value) {
-        if (index in results) return;
-        results[index] = value;
-        if (!(--counter)) deferred.resolve(results);
-      }, function(reason) {
-        if (index in results) return;
-        deferred.reject(reason);
+    if (counter) {
+      forEach(promises, function(promise, index) {
+        ref(promise).then(function(value) {
+          if (index in results) return;
+          results[index] = value;
+          if (!(--counter)) deferred.resolve(results);
+        }, function(reason) {
+          if (index in results) return;
+          deferred.reject(reason);
+        });
       });
-    });
+    } else {
+      deferred.resolve(results);
+    }
 
     return deferred.promise;
   }
