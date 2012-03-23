@@ -324,7 +324,7 @@ function $CompileProvider($provide) {
          childLinkingFn = /* nodesetLinkingFn */ linkingFns[i++];
 
          if (directiveLinkingFn) {
-           if (directiveLinkingFn.scope && !rootElement) {
+           if (directiveLinkingFn.scope) {
              childScope = scope.$new(isObject(directiveLinkingFn.scope));
              jqLite(node).data('$scope', childScope);
            } else {

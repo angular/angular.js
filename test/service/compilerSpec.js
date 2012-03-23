@@ -1035,10 +1035,11 @@ describe('$compile', function() {
         );
 
 
-        it('should allow more then one scope creation per element', inject(
+        it('should allow more one new scope directives per element, but directives should share' +
+            'the scope', inject(
           function($rootScope, $compile, log) {
-            $compile('<div class="scope-a; scope-b"></div>')($rootScope);
-            expect(log).toEqual('001; 001');
+            element = $compile('<div class="scope-a; scope-b"></div>')($rootScope);
+            expect(log).toEqual('002; 002');
           })
         );
 
@@ -1064,10 +1065,18 @@ describe('$compile', function() {
         );
 
 
-        it('should treat new scope on new template as noop', inject(
+        it('should create new scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div scope-a></div>')($rootScope);
-            expect(log).toEqual('001');
+            expect(log).toEqual('002');
+          })
+        );
+
+
+        it('should create isolate scope even at the root of the template', inject(
+          function($rootScope, $compile, log) {
+            element = $compile('<div iscope></div>')($rootScope);
+            expect(log).toEqual('002');
           })
         );
       });
