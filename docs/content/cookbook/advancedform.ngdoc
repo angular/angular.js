@@ -85,8 +85,8 @@ detection, and preventing invalid form submission.
          <input type="text" ng-model="contact.value" required/>
           [ <a href="" ng-click="removeContact(contact)">X</a> ]
        </div>
-     <button ng-click="cancel()" ng-disabled="{{isCancelDisabled()}}">Cancel</button>
-     <button ng-click="save()" ng-disabled="{{isSaveDisabled()}}">Save</button>
+     <button ng-click="cancel()" ng-disabled="isCancelDisabled()">Cancel</button>
+     <button ng-click="save()" ng-disabled="isSaveDisabled()">Save</button>
    </form>
 
    <hr/>
