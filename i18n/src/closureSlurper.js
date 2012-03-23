@@ -12,7 +12,7 @@ var Q  = require('qq'),
              require: function() {},
              i18n: {currency: {}, pluralRules: {}} };
 
-createFolder('../locale/').then(function() {
+createFolder('../../src/ngLocale/').then(function() {
   var promiseA = Q.defer(),
       promiseB = Q.defer();
 
