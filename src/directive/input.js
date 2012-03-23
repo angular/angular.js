@@ -558,7 +558,7 @@ function radioInputType(scope, element, attr, ctrl) {
 
   ctrl.$render = function() {
     var value = attr.value;
-    element[0].checked = isDefined(value) && (value == ctrl.$viewValue);
+    element[0].checked = (value == ctrl.$viewValue);
   };
 
   attr.$observe('value', ctrl.$render);
@@ -1168,3 +1168,27 @@ var ngListDirective = function() {
     }
   };
 };
+
+
+var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
+
+var ngValueDirective = [function() {
+  return {
+    priority: 100,
+    compile: function(tpl, attr) {
+      if (CONSTANT_VALUE_REGEXP.test(attr.ngValue)) {
+        return function(scope) {
+          attr.$set('value', scope.$eval(attr.ngValue));
+        };
+      } else {
+        attr.$observers.value = [];
+
+        return function(scope) {
+          scope.$watch(attr.ngValue, function(value) {
+            attr.$set('value', value, false);
+          });
+        };
+      }
+    }
+  };
+}];

@@ -1078,4 +1078,42 @@ describe('input', function() {
       expect(scope.value).toBe('value3');
     }));
   });
+
+
+  describe('ng-value', function() {
+
+    it('should evaluate and set constant expressions', function() {
+      compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
+                   '<input type="radio" ng-model="selected" ng-value="false">' +
+                   '<input type="radio" ng-model="selected" ng-value="1">');
+      scope.$digest();
+
+      browserTrigger(inputElm[0], 'click');
+      expect(scope.selected).toBe(true);
+
+      browserTrigger(inputElm[1], 'click');
+      expect(scope.selected).toBe(false);
+
+      browserTrigger(inputElm[2], 'click');
+      expect(scope.selected).toBe(1);
+    });
+
+
+    it('should watch the expression', function() {
+      compileInput('<input type="radio" ng-model="selected" ng-value="value">');
+
+      scope.$apply(function() {
+        scope.selected = scope.value = {some: 'object'};
+      });
+      expect(inputElm[0].checked).toBe(true);
+
+      scope.$apply(function() {
+        scope.value = {some: 'other'};
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.selected).toBe(scope.value);
+    });
+  });
 });
