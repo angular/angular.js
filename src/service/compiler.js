@@ -732,7 +732,7 @@ function $CompileProvider($provide) {
           if (src[key]) {
             value += (key === 'style' ? ';' : ' ') + src[key];
           }
-          dst.$set(key, value, srcAttr[key]);
+          dst.$set(key, value, true, srcAttr[key]);
         }
       });
       // copy the new attributes on the old attrs object
@@ -937,9 +937,11 @@ function $CompileProvider($provide) {
      * can share the attribute. This function properly handles boolean attributes.
      * @param {string} key Normalized key. (ie ngAttribute)
      * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
+     * @param {boolean=} writeAttr If false, does not write the value to DOM element attribute.
+     *     Defaults to true.
      * @param {string=} attrName Optional none normalized name. Defaults to key.
      */
-    function attrSetter(key, value, attrName) {
+    function attrSetter(key, value, writeAttr, attrName) {
       var booleanKey = isBooleanAttr(this.$element[0], key.toLowerCase());
 
       if (booleanKey) {
@@ -962,11 +964,14 @@ function $CompileProvider($provide) {
         }
       }
 
-      if (value === null || value === undefined) {
-        this.$element.removeAttr(attrName);
-      } else {
-        this.$element.attr(attrName, value);
+      if (writeAttr !== false) {
+        if (value === null || value === undefined) {
+          this.$element.removeAttr(attrName);
+        } else {
+          this.$element.attr(attrName, value);
+        }
       }
+
 
       // fire observers
       forEach(this.$observers[key], function(fn) {
