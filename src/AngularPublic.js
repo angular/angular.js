@@ -101,7 +101,8 @@ function publishExternalAPI(angular){
             ngChange: ngChangeDirective,
             ngModelInstant: ngModelInstantDirective,
             required: requiredDirective,
-            ngRequired: requiredDirective
+            ngRequired: requiredDirective,
+            ngValue: ngValueDirective
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);

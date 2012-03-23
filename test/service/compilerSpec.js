@@ -1401,7 +1401,7 @@ describe('$compile', function() {
 
 
       it('should allow overriding of attribute name and remember the name', function() {
-        attr.$set('ngOther', '123', 'other');
+        attr.$set('ngOther', '123', true, 'other');
         expect(element.attr('other')).toEqual('123');
         expect(attr.ngOther).toEqual('123');
 
@@ -1437,7 +1437,15 @@ describe('$compile', function() {
         attr.$set('ngMyAttr', 'value');
         attr.$set('ngMyAttr', null);
         expect(element.attr('ng-my-attr')).toBe(undefined);
-      })
+      });
+
+
+      it('should not set DOM element attr if writeAttr false', function() {
+        attr.$set('test', 'value', false);
+
+        expect(element.attr('test')).toBeUndefined();
+        expect(attr.test).toBe('value');
+      });
     });
   });
 
