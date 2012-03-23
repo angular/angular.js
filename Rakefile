@@ -37,10 +37,10 @@ task :compile_scenario => :init do
 
   deps = [
       'lib/jquery/jquery.js',
-      'src/scenario/angular.prefix',
+      'src/ngScenario/angular.prefix',
       files['angularSrc'],
       files['angularScenario'],
-      'src/scenario/angular.suffix',
+      'src/ngScenario/angular.suffix',
   ]
 
   concat = 'cat ' + deps.flatten.join(' ')
@@ -56,9 +56,9 @@ desc 'Compile JSTD Scenario Adapter'
 task :compile_jstd_scenario_adapter => :init do
 
   deps = [
-      'src/jstd-scenario-adapter/angular.prefix',
-      'src/jstd-scenario-adapter/Adapter.js',
-      'src/jstd-scenario-adapter/angular.suffix',
+      'src/ngScenario/jstd-scenario-adapter/angular.prefix',
+      'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+      'src/ngScenario/jstd-scenario-adapter/angular.suffix',
   ]
 
   concat = 'cat ' + deps.flatten.join(' ')
@@ -108,7 +108,7 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
         --js #{path_to('angular.js')} \
         --js_output_file #{path_to('angular.min.js')})
 
-  FileUtils.cp_r 'i18n/locale', path_to('i18n')
+  FileUtils.cp_r 'src/ngLocale', path_to('i18n')
 
   File.open(path_to('angular-loader.js'), 'w') do |f|
     concat = 'cat ' + [
@@ -153,7 +153,7 @@ task :package => [:clean, :compile, :docs] do
   FileUtils.rm_r(path_to('pkg'), :force => true)
   FileUtils.mkdir_p(pkg_dir)
 
-  ['src/angular-mocks.js',
+  ['src/ngMock/angular-mocks.js',
     path_to('angular.js'),
     path_to('angular-loader.js'),
     path_to('angular.min.js'),
@@ -162,7 +162,7 @@ task :package => [:clean, :compile, :docs] do
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),
   ].each do |src|
-    dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{NG_VERSION.full}\\1")
+    dest = src.gsub(/^.*\//, '').gsub(/((\.min)?\.js)$/, "-#{NG_VERSION.full}\\1")
     FileUtils.cp(src, pkg_dir + '/' + dest)
   end
 
