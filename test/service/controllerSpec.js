@@ -1,11 +1,46 @@
 'use strict';
 
 describe('$controller', function() {
-  var $controller;
+  var $controllerProvider, $controller;
 
-  beforeEach(inject(function($injector) {
-    $controller = $injector.get('$controller');
+  beforeEach(module(function(_$controllerProvider_) {
+    $controllerProvider = _$controllerProvider_;
   }));
+
+
+  beforeEach(inject(function(_$controller_) {
+    $controller = _$controller_;
+  }));
+
+
+  describe('provider', function() {
+
+    it('should allow registration of controllers', function() {
+      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register('FooCtrl', FooCtrl);
+      ctrl = $controller('FooCtrl', {$scope: scope});
+
+      expect(scope.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+
+    it('should allow registration of controllers annotated with arrays', function() {
+      var FooCtrl = function($scope) { $scope.foo = 'bar' },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register('FooCtrl', ['$scope', FooCtrl]);
+      ctrl = $controller('FooCtrl', {$scope: scope});
+
+      expect(scope.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+  });
+
 
   it('should return instance of given controller class', function() {
     var MyClass = function() {},
