@@ -14,8 +14,6 @@ angularFiles = {
     'src/ng/cacheFactory.js',
     'src/ng/compiler.js',
     'src/ng/controller.js',
-    'src/ng/cookieStore.js',
-    'src/ng/cookies.js',
     'src/ng/defer.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
@@ -66,6 +64,7 @@ angularFiles = {
   ],
 
   'angularSrcModules': [
+    'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngMock/angular-mocks.js'
   ],
@@ -98,6 +97,7 @@ angularFiles = {
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
+    'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngMock/*.js'
   ],
@@ -135,9 +135,11 @@ angularFiles = {
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
+    'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'test/matchers.js',
     'test/ngMock/*.js',
+    'test/ngCookies/*.js',
     'test/ngResource/*.js'
   ],
 
@@ -169,6 +171,7 @@ angularFiles = {
     'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
     'example/personalLog/*.js',
+
     'example/personalLog/test/*.js'
   ],
 
