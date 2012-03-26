@@ -30,9 +30,4 @@ describe('$sniffer', function() {
       expect(sniffer({onhashchange: true, document: {documentMode: 7}}).hashchange).toBe(false);
     });
   });
-
-  it('should use Modernizr if defined', function() {
-    var Modernizr = {};
-    expect(sniffer({Modernizr: Modernizr})).toBe(Modernizr);
-  });
 });

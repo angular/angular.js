@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc object
+ * !!! This is an undocumented "private" service !!!
+ *
  * @name angular.module.ng.$sniffer
  * @requires $window
  *
@@ -13,8 +14,6 @@
  */
 function $SnifferProvider(){
   this.$get = ['$window', function($window){
-    if ($window.Modernizr) return $window.Modernizr;
-
     return {
       history: !!($window.history && $window.history.pushState),
       hashchange: 'onhashchange' in $window &&
