@@ -54,6 +54,25 @@ describe('ng-view', function() {
   });
 
 
+  it('should support string controller declaration', function() {
+    var MyCtrl = jasmine.createSpy('MyCtrl');
+
+    module(function($controllerProvider, $routeProvider) {
+      $controllerProvider.register('MyCtrl', ['$scope', MyCtrl]);
+      $routeProvider.when('/foo', {controller: 'MyCtrl', template: '/tpl.html'});
+    });
+
+    inject(function($route, $location, $rootScope, $templateCache) {
+      $templateCache.put('/tpl.html', [200, '<div></div>', {}]);
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      expect($route.current.controller).toBe('MyCtrl');
+      expect(MyCtrl).toHaveBeenCalledWith(element.contents().scope());
+    });
+  });
+
+
   it('should load content via xhr when route changes', function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {template: 'myUrl1'});
