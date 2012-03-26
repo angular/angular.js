@@ -146,7 +146,7 @@ function TutorialInstructionsCtrl($cookieStore) {
   };
 }
 
-angular.module('ngdocs', ['ngdocs.directives', 'ngResource'], function($locationProvider, $filterProvider, $compileProvider) {
+angular.module('ngdocs', ['ngdocs.directives', 'ngResource', 'ngCookies'], function($locationProvider, $filterProvider, $compileProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
 
   $filterProvider.register('title', function(){

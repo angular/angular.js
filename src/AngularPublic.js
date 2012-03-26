@@ -110,8 +110,6 @@ function publishExternalAPI(angular){
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,
-        $cookies: $CookiesProvider,
-        $cookieStore: $CookieStoreProvider,
         $defer: $DeferProvider,
         $document: $DocumentProvider,
         $exceptionHandler: $ExceptionHandlerProvider,
