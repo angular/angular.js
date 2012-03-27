@@ -1,5 +1,4 @@
 'use strict';
-'use strict';
 
 /**
  * Parse headers into key value object
