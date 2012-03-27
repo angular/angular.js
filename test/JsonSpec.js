@@ -1,6 +1,18 @@
 'use strict';
 
 describe('json', function() {
+
+  describe('fromJson', function() {
+
+    it('should delegate to native parser', function() {
+      var spy = spyOn(JSON, 'parse').andCallThrough();
+
+      expect(fromJson('{}')).toEqual({});
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+
   it('should serialize primitives', function() {
     expect(toJson(0/0)).toEqual('null');
     expect(toJson(null)).toEqual('null');
@@ -48,15 +60,6 @@ describe('json', function() {
   it('should ignore functions', function() {
     expect(toJson([function() {},1])).toEqual('[null,1]');
     expect(toJson({a:function() {}})).toEqual('{}');
-  });
-
-  it('should parse null', function() {
-    expect(fromJson('null')).toBeNull();
-  });
-
-  it('should parse boolean', function() {
-    expect(fromJson('true')).toBeTruthy();
-    expect(fromJson('false')).toBeFalsy();
   });
 
   it('should serialize array with empty items', function() {
@@ -109,103 +112,6 @@ describe('json', function() {
 
   it('should not serialize $document object', function() {
     expect(toJson(document)).toEqual('DOCUMENT');
-  });
-
-  it('should parse floats', function() {
-    expect(fromJson("{value:2.55, name:'misko'}")).toEqual({value:2.55, name:'misko'});
-  });
-
-  it('should parse negative / possitve numbers', function() {
-    expect(fromJson("{neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]}")).toEqual({neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]});
-  });
-
-  it('should parse exponents', function() {
-    expect(fromJson("{exp:1.2E10}")).toEqual({exp:1.2E10});
-    expect(fromJson("{exp:1.2E-10}")).toEqual({exp:1.2E-10});
-    expect(fromJson("{exp:1.2e+10}")).toEqual({exp:1.2E10});
-    expect(fromJson("{exp:1.2e-10}")).toEqual({exp:1.2E-10});
-  });
-
-  it('should ignore non-strings', function() {
-    expect(fromJson([])).toEqual([]);
-    expect(fromJson({})).toEqual({});
-    expect(fromJson(null)).toEqual(null);
-    expect(fromJson(undefined)).toEqual(undefined);
-  });
-
-
-  //run these tests only in browsers that have native JSON parser
-  if (JSON && JSON.parse) {
-
-    describe('native parser', function() {
-
-      var nativeParser = JSON.parse;
-
-      afterEach(function() {
-        JSON.parse = nativeParser;
-      });
-
-
-      it('should delegate to native parser if available and boolean flag is passed', function() {
-        var spy = this.spyOn(JSON, 'parse').andCallThrough();
-
-        expect(fromJson('{}')).toEqual({});
-        expect(spy).not.toHaveBeenCalled();
-
-        expect(fromJson('{}', true)).toEqual({});
-        expect(spy).toHaveBeenCalled();
-      });
-    });
-  }
-
-
-  describe('security', function() {
-    it('should not allow naked expressions', function() {
-      expect(function() {fromJson('1+2');}).
-        toThrow(new Error("Syntax Error: Token '+' is an unexpected token at column 2 of the expression [1+2] starting at [+2]."));
-    });
-
-    it('should not allow naked expressions group', function() {
-      expect(function() {fromJson('(1+2)');}).
-        toThrow(new Error("Syntax Error: Token '(' is not valid json at column 1 of the expression [(1+2)] starting at [(1+2)]."));
-    });
-
-    it('should not allow expressions in objects', function() {
-      expect(function() {fromJson('{a:abc()}');}).
-        toThrow(new Error("Syntax Error: Token 'abc' is not valid json at column 4 of the expression [{a:abc()}] starting at [abc()}]."));
-    });
-
-    it('should not allow expressions in arrays', function() {
-      expect(function() {fromJson('[1+2]');}).
-        toThrow(new Error("Syntax Error: Token '+' is not valid json at column 3 of the expression [[1+2]] starting at [+2]]."));
-    });
-
-    it('should not allow vars', function() {
-      expect(function() {fromJson('[1, x]');}).
-        toThrow(new Error("Syntax Error: Token 'x' is not valid json at column 5 of the expression [[1, x]] starting at [x]]."));
-    });
-
-    it('should not allow dereference', function() {
-      expect(function() {fromJson('["".constructor]');}).
-        toThrow(new Error("Syntax Error: Token '.' is not valid json at column 4 of the expression [[\"\".constructor]] starting at [.constructor]]."));
-    });
-
-    it('should not allow expressions ofter valid json', function() {
-      expect(function() {fromJson('[].constructor');}).
-        toThrow(new Error("Syntax Error: Token '.' is not valid json at column 3 of the expression [[].constructor] starting at [.constructor]."));
-    });
-
-    it('should not allow object dereference', function() {
-      expect(function() {fromJson('{a:1, b: $location, c:1}');}).toThrow();
-      expect(function() {fromJson("{a:1, b:[1]['__parent__']['location'], c:1}");}).toThrow();
-    });
-
-    it('should not allow assignments', function() {
-      expect(function() {fromJson('{a:1, b:[1]=1, c:1}');}).toThrow();
-      expect(function() {fromJson('{a:1, b:=1, c:1}');}).toThrow();
-      expect(function() {fromJson('{a:1, b:x=1, c:1}');}).toThrow();
-    });
-
   });
 
 

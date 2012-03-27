@@ -42,7 +42,7 @@ describe('angular.scenario.Future', function() {
 
   it('should parse json with fromJson', function() {
     var future = new angular.scenario.Future('test name', function(done) {
-      done(null, "{test: 'foo'}");
+      done(null, '{"test": "foo"}');
     });
     future.fromJson().execute(angular.noop);
     expect(future.value).toEqual({test: 'foo'});

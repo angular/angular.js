@@ -27,15 +27,12 @@ function toJson(obj, pretty) {
  * Deserializes a JSON string.
  *
  * @param {string} json JSON string to deserialize.
- * @param {boolean} [useNative=false] Use native JSON parser, if available.
  * @returns {Object|Array|Date|string|number} Deserialized thingy.
  */
-function fromJson(json, useNative) {
-  if (!isString(json)) return json;
-
-  return (useNative && window.JSON && window.JSON.parse)
+function fromJson(json) {
+  return isString(json)
       ? JSON.parse(json)
-      : parseJson(json, true)();
+      : json;
 }
 
 
