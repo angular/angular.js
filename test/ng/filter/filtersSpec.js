@@ -267,14 +267,34 @@ describe('filters', function() {
                       toEqual('12:05 PM');
     });
 
-    it('should be able to parse ISO 8601 dates/times using', function() {
-      var isoString = '2010-09-03T05:05:08.872Z';
-      expect(date(isoString)).
-          toEqual(date(isoString, 'mediumDate'));
-    });
-
     it('should parse format ending with non-replaced string', function() {
       expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
+    });
+
+
+    it('should support various iso8061 date strings as input', function() {
+      var format = 'yyyy-MM ss';
+
+      //full ISO8061
+      expect(date('2003-09-10T13:02:03.000Z', format)).toEqual('2003-09 03');
+
+      expect(date('2003-09-10T13:02:03.000+00:00', format)).toEqual('2003-09 03');
+
+      expect(date('2003-09-10T13:02:03-08:00', format)).toEqual('2003-09 03');
+
+      expect(date('20030910T033203-0930', format)).toEqual('2003-09 03');
+
+      //no millis
+      expect(date('2003-09-10T13:02:03Z', format)).toEqual('2003-09 03');
+
+      //no seconds
+      expect(date('2003-09-10T13:02Z', format)).toEqual('2003-09 00');
+
+      //no minutes
+      expect(date('2003-09-10T13Z', format)).toEqual('2003-09 00');
+
+      //no time
+      expect(date('2003-09-10', format)).toEqual('2003-09 00');
     });
   });
 });

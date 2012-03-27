@@ -72,9 +72,8 @@ describe('json', function() {
   });
 
   it('should serialize UTC dates', function() {
-    var date = jsonStringToDate('2009-10-09T01:02:03.027Z');
+    var date = new angular.mock.TzDate(-1, '2009-10-09T01:02:03.027Z');
     expect(toJson(date)).toEqual('"2009-10-09T01:02:03.027Z"');
-    expect(fromJson('"2009-10-09T01:02:03.027Z"').getTime()).toEqual(date.getTime());
   });
 
   it('should prevent recursion', function() {
@@ -156,17 +155,7 @@ describe('json', function() {
         expect(fromJson('{}', true)).toEqual({});
         expect(spy).toHaveBeenCalled();
       });
-
-
-      it('should convert timestamp strings to Date objects', function() {
-        expect(fromJson('"2010-12-22T17:23:17.974Z"', true) instanceof Date).toBe(true);
-        expect(fromJson('["2010-12-22T17:23:17.974Z"]', true)[0] instanceof Date).toBe(true);
-        expect(fromJson('{"t":"2010-12-22T17:23:17.974Z"}', true).t instanceof Date).toBe(true);
-        expect(fromJson('{"t":["2010-12-22T17:23:17.974Z"]}', true).t[0] instanceof Date).toBe(true);
-        expect(fromJson('{"t":{"t":"2010-12-22T17:23:17.974Z"}}', true).t.t instanceof Date).toBe(true);
-      });
     });
-
   }
 
 
@@ -219,45 +208,6 @@ describe('json', function() {
 
   });
 
-
-  describe('iso 8061 date', function() {
-    it('should read/write to date', function() {
-      var date = new Date('Sep 10 2003 13:02:03 GMT');
-      expect(jsonDateToString(date)).toBe('2003-09-10T13:02:03.000Z');
-      expect(jsonStringToDate(jsonDateToString(date)).getTime()).toBe(date.getTime());
-    });
-
-
-    it('should convert to date', function() {
-      //full ISO8061
-      expect(jsonStringToDate('2003-09-10T13:02:03.000Z')).toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
-
-      expect(jsonStringToDate('2003-09-10T13:02:03.000+00:00')).toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
-
-      expect(jsonStringToDate('20030910T033203-0930')).toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
-
-      //no millis
-      expect(jsonStringToDate('2003-09-10T13:02:03Z')).toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
-
-      //no seconds
-      expect(jsonStringToDate('2003-09-10T13:02Z')).toEqual(new Date('Sep 10 2003 13:02:00 GMT'));
-
-      //no minutes
-      expect(jsonStringToDate('2003-09-10T13Z')).toEqual(new Date('Sep 10 2003 13:00:00 GMT'));
-
-      //no time
-      expect(jsonStringToDate('2003-09-10')).toEqual(new Date('Sep 10 2003 00:00:00 GMT'));
-
-      expect(jsonStringToDate('2011-12-28T13:02:09-08:00')).toEqual(new Date('Dec 28 2011 21:02:09 GMT'));
-    });
-
-
-    it('should parse date', function() {
-      var date = jsonStringToDate('2003-09-10T13:02:03.000Z');
-      expect(jsonDateToString(date)).toBe('2003-09-10T13:02:03.000Z');
-      expect(jsonStringToDate('str')).toBe('str');
-    });
-  });
 
   describe('string', function() {
     it('should quote', function() {
