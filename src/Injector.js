@@ -48,7 +48,7 @@ function inferInjectionArgs(fn) {
     var args = fn.$inject = [];
     var fnText = fn.toString().replace(STRIP_COMMENTS, '');
     var argDecl = fnText.match(FN_ARGS);
-    forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
+    forEach(trim(argDecl[1]).split(FN_ARG_SPLIT), function(arg){
       arg.replace(FN_ARG, function(all, name){
         args.push(name);
       });
