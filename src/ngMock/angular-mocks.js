@@ -397,6 +397,19 @@ angular.mock.$LogProvider = function() {
     return parseInt(str, 10);
   }
 
+  function padNumber(num, digits, trim) {
+    var neg = '';
+    if (num < 0) {
+      neg =  '-';
+      num = -num;
+    }
+    num = '' + num;
+    while(num.length < digits) num = '0' + num;
+    if (trim)
+      num = num.substr(num.length - digits);
+    return neg + num;
+  }
+
 
   /**
    * @ngdoc object
@@ -523,12 +536,25 @@ angular.mock.$LogProvider = function() {
       return self.date.getDay();
     };
 
+    // provide this method only on browsers that already have it
+    if (self.toISOString) {
+      self.toISOString = function() {
+        return padNumber(self.origDate.getUTCFullYear(), 4) + '-' +
+              padNumber(self.origDate.getUTCMonth() + 1, 2) + '-' +
+              padNumber(self.origDate.getUTCDate(), 2) + 'T' +
+              padNumber(self.origDate.getUTCHours(), 2) + ':' +
+              padNumber(self.origDate.getUTCMinutes(), 2) + ':' +
+              padNumber(self.origDate.getUTCSeconds(), 2) + '.' +
+              padNumber(self.origDate.getUTCMilliseconds(), 3) + 'Z'
+      }
+    }
+
     //hide all methods not implemented in this mock that the Date prototype exposes
     var unimplementedMethods = ['getMilliseconds', 'getUTCDay',
         'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
         'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
         'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
-        'setYear', 'toDateString', 'toJSON', 'toGMTString', 'toLocaleFormat', 'toLocaleString',
+        'setYear', 'toDateString', 'toGMTString', 'toJSON', 'toLocaleFormat', 'toLocaleString',
         'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
 
     angular.forEach(unimplementedMethods, function(methodName) {
