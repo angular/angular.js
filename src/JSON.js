@@ -1,7 +1,5 @@
 'use strict';
 
-var array = [].constructor;
-
 /**
  * @ngdoc function
  * @name angular.toJson
@@ -35,46 +33,11 @@ function toJson(obj, pretty) {
 function fromJson(json, useNative) {
   if (!isString(json)) return json;
 
-  var obj;
-
-  if (useNative && window.JSON && window.JSON.parse) {
-    obj = JSON.parse(json);
-  } else {
-    obj = parseJson(json, true)();
-  }
-  return transformDates(obj);
-
-  // TODO make forEach optionally recursive and remove this function
-  // TODO(misko): remove this once the $http service is checked in.
-  function transformDates(obj) {
-    if (isString(obj) && 15 <= obj.length && obj.length <= 24) {
-      return jsonStringToDate(obj);
-    } else if (isArray(obj) || isObject(obj)) {
-      forEach(obj, function(val, name) {
-        obj[name] = transformDates(val);
-      });
-    }
-    return obj;
-  }
+  return (useNative && window.JSON && window.JSON.parse)
+      ? JSON.parse(json)
+      : parseJson(json, true)();
 }
 
-var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
-function jsonStringToDate(string){
-  var match;
-  if (match = string.match(R_ISO8061_STR)) {
-    var date = new Date(0),
-        tzHour = 0,
-        tzMin  = 0;
-    if (match[9]) {
-      tzHour = int(match[9] + match[10]);
-      tzMin = int(match[9] + match[11]);
-    }
-    date.setUTCFullYear(int(match[1]), int(match[2]) - 1, int(match[3]));
-    date.setUTCHours(int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
-    return date;
-  }
-  return string;
-}
 
 function jsonDateToString(date){
   if (!date) return date;
