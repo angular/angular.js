@@ -3,6 +3,7 @@
 describe("resource", function() {
   var $resource, CreditCard, callback, $httpBackend;
 
+  beforeEach(module('ngResource'));
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
@@ -262,7 +263,7 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(cc instanceof CreditCard).toBe(true);
 
-    $httpBackend.expect('POST', '/CreditCard/123', toJson(data)).respond('');
+    $httpBackend.expect('POST', '/CreditCard/123', angular.toJson(data)).respond('');
     var idBefore = cc.id;
 
     cc.$save();

@@ -122,7 +122,6 @@ function publishExternalAPI(angular){
         $location: $LocationProvider,
         $log: $LogProvider,
         $parse: $ParseProvider,
-        $resource: $ResourceProvider,
         $route: $RouteProvider,
         $routeParams: $RouteParamsProvider,
         $rootScope: $RootScopeProvider,

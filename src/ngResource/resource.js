@@ -1,8 +1,14 @@
 'use strict';
 
 /**
+ * @ngdoc overview
+ * @name angular.module.ngResource
+ * @description
+ */
+
+ /**
  * @ngdoc object
- * @name angular.module.ng.$resource
+ * @name angular.module.ngResource.$resource
  * @requires $http
  *
  * @description
@@ -200,8 +206,8 @@
       </doc:scenario>
     </doc:example>
  */
-function $ResourceProvider() {
-  this.$get = ['$http', function($http) {
+angular.module('ngResource', ['ng']).
+  factory('$resource', ['$http', '$parse', function($http, $parse) {
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
@@ -209,9 +215,54 @@ function $ResourceProvider() {
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'}
     };
+    var forEach = angular.forEach,
+        extend = angular.extend,
+        copy = angular.copy,
+        isFunction = angular.isFunction,
+        getter = function(obj, path) {
+          return $parse(path)(obj);
+        };
+
+  /**
+   * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+   * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
+   * segments:
+   *    segment       = *pchar
+   *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+   *    pct-encoded   = "%" HEXDIG HEXDIG
+   *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+   *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+   *                     / "*" / "+" / "," / ";" / "="
+   */
+  function encodeUriSegment(val) {
+    return encodeUriQuery(val, true).
+      replace(/%26/gi, '&').
+      replace(/%3D/gi, '=').
+      replace(/%2B/gi, '+');
+  }
 
 
-    function Route(template, defaults) {
+  /**
+   * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+   * method becuase encodeURIComponent is too agressive and encodes stuff that doesn't have to be
+   * encoded per http://tools.ietf.org/html/rfc3986:
+   *    query       = *( pchar / "/" / "?" )
+   *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+   *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+   *    pct-encoded   = "%" HEXDIG HEXDIG
+   *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+   *                     / "*" / "+" / "," / ";" / "="
+   */
+  function encodeUriQuery(val, pctEncodeSpaces) {
+    return encodeURIComponent(val).
+      replace(/%40/gi, '@').
+      replace(/%3A/gi, ':').
+      replace(/%24/g, '$').
+      replace(/%2C/gi, ',').
+      replace((pctEncodeSpaces ? null : /%20/g), '+');
+  }
+
+  function Route(template, defaults) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
       var urlParams = this.urlParams = {};
@@ -236,11 +287,12 @@ function $ResourceProvider() {
         });
         url = url.replace(/\/?#$/, '');
         var query = [];
-        forEachSorted(params, function(value, key){
+        forEach(params, function(value, key){
           if (!self.urlParams[key]) {
             query.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
           }
         });
+        query.sort();
         url = url.replace(/\/*$/, '');
         return url + (query.length ? '?' + query.join('&') : '');
       }
@@ -364,5 +416,4 @@ function $ResourceProvider() {
     }
 
     return ResourceFactory;
-  }];
-}
+  }]);

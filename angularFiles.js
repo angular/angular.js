@@ -66,6 +66,10 @@ angularFiles = {
     'src/ng/directive/style.js'
   ],
 
+  'angularSrcModules': [
+    'src/ngMock/angular-mocks.js'
+  ],
+
   'angularScenario': [
     'src/ngScenario/Scenario.js',
     'src/ngScenario/Application.js',
@@ -83,20 +87,9 @@ angularFiles = {
     'src/ngScenario/output/Object.js'
   ],
 
-  'jstd': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'lib/jquery/jquery.js',
-    'test/jquery_remove.js',
-    '@angularSrc',
-    'example/personalLog/*.js',
+  'angularTest': [
     'test/testabilityPatch.js',
     'test/matchers.js',
-    'src/ngScenario/Scenario.js',
-    'src/ngScenario/output/*.js',
-    'src/ngScenario/jstd-scenario-adapter/*.js',
-    'src/ngScenario/*.js',
-    'src/ngMock/angular-mocks.js',
     'test/ngScenario/*.js',
     'test/ngScenario/output/*.js',
     'test/ngScenario/jstd-scenario-adapter/*.js',
@@ -105,7 +98,21 @@ angularFiles = {
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
-    'test/ngMock/*.js',
+    'test/ngMock/*.js'
+  ],
+
+  'jstd': [
+    'lib/jasmine/jasmine.js',
+    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+    'lib/jquery/jquery.js',
+    'test/jquery_remove.js',
+    '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+    '@angularTest',
+    'example/personalLog/*.js',
     'example/personalLog/test/*.js'
   ],
 
@@ -122,19 +129,20 @@ angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
-  'jstdMocks': [
+  "jstdModules": [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
     'test/matchers.js',
-    'test/ngMock/angular-mocksSpec.js'
+    'test/ngMock/*.js',
   ],
 
   'jstdPerf': [
    'lib/jasmine/jasmine.js',
    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-   'angularSrc',
+   '@angularSrc',
+   '@angularSrcModules',
    'src/ngMock/angular-mocks.js',
    'perf/data/*.js',
    'perf/testUtils.js',
@@ -152,23 +160,12 @@ angularFiles = {
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+    '@angularTest',
     'example/personalLog/*.js',
-    'test/testabilityPatch.js',
-    'test/matchers.js',
-    'src/ngScenario/Scenario.js',
-    'src/ngScenario/output/*.js',
-    'src/ngScenario/jstd-scenario-adapter/*.js',
-    'src/ngScenario/*.js',
-    'src/ngMock/angular-mocks.js',
-    'test/ngScenario/*.js',
-    'test/ngScenario/output/*.js',
-    'test/ngScenario/jstd-scenario-adapter/*.js',
-    'test/*.js',
-    'test/auto/*.js',
-    'test/ng/*.js',
-    'test/ng/directive/*.js',
-    'test/ng/filter/*.js',
-    'test/ngMock/*.js',
     'example/personalLog/test/*.js'
   ],
 
@@ -181,14 +178,29 @@ angularFiles = {
 
 // Execute only in slim-jim
 if (typeof JASMINE_ADAPTER !== 'undefined') {
-  // SlimJim config
-  files = [JASMINE, JASMINE_ADAPTER];
-  angularFiles.jstd.forEach(function(pattern) {
-    // replace angular source
-    if (pattern === '@angularSrc') files = files.concat(angularFiles.angularSrc);
-    // ignore jstd and jasmine files
-    else if (!/jstd|jasmine/.test(pattern)) files.push(pattern);
+  // Testacular config
+  var mergedFiles = [];
+  angularFiles.jstd.forEach(function(file) {
+    // replace @ref
+    var match = file.match(/^\@(.*)/);
+    if (match) {
+      var deps = angularFiles[match[1]];
+      if (!deps) {
+        console.log('No dependency:' + file)
+      }
+      mergedFiles = mergedFiles.concat(deps);
+    } else {
+      mergedFiles.push(file);
+    }
   });
+
+  files = [JASMINE, JASMINE_ADAPTER];
+
+  mergedFiles.forEach(function(file){
+    if (/jstd|jasmine/.test(file)) return;
+    files.push(file);
+  });
+
 
   exclude = angularFiles.jstdExclude;
 
