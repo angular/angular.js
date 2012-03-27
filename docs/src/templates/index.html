@@ -18,7 +18,6 @@
           baseUrl = location.href.replace(rUrl, indexFile),
           jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
           debug = /index[^\.]*-debug\.html$/.test(baseUrl),
-          angularPath = debug ? '../angular.js' : '../angular.min.js',
           headEl = document.getElementsByTagName('head')[0],
           sync = true;
 
@@ -28,9 +27,14 @@
                       type: 'text/css'});
       addTag('script', {src: 'syntaxhighlighter/syntaxhighlighter-combined.js'}, sync);
       if (jQuery) addTag('script', {src: 'jquery.min.js'});
-      addTag('script', {src: angularPath}, sync);
+      addTag('script', {src: path('angular.js')}, sync);
+      addTag('script', {src: path('angular-resource.js') }, sync);
       addTag('script', {src: 'docs-combined.js'}, sync);
       addTag('script', {src: 'docs-keywords.js'}, sync);
+
+      function path(name) {
+        return '../' + name.replace(/\.js$/, debug ? '.js' : '.min.js');
+      }
 
       function addTag(name, attributes, sync) {
         var el = document.createElement(name),
