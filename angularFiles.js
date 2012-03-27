@@ -24,7 +24,6 @@ angularFiles = {
     'src/ng/log.js',
     'src/ng/parse.js',
     'src/ng/q.js',
-    'src/ng/resource.js',
     'src/ng/route.js',
     'src/ng/routeParams.js',
     'src/ng/rootScope.js',
@@ -67,6 +66,7 @@ angularFiles = {
   ],
 
   'angularSrcModules': [
+    'src/ngResource/resource.js',
     'src/ngMock/angular-mocks.js'
   ],
 
@@ -98,6 +98,7 @@ angularFiles = {
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
+    'test/ngResource/*.js',
     'test/ngMock/*.js'
   ],
 
@@ -134,8 +135,10 @@ angularFiles = {
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
+    'src/ngResource/resource.js',
     'test/matchers.js',
     'test/ngMock/*.js',
+    'test/ngResource/*.js'
   ],
 
   'jstdPerf': [

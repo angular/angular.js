@@ -215,7 +215,8 @@ angular.module('ngResource', ['ng']).
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'}
     };
-    var forEach = angular.forEach,
+    var noop = angular.noop,
+        forEach = angular.forEach,
         extend = angular.extend,
         copy = angular.copy,
         isFunction = angular.isFunction,

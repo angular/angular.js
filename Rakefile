@@ -80,10 +80,12 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
       'src/loader.suffix'])
       
   FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
+  FileUtils.cp 'src/ngResource/resource.js', path_to('angular-resource.js')
 
   
   closureCompile('angular.js')
   closureCompile('angular-loader.js')
+  closureCompile('angular-resource.js')
 
 end
 
@@ -113,6 +115,8 @@ task :package => [:clean, :compile, :docs] do
     path_to('angular-loader.js'),
     path_to('angular-loader.min.js'),
     path_to('angular-mocks.js'),
+    path_to('angular-resource.js'),
+    path_to('angular-resource.min.js'),
     path_to('angular-scenario.js'),
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),
