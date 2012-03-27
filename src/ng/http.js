@@ -152,7 +152,7 @@ function $HttpProvider() {
      * For unit testing applications that use `$http` service, see
      * {@link angular.module.ngMock.$httpBackend $httpBackend mock}.
      *
-     * For a higher level of abstraction, please check out the {@link angular.module.ng.$resource
+     * For a higher level of abstraction, please check out the {@link angular.module.ngResource.$resource
      * $resource} service.
      *
      * The $http API is based on the {@link angular.module.ng.$q deferred/promise APIs} exposed by

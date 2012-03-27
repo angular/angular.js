@@ -2,7 +2,7 @@ require 'yaml'
 include FileUtils
 
 content = File.open('angularFiles.js', 'r') {|f| f.read }
-files = eval(content.gsub(/\};(\s|\S)*/, '}').gsub(/angularFiles = /, '').gsub(/:/, '=>'));
+files = eval(content.gsub(/\};(\s|\S)*/, '}').gsub(/angularFiles = /, '').gsub(/:/, '=>').gsub(/\/\//, '#'));
 
 BUILD_DIR = 'build'
 
@@ -34,38 +34,24 @@ end
 
 desc 'Compile Scenario'
 task :compile_scenario => :init do
-
-  deps = [
+  
+  concatFile('angular-scenario.js', [
       'lib/jquery/jquery.js',
       'src/ngScenario/angular.prefix',
       files['angularSrc'],
       files['angularScenario'],
       'src/ngScenario/angular.suffix',
-  ]
-
-  concat = 'cat ' + deps.flatten.join(' ')
-
-  File.open(path_to('angular-scenario.js'), 'w') do |f|
-    f.write(%x{#{concat}}.gsub('"NG_VERSION_FULL"', NG_VERSION.full))
-    f.write(gen_css('css/angular.css') + "\n")
-    f.write(gen_css('css/angular-scenario.css'))
-  end
+  ], gen_css('css/angular.css') + "\n" + gen_css('css/angular-scenario.css'))
 end
 
 desc 'Compile JSTD Scenario Adapter'
 task :compile_jstd_scenario_adapter => :init do
 
-  deps = [
+  concatFile('jstd-scenario-adapter.js', [
       'src/ngScenario/jstd-scenario-adapter/angular.prefix',
       'src/ngScenario/jstd-scenario-adapter/Adapter.js',
       'src/ngScenario/jstd-scenario-adapter/angular.suffix',
-  ]
-
-  concat = 'cat ' + deps.flatten.join(' ')
-
-  File.open(path_to('jstd-scenario-adapter.js'), 'w') do |f|
-    f.write(%x{#{concat}}.gsub('"NG_VERSION_FULL"', NG_VERSION.full))
-  end
+  ])
 
   # TODO(vojta) use jstd configuration when implemented
   # (instead of including jstd-adapter-config.js)
@@ -80,55 +66,24 @@ end
 desc 'Compile JavaScript'
 task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
-  deps = [
-      'src/angular.prefix',
-      files['angularSrc'],
-      'src/angular.suffix',
-  ]
-
-  File.open(path_to('angular.js'), 'w') do |f|
-    concat = 'cat ' + deps.flatten.join(' ')
-
-    content = %x{#{concat}}.
-              gsub('"NG_VERSION_FULL"', NG_VERSION.full).
-              gsub('"NG_VERSION_MAJOR"', NG_VERSION.major).
-              gsub('"NG_VERSION_MINOR"', NG_VERSION.minor).
-              gsub('"NG_VERSION_DOT"', NG_VERSION.dot).
-              gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename).
-              gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
-              gsub(/'USE STRICT'/, "'use strict'")      # rename the placeholder in angular.prefix
-
-    f.write(content)
-    f.write(gen_css('css/angular.css', true))
-  end
-
-  %x(java -jar lib/closure-compiler/compiler.jar \
-        --compilation_level SIMPLE_OPTIMIZATIONS \
-        --language_in ECMASCRIPT5_STRICT \
-        --js #{path_to('angular.js')} \
-        --js_output_file #{path_to('angular.min.js')})
+  concatFile('angular.js', [
+        'src/angular.prefix',
+        files['angularSrc'],
+        'src/angular.suffix',
+      ], gen_css('css/angular.css', true))
 
   FileUtils.cp_r 'src/ngLocale', path_to('i18n')
 
-  File.open(path_to('angular-loader.js'), 'w') do |f|
-    concat = 'cat ' + [
+  concatFile('angular-loader.js', [
       'src/loader.prefix',
       'src/loader.js',
-      'src/loader.suffix'].flatten.join(' ')
+      'src/loader.suffix'])
+      
+  FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
 
-    content = %x{#{concat}}.
-              gsub('"NG_VERSION_FULL"', NG_VERSION.full).
-              gsub(/^\s*['"]use strict['"];?\s*$/, '') # remove all file-specific strict mode flags
-
-    f.write(content)
-  end
-
-  %x(java -jar lib/closure-compiler/compiler.jar \
-        --compilation_level SIMPLE_OPTIMIZATIONS \
-        --language_in ECMASCRIPT5_STRICT \
-        --js #{path_to('angular-loader.js')} \
-        --js_output_file #{path_to('angular-loader.min.js')})
-
+  
+  closureCompile('angular.js')
+  closureCompile('angular-loader.js')
 
 end
 
@@ -153,11 +108,11 @@ task :package => [:clean, :compile, :docs] do
   FileUtils.rm_r(path_to('pkg'), :force => true)
   FileUtils.mkdir_p(pkg_dir)
 
-  ['src/ngMock/angular-mocks.js',
-    path_to('angular.js'),
-    path_to('angular-loader.js'),
+  [ path_to('angular.js'),
     path_to('angular.min.js'),
+    path_to('angular-loader.js'),
     path_to('angular-loader.min.js'),
+    path_to('angular-mocks.js'),
     path_to('angular-scenario.js'),
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),
@@ -336,3 +291,32 @@ end
 def path_to(filename)
   return File.join(BUILD_DIR, *filename)
 end
+
+def closureCompile(filename)
+  puts "Compiling #{filename} ..."
+  %x(java -jar lib/closure-compiler/compiler.jar \
+        --compilation_level SIMPLE_OPTIMIZATIONS \
+        --language_in ECMASCRIPT5_STRICT \
+        --js #{path_to(filename)} \
+        --js_output_file #{path_to(filename.gsub(/\.js$/, '.min.js'))})
+end
+
+def concatFile(filename, deps, footer='')
+  puts "Building #{filename} ..."
+  File.open(path_to(filename), 'w') do |f|
+    concat = 'cat ' + deps.flatten.join(' ')
+
+    content = %x{#{concat}}.
+              gsub('"NG_VERSION_FULL"', NG_VERSION.full).
+              gsub('"NG_VERSION_MAJOR"', NG_VERSION.major).
+              gsub('"NG_VERSION_MINOR"', NG_VERSION.minor).
+              gsub('"NG_VERSION_DOT"', NG_VERSION.dot).
+              gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename).
+              gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
+              gsub(/'USE STRICT'/, "'use strict'")      # rename the placeholder in angular.prefix
+
+    f.write(content)
+    f.write(footer)
+  end
+end
+

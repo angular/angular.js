@@ -1,6 +1,7 @@
 'use strict';
 
 describe('ngMock', function() {
+  var noop = angular.noop;
 
   describe('$browser', function() {
 
@@ -8,7 +9,7 @@ describe('ngMock', function() {
 
       it('should store url, done', inject(function($browser) {
         var url  = 'some.js',
-            done = noop;
+            done = angular.noop;
 
         $browser.addJs(url, done);
 
