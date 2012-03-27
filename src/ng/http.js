@@ -90,7 +90,7 @@ function $HttpProvider() {
 
   var $config = this.defaults = {
     // transform incoming response data
-    transformResponse: function(data) {
+    transformResponse: [function(data) {
       if (isString(data)) {
         // strip json vulnerability protection prefix
         data = data.replace(PROTECTION_PREFIX, '');
@@ -98,12 +98,12 @@ function $HttpProvider() {
           data = fromJson(data, true);
       }
       return data;
-    },
+    }],
 
     // transform outgoing request data
-    transformRequest: function(d) {
+    transformRequest: [function(d) {
       return isObject(d) && !isFile(d) ? toJson(d) : d;
-    },
+    }],
 
     // default headers
     headers: {
