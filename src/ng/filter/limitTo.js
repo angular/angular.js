@@ -31,24 +31,24 @@
          }
        </script>
        <div ng-controller="Ctrl">
-         Limit {{numbers}} to: <input type="integer" ng-model="limit"/>
-         <p>Output: {{ numbers | limitTo:limit | json }}</p>
+         Limit {{numbers}} to: <input type="integer" ng-model="limit" ng-model-instant>
+         <p>Output: {{ numbers | limitTo:limit }}</p>
        </div>
      </doc:source>
      <doc:scenario>
        it('should limit the numer array to first three items', function() {
          expect(element('.doc-example-live input[ng-model=limit]').val()).toBe('3');
-         expect(binding('numbers | limitTo:limit | json')).toEqual('[1,2,3]');
+         expect(binding('numbers | limitTo:limit')).toEqual('[1,2,3]');
        });
 
        it('should update the output when -3 is entered', function() {
          input('limit').enter(-3);
-         expect(binding('numbers | limitTo:limit | json')).toEqual('[7,8,9]');
+         expect(binding('numbers | limitTo:limit')).toEqual('[7,8,9]');
        });
 
        it('should not exceed the maximum size of input array', function() {
          input('limit').enter(100);
-         expect(binding('numbers | limitTo:limit | json')).toEqual('[1,2,3,4,5,6,7,8,9]');
+         expect(binding('numbers | limitTo:limit')).toEqual('[1,2,3,4,5,6,7,8,9]');
        });
      </doc:scenario>
    </doc:example>
