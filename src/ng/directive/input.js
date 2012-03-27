@@ -671,7 +671,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
-          expect(binding('user')).toEqual('{"last":"visitor","name":"guest"}');
+          expect(binding('user')).toEqual('{"name":"guest","last":"visitor"}');
           expect(binding('myForm.userName.$valid')).toEqual('true');
           expect(binding('myForm.$valid')).toEqual('true');
         });
@@ -685,7 +685,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
         it('should be valid if empty when min length is set', function() {
           input('user.last').enter('');
-          expect(binding('user')).toEqual('{"last":"","name":"guest"}');
+          expect(binding('user')).toEqual('{"name":"guest","last":""}');
           expect(binding('myForm.lastName.$valid')).toEqual('true');
           expect(binding('myForm.$valid')).toEqual('true');
         });

@@ -407,7 +407,7 @@ function dateFilter($locale) {
      </doc:source>
      <doc:scenario>
        it('should jsonify filtered objects', function() {
-         expect(binding("{'name':'value'}")).toBe('{\n  "name":"value"}');
+         expect(binding("{'name':'value'}")).toMatch(/\{\n  "name": ?"value"\n}/);
        });
      </doc:scenario>
    </doc:example>
