@@ -63,6 +63,17 @@ describe('ngMock', function() {
     });
 
 
+    it('should fake toISOString method', function() {
+      var date = new angular.mock.TzDate(-1, '2009-10-09T01:02:03.027Z');
+
+      if (new Date().toISOString) {
+        expect(date.toISOString()).toEqual('2009-10-09T01:02:03.027Z');
+      } else {
+        expect(date.toISOString).toBeUndefined();
+      }
+    });
+
+
     it('should fake getHours method', function() {
       //0 in -3h
       var t0 = new angular.mock.TzDate(-3, 0);
