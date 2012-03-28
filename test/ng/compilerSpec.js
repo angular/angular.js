@@ -166,7 +166,7 @@ describe('$compile', function() {
               compile: function(element, templateAttr) {
                 expect(typeof templateAttr.$normalize).toBe('function');
                 expect(typeof templateAttr.$set).toBe('function');
-                expect(isElement(templateAttr.$element)).toBeTruthy();
+                expect(isElement(templateAttr.$$element)).toBeTruthy();
                 expect(element.text()).toEqual('unlinked');
                 expect(templateAttr.exp).toEqual('abc');
                 expect(templateAttr.aa).toEqual('A');
@@ -344,7 +344,7 @@ describe('$compile', function() {
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
-              expect(element).toBe(attr.$element);
+              expect(element).toBe(attr.$$element);
             }
           }));
           $compileProvider.directive('append', valueFn({
@@ -352,7 +352,7 @@ describe('$compile', function() {
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
-              expect(element).toBe(attr.$element);
+              expect(element).toBe(attr.$$element);
             }
           }));
         }));

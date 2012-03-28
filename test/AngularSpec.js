@@ -88,6 +88,15 @@ describe('angular', function() {
       expect(copy).toEqual(original);
       expect(copy.key).toBe(original.key);
     });
+
+    it('should not copy $$ properties nor prototype properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
   });
 
   describe('elementHTML', function() {
