@@ -611,6 +611,7 @@ function $CompileProvider($provide) {
         } else {
           attrs = shallowCopy(templateAttrs);
           attrs.$element = jqLite(linkNode);
+          attrs.$observers = {};
         }
         element = attrs.$element;
 

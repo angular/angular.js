@@ -283,9 +283,10 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
+      priority: 100,
       compile: function(tpl, attr) {
-        attr.$observers[attrName] = [];
         return function(scope, element, attr) {
+          attr.$observers[attrName] = [];
           scope.$watch(attr[normalized], function(value) {
             attr.$set(attrName, value);
           });
@@ -301,9 +302,10 @@ forEach(['src', 'href'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
+      priority: 100,
       compile: function(tpl, attr) {
-        attr.$observers[attrName] = [];
         return function(scope, element, attr) {
+          attr.$observers[attrName] = [];
           attr.$observe(normalized, function(value) {
             attr.$set(attrName, value);
           });
