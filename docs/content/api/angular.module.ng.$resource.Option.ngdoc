@@ -1,0 +1,77 @@
+@ngdoc object
+@name angular.module.ng.$resource.Option
+@description
+
+The `Option`s objects are used to configure the request. A typical resource definition will have
+several `Option` objects layered on top of each other. When the resource method is invoked the
+`Option`s are squashed into single value using tho following rules.
+
+If the type of the property is:
+
+  * **`string`** - the higher level option replaces the lower level option. The strings is {@link
+    angular.ng.$interpolate interpolated} and can refer to the previous value. For example the
+    `url` option typically shows: `{{url}}/{{self.id}}` which means that give a previous value of
+    `url` of `/resource/` and value of `self.id=123` then the resulting `url` is `/resource/123'.
+
+  * **`Object`** - merge the properties of the current `Option` to the properties of the previous
+    `Option`. If the two objects have same key then the current key prevails. This is useful
+    for specifying  HTTP request headers, or merging overwrite properties onto current data.
+
+  * **`function`** - execute the function and use the return value as the new value. The function
+    gets passed in a hash of the previous values.
+
+@property {string=} method The HTTP `method` to use for the request.
+
+@property {string=} url The HTTP `url` to use for the request.
+
+@property {Object=} params The HTTP query `parameters` to use for the request. The `params` is an 
+    object hash which gets converted into the `?key1=value1&key2=value2&...` format. If the value
+    is not a string it gets converted into a string using the JSON service.
+
+@property {Object=} headers The HTTP `headers` to use for the request. The `headers` is an object
+    hash whose key/value get converted into request properties.
+
+
+
+@property {Object=} self The `Resource` for the request. Usually the `self` is not specified in 
+    the `Option`s since it is implicit property of the request. See {@link 
+    angular.module.ng.$resource $resource} for discussion of this property.
+
+@property {Object=} data The intermediate representation of the `Resource` for the request. 
+    Usually the `data` is not specified in the `Option`s since it is implicit property of the 
+    request. See {@link angular.module.ng.$resource $resource} for discussion of this property.
+
+
+
+@property {string|Function=} returns Designates where should the `data` from the response be 
+    `internalized()`.
+
+      * **`'self'`** - String `self` implies that the response data will be internazed back into 
+        the `Resource` which made the request.
+
+      * **Function** - Function constructor implies that the response data will be internalized 
+        into a new instance of the given contstructor.
+
+      * **null** - null implies that the data from the response will be ignored.
+
+@property {string|function=} response Is an expression which is used to extract the `data` from
+  the response. 
+
+@property {string|function|boolean=} request The result of this expression is the request body.
+
+
+
+@property {function=} connector The function used for making the request (normally the {@link
+  api/angular.module.ng.$http $http} service). The function is called as follows:
+  <pre>
+    option.connector({
+      method: option.method,
+      url: option.url,
+      params: option.params,
+      headers: option.headers,
+      data: option.request,
+      cache: option.cache,
+    });
+  </pre>
+
+@property {*=} cache The cache property of the connector.

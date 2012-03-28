@@ -1,0 +1,25 @@
+@ngdoc function
+@name angular.module.ng.$resource#create
+@methodOf angular.module.ng.$resource
+@description
+
+Create a `Resource` using the given `$resource` factory. Creating `Resource` implies that the
+`Resource` constructor function gets decorated with resource methods.
+
+@param {Function=} constructor An optional `Resource` constructor function. If none is specified
+    a constructor function which allows you to initialize form data will be provided, as seen 
+    here:
+    <pre>
+      var Resource = function(data) {
+        angular.extend(this, data);
+      };
+    </pre>
+
+@returns {Function} A `Resource` constructor function specified in `constructor` parameter. This
+    is useful when declaring resources in providers as seen here:
+    <pre>
+      angular.module('...', []).
+        factory('MyResource', function($resource){
+          return $resource({url: '/my-resource/'}).create(function MyResource() {});
+        });
+    </pre>

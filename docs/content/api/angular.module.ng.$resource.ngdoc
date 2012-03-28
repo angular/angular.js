@@ -1,0 +1,300 @@
+@ngdoc service
+@name angular.module.ng.$resource
+@description
+
+# The Case for Resource
+
+A resource is a class which represents data stored in remote location. A resource provides
+methods for manipulating the data, which shield you from the low-level details of the
+communication protocol.
+
+For example a server may contain a collection of `Task`s which can be created, updated, retrieved
+and deleted using different URLs, request headers and encoding schemes. A `Task` resource would be
+a class which contains methods for creating, updating, retrieving and deleting the `Task`s without 
+having to worry about the communication channel.
+
+To best understand the role which `Resource`s play in Angular, let's compare what code performing
+`Task` updating would look like without and with resources.
+
+Marking a `Task` done without a resource:
+<pre>
+  // Too much of the communication details are present here.
+  // The actual work (marking task as done) is drowned out.
+  // Data and behavior is separate, which is not following best OO practices
+  $http({ url:'/task/123' }).
+    then(function(response) {
+      var task = response.data;
+      task.status = 'done';
+      $http({method:'POST', url:'/task/123', data: task}).
+        then(function(response){
+          // error handling
+        });
+    });
+</pre>
+
+Marking a `Task` as done with resource:
+<pre>
+  Task.get(123).
+    then(function(task) {
+      task.markDone();
+      task.save()
+    });
+</pre>
+
+Provided that we have defined the `Task` resource as:
+<pre>
+  function Task(){
+    this.markDone = function(){
+      this.status = 'done';
+    }
+  }
+  
+  $resource({ url: '/task/' }, function(Task, rsrcMethod){
+    Task.get = rsrcMethod('id', {url:'{{url}}/{{id}}'});
+    Task.property.save = rsrcMethod('', '{{url}}/{{self.id}}', request:true});
+  }).create(Task);
+</pre>
+
+A `$resource` is a factory for decorating your resource classes with methods which abstract away
+the communication details.
+
+
+# Resource Internals
+
+In its simplest form a `$resource` is a set of {@link angular.module.ng.$resource.Option options}
+which govern the transformation behavior of making a request and processing the response. A
+`$resource` is a method-factory. We assign these methods to the resource classes, to define the
+resource behavior for create, update, delete, and other operations.
+
+When a resource method is invoked it creates a `context` object. The `context` is just a simple
+property hash that keeps track of the computed property-values from the {@link
+angular.module.ng.$resource.Option options} expressions. For example it will contain the resulting
+value of {@link angular.module.ng.$resource.Option#self `self`}, {@link
+angular.module.ng.$resource.Option#data `data`}, {@link angular.module.ng.$resource.Option#url
+`url`}, {@link angular.module.ng.$resource.Option#headers `headers`}, and other {@link
+angular.module.ng.$resource.Option options}. At the end of the method execution the `context` is
+used to construct a request object for the {@link angular.module.ng.$resource.Option#connector
+`connector`}, which is typically the {@link angular.module.ng.$http $http} service.
+
+A resource method always returns a {@link angular.module.ng.$q promise}, which is resolved
+according to the rules of {@link angular.module.ng.$resource.Option#returns `returns`} option.
+The `returns` option will be described in more detail below.
+
+The diagram bellow explains the inner workings of the resource methods. The properties with `@`
+are {@link angular.module.ng.$resource.Option options} where as properties without `@` are
+properties on the `context` object.
+
+<img src="img/resource.png">
+
+When a resource method is invoked, it constructs a request object for the {@link
+angular.module.ng.$resource.Option#connector `connector`} as follows:
+
+  * The method arguments are copied into the `context` object. This makes the method arguments
+    available for use in the subsequent steps of execution. See {@link
+    angular.module.ng.$resource#Parameters methodFactory} for details.
+
+  * The method's `this` is copied into {@link angular.module.ng.$resource.Option#self `self`}. The
+    {@link angular.module.ng.$resource.Option#self `self`} is either your resource instance or
+    resource constructor depending on wether the method was invoked as instance method or as
+    static method.
+
+  * If {@link angular.module.ng.$resource.Option#request `request`} option has been provided then,
+    then resource is converted into a {@link angular.module.ng.$resource.Option#data `data`}. A
+    {@link angular.module.ng.$resource.Option#data `data`} is an object hash representation of
+    your resource. Typically this is just a deep copy of the {@link
+    angular.module.ng.$resource.Option#self `self`}, but if {@link
+    angular.module.ng.$resource#externalize `externalize()`} method is defined on the your
+    resource class then the conversion process may be more complicated.
+
+  * The {@link angular.module.ng.$resource.Option options} are evaluated and the result is placed
+    into the `context` object under the option name key.
+
+  * The {@link angular.module.ng.$resource.Option#connector `connector`} is invoked with these
+    parameters:
+
+    - **`method`** - `context`.{@link angular.module.ng.$resource.Option#method `method`} 
+    - **`url`** - `context`.{@link angular.module.ng.$resource.Option#url `url`} 
+    - **`params`** - `context`.{@link angular.module.ng.$resource.Option#params `params`} 
+    - **`data`** - if {@link angular.module.ng.$resource.Option#request `request`} option has been
+      provided then the data is set to the result of {@link
+      angular.module.ng.$resource.Option#request `request()`} invocation.
+    - **`headers`** - `context`.{@link angular.module.ng.$resource.Option#headers `headers`} 
+    - **`cache`** - `context`.{@link angular.module.ng.$resource.Option#cache `cache`} 
+
+The {@link angular.module.ng.$resource.Option#connector `connector`} returns a {@link
+angular.module.ng.$q promise} which is then processed as follows upon promise fulfillment.
+
+  * The {@link angular.module.ng.$resource.Option#response `response()`} method is used to extract
+    the {@link angular.module.ng.$resource.Option#data `data`} from the {@link
+    angular.module.ng.$resource.Option#connector `connector`} response. 
+
+  * Depending on the value of {@link angular.module.ng.$resource.Option#return `returns`} option
+    the data is merged back into the original resource instance or the new resource instance using
+    the {@link angular.module.ng.$resource#internalize `internalize()`} method. If no {@link
+    angular.module.ng.$resource#internalize `internalize()`} method is defined a simple {@link
+    angular.merge `merge`} is performed. If the {@link angular.module.ng.$resource.Option#data
+    `data`} is an array, then the result is an array of resources.
+
+    - **`"self"`** - merged the {@link angular.module.ng.$resource.Option#data `data`} back into
+      the original resource instance.
+
+    - **`YourResourceType`** - Use the constructor provided to make new instance of your resource
+      object and merge the data into the new instance.
+
+
+<a name="internalize"></a><a name="externalize"></a>
+## `externalize()`, `internalize()` methods
+
+Your resource may define a static `internalize` and `externalize method`.
+
+<pre>
+  var MyResource = function() {};
+  
+  MyResource.externalize = function(self) {
+    // default implementation
+    return angular.copy(self);
+  }
+  
+  MyResource.internalize = function(self, requestSelf, data) {
+    // default implementation
+    angular.extend(self, requestSelf, data);
+  }
+</pre>
+
+The purpose of the `externalize()` method is to produce {@link
+angular.module.ng.$resource.Option#data `data`} object. This typically involves cleaning up
+intermediary or computed values, or doing property renaming. The data is a serialized version of
+the resource. The `externalize()` method takes single argument:
+
+`context.data = `*`YourResource`*`.externalize(self)`:
+
+  * **`self`** - the resource to serialize.
+
+Similarly the purpose of the `internalize()` method is to reconstruct the resource from the {@link
+angular.module.ng.$resource.Option#data `data`} object. This is the deserialization of the data
+object.The `externalize()` method takes three arguments:
+
+*`YourResource`*`.internalize(self, requestSelf, data)`:
+
+  * **`self`** - the destination resource to de-serialize to.
+  * **`requestSelf`** - the optional hash of overridden properties discussed later.
+  * **`data`** - the `data` object as returned from the {@link
+    angular.module.ng.$resource.Option#connector `connector`}.
+
+
+<a name="request"></a><a name="response"></a>
+## `request()`, `response()` methods
+
+The {@link angular.module.ng.$resource.Option#request `request`} method is responsible for turning
+the {@link angular.module.ng.$resource.Option#data `data`} into a request for the {@link
+angular.module.ng.$resource.Option#connector `connector`}. This may involve wrapping the {@link
+angular.module.ng.$resource.Option#data `data`} into additional layers which the server may
+require, or placing some of the properties from the data into request {@link
+angular.module.ng.$resource.Option#header `header`} and or {@link
+angular.module.ng.$resource.Option#url `url`}.
+
+Similarly the {@link angular.module.ng.$resource.Option#request `request`} method is responsible
+for extracting the {@link angular.module.ng.$resource.Option#data `data`} from the response. This
+may be required since often times the server will wrap the response in meta-data object or return
+part of the information in response header.
+
+# Default `$resource`
+
+The basic `$resource` is defined as:
+
+<pre>
+{
+  connector: $http,
+  method: 'GET',
+  url: '/',
+  response: 'response.data'
+}
+</pre>
+
+## Defining `static` Methods on a Resource
+
+A method is defined on the resource as follows:
+<pre>
+  var Task = $resource({
+    url: '/data/Task/'
+  }, function(Task, rsrcMethod) {
+    Task.get = rsrcMethod('id', { url:'{{url}}/{{id}}' });
+  }).create();
+</pre>
+
+The above will create a `Task` resource with a method `get()`.
+
+Invoking `Task.get()` will perform the following simplified pseudo-code an the {@link
+angular.module.ng.$http $http} service: 
+<pre>
+  // var taskFuture = Tasks.get(123);
+  var taskFuture = $http({
+    url:'/data/Task/123',     // derived from 'url' option
+    method:'GET' // derived from 'method' option
+  }).then(function(response){
+    var data = response.data; // derived form the 'response' option;
+    var Type = Task;          // derived from 'returns' option;
+    var self = new Type();
+    
+    (Type.internalize || merge)(self, data);
+    return self;
+  }); 
+</pre>
+
+Things to notice:
+
+  * The `url` is defined on the resourceLevel, which means that all methods automatically inherit
+    the url base, and the methods can further extend `url` with method arguments.
+
+  * The `get` method defines an argument `id` which can then be appended to the `url` to further
+    refine it.
+
+  * The return of `Task.get()` is a {@link angular.module.ng.$q promise} which will contain an 
+    instance of the `Task` class.
+
+
+# Defining `instance` Methods on a Resource
+
+Defining instance method is more complicated because we have to take into account the process 
+of extracting the payload from the resource and writing the response back into the same resource
+instance.
+
+# Derived Resource
+
+To make resources more flexible the `$resource` definitions can be chained to reuse commonalities
+between requests.
+
+
+# Common Use-Cases
+
+- Getting data
+- Querying a collection
+- Merge on save
+
+
+## Reusable Resource Definitions
+
+- parse example
+
+
+@param {Option} options A collection of {@link angular.module.ng.$resource.Option options} which 
+      should be applied to all methods.
+
+@param {function(Resource, methodFactory)} factory An option factory function which is used to
+  decorate the `Resource` with methods.
+
+  * **`Resource`** - The resource to decorate with methods. The `Resource` is a constructor
+    function as defined in the {@link angular.module.ng.$resource#create `create()`} method.
+
+  * **`methodFactory(argNames, options)`** - A method factory, which is used to decorate the
+    `Resorce` with methods.
+
+    * **`argNames`** - {`string|array<string>`} - A comma separated string or array of string names.
+      The names represents the arguments of the method, and will be written to the `context` object.
+
+    * **`options`** - {`Options`} - A set of {@link angular.module.ng.$resource.Option options} to
+      apply to this method.
+
+
+@returns {angular.module.ng.$resource} A new derived sub-resource of the original resource with
+{@link angular.module.ng.$resource.Option options} overridden as specified in `options`.
