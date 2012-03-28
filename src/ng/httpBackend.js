@@ -18,7 +18,7 @@ var XHR = window.XMLHttpRequest || function() {
  * XMLHttpRequest object or JSONP and deals with browser incompatibilities.
  *
  * You should never need to use this service directly, instead use the higher-level abstractions:
- * {@link angular.module.ng.$http $http} or {@link angular.module.ng.$resource $resource}.
+ * {@link angular.module.ng.$http $http} or {@link angular.module.ngResource.$resource $resource}.
  *
  * During testing this implementation is swapped with {@link angular.module.ngMock.$httpBackend mock
  * $httpBackend} which can be trained with responses.

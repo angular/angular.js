@@ -8,8 +8,6 @@
  */
 _jQuery.event.special.change = undefined;
 
-
-publishExternalAPI(angular);
 bindJQuery();
 beforeEach(function() {
   publishExternalAPI(angular);

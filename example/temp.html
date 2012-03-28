@@ -1,22 +1,30 @@
 <!doctype html>
-<html xmlns:ng="http://angularjs.org" ng:app>
+<html ng-app="example">
   <head>
     <title>angular dev sandbox</title>
-    <script src="../src/angular-bootstrap.js"></script>
+    <script src="../src/loader.js"></script>
     <script>
-    angular.module.ng('routeConfig', function($route) {
-          $route.when('/view1', {controller: MyCtrl, template: 'view1.html'});
-          $route.when('/view2', {controller: MyCtrl, template: 'view2.html'});
+      setupModuleLoader(window);
+      angular.module('example', [], function($routeProvider) {
+        $routeProvider.when('/view1', {controller: MyCtrl, template: 'view1.html'});
+        $routeProvider.when('/view2', {controller: MyCtrl, template: 'view2.html'});
 
-          function MyCtrl() {};
-        }, {$inject: ['$route']});
+        function MyCtrl($location, $scope) {
+          $scope.url = function() {
+            return $location.url();
+          }
+        };
+      });
     </script>
+    <script src="../src/angular-bootstrap.js"></script>
   </head>
-  <body ng:init="$service('$window').$root = this">
+  <body>
     <p>
       <a href="#/view1">view1</a> | <a href="#/view2">view2</a> | <a href="#">blank</a>
     </p>
 
-    view: <ng:view></ng:view>
+    <hr>
+
+    <div ng-view></div>
   </body>
 </html>
