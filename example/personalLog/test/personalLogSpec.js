@@ -1,12 +1,13 @@
 describe('example.personalLog.LogCtrl', function() {
   var logScope;
 
-  beforeEach(function() {
-    var injector = angular.injector(['ng', 'ngMock', 'ngCookies']);
-    logScope = injector.get('$rootScope');
-    logScope.$cookies = injector.get('$cookies');
-    injector.instantiate(example.personalLog.LogCtrl, {$scope: logScope});
-  });
+
+  beforeEach(module('personalLog'));
+
+  beforeEach(inject(function($rootScope, $controller) {
+    logScope = $rootScope.$new();
+    $controller('LogCtrl', {$scope: logScope});
+  }));
 
 
   it('should initialize notes with an empty array', function() {
@@ -43,11 +44,11 @@ describe('example.personalLog.LogCtrl', function() {
     });
 
 
-    it('should store logs in the logs cookie', function() {
-      expect(logScope.$cookies.logs).not.toBeDefined();
+    it('should store logs in the logs cookie', inject(function($cookies) {
+      expect($cookies.logs).not.toBeDefined();
       logScope.addLog('first log message');
-      expect(logScope.$cookies.logs).toBeTruthy();
-    });
+      expect($cookies.logs).toBeTruthy();
+    }));
 
 
     it('should do nothing if newMsg is empty', function() {
@@ -79,17 +80,17 @@ describe('example.personalLog.LogCtrl', function() {
     });
 
 
-    it('should update cookies when a log is deleted', function() {
-      expect(logScope.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){3}\]/);
+    it('should update cookies when a log is deleted', inject(function($cookies) {
+      expect($cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){3}\]/);
 
       logScope.rmLog(logScope.logs[1]);
-      expect(logScope.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){2}\]/);
+      expect($cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){2}\]/);
 
       logScope.rmLog(logScope.logs[0]);
       logScope.rmLog(logScope.logs[0]);
       logScope.rmLog(logScope.logs[0]);
-      expect(logScope.$cookies.logs).toMatch(/\[\]/);
-    });
+      expect($cookies.logs).toMatch(/\[\]/);
+    }));
   });
 
 
@@ -110,10 +111,10 @@ describe('example.personalLog.LogCtrl', function() {
     });
 
 
-    it('should remove logs cookie', function() {
-      expect(logScope.$cookies.logs).toBeTruthy();
+    it('should remove logs cookie', inject(function($cookies) {
+      expect($cookies.logs).toBeTruthy();
       logScope.rmLogs();
-      expect(logScope.$cookies.logs).not.toBeDefined();
-    });
+      expect($cookies.logs).not.toBeDefined();
+    }));
   });
 });

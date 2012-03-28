@@ -5,28 +5,23 @@
  *               - testability of controllers
  *               - dependency injection for controllers via $inject and constructor function
  *               - $cookieStore for persistent cookie-backed storage
- *               - simple templating constructs such as ng:repeat and {{}}
+ *               - simple templating constructs such as ng-repeat and {{}}
  *               - date filter
  *               - and binding onSubmit and onClick events to angular expressions
  * @author Igor Minar
  */
 
-
-/** @namespace the 'example' namespace */
-var example = example || {};
-/** @namespace namespace of the personal log app */
-example.personalLog = {};
-
-
 //name space isolating closure
 (function() {
+
+var app = angular.module('personalLog', ['ngCookies']);
 
 var LOGS = 'logs';
 
 /**
  * The controller for the personal log app.
  */
-function LogCtrl($cookieStore, $scope) {
+app.controller('LogCtrl', ['$cookieStore', '$scope', function LogCtrl($cookieStore, $scope) {
 
   var logs = $scope.logs = $cookieStore.get(LOGS) || []; //main model
 
@@ -72,11 +67,6 @@ function LogCtrl($cookieStore, $scope) {
     logs.splice(0, logs.length);
     $cookieStore.remove(LOGS);
   };
-}
+}]);
 
-//inject
-LogCtrl.$inject = ['$cookieStore', '$scope'];
-
-//export
-example.personalLog.LogCtrl = LogCtrl;
 })();
