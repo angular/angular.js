@@ -619,9 +619,9 @@ describe('$http', function() {
           $httpBackend.expect('POST', '/url', 'header1').respond(200);
           $http.post('/url', 'req', {
             headers: {h1: 'header1'},
-            transformRequest: function(data, headers) {
+            transformRequest: [function(data, headers) {
               return headers('h1');
-            }
+            }]
           }).success(callback);
           $httpBackend.flush();
 
@@ -703,9 +703,9 @@ describe('$http', function() {
         it('should have access to response headers', function() {
           $httpBackend.expect('GET', '/url').respond(200, 'response', {h1: 'header1'});
           $http.get('/url', {
-            transformResponse: function(data, headers) {
+            transformResponse: [function(data, headers) {
               return headers('h1');
-            }
+            }]
           }).success(callback);
           $httpBackend.flush();
 
