@@ -3,7 +3,6 @@ angularFiles = {
     'src/Angular.js',
     'src/loader.js',
     'src/AngularPublic.js',
-    'src/JSON.js',
     'src/jqLite.js',
     'src/apis.js',
 
