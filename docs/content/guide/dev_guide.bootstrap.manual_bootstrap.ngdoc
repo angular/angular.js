@@ -2,13 +2,26 @@
 @name  Developer Guide: Initializing Angular: Manual Initialization
 @description
 
-Letting angular handle the initialization process (bootstrapping) is a handy way to start using
-angular, but advanced users who want more control over the initialization process can choose to use
-the manual bootstrapping method instead.
+In the vast majority of cases you'll want to let Angular handle initialization automatically.  
+If, however, you need to delay Angular from managing the page right after the DOMContentLoaded 
+event fires, you'll need to control this initialization manually.
 
-The best way to get started with manual bootstrapping is to look at the what happens when you use
-{@link api/angular.module.ng.$compileProvider.directive.ng-app ng-app}, by showing each step of the process
-explicitly.
+To initialize Angular -- after you've done your own special-purpose initialization -- just call 
+the {@link api/angular.bootstrap bootstrap()} function with the HTML container node that you want
+Angular to manage.  In automatic initialization you'd do this by adding the `ng-app` attribute to 
+the same node.  Now, you won't use `ng-app` anywhere in your document.
+
+To show the contrast of manual vs. automatic initialization, this automatic method:
+
+<pre>
+<!doctype html>
+<html ng-app>
+<head>
+  <script src="http://code.angularjs.org/angular.js"></script>
+...
+</pre
+
+is the same as this manual method:
 
 <pre>
 <!doctype html>
@@ -21,18 +34,8 @@ explicitly.
      });
   </script>
 </head>
-<body>
-Hello {{'World'}}!
-</body>
-</html>
+...
 </pre>
-
-This is the sequence that your code should follow if you bootstrap angular on your own:
-
-1. After the page is loaded, find the root of the HTML template, which is typically the root of
-the document.
-2. Call {@link api/angular.bootstrap} to  {@link dev_guide.compiler compile} the template into
-an executable, bi-directionally bound application.
 
 
 ## Related Topics
