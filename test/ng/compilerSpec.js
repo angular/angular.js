@@ -1374,6 +1374,41 @@ describe('$compile', function() {
     });
 
 
+    it('should properly $observe inside ng-repeat', function() {
+      var spies = [];
+
+      module(function($compileProvider) {
+        $compileProvider.directive('observer', function() {
+          return function(scope, elm, attr) {
+            spies.push(jasmine.createSpy('observer ' + spies.length));
+            attr.$observe('some', spies[spies.length - 1]);
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div ng-repeat="i in items">'+
+                              '<span some="id_{{i.id}}" observer></span>'+
+                           '</div></div>')($rootScope);
+
+        $rootScope.$apply(function() {
+          $rootScope.items = [{id: 1}, {id: 2}];
+        });
+
+        expect(spies[0]).toHaveBeenCalledOnceWith('id_1');
+        expect(spies[1]).toHaveBeenCalledOnceWith('id_2');
+        spies[0].reset();
+        spies[1].reset();
+
+        $rootScope.$apply(function() {
+          $rootScope.items[0].id = 5;
+        });
+
+        expect(spies[0]).toHaveBeenCalledOnceWith('id_5');
+      });
+    });
+
+
     describe('$set', function() {
       var attr;
       beforeEach(function(){
