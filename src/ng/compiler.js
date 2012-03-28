@@ -214,6 +214,79 @@ function $CompileProvider($provide) {
       }
     };
 
+    var Attributes = function(element, attr) {
+      this.$$element = element;
+      this.$$observers = {};
+      this.$attr = attr || {};
+    };
+
+    Attributes.prototype = {
+      $normalize: directiveNormalize,
+
+
+      /**
+       * Set a normalized attribute on the element in a way such that all directives
+       * can share the attribute. This function properly handles boolean attributes.
+       * @param {string} key Normalized key. (ie ngAttribute)
+       * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
+       * @param {boolean=} writeAttr If false, does not write the value to DOM element attribute.
+       *     Defaults to true.
+       * @param {string=} attrName Optional none normalized name. Defaults to key.
+       */
+      $set: function(key, value, writeAttr, attrName) {
+        var booleanKey = isBooleanAttr(this.$$element[0], key.toLowerCase());
+
+        if (booleanKey) {
+          this.$$element.prop(key, value);
+          attrName = booleanKey;
+        }
+
+        this[key] = value;
+
+        // translate normalized key to actual key
+        if (attrName) {
+          this.$attr[key] = attrName;
+        } else {
+          attrName = this.$attr[key];
+          if (!attrName) {
+            this.$attr[key] = attrName = snake_case(key, '-');
+          }
+        }
+
+        if (writeAttr !== false) {
+          if (value === null || value === undefined) {
+            this.$$element.removeAttr(attrName);
+          } else {
+            this.$$element.attr(attrName, value);
+          }
+        }
+
+        // fire observers
+        forEach(this.$$observers[key], function(fn) {
+          try {
+            fn(value);
+          } catch (e) {
+            $exceptionHandler(e);
+          }
+        });
+      },
+
+
+      /**
+       * Observe an interpolated attribute.
+       * The observer will never be called, if given attribute is not interpolated.
+       *
+       * @param {string} key Normalized key. (ie ngAttribute) .
+       * @param {function(*)} fn Function that will be called whenever the attribute value changes.
+       */
+      $observe: function(key, fn) {
+        // keep only observers for interpolated attrs
+        if (this.$$observers[key]) {
+          this.$$observers[key].push(fn);
+        }
+      }
+    };
+
     return compile;
 
     //================================
@@ -278,13 +351,8 @@ function $CompileProvider($provide) {
          directiveLinkingFn, childLinkingFn, directives, attrs, linkingFnFound;
 
      for(var i = 0, ii = nodeList.length; i < ii; i++) {
-       attrs = {
-         $attr: {},
-         $normalize: directiveNormalize,
-         $set: attrSetter,
-         $observe: interpolatedAttrObserve,
-         $observers: {}
-       };
+       attrs = new Attributes();
+
        // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
        directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
 
@@ -441,7 +509,7 @@ function $CompileProvider($provide) {
           newIsolatedScopeDirective = null,
           templateDirective = null,
           delayedLinkingFn = null,
-          element = templateAttrs.$element = jqLite(templateNode),
+          element = templateAttrs.$$element = jqLite(templateNode),
           directive,
           directiveName,
           template,
@@ -485,7 +553,7 @@ function $CompileProvider($provide) {
           terminalPriority = directive.priority;
           if (directiveValue == 'element') {
             template = jqLite(templateNode);
-            templateNode = (element = templateAttrs.$element = jqLite(
+            templateNode = (element = templateAttrs.$$element = jqLite(
                 '<!-- ' + directiveName + ': ' + templateAttrs[directiveName]  + ' -->'))[0];
             replaceWith(rootElement, jqLite(template[0]), templateNode);
             childTranscludeFn = compile(template, transcludeFn, terminalPriority);
@@ -609,11 +677,9 @@ function $CompileProvider($provide) {
         if (templateNode === linkNode) {
           attrs = templateAttrs;
         } else {
-          attrs = shallowCopy(templateAttrs);
-          attrs.$element = jqLite(linkNode);
-          attrs.$observers = {};
+          attrs = shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
         }
-        element = attrs.$element;
+        element = attrs.$$element;
 
         if (newScopeDirective && isObject(newScopeDirective.scope)) {
           forEach(newScopeDirective.scope, function(mode, name) {
@@ -720,7 +786,7 @@ function $CompileProvider($provide) {
     function mergeTemplateAttributes(dst, src) {
       var srcAttr = src.$attr,
           dstAttr = dst.$attr,
-          element = dst.$element;
+          element = dst.$$element;
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
@@ -873,7 +939,7 @@ function $CompileProvider($provide) {
 
           // we define observers array only for interpolated attrs
           // and ignore observers for non interpolated attrs to save some memory
-          attr.$observers[name] = [];
+          attr.$$observers[name] = [];
           attr[name] = undefined;
           scope.$watch(interpolateFn, function(value) {
             attr.$set(name, value);
@@ -909,70 +975,6 @@ function $CompileProvider($provide) {
         parent.replaceChild(newNode, oldNode);
       }
       element[0] = newNode;
-    }
-
-
-    /**
-     * Set a normalized attribute on the element in a way such that all directives
-     * can share the attribute. This function properly handles boolean attributes.
-     * @param {string} key Normalized key. (ie ngAttribute)
-     * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
-     * @param {boolean=} writeAttr If false, does not write the value to DOM element attribute.
-     *     Defaults to true.
-     * @param {string=} attrName Optional none normalized name. Defaults to key.
-     */
-    function attrSetter(key, value, writeAttr, attrName) {
-      var booleanKey = isBooleanAttr(this.$element[0], key.toLowerCase());
-
-      if (booleanKey) {
-        this.$element.prop(key, value);
-        attrName = booleanKey;
-      }
-
-      this[key] = value;
-
-      // translate normalized key to actual key
-      if (attrName) {
-        this.$attr[key] = attrName;
-      } else {
-        attrName = this.$attr[key];
-        if (!attrName) {
-          this.$attr[key] = attrName = snake_case(key, '-');
-        }
-      }
-
-      if (writeAttr !== false) {
-        if (value === null || value === undefined) {
-          this.$element.removeAttr(attrName);
-        } else {
-          this.$element.attr(attrName, value);
-        }
-      }
-
-
-      // fire observers
-      forEach(this.$observers[key], function(fn) {
-        try {
-          fn(value);
-        } catch (e) {
-          $exceptionHandler(e);
-        }
-      });
-    }
-
-
-    /**
-     * Observe an interpolated attribute.
-     * The observer will never be called, if given attribute is not interpolated.
-     *
-     * @param {string} key Normalized key. (ie ngAttribute) .
-     * @param {function(*)} fn Function that will be called whenever the attribute value changes.
-     */
-    function interpolatedAttrObserve(key, fn) {
-      // keep only observers for interpolated attrs
-      if (this.$observers[key]) {
-        this.$observers[key].push(fn);
-      }
     }
   }];
 }

@@ -598,16 +598,16 @@ function copy(source, destination){
 
 /**
  * Create a shallow copy of an object
- * @param src
  */
-function shallowCopy(src) {
-  var dst = {},
-      key;
-  for(key in src) {
-    if (src.hasOwnProperty(key)) {
+function shallowCopy(src, dst) {
+  dst = dst || {};
+
+  for(var key in src) {
+    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
       dst[key] = src[key];
     }
   }
+
   return dst;
 }
 

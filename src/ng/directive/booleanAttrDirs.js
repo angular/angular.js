@@ -286,7 +286,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
       priority: 100,
       compile: function(tpl, attr) {
         return function(scope, element, attr) {
-          attr.$observers[attrName] = [];
+          attr.$$observers[attrName] = [];
           scope.$watch(attr[normalized], function(value) {
             attr.$set(attrName, value);
           });
@@ -305,7 +305,7 @@ forEach(['src', 'href'], function(attrName) {
       priority: 100,
       compile: function(tpl, attr) {
         return function(scope, element, attr) {
-          attr.$observers[attrName] = [];
+          attr.$$observers[attrName] = [];
           attr.$observe(normalized, function(value) {
             attr.$set(attrName, value);
           });
