@@ -2,7 +2,10 @@ require 'yaml'
 include FileUtils
 
 content = File.open('angularFiles.js', 'r') {|f| f.read }
-files = eval(content.gsub(/\};(\s|\S)*/, '}').gsub(/angularFiles = /, '').gsub(/:/, '=>').gsub(/\/\//, '#'));
+files = eval(content.gsub(/\};(\s|\S)*/, '}').
+            gsub(/angularFiles = /, '').
+            gsub(/:/, '=>').
+            gsub(/\/\//, '#'));
 
 BUILD_DIR = 'build'
 
@@ -34,8 +37,8 @@ end
 
 desc 'Compile Scenario'
 task :compile_scenario => :init do
-  
-  concatFile('angular-scenario.js', [
+
+  concat_file('angular-scenario.js', [
       'lib/jquery/jquery.js',
       'src/ngScenario/angular.prefix',
       files['angularSrc'],
@@ -47,7 +50,7 @@ end
 desc 'Compile JSTD Scenario Adapter'
 task :compile_jstd_scenario_adapter => :init do
 
-  concatFile('jstd-scenario-adapter.js', [
+  concat_file('jstd-scenario-adapter.js', [
       'src/ngScenario/jstd-scenario-adapter/angular.prefix',
       'src/ngScenario/jstd-scenario-adapter/Adapter.js',
       'src/ngScenario/jstd-scenario-adapter/angular.suffix',
@@ -66,7 +69,7 @@ end
 desc 'Compile JavaScript'
 task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
-  concatFile('angular.js', [
+  concat_file('angular.js', [
         'src/angular.prefix',
         files['angularSrc'],
         'src/angular.suffix',
@@ -74,20 +77,20 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
   FileUtils.cp_r 'src/ngLocale', path_to('i18n')
 
-  concatFile('angular-loader.js', [
+  concat_file('angular-loader.js', [
       'src/loader.prefix',
       'src/loader.js',
       'src/loader.suffix'])
-      
+
   FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
   FileUtils.cp 'src/ngResource/resource.js', path_to('angular-resource.js')
   FileUtils.cp 'src/ngCookies/cookies.js', path_to('angular-cookies.js')
 
-  
-  closureCompile('angular.js')
-  closureCompile('angular-cookies.js')
-  closureCompile('angular-loader.js')
-  closureCompile('angular-resource.js')
+
+  closure_compile('angular.js')
+  closure_compile('angular-cookies.js')
+  closure_compile('angular-loader.js')
+  closure_compile('angular-resource.js')
 
 end
 
@@ -300,7 +303,7 @@ def path_to(filename)
   return File.join(BUILD_DIR, *filename)
 end
 
-def closureCompile(filename)
+def closure_compile(filename)
   puts "Compiling #{filename} ..."
   %x(java -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
@@ -309,7 +312,7 @@ def closureCompile(filename)
         --js_output_file #{path_to(filename.gsub(/\.js$/, '.min.js'))})
 end
 
-def concatFile(filename, deps, footer='')
+def concat_file(filename, deps, footer='')
   puts "Building #{filename} ..."
   File.open(path_to(filename), 'w') do |f|
     concat = 'cat ' + deps.flatten.join(' ')
