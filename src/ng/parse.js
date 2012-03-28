@@ -752,9 +752,3 @@ function $ParseProvider() {
     };
   }];
 }
-
-
-// This is a special access for JSON parser which bypasses the injector
-var parseJson = function(json) {
-  return parser(json, true);
-};

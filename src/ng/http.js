@@ -1,5 +1,4 @@
 'use strict';
-'use strict';
 
 /**
  * Parse headers into key value object
@@ -68,9 +67,6 @@ function headersGetter(headers) {
  * @returns {*} Transformed data.
  */
 function transformData(data, headers, fns) {
-  if (isFunction(fns))
-    return fns(data, headers);
-
   forEach(fns, function(fn) {
     data = fn(data, headers);
   });
@@ -91,7 +87,7 @@ function $HttpProvider() {
 
   var $config = this.defaults = {
     // transform incoming response data
-    transformResponse: function(data) {
+    transformResponse: [function(data) {
       if (isString(data)) {
         // strip json vulnerability protection prefix
         data = data.replace(PROTECTION_PREFIX, '');
@@ -99,12 +95,12 @@ function $HttpProvider() {
           data = fromJson(data, true);
       }
       return data;
-    },
+    }],
 
     // transform outgoing request data
-    transformRequest: function(d) {
+    transformRequest: [function(d) {
       return isObject(d) && !isFile(d) ? toJson(d) : d;
-    },
+    }],
 
     // default headers
     headers: {
@@ -365,12 +361,12 @@ function $HttpProvider() {
      *      `?key1=value1&key2=value2` after the url. If the value is not a string, it will be JSONified.
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
-     *    - **transformRequest** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
-     *      transform function or an array of such functions. The transform function takes the http
-     *      request body and headers and returns its transformed (typically serialized) version.
-     *    - **transformResponse** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
-     *      transform function or an array of such functions. The transform function takes the http
-     *      response body and headers and returns its transformed (typically deserialized) version.
+     *    - **transformRequest** – `{Array.<function(data, headersGetter)>}` – an array of transform
+     *      functions. The transform function takes the http request body and headers and returns
+     *      its transformed (typically serialized) version.
+     *    - **transformResponse** – `{Array.<function(data, headersGetter)>}` – an array of
+     *      transform functions. The transform function takes the http response body and headers and
+     *      returns its transformed (typically deserialized) version.
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
      *      GET request, otherwise if a cache instance built with
      *      {@link angular.module.ng.$cacheFactory $cacheFactory}, this cache will be used for
