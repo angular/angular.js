@@ -166,7 +166,7 @@ describe('$compile', function() {
               compile: function(element, templateAttr) {
                 expect(typeof templateAttr.$normalize).toBe('function');
                 expect(typeof templateAttr.$set).toBe('function');
-                expect(isElement(templateAttr.$element)).toBeTruthy();
+                expect(isElement(templateAttr.$$element)).toBeTruthy();
                 expect(element.text()).toEqual('unlinked');
                 expect(templateAttr.exp).toEqual('abc');
                 expect(templateAttr.aa).toEqual('A');
@@ -344,7 +344,7 @@ describe('$compile', function() {
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
-              expect(element).toBe(attr.$element);
+              expect(element).toBe(attr.$$element);
             }
           }));
           $compileProvider.directive('append', valueFn({
@@ -352,7 +352,7 @@ describe('$compile', function() {
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
-              expect(element).toBe(attr.$element);
+              expect(element).toBe(attr.$$element);
             }
           }));
         }));
@@ -1370,6 +1370,42 @@ describe('$compile', function() {
         expect(state.first[0].link.attr).not.toBe(state.first[1].link.attr);
         expect(state.second[0].link.element).not.toBe(state.second[1].link.element);
         expect(state.second[0].link.attr).not.toBe(state.second[1].link.attr);
+      });
+    });
+
+
+    it('should properly $observe inside ng-repeat', function() {
+      var spies = [];
+
+      module(function($compileProvider) {
+        $compileProvider.directive('observer', function() {
+          return function(scope, elm, attr) {
+            spies.push(jasmine.createSpy('observer ' + spies.length));
+            attr.$observe('some', spies[spies.length - 1]);
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile(
+          '<div>' +
+            '<div ng-repeat="i in items"><span some="id_{{i.id}}" observer></span></div>' +
+          '</div>')($rootScope);
+
+        $rootScope.$apply(function() {
+          $rootScope.items = [{id: 1}, {id: 2}];
+        });
+
+        expect(spies[0]).toHaveBeenCalledOnceWith('id_1');
+        expect(spies[1]).toHaveBeenCalledOnceWith('id_2');
+        spies[0].reset();
+        spies[1].reset();
+
+        $rootScope.$apply(function() {
+          $rootScope.items[0].id = 5;
+        });
+
+        expect(spies[0]).toHaveBeenCalledOnceWith('id_5');
       });
     });
 
