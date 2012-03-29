@@ -31,7 +31,8 @@ var nullFormCtrl = {
  * of `FormController`.
  *
  */
-FormController.$inject = ['$element', '$attrs'];
+//asks for $scope to fool the BC controller module
+FormController.$inject = ['$element', '$attrs', '$scope'];
 function FormController(element, attrs) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
