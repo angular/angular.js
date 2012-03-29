@@ -330,6 +330,19 @@ describe('$location', function() {
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
       });
+
+
+      it('should return decoded characters for search specified in URL', function() {
+        var locationUrl = new LocationUrl('http://host.com/?q=1%2F2%203');
+        expect(locationUrl.search()).toEqual({'q': '1/2 3'});
+      });
+
+
+      it('should return decoded characters for search specified with setter', function() {
+        var locationUrl = new LocationUrl('http://host.com/');
+        locationUrl.search('q', '1/2 3');
+        expect(locationUrl.search()).toEqual({'q': '1/2 3'});
+      });
     });
   });
 
