@@ -1181,9 +1181,8 @@ var ngValueDirective = [function() {
           attr.$set('value', scope.$eval(attr.ngValue));
         };
       } else {
-        attr.$$observers.value = [];
-
-        return function(scope) {
+        return function(scope, elm, attr) {
+          attr.$$observers.value = [];
           scope.$watch(attr.ngValue, function(value) {
             attr.$set('value', value, false);
           });
