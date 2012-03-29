@@ -1,5 +1,69 @@
+<a name="v1.0.0rc3"></a>
+# v1.0.0rc3 barefoot-telepathy (2012-03-29)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - properly clone attr.$observers in ng-repeat
+    ([f2106692](https://github.com/angular/angular.js/commit/f2106692b1ebf00aa5f8b2accd75f014b6cd4faa))
+  - create new (isolate) scopes for directives on root elements
+    ([5390fb37](https://github.com/angular/angular.js/commit/5390fb37d2c01937922613fc57df4986af521787),
+     closes [#817](https://github.com/angular/angular.js/issues/817))
+- **angular.forEach:** should ignore prototypically inherited properties
+  ([8d7e6948](https://github.com/angular/angular.js/commit/8d7e6948496ff26ef1da8854ba02fcb8eebfed61),
+    closes [#813](https://github.com/angular/angular.js/issues/813))
+- **initialization:** use jQuery#ready for initialization if available
+  ([cb2ad9ab](https://github.com/angular/angular.js/commit/cb2ad9abf24e6f855cc749efe3155bd7987ece9d),
+    closes [#818](https://github.com/angular/angular.js/issues/818))
+- **$q:** resolve all of nothing to nothing
+  ([ac75079e](https://github.com/angular/angular.js/commit/ac75079e2113949d5d64adbcf23d56f3cf295d41))
+
+
+## Features
+
+- **$compile:** do not interpolate boolean attribute directives, rather evaluate them
+  ([a08cbc02](https://github.com/angular/angular.js/commit/a08cbc02e78e789a66e9af771c410e8ad1646e25))
+- **$controller:** support controller registration via $controllerProvider
+  ([d54dfecb](https://github.com/angular/angular.js/commit/d54dfecb00fba41455536c5ddd55310592fdaf84))
+- **$http:**
+  - make the `transformRequest` and `transformResponse` default to an array
+    ([a8a750ab](https://github.com/angular/angular.js/commit/a8a750ab05bdff73ba3af0b98f3f284ff8d1e743))
+  - added `params` parameter
+    ([73c85930](https://github.com/angular/angular.js/commit/73c8593077155a9f2e8ef42efd4c497eba0bef4f))
+- **TzDate:** add support for toISOString method
+  ([da9f4dfc](https://github.com/angular/angular.js/commit/da9f4dfcf4f3d0c21821d8474ac0bb19a3c51415))
+- **jqLite:** make injector() and scope() work with the document object
+  ([5fdab52d](https://github.com/angular/angular.js/commit/5fdab52dd7c269f99839f4fa6b5854d9548269fa))
+- **ngValue:** directive that allows radio inputs to have non string values
+  ([09e175f0](https://github.com/angular/angular.js/commit/09e175f02cca0f4a295fd0c9b980cd8f432e722b),
+    closes [#816](https://github.com/angular/angular.js/issues/816))
+
+
+## Breaking Changes
+
+- `$resource`, `$cookies` and `$cookieStore` services are now distributed as separate modules, see
+  `angular-resource.js` and `angular-cookies.js`.
+  ([798bca62](https://github.com/angular/angular.js/commit/798bca62c6f64775b85deda3713e7b6bcc7a4b4d),
+   [7b22d59b](https://github.com/angular/angular.js/commit/7b22d59b4a16d5c50c2eee054178ba17f8038880))
+- angular.fromJson doesn't deserialize date strings into date objects.
+  ([ac4318a2](https://github.com/angular/angular.js/commit/ac4318a2fa5c6d306dbc19466246292a81767fca))
+- angular.toJson always use native JSON.parse and JSON.stringify - this might break code that
+  consumes the output in whitespace-sensitive way
+  ([35125d25](https://github.com/angular/angular.js/commit/35125d25137ac2da13ed1ca3e652ec8f2c945053))
+- IE7 and older have are now required to polyfill the JSON global object
+  ([87f5c6e5](https://github.com/angular/angular.js/commit/87f5c6e5b716100e203ec59c5874c3e927f83fa0))
+- boolean attr directives (ng-disabled, ng-required, etc) are evaluated rather than interpolated
+  ([a08cbc02](https://github.com/angular/angular.js/commit/a08cbc02e78e789a66e9af771c410e8ad1646e25))
+- `ng-bind-attr` directive removed
+  ([55027132](https://github.com/angular/angular.js/commit/55027132f3d57e5dcf94683e6e6bd7b0aae0087d))
+- any app that depends on $sniffer service should use Modernizr instead
+  ([aaedefb9](https://github.com/angular/angular.js/commit/aaedefb92e6bec6626e173e5155072c91471596a))
+
+
+
 <a name="v1.0.0rc2"></a>
-# v1.0.0rc2 (2012-03-20)
+# v1.0.0rc2 silence-absorption (2012-03-20)
 
 ## Features
 
