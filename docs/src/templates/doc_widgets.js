@@ -2,7 +2,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
 
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");
-  var angularJsRegex = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
+  var angularJsRegex = /^(|.*\/)angular(-\d.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
   for(var j = 0; j < scripts.length; j++) {
     var src = scripts[j].src;
     if (src && src.match(angularJsRegex)) {
