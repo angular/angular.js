@@ -1115,5 +1115,23 @@ describe('input', function() {
       browserTrigger(inputElm, 'click');
       expect(scope.selected).toBe(scope.value);
     });
+
+
+    it('should work inside ng-repeat', function() {
+      compileInput(
+        '<input type="radio" ng-repeat="i in items" ng-model="$parent.selected" ng-value="i.id">');
+
+      scope.$apply(function() {
+        scope.items = [{id: 1}, {id: 2}];
+        scope.selected = 1;
+      });
+
+      inputElm = formElm.find('input');
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
+
+      browserTrigger(inputElm.eq(1), 'click');
+      expect(scope.selected).toBe(2);
+    });
   });
 });
