@@ -335,7 +335,7 @@ LocationUrl.prototype = {
       if (paramValue === null) {
         delete this.$$search[search];
       } else {
-        this.$$search[search] = encodeUriQuery(paramValue);
+        this.$$search[search] = paramValue;
       }
     } else {
       this.$$search = isString(search) ? parseKeyValue(search) : search;
