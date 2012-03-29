@@ -160,6 +160,13 @@ describe('injector', function() {
     });
 
 
+    it('should handle no arg functions with spaces in the arguments list', function() {
+      function fn( ) {}
+      expect(inferInjectionArgs(fn)).toEqual([]);
+      expect(fn.$inject).toEqual([]);
+    });
+
+
     it('should handle args with both $ and _', function() {
       function $f_n0($a_) {}
       expect(inferInjectionArgs($f_n0)).toEqual(['$a_']);
