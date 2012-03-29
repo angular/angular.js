@@ -6,7 +6,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
   for(var j = 0; j < scripts.length; j++) {
     var src = scripts[j].src;
     if (src && src.match(angularJsRegex)) {
-      angularJsUrl = src.replace('docs.angularjs.org', 'code.angularjs.org');
+      angularJsUrl = src.replace(/docs(-next)?\.angularjs\.org/, 'code.angularjs.org');
       continue;
     }
   }
