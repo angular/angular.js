@@ -38,7 +38,7 @@
  * Implicit module which gets automatically added to each {@link angular.module.AUTO.$injector $injector}.
  */
 
-var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/m;
+var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(.+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
