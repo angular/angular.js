@@ -137,33 +137,29 @@ describe('ng-view', function() {
   });
 
 
-  it('should be possible to nest ng-view in ng-include', inject(function() {
-    // TODO(vojta): refactor this test
-    dealoc(element);
-    var injector = angular.injector(['ng', 'ngMock', function($routeProvider) {
-      $routeProvider.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
-    }]);
-    var myApp = injector.get('$rootScope');
-    var $httpBackend = injector.get('$httpBackend');
-    $httpBackend.expect('GET', 'includePartial.html').respond('view: <ng:view></ng:view>');
-    injector.get('$location').path('/foo');
+  it('should be possible to nest ng-view in ng-include', function() {
 
-    var $route = injector.get('$route');
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {template: 'viewPartial.html'});
+    });
 
-    element = injector.get('$compile')(
+    inject(function($httpBackend, $location, $route, $compile, $rootScope) {
+      $httpBackend.whenGET('includePartial.html').respond('view: <ng:view></ng:view>');
+      $httpBackend.whenGET('viewPartial.html').respond('content');
+      $location.path('/foo');
+
+      var elm = $compile(
         '<div>' +
           'include: <ng:include src="\'includePartial.html\'"> </ng:include>' +
-        '</div>')(myApp);
-    myApp.$apply();
+        '</div>')($rootScope);
+      $rootScope.$digest();
+      $httpBackend.flush();
 
-    $httpBackend.expect('GET', 'viewPartial.html').respond('content');
-    $httpBackend.flush();
-
-    expect(element.text()).toEqual('include: view: content');
-    expect($route.current.template).toEqual('viewPartial.html');
-    dealoc(myApp);
-    dealoc(element);
-  }));
+      expect(elm.text()).toEqual('include: view: content');
+      expect($route.current.template).toEqual('viewPartial.html');
+      dealoc(elm)
+    });
+  });
 
 
   it('should initialize view template after the view controller was initialized even when ' +
