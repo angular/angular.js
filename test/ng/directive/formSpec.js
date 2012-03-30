@@ -1,7 +1,7 @@
 'use strict';
 
 describe('form', function() {
-  var doc, control, scope, $compile;
+  var doc, control, scope, $compile, changeInputValue;
 
   beforeEach(module(function($compileProvider) {
     $compileProvider.directive('storeModelCtrl', function() {
@@ -14,9 +14,14 @@ describe('form', function() {
     });
   }));
 
-  beforeEach(inject(function($injector) {
+  beforeEach(inject(function($injector, $sniffer) {
     $compile = $injector.get('$compile');
     scope = $injector.get('$rootScope');
+
+    changeInputValue = function(elm, value) {
+      elm.val(value);
+      browserTrigger(elm, $sniffer.hasEvent('input') ? 'input' : 'change');
+    };
   }));
 
   afterEach(function() {
@@ -126,10 +131,8 @@ describe('form', function() {
     var inputA = doc.find('input').eq(0),
         inputB = doc.find('input').eq(1);
 
-    inputA.val('val1');
-    browserTrigger(inputA, 'blur');
-    inputB.val('val2');
-    browserTrigger(inputB, 'blur');
+    changeInputValue(inputA, 'val1');
+    changeInputValue(inputB, 'val2');
 
     expect(scope.firstName).toBe('val1');
     expect(scope.lastName).toBe('val2');
