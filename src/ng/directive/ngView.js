@@ -115,42 +115,44 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           lastScope,
           onloadExp = attr.onload || '';
 
-      scope.$on('$afterRouteChange', function(event, next, previous) {
-        changeCounter++;
-      });
+      scope.$on('$afterRouteChange', update);
+      update();
 
-      scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
-        var template = $route.current && $route.current.template;
 
-        function destroyLastScope() {
-          if (lastScope) {
-            lastScope.$destroy();
-            lastScope = null;
-          }
+      function destroyLastScope() {
+        if (lastScope) {
+          lastScope.$destroy();
+          lastScope = null;
         }
+      }
+
+      function update() {
+        var template = $route.current && $route.current.template,
+            thisChangeId = ++changeCounter;
 
         function clearContent() {
           // ignore callback if another route change occured since
-          if (newChangeCounter == changeCounter) {
+          if (thisChangeId === changeCounter) {
             element.html('');
+            destroyLastScope();
           }
-          destroyLastScope();
         }
 
         if (template) {
           $http.get(template, {cache: $templateCache}).success(function(response) {
             // ignore callback if another route change occured since
-            if (newChangeCounter == changeCounter) {
+            if (thisChangeId === changeCounter) {
               element.html(response);
               destroyLastScope();
 
               var link = $compile(element.contents()),
-                  current = $route.current;
+                  current = $route.current,
+                  controller;
 
               lastScope = current.scope = scope.$new();
               if (current.controller) {
-                element.contents().
-                  data('$ngControllerController', $controller(current.controller, {$scope: lastScope}));
+                controller = $controller(current.controller, {$scope: lastScope});
+                element.contents().data('$ngControllerController', controller);
               }
 
               link(lastScope);
@@ -164,7 +166,7 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
         } else {
           clearContent();
         }
-      });
+      }
     }
   };
 }];
