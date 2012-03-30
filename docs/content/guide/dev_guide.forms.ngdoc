@@ -20,7 +20,7 @@ In addition it provides {@link api/angular.module.ng.$compileProvider.directive.
 <doc:source>
 <div ng-controller="Controller">
   <form novalidate class="simple-form">
-    Name: <input type="text" ng-model="user.name" ng-model-instant /><br />
+    Name: <input type="text" ng-model="user.name" /><br />
     E-mail: <input type="email" ng-model="user.email" /><br />
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
     <input type="radio" ng-model="user.gender" value="female" />female<br />
@@ -50,11 +50,7 @@ In addition it provides {@link api/angular.module.ng.$compileProvider.directive.
 </doc:example>
 
 
-Note that:
-
-  * the {@link api/angular.module.ng.$compileProvider.directive.ng-model-instant ng-model-instant} causes the `user.name` to be updated immediately.
-
-  * `novalidate` is used to disable browser's native form validation.
+Note that `novalidate` is used to disable browser's native form validation.
 
 
 
@@ -76,7 +72,7 @@ This ensures that the user is not distracted with an error until after interacti
 <div ng-controller="Controller">
   <form novalidate class="css-form">
     Name:
-      <input type="text" ng-model="user.name" ng-model-instant required /><br />
+      <input type="text" ng-model="user.name" required /><br />
     E-mail: <input type="email" ng-model="user.email" required /><br />
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
     <input type="radio" ng-model="user.gender" value="female" />female<br />
@@ -147,7 +143,7 @@ This allows us to extend the above example with these features:
 
     <input type="checkbox" ng-model="user.agree" name="userAgree" required />
     I agree: <input ng-show="user.agree" type="text" ng-model="user.agreeSign"
-              ng-model-instant required /><br />
+              required /><br />
     <div ng-show="!user.agree || !user.agreeSign">Please agree and sign.</div>
 
     <button ng-click="reset()" disabled="{{isUnchanged(user)}}">RESET</button>

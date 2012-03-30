@@ -198,12 +198,13 @@ angular.scenario.dsl('binding', function() {
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
+  var supportInputEvent = 'oninput' in document.createElement('div');
 
   chain.enter = function(value, event) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger(event || 'blur');
+      input.trigger(event || supportInputEvent && 'input' || 'change');
       done();
     });
   };
