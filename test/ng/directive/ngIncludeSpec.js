@@ -60,9 +60,10 @@ describe('ng-include', function() {
   }));
 
 
-  it('should fire $includeContentLoaded event after linking the content', inject(
+  it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
-    var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function() {
+    var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function(event) {
+      expect(event.targetScope.$parent).toBe($rootScope);
       expect(element.text()).toBe('partial content');
     });
 
