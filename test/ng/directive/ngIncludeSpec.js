@@ -18,11 +18,10 @@ describe('ng-include', function() {
 
   it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+    element = jqLite('<ng:include src="url"></ng:include>');
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
-    $rootScope.childScope = $rootScope.$new();
-    $rootScope.childScope.name = 'misko';
+    $rootScope.name = 'misko';
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(element.text()).toEqual('misko');
@@ -46,10 +45,9 @@ describe('ng-include', function() {
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
         function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+    element = jqLite('<ng:include src="url"></ng:include>');
     element = $compile(element)($rootScope);
-    $rootScope.childScope = $rootScope.$new();
-    $rootScope.childScope.name = 'igor';
+    $rootScope.name = 'igor';
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
 
@@ -59,23 +57,6 @@ describe('ng-include', function() {
     $rootScope.$digest();
 
     expect(element.text()).toEqual('');
-  }));
-
-
-  it('should allow this for scope', inject(putIntoCache('myUrl', '{{"abc"}}'),
-        function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url" scope="this"></ng:include>');
-    element = $compile(element)($rootScope);
-    $rootScope.url = 'myUrl';
-    $rootScope.$digest();
-
-    // TODO(misko): because we are using scope==this, the eval gets registered
-    // during the flush phase and hence does not get called.
-    // I don't think passing 'this' makes sense. Does having scope on ng-include makes sense?
-    // should we make scope="this" illegal?
-    $rootScope.$digest();
-
-    expect(element.text()).toEqual('abc');
   }));
 
 
@@ -111,20 +92,33 @@ describe('ng-include', function() {
   }));
 
 
-  it('should destroy old scope', inject(putIntoCache('myUrl', 'my partial'),
-        function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url"></ng:include>');
-    element = $compile(element)($rootScope);
+  it('should create child scope and destroy old one', inject(
+        function($rootScope, $compile, $httpBackend) {
+    $httpBackend.whenGET('url1').respond('partial {{$parent.url}}');
+    $httpBackend.whenGET('url2').respond(404);
 
-    expect($rootScope.$$childHead).toBeFalsy();
+    element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+    expect(element.children().scope()).toBeFalsy();
 
-    $rootScope.url = 'myUrl';
+    $rootScope.url = 'url1';
     $rootScope.$digest();
-    expect($rootScope.$$childHead).toBeTruthy();
+    $httpBackend.flush();
+    expect(element.children().scope()).toBeTruthy();
+    expect(element.text()).toBe('partial url1');
+
+    $rootScope.url = 'url2';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.children().scope()).toBeFalsy();
+    expect(element.text()).toBe('');
+
+    $rootScope.url = 'url1';
+    $rootScope.$digest();
+    expect(element.children().scope()).toBeTruthy();
 
     $rootScope.url = null;
     $rootScope.$digest();
-    expect($rootScope.$$childHead).toBeFalsy();
+    expect(element.children().scope()).toBeFalsy();
   }));
 
 
