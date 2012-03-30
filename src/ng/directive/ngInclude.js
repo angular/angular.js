@@ -110,7 +110,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                 $anchorScroll();
               }
 
-              scope.$emit('$includeContentLoaded');
+              childScope.$emit('$includeContentLoaded');
               scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
