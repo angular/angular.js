@@ -3,7 +3,7 @@
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-include
- * @restrict EA
+ * @restrict ECA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
@@ -74,7 +74,8 @@
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
                   function($http,   $templateCache,   $anchorScroll,   $compile) {
   return {
-    restrict: 'EA',
+    restrict: 'ECA',
+    terminal: true,
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
