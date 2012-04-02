@@ -30,4 +30,43 @@ describe('$sniffer', function() {
       expect(sniffer({onhashchange: true, document: {documentMode: 7}}).hashchange).toBe(false);
     });
   });
+
+
+  describe('hasEvent', function() {
+    var mockDocument, mockDivElement, $sniffer;
+
+    beforeEach(function() {
+      mockDocument = {createElement: jasmine.createSpy('createElement')};
+      mockDocument.createElement.andCallFake(function(elm) {
+        if (elm === 'div') return mockDivElement;
+      });
+
+      $sniffer = sniffer({document: mockDocument});
+    });
+
+
+    it('should return true if "oninput" is present in a div element', function() {
+      mockDivElement = {oninput: noop};
+
+      expect($sniffer.hasEvent('input')).toBe(true);
+    });
+
+
+    it('should return false if "oninput" is not present in a div element', function() {
+      mockDivElement = {};
+
+      expect($sniffer.hasEvent('input')).toBe(false);
+    });
+
+
+    it('should only create the element once', function() {
+      mockDivElement = {};
+
+      $sniffer.hasEvent('input');
+      $sniffer.hasEvent('input');
+      $sniffer.hasEvent('input');
+
+      expect(mockDocument.createElement).toHaveBeenCalledOnce();
+    });
+  });
 });
