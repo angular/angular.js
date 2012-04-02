@@ -5,7 +5,7 @@
 <ul doc:tutorial-nav="2"></ul>
 
 
-Now it's time to make the web page dynamic -- with Angular. We'll also add a test that verifies the
+Now it's time to make the web page dynamic — with AngularJS. We'll also add a test that verifies the
 code for the controller we are going to add.
 
 There are many ways to structure the code for an application. For Angular apps, we encourage the
@@ -23,64 +23,64 @@ The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
 
 
-## Template for the View
+## View and Template
 
-The __view__ component is constructed by Angular from this template:
+In Angular, the __view__ is a projection of the model through the HTML __template__. This means that
+whenever the model changes, Angular refreshes the appropriate binding points, which updates the
+view.
+
+The view component is constructed by Angular from this template:
 
 __`app/index.html`:__
 <pre>
-<html ng:app>
-...
-<body ng:controller="PhoneListCtrl">
+<html ng-app>
+<head>
+  ...
+  <script src="lib/angular/angular.js"></script>
+  <script src="js/controllers.js"></script>
+</head>
+<body ng-controller="PhoneListCtrl">
 
   <ul>
-    <li ng:repeat="phone in phones">
+    <li ng-repeat="phone in phones">
       {{phone.name}}
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
-
-  <script src="lib/angular/angular.js"></script>
-  <script src="js/controllers.js"></script>
 </body>
 </html>
 </pre>
 
-We replaced the hard-coded phone list with the {@link api/angular.widget.@ng:repeat ng:repeat
-widget} and two {@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
+We replaced the hard-coded phone list with the
+{@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat directive} and two
+{@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
-* The `ng:repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
+* The `ng-repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
 repeater tells Angular to create a `<li>` element for each phone in the list using the first `<li>`
 tag as the template.
 
-      <img src="img/tutorial/tutorial_02_final.png">
+* As we've learned in step 0, the curly braces around `phone.name` and `phone.snippet` denote
+bindings. As opposed to evaluating constants, these expression are refering to our application
+model, which was set up in our `PhoneListCtrl` controller.
 
-* The curly braces around `phone.name` and `phone.snippet` are examples of {@link
-guide/dev_guide.compiler.markup Angular markup}. The curly markup is shorthand for the Angular
-directive {@link api/angular.directive.ng:bind ng:bind}. An `ng:bind` directive indicates a
-template binding point to Angular. Binding points are locations in a template where Angular creates
-data-binding between the view and the model.
-
-In Angular, the view is a projection of the model through the HTML template. This means that
-whenever the model changes, Angular refreshes the appropriate binding points, which updates the
-view.
+      <img src="img/tutorial/tutorial_02.png">
 
 
 ## Model and Controller
 
 The data __model__ (a simple array  of phones in object literal notation) is instantiated within
-the __controller__ function(`PhoneListCtrl`):
+the `PhoneListCtrl` __controller__:
 
 __`app/js/controllers.js`:__
 <pre>
-function PhoneListCtrl() {
-  this.phones = [{"name": "Nexus S",
-                  "snippet": "Fast just got faster with Nexus S."},
-                 {"name": "Motorola XOOM™ with Wi-Fi",
-                  "snippet": "The Next, Next Generation tablet."},
-                 {"name": "MOTOROLA XOOM™",
-                  "snippet": "The Next, Next Generation tablet."}];
+function PhoneListCtrl($scope) {
+  $scope.phones = [{"name": "Nexus S",
+                    "snippet": "Fast just got faster with Nexus S."},
+                   {"name": "Motorola XOOM™ with Wi-Fi",
+                    "snippet": "The Next, Next Generation tablet."},
+                   {"name": "MOTOROLA XOOM™",
+                    "snippet": "The Next, Next Generation tablet."}];
 }
 </pre>
 
@@ -92,10 +92,15 @@ providing context for our data model, the controller allows us to establish data
 the model and the view. We connected the dots between the presentation, data, and logic components
 as follows:
 
-* The name of our controller function(in the JavaScript file `controllers.js`) matches the {@link
-api/angular.directive.ng:controller ng:controller} directive in the `<body>` tag (`PhoneListCtrl`).
-* The data is instantiated within the *scope* of our controller function; our template binding
-points are located within the block bounded by the `<body ng:controller="PhoneListCtrl">` tag.
+* `PhoneListCtrl` — the name of our controller function (located in the JavaScript file
+`controllers.js`), matches the value of the
+{@link api/angular.module.ng.$compileProvider.directive.ng-controller ng-controller} directive located
+on the `<body>` tag.
+
+* The phone data is then attached to the *scope* (`$scope`) that was injected into our controller
+function. The controller scope is a prototypically descendant of the root scope that was created
+when the application bootstrapped. This controller scope is available to all bindings located within
+the `<body ng-controller="PhoneListCtrl">` tag.
 
   The concept of a scope in Angular is crucial; a scope can be seen as the glue which allows the
 template, model and controller to work together. Angular uses scopes, along with the information
@@ -118,8 +123,10 @@ describe('PhoneCat controllers', function() {
   describe('PhoneListCtrl', function() {
 
     it('should create "phones" model with 3 phones', function() {
-      var ctrl = new PhoneListCtrl();
-      expect(ctrl.phones.length).toBe(3);
+      var scope = {},
+          ctrl = new PhoneListCtrl(scope);
+
+      expect(scope.phones.length).toBe(3);
     });
   });
 });
@@ -142,11 +149,11 @@ http://code.google.com/p/js-test-driver/ JsTestDriver}. To run the test, do the 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
 `./scripts/test-server.sh` to start the test web server.
 
-2. Open a new browser tab or window and navigate to {@link http://localhost:9876}.
+2. Open a new browser window and navigate to {@link http://localhost:9876}.
 
 3. Choose "Capture this browser in strict mode".
 
-   At this point, you can leave this tab open and forget about it. JsTestDriver will use it to
+   At this point, you can leave this window open and forget about it. JsTestDriver will use it to
 execute the tests and report the results in the terminal.
 
 4. Execute the test by running `./scripts/test.sh`
@@ -160,8 +167,8 @@ execute the tests and report the results in the terminal.
 
   Yay! The test passed! Or not...
 
-  Note: If you see errors after you run the test, close the browser tab and go back to the terminal
-and kill the script, then repeat the procedure above.
+  Note: If you see errors after you run the test, close the browser window and go back to the
+  terminal and kill the script, then repeat the procedure above.
 
 # Experiments
 
@@ -179,14 +186,14 @@ and kill the script, then repeat the procedure above.
 
           <table>
             <tr><th>row number</th></tr>
-            <tr ng:repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i}}</td></tr>
+            <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i}}</td></tr>
           </table>
 
   Now, make the list 1-based by incrementing `i` by one in the binding:
 
           <table>
             <tr><th>row number</th></tr>
-            <tr ng:repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
+            <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
           </table>
 
 * Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`, and rerun the

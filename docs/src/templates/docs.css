@@ -518,3 +518,24 @@ td.empty-corner-lt {
 .even {
   background-color: #d3d3d3;
 }
+
+/* tutorial */
+
+#content .tutorial-start {
+  -moz-border-radius:8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+
+  background-color: #7989D6;
+  padding: 10px;
+  margin-left: 43%;
+  width: 100px;
+  color: #fff;
+  font-weight: bold;
+
+}
+
+#content .tutorial-start:hover {
+  color: #000;
+}
+
