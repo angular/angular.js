@@ -274,7 +274,7 @@ function qFactory(nextTick, exceptionHandler) {
       then: function(callback, errback) {
         var result = defer();
         nextTick(function() {
-          result.resolve(errback(reason));
+          result.resolve((errback || defaultErrback)(reason));
         });
         return result.promise;
       }
