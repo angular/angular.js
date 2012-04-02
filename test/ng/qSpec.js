@@ -480,6 +480,14 @@ describe('q', function() {
       syncResolve(deferred, rejectedPromise);
       expect(log).toEqual(['error(Error: not gonna happen)']);
     });
+
+
+    it('should return a promise that forwards callbacks if the callbacks are missing', function() {
+      var rejectedPromise = q.reject('rejected');
+      promise.then(success(), error());
+      syncResolve(deferred, rejectedPromise.then());
+      expect(log).toEqual(['error(rejected)']);
+    });
   });
 
 
