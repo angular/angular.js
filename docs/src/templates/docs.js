@@ -133,14 +133,14 @@ SyntaxHighlighter['defaults'].gutter = true;
  * @param $cookieStore
  * @constructor
  */
-function TutorialInstructionsCtrl($cookieStore) {
-  this.selected = $cookieStore.get('selEnv') || 'git-mac';
+function TutorialInstructionsCtrl($scope, $cookieStore) {
+  $scope.selected = $cookieStore.get('selEnv') || 'git-mac';
 
-  this.currentCls = function(id, cls) {
+  $scope.currentCls = function(id, cls) {
     return this.selected == id  ? cls || 'current' : '';
   };
 
-  this.select = function(id) {
+  $scope.select = function(id) {
     this.selected = id;
     $cookieStore.put('selEnv', id);
   };
