@@ -302,13 +302,21 @@ forEach(['src', 'href'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
-      priority: 100,
+      priority: 99, // it needs to run after the attributes are interpolated
       compile: function(tpl, attr) {
         return function(scope, element, attr) {
-          attr.$$observers[attrName] = [];
-          attr.$observe(normalized, function(value) {
+          var value = attr[normalized];
+          if (value == undefined) {
+            // undefined value means that the directive is being interpolated
+            // so just register observer
+            attr.$$observers[attrName] = [];
+            attr.$observe(normalized, function(value) {
+              attr.$set(attrName, value);
+            });
+          } else {
+            // value present means that no interpolation, so copy to native attribute.
             attr.$set(attrName, value);
-          });
+          }
         };
       }
     };
