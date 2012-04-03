@@ -242,16 +242,39 @@ describe('$compile', function() {
       });
 
 
-      it('should prevent changing of structure', inject(
-        function($compile, $rootScope){
-          element = jqLite("<div><div log></div></div>");
-          var linkFn = $compile(element);
-          element.append("<div></div>");
-          expect(function() {
-            linkFn($rootScope);
-          }).toThrow('Template changed structure!');
-        }
-      ));
+      it('should allow changing the template structure after the current node', function() {
+        module(function($compileProvider){
+          $compileProvider.directive('after', valueFn({
+            compile: function(element) {
+              element.after('<span log>B</span>');
+            }
+          }));
+        });
+        inject(function($compile, $rootScope, log){
+          element = jqLite("<div><div after>A</div></div>");
+          $compile(element)($rootScope);
+          expect(element.text()).toBe('AB');
+          expect(log).toEqual('LOG');
+        });
+      });
+
+
+      it('should allow changing the template structure after the current node inside ngRepeat', function() {
+        module(function($compileProvider){
+          $compileProvider.directive('after', valueFn({
+            compile: function(element) {
+              element.after('<span log>B</span>');
+            }
+          }));
+        });
+        inject(function($compile, $rootScope, log){
+          element = jqLite('<div><div ng-repeat="i in [1,2]"><div after>A</div></div></div>');
+          $compile(element)($rootScope);
+          $rootScope.$digest();
+          expect(element.text()).toBe('ABAB');
+          expect(log).toEqual('LOG; LOG');
+        });
+      });
     });
 
     describe('compiler control', function() {
