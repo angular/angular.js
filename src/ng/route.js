@@ -51,15 +51,13 @@ function $RouteProvider(){
    *      If the option is set to `false` and url in the browser changes, then
    *      `$routeUpdate` event is broadcasted on the root scope.
    *
-   * @returns {Object} route object
+   * @returns {Object} self
    *
    * @description
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    var routeDef = routes[path];
-    if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
-    if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
+    routes[path] = extend({reloadOnSearch: true}, route);
 
     // create redirection for trailing slashes
     if (path) {
@@ -70,7 +68,7 @@ function $RouteProvider(){
       routes[redirectPath] = {redirectTo: path};
     }
 
-    return routeDef;
+    return this;
   };
 
   /**
@@ -83,9 +81,11 @@ function $RouteProvider(){
    * is matched.
    *
    * @param {Object} params Mapping information to be assigned to `$route.current`.
+   * @returns {Object} self
    */
   this.otherwise = function(params) {
     this.when(null, params);
+    return this;
   };
 
 

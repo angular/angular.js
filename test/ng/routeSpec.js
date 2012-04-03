@@ -10,7 +10,7 @@ describe('$route', function() {
     module(function($routeProvider) {
       $routeProvider.when('/Book/:book/Chapter/:chapter',
           {controller: noop, template: 'Chapter.html'});
-      $routeProvider.when('/Blank');
+      $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
       $rootScope.$on('$beforeRouteChange', function(event, next, current) {
@@ -143,6 +143,24 @@ describe('$route', function() {
       expect($route.current.template).toEqual('foo.html');
       expect($route.current.controller).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
+    });
+  });
+
+
+  it('should chain whens and otherwise', function() {
+    module(function($routeProvider){
+      $routeProvider.when('/foo', {template: 'foo.html'}).
+                     otherwise({template: 'bar.html'}).
+                     when('/baz', {template: 'baz.html'});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $rootScope.$digest();
+      expect($route.current.template).toBe('bar.html');
+
+      $location.url('/baz');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('baz.html');
     });
   });
 
