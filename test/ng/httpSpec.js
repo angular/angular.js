@@ -7,6 +7,7 @@ describe('$http', function() {
   beforeEach(function() {
     callback = jasmine.createSpy('done');
   });
+
   beforeEach(module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
   }));
@@ -127,9 +128,6 @@ describe('$http', function() {
       $httpBackend.expect('POST', '/url', 'some-data').respond('');
       $http({url: '/url', method: 'POST', data: 'some-data'});
     }));
-
-
-    // TODO(vojta): test passing timeout
 
 
     describe('params', function() {
@@ -942,5 +940,26 @@ describe('$http', function() {
         $httpBackend.flush();
       });
     });
+  });
+
+
+  it('should pass timeout and withCredentials', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials) {
+      expect(timeout).toBe(12345);
+      expect(withCredentials).toBe(true);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http) {
+      $http({method: 'GET', url: 'some.html', timeout: 12345, withCredentials: true});
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
   });
 });

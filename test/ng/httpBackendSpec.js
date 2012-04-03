@@ -113,6 +113,12 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should set withCredentials', function() {
+    $backend('GET', '/some.url', null, callback, {}, null, true);
+    expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
+  });
+
+
   describe('JSONP', function() {
 
     var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;
