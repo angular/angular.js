@@ -3,8 +3,8 @@
 describe('$routeParams', function() {
   it('should publish the params into a service',  function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo');
-      $routeProvider.when('/bar/:barId');
+      $routeProvider.when('/foo', {});
+      $routeProvider.when('/bar/:barId', {});
     });
 
     inject(function($rootScope, $route, $location, $routeParams) {
