@@ -2,14 +2,14 @@
 @name Developer Guide: Initializing Angular
 @description
 
-Initializing angular consists of loading the `angular.js` script in your page, and specifying how
-angular should process and manage the page. To initialize angular you do the following:
+Initializing Angular consists of loading the `angular.js` script in your page, and specifying how
+Angular should process and manage the page. To initialize Angular you do the following:
 
-* Specify the angular namespace in the `<html>` page
-* Choose which flavor of angular script to load (debug or production)
-* Specify whether or not angular should process and manage the page automatically (`ng-app`)
+* Specify the Angular namespace in the `<html>` page
+* Choose which flavor of Angular script to load (debug or production)
+* Specify whether or not Angular should process and manage the page automatically (`ng-app`)
 
-The simplest way to initialize angular is to load the angular script and tell angular to compile
+The simplest way to initialize Angular is to load the Angular script and tell Angular to compile
 and manage the whole page. You do this as follows:
 
 <pre>
@@ -29,8 +29,8 @@ and manage the whole page. You do this as follows:
 
         <html xmlns:ng="http://angularjs.org">
 
-You need to add the angular namespace declaration if you use `ng:something` style of declaring
-angular directives and you write your templates as XHTML. Or when you are targeting Internet
+You need to add the Angular namespace declaration if you use `ng:something` style of declaring
+Angular directives and you write your templates as XHTML. Or when you are targeting Internet
 Explorer older than version 9 (because older versions of IE do not render namespace
 properly for either HTML or XHTML). For more info please read {@link ie Internet Explorer
 Compatibility} doc.
@@ -39,7 +39,7 @@ Compatibility} doc.
 ## Creating Your Own Namespaces
 
 When you are ready to define your own {@link api/angular.module.ng.$compileProvider.directive
-directive}, you may chose to create your own namespace in addition to specifying the angular
+directive}, you may chose to create your own namespace in addition to specifying the Angular
 namespace. You use your own namespace to form the fully qualified name for directives that you
 create.
 
@@ -52,7 +52,7 @@ it to your unique domain:
 
 ## Loading the Angular Bootstrap Script
 
-The angular bootstrap script comes in two flavors; a debug script, and a production script:
+The Angular bootstrap script comes in two flavors; a debug script, and a production script:
 
 * angular-[version].js - This is a human-readable file, suitable for development and debugging.
 * angular-[version].min.js - This is a compressed and obfuscated file, suitable for use in
