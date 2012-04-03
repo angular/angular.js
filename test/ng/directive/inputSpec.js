@@ -236,7 +236,7 @@ describe('NgModelController', function() {
 describe('ng-model', function() {
 
   it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty)',
-      inject(function($compile, $rootScope) {
+      inject(function($compile, $rootScope, $sniffer) {
     var element = $compile('<input type="email" ng-model="value" />')($rootScope);
 
     $rootScope.$digest();
@@ -254,14 +254,14 @@ describe('ng-model', function() {
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('invalid-again');
-    browserTrigger(element, 'blur');
+    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(false);
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('vojta@google.com');
-    browserTrigger(element, 'blur');
+    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
     expect(element).toBeValid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(true);
@@ -282,7 +282,7 @@ describe('ng-model', function() {
 
 
 describe('input', function() {
-  var formElm, inputElm, scope, $compile;
+  var formElm, inputElm, scope, $compile, changeInputValueTo;
 
   function compileInput(inputHtml) {
     formElm = jqLite('<form name="form">' + inputHtml + '</form>');
@@ -290,14 +290,14 @@ describe('input', function() {
     $compile(formElm)(scope);
   }
 
-  function changeInputValueTo(value) {
-    inputElm.val(value);
-    browserTrigger(inputElm, 'blur');
-  }
-
-  beforeEach(inject(function($injector) {
+  beforeEach(inject(function($injector, $sniffer) {
     $compile = $injector.get('$compile');
     scope = $injector.get('$rootScope');
+
+    changeInputValueTo = function(value) {
+      inputElm.val(value);
+      browserTrigger(inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+    };
   }));
 
   afterEach(function() {
@@ -379,7 +379,7 @@ describe('input', function() {
   it('should ignore input without ng-model attr', function() {
     compileInput('<input type="text" name="whatever" required />');
 
-    browserTrigger(inputElm, 'blur');
+    changeInputValueTo('');
     expect(inputElm.hasClass('ng-valid')).toBe(false);
     expect(inputElm.hasClass('ng-invalid')).toBe(false);
     expect(inputElm.hasClass('ng-pristine')).toBe(false);
@@ -715,7 +715,7 @@ describe('input', function() {
       expect(inputElm[1].checked).toBe(true);
       expect(inputElm[2].checked).toBe(false);
 
-      browserTrigger(inputElm[2]);
+      browserTrigger(inputElm[2], 'click');
       expect(scope.color).toBe('blue');
     });
 
@@ -735,7 +735,7 @@ describe('input', function() {
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm[1].checked).toBe(false);
 
-      browserTrigger(inputElm[1]);
+      browserTrigger(inputElm[1], 'click');
       expect(scope.value).toBe('red');
 
       scope.$apply(function() {
@@ -753,7 +753,7 @@ describe('input', function() {
     it('should ignore checkbox without ng-model attr', function() {
       compileInput('<input type="checkbox" name="whatever" required />');
 
-      browserTrigger(inputElm, 'blur');
+      changeInputValueTo('');
       expect(inputElm.hasClass('ng-valid')).toBe(false);
       expect(inputElm.hasClass('ng-invalid')).toBe(false);
       expect(inputElm.hasClass('ng-pristine')).toBe(false);
@@ -851,7 +851,7 @@ describe('input', function() {
       compileInput('<textarea name="whatever" required></textarea>');
       inputElm = formElm.find('textarea');
 
-      browserTrigger(inputElm, 'blur');
+      changeInputValueTo('');
       expect(inputElm.hasClass('ng-valid')).toBe(false);
       expect(inputElm.hasClass('ng-invalid')).toBe(false);
       expect(inputElm.hasClass('ng-pristine')).toBe(false);
@@ -1050,33 +1050,6 @@ describe('input', function() {
       browserTrigger(inputElm, 'click');
       expect(scope.changeFn).toHaveBeenCalledOnce();
     });
-  });
-
-
-  describe('ng-model-instant', function() {
-
-    it('should bind keydown, change, input events', inject(function($browser) {
-      compileInput('<input type="text" ng-model="value" ng-model-instant />');
-
-      inputElm.val('value1');
-      browserTrigger(inputElm, 'keydown');
-
-      // should be async (because of keydown)
-      expect(scope.value).toBeUndefined();
-
-      $browser.defer.flush();
-      expect(scope.value).toBe('value1');
-
-      inputElm.val('value2');
-      browserTrigger(inputElm, 'change');
-      expect(scope.value).toBe('value2');
-
-      if (msie < 9) return;
-
-      inputElm.val('value3');
-      browserTrigger(inputElm, 'input');
-      expect(scope.value).toBe('value3');
-    }));
   });
 
 

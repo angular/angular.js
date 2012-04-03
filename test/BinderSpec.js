@@ -142,20 +142,6 @@ describe('Binder', function() {
     expect(html.indexOf('action="foo();"')).toBeGreaterThan(0);
   });
 
-  it('RepeaterAdd', inject(function($rootScope, $compile) {
-    element = $compile('<div><input type="text" ng-model="item.x" ng-repeat="item in items"></div>')($rootScope);
-    $rootScope.items = [{x:'a'}, {x:'b'}];
-    $rootScope.$apply();
-    var first = childNode(element, 1);
-    var second = childNode(element, 2);
-    expect(first.val()).toEqual('a');
-    expect(second.val()).toEqual('b');
-
-    first.val('ABC');
-    browserTrigger(first, 'blur');
-    expect($rootScope.items[0].x).toEqual('ABC');
-  }));
-
   it('ItShouldRemoveExtraChildrenWhenIteratingOverHash', inject(function($rootScope, $compile) {
     element = $compile('<div><div ng-repeat="i in items">{{i}}</div></div>')($rootScope);
     var items = {};
