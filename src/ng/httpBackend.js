@@ -32,7 +32,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locationProtocol) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout) {
+  return function(method, url, post, callback, headers, timeout, withCredentials) {
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -70,6 +70,10 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
               callback, status || xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
         }
       };
+
+      if (withCredentials) {
+        xhr.withCredentials = true;
+      }
 
       xhr.send(post || '');
 
