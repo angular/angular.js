@@ -2,10 +2,11 @@
 @name Developer Guide: Angular HTML Compiler
 @description
 
-The core of angular is its HTML compiler.  The compiler processes angular directives allowing them
-to transform a static HTML page into a dynamic web application.
+The core of Angular is its HTML compiler.  The compiler processes Angular 
+{@link api/angular.module.ng.$compileProvider.directive directives} allowing them to transform a 
+static HTML page into a dynamic web application.
 
-The default HTML transformations that the angular compiler provides are useful for building generic
+The default HTML transformations that the Angular compiler provides are useful for building generic
 apps, but you can also extend the compiler to create a domain-specific language for building
 specific types of web applications.
 
