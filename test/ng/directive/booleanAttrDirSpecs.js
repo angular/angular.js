@@ -10,7 +10,14 @@ describe('boolean attr directives', function() {
 
   it('should bind href', inject(function($rootScope, $compile) {
     element = $compile('<a ng-href="{{url}}"></a>')($rootScope)
-    $rootScope.url = 'http://server'
+    $rootScope.url = 'http://server';
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('http://server');
+  }));
+
+
+  it('should bind href even if no interpolation', inject(function($rootScope, $compile) {
+    element = $compile('<a ng-href="http://server"></a>')($rootScope)
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('http://server');
   }));
