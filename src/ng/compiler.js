@@ -350,7 +350,7 @@ function $CompileProvider($provide) {
      var linkingFns = [],
          directiveLinkingFn, childLinkingFn, directives, attrs, linkingFnFound;
 
-     for(var i = 0, ii = nodeList.length; i < ii; i++) {
+     for(var i = 0; i < nodeList.length; i++) {
        attrs = new Attributes();
 
        // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
@@ -374,10 +374,6 @@ function $CompileProvider($provide) {
      return linkingFnFound ? linkingFn : null;
 
      /* nodesetLinkingFn */ function linkingFn(scope, nodeList, rootElement, boundTranscludeFn) {
-       if (linkingFns.length != nodeList.length * 2) {
-         throw Error('Template changed structure!');
-       }
-
        var childLinkingFn, directiveLinkingFn, node, childScope, childTransclusionFn;
 
        for(var i=0, n=0, ii=linkingFns.length; i<ii; n++) {
