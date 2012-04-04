@@ -23,6 +23,18 @@ describe('boolean attr directives', function() {
   }));
 
 
+  it('should properly evaluate 0 as false', inject(function($rootScope, $compile) {
+    // jQuery does not treat 0 as false, when setting attr()
+    element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope)
+    $rootScope.isDisabled = 0;
+    $rootScope.$digest();
+    expect(element.attr('disabled')).toBeFalsy();
+    $rootScope.isDisabled = 1;
+    $rootScope.$digest();
+    expect(element.attr('disabled')).toBeTruthy();
+  }));
+
+
   it('should bind disabled', inject(function($rootScope, $compile) {
     element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope)
     $rootScope.isDisabled = false;

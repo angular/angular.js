@@ -288,7 +288,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
         return function(scope, element, attr) {
           attr.$$observers[attrName] = [];
           scope.$watch(attr[normalized], function(value) {
-            attr.$set(attrName, value);
+            attr.$set(attrName, !!value);
           });
         };
       }
