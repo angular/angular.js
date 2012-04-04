@@ -104,22 +104,22 @@ describe('ng-include', function() {
     $rootScope.url = 'url1';
     $rootScope.$digest();
     $httpBackend.flush();
-    expect(element.children().scope()).toBeTruthy();
+    expect(element.children().scope().$parent).toBe($rootScope);
     expect(element.text()).toBe('partial url1');
 
     $rootScope.url = 'url2';
     $rootScope.$digest();
     $httpBackend.flush();
-    expect(element.children().scope()).toBeFalsy();
+    expect($rootScope.$$childHead).toBeFalsy();
     expect(element.text()).toBe('');
 
     $rootScope.url = 'url1';
     $rootScope.$digest();
-    expect(element.children().scope()).toBeTruthy();
+    expect(element.children().scope().$parent).toBe($rootScope);
 
     $rootScope.url = null;
     $rootScope.$digest();
-    expect(element.children().scope()).toBeFalsy();
+    expect($rootScope.$$childHead).toBeFalsy();
   }));
 
 
