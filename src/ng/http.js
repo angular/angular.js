@@ -375,6 +375,9 @@ function $HttpProvider() {
      *      {@link angular.module.ng.$cacheFactory $cacheFactory}, this cache will be used for
      *      caching.
      *    - **timeout** – `{number}` – timeout in milliseconds.
+     *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
+     *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
+     *      requests with credentials} for more information.
      *
      * @returns {HttpPromise} Returns a {@link angular.module.ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -674,7 +677,8 @@ function $HttpProvider() {
 
       // if we won't have the response in cache, send the request to the backend
       if (!cachedResp) {
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout);
+        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+            config.withCredentials);
       }
 
       return promise;
