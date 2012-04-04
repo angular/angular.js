@@ -864,6 +864,88 @@ describe('$location', function() {
     });
 
 
+    it('should not rewrite when link to different base path when history enabled on new browser',
+        function() {
+      configureService('/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when link to different base path when history enabled on old browser',
+        function() {
+      configureService('/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when link to different base path when history disabled', function() {
+      configureService('/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history enabled on new browser',
+        function() {
+      configureService('http://host.com/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history enabled on old browser',
+        function() {
+      configureService('http://host.com/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should not rewrite when full link to different base path when history disabled', function() {
+      configureService('http://host.com/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!(msie < 9)) {
 
