@@ -8,14 +8,6 @@ describe('boolean attr directives', function() {
   });
 
 
-  it('should bind href', inject(function($rootScope, $compile) {
-    element = $compile('<a ng-href="{{url}}"></a>')($rootScope)
-    $rootScope.url = 'http://server'
-    $rootScope.$digest();
-    expect(element.attr('href')).toEqual('http://server');
-  }));
-
-
   it('should bind disabled', inject(function($rootScope, $compile) {
     element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope)
     $rootScope.isDisabled = false;
@@ -70,24 +62,6 @@ describe('boolean attr directives', function() {
     $rootScope.$digest();
     expect(element.attr('multiple')).toBeTruthy();
   }));
-
-
-  it('should bind src', inject(function($rootScope, $compile) {
-    element = $compile('<div ng-src="{{url}}" />')($rootScope)
-    $rootScope.url = 'http://localhost/';
-    $rootScope.$digest();
-    expect(element.attr('src')).toEqual('http://localhost/');
-  }));
-
-
-  it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
-    element = $compile('<a ng-href="{{url}}" rel="{{rel}}"></a>')($rootScope);
-    $rootScope.url = 'http://server';
-    $rootScope.rel = 'REL';
-    $rootScope.$digest();
-    expect(element.attr('href')).toEqual('http://server');
-    expect(element.attr('rel')).toEqual('REL');
-  }));
 });
 
 
@@ -109,9 +83,15 @@ describe('ng-src', function() {
 
 
 describe('ng-href', function() {
+  var element;
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
 
   it('should interpolate the expression and bind to href', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope)
+    element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope)
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('some/');
 
@@ -119,7 +99,15 @@ describe('ng-href', function() {
       $rootScope.id = 1;
     });
     expect(element.attr('href')).toEqual('some/1');
+  }));
 
-    dealoc(element);
+
+  it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
+    element = $compile('<a ng-href="{{url}}" rel="{{rel}}"></a>')($rootScope);
+    $rootScope.url = 'http://server';
+    $rootScope.rel = 'REL';
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('http://server');
+    expect(element.attr('rel')).toEqual('REL');
   }));
 });
