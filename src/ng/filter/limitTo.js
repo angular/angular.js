@@ -31,7 +31,7 @@
          }
        </script>
        <div ng-controller="Ctrl">
-         Limit {{numbers}} to: <input type="integer" ng-model="limit" ng-model-instant>
+         Limit {{numbers}} to: <input type="integer" ng-model="limit">
          <p>Output: {{ numbers | limitTo:limit }}</p>
        </div>
      </doc:source>

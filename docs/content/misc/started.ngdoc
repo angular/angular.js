@@ -65,7 +65,7 @@ This example demonstrates angular's two-way data binding:
 
 <doc:example>
  <doc:source>
-  Your name: <input type="text" ng-model="yourname" ng-model-instant placeholder="World">
+  Your name: <input type="text" ng-model="yourname" placeholder="World">
   <hr>
   Hello {{yourname || 'World'}}!
  </doc:source>

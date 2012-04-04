@@ -23,7 +23,7 @@
          }
        </script>
        <div ng-controller="Ctrl">
-         <input type="number" ng-model="amount" ng-model-instant> <br>
+         <input type="number" ng-model="amount"> <br>
          default currency symbol ($): {{amount | currency}}<br>
          custom currency identifier (USD$): {{amount | currency:"USD$"}}
        </div>
@@ -74,7 +74,7 @@ function currencyFilter($locale) {
          }
        </script>
        <div ng-controller="Ctrl">
-         Enter number: <input ng-model='val' ng-model-instant><br>
+         Enter number: <input ng-model='val'><br>
          Default formatting: {{val | number}}<br>
          No fractions: {{val | number:0}}<br>
          Negative number: {{-val | number:4}}
@@ -468,7 +468,7 @@ var uppercaseFilter = valueFn(uppercase);
          }
        </script>
        <div ng-controller="Ctrl">
-       Snippet: <textarea ng-model="snippet" ng-model-instant cols="60" rows="3"></textarea>
+       Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
        <table>
          <tr>
            <td>Filter</td>

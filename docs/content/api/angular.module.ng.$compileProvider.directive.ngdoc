@@ -38,7 +38,7 @@ the following example.
      }
    </script>
    <div ng-controller="Ctrl1">
-     Hello <input ng-model='name' ng-model-instant> <hr/>
+     Hello <input ng-model='name'> <hr/>
      &ltspan ng:bind="name"&gt <span ng:bind="name"></span> <br/>
      &ltspan ng_bind="name"&gt <span ng_bind="name"></span> <br/>
      &ltspan ng-bind="name"&gt <span ng-bind="name"></span> <br/>

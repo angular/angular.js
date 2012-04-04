@@ -38,9 +38,9 @@ allow a user to enter data.
     <input type="text" ng-model="user.name" required/> <br><br>
 
     <label>Address:</label><br>
-    <input type="text" ng-model="user.address.line1" ng-model-instant size="33" required> <br>
-    <input type="text" ng-model="user.address.city" ng-model-instant size="12" required>,
-    <input type="text" ng-model="user.address.state" ng-model-instant
+    <input type="text" ng-model="user.address.line1" size="33" required> <br>
+    <input type="text" ng-model="user.address.city" size="12" required>,
+    <input type="text" ng-model="user.address.state"
            ng-pattern="state" size="2" required>
     <input type="text" ng-model="user.address.zip" size="5"
            ng-pattern="zip" required><br><br>
@@ -54,7 +54,7 @@ allow a user to enter data.
         <option>pager</option>
         <option>IM</option>
       </select>
-      <input type="text" ng-model="contact.value" ng-model-instant required/>
+      <input type="text" ng-model="contact.value" required>
        [ <a href="" ng-click="removeContact(contact)">X</a> ]
     </div>
     <hr/>
