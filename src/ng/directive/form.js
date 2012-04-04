@@ -70,23 +70,43 @@ function FormController(element, attrs) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
     }
-    forEach(errors, cleanupControlErrors, control);
+    forEach(errors, function(queue, validationToken) {
+      form.$setValidity(validationToken, true, control);
+    });
   };
 
   form.$setValidity = function(validationToken, isValid, control) {
-    if (isValid) {
-      cleanupControlErrors(errors[validationToken], validationToken, control);
+    var queue = errors[validationToken];
 
-      if (!invalidCount) {
-        toggleValidCss(isValid);
-        form.$valid = true;
-        form.$invalid = false;
+    if (isValid) {
+      if (queue) {
+        arrayRemove(queue, control);
+        if (!queue.length) {
+          invalidCount--;
+          if (!invalidCount) {
+            toggleValidCss(isValid);
+            form.$valid = true;
+            form.$invalid = false;
+          }
+          errors[validationToken] = false;
+          toggleValidCss(true, validationToken);
+          parentForm.$setValidity(validationToken, true, form);
+        }
       }
+
     } else {
       if (!invalidCount) {
         toggleValidCss(isValid);
       }
-      addControlError(validationToken, control);
+      if (queue) {
+        if (includes(queue, control)) return;
+      } else {
+        errors[validationToken] = queue = [];
+        invalidCount++;
+        toggleValidCss(false, validationToken);
+        parentForm.$setValidity(validationToken, false, form);
+      }
+      queue.push(control);
 
       form.$valid = false;
       form.$invalid = true;
@@ -99,31 +119,6 @@ function FormController(element, attrs) {
     form.$pristine = false;
   };
 
-  function cleanupControlErrors(queue, validationToken, control) {
-    if (queue) {
-      control = control || this; // so that we can be used in forEach;
-      arrayRemove(queue, control);
-      if (!queue.length) {
-        invalidCount--;
-        errors[validationToken] = false;
-        toggleValidCss(true, validationToken);
-        parentForm.$setValidity(validationToken, true, form);
-      }
-    }
-  }
-
-  function addControlError(validationToken, control) {
-    var queue = errors[validationToken];
-    if (queue) {
-      if (includes(queue, control)) return;
-    } else {
-      errors[validationToken] = queue = [];
-      invalidCount++;
-      toggleValidCss(false, validationToken);
-      parentForm.$setValidity(validationToken, false, form);
-    }
-    queue.push(control);
-  }
 }
 
 
