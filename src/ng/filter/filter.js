@@ -41,7 +41,7 @@
                                 {name:'Adam', phone:'555-5678'},
                                 {name:'Julie', phone:'555-8765'}]"></div>
 
-       Search: <input ng-model="searchText" ng-model-instant>
+       Search: <input ng-model="searchText">
        <table id="searchTextResults">
          <tr><th>Name</th><th>Phone</th><tr>
          <tr ng-repeat="friend in friends | filter:searchText">
@@ -50,9 +50,9 @@
          <tr>
        </table>
        <hr>
-       Any: <input ng-model="search.$" ng-model-instant> <br>
-       Name only <input ng-model="search.name" ng-model-instant><br>
-       Phone only <input ng-model="search.phone" ng-model-instant><br>
+       Any: <input ng-model="search.$"> <br>
+       Name only <input ng-model="search.name"><br>
+       Phone only <input ng-model="search.phone"å><br>
        <table id="searchObjResults">
          <tr><th>Name</th><th>Phone</th><tr>
          <tr ng-repeat="friend in friends | filter:search">
