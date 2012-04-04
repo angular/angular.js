@@ -189,16 +189,16 @@ describe('form', function() {
 
     it('should deregister a child form when its DOM is removed', function() {
       doc = jqLite(
-          '<form name="parent">' +
-            '<div class="ng-form" name="child">' +
-              '<input ng:model="modelA" name="inputA" required>' +
-            '</div>' +
+        '<form name="parent">' +
+          '<div class="ng-form" name="child">' +
+          '<input ng:model="modelA" name="inputA" required>' +
+          '</div>' +
           '</form>');
       $compile(doc)(scope);
       scope.$apply();
 
       var parent = scope.parent,
-          child = scope.child;
+        child = scope.child;
 
       expect(parent).toBeDefined();
       expect(child).toBeDefined();
@@ -208,6 +208,39 @@ describe('form', function() {
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
       expect(parent.$error.required).toBe(false);
+    });
+
+
+    it('should deregister a input when its removed from DOM', function() {
+      doc = jqLite(
+        '<form name="parent">' +
+          '<div class="ng-form" name="child">' +
+            '<input ng:model="modelA" name="inputA" required>' +
+          '</div>' +
+        '</form>');
+      $compile(doc)(scope);
+      scope.$apply();
+
+      var parent = scope.parent,
+          child = scope.child,
+          input = child.inputA;
+
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+      expect(parent.$error.required).toEqual([child]);
+      expect(child.$error.required).toEqual([input]);
+      expect(doc.hasClass('ng-invalid')).toBe(true);
+      expect(doc.hasClass('ng-invalid-required')).toBe(true);
+      expect(doc.find('div').hasClass('ng-invalid')).toBe(true);
+      expect(doc.find('div').hasClass('ng-invalid-required')).toBe(true);
+      doc.find('input').remove(); //remove child
+
+      expect(parent.$error.required).toBe(false);
+      expect(child.$error.required).toBe(false);
+      expect(doc.hasClass('ng-valid')).toBe(true);
+      expect(doc.hasClass('ng-valid-required')).toBe(true);
+      expect(doc.find('div').hasClass('ng-valid')).toBe(true);
+      expect(doc.find('div').hasClass('ng-valid-required')).toBe(true);
     });
 
 
