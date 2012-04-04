@@ -110,4 +110,10 @@ describe('ng-href', function() {
     expect(element.attr('href')).toEqual('http://server');
     expect(element.attr('rel')).toEqual('REL');
   }));
+
+
+  it('should set value to href if it is not interpolated', inject(function($rootScope, $compile) {
+    element = $compile('<a ng-href="some/value">link</a>')($rootScope);
+    expect(element.attr('href')).toBe('some/value');
+  }));
 });
