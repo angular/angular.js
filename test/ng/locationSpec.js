@@ -687,7 +687,7 @@ describe('$location', function() {
     function initBrowser() {
       return function($browser){
         $browser.url('http://host.com/base');
-        $browser.$$baseHref = '/base/index.html';
+        $browser.$$baseHref = '/base/';
       };
     }
 
@@ -752,7 +752,7 @@ describe('$location', function() {
         initLocation(),
         function($browser) {
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+          expectRewriteTo($browser, 'http://host.com/base/#!/link?a#b');
         }
       );
     });
@@ -765,7 +765,7 @@ describe('$location', function() {
         initLocation(),
         function($browser) {
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+          expectRewriteTo($browser, 'http://host.com/base/#!/link?a#b');
         }
       );
     });
@@ -798,7 +798,7 @@ describe('$location', function() {
 
 
     it('should not rewrite full url links do different domain', function() {
-      configureService('http://www.dot.abc/a?b=c', true);
+      configureService('http://www.dot.abc/base/a?b=c', true);
       inject(
         initBrowser(),
         initLocation(),
@@ -843,7 +843,7 @@ describe('$location', function() {
         initLocation(),
         function($browser) {
           browserTrigger(link, 'click');
-          expectRewriteTo($browser, 'http://host.com/base/index.html#!/new');
+          expectRewriteTo($browser, 'http://host.com/base/#!/new');
         }
       );
     });
@@ -863,6 +863,82 @@ describe('$location', function() {
       );
     });
 
+
+    it('should not rewrite when link to different base path when history enabled on new browser', function() {
+      configureService('/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+	it('should not rewrite when link to different base path when history enabled on old browser', function() {
+      configureService('/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+	it('should not rewrite when link to different base path when history disabled', function() {
+      configureService('/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+	it('should not rewrite when full link to different base path when history enabled on new browser', function() {
+      configureService('http://host.com/other_base/link', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+	it('should not rewrite when full link to different base path when history enabled on old browser', function() {
+      configureService('http://host.com/other_base/link', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+	it('should not rewrite when full link to different base path when history disabled', function() {
+      configureService('http://host.com/other_base/link', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!(msie < 9)) {
