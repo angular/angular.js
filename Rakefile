@@ -98,11 +98,8 @@ end
 desc 'Generate docs'
 task :docs => [:init] do
   `node docs/src/gen-docs.js`
-  File.open(path_to('docs/.htaccess'), File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('"NG_VERSION_FULL"', NG_VERSION.full)
+  rewrite_file(path_to('docs/.htaccess')) do |content|
+    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
   end
 end
 
@@ -135,87 +132,38 @@ task :package => [:clean, :compile, :docs] do
   FileUtils.cp_r path_to('i18n'), "#{pkg_dir}/i18n-#{NG_VERSION.full}"
   FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{NG_VERSION.full}"
 
-  File.open("#{pkg_dir}/angular-mocks-#{NG_VERSION.full}.js", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('"NG_VERSION_FULL"', NG_VERSION.full)
-  end
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  rewrite_file("#{pkg_dir}/angular-mocks-#{NG_VERSION.full}.js") do |content|
+    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
   end
 
 
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  [ "#{pkg_dir}/docs-#{NG_VERSION.full}/index.html",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq.html",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-nocache.html",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-nocache.html",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-debug.html",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-debug.html"
+  ].each do |src|
+    rewrite_file(src) do |content|
+      content.sub!('angular.js', "angular-#{NG_VERSION.full}.js").
+              sub!('angular-resource.js', "angular-resource-#{NG_VERSION.full}.js").
+              sub!('angular-cookies.js', "angular-cookies-#{NG_VERSION.full}.js")
+    end
   end
 
 
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-nocache.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  rewrite_file("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html") do |content|
+    content.sub!('angular-scenario.js', "angular-scenario-#{NG_VERSION.full}.js")
   end
 
 
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-nocache.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
-  end
-
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-debug.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('../angular.js', "../angular-#{NG_VERSION.full}.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
-  end
-
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-debug.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('../angular.js', "../angular-#{NG_VERSION.full}.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
-  end
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular-scenario.js', "angular-scenario-#{NG_VERSION.full}.js")
-  end
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache.manifest", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
-  end
-
-  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache-offline.manifest", File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  [ "#{pkg_dir}/docs-#{NG_VERSION.full}/appcache.manifest",
+    "#{pkg_dir}/docs-#{NG_VERSION.full}/appcache-offline.manifest"
+  ].each do |src|
+    rewrite_file(src) do |content|
+      content.sub!('../angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+              sub!('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+    end
   end
 
 
@@ -303,6 +251,7 @@ def path_to(filename)
   return File.join(BUILD_DIR, *filename)
 end
 
+
 def closure_compile(filename)
   puts "Compiling #{filename} ..."
 
@@ -314,14 +263,12 @@ def closure_compile(filename)
         --js #{path_to(filename)} \
         --js_output_file #{min_path})
 
-  File.open(min_path, File::RDWR) do |f|
-    text = f.read
-    f.truncate 0
-    f.rewind
-    f.write text.sub("'use strict';", "").
-                 sub(/\(function\([^)]*\)\{/, "\\0'use strict';")
+  rewrite_file(min_path) do |content|
+    content.sub!("'use strict';", "").
+            sub!(/\(function\([^)]*\)\{/, "\\0'use strict';")
   end
 end
+
 
 def concat_file(filename, deps, footer='')
   puts "Building #{filename} ..."
@@ -342,3 +289,17 @@ def concat_file(filename, deps, footer='')
   end
 end
 
+
+def rewrite_file(filename)
+  File.open(filename, File::RDWR) do |f|
+    content = f.read
+
+    content = yield content
+
+    raise "File rewrite failed - No content!" unless content
+
+    f.truncate 0
+    f.rewind
+    f.write content
+  end
+end
