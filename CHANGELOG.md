@@ -1,3 +1,64 @@
+<a name="v1.0.0rc4"></a>
+# v1.0.0rc4 insomnia-induction (2012-04-05)
+
+
+## Bug Fixes
+
+- **$compile:** relax the restriction that directives can not add siblings
+  ([7e86eacf](https://github.com/angular/angular.js/commit/7e86eacf301934335c22908ec6dbd1a083d88fab))
+- **$location:** search setter should not double-encode the value
+  ([59fa40ec](https://github.com/angular/angular.js/commit/59fa40ec0e851759d35fb0ea5fd01019d1403049),
+   [#751](https://github.com/angular/angular.js/issues/751))
+- **$q:** $q.reject should forward callbacks if missing
+  ([c0b78478](https://github.com/angular/angular.js/commit/c0b78478a0e64942a69aba7c1bfa4eb01c0e9a5e),
+   [#845](https://github.com/angular/angular.js/issues/845))
+- **build:** move `'use strict';` flag into the angular closure
+  ([637817e3](https://github.com/angular/angular.js/commit/637817e3ba48d149e7a9628533d21e81c650d988))
+- **Directives**:
+  - **ngModel:** update model on each key stroke (revert ngModelInstant)
+    ([06d09550](https://github.com/angular/angular.js/commit/06d0955074f79de553cc34fbf945045dc458e064))
+  - **booleanAttrs:** always convert the model to boolean before setting the element property
+    ([dcb8e076](https://github.com/angular/angular.js/commit/dcb8e0767fbf0a7a55f3b0045fd01b2532ea5441))
+  - **form:** preperly clean up when invalid widget is removed
+    ([21b77ad5](https://github.com/angular/angular.js/commit/21b77ad5c231ab0e05eb89f22005f7ed8d40a6c1))
+  - **ngHref:** copy even if no binding
+    ([2f5dba48](https://github.com/angular/angular.js/commit/2f5dba488e855bcdbb9304aa809efcb9de7b43e9))
+  - **ngInclude:** fire $includeContentLoaded on proper (child) scope
+    ([199ac269](https://github.com/angular/angular.js/commit/199ac269869a57bb63d60c9b3f510d546bf0c9b2))
+
+
+## Features
+
+- **$http:** add `withCredentials` config option
+  ([86182a94](https://github.com/angular/angular.js/commit/86182a9415b9209662b16c25c180b958ba7e6cf9))
+- **$route:** allow chaining of whens and otherwise
+  ([15ecc6f3](https://github.com/angular/angular.js/commit/15ecc6f3668885ebc5c7130dd34e00059ddf79ae))
+- **ngInclude:** allow ngInclude as css class
+  ([428f2b56](https://github.com/angular/angular.js/commit/428f2b563663315df4f235ca19cef4bdcf82e2ab))
+
+
+## Docs
+- reintroduced the tutorial docs - currently only steps 0-3 are up to date and the code is not split
+  up into step specific commits yet. See
+  [this branch](https://github.com/angular/angular-phonecat/tree/v1.0-update) instead.
+- various other doc fixes
+
+
+## Breaking Changes
+
+We removed two useless features:
+
+- $routeProvider.when used to return the route definition object but now it returns self
+  ([15ecc6f3](https://github.com/angular/angular.js/commit/15ecc6f3668885ebc5c7130dd34e00059ddf79ae))
+- ngInclude does not have scope attribute anymore
+  ([5f70d615](https://github.com/angular/angular.js/commit/5f70d615a5f7e102424c6adc15d7a6f697870b6e))
+- ngModelInstant directive is no more and ngModel behaves just as ngModelInstant used to. This
+  doesn't really break anything, just remember to remove all ngModelInstant references from your
+  template as they serve no purpose now.
+  ([06d09550](https://github.com/angular/angular.js/commit/06d0955074f79de553cc34fbf945045dc458e064))
+
+
+
 <a name="v1.0.0rc3"></a>
 # v1.0.0rc3 barefoot-telepathy (2012-03-29)
 
@@ -9,13 +70,13 @@
     ([f2106692](https://github.com/angular/angular.js/commit/f2106692b1ebf00aa5f8b2accd75f014b6cd4faa))
   - create new (isolate) scopes for directives on root elements
     ([5390fb37](https://github.com/angular/angular.js/commit/5390fb37d2c01937922613fc57df4986af521787),
-     closes [#817](https://github.com/angular/angular.js/issues/817))
+      [#817](https://github.com/angular/angular.js/issues/817))
 - **angular.forEach:** should ignore prototypically inherited properties
   ([8d7e6948](https://github.com/angular/angular.js/commit/8d7e6948496ff26ef1da8854ba02fcb8eebfed61),
-    closes [#813](https://github.com/angular/angular.js/issues/813))
+   [#813](https://github.com/angular/angular.js/issues/813))
 - **initialization:** use jQuery#ready for initialization if available
   ([cb2ad9ab](https://github.com/angular/angular.js/commit/cb2ad9abf24e6f855cc749efe3155bd7987ece9d),
-    closes [#818](https://github.com/angular/angular.js/issues/818))
+   [#818](https://github.com/angular/angular.js/issues/818))
 - **$q:** resolve all of nothing to nothing
   ([ac75079e](https://github.com/angular/angular.js/commit/ac75079e2113949d5d64adbcf23d56f3cf295d41))
 
@@ -37,7 +98,7 @@
   ([5fdab52d](https://github.com/angular/angular.js/commit/5fdab52dd7c269f99839f4fa6b5854d9548269fa))
 - **ngValue:** directive that allows radio inputs to have non string values
   ([09e175f0](https://github.com/angular/angular.js/commit/09e175f02cca0f4a295fd0c9b980cd8f432e722b),
-    closes [#816](https://github.com/angular/angular.js/issues/816))
+   [#816](https://github.com/angular/angular.js/issues/816))
 
 
 ## Breaking Changes
