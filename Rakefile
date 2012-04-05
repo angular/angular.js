@@ -305,11 +305,22 @@ end
 
 def closure_compile(filename)
   puts "Compiling #{filename} ..."
+
+  min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
+
   %x(java -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
         --js #{path_to(filename)} \
-        --js_output_file #{path_to(filename.gsub(/\.js$/, '.min.js'))})
+        --js_output_file #{min_path})
+
+  File.open(min_path, File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub("'use strict';", "").
+                 sub(/\(function\([^)]*\)\{/, "\\0'use strict';")
+  end
 end
 
 def concat_file(filename, deps, footer='')
@@ -324,7 +335,7 @@ def concat_file(filename, deps, footer='')
               gsub('"NG_VERSION_DOT"', NG_VERSION.dot).
               gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename).
               gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
-              gsub(/'USE STRICT'/, "'use strict'")      # rename the placeholder in angular.prefix
+              sub(/\(function\([^)]*\)\s*\{/, "\\0\n'use strict';") # add single strict mode flag
 
     f.write(content)
     f.write(footer)
