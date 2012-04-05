@@ -26,7 +26,7 @@
       addTag('link', {rel: 'stylesheet', href: 'syntaxhighlighter/syntaxhighlighter-combined.css',
                       type: 'text/css'});
       addTag('script', {src: 'syntaxhighlighter/syntaxhighlighter-combined.js'}, sync);
-      if (jQuery) addTag('script', {src: 'jquery.min.js'});
+      if (jQuery) addTag('script', {src: debug ? 'jquery.js' : 'jquery.min.js'});
       addTag('script', {src: path('angular.js')}, sync);
       addTag('script', {src: path('angular-resource.js') }, sync);
       addTag('script', {src: path('angular-cookies.js') }, sync);

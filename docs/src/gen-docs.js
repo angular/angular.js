@@ -68,6 +68,7 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
   writesFuture.push(writer.copyTpl('jquery.min.js'));
+  writesFuture.push(writer.copyTpl('jquery.js'));
 
   writesFuture.push(writer.output('docs-keywords.js',
                                 ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
