@@ -2,19 +2,27 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-bind
+ * @name angular.module.ng.$compileProvider.directive.ngBind
  *
  * @description
- * The `ng-bind` attribute tells Angular to replace the text content of the specified HTML element
+ * The `ngBind` attribute tells Angular to replace the text content of the specified HTML element
  * with the value of a given expression, and to update the text content when the value of that
  * expression changes.
  *
- * Typically, you don't use `ng-bind` directly, but instead you use the double curly markup like
- * `{{ expression }}` and let the Angular compiler transform it to
- * `<span ng-bind="expression"></span>` when the template is compiled.
+ * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
+ * `{{ expression }}` which is similar but less verbose.
+ *
+ * Once scenario in which the use of `ngBind` is prefered over `{{ expression }}` binding is when
+ * it's desirable to put bindings into template that is momentarily displayed by the browser in its
+ * raw state before Angular compiles it. Since `ngBind` is an element attribute, it makes make the
+ * bindings invisible to the user while the page is loading.
+ *
+ * An alternative solution to this problem would be using the
+ * {@link angular.module.ng.$compileProvider.directive.ngCloak ngCloak} directive.
+ *
  *
  * @element ANY
- * @param {expression} ng-bind {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBind {@link guide/dev_guide.expressions Expression} to evaluate.
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
@@ -49,18 +57,18 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-bind-html-unsafe
+ * @name angular.module.ng.$compileProvider.directive.ngBindHtmlUnsafe
  *
  * @description
  * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
  * element. *The innerHTML-ed content will not be sanitized!* You should use this directive only if
- * {@link angular.module.ng.$compileProvider.directive.ng-bind-html ng-bind-html} directive is too
+ * {@link angular.module.ng.$compileProvider.directive.ngBindHtml ngBindHtml} directive is too
  * restrictive and when you absolutely trust the source of the content you are binding to.
  *
  * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} ng-bind-html-unsafe {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBindHtmlUnsafe {@link guide/dev_guide.expressions Expression} to evaluate.
  */
 var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
@@ -72,7 +80,7 @@ var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-bind-html
+ * @name angular.module.ng.$compileProvider.directive.ngBindHtml
  *
  * @description
  * Creates a binding that will sanitize the result of evaluating the `expression` with the
@@ -82,7 +90,7 @@ var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
  * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} ng-bind-html {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBindHtml {@link guide/dev_guide.expressions Expression} to evaluate.
  */
 var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
   return function(scope, element, attr) {
@@ -98,17 +106,17 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-bind-template
+ * @name angular.module.ng.$compileProvider.directive.ngBindTemplate
  *
  * @description
- * The `ng-bind-template` attribute specifies that the element
- * text should be replaced with the template in ng-bind-template.
- * Unlike ng-bind the ng-bind-template can contain multiple `{{` `}}`
+ * The `ngBindTemplate` directive specifies that the element
+ * text should be replaced with the template in ngBindTemplate.
+ * Unlike ngBind the ngBindTemplate can contain multiple `{{` `}}`
  * expressions. (This is required since some HTML elements
  * can not have SPAN elements such as TITLE, or OPTION to name a few.)
  *
  * @element ANY
- * @param {string} ng-bind-template template of form
+ * @param {string} ngBindTemplate template of form
  *   <tt>{{</tt> <tt>expression</tt> <tt>}}</tt> to eval.
  *
  * @example

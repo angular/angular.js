@@ -45,7 +45,7 @@ __`app/index.html`:__
 
 We added a standard HTML `<input>` tag and used angular's
 {@link api/angular.module.ng.$filter.filter $filter} function to process the input for the
-`ng-repeater`.
+`ngRepeate` directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:
@@ -63,7 +63,7 @@ the DOM to reflect the current state of the model.
 * Use of `filter` filter. The {@link api/angular.module.ng.$filter.filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
 
-  `ng-repeat` automatically updates the view in response to the changing number of phones returned
+  `ngRepeat` automatically updates the view in response to the changing number of phones returned
 by the `filter` filter. The process is completely transparent to the developer.
 
 ## Test
@@ -131,7 +131,7 @@ model lives in the scope defined by the body element:
           <body ng-controller="PhoneListCtrl">
 
   If you want to bind to the query model from the `<title>` element, you must __move__ the
-`ng-controller` declaration to the HTML element because it is the common parent of both the body
+`ngController` declaration to the HTML element because it is the common parent of both the body
 and title elements:
 
           <html ng-app ng-controller="PhoneListCtrl">
@@ -140,9 +140,9 @@ and title elements:
 
   While using double curlies works fine in within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link api/angular.module.ng.$compileProvider.directive.ng-bind
-ng-bind} or {@link api/angular.module.ng.$compileProvider.directive.ng-bind-template
-ng-bind-template} directives, which are invisible to the user while the page is loading:
+solution would be to use the {@link api/angular.module.ng.$compileProvider.directive.ngBind
+ngBind} or {@link api/angular.module.ng.$compileProvider.directive.ngBindTemplate
+ngBindTemplate} directives, which are invisible to the user while the page is loading:
 
           <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
 

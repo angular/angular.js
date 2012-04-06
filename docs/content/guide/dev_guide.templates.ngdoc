@@ -26,7 +26,7 @@ with {@link dev_guide.expressions expressions}:
 
 <pre>
 <html ng-app>
- <!-- Body tag augmented with ng-controller directive  -->
+ <!-- Body tag augmented with ngController directive  -->
  <body ng-controller="MyController">
    <input ng-model="foo" value="bar">
    <!-- Button tag with ng-click directive, and
@@ -42,7 +42,7 @@ In a simple single-page app, the template consists of HTML, CSS, and angular dir
 in just one HTML file (usually `index.html`). In a more complex app, you can display multiple views
 within one main page using "partials", which are segments of template located in separate HTML
 files.  You "include" the partials in the main page using the {@link api/angular.module.ng.$route
-$route} service in conjunction with the {@link api/angular.module.ng.$compileProvider.directive.ng-view ng-view} directive. An
+$route} service in conjunction with the {@link api/angular.module.ng.$compileProvider.directive.ngView ngView} directive. An
 example of this technique is shown in the {@link tutorial/ angular tutorial}, in steps seven and
 eight.
 

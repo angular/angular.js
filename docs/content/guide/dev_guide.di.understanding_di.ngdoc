@@ -27,9 +27,9 @@ In the illustration above, the dependency injection sequence proceeds as follows
 
 1. Module "phonecat" is created and all the service providers are registered with this module.
    (the "ng" module is created by Angular behind the scenes as well)
-2. `ng-app` triggers bootstrap sequence on given element, during which angular creates injector,
+2. `ngApp` triggers bootstrap sequence on given element, during which angular creates injector,
 loads "phonecat" and "ng" modules and compiles the template.
-3. The `ng-controller` directive implicitly creates a new child scope and instantiates
+3. The `ngController` directive implicitly creates a new child scope and instantiates
 `PhoneListCtrl` controller.
 4. Injector identifies the `$http` service as `PhoneListCtrl` controller's only dependency.
 5. Injector checks its instances cache whether the `$http` service has already been instantiated.

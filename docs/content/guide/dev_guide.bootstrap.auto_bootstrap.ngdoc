@@ -2,7 +2,7 @@
 @name Developer Guide: Initializing Angular: Automatic Initialization
 @description
 
-For Angular to manage the DOM for your application, it needs to compile some or all of an HTML page.  Angular does this initialization automatically when you load the angular.js script into your page and insert an `ng-app` directive (attribute) into one of the page's elements.  For example, we can tell Angular to initialize the entire document:
+For Angular to manage the DOM for your application, it needs to compile some or all of an HTML page.  Angular does this initialization automatically when you load the angular.js script into your page and insert an `ngApp` directive (attribute) into one of the page's elements.  For example, we can tell Angular to initialize the entire document:
 
 <pre>
 <!doctype html>
@@ -16,7 +16,7 @@ For Angular to manage the DOM for your application, it needs to compile some or 
 </html>
 </pre>
 
-You can also tell Angular to manage only a portion of a page.  You would want to do this if you are using some other framework to manage other parts of the page.  You do this by placing the `ng-app` directive on one or more container elements in the document.  For example:
+You can also tell Angular to manage only a portion of a page.  You would want to do this if you are using some other framework to manage other parts of the page.  You do this by placing the `ngApp` directive on one or more container elements in the document.  For example:
 
 <pre>
 <div ng-app>
@@ -24,7 +24,7 @@ You can also tell Angular to manage only a portion of a page.  You would want to
 </div>
 </pre>
 
-You can also ask `ng-app` to load additional {@link api/angular.module modules} containing services, directives or filers that you'll use on the page.
+You can also ask `ngApp` to load additional {@link api/angular.module modules} containing services, directives or filers that you'll use on the page.
 
 <pre>
 <div ng-app="AwesomeModule">
@@ -38,7 +38,7 @@ From a high-level, here's what Angular does during the initialization process:
 1. The browser loads the page, and then runs the Angular script. Angular then waits for the
 `DOMContentLoaded` (or 'Load') event to attempt to initialize.
 
-2. Angular looks for the `ng-app` directive. If found it compilies the DOM element containing `ng-app` and its children.
+2. Angular looks for the `ngApp` directive. If found it compilies the DOM element containing `ngApp` and its children.
 
 3. Angular creates a global variable `angular` and binds all Angular APIs to this object's fields.
 
