@@ -42,11 +42,12 @@ template/view. This behavior interacts with and modifies the application model.
 As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any functions assigned to
 the scope, along with any prototype methods of the controller type, become functions available in
-the template/view, and can be invoked via angular expressions and `ng-` event handlers (e.g. {@link
-api/angular.module.ng.$compileProvider.directive.ng-click ng-click}). These controller methods are always evaluated within the
-context of the angular scope object that the controller function was applied to (which means that
-the `this` keyword of any controller method is always bound to the scope that the controller
-augments). This is how the second task of adding behavior to the scope is accomplished.
+the template/view, and can be invoked via angular expressions and `ng` event handler directives
+(e.g. {@link api/angular.module.ng.$compileProvider.directive.ngClick ngClick}). These controller
+methods are always evaluated within the context of the angular scope object that the controller
+function was applied to (which means that the `this` keyword of any controller method is always
+bound to the scope that the controller augments). This is how the second task of adding behavior to
+the scope is accomplished.
 
 
 # Using Controllers Correctly
@@ -78,7 +79,7 @@ instances).
 # Associating Controllers with Angular Scope Objects
 
 You can associate controllers with scope objects explicitly via the {@link api/angular.module.ng.$rootScope.Scope#$new
-scope.$new} api or implicitly via the {@link api/angular.module.ng.$compileProvider.directive.ng-controller ng-controller
+scope.$new} api or implicitly via the {@link api/angular.module.ng.$compileProvider.directive.ngController ngController
 directive} or {@link api/angular.module.ng.$route $route service}.
 
 
@@ -119,7 +120,7 @@ SpicyCtrl.prototype.jalapenoSpicy = function() {
 
 Things to notice in the example above:
 
-- The `ng-controller` directive is used to (implicitly) create a scope for our template, and the
+- The `ngController` directive is used to (implicitly) create a scope for our template, and the
 scope is augmented (managed) by the `SpicyCtrl` controller.
 - `SpicyCtrl` is just a plain JavaScript function. As an (optional) naming convention the name
 starts with capital letter and ends with "Ctrl" or "Controller".
@@ -186,7 +187,7 @@ function BabyCtrl($scope) {
 }
 </pre>
 
-Notice how we nested three `ng-controller` directives in our template. This template construct will
+Notice how we nested three `ngController` directives in our template. This template construct will
 result in 4 scopes being created for our view:
 
 - The root scope

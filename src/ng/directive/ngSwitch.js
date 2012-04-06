@@ -2,26 +2,26 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-switch
+ * @name angular.module.ng.$compileProvider.directive.ngSwitch
  * @restrict EA
  *
  * @description
  * Conditionally change the DOM structure.
  *
  * @usageContent
- * <any ng-switch-when="matchValue1">...</any>
- *   <any ng-switch-when="matchValue2">...</any>
+ * <ANY ng-switch-when="matchValue1">...</ANY>
+ *   <ANY ng-switch-when="matchValue2">...</ANY>
  *   ...
- *   <any ng-switch-default>...</any>
+ *   <ANY ng-switch-default>...</ANY>
  *
  * @scope
- * @param {*} ng-switch|on expression to match against <tt>ng-switch-when</tt>.
+ * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
  * @paramDescription
  * On child elments add:
  *
- * * `ng-switch-when`: the case statement to match against. If match then this
+ * * `ngSwitchWhen`: the case statement to match against. If match then this
  *   case will be displayed.
- * * `ng-switch-default`: the default case when no other casses match.
+ * * `ngSwitchDefault`: the default case when no other casses match.
  *
  * @example
     <doc:example>

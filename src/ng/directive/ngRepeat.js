@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-repeat
+ * @name angular.module.ng.$compileProvider.directive.ngRepeat
  *
  * @description
- * The `ng-repeat` directive instantiates a template once per item from a collection. Each template
+ * The `ngRepeat` directive instantiates a template once per item from a collection. Each template
  * instance gets its own scope, where the given loop variable is set to the current collection item,
  * and `$index` is set to the item index or key.
  *
@@ -21,7 +21,7 @@
  * @element ANY
  * @scope
  * @priority 1000
- * @param {repeat_expression} ng-repeat The expression indicating how to enumerate a collection. Two
+ * @param {repeat_expression} ngRepeat The expression indicating how to enumerate a collection. Two
  *   formats are currently supported:
  *
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
@@ -36,7 +36,7 @@
  *
  * @example
  * This example initializes the scope to a list of names and
- * then uses `ng-repeat` to display every person:
+ * then uses `ngRepeat` to display every person:
     <doc:example>
       <doc:source>
         <div ng-init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
@@ -68,7 +68,7 @@ var ngRepeatDirective = ngDirective({
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
       if (! match) {
-        throw Error("Expected ng-repeat in form of '_item_ in _collection_' but got '" +
+        throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" +
           expression + "'.");
       }
       lhs = match[1];

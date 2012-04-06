@@ -79,8 +79,8 @@ easier a web developer's life can if they're using angular:
 Try out the Live Preview above, and then let's walk through the example and describe what's going
 on.
 
-In the `<html>` tag we specify that this is an angular application with the `ng-app` directive.
-The `ng-app' will cause the angular to {@link dev_guide.bootstrap auto initialize} your application.
+In the `<html>` tag we specify that this is an angular application with the `ngApp` directive.
+The `ngApp' will cause the angular to {@link dev_guide.bootstrap auto initialize} your application.
 
         <html ng-app>
 
@@ -88,7 +88,7 @@ We load the angular using the  `<script>` tag:
 
     <script src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
 
-From the `ng-model` attribute of the `<input>` tags, angular automatically sets up two-way data
+From the `ngModel` attribute of the `<input>` tags, angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
         Quantity: <input type="integer" min="0" ng-model="qty" required >
@@ -112,7 +112,7 @@ And finally, the mysterious `{{ double curly braces }}`:
 This notation, `{{ _expression_ }}`, is a bit of built-in angular binding markup, a shortcut for
 displaying data to the user. The expression within curly braces is monitored and its evaluated value
 is updated into the view by angular's template compiler. Alternatively, one could use angular's
-{@link api/angular.module.ng.$compileProvider.directive.ng-bind ng-bind}) directive. The expression
+{@link api/angular.module.ng.$compileProvider.directive.ngBind ngBind}) directive. The expression
 itself can be a combination of both an expression and a {@link dev_guide.templates.filters filter}:
 `{{ expression | filter }}`. Angular provides filters for formatting display data.
 

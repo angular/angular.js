@@ -52,7 +52,7 @@ __`app/index.html`:__
 </pre>
 
 We replaced the hard-coded phone list with the
-{@link api/angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat directive} and two
+{@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat directive} and two
 {@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
@@ -94,7 +94,7 @@ as follows:
 
 * `PhoneListCtrl` — the name of our controller function (located in the JavaScript file
 `controllers.js`), matches the value of the
-{@link api/angular.module.ng.$compileProvider.directive.ng-controller ng-controller} directive located
+{@link api/angular.module.ng.$compileProvider.directive.ngController ngController} directive located
 on the `<body>` tag.
 
 * The phone data is then attached to the *scope* (`$scope`) that was injected into our controller

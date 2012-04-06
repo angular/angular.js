@@ -102,7 +102,7 @@ allow a user to enter data.
 
 # Things to notice
 
-* The user data model is initialized {@link api/angular.module.ng.$compileProvider.directive.ng-controller controller} and is
+* The user data model is initialized {@link api/angular.module.ng.$compileProvider.directive.ngController controller} and is
   available in the {@link api/angular.module.ng.$rootScope.Scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.

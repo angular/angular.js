@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-transclude
+ * @name angular.module.ng.$compileProvider.directive.ngTransclude
  *
  * @description
  * Insert the transcluded DOM here.
