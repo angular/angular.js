@@ -435,7 +435,7 @@ function makeMap(str){
 
 
 /**
- * HTML class which is the only class which can be used in ng-bind to inline HTML for security
+ * HTML class which is the only class which can be used in ngBind to inline HTML for security
  * reasons.
  *
  * @constructor
@@ -873,10 +873,10 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-app
+ * @name angular.module.ng.$compileProvider.directive.ngApp
  *
  * @element ANY
- * @param {angular.Module} ng-app on optional application
+ * @param {angular.Module} ngApp on optional application
  *   {@link angular.module module} name to load.
  *
  * @description
@@ -886,11 +886,11 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * designates the root of the application and is typically placed
  * ot the root of the page.
  *
- * In the example below if the `ng-app` directive would not be placed
+ * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
- * `ng-app` is the easiest way to bootstrap an application.
+ * `ngApp` is the easiest way to bootstrap an application.
  *
  <doc:example>
    <doc:source>

@@ -181,7 +181,7 @@ describe('select', function() {
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
         compile('<select ng-model="selected" ng-options="i dont parse"></select>');
-      }).toThrow("Expected ng-options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
+      }).toThrow("Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
                  " _collection_' but got 'i dont parse'.");
     });
 

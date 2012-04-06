@@ -124,7 +124,7 @@ function FormController(element, attrs) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-form
+ * @name angular.module.ng.$compileProvider.directive.ngForm
  * @restrict EAC
  *
  * @description
@@ -132,7 +132,7 @@ function FormController(element, attrs) {
  * does not allow nesting of form elements. It is useful to nest forms, for example if the validity of a
  * sub-group of controls needs to be determined.
  *
- * @param {string=} ng-form|name Name of the form. If specified, the form controller will be published into
+ * @param {string=} ngForm|name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
  *
  */
@@ -149,11 +149,11 @@ function FormController(element, attrs) {
  * If `name` attribute is specified, the form controller is published onto the current scope under
  * this name.
  *
- * # Alias: {@link angular.module.ng.$compileProvider.directive.ng-form `ng-form`}
+ * # Alias: {@link angular.module.ng.$compileProvider.directive.ngForm `ngForm`}
  *
  * In angular forms can be nested. This means that the outer form is valid when all of the child
  * forms are valid as well. However browsers do not allow nesting of `<form>` elements, for this
- * reason angular provides {@link angular.module.ng.$compileProvider.directive.ng-form `ng-form`} alias
+ * reason angular provides {@link angular.module.ng.$compileProvider.directive.ngForm `ngForm`} alias
  * which behaves identical to `<form>` but allows form nesting.
  *
  *
@@ -177,19 +177,20 @@ function FormController(element, attrs) {
  * You can use one of the following two ways to specify what javascript method should be called when
  * a form is submitted:
  *
- * - ng-submit on the form element (add link to ng-submit)
- * - ng-click on the first button or input field of type submit (input[type=submit])
+ * - {@link angular.module.ng.$compileProvider.directive.ngSubmit ngSubmit} directive on the form element
+ * - {@link angular.module.ng.$compileProvider.directive.ngClick ngClick} directive on the first
+  *  button or input field of type submit (input[type=submit])
  *
- * To prevent double execution of the handler, use only one of ng-submit or ng-click. This is
- * because of the following form submission rules coming from the html spec:
+ * To prevent double execution of the handler, use only one of ngSubmit or ngClick directives. This
+ * is because of the following form submission rules coming from the html spec:
  *
  * - If a form has only one input field then hitting enter in this field triggers form submit
- * (`ng-submit`)
+ * (`ngSubmit`)
  * - if a form has has 2+ input fields and no buttons or input[type=submit] then hitting enter
  * doesn't trigger submit
  * - if a form has one or more input fields and one or more buttons or input[type=submit] then
  * hitting enter in any of the input fields will trigger the click handler on the *first* button or
- * input[type=submit] (`ng-click`) *and* a submit handler on the enclosing form (`ng-submit`)
+ * input[type=submit] (`ngClick`) *and* a submit handler on the enclosing form (`ngSubmit`)
  *
  * @param {string=} name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.

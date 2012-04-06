@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-href
+ * @name angular.module.ng.$compileProvider.directive.ngHref
  * @restrict A
  *
  * @description
@@ -10,8 +10,7 @@
  * the page open to a wrong URL, if the user clicks that link before
  * angular has a chance to replace the {{hash}} with actual URL, the
  * link will be broken and will most likely return a 404 error.
- * The `ng-href` solves this problem by placing the `href` in the
- * `ng-` namespace.
+ * The `ngHref` directive solves this problem.
  *
  * The buggy way to write it:
  * <pre>
@@ -24,7 +23,7 @@
  * </pre>
  *
  * @element A
- * @param {template} ng-href any string which can contain `{{}}` markup.
+ * @param {template} ngHref any string which can contain `{{}}` markup.
  *
  * @example
  * This example uses `link` variable inside `href` attribute:
@@ -83,15 +82,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-src
+ * @name angular.module.ng.$compileProvider.directive.ngSrc
  * @restrict A
  *
  * @description
- * Using <angular/> markup like `{{hash}}` in a `src` attribute doesn't
+ * Using Angular markup like `{{hash}}` in a `src` attribute doesn't
  * work right: The browser will fetch from the URL with the literal
- * text `{{hash}}` until <angular/> replaces the expression inside
- * `{{hash}}`. The `ng-src` attribute solves this problem by placing
- *  the `src` attribute in the `ng-` namespace.
+ * text `{{hash}}` until Angular replaces the expression inside
+ * `{{hash}}`. The `ngSrc` directive solves this problem.
  *
  * The buggy way to write it:
  * <pre>
@@ -104,12 +102,12 @@
  * </pre>
  *
  * @element IMG
- * @param {template} ng-src any string which can contain `{{}}` markup.
+ * @param {template} ngSrc any string which can contain `{{}}` markup.
  */
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-disabled
+ * @name angular.module.ng.$compileProvider.directive.ngDisabled
  * @restrict A
  *
  * @description
@@ -124,7 +122,7 @@
  * The HTML specs do not require browsers to preserve the special attributes such as disabled.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce ng-disabled.
+ * To solve this problem, we introduce the `ngDisabled` directive.
  *
  * @example
     <doc:example>
@@ -142,20 +140,20 @@
     </doc:example>
  *
  * @element INPUT
- * @param {string} expression Angular expression that will be evaluated.
+ * @param {expression} ngDisabled Angular expression that will be evaluated.
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-checked
+ * @name angular.module.ng.$compileProvider.directive.ngChecked
  * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as checked.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce ng-checked.
+ * To solve this problem, we introduce the `ngChecked` directive.
  * @example
     <doc:example>
       <doc:source>
@@ -172,20 +170,20 @@
     </doc:example>
  *
  * @element INPUT
- * @param {string} expression Angular expression that will be evaluated.
+ * @param {expression} ngChecked Angular expression that will be evaluated.
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-multiple
+ * @name angular.module.ng.$compileProvider.directive.ngMultiple
  * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as multiple.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce ng-multiple.
+ * To solve this problem, we introduce the `ngMultiple` directive.
  *
  * @example
      <doc:example>
@@ -208,20 +206,20 @@
      </doc:example>
  *
  * @element SELECT
- * @param {string} expression Angular expression that will be evaluated.
+ * @param {expression} ngMultiple Angular expression that will be evaluated.
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-readonly
+ * @name angular.module.ng.$compileProvider.directive.ngReadonly
  * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as readonly.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce ng-readonly.
+ * To solve this problem, we introduce the `ngReadonly` directive.
  * @example
     <doc:example>
       <doc:source>
@@ -244,14 +242,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-selected
+ * @name angular.module.ng.$compileProvider.directive.ngSelected
  * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as selected.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce ng-selected.
+ * To solve this problem, we introduced the `ngSelected` directive.
  * @example
     <doc:example>
       <doc:source>

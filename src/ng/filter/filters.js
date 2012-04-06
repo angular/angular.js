@@ -398,7 +398,6 @@ function dateFilter($locale) {
  * @param {*} object Any JavaScript object (including arrays and primitive types) to filter.
  * @returns {string} JSON string.
  *
- * @css ng-monospace Always applied to the encapsulating element.
  *
  * @example:
    <doc:example>

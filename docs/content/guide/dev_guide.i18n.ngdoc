@@ -22,7 +22,7 @@ http://docs.angularjs.org/#!/api/angular.module.ng.$filter.number number} and {@
 http://docs.angularjs.org/#!/api/angular.module.ng.$filter.currency currency} filters.
 
 Additionally, Angular supports localizable pluralization support provided by the {@link
-api/angular.module.ng.$compileProvider.directive.ng-pluralize ng-pluralize directive}.
+api/angular.module.ng.$compileProvider.directive.ngPluralize ngPluralize directive}.
 
 All localizable Angular components depend on locale-specific rule sets managed by the {@link
 api/angular.module.ng.$locale $locale service}.

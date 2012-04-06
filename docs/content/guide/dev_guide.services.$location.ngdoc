@@ -316,7 +316,7 @@ When a user clicks on this link,
 In cases like the following, links are not rewritten; instead, the browser will perform a full page
 reload to the original link.
 
-- Links with an `ng-ext-link` directive<br />
+- Links with an `ngExtLink` directive<br />
   Example: `<a href="/ext/link?a=b" ng-ext-link>link</a>`
 - Links that contain `target="_blank"`<br />
   Example: `<a href="/ext/link?a=b" target="_blank">link</a>`

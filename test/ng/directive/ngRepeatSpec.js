@@ -67,7 +67,7 @@ describe('ng-repeat', function() {
   it('should error on wrong parsing of ng-repeat', inject(function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse"></li></ul>')($rootScope);
-    }).toThrow("Expected ng-repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+    }).toThrow("Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
   }));
 
 

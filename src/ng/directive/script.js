@@ -6,7 +6,7 @@
  *
  * @description
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
- * template can be used by `ng-include`, `ng-view` or directive templates.
+ * template can be used by `ngInclude`, `ngView` or directive templates.
  *
  * @restrict E
  * @param {'text/ng-template'} type must be set to `'text/ng-template'`

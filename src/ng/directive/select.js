@@ -8,34 +8,34 @@
  * @description
  * HTML `SELECT` element with angular data-binding.
  *
- * # `ng-options`
+ * # `ngOptions`
  *
- * Optionally `ng-options` attribute can be used to dynamically generate a list of `<option>`
+ * Optionally `ngOptions` attribute can be used to dynamically generate a list of `<option>`
  * elements for a `<select>` element using an array or an object obtained by evaluating the
- * `ng-options` expression.
+ * `ngOptions` expression.
  *˝˝
  * When an item in the select menu is select, the value of array element or object property
- * represented by the selected option will be bound to the model identified by the `ng-model` attribute
- * of the parent select element.
+ * represented by the selected option will be bound to the model identified by the `ngModel`
+ * directive of the parent select element.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent `null` or "not selected"
  * option. See example below for demonstration.
  *
- * Note: `ng-options` provides iterator facility for `<option>` element which must be used instead
- * of {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}. `ng-repeat` is not suitable for use with
- * `<option>` element because of the following reasons:
+ * Note: `ngOptions` provides iterator facility for `<option>` element which must be used instead
+ * of {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}. `ngRepeat` is not
+ * suitable for use with `<option>` element because of the following reasons:
  *
  *   * value attribute of the option element that we need to bind to requires a string, but the
  *     source of data for the iteration might be in a form of array containing objects instead of
  *     strings
- *   * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} unrolls after the select binds causing
- *     incorect rendering on most browsers.
+ *   * {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} unrolls after the
+  *    select binds causing incorect rendering on most browsers.
  *   * binding to a value not in list confuses most browsers.
  *
  * @param {string} name assignable expression to data-bind to.
  * @param {string=} required The control is considered valid only if value is entered.
- * @param {comprehension_expression=} ng-options in one of the following forms:
+ * @param {comprehension_expression=} ngOptions in one of the following forms:
  *
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`
@@ -182,7 +182,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           });
         };
 
-        // we have to do it on each watch since ng-model watches reference, but
+        // we have to do it on each watch since ngModel watches reference, but
         // we need to work of an array, so we need to see if anything was inserted/removed
         scope.$watch(function() {
           if (!equals(lastView, ctrl.$viewValue)) {
@@ -209,7 +209,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw Error(
-            "Expected ng-options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            "Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
             " but got '" + optionsExp + "'.");
         }
 
