@@ -2,17 +2,17 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-controller
+ * @name angular.module.ng.$compileProvider.directive.ngController
  *
  * @description
- * The `ng-controller` directive assigns behavior to a scope. This is a key aspect of how angular
+ * The `ngController` directive assigns behavior to a scope. This is a key aspect of how angular
  * supports the principles behind the Model-View-Controller design pattern.
  *
  * MVC components in angular:
  *
  * * Model — The Model is data in scope properties; scopes are attached to the DOM.
  * * View — The template (HTML with data bindings) is rendered into the View.
- * * Controller — The `ng-controller` directive specifies a Controller class; the class has
+ * * Controller — The `ngController` directive specifies a Controller class; the class has
  *   methods that typically express the business logic behind the application.
  *
  * Note that an alternative way to define controllers is via the `{@link angular.module.ng.$route}`
@@ -20,7 +20,7 @@
  *
  * @element ANY
  * @scope
- * @param {expression} ng-controller Name of a globally accessible constructor function or an
+ * @param {expression} ngController Name of a globally accessible constructor function or an
  *     {@link guide/dev_guide.expressions expression} that on the current scope evaluates to a
  *     constructor function.
  *

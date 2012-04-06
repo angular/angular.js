@@ -2,14 +2,14 @@
 @name  Developer Guide: Initializing Angular: Manual Initialization
 @description
 
-In the vast majority of cases you'll want to let Angular handle initialization automatically.  
-If, however, you need to delay Angular from managing the page right after the DOMContentLoaded 
+In the vast majority of cases you'll want to let Angular handle initialization automatically.
+If, however, you need to delay Angular from managing the page right after the DOMContentLoaded
 event fires, you'll need to control this initialization manually.
 
-To initialize Angular -- after you've done your own special-purpose initialization -- just call 
+To initialize Angular -- after you've done your own special-purpose initialization -- just call
 the {@link api/angular.bootstrap bootstrap()} function with the HTML container node that you want
-Angular to manage.  In automatic initialization you'd do this by adding the `ng-app` attribute to 
-the same node.  Now, you won't use `ng-app` anywhere in your document.
+Angular to manage.  In automatic initialization you'd do this by adding the `ngApp` attribute to
+the same node.  Now, you won't use `ngApp` anywhere in your document.
 
 To show the contrast of manual vs. automatic initialization, this automatic method:
 

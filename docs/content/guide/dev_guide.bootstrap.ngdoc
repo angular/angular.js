@@ -7,7 +7,7 @@ Angular should process and manage the page. To initialize Angular you do the fol
 
 * Specify the Angular namespace in the `<html>` page
 * Choose which flavor of Angular script to load (debug or production)
-* Specify whether or not Angular should process and manage the page automatically (`ng-app`)
+* Specify whether or not Angular should process and manage the page automatically (`ngApp`)
 
 The simplest way to initialize Angular is to load the Angular script and tell Angular to compile
 and manage the whole page. You do this as follows:

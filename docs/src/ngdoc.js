@@ -372,10 +372,10 @@ Doc.prototype = {
         dom.text(')');
         dom.code(function() {
           dom.text('<');
-          dom.text(self.shortName);
+          dom.text(dashCase(self.shortName));
           renderParams('\n       ', '="', '"');
           dom.text('>\n</');
-          dom.text(self.shortName);
+          dom.text(dashCase(self.shortName));
           dom.text('>');
         });
       }
@@ -384,7 +384,7 @@ Doc.prototype = {
         dom.text('as attribute');
         dom.code(function() {
           dom.text('<' + element + ' ');
-          dom.text(self.shortName);
+          dom.text(dashCase(self.shortName));
           renderParams('\n     ', '="', '"', true);
           dom.text('>\n   ...\n');
           dom.text('</' + element + '>');
@@ -395,7 +395,7 @@ Doc.prototype = {
         var element = self.element || 'ANY';
         dom.code(function() {
           dom.text('<' + element + ' class="');
-          dom.text(self.shortName);
+          dom.text(dashCase(self.shortName));
           renderParams(' ', ': ', ';', true);
           dom.text('">\n   ...\n');
           dom.text('</' + element + '>');
@@ -467,7 +467,7 @@ Doc.prototype = {
         (self.param||[]).forEach(function(param){
           dom.text('\n      ');
           dom.text(param.optional ? ' [' : ' ');
-          dom.text(param.name);
+          dom.text(dashCase(param.name));
           dom.text(BOOLEAN_ATTR[param.name] ? '' : '="{' + param.type + '}"');
           dom.text(param.optional ? ']' : '');
         });
@@ -821,4 +821,12 @@ function property(name) {
   return function(value){
     return value[name];
   };
+}
+
+
+var DASH_CASE_REGEXP = /[A-Z]/g;
+function dashCase(name){
+  return name.replace(DASH_CASE_REGEXP, function(letter, pos) {
+    return (pos ? '-' : '') + letter.toLowerCase();
+  });
 }

@@ -2,22 +2,23 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-include
+ * @name angular.module.ng.$compileProvider.directive.ngInclude
  * @restrict ECA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
  * Keep in mind that Same Origin Policy applies to included resources
- * (e.g. ng-include won't work for file:// access).
+ * (e.g. ngInclude won't work for cross-domain requests on all browsers and for
+ *  file:// access on some browsers).
  *
  * @scope
  *
- * @param {string} ng-include|src angular expression evaluating to URL. If the source is a string constant,
+ * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
- * @param {string=} autoscroll Whether `ng-include` should call {@link angular.module.ng.$anchorScroll
+ * @param {string=} autoscroll Whether `ngInclude` should call {@link angular.module.ng.$anchorScroll
  *                  $anchorScroll} to scroll the viewport after the content is loaded.
  *
  *                  - If the attribute is not set, disable scrolling.
@@ -65,11 +66,11 @@
 
 /**
  * @ngdoc event
- * @name angular.module.ng.$compileProvider.directive.ng-include#$includeContentLoaded
- * @eventOf angular.module.ng.$compileProvider.directive.ng-include
- * @eventType emit on the current ng-include scope
+ * @name angular.module.ng.$compileProvider.directive.ngInclude#$includeContentLoaded
+ * @eventOf angular.module.ng.$compileProvider.directive.ngInclude
+ * @eventType emit on the current ngInclude scope
  * @description
- * Emitted every time the ng-include content is reloaded.
+ * Emitted every time the ngInclude content is reloaded.
  */
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
                   function($http,   $templateCache,   $anchorScroll,   $compile) {
