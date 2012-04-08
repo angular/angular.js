@@ -73,7 +73,7 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
   scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
-    element.html(value == undefined ? '' : value);
+    element.html(value || '');
   });
 });
 
@@ -96,9 +96,8 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
     scope.$watch(attr.ngBindHtml, function(value) {
-      if (value = $sanitize(value)) {
-        element.html(value);
-      }
+      value = $sanitize(value);
+      element.html(value || '');
     });
   }
 }];
