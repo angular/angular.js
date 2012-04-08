@@ -82,6 +82,21 @@ describe('ng-bind-*', function() {
       $rootScope.$digest();
       expect(lowercase(element.html())).toEqual('<div>hello</div>');
     }));
+
+
+    it('should reset html when value is null or undefined', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+
+      forEach([null, undefined, ''], function(val) {
+        $rootScope.html = 'some val';
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toEqual('some val');
+
+        $rootScope.html = val;
+        $rootScope.$digest();
+        expect(lowercase(element.html())).toEqual('');
+      });
+    }));
   });
 
 
