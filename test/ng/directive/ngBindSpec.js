@@ -45,13 +45,6 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('-0false');
     }));
-
-
-    it('should render object as JSON ignore $$', inject(function($rootScope, $compile) {
-      element = $compile('<div>{{ {key:"value", $$key:"hide"}  }}</div>')($rootScope);
-      $rootScope.$digest();
-      expect(fromJson(element.text())).toEqual({key:'value'});
-    }));
   });
 
 
