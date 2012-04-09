@@ -343,39 +343,6 @@ function Browser(window, document, body, $log, $sniffer) {
   // Misc API
   //////////////////////////////////////////////////////////////
 
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#addJs
-   * @methodOf angular.module.ng.$browser
-   *
-   * @param {string} url Url to js file
-   *
-   * @description
-   * Adds a script tag to the head.
-   */
-  self.addJs = function(url, done) {
-    // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
-    // - fetches local scripts via XHR and evals them
-    // - adds and immediately removes script elements from the document
-    var script = rawDocument.createElement('script');
-
-    script.type = 'text/javascript';
-    script.src = url;
-
-    if (msie) {
-      script.onreadystatechange = function() {
-        /loaded|complete/.test(script.readyState) && done && done();
-      };
-    } else {
-      if (done) script.onload = script.onerror = done;
-    }
-
-    body[0].appendChild(script);
-
-    return script;
-  };
-
   /**
    * Returns current <base href>
    * (always relative - without domain)
