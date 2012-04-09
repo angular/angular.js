@@ -137,13 +137,6 @@ angular.mock.$Browser = function() {
   self.baseHref = function() {
     return this.$$baseHref;
   };
-
-  self.$$scripts = [];
-  self.addJs = function(url, done) {
-    var script = {url: url, done: done};
-    self.$$scripts.push(script);
-    return script;
-  };
 };
 angular.mock.$Browser.prototype = {
 
