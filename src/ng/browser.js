@@ -343,23 +343,6 @@ function Browser(window, document, body, $log, $sniffer) {
   // Misc API
   //////////////////////////////////////////////////////////////
 
-  /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#addCss
-   * @methodOf angular.module.ng.$browser
-   *
-   * @param {string} url Url to css file
-   * @description
-   * Adds a stylesheet tag to the head.
-   */
-  self.addCss = function(url) {
-    var link = jqLite(rawDocument.createElement('link'));
-    link.attr('rel', 'stylesheet');
-    link.attr('type', 'text/css');
-    link.attr('href', url);
-    body.append(link);
-  };
-
 
   /**
    * @ngdoc method
