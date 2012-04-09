@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-switch', function() {
+describe('ngSwitch', function() {
   var element;
 
 

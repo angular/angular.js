@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-view', function() {
+describe('ngView', function() {
   var element;
 
   beforeEach(module(function() {
@@ -137,7 +137,7 @@ describe('ng-view', function() {
   });
 
 
-  it('should be possible to nest ng-view in ng-include', function() {
+  it('should be possible to nest ngView in ngInclude', function() {
 
     module(function($routeProvider) {
       $routeProvider.when('/foo', {template: 'viewPartial.html'});

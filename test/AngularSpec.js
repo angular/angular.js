@@ -345,7 +345,7 @@ describe('angular', function() {
     });
 
 
-    it('should look for ng-app directive in id', function() {
+    it('should look for ngApp directive in id', function() {
       var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
       angularInit(element, bootstrap);
@@ -353,7 +353,7 @@ describe('angular', function() {
     });
 
 
-    it('should look for ng-app directive in className', function() {
+    it('should look for ngApp directive in className', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
       element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['.ng\\:app'] = [appElement];
@@ -362,7 +362,7 @@ describe('angular', function() {
     });
 
 
-    it('should look for ng-app directive using querySelectorAll', function() {
+    it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
       element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];

@@ -470,7 +470,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should merge interpolated css class with ng-repeat',
+        it('should merge interpolated css class with ngRepeat',
             inject(function($compile, $rootScope) {
           element = $compile(
               '<div>' +

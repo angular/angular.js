@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-class', function() {
+describe('ngClass', function() {
   var element;
 
 
@@ -148,7 +148,7 @@ describe('ng-class', function() {
   }));
 
 
-  it('should ng-class odd/even', inject(function($rootScope, $compile) {
+  it('should ngClass odd/even', inject(function($rootScope, $compile) {
     element = $compile('<ul><li ng-repeat="i in [0,1]" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li><ul>')($rootScope);
     $rootScope.$digest();
     var e1 = jqLite(element[0].childNodes[1]);
@@ -160,7 +160,7 @@ describe('ng-class', function() {
   }));
 
 
-  it('should allow both ng-class and ng-class-odd/even on the same element', inject(function($rootScope, $compile) {
+  it('should allow both ngClass and ngClassOdd/Even on the same element', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
       '<li ng-repeat="i in [0,1]" ng-class="\'plainClass\'" ' +
       'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
@@ -178,7 +178,7 @@ describe('ng-class', function() {
   }));
 
 
-  it('should allow both ng-class and ng-class-odd/even with multiple classes', inject(function($rootScope, $compile) {
+  it('should allow both ngClass and ngClassOdd/Even with multiple classes', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
       '<li ng-repeat="i in [0,1]" ng-class="[\'A\', \'B\']" ' +
       'ng-class-odd="[\'C\', \'D\']" ng-class-even="[\'E\', \'F\']"></li>' +

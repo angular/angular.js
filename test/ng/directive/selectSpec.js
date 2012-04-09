@@ -23,7 +23,7 @@ describe('select', function() {
 
   describe('select-one', function() {
 
-    it('should compile children of a select without a ng-model, but not create a model for it',
+    it('should compile children of a select without a ngModel, but not create a model for it',
         function() {
       compile('<select>' +
                 '<option selected="true">{{a}}</option>' +
@@ -144,7 +144,7 @@ describe('select', function() {
   });
 
 
-  describe('ng-options', function() {
+  describe('ngOptions', function() {
     function createSelect(attrs, blank, unknown) {
       var html = '<select';
       forEach(attrs, function(value, key) {
@@ -600,7 +600,7 @@ describe('select', function() {
       });
 
 
-      it('should support binding via ng-bind-template attribute', function () {
+      it('should support binding via ngBindTemplate directive', function () {
         var option;
         createSingleSelect('<option value="" ng-bind-template="blank is {{blankVal}}"></option>');
 
@@ -617,7 +617,7 @@ describe('select', function() {
       });
 
 
-      it('should support biding via ng-bind attribute', function () {
+      it('should support biding via ngBind attribute', function () {
         var option;
         createSingleSelect('<option value="" ng-bind="blankVal"></option>');
 
@@ -774,9 +774,9 @@ describe('select', function() {
     });
 
 
-    describe('ng-required', function() {
+    describe('ngRequired', function() {
 
-      it('should allow bindings on ng-required', function() {
+      it('should allow bindings on ngRequired', function() {
         createSelect({
           'ng-model': 'value',
           'ng-options': 'item.name for item in values',

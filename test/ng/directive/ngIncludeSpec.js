@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-include', function() {
+describe('ngInclude', function() {
   var element;
 
 

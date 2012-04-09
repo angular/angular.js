@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-click', function() {
+describe('ngClick', function() {
   var element;
 
   afterEach(function() {

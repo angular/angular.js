@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-bind-*', function() {
+describe('ngBind*', function() {
   var element;
 
 
@@ -9,7 +9,7 @@ describe('ng-bind-*', function() {
   });
 
 
-  describe('ng-bind', function() {
+  describe('ngBind', function() {
 
     it('should set text', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind="a"></div>')($rootScope);
@@ -55,9 +55,9 @@ describe('ng-bind-*', function() {
   });
 
 
-  describe('ng-bind-template', function() {
+  describe('ngBindTemplate', function() {
 
-    it('should ng-bind-template', inject(function($rootScope, $compile) {
+    it('should ngBindTemplate', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="Hello {{name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
       $rootScope.$digest();
@@ -74,7 +74,7 @@ describe('ng-bind-*', function() {
   });
 
 
-  describe('ng-bind-html', function() {
+  describe('ngBindHtml', function() {
 
     it('should set html', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-html="html"></div>')($rootScope);
@@ -100,7 +100,7 @@ describe('ng-bind-*', function() {
   });
 
 
-  describe('ng-bind-html-unsafe', function() {
+  describe('ngBindHtmlUnsafe', function() {
 
     it('should set unsafe html', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
