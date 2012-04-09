@@ -784,7 +784,7 @@ describe('$location', function() {
     });
 
 
-    it('should not rewrite ng-ext-link', function() {
+    it('should not rewrite ngExtLink', function() {
       configureService('#new', true, true, 'ng-ext-link');
       inject(
         initBrowser(),

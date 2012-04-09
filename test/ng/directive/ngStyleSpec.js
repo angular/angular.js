@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-style', function() {
+describe('ngStyle', function() {
   var element;
 
 

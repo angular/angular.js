@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-init', function() {
+describe('ngInit', function() {
   var element;
 
 
@@ -9,7 +9,7 @@ describe('ng-init', function() {
   });
 
 
-  it("should ng-init", inject(function($rootScope, $compile) {
+  it("should init model", inject(function($rootScope, $compile) {
     element = $compile('<div ng-init="a=123"></div>')($rootScope);
     expect($rootScope.a).toEqual(123);
   }));

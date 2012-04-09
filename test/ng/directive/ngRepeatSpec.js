@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-repeat', function() {
+describe('ngRepeat', function() {
   var element;
 
 
@@ -9,7 +9,7 @@ describe('ng-repeat', function() {
   });
 
 
-  it('should ng-repeat over array', inject(function($rootScope, $compile) {
+  it('should ngRepeat over array', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
         '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
@@ -37,7 +37,7 @@ describe('ng-repeat', function() {
   }));
 
 
-  it('should ng-repeat over object', inject(function($rootScope, $compile) {
+  it('should ngRepeat over object', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
         '<li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li>' +
@@ -48,7 +48,7 @@ describe('ng-repeat', function() {
   }));
 
 
-  it('should not ng-repeat over parent properties', inject(function($rootScope, $compile) {
+  it('should not ngRepeat over parent properties', inject(function($rootScope, $compile) {
     var Class = function() {};
     Class.prototype.abc = function() {};
     Class.prototype.value = 'abc';
@@ -64,14 +64,14 @@ describe('ng-repeat', function() {
   }));
 
 
-  it('should error on wrong parsing of ng-repeat', inject(function($rootScope, $compile) {
+  it('should error on wrong parsing of ngRepeat', inject(function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse"></li></ul>')($rootScope);
     }).toThrow("Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
   }));
 
 
-  it("should throw error when left-hand-side of ng-repeat can't be parsed", inject(
+  it("should throw error when left-hand-side of ngRepeat can't be parsed", inject(
       function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse in foo"></li></ul>')($rootScope);

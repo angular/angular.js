@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-pluralize', function() {
+describe('ngPluralize', function() {
   var element;
 
 

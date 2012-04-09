@@ -1,7 +1,7 @@
 'use strict';
 
 
-describe('ng-non-bindable', function() {
+describe('ngNonBindable', function() {
   var element;
 
 

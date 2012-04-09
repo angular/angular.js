@@ -233,7 +233,7 @@ describe('NgModelController', function() {
   });
 });
 
-describe('ng-model', function() {
+describe('ngModel', function() {
 
   it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty)',
       inject(function($compile, $rootScope, $sniffer) {
@@ -376,7 +376,7 @@ describe('input', function() {
   });
 
 
-  it('should ignore input without ng-model attr', function() {
+  it('should ignore input without ngModel directive', function() {
     compileInput('<input type="text" name="whatever" required />');
 
     changeInputValueTo('');
@@ -750,7 +750,7 @@ describe('input', function() {
 
   describe('checkbox', function() {
 
-    it('should ignore checkbox without ng-model attr', function() {
+    it('should ignore checkbox without ngModel directive', function() {
       compileInput('<input type="checkbox" name="whatever" required />');
 
       changeInputValueTo('');
@@ -847,7 +847,7 @@ describe('input', function() {
     });
 
 
-    it('should ignore textarea without ng-model attr', function() {
+    it('should ignore textarea without ngModel directive', function() {
       compileInput('<textarea name="whatever" required></textarea>');
       inputElm = formElm.find('textarea');
 
@@ -860,7 +860,7 @@ describe('input', function() {
   });
 
 
-  describe('ng-list', function() {
+  describe('ngList', function() {
 
     it('should parse text into an array', function() {
       compileInput('<input type="text" ng-model="list" ng-list />');
@@ -941,7 +941,7 @@ describe('input', function() {
 
   describe('required', function() {
 
-    it('should allow bindings on ng-required', function() {
+    it('should allow bindings via ngRequired', function() {
       compileInput('<input type="text" ng-model="value" ng-required="required" />');
 
       scope.$apply(function() {
@@ -1015,7 +1015,7 @@ describe('input', function() {
   });
 
 
-  describe('ng-change', function() {
+  describe('ngChange', function() {
 
     it('should $eval expression after new value is set in the model', function() {
       compileInput('<input type="text" ng-model="value" ng-change="change()" />');
@@ -1040,7 +1040,7 @@ describe('input', function() {
     });
 
 
-    it('should $eval ng-change expression on checkbox', function() {
+    it('should $eval ngChange expression on checkbox', function() {
       compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
 
       scope.changeFn = jasmine.createSpy('changeFn');
@@ -1053,7 +1053,7 @@ describe('input', function() {
   });
 
 
-  describe('ng-value', function() {
+  describe('ngValue', function() {
 
     it('should evaluate and set constant expressions', function() {
       compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
@@ -1090,7 +1090,7 @@ describe('input', function() {
     });
 
 
-    it('should work inside ng-repeat', function() {
+    it('should work inside ngRepeat', function() {
       compileInput(
         '<input type="radio" ng-repeat="i in items" ng-model="$parent.selected" ng-value="i.id">');
 

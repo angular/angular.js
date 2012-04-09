@@ -53,7 +53,7 @@ describe('form', function() {
   });
 
 
-  it('should use ng-form as form name', function() {
+  it('should use ngForm value as form name', function() {
     doc = $compile(
       '<div ng-form="myForm">' +
         '<input type="text" name="alias" ng-model="value"/>' +

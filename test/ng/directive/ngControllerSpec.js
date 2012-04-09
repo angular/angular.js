@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-controller', function() {
+describe('ngController', function() {
   var element;
 
   beforeEach(inject(function($window) {

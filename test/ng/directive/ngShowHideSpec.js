@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng-show / ng-hide', function() {
+describe('ngShow / ngHide', function() {
   var element;
 
 
@@ -8,7 +8,7 @@ describe('ng-show / ng-hide', function() {
     dealoc(element);
   });
 
-  describe('ng-show', function() {
+  describe('ngShow', function() {
     it('should show and hide an element', inject(function($rootScope, $compile) {
       element = jqLite('<div ng-show="exp"></div>');
       element = $compile(element)($rootScope);
@@ -30,7 +30,7 @@ describe('ng-show / ng-hide', function() {
     }));
   });
 
-  describe('ng-hide', function() {
+  describe('ngHide', function() {
     it('should hide an element', inject(function($rootScope, $compile) {
       element = jqLite('<div ng-hide="exp"></div>');
       element = $compile(element)($rootScope);

@@ -77,7 +77,7 @@ describe('boolean attr directives', function() {
 });
 
 
-describe('ng-src', function() {
+describe('ngSrc', function() {
 
   it('should interpolate the expression and bind to src', inject(function($compile, $rootScope) {
     var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope)
@@ -94,7 +94,7 @@ describe('ng-src', function() {
 });
 
 
-describe('ng-href', function() {
+describe('ngHref', function() {
   var element;
 
   afterEach(function() {
