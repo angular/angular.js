@@ -26,11 +26,11 @@ var XHR = window.XMLHttpRequest || function() {
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
     return createHttpBackend($browser, XHR, $browser.defer, $window.angular.callbacks,
-        $document[0].body, $window.location.protocol.replace(':', ''));
+        $document[0], $window.location.protocol.replace(':', ''));
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locationProtocol) {
+function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials) {
     $browser.$$incOutstandingRequestCount();
@@ -42,7 +42,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
         callbacks[callbackId].data = data;
       };
 
-      var script = $browser.addJs(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+      jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
           function() {
         if (callbacks[callbackId].data) {
           completeRequest(callback, 200, callbacks[callbackId].data);
@@ -50,7 +50,6 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
           completeRequest(callback, -2);
         }
         delete callbacks[callbackId];
-        body.removeChild(script);
       });
     } else {
       var xhr = new XHR();
@@ -99,5 +98,29 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
       callback(status, response, headersString);
       $browser.$$completeOutstandingRequest(noop);
     }
+  };
+
+  function jsonpReq(url, done) {
+    // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
+    // - fetches local scripts via XHR and evals them
+    // - adds and immediately removes script elements from the document
+    var script = rawDocument.createElement('script'),
+        doneWrapper = function() {
+          rawDocument.body.removeChild(script);
+          if (done) done();
+        }
+
+    script.type = 'text/javascript';
+    script.src = url;
+
+    if (msie) {
+      script.onreadystatechange = function() {
+        if (/loaded|complete/.test(script.readyState)) doneWrapper();
+      };
+    } else {
+      script.onload = script.onerror = doneWrapper;
+    }
+
+    rawDocument.body.appendChild(script);
   };
 }

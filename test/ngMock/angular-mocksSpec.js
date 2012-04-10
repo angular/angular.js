@@ -3,28 +3,6 @@
 describe('ngMock', function() {
   var noop = angular.noop;
 
-  describe('$browser', function() {
-
-    describe('addJs', function() {
-
-      it('should store url, done', inject(function($browser) {
-        var url  = 'some.js',
-            done = angular.noop;
-
-        $browser.addJs(url, done);
-
-        var script = $browser.$$scripts.shift();
-        expect(script.url).toBe(url);
-        expect(script.done).toBe(done);
-      }));
-
-
-      it('should return the script object', inject(function($browser) {
-        expect($browser.addJs('some.js', null, noop)).toBe($browser.$$scripts[0]);
-      }));
-    });
-  });
-
 
   describe('TzDate', function() {
 

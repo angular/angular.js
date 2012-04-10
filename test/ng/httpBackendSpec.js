@@ -1,7 +1,7 @@
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
-      xhr, fakeBody, callback;
+      xhr, fakeDocument, callback;
 
   // TODO(vojta): should be replaced by $defer mock
   function fakeTimeout(fn, delay) {
@@ -21,8 +21,24 @@ describe('$httpBackend', function() {
   beforeEach(inject(function($injector) {
     callbacks = {counter: 0};
     $browser = $injector.get('$browser');
-    fakeBody = {removeChild: jasmine.createSpy('body.removeChild')};
-    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeBody);
+    fakeDocument = {
+      $$scripts: [],
+      createElement: jasmine.createSpy('createElement').andCallFake(function() {
+        return {};
+      }),
+      body: {
+        appendChild: jasmine.createSpy('body.appendChid').andCallFake(function(script) {
+          fakeDocument.$$scripts.push(script);
+        }),
+        removeChild: jasmine.createSpy('body.removeChild').andCallFake(function(script) {
+          var index = indexOf(fakeDocument.$$scripts, script);
+          if (index != -1) {
+            fakeDocument.$$scripts.splice(index, 1);
+          }
+        })
+      }
+    };
+    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -131,14 +147,20 @@ describe('$httpBackend', function() {
       });
 
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-      expect($browser.$$scripts.length).toBe(1);
+      expect(fakeDocument.$$scripts.length).toBe(1);
 
-      var script = $browser.$$scripts.shift(),
-          url = script.url.match(SCRIPT_URL);
+      var script = fakeDocument.$$scripts.shift(),
+          url = script.src.match(SCRIPT_URL);
 
       expect(url[1]).toBe('http://example.org/path');
       callbacks[url[2]]('some-data');
-      script.done();
+
+      if (script.onreadystatechange) {
+        script.readyState = 'complete';
+        script.onreadystatechange();
+      } else {
+        script.onload()
+      }
 
       expect(callback).toHaveBeenCalledOnce();
     });
@@ -146,17 +168,23 @@ describe('$httpBackend', function() {
 
     it('should clean up the callback and remove the script', function() {
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-      expect($browser.$$scripts.length).toBe(1);
+      expect(fakeDocument.$$scripts.length).toBe(1);
 
-      var script = $browser.$$scripts.shift(),
-          callbackId = script.url.match(SCRIPT_URL)[2];
+
+      var script = fakeDocument.$$scripts.shift(),
+          callbackId = script.src.match(SCRIPT_URL)[2];
 
       callbacks[callbackId]('some-data');
-      script.done();
+
+      if (script.onreadystatechange) {
+        script.readyState = 'complete';
+        script.onreadystatechange();
+      } else {
+        script.onload()
+      }
 
       expect(callbacks[callbackId]).toBeUndefined();
-      expect(fakeBody.removeChild).toHaveBeenCalledOnce();
-      expect(fakeBody.removeChild).toHaveBeenCalledWith(script);
+      expect(fakeDocument.body.removeChild).toHaveBeenCalledOnceWith(script);
     });
 
 
@@ -167,21 +195,26 @@ describe('$httpBackend', function() {
       });
 
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-      expect($browser.$$scripts.length).toBe(1);
+      expect(fakeDocument.$$scripts.length).toBe(1);
 
-      $browser.$$scripts.shift().done();
+      var script = fakeDocument.$$scripts.shift();
+      if (script.onreadystatechange) {
+        script.readyState = 'complete';
+        script.onreadystatechange();
+      } else {
+        script.onload()
+      }
       expect(callback).toHaveBeenCalledOnce();
     });
 
 
     it('should set url to current location if not specified or empty string', function() {
       $backend('JSONP', undefined, null, callback);
-      expect($browser.$$scripts[0].url).toBe($browser.url());
-      $browser.$$scripts.shift();
+      expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
+      fakeDocument.$$scripts.shift();
 
       $backend('JSONP', '', null, callback);
-      expect($browser.$$scripts[0].url).toBe($browser.url());
-      $browser.$$scripts.shift();
+      expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
     });
 
 
