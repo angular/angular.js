@@ -1,0 +1,6 @@
+/**
+ * @license AngularJS v"NG_VERSION_FULL"
+ * (c) 2010-2012 AngularJS http://angularjs.org
+ * License: MIT
+ */
+(function(angular) {

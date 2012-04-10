@@ -82,15 +82,23 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
       'src/loader.js',
       'src/loader.suffix'])
 
-  FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
-  FileUtils.cp 'src/ngResource/resource.js', path_to('angular-resource.js')
-  FileUtils.cp 'src/ngCookies/cookies.js', path_to('angular-cookies.js')
 
+  concat_module('sanitize', [
+      'src/ngSanitize/sanitize.js',
+      'src/ngSanitize/directive/ngBindHtml.js',
+      'src/ngSanitize/filter/linky.js'])
+
+  concat_module('resource', ['src/ngResource/resource.js'])
+  concat_module('cookies', ['src/ngCookies/cookies.js'])
+
+
+  FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
 
   closure_compile('angular.js')
   closure_compile('angular-cookies.js')
   closure_compile('angular-loader.js')
   closure_compile('angular-resource.js')
+  closure_compile('angular-sanitize.js')
 
 end
 
@@ -121,6 +129,8 @@ task :package => [:clean, :compile, :docs] do
     path_to('angular-cookies.min.js'),
     path_to('angular-resource.js'),
     path_to('angular-resource.min.js'),
+    path_to('angular-sanitize.js'),
+    path_to('angular-sanitize.min.js'),
     path_to('angular-scenario.js'),
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),
@@ -147,7 +157,8 @@ task :package => [:clean, :compile, :docs] do
     rewrite_file(src) do |content|
       content.sub!('angular.js', "angular-#{NG_VERSION.full}.js").
               sub!('angular-resource.js', "angular-resource-#{NG_VERSION.full}.js").
-              sub!('angular-cookies.js', "angular-cookies-#{NG_VERSION.full}.js")
+              sub!('angular-cookies.js', "angular-cookies-#{NG_VERSION.full}.js").
+              sub!('angular-sanitize.js', "angular-sanitize-#{NG_VERSION.full}.js")
     end
   end
 
@@ -287,6 +298,11 @@ def concat_file(filename, deps, footer='')
     f.write(content)
     f.write(footer)
   end
+end
+
+
+def concat_module(name, files)
+  concat_file('angular-' + name + '.js', ['src/module.prefix'] + files + ['src/module.suffix'])
 end
 
 
