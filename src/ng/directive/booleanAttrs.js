@@ -282,7 +282,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       priority: 100,
-      compile: function(tpl, attr) {
+      compile: function() {
         return function(scope, element, attr) {
           attr.$$observers[attrName] = [];
           scope.$watch(attr[normalized], function(value) {
@@ -301,7 +301,7 @@ forEach(['src', 'href'], function(attrName) {
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       priority: 99, // it needs to run after the attributes are interpolated
-      compile: function(tpl, attr) {
+      compile: function() {
         return function(scope, element, attr) {
           var value = attr[normalized];
           if (value == undefined) {

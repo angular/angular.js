@@ -130,4 +130,4 @@ function publishExternalAPI(angular){
       });
     }
   ]);
-};
+}

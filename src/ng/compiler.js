@@ -446,7 +446,7 @@ function $CompileProvider($provide) {
               if (isBooleanAttr(node, nName)) {
                 attrs[nName] = true; // presence means true
               }
-              addAttrInterpolateDirective(node, directives, value, nName)
+              addAttrInterpolateDirective(node, directives, value, nName);
               addDirective(directives, nName, 'A', maxPriority);
             }
           }

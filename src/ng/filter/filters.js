@@ -344,7 +344,7 @@ function dateFilter($locale) {
         parts = [],
         fn, match;
 
-    format = format || 'mediumDate'
+    format = format || 'mediumDate';
     format = $locale.DATETIME_FORMATS[format] || format;
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
@@ -545,4 +545,4 @@ function linkyFilter() {
     writer.chars(raw);
     return html.join('');
   };
-};
+}

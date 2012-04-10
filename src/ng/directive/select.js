@@ -421,7 +421,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           while(optionGroupsCache.length > groupIndex) {
             optionGroupsCache.pop()[0].element.remove();
           }
-        };
+        }
       }
     }
   }

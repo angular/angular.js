@@ -161,7 +161,7 @@ function lex(text){
 
     //check if this is not a method invocation and if it is back out to last dot
     if (lastDot) {
-      peekIndex = index
+      peekIndex = index;
       while(peekIndex < text.length) {
         var ch = text.charAt(peekIndex);
         if (ch == '(') {
@@ -269,7 +269,8 @@ function parser(text, json, $filter){
       functionCall = _functionCall,
       fieldAccess = _fieldAccess,
       objectIndex = _objectIndex,
-      filterChain = _filterChain
+      filterChain = _filterChain;
+
   if(json){
     // The extra level of aliasing is here, just in case the lexer misses something, so that
     // we prevent any accidental execution in JSON.
@@ -342,10 +343,6 @@ function parser(text, json, $filter){
     return function(self, locals) {
       return fn(self, locals, left, right);
     };
-  }
-
-  function hasTokens () {
-    return tokens.length > 0;
   }
 
   function statements() {
@@ -497,21 +494,6 @@ function parser(text, json, $filter){
     }
   }
 
-  function _functionIdent(fnScope) {
-    var token = expect();
-    var element = token.text.split('.');
-    var instance = fnScope;
-    var key;
-    for ( var i = 0; i < element.length; i++) {
-      key = element[i];
-      if (instance)
-        instance = instance[key];
-    }
-    if (!isFunction(instance)) {
-      throwError("should be a function", token);
-    }
-    return instance;
-  }
 
   function primary() {
     var primary;

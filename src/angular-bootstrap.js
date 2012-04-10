@@ -9,7 +9,6 @@
 
   var filename = /^(.*\/)angular-bootstrap.js(#.*)?$/,
       scripts = document.getElementsByTagName("SCRIPT"),
-      config,
       serverPath,
       match,
       globalVars = {};
@@ -84,7 +83,7 @@
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
     }
-  }
+  };
 
   function addCss(file) {
     document.write('<link rel="stylesheet" type="text/css" href="' +

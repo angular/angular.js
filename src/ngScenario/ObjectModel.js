@@ -73,7 +73,7 @@ angular.scenario.ObjectModel = function(runner) {
     self.emit('StepBegin', it, step);
   });
 
-  runner.on('StepEnd', function(spec, step) {
+  runner.on('StepEnd', function(spec) {
     var it = self.getSpec(spec.id);
     var step = it.getLastStep();
     if (step.name !== step.name)

@@ -82,7 +82,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, element, attr) {
+      return function(scope, element) {
         var changeCounter = 0,
             childScope;
 
