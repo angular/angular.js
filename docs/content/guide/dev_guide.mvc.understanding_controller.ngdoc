@@ -30,10 +30,6 @@ function GreetingCtrl($scope) {
 
 The `GreetingCtrl` controller creates a `greeting` model which can be referred to in a template.
 
-When a controller function is applied to an angular scope object, the `this` of the controller
-function becomes the scope of the angular scope object, so any assignment to `this` within the
-controller function happens on the angular scope object.
-
 # Adding Behavior to a Scope Object
 
 Behavior on an angular scope object is in the form of scope method properties available to the
@@ -41,14 +37,8 @@ template/view. This behavior interacts with and modifies the application model.
 
 As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any functions assigned to
-the scope, along with any prototype methods of the controller type, become functions available in
-the template/view, and can be invoked via angular expressions and `ng` event handler directives
-(e.g. {@link api/angular.module.ng.$compileProvider.directive.ngClick ngClick}). These controller
-methods are always evaluated within the context of the angular scope object that the controller
-function was applied to (which means that the `this` keyword of any controller method is always
-bound to the scope that the controller augments). This is how the second task of adding behavior to
-the scope is accomplished.
-
+the scope are available in the template/view, and can be invoked via angular expressions
+and `ng` event handler directives (e.g. {@link api/angular.module.ng.$compileProvider.directive.ngClick ngClick}).
 
 # Using Controllers Correctly
 
@@ -109,13 +99,14 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 function SpicyCtrl($scope) {
  $scope.spice = 'very';
  $scope.chiliSpicy = function() {
-   this.spice = 'chili';
+   $scope.spice = 'chili';
+ }
+ $scope.jalapenoSpicy = function() {
+  $scope.spice = 'jalapeño';
  }
 }
 
-SpicyCtrl.prototype.jalapenoSpicy = function() {
- this.spice = 'jalapeño';
-}
+
 </pre>
 
 Things to notice in the example above:
@@ -124,13 +115,18 @@ Things to notice in the example above:
 scope is augmented (managed) by the `SpicyCtrl` controller.
 - `SpicyCtrl` is just a plain JavaScript function. As an (optional) naming convention the name
 starts with capital letter and ends with "Ctrl" or "Controller".
-- The JavaScript keyword `this` in the `SpicyCtrl` function is bound to the scope that the
-controller augments.
-- Assigning a property to `this` creates or updates the model.
-- Controller methods can be created through direct assignment to scope (the `chiliSpicy` method) or
-as prototype methods of the controller constructor function(the `jalapenoSpicy` method)
+- Assigning a property to `$scope` creates or updates the model.
+- Controller methods can be created through direct assignment to scope (the `chiliSpicy` method)
 - Both controller methods are available in the template (for the `body` element and and its
 children).
+- NB:  Previous versions of Angular (pre 1.0 RC) allowed you to use `this` interchangeably with
+the $scope method, but this is no longer the case.  Inside of methods defined on the scope
+`this` and $scope are interchangeable (angular sets `this` to $scope), but not otherwise
+inside your controller constructor.
+- NB:  Previous versions of Angular (pre 1.0 RC) added prototype methods into the scope
+automatically, but this is no longer the case; all methods need to be added manually to
+the scope.
+
 
 Controller methods can also take arguments, as demonstrated in the following variation of the
 previous example.
@@ -148,7 +144,7 @@ previous example.
 function SpicyCtrl($scope) {
  $scope.spice = 'very';
  $scope.spicy = function(spice) {
-   this.spice = spice;
+   $scope.spice = spice;
  }
 }
 </pre>
