@@ -449,7 +449,7 @@ function $LocationProvider(){
     } else {
       return hashPrefix;
     }
-  }
+  };
 
   /**
    * @ngdoc property

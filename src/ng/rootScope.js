@@ -66,7 +66,7 @@ function $RootScopeProvider(){
       TTL = value;
     }
     return TTL;
-  }
+  };
 
   this.$get = ['$injector', '$exceptionHandler', '$parse',
       function( $injector,   $exceptionHandler,   $parse) {

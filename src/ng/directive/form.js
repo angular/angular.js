@@ -6,7 +6,7 @@ var nullFormCtrl = {
   $removeControl: noop,
   $setValidity: noop,
   $setDirty: noop
-}
+};
 
 /**
  * @ngdoc object

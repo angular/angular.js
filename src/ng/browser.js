@@ -249,7 +249,7 @@ function Browser(window, document, body, $log, $sniffer) {
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function(name, value) {
-    var cookieLength, cookieArray, cookie, i, keyValue, index;
+    var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
       if (value === undefined) {

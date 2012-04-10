@@ -2,7 +2,7 @@
 
 ////////////////////////////////////
 
-if (typeof document.getAttribute == $undefined)
+if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
 /**
@@ -52,14 +52,7 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) {return String.fromCharCode(code);}
 
 
-var $boolean          = 'boolean',
-    $console          = 'console',
-    $length           = 'length',
-    $name             = 'name',
-    $object           = 'object',
-    $string           = 'string',
-    $undefined        = 'undefined',
-    Error             = window.Error,
+var Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
@@ -107,7 +100,7 @@ function forEach(obj, iterator, context) {
   if (obj) {
     if (isFunction(obj)){
       for (key in obj) {
-        if (key != 'prototype' && key != $length && key != $name && obj.hasOwnProperty(key)) {
+        if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -138,7 +131,7 @@ function sortedKeys(obj) {
 }
 
 function forEachSorted(obj, iterator, context) {
-  var keys = sortedKeys(obj)
+  var keys = sortedKeys(obj);
   for ( var i = 0; i < keys.length; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
@@ -269,7 +262,7 @@ function valueFn(value) {return function() {return value;};}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){return typeof value == $undefined;}
+function isUndefined(value){return typeof value == 'undefined';}
 
 
 /**
@@ -283,7 +276,7 @@ function isUndefined(value){return typeof value == $undefined;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){return typeof value != $undefined;}
+function isDefined(value){return typeof value != 'undefined';}
 
 
 /**
@@ -298,7 +291,7 @@ function isDefined(value){return typeof value != $undefined;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value!=null && typeof value == $object;}
+function isObject(value){return value != null && typeof value == 'object';}
 
 
 /**
@@ -312,7 +305,7 @@ function isObject(value){return value!=null && typeof value == $object;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){return typeof value == $string;}
+function isString(value){return typeof value == 'string';}
 
 
 /**
@@ -397,8 +390,10 @@ function isFile(obj) {
 }
 
 
-function isBoolean(value) {return typeof value == $boolean;}
-function isTextNode(node) {return nodeName_(node) == '#text';}
+function isBoolean(value) {
+  return typeof value == 'boolean';
+}
+
 
 function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
@@ -433,26 +428,6 @@ function makeMap(str){
 }
 
 
-
-/**
- * HTML class which is the only class which can be used in ngBind to inline HTML for security
- * reasons.
- *
- * @constructor
- * @param html raw (unsafe) html
- * @param {string=} option If set to 'usafe', get method will return raw (unsafe/unsanitized) html
- */
-function HTML(html, option) {
-  this.html = html;
-  this.get = lowercase(option) == 'unsafe'
-    ? valueFn(html)
-    : function htmlSanitize() {
-        var buf = [];
-        htmlParser(html, htmlSanitizeWriter(buf));
-        return buf.join('');
-      };
-}
-
 if (msie < 9) {
   nodeName_ = function(element) {
     element = element.nodeName ? element : element[0];
@@ -465,12 +440,6 @@ if (msie < 9) {
   };
 }
 
-function isVisible(element) {
-  var rect = element[0].getBoundingClientRect(),
-      width = (rect.width || (rect.right||0 - rect.left||0)),
-      height = (rect.height || (rect.bottom||0 - rect.top||0));
-  return width>0 && height>0;
-}
 
 function map(obj, iterator, context) {
   var results = [];
@@ -671,17 +640,6 @@ function equals(o1, o2) {
   return false;
 }
 
-function setHtml(node, html) {
-  if (isLeafNode(node)) {
-    if (msie) {
-      node.innerText = html;
-    } else {
-      node.textContent = html;
-    }
-  } else {
-    node.innerHTML = html;
-  }
-}
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
@@ -742,7 +700,7 @@ function toJsonReplacer(key, value) {
   }
 
   return val;
-};
+}
 
 
 /**
@@ -799,7 +757,7 @@ function startingTag(element) {
     // turns out IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
     element.html('');
-  } catch(e) {};
+  } catch(e) {}
   return jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1];
 }
 
@@ -918,7 +876,7 @@ function angularInit(element, bootstrap) {
       forEach(element.querySelectorAll('.' + name), append);
       forEach(element.querySelectorAll('.' + name + '\\:'), append);
       forEach(element.querySelectorAll('[' + name + ']'), append);
-    };
+    }
   });
 
   forEach(elements, function(element) {
@@ -1005,9 +963,7 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    var error = new Error("Argument '" + (name||'?') + "' is " +
-        (reason || "required"));
-    throw error;
+    throw new Error("Argument '" + (name || '?') + "' is " + (reason || "required"));
   }
   return arg;
 }

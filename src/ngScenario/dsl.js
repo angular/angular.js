@@ -128,7 +128,7 @@ angular.scenario.dsl('browser', function() {
     return api;
   };
 
-  return function(time) {
+  return function() {
     return chain;
   };
 });

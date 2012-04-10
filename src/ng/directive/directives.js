@@ -8,4 +8,4 @@ function ngDirective(directive) {
   }
   directive.restrict = directive.restrict || 'AC';
   return valueFn(directive);
-};
+}

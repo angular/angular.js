@@ -477,7 +477,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$parsers.push(maxLengthValidator);
     ctrl.$formatters.push(maxLengthValidator);
   }
-};
+}
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
@@ -584,7 +584,7 @@ function radioInputType(scope, element, attr, ctrl) {
       scope.$apply(function() {
         ctrl.$setViewValue(attr.value);
       });
-    };
+    }
   });
 
   ctrl.$render = function() {
@@ -840,7 +840,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
         this.$invalid = false;
       }
     } else {
-      toggleValidCss(false)
+      toggleValidCss(false);
       this.$invalid = true;
       this.$valid = false;
       invalidCount++;
