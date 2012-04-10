@@ -87,24 +87,6 @@ var jqCache = {},
 function jqNextId() { return (jqId++); }
 
 
-function getStyle(element) {
-  var current = {}, style = element[0].style, value, name, i;
-  if (typeof style.length == 'number') {
-    for(i = 0; i < style.length; i++) {
-      name = style[i];
-      current[name] = style[name];
-    }
-  } else {
-    for (name in style) {
-      value = style[name];
-      if (1*name != name && name != 'cssText' && value && typeof value == 'string' && value !='false')
-        current[name] = value;
-    }
-  }
-  return current;
-}
-
-
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
 
@@ -546,7 +528,7 @@ function createEventHandler(element) {
   };
   eventHandler.fns = [];
   return eventHandler;
-};
+}
 
 //////////////////////////////////////////
 // Functions iterating traversal.

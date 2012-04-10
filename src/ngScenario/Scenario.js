@@ -176,7 +176,7 @@ function asyncForEach(list, iterator, done) {
  * to a specific line length.
  *
  * @param {Object} error The exception to format, can be anything throwable
- * @param {Number} maxStackLines Optional. max lines of the stack trace to include
+ * @param {Number=} [maxStackLines=5] max lines of the stack trace to include
  *  default is 5.
  */
 function formatException(error, maxStackLines) {
@@ -307,7 +307,7 @@ function browserTrigger(element, type, keys) {
                         pressed('shift'), pressed('meta'), 0, element);
 
     element.dispatchEvent(evnt);
-    finalProcessDefault = !(appWindow.angular['ff-684208-preventDefault'] || !fakeProcessDefault)
+    finalProcessDefault = !(appWindow.angular['ff-684208-preventDefault'] || !fakeProcessDefault);
 
     delete appWindow.angular['ff-684208-preventDefault'];
 

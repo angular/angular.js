@@ -108,7 +108,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         doneWrapper = function() {
           rawDocument.body.removeChild(script);
           if (done) done();
-        }
+        };
 
     script.type = 'text/javascript';
     script.src = url;
@@ -122,5 +122,5 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
     rawDocument.body.appendChild(script);
-  };
+  }
 }
