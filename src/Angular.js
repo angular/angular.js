@@ -952,8 +952,8 @@ function angularInit(element, bootstrap) {
  * See: {@link guide/dev_guide.bootstrap.manual_bootstrap Bootstrap}
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
- * @param {angular.module.auta.$injector} the injector;
+ * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @returns {angular.module.auto.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   element = jqLite(element);
