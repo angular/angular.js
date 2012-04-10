@@ -146,9 +146,9 @@ This allows us to extend the above example with these features:
               required /><br />
     <div ng-show="!user.agree || !user.agreeSign">Please agree and sign.</div>
 
-    <button ng-click="reset()" disabled="{{isUnchanged(user)}}">RESET</button>
+    <button ng-click="reset()" ng-disabled="isUnchanged(user)">RESET</button>
     <button ng-click="update(user)"
-            disabled="{{form.$invalid || isUnchanged(user)}}">SAVE</button>
+            ng-disabled="form.$invalid || isUnchanged(user)">SAVE</button>
   </form>
 </div>
 
