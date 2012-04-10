@@ -67,39 +67,13 @@ describe('ngBind*', function() {
   });
 
 
-  describe('ngBindHtml', function() {
-
-    it('should set html', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-bind-html="html"></div>')($rootScope);
-      $rootScope.html = '<div unknown>hello</div>';
-      $rootScope.$digest();
-      expect(lowercase(element.html())).toEqual('<div>hello</div>');
-    }));
-
-
-    it('should reset html when value is null or undefined', inject(function($compile, $rootScope) {
-      element = $compile('<div ng-bind-html="html"></div>')($rootScope);
-
-      forEach([null, undefined, ''], function(val) {
-        $rootScope.html = 'some val';
-        $rootScope.$digest();
-        expect(lowercase(element.html())).toEqual('some val');
-
-        $rootScope.html = val;
-        $rootScope.$digest();
-        expect(lowercase(element.html())).toEqual('');
-      });
-    }));
-  });
-
-
   describe('ngBindHtmlUnsafe', function() {
 
     it('should set unsafe html', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
       $rootScope.html = '<div onclick="">hello</div>';
       $rootScope.$digest();
-      expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
     }));
   });
 });
