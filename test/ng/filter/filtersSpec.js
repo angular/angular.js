@@ -153,32 +153,6 @@ describe('filters', function() {
     });
   });
 
-  describe('linky', function() {
-    var linky;
-
-    beforeEach(inject(function($filter){
-      linky = $filter('linky')
-    }));
-
-    it('should do basic filter', function() {
-      expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c")).
-        toEqual('<a href="http://ab/">http://ab/</a> ' +
-                '(<a href="http://a/">http://a/</a>) ' +
-                '&lt;<a href="http://a/">http://a/</a>&gt; ' +
-                '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c');
-      expect(linky(undefined)).not.toBeDefined();
-    });
-
-    it('should handle mailto:', function() {
-      expect(linky("mailto:me@example.com")).
-                      toEqual('<a href="mailto:me@example.com">me@example.com</a>');
-      expect(linky("me@example.com")).
-                      toEqual('<a href="mailto:me@example.com">me@example.com</a>');
-      expect(linky("send email to me@example.com, but")).
-        toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
-    });
-  });
-
   describe('date', function() {
 
     var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am

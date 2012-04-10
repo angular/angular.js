@@ -96,7 +96,6 @@ function $FilterProvider($provide) {
   register('filter', filterFilter);
   register('json', jsonFilter);
   register('limitTo', limitToFilter);
-  register('linky', linkyFilter);
   register('lowercase', lowercaseFilter);
   register('number', numberFilter);
   register('orderBy', orderByFilter);

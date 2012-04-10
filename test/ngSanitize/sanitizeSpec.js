@@ -4,6 +4,8 @@ describe('HTML', function() {
 
   var expectHTML;
 
+  beforeEach(module('ngSanitize'));
+
   beforeEach(inject(function($sanitize) {
     expectHTML = function(html){
       return expect($sanitize(html));
@@ -11,6 +13,8 @@ describe('HTML', function() {
   }));
 
   describe('htmlParser', function() {
+    if (angular.isUndefined(window.htmlParser)) return;
+
     var handler, start, text;
     beforeEach(function() {
       handler = {
@@ -22,8 +26,8 @@ describe('HTML', function() {
             };
             // Since different browsers handle newlines differenttly we trim
             // so that it is easier to write tests.
-            forEach(attrs, function(value, key){
-              attrs[key] = trim(value);
+            angular.forEach(attrs, function(value, key) {
+              attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '')
             });
           },
           chars: function(text_){
@@ -64,9 +68,9 @@ describe('HTML', function() {
       expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}, unary:false});
       expect(text).toEqual('abc');
     });
-
   });
 
+  // THESE TESTS ARE EXECUTED WITH COMPILED ANGULAR
   it('should echo html', function() {
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
        toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
@@ -141,6 +145,8 @@ describe('HTML', function() {
   });
 
   describe('htmlSanitizerWriter', function() {
+    if (angular.isUndefined(window.htmlSanitizeWriter)) return;
+
     var writer, html;
     beforeEach(function() {
       html = '';
@@ -277,5 +283,4 @@ describe('HTML', function() {
     });
 
   });
-
 });

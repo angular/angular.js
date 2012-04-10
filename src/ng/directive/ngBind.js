@@ -57,54 +57,6 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngBindHtmlUnsafe
- *
- * @description
- * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
- * element. *The innerHTML-ed content will not be sanitized!* You should use this directive only if
- * {@link angular.module.ng.$compileProvider.directive.ngBindHtml ngBindHtml} directive is too
- * restrictive and when you absolutely trust the source of the content you are binding to.
- *
- * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
- *
- * @element ANY
- * @param {expression} ngBindHtmlUnsafe {@link guide/dev_guide.expressions Expression} to evaluate.
- */
-var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
-  element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
-  scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
-    element.html(value || '');
-  });
-});
-
-
-/**
- * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngBindHtml
- *
- * @description
- * Creates a binding that will sanitize the result of evaluating the `expression` with the
- * {@link angular.module.ng.$sanitize $sanitize} service and innerHTML the result into the current
- * element.
- *
- * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
- *
- * @element ANY
- * @param {expression} ngBindHtml {@link guide/dev_guide.expressions Expression} to evaluate.
- */
-var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
-  return function(scope, element, attr) {
-    element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
-    scope.$watch(attr.ngBindHtml, function(value) {
-      value = $sanitize(value);
-      element.html(value || '');
-    });
-  }
-}];
-
-
-/**
- * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ngBindTemplate
  *
  * @description
@@ -159,4 +111,29 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
       element.text(value);
     });
   }
+}];
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ngBindHtmlUnsafe
+ *
+ * @description
+ * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
+ * element. *The innerHTML-ed content will not be sanitized!* You should use this directive only if
+ * {@link angular.module.ng.$compileProvider.directive.ngBindHtml ngBindHtml} directive is too
+ * restrictive and when you absolutely trust the source of the content you are binding to.
+ *
+ * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
+ *
+ * @element ANY
+ * @param {expression} ngBindHtmlUnsafe {@link guide/dev_guide.expressions Expression} to evaluate.
+ */
+var ngBindHtmlUnsafeDirective = [function() {
+  return function(scope, element, attr) {
+    element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
+    scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
+      element.html(value || '');
+    });
+  };
 }];

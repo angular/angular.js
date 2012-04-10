@@ -9,6 +9,8 @@ describe("angular.scenario.dsl", function() {
     dealoc(element);
   });
 
+  beforeEach(module('ngSanitize'));
+
   beforeEach(inject(function($injector) {
     eventLog = [];
     $window = {
