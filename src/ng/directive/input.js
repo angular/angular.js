@@ -576,8 +576,10 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 }
 
 function radioInputType(scope, element, attr, ctrl) {
-  // correct the name
-  element.attr('name', attr.id + '@' + attr.name);
+  // make the name unique, if not defined
+  if (isUndefined(attr.name)) {
+    element.attr('name', nextUid());
+  }
 
   element.bind('click', function() {
     if (element[0].checked) {
@@ -1144,9 +1146,9 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 var ngValueDirective = [function() {
   return {
     priority: 100,
-    compile: function(tpl, attr) {
-      if (CONSTANT_VALUE_REGEXP.test(attr.ngValue)) {
-        return function(scope) {
+    compile: function(tpl, tplAttr) {
+      if (CONSTANT_VALUE_REGEXP.test(tplAttr.ngValue)) {
+        return function(scope, elm, attr) {
           attr.$set('value', scope.$eval(attr.ngValue));
         };
       } else {
