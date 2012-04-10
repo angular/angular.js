@@ -35,7 +35,7 @@ __`app/index.html`:__
    Fulltext Search: <input ng-model="query">
 
   <ul class="phones">
-    <li ng-repeat="phone in phones | filter(query)">
+    <li ng-repeat="phone in phones | filter:query">
       {{phone.name}}
       <p>{{phone.snippet}}</p>
     </li>

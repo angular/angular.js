@@ -178,7 +178,7 @@ execute the tests and report the results in the terminal.
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
-          this.hello = "Hello, World!"
+          $scope.hello = "Hello, World!"
 
   Refresh your browser to make sure it says, "Hello, World!"
 
