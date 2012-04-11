@@ -85,7 +85,6 @@ var currentDate = function() {
 
 
 var printSection = function(stream, title, section) {
-  var NESTED = true;
   var components = Object.getOwnPropertyNames(section).sort();
 
   if (!components.length) return;
@@ -94,9 +93,10 @@ var printSection = function(stream, title, section) {
 
   components.forEach(function(name) {
     var prefix = '-';
+    var nested = section[name].length > 1;
 
     if (name !== EMPTY_COMPONENT) {
-      if (NESTED) {
+      if (nested) {
         stream.write(util.format('- **%s:**\n', name));
         prefix = '  -';
       } else {
