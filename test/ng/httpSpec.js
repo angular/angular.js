@@ -940,6 +940,22 @@ describe('$http', function() {
         $httpBackend.flush();
       });
     });
+
+
+    describe('defaults', function() {
+
+      it('should expose the defaults object at runtime', function() {
+        expect($http.defaults).toBeDefined();
+
+        $http.defaults.headers.common.foo = 'bar';
+        $httpBackend.expect('GET', '/url', undefined, function(headers) {
+          return headers['foo'] == 'bar';
+        }).respond('');
+
+        $http.get('/url');
+        $httpBackend.flush();
+      });
+    });
   });
 
 

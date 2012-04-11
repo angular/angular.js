@@ -223,6 +223,9 @@ function $HttpProvider() {
      * with name equal to the lower-cased http method name, e.g.
      * `$httpProvider.defaults.headers.get['My-Header']='value'`.
      *
+     * Additionally, the defaults can be set at runtime via the `$http.defaults` object in a similar
+     * fassion as described above.
+     *
      *
      * # Transforming Requests and Responses
      *
@@ -603,6 +606,19 @@ function $HttpProvider() {
      * @returns {XhrFuture} Future object
      */
     createShortMethodsWithData('post', 'put');
+
+        /**
+         * @ngdoc property
+         * @name angular.module.ng.$http#defaults
+         * @propertyOf angular.module.ng.$http
+         *
+         * @description
+         * Runtime equivalent of the `$httpProvider.defaults` property. Allows configuration of
+         * default headers as well as request and response transformations.
+         *
+         * See "Setting HTTP Headers" and "Transforming Requests and Responses" sections above.
+         */
+    $http.defaults = $config;
 
 
     return $http;
