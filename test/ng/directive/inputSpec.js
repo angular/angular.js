@@ -1106,5 +1106,49 @@ describe('input', function() {
       browserTrigger(inputElm.eq(1), 'click');
       expect(scope.selected).toBe(2);
     });
+
+
+    it('should work inside ngRepeat with primitive values', function() {
+      compileInput(
+        '<div ng-repeat="i in items">' +
+          '<input type="radio" name="sel_{{i.id}}" ng-model="i.selected" ng-value="true">' +
+          '<input type="radio" name="sel_{{i.id}}" ng-model="i.selected" ng-value="false">' +
+        '</div>');
+
+      scope.$apply(function() {
+        scope.items = [{id: 1, selected: true}, {id: 2, selected: false}];
+      });
+
+      inputElm = formElm.find('input');
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
+      expect(inputElm[3].checked).toBe(true);
+
+      browserTrigger(inputElm.eq(1), 'click');
+      expect(scope.items[0].selected).toBe(false);
+    });
+
+
+    it('should work inside ngRepeat without name attribute', function() {
+      compileInput(
+        '<div ng-repeat="i in items">' +
+          '<input type="radio" ng-model="i.selected" ng-value="true">' +
+          '<input type="radio" ng-model="i.selected" ng-value="false">' +
+        '</div>');
+
+      scope.$apply(function() {
+        scope.items = [{id: 1, selected: true}, {id: 2, selected: false}];
+      });
+
+      inputElm = formElm.find('input');
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
+      expect(inputElm[3].checked).toBe(true);
+
+      browserTrigger(inputElm.eq(1), 'click');
+      expect(scope.items[0].selected).toBe(false);
+    });
   });
 });
