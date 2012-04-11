@@ -560,7 +560,7 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
-     * @returns {XhrFuture} Future object
+     * @returns {HttpPromise} Future object
      */
 
     /**
@@ -574,7 +574,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request.
      *                     Should contain `JSON_CALLBACK` string.
      * @param {Object=} config Optional configuration object
-     * @returns {XhrFuture} Future object
+     * @returns {HttpPromise} Future object
      */
     createShortMethods('get', 'delete', 'head', 'jsonp');
 
@@ -603,7 +603,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
      * @param {Object=} config Optional configuration object
-     * @returns {XhrFuture} Future object
+     * @returns {HttpPromise} Future object
      */
     createShortMethodsWithData('post', 'put');
 
