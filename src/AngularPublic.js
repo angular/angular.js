@@ -71,7 +71,6 @@ function publishExternalAPI(angular){
             style: styleDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
-            ngBindHtml: ngBindHtmlDirective,
             ngBindHtmlUnsafe: ngBindHtmlUnsafeDirective,
             ngBindTemplate: ngBindTemplateDirective,
             ngClass: ngClassDirective,
@@ -123,7 +122,6 @@ function publishExternalAPI(angular){
         $routeParams: $RouteParamsProvider,
         $rootScope: $RootScopeProvider,
         $q: $QProvider,
-        $sanitize: $SanitizeProvider,
         $sniffer: $SnifferProvider,
         $templateCache: $TemplateCacheProvider,
         $window: $WindowProvider

@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * @ngdoc overview
+ * @name angular.module.ngSanitize
+ * @description
+ */
+
 /*
  * HTML Parser By Misko Hevery (misko@hevery.com)
  * based on:  HTML Parser By John Resig (ejohn.org)
@@ -17,10 +23,9 @@
  */
 
 
-
 /**
  * @ngdoc service
- * @name angular.module.ng.$sanitize
+ * @name angular.module.ngSanitize.$sanitize
  * @function
  *
  * @description
@@ -34,7 +39,7 @@
  * @returns {string} Sanitized html.
  *
  * @example
-   <doc:example>
+   <doc:example module="ngSanitize">
      <doc:source>
        <script>
          function Ctrl($scope) {
@@ -103,14 +108,12 @@
      </doc:scenario>
    </doc:example>
  */
-
-function $SanitizeProvider() {
-  this.$get = valueFn(function(html) {
-    var buf = [];
+var $sanitize = function(html) {
+  var buf = [];
     htmlParser(html, htmlSanitizeWriter(buf));
     return buf.join('');
-  });
-}
+};
+
 
 // Regular Expressions for parsing tags and attributes
 var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
@@ -136,15 +139,15 @@ var voidElements = makeMap("area,br,col,hr,img,wbr");
 // http://dev.w3.org/html5/spec/Overview.html#optional-tags
 var optionalEndTagBlockElements = makeMap("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr"),
     optionalEndTagInlineElements = makeMap("rp,rt"),
-    optionalEndTagElements = extend({}, optionalEndTagInlineElements, optionalEndTagBlockElements);
+    optionalEndTagElements = angular.extend({}, optionalEndTagInlineElements, optionalEndTagBlockElements);
 
 // Safe Block Elements - HTML5
-var blockElements = extend({}, optionalEndTagBlockElements, makeMap("address,article,aside," +
+var blockElements = angular.extend({}, optionalEndTagBlockElements, makeMap("address,article,aside," +
         "blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,h6," +
         "header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul"));
 
 // Inline Elements - HTML5
-var inlineElements = extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b,bdi,bdo," +
+var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b,bdi,bdo," +
         "big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,samp,small," +
         "span,strike,strong,sub,sup,time,tt,u,var"));
 
@@ -152,16 +155,23 @@ var inlineElements = extend({}, optionalEndTagInlineElements, makeMap("a,abbr,ac
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
 
-var validElements = extend({}, voidElements, blockElements, inlineElements, optionalEndTagElements);
+var validElements = angular.extend({}, voidElements, blockElements, inlineElements, optionalEndTagElements);
 
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap");
-var validAttrs = extend({}, uriAttrs, makeMap(
+var validAttrs = angular.extend({}, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,'+
     'scope,scrolling,shape,span,start,summary,target,title,type,'+
     'valign,value,vspace,width'));
+
+function makeMap(str) {
+  var obj = {}, items = str.split(','), i;
+  for (i = 0; i < items.length; i++) obj[items[i]] = true;
+  return obj;
+}
+
 
 /**
  * @example
@@ -249,7 +259,7 @@ function htmlParser( html, handler ) {
   parseEndTag();
 
   function parseStartTag( tag, tagName, rest, unary ) {
-    tagName = lowercase(tagName);
+    tagName = angular.lowercase(tagName);
     if ( blockElements[ tagName ] ) {
       while ( stack.last() && inlineElements[ stack.last() ] ) {
         parseEndTag( "", stack.last() );
@@ -280,7 +290,7 @@ function htmlParser( html, handler ) {
 
   function parseEndTag( tag, tagName ) {
     var pos = 0, i;
-    tagName = lowercase(tagName);
+    tagName = angular.lowercase(tagName);
     if ( tagName )
       // Find the closest opened tag of the same type
       for ( pos = stack.length - 1; pos >= 0; pos-- )
@@ -338,18 +348,18 @@ function encodeEntities(value) {
  */
 function htmlSanitizeWriter(buf){
   var ignore = false;
-  var out = bind(buf, buf.push);
+  var out = angular.bind(buf, buf.push);
   return {
     start: function(tag, attrs, unary){
-      tag = lowercase(tag);
+      tag = angular.lowercase(tag);
       if (!ignore && specialElements[tag]) {
         ignore = tag;
       }
       if (!ignore && validElements[tag] == true) {
         out('<');
         out(tag);
-        forEach(attrs, function(value, key){
-          var lkey=lowercase(key);
+        angular.forEach(attrs, function(value, key){
+          var lkey=angular.lowercase(key);
           if (validAttrs[lkey]==true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
             out(' ');
             out(key);
@@ -362,7 +372,7 @@ function htmlSanitizeWriter(buf){
       }
     },
     end: function(tag){
-        tag = lowercase(tag);
+        tag = angular.lowercase(tag);
         if (!ignore && validElements[tag] == true) {
           out('</');
           out(tag);
@@ -379,3 +389,7 @@ function htmlSanitizeWriter(buf){
       }
   };
 }
+
+
+// define ngSanitize module and register $sanitize service
+angular.module('ngSanitize', []).value('$sanitize', $sanitize);

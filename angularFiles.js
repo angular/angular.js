@@ -24,7 +24,6 @@ angularFiles = {
     'src/ng/route.js',
     'src/ng/routeParams.js',
     'src/ng/rootScope.js',
-    'src/ng/sanitize.js',
     'src/ng/sniffer.js',
     'src/ng/window.js',
     'src/ng/http.js',
@@ -65,6 +64,9 @@ angularFiles = {
   'angularSrcModules': [
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
+    'src/ngSanitize/sanitize.js',
+    'src/ngSanitize/directive/ngBindHtml.js',
+    'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js'
   ],
 
@@ -98,6 +100,9 @@ angularFiles = {
     'test/ng/filter/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
+    'test/ngSanitize/*.js',
+    'test/ngSanitize/directive/*.js',
+    'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js'
   ],
 
@@ -136,10 +141,16 @@ angularFiles = {
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
+    'src/ngSanitize/sanitize.js',
+    'src/ngSanitize/directive/ngBindHtml.js',
+    'src/ngSanitize/filter/linky.js',
     'test/matchers.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
-    'test/ngResource/*.js'
+    'test/ngResource/*.js',
+    'test/ngSanitize/*.js',
+    'test/ngSanitize/directive/*.js',
+    'test/ngSanitize/filter/*.js'
   ],
 
   'jstdPerf': [

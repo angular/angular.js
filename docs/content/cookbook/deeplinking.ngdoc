@@ -39,7 +39,7 @@ The two partials are defined in the following URLs:
 <doc:example module="deepLinking">
  <doc:source jsfiddle="false">
     <script>
-     angular.module('deepLinking', [])
+     angular.module('deepLinking', ['ngSanitize'])
        .config(function($routeProvider) {
           $routeProvider.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
           $routeProvider.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
