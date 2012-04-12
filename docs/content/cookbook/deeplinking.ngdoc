@@ -5,7 +5,7 @@
 Deep linking allows you to encode the state of the application in the URL so that it can be
 bookmarked and the application can be restored from the URL to the same state.
 
-While <angular/> does not force you to deal with bookmarks in any particular way, it has services
+While angular does not force you to deal with bookmarks in any particular way, it has services
 which make the common case described here very easy to implement.
 
 # Assumptions
@@ -33,8 +33,8 @@ In this example we have a simple app which consist of two screens:
 
 The two partials are defined in the following URLs:
 
-* <a href="./examples/settings.html" ng-ext-link>./examples/settings.html</a>
-* <a href="./examples/welcome.html" ng-ext-link>./examples/welcome.html</a>
+* <a href="examples/settings.html" target="_self">./examples/settings.html</a>
+* <a href="examples/welcome.html" target="_self">./examples/welcome.html</a>
 
 <doc:example module="deepLinking">
  <doc:source jsfiddle="false">
