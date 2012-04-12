@@ -2,8 +2,6 @@
 @name Tutorial: 4 - Two-way Data Binding
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
 <ul doc:tutorial-nav="4"></ul>
 
 
@@ -29,11 +27,11 @@ __`app/index.html`:__
 ...
   <ul class="controls">
     <li>
-      Search: <input type="text" ng:model="query"/>
+      Search: <input ng-model="query">
     </li>
     <li>
       Sort by:
-      <select ng:model="orderProp">
+      <select ng-model="orderProp">
         <option value="name">Alphabetical</option>
         <option value="age">Newest</option>
       </select>
@@ -41,7 +39,7 @@ __`app/index.html`:__
   </ul>
 
   <ul class="phones">
-    <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
+    <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
       {{phone.name}}
       <p>{{phone.snippet}}</p>
     </li>
@@ -54,14 +52,14 @@ We made the following changes to the `index.html` template:
 * First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
 two provided sorting options.
 
-      <img src="img/tutorial/tutorial_04-06_final.png">
+      <img src="img/tutorial/tutorial_04.png">
 
-* We then chained the `$filter` method with {@link api/angular.module.ng.$filter.orderBy `$orderBy`} method to
-further process the input into the repeater. `$orderBy` is a utility method similar to {@link
-api/angular.module.ng.$filter.filter `$filter`}, but instead of filtering an array, it reorders it.
+* We then chained the `filter` filter with {@link api/angular.module.ng.$filter.orderBy `orderBy`}
+filter to further process the input into the repeater. `orderBy` is a filter that takes an input
+array, copies it and reorders the copy which is then returned.
 
 Angular creates a two way data-binding between the select element and the `orderProp` model.
-`orderProp` is then used as the input for the `$orderBy` method.
+`orderProp` is then used as the input for the `orderBy` filter.
 
 As we discussed in the section about data-binding and the repeater in step 3, whenever the model
 changes (for example because a user changes the order with the select drop down menu), Angular's
@@ -76,8 +74,8 @@ __`app/js/controller.js`:__
 <pre>
 /* App Controllers */
 
-function PhoneListCtrl() {
-  this.phones = [{"name": "Nexus S",
+function PhoneListCtrl($scope) {
+  $scope.phones = [{"name": "Nexus S",
                   "snippet": "Fast just got faster with Nexus S.",
                   "age": 0},
                  {"name": "Motorola XOOM™ with Wi-Fi",
@@ -87,7 +85,7 @@ function PhoneListCtrl() {
                   "snippet": "The Next, Next Generation tablet.",
                   "age": 2}];
 
-  this.orderProp = 'age';
+  $scope.orderProp = 'age';
 }
 </pre>
 
@@ -95,8 +93,8 @@ function PhoneListCtrl() {
 record. This property is used to order phones by age.
 
 * We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
-not set the default value here, angular would have used the value of the first `<option>` element
-(`'name'`) when it initialized the data model.
+not set the default value here, the model would stay uninitialized until our user would pick an
+option from the drop down menu.
 
   This is a good time to talk about two-way data-binding. Notice that when the app is loaded in the
 browser, "Newest" is selected in the drop down menu. This is because we set `orderProp` to `'age'`
@@ -120,17 +118,18 @@ describe('PhoneCat controllers', function() {
     var scope, $browser, ctrl;
 
     beforeEach(function() {
-      ctrl = new PhoneListCtrl();
+      scope = {};
+      ctrl = new PhoneListCtrl(scope);
     });
 
 
     it('should create "phones" model with 3 phones', function() {
-      expect(ctrl.phones.length).toBe(3);
+      expect(scope.phones.length).toBe(3);
     });
 
 
     it('should set the default value of orderProp model', function() {
-      expect(ctrl.orderProp).toBe('age');
+      expect(scope.orderProp).toBe('age');
     });
   });
 });
@@ -162,13 +161,13 @@ __`test/e2e/scenarios.js`:__
       // narrow the dataset to make the test assertions shorter
       input('query').enter('tablet');
 
-      expect(repeater('.phones li', 'Phone List').column('a')).
+      expect(repeater('.phones li', 'Phone List').column('phone.name')).
           toEqual(["Motorola XOOM\u2122 with Wi-Fi",
                    "MOTOROLA XOOM\u2122"]);
 
       select('orderProp').option('alphabetical');
 
-      expect(repeater('.phones li', 'Phone List').column('a')).
+      expect(repeater('.phones li', 'Phone List').column('phone.name')).
           toEqual(["MOTOROLA XOOM\u2122",
                    "Motorola XOOM\u2122 with Wi-Fi"]);
     });
@@ -184,9 +183,12 @@ Angular's server}.
 
 # Experiments
 
+<div style="display:none">
+!!!!! TODO(i): we need to fix select/option to support unknown option !!!!!
 * In the `PhoneListCtrl` controller, remove the statement that sets the `orderProp` value and
 you'll see that the ordering as well as the current selection in the dropdown menu will default to
 "Alphabetical".
+</div>
 
 * Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
 text.
