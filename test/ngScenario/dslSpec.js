@@ -168,23 +168,14 @@ describe("angular.scenario.dsl", function() {
     });
 
     describe('location', function() {
-      beforeEach(function() {
-        $window.angular.injector = function() {
-          return {
-            get: function(serviceId) {
-              if (serviceId == '$location') {
-                return {
-                  url: function() {return '/path?search=a#hhh';},
-                  path: function() {return '/path';},
-                  search: function() {return {search: 'a'};},
-                  hash: function() {return 'hhh';}
-                };
-              }
-              throw new Error('unknown service id ' + serviceId);
-            }
-          };
-        };
-      });
+      beforeEach(inject(function($injector) {
+        angular.extend($injector.get('$location'), {
+          url: function() {return '/path?search=a#hhh';},
+          path: function() {return '/path';},
+          search: function() {return {search: 'a'};},
+          hash: function() {return 'hhh';}
+        });
+      }));
 
       it('should return full url', function() {
         $root.dsl.browser().location().url();

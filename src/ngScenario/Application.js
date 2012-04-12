@@ -91,8 +91,7 @@ angular.scenario.Application.prototype.executeAction = function(action) {
     return action.call(this, $window, _jQuery($window.document));
   }
   angularInit($window.document, function(element) {
-    element = $window.angular.element(element);
-    var $injector = element.inheritedData('$injector');
+    var $injector = $window.angular.element(element).injector();
     $injector.invoke(function($browser){
       $browser.notifyWhenNoOutstandingRequests(function() {
         action.call(self, $window, _jQuery($window.document));

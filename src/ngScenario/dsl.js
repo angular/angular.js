@@ -103,25 +103,25 @@ angular.scenario.dsl('browser', function() {
 
     api.url = function() {
       return this.addFutureAction('$location.url()', function($window, $document, done) {
-        done(null, $window.angular.injector(['ng']).get('$location').url());
+        done(null, $window.angular.element($window.document).injector().get('$location').url());
       });
     };
 
     api.path = function() {
       return this.addFutureAction('$location.path()', function($window, $document, done) {
-        done(null, $window.angular.injector(['ng']).get('$location').path());
+        done(null, $window.angular.element($window.document).injector().get('$location').path());
       });
     };
 
     api.search = function() {
       return this.addFutureAction('$location.search()', function($window, $document, done) {
-        done(null, $window.angular.injector(['ng']).get('$location').search());
+        done(null, $window.angular.element($window.document).injector().get('$location').search());
       });
     };
 
     api.hash = function() {
       return this.addFutureAction('$location.hash()', function($window, $document, done) {
-        done(null, $window.angular.injector(['ng']).get('$location').hash());
+        done(null, $window.angular.element($window.document).injector().get('$location').hash());
       });
     };
 
