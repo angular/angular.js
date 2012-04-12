@@ -84,7 +84,7 @@ Compilation of HTML happens in three phases:
   collection of all of the linking functions returned from the individual directive compile
   functions.
 
-  3. Link the template with scope by calling the liking function returned from the previous step.
+  3. Link the template with scope by calling the linking function returned from the previous step.
   This in turn will call the linking function of the individual directives allowing them to
   register any listeners on the elements and set up any {@link
   angular.module.ng.$rootScope.Scope#$watch watches} with the {@link
