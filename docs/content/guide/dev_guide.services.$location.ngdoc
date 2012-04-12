@@ -305,7 +305,7 @@ history API  or not; the `$location` service makes this transparent to you.
 ### Html link rewriting
 
 When you use the history API mode, you will need different links in different browser, but all you
-have to do is specify regular URL links, such as: `&lt;a href="/some?foo=bar"&gt;link&lt;/a&gt;`
+have to do is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
 
 When a user clicks on this link,
 
@@ -316,12 +316,13 @@ When a user clicks on this link,
 In cases like the following, links are not rewritten; instead, the browser will perform a full page
 reload to the original link.
 
-- Links with an `ngExtLink` directive<br />
-  Example: `<a href="/ext/link?a=b" ng-ext-link>link</a>`
-- Links that contain `target="_blank"`<br />
-  Example: `<a href="/ext/link?a=b" target="_blank">link</a>`
-- Absolute links that go to a different domain<br />
+- Links that contain `target` element<br>
+  Example: `<a href="/ext/link?a=b" target="_self">link</a>`
+- Absolute links that go to a different domain<br>
   Example: `<a href="http://angularjs.org/">link</a>`
+- Links starting with '/' that lead to a different base path when base is defined<br>
+  Example: `<a href="/not-my-base/link">link</a>`
+
 
 ### Server side
 
@@ -341,11 +342,13 @@ Applications Crawlable}.
 
 ### Relative links
 
-Be sure to check all relative links, images, scripts etc. You must use an absolute path because the
-path is going to be rewritten. You can use `<base href="" />` tag as well.
+Be sure to check all relative links, images, scripts etc. You must either specify the url base in
+the head of your main html file (`<base href="/my-base">`) or you must use absolute urls
+(starting with `/`) everywhere because relative urls will be resolved to absolute urls using the
+initial absolute url of the document, which is often different from the root of the application.
 
 Running Angular apps with the History API enabled from document root is strongly encouraged as it
-takes care of all relative link issues. **Otherwise you have to specify &lt;base href="" /&gt; !**
+takes care of all relative link issues.
 
 ### Sending links among different browsers
 
@@ -379,9 +382,9 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="/base/first?a=b">/base/first?a=b</a> |
-    <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
-    <a href="/base/another?search" ng-ext-link>external</a>
+    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="/other-base/another?search">external</a>
   </div>
 
   <div id="hashbang-mode" ng-controller="HashbangCntl">
@@ -393,9 +396,9 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="/base/first?a=b">/base/first?a=b</a> |
-    <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
-    <a href="/base/another?search" ng-ext-link>external</a>
+    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="/other-base/another?search">external</a>
   </div>
 </div>
 
@@ -445,7 +448,7 @@ In this examples we use `<base href="/base/index.html" />`
       $compileProvider.directive('ngAddressBar', function() {
         return function(scope, elm, attrs) {
           var browser = browsers[attrs.browser],
-              input = angular.element('<input type="text" />').val(browser.url()),
+              input = angular.element('<input type="text">').val(browser.url()),
               delay;
 
           input.bind('keypress keyup keydown', function() {

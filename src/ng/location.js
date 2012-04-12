@@ -500,22 +500,16 @@ function $LocationProvider(){
           elm = elm.parent();
         }
 
-        var href = elm.attr('href');
-        if (!href || isDefined(elm.attr('ng-ext-link')) || elm.attr('target')) return;
+        var absHref = elm.prop('href');
 
-        // link to different base path
-        if (href[0] === '/' && href.indexOf(pathPrefix) !== 0)  return;
+        if (!absHref ||
+            elm.attr('target') ||
+            absHref.indexOf(absUrlPrefix) !== 0) { // link to different domain or base path
+          return;
+        }
 
-        // remove same domain from full url links (IE7 always returns full hrefs)
-        href = href.replace(absUrlPrefix, '');
-
-        // link to different domain (or base path)
-        if (href.substr(0, 4) == 'http') return;
-
-        // remove pathPrefix from absolute links
-        href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
-
-        currentUrl.url(href);
+        // update location with href without the prefix
+        currentUrl.url(absHref.substr(absUrlPrefix.length));
         $rootScope.$apply();
         event.preventDefault();
         // hack to work around FF6 bug 684208 when scenario runner clicks on links
