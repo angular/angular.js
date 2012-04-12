@@ -61,11 +61,11 @@
 
         <div ng-controller="MainCntl">
           Choose:
-          <a href="/Book/Moby">Moby</a> |
-          <a href="/Book/Moby/ch/1">Moby: Ch1</a> |
-          <a href="/Book/Gatsby">Gatsby</a> |
-          <a href="/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
-          <a href="/Book/Scarlet">Scarlet Letter</a><br/>
+          <a href="Book/Moby">Moby</a> |
+          <a href="Book/Moby/ch/1">Moby: Ch1</a> |
+          <a href="Book/Gatsby">Gatsby</a> |
+          <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
+          <a href="Book/Scarlet">Scarlet Letter</a><br/>
 
           <div ng-view></div>
           <hr />
