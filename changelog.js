@@ -38,10 +38,14 @@ var parseRawCommit = function(raw) {
   lines.forEach(function(line) {
     match = line.match(/Closes\s#(\d+)/);
     if (match) msg.closes.push(parseInt(match[1]));
-
-    match = line.match(/Breaks\s(.*)/);
-    if (match) msg.breaks.push(match[1]);
   });
+  
+  match = raw.match(/BREAKING CHANGE:([\s\S]*)/);
+  if (match) {
+    console.log('found!!!')
+    msg.breaks.push(match[1]);
+  }
+  
 
   msg.body = lines.join('\n');
   match = msg.subject.match(/^(.*)\((.*)\)\:\s(.*)$/);

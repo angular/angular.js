@@ -1,5 +1,63 @@
-<a name="v1.0.0rc4"></a>
-# v1.0.0rc4 insomnia-induction (2012-04-05)
+<a name="1.0.0rc5"></a>
+# 1.0.0rc5 reality-distortion (2012-04-12)
+
+
+## Bug Fixes
+
+- **$location:** properly rewrite urls in html5 mode with base url set + don't rewrite links to
+  different base paths
+  ([6d7e7fde](https://github.com/angular/angular.js/commit/6d7e7fdea6c3d6551ff40c150aa42e1375d2cb5f),
+   [0a5050eb](https://github.com/angular/angular.js/commit/0a5050eb3c1f1ed84134f23a44b97a7261114060))
+- **e2eRunner:** $browser.location should delegate to apps $location
+  ([df72852f](https://github.com/angular/angular.js/commit/df72852f3496d7640bb4f70837338e464b7ed69f))
+- **input.radio:** support 2-way binding in a repeater
+  ([93d62860](https://github.com/angular/angular.js/commit/93d62860e988a09fb64e594f50f6cd55a1fc5748),
+   [#869](https://github.com/angular/angular.js/issues/869))
+- **ngBindHtml:** clear contents when model is falsy
+  ([10daefc6](https://github.com/angular/angular.js/commit/10daefc6f466a21d9418437666461c80cf24fcfe),
+   [#864](https://github.com/angular/angular.js/issues/864))
+- lots of doc fixes
+
+
+## Features
+
+- **$http:** expose the defaults config as $http.defaults
+  ([dceafd32](https://github.com/angular/angular.js/commit/dceafd32ee140c8af5c7a0ca6cb808395fffeed3))
+- **docs:** steps 0-4 of the Tutorial have been updated and improved
+
+
+## Breaking Changes
+
+- `ng-ext-link` directive was removed because it's unnecessary
+  ([6d7e7fde](https://github.com/angular/angular.js/commit/6d7e7fdea6c3d6551ff40c150aa42e1375d2cb5f))
+
+    apps that relied on ng-ext-link should simply replace it with `target="_self"`
+
+- `$browser.addCss` was removed - it was never meant to be a public api
+  ([13d5528a](https://github.com/angular/angular.js/commit/13d5528a5f5a2f0feee5c742788a914d2371841e))
+
+    apps the depend on this functionality should write a simple utility function specific to the app
+    (see this diff for hints).
+
+- `$browser.addJs` method was removed - it was never meant to be a public api
+  ([fbaa1968](https://github.com/angular/angular.js/commit/fbaa1968b7c596ccb63ea8b4be1d3bd92eda50d8))
+
+    apps that depended on this functionality should either use many of the existing script loaders or
+    create a simple helper method specific to the app.
+
+- `$sanitize` service, `ngBindHtml` directive and `linky` filter were moved to the `ngSanitize` module
+  ([5bcd7198](https://github.com/angular/angular.js/commit/5bcd7198664dca2bf85ddf8b3a89f417cd4e4796))
+
+    apps that depend on any of these will need to load `angular-sanitize.js` and include `ngSanitize`
+    in their dependency list: `var myApp = angular.module('myApp', ['ngSanitize']);`
+
+
+
+
+
+
+<a name="1.0.0rc4"></a>
+# 1.0.0rc4 insomnia-induction (2012-04-05)
 
 
 ## Bug Fixes
@@ -59,8 +117,8 @@ We removed two useless features:
 
 
 
-<a name="v1.0.0rc3"></a>
-# v1.0.0rc3 barefoot-telepathy (2012-03-29)
+<a name="1.0.0rc3"></a>
+# 1.0.0rc3 barefoot-telepathy (2012-03-29)
 
 
 ## Bug Fixes
@@ -123,8 +181,8 @@ We removed two useless features:
 
 
 
-<a name="v1.0.0rc2"></a>
-# v1.0.0rc2 silence-absorption (2012-03-20)
+<a name="1.0.0rc2"></a>
+# 1.0.0rc2 silence-absorption (2012-03-20)
 
 ## Features
 
