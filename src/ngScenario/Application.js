@@ -92,9 +92,15 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   }
   angularInit($window.document, function(element) {
     var $injector = $window.angular.element(element).injector();
+    var $element = _jQuery(element);
+
+    $element.injector = function() {
+      return $injector;
+    };
+
     $injector.invoke(function($browser){
       $browser.notifyWhenNoOutstandingRequests(function() {
-        action.call(self, $window, _jQuery($window.document));
+        action.call(self, $window, $element);
       });
     });
   });
