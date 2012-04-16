@@ -45,7 +45,7 @@ the only button on the page, and then it verifies that there are 10 items listed
 The API section below lists the available commands and expectations for the Runner.
 
 # API
-Source: {@link https://github.com/angular/angular.js/blob/master/src/scenario/dsl.js}
+Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js}
 
 ## pause()
 Pauses the execution of the tests until you call `resume()` in the console (or click the resume
