@@ -90,7 +90,7 @@
  * Calling the linking function returns the element of the template. It is either the original element
  * passed in, or the clone of the element if the `cloneAttachFn` is provided.
  *
- * After linking the view is not updateh until after a call to $digest which typically is done by
+ * After linking the view is not updated until after a call to $digest which typically is done by
  * Angular automatically.
  *
  * If you need access to the bound view, there are two ways to do it:
