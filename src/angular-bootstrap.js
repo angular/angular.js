@@ -2,7 +2,7 @@
 
 /**
  * @license AngularJS
- * (c) 2010-2011 AngularJS http://angularjs.org
+ * (c) 2010-2012 Google, Inc. http://angularjs.org
  * License: MIT
  */
 (function(window, document) {
