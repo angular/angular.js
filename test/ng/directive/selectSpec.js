@@ -10,11 +10,33 @@ describe('select', function() {
     scope.$apply();
   }
 
+
   beforeEach(inject(function($injector, $rootScope) {
     scope = $rootScope;
     $compile = $injector.get('$compile');
     formElement = element = null;
   }));
+
+
+  beforeEach(function() {
+    this.addMatchers({
+      toEqualSelect: function(expected){
+        var actualValues = [],
+            expectedValues = [].slice.call(arguments);
+
+        forEach(this.actual.find('option'), function(option) {
+          actualValues.push(option.selected ? [option.value] : option.value);
+        });
+
+        this.message = function() {
+          return 'Expected ' + toJson(actualValues) + ' to equal ' + toJson(expectedValues) + '.';
+        };
+
+        return equals(expectedValues, actualValues);
+      }
+    });
+  });
+
 
   afterEach(function() {
     dealoc(formElement);
@@ -102,15 +124,13 @@ describe('select', function() {
         scope.selection = ['A'];
       });
 
-      expect(element.find('option')[0].selected).toEqual(true);
-      expect(element.find('option')[1].selected).toEqual(false);
+      expect(element).toEqualSelect(['A'], 'B');
 
       scope.$apply(function() {
         scope.selection.push('B');
       });
 
-      expect(element.find('option')[0].selected).toEqual(true);
-      expect(element.find('option')[1].selected).toEqual(true);
+      expect(element).toEqualSelect(['A'], ['B']);
     });
 
 
@@ -817,47 +837,27 @@ describe('select', function() {
 
 
   describe('OPTION value', function() {
-    beforeEach(function() {
-      this.addMatchers({
-        toHaveValue: function(expected){
-          this.message = function() {
-            return 'Expected "' + this.actual.html() + '" to have value="' + expected + '".';
-          };
 
-          var value;
-          htmlParser(this.actual.html(), {
-            start:function(tag, attrs){
-              value = attrs.value;
-            },
-            end:noop,
-            chars:noop
-          });
-          return trim(value) == trim(expected);
-        }
-      });
+    it('should populate value attribute on OPTION', function() {
+      compile('<select ng-model="x"><option selected>abc</option></select>');
+      expect(element).toEqualSelect('abc');
     });
 
+    it('should ignore value if already exists', function() {
+      compile('<select ng-model="x"><option value="abc">xyz</option></select>');
+      expect(element).toEqualSelect('abc');
+    });
 
-    it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
-      element = $compile('<select ng-model="x"><option>abc</option></select>')($rootScope)
-      expect(element).toHaveValue('abc');
-    }));
+    it('should set value even if newlines present', function() {
+      compile('<select ng-model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
+      expect(element).toEqualSelect('\nabc\n');
+    });
 
-    it('should ignore value if already exists', inject(function($rootScope, $compile) {
-      element = $compile('<select ng-model="x"><option value="abc">xyz</option></select>')($rootScope)
-      expect(element).toHaveValue('abc');
-    }));
-
-    it('should set value even if newlines present', inject(function($rootScope, $compile) {
-      element = $compile('<select ng-model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
-      expect(element).toHaveValue('\nabc\n');
-    }));
-
-    it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
+    it('should set value even if self closing HTML', function() {
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
-      element = $compile('<select ng-model="x"><option>\n</option></select>')($rootScope)
-      expect(element).toHaveValue('\n');
-    }));
+      compile('<select ng-model="x"><option>\n</option></select>');
+      expect(element).toEqualSelect('\n');
+    });
   });
 });
