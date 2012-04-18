@@ -10,12 +10,17 @@ describe('select', function() {
     scope.$apply();
   }
 
-
-  beforeEach(inject(function($injector, $rootScope) {
-    scope = $rootScope;
-    $compile = $injector.get('$compile');
+  beforeEach(inject(function($rootScope, _$compile_) {
+    scope = $rootScope.$new(); //create a child scope because the root scope can't be $destroy-ed
+    $compile = _$compile_;
     formElement = element = null;
   }));
+
+
+  afterEach(function() {
+    scope.$destroy(); //disables unknown option work during destruction
+    dealoc(formElement);
+  });
 
 
   beforeEach(function() {
@@ -35,11 +40,6 @@ describe('select', function() {
         return equals(expectedValues, actualValues);
       }
     });
-  });
-
-
-  afterEach(function() {
-    dealoc(formElement);
   });
 
 
@@ -107,6 +107,267 @@ describe('select', function() {
 
       expect(element).toBeValid();
       expect(element).toBePristine();
+    });
+
+
+    it('should work with repeated value options', function() {
+      scope.robots = ['c3p0', 'r2d2'];
+      scope.robot = 'r2d2';
+      compile('<select ng-model="robot">' +
+                '<option ng-repeat="r in robots">{{r}}</option>' +
+              '</select>');
+      expect(element).toEqualSelect('c3p0', ['r2d2']);
+
+      browserTrigger(element.find('option').eq(0));
+      expect(element).toEqualSelect(['c3p0'], 'r2d2');
+      expect(scope.robot).toBe('c3p0');
+
+      scope.$apply(function() {
+        scope.robots.unshift('wallee');
+      });
+      expect(element).toEqualSelect('wallee', ['c3p0'], 'r2d2');
+      expect(scope.robot).toBe('c3p0');
+
+      scope.$apply(function() {
+        scope.robots = ['c3p0+', 'r2d2+'];
+        scope.robot = 'r2d2+';
+      });
+      expect(element).toEqualSelect('c3p0+', ['r2d2+']);
+      expect(scope.robot).toBe('r2d2+');
+    });
+
+
+    describe('empty option', function() {
+
+      it('should select the empty option when model is undefined', function() {
+        compile('<select ng-model="robot">' +
+                  '<option value="">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect([''], 'x', 'y');
+      });
+
+
+      it('should support defining an empty option anywhere in the option list', function() {
+        compile('<select ng-model="robot">' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="">--select--</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect('x', [''], 'y');
+      });
+
+
+      it('should set the model to empty string when empty option is selected', function() {
+        scope.robot = 'x';
+        compile('<select ng-model="robot">' +
+                  '<option value="">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect('', ['x'], 'y');
+
+        browserTrigger(element.find('option').eq(0));
+        expect(element).toEqualSelect([''], 'x', 'y');
+        expect(scope.robot).toBe('');
+      });
+
+
+      describe('interactions with repeated options', function() {
+
+        it('should select empty option when model is undefined', function() {
+          scope.robots = ['c3p0', 'r2d2'];
+          compile('<select ng-model="robot">' +
+                    '<option value="">--select--</option>' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+          expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
+        });
+
+
+        it('should set model to empty string when selected', function() {
+          scope.robots = ['c3p0', 'r2d2'];
+          compile('<select ng-model="robot">' +
+                    '<option value="">--select--</option>' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+
+          browserTrigger(element.find('option').eq(1));
+          expect(element).toEqualSelect('', ['c3p0'], 'r2d2');
+          expect(scope.robot).toBe('c3p0');
+
+          browserTrigger(element.find('option').eq(0));
+          expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
+          expect(scope.robot).toBe('');
+        });
+
+
+        it('should not break if both the select and repeater models change at once', function() {
+          scope.robots = ['c3p0', 'r2d2'];
+          scope.robot = 'c3p0'
+          compile('<select ng-model="robot">' +
+                    '<option value="">--select--</option>' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+          expect(element).toEqualSelect('', ['c3p0'], 'r2d2');
+
+          scope.$apply(function() {
+            scope.robots = ['wallee'];
+            scope.robot = '';
+          });
+
+          expect(element).toEqualSelect([''], 'wallee');
+        });
+      });
+    });
+
+
+    describe('unknown option', function() {
+
+      it("should insert&select temporary unknown option when no options-model match", function() {
+        compile('<select ng-model="robot">' +
+                  '<option>c3p0</option>' +
+                  '<option>r2d2</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect(['? undefined:undefined ?'], 'c3p0', 'r2d2');
+
+        scope.$apply(function() {
+          scope.robot = 'r2d2';
+        });
+        expect(element).toEqualSelect('c3p0', ['r2d2']);
+
+
+        scope.$apply(function() {
+          scope.robot = "wallee";
+        });
+        expect(element).toEqualSelect(['? string:wallee ?'], 'c3p0', 'r2d2');
+      });
+
+
+      it("should NOT insert temporary unknown option when model is undefined and empty options " +
+          "is present", function() {
+        compile('<select ng-model="robot">' +
+                  '<option value="">--select--</option>' +
+                  '<option>c3p0</option>' +
+                  '<option>r2d2</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
+        expect(scope.robot).toBeUndefined();
+
+        scope.$apply(function() {
+          scope.robot = null;
+        });
+        expect(element).toEqualSelect(['? object:null ?'], '', 'c3p0', 'r2d2');
+
+        scope.$apply(function() {
+          scope.robot = 'r2d2';
+        });
+        expect(element).toEqualSelect('', 'c3p0', ['r2d2']);
+
+        scope.$apply(function() {
+          delete scope.robot;
+        });
+        expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
+      });
+
+
+      it("should insert&select temporary unknown option when no options-model match, empty " +
+          "option is present and model is defined", function() {
+        scope.robot = 'wallee';
+        compile('<select ng-model="robot">' +
+                  '<option value="">--select--</option>' +
+                  '<option>c3p0</option>' +
+                  '<option>r2d2</option>' +
+                '</select>');
+
+        expect(element).toEqualSelect(['? string:wallee ?'], '', 'c3p0', 'r2d2');
+
+        scope.$apply(function() {
+          scope.robot = 'r2d2';
+        });
+        expect(element).toEqualSelect('', 'c3p0', ['r2d2']);
+      });
+
+
+      describe('interactions with repeated options', function() {
+
+        it('should work with repeated options', function() {
+          compile('<select ng-model="robot">' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+          expect(element).toEqualSelect(['? undefined:undefined ?']);
+          expect(scope.robot).toBeUndefined();
+
+          scope.$apply(function() {
+            scope.robot = 'r2d2';
+          });
+          expect(element).toEqualSelect(['? string:r2d2 ?']);
+          expect(scope.robot).toBe('r2d2');
+
+          scope.$apply(function() {
+            scope.robots = ['c3p0', 'r2d2'];
+          });
+          expect(element).toEqualSelect('c3p0', ['r2d2']);
+          expect(scope.robot).toBe('r2d2');
+        });
+
+
+        it('should work with empty option and repeated options', function() {
+          compile('<select ng-model="robot">' +
+                    '<option value="">--select--</option>' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+          expect(element).toEqualSelect(['']);
+          expect(scope.robot).toBeUndefined();
+
+          scope.$apply(function() {
+            scope.robot = 'r2d2';
+          });
+          expect(element).toEqualSelect(['? string:r2d2 ?'], '');
+          expect(scope.robot).toBe('r2d2');
+
+          scope.$apply(function() {
+            scope.robots = ['c3p0', 'r2d2'];
+          });
+          expect(element).toEqualSelect('', 'c3p0', ['r2d2']);
+          expect(scope.robot).toBe('r2d2');
+        });
+
+
+        it('should insert unknown element when repeater shrinks and selected option is unavailable',
+            function() {
+          scope.robots = ['c3p0', 'r2d2'];
+          scope.robot = 'r2d2';
+          compile('<select ng-model="robot">' +
+                    '<option ng-repeat="r in robots">{{r}}</option>' +
+                  '</select>');
+          expect(element).toEqualSelect('c3p0', ['r2d2']);
+          expect(scope.robot).toBe('r2d2');
+
+          scope.$apply(function() {
+            scope.robots.pop();
+          });
+          expect(element).toEqualSelect(['? string:r2d2 ?'], 'c3p0');
+          expect(scope.robot).toBe('r2d2');
+
+          scope.$apply(function() {
+            scope.robots.unshift('r2d2');
+          });
+          expect(element).toEqualSelect(['r2d2'], 'c3p0');
+          expect(scope.robot).toBe('r2d2');
+
+          scope.$apply(function() {
+            delete scope.robots;
+          });
+          expect(element).toEqualSelect(['? string:r2d2 ?']);
+          expect(scope.robot).toBe('r2d2');
+        });
+      });
     });
   });
 
@@ -840,24 +1101,18 @@ describe('select', function() {
 
     it('should populate value attribute on OPTION', function() {
       compile('<select ng-model="x"><option selected>abc</option></select>');
-      expect(element).toEqualSelect('abc');
+      expect(element).toEqualSelect(['? undefined:undefined ?'], 'abc');
     });
 
     it('should ignore value if already exists', function() {
       compile('<select ng-model="x"><option value="abc">xyz</option></select>');
-      expect(element).toEqualSelect('abc');
-    });
-
-    it('should set value even if newlines present', function() {
-      compile('<select ng-model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
-      expect(element).toEqualSelect('\nabc\n');
+      expect(element).toEqualSelect(['? undefined:undefined ?'], 'abc');
     });
 
     it('should set value even if self closing HTML', function() {
-      // IE removes the \n from option, which makes this test pointless
-      if (msie) return;
-      compile('<select ng-model="x"><option>\n</option></select>');
-      expect(element).toEqualSelect('\n');
+      scope.x = 'hello'
+      compile('<select ng-model="x"><option>hello</select>');
+      expect(element).toEqualSelect(['hello']);
     });
   });
 });
