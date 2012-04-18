@@ -13,9 +13,9 @@ describe('scriptDirective', function() {
       function($compile, $templateCache) {
         $compile('<div>foo' +
                    '<script id="/ignore">ignore me</script>' +
-                   '<script type="text/ng-template" id="/myTemplate.html"><x>{{y}}</x></script>' +
+                   '<script type="text/ng-template" id="/myTemplate.html">\n<x>{{y}}</x></script>' +
                  '</div>' );
-        expect($templateCache.get('/myTemplate.html')).toBe('<x>{{y}}</x>');
+        expect($templateCache.get('/myTemplate.html')).toBe('\n<x>{{y}}</x>');
         expect($templateCache.get('/ignore')).toBeUndefined();
       }
   ));
