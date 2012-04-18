@@ -124,7 +124,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * {@link angular.module.ng.$compileProvider.directive.ngBindHtml ngBindHtml} directive is too
  * restrictive and when you absolutely trust the source of the content you are binding to.
  *
- * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
+ * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
  * @param {expression} ngBindHtmlUnsafe {@link guide/dev_guide.expressions Expression} to evaluate.
