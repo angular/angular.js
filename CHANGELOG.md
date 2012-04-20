@@ -1,3 +1,30 @@
+<a name="v1.0.0rc6"></a>
+# v1.0.0rc6 runny-nose (2012-04-20)
+
+
+## Bug Fixes
+
+- **select:** properly handle empty & unknown options without ngOptions
+  ([904b69c7](https://github.com/angular/angular.js/commit/904b69c745ea4afc1d6ecd2a5f3138c6f947b157))
+- **compiler:** reading comment throws error in ie
+  ([46bb08a9](https://github.com/angular/angular.js/commit/46bb08a9d0780fafef6dc5c1140c71912462887a))
+- **document:** accidental clobbering of document.getAttribute
+  ([eafe15f5](https://github.com/angular/angular.js/commit/eafe15f54c686d5c83f777fd319f4c568e209432),
+   [#877](https://github.com/angular/angular.js/issues/877))
+- **script:** Incorrectly reading script text on ie
+  ([94dd6857](https://github.com/angular/angular.js/commit/94dd68570952f6f31abfa351b1159afcd3588a57))
+
+
+## Features
+
+- **$resource:** support HTTP PATCH method
+  ([e61fd1b4](https://github.com/angular/angular.js/commit/e61fd1b43a55496c11c63da7ca2fc05b88d44043),
+   [#887](https://github.com/angular/angular.js/issues/887))
+- **jquery:** jquery 1.7.2 support
+  ([8ebe5ccd](https://github.com/angular/angular.js/commit/8ebe5ccd9ace7807bedc7317d605370fe82b773d))
+
+
+
 <a name="1.0.0rc5"></a>
 # 1.0.0rc5 reality-distortion (2012-04-12)
 
