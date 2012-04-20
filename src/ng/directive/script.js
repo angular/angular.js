@@ -35,8 +35,7 @@ var scriptDirective = ['$templateCache', function($templateCache) {
     terminal: true,
     compile: function(element, attr) {
       if (attr.type == 'text/ng-template') {
-        var templateUrl = attr.id;
-        $templateCache.put(templateUrl, element.text());
+        $templateCache.put(attr.id, element.html());
       }
     }
   };

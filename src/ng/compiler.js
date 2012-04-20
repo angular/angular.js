@@ -467,12 +467,17 @@ function $CompileProvider($provide) {
           addTextInterpolateDirective(directives, node.nodeValue);
           break;
         case 8: /* Comment */
-          match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
-          if (match) {
-            nName = directiveNormalize(match[1]);
-            if (addDirective(directives, nName, 'M', maxPriority)) {
-              attrs[nName] = trim(match[2]);
+          try {
+            match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
+            if (match) {
+              nName = directiveNormalize(match[1]);
+              if (addDirective(directives, nName, 'M', maxPriority)) {
+                attrs[nName] = trim(match[2]);
+              }
             }
+          } catch (e) {
+            // turns out that under some circumstances IE9 throws errors when one attempts to read comment's node value.
+            // Just ignore it and continue. (Can't seem to reproduce in test case.)
           }
           break;
       }
