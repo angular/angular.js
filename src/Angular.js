@@ -2,9 +2,6 @@
 
 ////////////////////////////////////
 
-if (typeof document.getAttribute == 'undefined')
-  document.getAttribute = function() {};
-
 /**
  * @ngdoc function
  * @name angular.lowercase
