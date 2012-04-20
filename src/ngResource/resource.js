@@ -318,7 +318,7 @@ angular.module('ngResource', ['ng']).
       }
 
       forEach(actions, function(action, name) {
-        var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
+        var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
         Resource[name] = function(a1, a2, a3, a4) {
           var params = {};
           var data;
@@ -349,7 +349,7 @@ angular.module('ngResource', ['ng']).
             }
           case 1:
             if (isFunction(a1)) success = a1;
-            else if (isPostOrPut) data = a1;
+            else if (hasBody) data = a1;
             else params = a1;
             break;
           case 0: break;
@@ -409,7 +409,7 @@ angular.module('ngResource', ['ng']).
             throw "Expected between 1-3 arguments [params, success, error], got " +
               arguments.length + " arguments.";
           }
-          var data = isPostOrPut ? this : undefined;
+          var data = hasBody ? this : undefined;
           Resource[name].call(this, params, data, success, error);
         };
       });

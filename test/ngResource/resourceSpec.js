@@ -11,6 +11,9 @@ describe("resource", function() {
       charge:{
         method:'POST',
         params:{verb:'!charge'}
+      },
+      patch: {
+        method: 'PATCH'
       }
     });
     callback = jasmine.createSpy();
@@ -232,6 +235,20 @@ describe("resource", function() {
 
     var card = new CreditCard({id:{key:123}, name:'misko'});
     card.$charge({amount:10}, callback);
+  });
+
+
+  it("should patch a resource", function() {
+    $httpBackend.expectPATCH('/CreditCard/123', '{"name":"igor"}').
+                     respond({id: 123, name: 'rama'});
+
+    var card = CreditCard.patch({id: 123}, {name: 'igor'}, callback);
+
+    expect(card).toEqualData({name: 'igor'});
+    expect(callback).not.toHaveBeenCalled();
+    $httpBackend.flush();
+    expect(callback).toHaveBeenCalled();
+    expect(card).toEqualData({id: 123, name: 'rama'});
   });
 
 

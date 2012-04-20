@@ -1113,6 +1113,20 @@ function createHttpBackendMock($delegate, $browser) {
 
   /**
    * @ngdoc method
+   * @name angular.module.ngMock.$httpBackend#expectPATCH
+   * @methodOf angular.module.ngMock.$httpBackend
+   * @description
+   * Creates a new request expectation for PATCH requests. For more info see `expect()`.
+   *
+   * @param {string|RegExp} url HTTP url.
+   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {Object=} headers HTTP headers.
+   * @returns {requestHandler} Returns an object with `respond` method that control how a matched
+   *   request is handled.
+   */
+
+  /**
+   * @ngdoc method
    * @name angular.module.ngMock.$httpBackend#expectJSONP
    * @methodOf angular.module.ngMock.$httpBackend
    * @description
@@ -1220,7 +1234,7 @@ function createHttpBackendMock($delegate, $browser) {
      }
     });
 
-    angular.forEach(['PUT', 'POST'], function(method) {
+    angular.forEach(['PUT', 'POST', 'PATCH'], function(method) {
       $httpBackend[prefix + method] = function(url, data, headers) {
         return $httpBackend[prefix](method, url, data, headers)
       }
@@ -1475,6 +1489,20 @@ angular.module('ngMockE2E', ['ng']).config(function($provide) {
  * @methodOf angular.module.ngMockE2E.$httpBackend
  * @description
  * Creates a new backend definition for PUT requests.  For more info see `when()`.
+ *
+ * @param {string|RegExp} url HTTP url.
+ * @param {(string|RegExp)=} data HTTP request body.
+ * @param {(Object|function(Object))=} headers HTTP headers.
+ * @returns {requestHandler} Returns an object with `respond` and `passThrough` methods that
+ *   control how a matched request is handled.
+ */
+
+/**
+ * @ngdoc method
+ * @name angular.module.ngMockE2E.$httpBackend#whenPATCH
+ * @methodOf angular.module.ngMockE2E.$httpBackend
+ * @description
+ * Creates a new backend definition for PATCH requests.  For more info see `when()`.
  *
  * @param {string|RegExp} url HTTP url.
  * @param {(string|RegExp)=} data HTTP request body.
