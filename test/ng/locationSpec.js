@@ -672,6 +672,14 @@ describe('$location', function() {
       module(function($provide, $locationProvider) {
         var jqRoot = jqLite('<div></div>');
         attrs = attrs ? ' ' + attrs + ' ' : '';
+
+        // fake the base behavior
+        if (linkHref[0] == '/') {
+          linkHref = 'http://host.com' + linkHref;
+        } else if(!linkHref.match(/:\/\//)) {
+          linkHref = 'http://host.com/base/' + linkHref;
+        }
+
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
         root = jqRoot.append(link)[0];
 
@@ -773,19 +781,6 @@ describe('$location', function() {
 
     it('should not rewrite when history disabled', function() {
       configureService('#new', false);
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
-        }
-      );
-    });
-
-
-    it('should not rewrite ngExtLink', function() {
-      configureService('#new', true, true, 'ng-ext-link');
       inject(
         initBrowser(),
         initLocation(),

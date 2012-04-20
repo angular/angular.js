@@ -6,7 +6,7 @@
  * @restrict A
  *
  * @description
- * Using <angular/> markup like {{hash}} in an href attribute makes
+ * Using Angular markup like {{hash}} in an href attribute makes
  * the page open to a wrong URL, if the user clicks that link before
  * angular has a chance to replace the {{hash}} with actual URL, the
  * link will be broken and will most likely return a 404 error.
@@ -32,10 +32,10 @@
         <input ng-model="value" /><br />
         <a id="link-1" href ng-click="value = 1">link 1</a> (link, don't reload)<br />
         <a id="link-2" href="" ng-click="value = 2">link 2</a> (link, don't reload)<br />
-        <a id="link-3" ng-href="/{{'123'}}" ng-ext-link>link 3</a> (link, reload!)<br />
+        <a id="link-3" ng-href="/{{'123'}}">link 3</a> (link, reload!)<br />
         <a id="link-4" href="" name="xx" ng-click="value = 4">anchor</a> (link, don't reload)<br />
         <a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
-        <a id="link-6" ng-href="/{{value}}" ng-ext-link>link</a> (link, change hash)
+        <a id="link-6" ng-href="{{value}}">link</a> (link, change location)
       </doc:source>
       <doc:scenario>
         it('should execute ng-click but not reload when href without value', function() {
@@ -60,21 +60,21 @@
         it('should execute ng-click but not reload when href empty string and name specified', function() {
           element('#link-4').click();
           expect(input('value').val()).toEqual('4');
-          expect(element('#link-4').attr('href')).toBe("");
+          expect(element('#link-4').attr('href')).toBe('');
         });
 
         it('should execute ng-click but not reload when no href but name specified', function() {
           element('#link-5').click();
           expect(input('value').val()).toEqual('5');
-          expect(element('#link-5').attr('href')).toBe("");
+          expect(element('#link-5').attr('href')).toBe('');
         });
 
         it('should only change url when only ng-href', function() {
           input('value').enter('6');
-          expect(element('#link-6').attr('href')).toBe("/6");
+          expect(element('#link-6').attr('href')).toBe('6');
 
           element('#link-6').click();
-          expect(browser().window().path()).toEqual('/6');
+          expect(browser().location().url()).toEqual('/6');
         });
       </doc:scenario>
     </doc:example>

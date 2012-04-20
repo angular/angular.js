@@ -92,40 +92,40 @@
  *
  * # Credit card resource
  *
-  * <pre>
-      // Define CreditCard class
-      var CreditCard = $resource('/user/:userId/card/:cardId',
-       {userId:123, cardId:'@id'}, {
-        charge: {method:'POST', params:{charge:true}}
-       });
+ * <pre>
+     // Define CreditCard class
+     var CreditCard = $resource('/user/:userId/card/:cardId',
+      {userId:123, cardId:'@id'}, {
+       charge: {method:'POST', params:{charge:true}}
+      });
 
-      // We can retrieve a collection from the server
-      var cards = CreditCard.query();
-      // GET: /user/123/card
-      // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+     // We can retrieve a collection from the server
+     var cards = CreditCard.query(function() {
+       // GET: /user/123/card
+       // server returns: [ {id:456, number:'1234', name:'Smith'} ];
 
-      var card = cards[0];
-      // each item is an instance of CreditCard
-      expect(card instanceof CreditCard).toEqual(true);
-      card.name = "J. Smith";
-      // non GET methods are mapped onto the instances
-      card.$save();
-      // POST: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
-      // server returns: {id:456, number:'1234', name: 'J. Smith'};
+       var card = cards[0];
+       // each item is an instance of CreditCard
+       expect(card instanceof CreditCard).toEqual(true);
+       card.name = "J. Smith";
+       // non GET methods are mapped onto the instances
+       card.$save();
+       // POST: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
+       // server returns: {id:456, number:'1234', name: 'J. Smith'};
 
-      // our custom method is mapped as well.
-      card.$charge({amount:9.99});
-      // POST: /user/123/card/456?amount=9.99&charge=true {id:456, number:'1234', name:'J. Smith'}
-      // server returns: {id:456, number:'1234', name: 'J. Smith'};
+       // our custom method is mapped as well.
+       card.$charge({amount:9.99});
+       // POST: /user/123/card/456?amount=9.99&charge=true {id:456, number:'1234', name:'J. Smith'}
+     });
 
-      // we can create an instance as well
-      var newCard = new CreditCard({number:'0123'});
-      newCard.name = "Mike Smith";
-      newCard.$save();
-      // POST: /user/123/card {number:'0123', name:'Mike Smith'}
-      // server returns: {id:789, number:'01234', name: 'Mike Smith'};
-      expect(newCard.id).toEqual(789);
-  * </pre>
+     // we can create an instance as well
+     var newCard = new CreditCard({number:'0123'});
+     newCard.name = "Mike Smith";
+     newCard.$save();
+     // POST: /user/123/card {number:'0123', name:'Mike Smith'}
+     // server returns: {id:789, number:'01234', name: 'Mike Smith'};
+     expect(newCard.id).toEqual(789);
+ * </pre>
  *
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
@@ -318,7 +318,7 @@ angular.module('ngResource', ['ng']).
       }
 
       forEach(actions, function(action, name) {
-        var isPostOrPutOrPatch = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
+        var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
         Resource[name] = function(a1, a2, a3, a4) {
           var params = {};
           var data;
@@ -349,7 +349,7 @@ angular.module('ngResource', ['ng']).
             }
           case 1:
             if (isFunction(a1)) success = a1;
-            else if (isPostOrPutOrPatch) data = a1;
+            else if (hasBody) data = a1;
             else params = a1;
             break;
           case 0: break;
@@ -409,7 +409,7 @@ angular.module('ngResource', ['ng']).
             throw "Expected between 1-3 arguments [params, success, error], got " +
               arguments.length + " arguments.";
           }
-          var data = isPostOrPutOrPatch ? this : undefined;
+          var data = hasBody ? this : undefined;
           Resource[name].call(this, params, data, success, error);
         };
       });
