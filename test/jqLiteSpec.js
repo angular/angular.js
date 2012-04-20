@@ -691,13 +691,13 @@ describe('jqLite', function() {
 
         parent.bind('mouseenter', function() { log += 'parentEnter;'; });
         parent.bind('mouseleave', function() { log += 'parentLeave;'; });
-        parent.mouseover = function(event) { parent.data('bind').mouseover(event || {}); };
-        parent.mouseout = function(event) { parent.data('bind').mouseout(event || {}); };
+        parent.mouseover = function() { browserTrigger(parent, 'mouseover'); };
+        parent.mouseout = function() { browserTrigger(parent, 'mouseout'); };
 
         child.bind('mouseenter', function() { log += 'childEnter;'; });
         child.bind('mouseleave', function() { log += 'childLeave;'; });
-        child.mouseover = function(event) { child.data('bind').mouseover(event || {}); };
-        child.mouseout = function(event) { child.data('bind').mouseout(event || {}); };
+        child.mouseover = function() { browserTrigger(child, 'mouseover'); };
+        child.mouseout = function() { browserTrigger(child, 'mouseout'); };
       });
 
       afterEach(function() {

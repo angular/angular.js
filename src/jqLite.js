@@ -559,14 +559,12 @@ forEach({
           bindFn(element, 'mouseover', function(event) {
             counter++;
             if (counter == 1) {
-              event.type = 'mouseenter';
               mouseenter(event);
             }
           });
           bindFn(element, 'mouseout', function(event) {
             counter --;
             if (counter == 0) {
-              event.type = 'mouseleave';
               mouseleave(event);
             }
           });
