@@ -584,10 +584,10 @@ expects as follows:
 
 <pre>
   scope: {
-    title: 'bind',   // set up title to accept data-binding
-    onOk: 'exp',     // create a delegate onOk function
-    onCancel: 'exp', // create a delegate onCancel function
-    show: 'prop'     // create a getter/setter function for visibility.
+    title: 'bind',          // set up title to accept data-binding
+    onOk: 'expression',     // create a delegate onOk function
+    onCancel: 'expression', // create a delegate onCancel function
+    show: 'accessor'        // create a getter/setter function for visibility.
   }
 </pre>
 
@@ -618,10 +618,10 @@ Therefore the final directive definition looks something like this:
 <pre>
 transclude: true,
 scope: {
-  title: 'bind',   // set up title to accept data-binding
-  onOk: 'exp',     // create a delegate onOk function
-  onCancel: 'exp', // create a delegate onCancel function
-  show: 'prop'     // create a getter/setter function for visibility.
+  title: 'bind',          // set up title to accept data-binding
+  onOk: 'expression',     // create a delegate onOk function
+  onCancel: 'expression', // create a delegate onCancel function
+  show: 'accessor'        // create a getter/setter function for visibility.
 }
 </pre>
 
