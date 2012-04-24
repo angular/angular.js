@@ -26,7 +26,7 @@
  *         // filters need to be forgiving so check input validity
  *         return text && greet(text) || text;
  *       };
- *     };
+ *     });
  *   }
  * </pre>
  *
