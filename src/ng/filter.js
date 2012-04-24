@@ -14,7 +14,7 @@
  *   function MyModule($provide, $filterProvider) {
  *     // create a service to demonstrate injection (not always needed)
  *     $provide.value('greet', function(name){
- *       return 'Hello ' + name + '!':
+ *       return 'Hello ' + name + '!';
  *     });
  *
  *     // register a filter factory which uses the
@@ -26,7 +26,7 @@
  *         // filters need to be forgiving so check input validity
  *         return text && greet(text) || text;
  *       };
- *     };
+ *     });
  *   }
  * </pre>
  *
