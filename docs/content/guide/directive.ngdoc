@@ -133,10 +133,10 @@ to save a clean copy of the `li` element for cloning purposes and as new `action
 the template `li` element needs to be cloned and inserted into `ul`. But cloning the `li` element
 is not enough. It also needs to compile the `li` so that its directives such as
 `{{action.descriptions}}` evaluate against the right {@link api/angular.module.ng.$rootScope.Scope
-scope}. A naive method would be to simply insert a copy of the `li` elemnt and then compile it.
+scope}. A naive method would be to simply insert a copy of the `li` element and then compile it.
 But compiling on every `li` element clone would be slow, since the compilation requires that we
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
-repeater which needs to unroll 100 items we would quickly run into performance problem.
+repeater which needs to unroll 100 items we would quickly run into performance problems.
 
 The solution is to break the compilation process into two phases the compile phase where all of
 the directives are identified and sorted by priority, and a linking phase where any work which
@@ -227,7 +227,7 @@ In this example we will build a directive which displays the current time.
 
 # Writing directives (long version)
 
-The full skeleton of the directive is shown here:
+An example skeleton of the directive is shown here, for the complete list see below.
 
 <pre>
   var myModule = angular.module(...);
