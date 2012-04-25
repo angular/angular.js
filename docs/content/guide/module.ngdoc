@@ -5,7 +5,7 @@
 # What is a Module?
 
 Most applications have a main method which instantiates, wires, and bootstraps the application.
-Angular apps don't have a main method, instead the modules serves the purpose of declaratively
+Angular apps don't have a main method, instead modules serve the purpose of declaratively
 specifying how an application should be bootstrapped. There are several advantages to this
 approach:
 
@@ -19,7 +19,7 @@ approach:
 
 # The Basics
 
-Ok, I'm in a hurry how do i get a Hello World module working?
+Ok, I'm in a hurry. How do I get a Hello World module working?
 
 Important things to notice:
 
@@ -62,9 +62,9 @@ that you break your application to multiple modules like this:
     initialization code.
 
 The reason for this breakup is that in your tests, it is often necessary to ignore the
-initialization code, which tends to be difficult to test. By putting it into separate module it
+initialization code, which tends to be difficult to test. By putting it into a separate module it
 can be easily ignored in tests. The tests can also be more focused by only loading the modules
-which are relevant to tests.
+that are relevant to tests.
 
 The above is only a suggestion, so feel free to tailor it to your needs.
 
