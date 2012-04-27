@@ -75,12 +75,14 @@ the `PhoneListCtrl` __controller__:
 __`app/js/controllers.js`:__
 <pre>
 function PhoneListCtrl($scope) {
-  $scope.phones = [{"name": "Nexus S",
-                    "snippet": "Fast just got faster with Nexus S."},
-                   {"name": "Motorola XOOM™ with Wi-Fi",
-                    "snippet": "The Next, Next Generation tablet."},
-                   {"name": "MOTOROLA XOOM™",
-                    "snippet": "The Next, Next Generation tablet."}];
+  $scope.phones = [
+    {"name": "Nexus S",
+     "snippet": "Fast just got faster with Nexus S."},
+    {"name": "Motorola XOOM™ with Wi-Fi",
+     "snippet": "The Next, Next Generation tablet."},
+    {"name": "MOTOROLA XOOM™",
+     "snippet": "The Next, Next Generation tablet."}
+  ];
 }
 </pre>
 
@@ -120,7 +122,7 @@ __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
 
-  describe('PhoneListCtrl', function() {
+  describe('PhoneListCtrl', function(){
 
     it('should create "phones" model with 3 phones', function() {
       var scope = {},
@@ -163,7 +165,7 @@ execute the tests and report the results in the terminal.
              Chrome: Runner reset.
              .
              Total 1 tests (Passed: 1; Fails: 0; Errors: 0) (2.00 ms)
-               Chrome 11.0.696.57 Mac OS: Run 1 tests (Passed: 1; Fails: 0; Errors 0) (2.00 ms)
+               Chrome 19.0.1084.36 Mac OS: Run 1 tests (Passed: 1; Fails: 0; Errors 0) (2.00 ms)
 
   Yay! The test passed! Or not...
 

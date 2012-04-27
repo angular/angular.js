@@ -149,16 +149,17 @@ The code contains some key Angular elements that we will need going forward.
 __`app/index.html`:__
 <pre>
 <!doctype html>
-<html ng-app>
+<html lang="en" ng-app>
 <head>
   <meta charset="utf-8">
-  <title>my angular app</title>
+  <title>My HTML File</title>
   <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
   <script src="lib/angular/angular.js"></script>
 </head>
 <body>
 
-  Nothing here {{'yet' + '!'}}
+  <p>Nothing here {{'yet' + '!'}}</p>
 
 </body>
 </html>
@@ -245,8 +246,9 @@ scripts and a simple example app, all pre-configured for developing a typical we
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
 
 * Removed the example app
-* Added phone images to `app/img/phones`
-* Added phone data files (JSON) to `app/phones`
+* Added phone images to `app/img/phones/`
+* Added phone data files (JSON) to `app/phones/`
+* Added [Bootstrap](http://twitter.github.com/bootstrap/) files to `app/css/` and `app/img/`
 
 
 
@@ -265,9 +267,9 @@ Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 <ul doc:tutorial-nav="0"></ul>
 
-Move elsewhere:
-
+<div style="display: none">
 Note: During the bootstrap the injector and the root scope will then be associated with the
    element on which the `ngApp` directive was declared, so when debugging the app you can retrieve
    them from browser console via `angular.element(rootElement).scope()` and
    `angular.element(rootElement).injector()`.
+</div>

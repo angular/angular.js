@@ -32,14 +32,27 @@ We made no changes to the controller.
 __`app/index.html`:__
 <pre>
 ...
-   Fulltext Search: <input ng-model="query">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span2">
+        <!--Sidebar content-->
 
-  <ul class="phones">
-    <li ng-repeat="phone in phones | filter:query">
-      {{phone.name}}
-      <p>{{phone.snippet}}</p>
-    </li>
-  </ul>
+        Search: <input ng-model="query">
+
+      </div>
+      <div class="span10">
+        <!--Body content-->
+
+        <ul class="phones">
+          <li ng-repeat="phone in phones | filter:query">
+            {{phone.name}}
+            <p>{{phone.snippet}}</p>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
 ...
 </pre>
 
@@ -54,7 +67,7 @@ list. This new code demonstrates the following:
 name of the input box to a variable of the same name in the data model and keeps the two in sync.
 
   In this code, the data that a user types into the input box (named __`query`__) is immediately
-available as a filter input in the list repeater (`phone in phones | filter(`__`query`__`)`). When
+available as a filter input in the list repeater (`phone in phones | filter:`__`query`__). When
 changes to the data model cause the repeater's input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.
 
@@ -85,6 +98,7 @@ describe('PhoneCat App', function() {
     beforeEach(function() {
       browser().navigateTo('../../app/index.html');
     });
+
 
     it('should filter the phone list as user types into the search box', function() {
       expect(repeater('.phones li').count()).toBe(3);
