@@ -697,6 +697,18 @@ describe('Scope', function() {
           grandChild.$emit('myEvent');
           expect(event).toBeDefined();
         });
+
+
+        it('should have preventDefault method and defaultPrevented property', function() {
+          var event = grandChild.$emit('myEvent');
+          expect(event.defaultPrevented).toBe(false);
+
+          child.$on('myEvent', function(event) {
+            event.preventDefault();
+          });
+          event = grandChild.$emit('myEvent');
+          expect(event.defaultPrevented).toBe(true);
+        });
       });
     });
 

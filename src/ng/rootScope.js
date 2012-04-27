@@ -618,6 +618,8 @@ function $RootScopeProvider(){
        *   - `name` - {string}: Name of the event.
        *   - `stopPropagation` - {function=}: calling `stopPropagation` function will cancel further event propagation
        *     (available only for events that were `$emit`-ed).
+       *   - `preventDefault` - {function}: calling `preventDefault` sets `defaultPrevented` flag to true.
+       *   - `defaultPrevented` - {boolean}: true if `preventDefault` was called.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -662,7 +664,11 @@ function $RootScopeProvider(){
             event = {
               name: name,
               targetScope: scope,
-              stopPropagation: function() {stopPropagation = true;}
+              stopPropagation: function() {stopPropagation = true;},
+              preventDefault: function() {
+                event.defaultPrevented = true;
+              },
+              defaultPrevented: false
             },
             listenerArgs = concat([event], arguments, 1),
             i, length;
@@ -712,8 +718,14 @@ function $RootScopeProvider(){
         var target = this,
             current = target,
             next = target,
-            event = { name: name,
-                      targetScope: target },
+            event = {
+              name: name,
+              targetScope: target,
+              preventDefault: function() {
+                event.defaultPrevented = true;
+              },
+              defaultPrevented: false
+            },
             listenerArgs = concat([event], arguments, 1);
 
         //down while you can, then up and next sibling or up and next sibling until back at root
