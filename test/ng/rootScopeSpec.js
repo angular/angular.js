@@ -668,8 +668,8 @@ describe('Scope', function() {
       }));
 
 
-      it('should allow cancelation of event propagation', function() {
-        child.$on('myEvent', function(event) { event.cancel(); });
+      it('should allow stopping event propagation', function() {
+        child.$on('myEvent', function(event) { event.stopPropagation(); });
         grandChild.$emit('myEvent');
         expect(log).toEqual('2>1>');
       });
@@ -682,17 +682,6 @@ describe('Scope', function() {
           expect(arg2).toBe('arg2');
         });
         child.$emit('abc', 'arg1', 'arg2');
-      });
-
-
-      it('should return event object with cancelled property', function() {
-        child.$on('some', function(event) {
-          event.cancel();
-        });
-
-        var result = grandChild.$emit('some');
-        expect(result).toBeDefined();
-        expect(result.cancelled).toBe(true);
       });
 
 
