@@ -28,7 +28,9 @@ function $SnifferProvider() {
         }
 
         return eventSupport[event];
-      }
+      },
+      // TODO(i): currently there is no way to feature detect CSP without triggering alerts
+      csp: false
     };
   }];
 }
