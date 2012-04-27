@@ -616,9 +616,8 @@ function $RootScopeProvider(){
        *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
        *   - `currentScope` - {Scope}: the current scope which is handling the event.
        *   - `name` - {string}: Name of the event.
-       *   - `cancel` - {function=}: calling `cancel` function will cancel further event propagation
+       *   - `stopPropagation` - {function=}: calling `stopPropagation` function will cancel further event propagation
        *     (available only for events that were `$emit`-ed).
-       *   - `cancelled` - {boolean}: Whether the event was cancelled.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -659,11 +658,11 @@ function $RootScopeProvider(){
         var empty = [],
             namedListeners,
             scope = this,
+            stopPropagation = false,
             event = {
               name: name,
               targetScope: scope,
-              cancel: function() {event.cancelled = true;},
-              cancelled: false
+              stopPropagation: function() {stopPropagation = true;}
             },
             listenerArgs = concat([event], arguments, 1),
             i, length;
@@ -674,7 +673,7 @@ function $RootScopeProvider(){
           for (i=0, length=namedListeners.length; i<length; i++) {
             try {
               namedListeners[i].apply(null, listenerArgs);
-              if (event.cancelled) return event;
+              if (stopPropagation) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
