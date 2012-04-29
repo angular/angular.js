@@ -400,72 +400,75 @@ function $HttpProvider() {
      *
      *
      * @example
-        <doc:example>
-          <doc:source jsfiddle="false">
-            <script>
-              function FetchCtrl($scope, $http) {
-                $scope.method = 'GET';
-                $scope.url = 'examples/http-hello.html';
+      <example>
+        <file name="index.html">
+          <div ng-controller="FetchCtrl">
+            <select ng-model="method">
+              <option>GET</option>
+              <option>JSONP</option>
+            </select>
+            <input type="text" ng-model="url" size="80"/>
+            <button ng-click="fetch()">fetch</button><br>
+            <button ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+            <button ng-click="updateModel('JSONP', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
+            <button ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
+            <pre>http status code: {{status}}</pre>
+            <pre>http response data: {{data}}</pre>
+          </div>
+        </file>
+        <file name="script.js">
+          function FetchCtrl($scope, $http, $templateCache) {
+            $scope.method = 'GET';
+            $scope.url = 'http-hello.html';
 
-                $scope.fetch = function() {
-                  $scope.code = null;
-                  $scope.response = null;
+            $scope.fetch = function() {
+              $scope.code = null;
+              $scope.response = null;
 
-                  $http({method: $scope.method, url: $scope.url}).
-                    success(function(data, status) {
-                      $scope.status = status;
-                      $scope.data = data;
-                    }).
-                    error(function(data, status) {
-                      $scope.data = data || "Request failed";
-                      $scope.status = status;
-                  });
-                };
+              $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
+                success(function(data, status) {
+                  $scope.status = status;
+                  $scope.data = data;
+                }).
+                error(function(data, status) {
+                  $scope.data = data || "Request failed";
+                  $scope.status = status;
+              });
+            };
 
-                $scope.updateModel = function(method, url) {
-                  $scope.method = method;
-                  $scope.url = url;
-                };
-              }
-            </script>
-            <div ng-controller="FetchCtrl">
-              <select ng-model="method">
-                <option>GET</option>
-                <option>JSONP</option>
-              </select>
-              <input type="text" ng-model="url" size="80"/>
-              <button ng-click="fetch()">fetch</button><br>
-              <button ng-click="updateModel('GET', 'examples/http-hello.html')">Sample GET</button>
-              <button ng-click="updateModel('JSONP', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
-              <button ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
-              <pre>http status code: {{status}}</pre>
-              <pre>http response data: {{data}}</pre>
-            </div>
-          </doc:source>
-          <doc:scenario>
-            it('should make an xhr GET request', function() {
-              element(':button:contains("Sample GET")').click();
-              element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('200');
-              expect(binding('data')).toBe('Hello, $http!\n');
-            });
+            $scope.updateModel = function(method, url) {
+              $scope.method = method;
+              $scope.url = url;
+            };
+          }
+        </file>
+        <file name="http-hello.html">
+          Hello, $http!
+        </file>
+        <file name="scenario.js">
+          it('should make an xhr GET request', function() {
+            element(':button:contains("Sample GET")').click();
+            element(':button:contains("fetch")').click();
+            expect(binding('status')).toBe('200');
+            expect(binding('data')).toMatch(/Hello, \$http!/);
+          });
 
-            it('should make a JSONP request to angularjs.org', function() {
-              element(':button:contains("Sample JSONP")').click();
-              element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('200');
-              expect(binding('data')).toMatch(/Super Hero!/);
-            });
+          it('should make a JSONP request to angularjs.org', function() {
+            element(':button:contains("Sample JSONP")').click();
+            element(':button:contains("fetch")').click();
+            expect(binding('status')).toBe('200');
+            expect(binding('data')).toMatch(/Super Hero!/);
+          });
 
-            it('should make JSONP request to invalid URL and invoke the error handler',
-                function() {
-              element(':button:contains("Invalid JSONP")').click();
-              element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('0');
-              expect(binding('data')).toBe('Request failed');
-            });
-          </doc:scenario>
-        </doc:example>
+          it('should make JSONP request to invalid URL and invoke the error handler',
+              function() {
+            element(':button:contains("Invalid JSONP")').click();
+            element(':button:contains("fetch")').click();
+            expect(binding('status')).toBe('0');
+            expect(binding('data')).toBe('Request failed');
+          });
+        </file>
+      </example>
      */
     function $http(config) {
       config.method = uppercase(config.method);

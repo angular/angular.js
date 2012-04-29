@@ -33,7 +33,7 @@
  * for a manual update.
    <doc:example>
      <doc:source>
-      <script type="text/javascript">
+      <script>
         function SettingsController($scope) {
           $scope.name = "John Smith";
           $scope.contacts = [

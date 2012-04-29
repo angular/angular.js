@@ -21,7 +21,7 @@ function escape(text) {
 
 
 
-directive.jsFiddle = function(getEmbededTemplate, escape, script) {
+directive.jsFiddle = function(getEmbeddedTemplate, escape, script) {
   return {
     terminal: true,
     link: function(scope, element, attr) {
@@ -40,15 +40,15 @@ directive.jsFiddle = function(getEmbededTemplate, escape, script) {
           if (index == 0) {
             fields[fileType] +=
               '<div ng-app' + (attr.module ? '="' + attr.module + '"' : '') + '>\n' +
-                getEmbededTemplate(file, 2);
+                getEmbeddedTemplate(file, 2);
           } else {
             fields[fileType] += '\n\n\n  <!-- CACHE FILE: ' + file + ' -->\n' +
               '  <script type="text/ng-template" id="' + file + '">\n' +
-              getEmbededTemplate(file, 4) +
+              getEmbeddedTemplate(file, 4) +
               '  </script>\n';
           }
         } else {
-          fields[fileType] += getEmbededTemplate(file) + '\n';
+          fields[fileType] += getEmbeddedTemplate(file) + '\n';
         }
       });
 
@@ -92,12 +92,12 @@ directive.prettyprint = ['reindentCode', function(reindentCode) {
 }];
 
 
-directive.ngSetText = ['getEmbededTemplate', function(getEmbededTemplate) {
+directive.ngSetText = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
   return {
     restrict: 'CA',
     priority: 10,
     compile: function(element, attr) {
-      element.text(getEmbededTemplate(attr.ngSetText));
+      element.text(getEmbeddedTemplate(attr.ngSetText));
     }
   }
 }]
@@ -134,21 +134,21 @@ directive.ngHtmlWrap = ['reindentCode', 'templateMerge', function(reindentCode, 
 }];
 
 
-directive.ngSetHtml = ['getEmbededTemplate', function(getEmbededTemplate) {
+directive.ngSetHtml = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
   return {
     restrict: 'CA',
     priority: 10,
     compile: function(element, attr) {
-      element.html(getEmbededTemplate(attr.ngSetHtml));
+      element.html(getEmbeddedTemplate(attr.ngSetHtml));
     }
   }
 }];
 
 
-directive.ngEvalJavascript = ['getEmbededTemplate', function(getEmbededTemplate) {
+directive.ngEvalJavascript = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
   return {
     compile: function (element, attr) {
-      var script = getEmbededTemplate(attr.ngEvalJavascript);
+      var script = getEmbeddedTemplate(attr.ngEvalJavascript);
 
       try {
         if (window.execScript) { // IE
@@ -254,7 +254,7 @@ service.templateMerge = ['reindentCode', function(indentCode) {
   };
 }];
 
-service.getEmbededTemplate = ['reindentCode', function(reindentCode) {
+service.getEmbeddedTemplate = ['reindentCode', function(reindentCode) {
   return function (id) {
     return reindentCode(angular.element(document.getElementById(id)).html(), 0);
   }

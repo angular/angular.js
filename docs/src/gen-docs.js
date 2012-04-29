@@ -41,36 +41,35 @@ function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
   writesFuture.push(writer.copyDir('img'));
-  writesFuture.push(writer.copyDir('examples'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index.html',
                                 writer.replace, {'doc:manifest': ''})); //manifest //TODO(i): enable
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-nocache.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-nocache.html',
                                 writer.replace, {'doc:manifest': ''}));
 
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq.html',
                                 writer.replace, {'doc:manifest': manifest}));
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-nocache.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq-nocache.html',
                                 writer.replace, {'doc:manifest': ''}));
 
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-debug.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-debug.html',
                                 writer.replace, {'doc:manifest': ''}));
 
-  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-debug.html',
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq-debug.html',
                                 writer.replace, {'doc:manifest': ''}));
 
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
-  writesFuture.push(writer.copyTpl('jquery.min.js'));
-  writesFuture.push(writer.copyTpl('jquery.js'));
+  writesFuture.push(writer.copyTpl('js/jquery.min.js'));
+  writesFuture.push(writer.copyTpl('js/jquery.js'));
 
-  writesFuture.push(writer.output('docs-keywords.js',
+  writesFuture.push(writer.output('js/docs-keywords.js',
                                 ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
   writesFuture.push(writer.output('sitemap.xml', new SiteMap(docs).render()));
   writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
@@ -78,19 +77,10 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.output('appcache.manifest',appCache()));
   writesFuture.push(writer.copyTpl('.htaccess'));
 
-  writesFuture.push(writer.merge(['docs.js',
-                                  'doc_widgets.js'],
-                                  'docs-combined.js'));
-  writesFuture.push(writer.merge(['docs.css',
-                                  'doc_widgets.css'],
-                                  'docs-combined.css'));
-  writesFuture.push(writer.merge(['syntaxhighlighter/shCore.js',
-                                  'syntaxhighlighter/shBrushJScript.js',
-                                  'syntaxhighlighter/shBrushXml.js'],
-                                  'syntaxhighlighter/syntaxhighlighter-combined.js'));
-  writesFuture.push(writer.merge(['syntaxhighlighter/shCore.css',
-                                  'syntaxhighlighter/shThemeDefault.css'],
-                                  'syntaxhighlighter/syntaxhighlighter-combined.css'));
+  writesFuture.push(writer.copy('docs/src/templates/js/docs.js', 'js/docs.js'));
+
+  writesFuture.push(writer.copy('docs/src/templates/css/bootstrap.min.css', 'css/bootstrap.min.css'));
+  writesFuture.push(writer.copy('docs/src/templates/css/docs.css', 'css/docs.css'));
 }
 
 

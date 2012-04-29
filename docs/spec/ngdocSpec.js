@@ -39,15 +39,6 @@ describe('ngdoc', function() {
         expect(ngdoc.metadata([d3])[0].shortName).toEqual('more text');
       });
 
-      it('should have depth information', function() {
-        var d1 = new Doc('@name a.b.c').parse();
-        var d2 = new Doc('@name a.b.ng-c').parse();
-        var d3 = new Doc('@name some text: more text').parse();
-        expect(ngdoc.metadata([d1])[0].depth).toEqual(2);
-        expect(ngdoc.metadata([d2])[0].depth).toEqual(2);
-        expect(ngdoc.metadata([d3])[0].depth).toEqual(1);
-      });
-
     });
 
     describe('parse', function() {
@@ -87,38 +78,6 @@ describe('ngdoc', function() {
         doc.parse(0);
         expect(doc.id).toEqual('a.b');
         expect(doc.name).toEqual('friendly name');
-      });
-
-      it('should escape <doc:source> element', function() {
-        var doc = new Doc('@name a\n@description before <doc:example>' +
-            '<doc:source>\n<>\n</doc:source></doc:example> after');
-        doc.parse();
-        expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<pre class="doc-source">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
-      });
-
-      it('should preserve the source attribute', function() {
-        var doc = new Doc('@name a\n@description before <doc:example>' +
-            '<doc:source source="false">lala</doc:source></doc:example> after');
-        doc.parse();
-        expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<pre class="doc-source" source="false">lala</pre></doc:example><p>after</p>');
-      });
-
-      it('should preserve the jsfiddle attribute', function() {
-        var doc = new Doc('@name a\n@description before <doc:example>' +
-            '<doc:source jsfiddle="foo">lala</doc:source></doc:example> after');
-        doc.parse();
-        expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<pre class="doc-source" jsfiddle="foo">lala</pre></doc:example><p>after</p>');
-      });
-
-      it('should escape <doc:scenario> element', function() {
-        var doc = new Doc('@name a\n@description before <doc:example>' +
-            '<doc:scenario>\n<>\n</doc:scenario></doc:example> after');
-        doc.parse();
-        expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<pre class="doc-scenario">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
       it('should store all links', function() {
@@ -173,51 +132,33 @@ describe('ngdoc', function() {
   });
 
   describe('markdown', function() {
-    it('should replace angular in markdown', function() {
-      expect(new Doc().markdown('<angular/>')).
-        toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
-    });
-
     it('should not replace anything in <pre>, but escape the html escape the content', function() {
       expect(new Doc().markdown('bah x\n<pre>\n<b>angular</b>.k\n</pre>\n asdf x')).
         toEqual(
-            '<p>bah x</p>' +
-            '<div ng:non-bindable><pre class="brush: js; html-script: true;">\n' +
+            '<p>bah x\n' +
+            '<pre class="prettyprint linenums">\n' +
             '&lt;b&gt;angular&lt;/b&gt;.k\n' +
-            '</pre></div>' +
-            '<p>asdf x</p>');
-    });
-
-    it('should ignore doc widgets', function() {
-      expect(new Doc().markdown('text<doc:example>do not touch</doc:example>')).
-        toEqual('<p>text</p><doc:example>do not touch</doc:example>');
-
-      expect(new Doc().markdown('text<doc:tutorial-instructions>do not touch</doc:tutorial-instructions>')).
-        toEqual('<p>text</p><doc:tutorial-instructions>do not touch</doc:tutorial-instructions>');
-    });
-
-    it('should ignore doc widgets with params', function() {
-      expect(new Doc().markdown('text<doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>')).
-        toEqual('<p>text</p><doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>');
+            '</pre>\n' +
+            ' asdf x</p>');
     });
 
     it('should replace text between two <pre></pre> tags', function() {
-      expect(new Doc().markdown('<pre>x</pre># One<pre>b</pre>')).
-        toMatch('</div><h1>One</h1><div');
+      expect(new Doc().markdown('<pre>x</pre>\n# One\n<pre>b</pre>')).
+        toMatch('</pre>\n\n<h1>One</h1>\n\n<pre');
     });
 
     it('should ignore nested doc widgets', function() {
       expect(new Doc().markdown(
-        'before<doc:tutorial-instructions>\n' +
-          '<doc:tutorial-instruction id="git-mac" ng:model="Git on Mac/Linux">' +
+        'before<div class="tabbable">\n' +
+          '<div class="tab-pane well" id="git-mac" ng:model="Git on Mac/Linux">' +
           '\ngit bla bla\n</doc:tutorial-instruction>\n' +
         '</doc:tutorial-instructions>')).toEqual(
 
-        '<p>before</p><doc:tutorial-instructions>\n' +
-          '<doc:tutorial-instruction id="git-mac" ng:model="Git on Mac/Linux">\n' +
+        '<p>before<div class="tabbable">\n' +
+          '<div class="tab-pane well" id="git-mac" ng:model="Git on Mac/Linux">\n' +
           'git bla bla\n' +
           '</doc:tutorial-instruction>\n' +
-        '</doc:tutorial-instructions>');
+        '</doc:tutorial-instructions></p>');
       });
 
     it('should unindent text before processing based on the second line', function() {
@@ -437,18 +378,18 @@ describe('ngdoc', function() {
         var doc = new Doc("@name a\n@description <pre><b>abc</b></pre>");
         doc.parse();
         expect(doc.description).
-          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">&lt;b&gt;abc&lt;/b&gt;</pre></div>');
+          toBe('<pre class="prettyprint linenums">&lt;b&gt;abc&lt;/b&gt;</pre>');
       });
 
       it('should support multiple pre blocks', function() {
         var doc = new Doc("@name a\n@description foo \n<pre>abc</pre>\n#bah\nfoo \n<pre>cba</pre>");
         doc.parse();
         expect(doc.description).
-          toBe('<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js;">abc</pre></div>' +
+          toBe('<p>foo \n' +
+               '<pre class="prettyprint linenums">abc</pre>\n\n' +
                '<h1>bah</h1>\n\n' +
-               '<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js;">cba</pre></div>');
+               '<p>foo \n' +
+               '<pre class="prettyprint linenums">cba</pre>');
 
       });
 
@@ -492,18 +433,6 @@ describe('ngdoc', function() {
         var doc = new Doc('@name a\n@example text {{ abc }}');
         doc.parse();
         expect(doc.example).toEqual('<p>text {{ abc }}</p>');
-      });
-
-      it('should support doc:example', function() {
-        var doc = new Doc('@name a\n@ngdoc overview\n@example \n' +
-            '<doc:example>\n' +
-            ' <doc:source><escapeme></doc:source>\n' +
-            ' <doc:scenario><scenario></doc:scenario>\n' +
-            '</doc:example>').parse();
-        var html = doc.html();
-        expect(html).toContain('<pre class="doc-source">&lt;escapeme&gt;</pre>');
-        expect(html).toContain('<pre class="doc-scenario">&lt;scenario&gt;</pre>');
-        expect(doc.scenarios).toEqual(['<scenario>']);
       });
     });
 

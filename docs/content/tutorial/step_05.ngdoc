@@ -2,7 +2,7 @@
 @name Tutorial: 5 - XHRs & Dependency Injection
 @description
 
-<ul doc:tutorial-nav="5"></ul>
+<ul doc-tutorial-nav="5"></ul>
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
@@ -11,7 +11,7 @@ api/angular.module.ng.$http $http}. We will use angular's {@link guide/dev_guide
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 
-<doc:tutorial-instructions step="5"></doc:tutorial-instructions>
+<div doc-tutorial-reset="5"></div>
 
 
 You should now see a list of 20 phones.
@@ -89,7 +89,7 @@ Note that the names of arguments are significant, because the injector uses thes
 dependencies.
 
 
-<img src="img/tutorial/xhr_service_final.png">
+<img  class="diagram" src="img/tutorial/xhr_service_final.png">
 
 
 ### '$' Prefix Naming Convention
@@ -235,4 +235,4 @@ injection), go to {@link step_06 step 6}, where you will add some
 thumbnail images of phones and some links.
 
 
-<ul doc:tutorial-nav="5"></ul>
+<ul doc-tutorial-nav="5"></ul>

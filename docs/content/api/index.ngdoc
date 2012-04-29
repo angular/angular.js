@@ -2,62 +2,6 @@
 @name API Reference
 @description
 
-## Angular Compiler API
-
-* {@link angular.module.ng.$compileProvider.directive Directives} - Angular DOM element attributes
-* {@link angular.module.ng.$filter Filters} - Angular output filters
-* {@link angular.module.ng.$compile $compile} - Template compiler
-
-## Angular Scope API
-
-* {@link angular.module.ng.$rootScope.Scope Scope Object} - Angular scope object
-
-
-## Angular Services & Dependency Injection API
-
-* {@link angular.module.ng Angular Services}
-* {@link angular.injector angular.injector() }
-
-
-## Angular Testing API
-
-* {@link angular.module.ngMock Testing Mocks API} - Mock objects for testing
-* {@link guide/dev_guide.e2e-testing Angular Scenario Runner} - Automated scenario testing
-documentation
-
-
-## Angular Utility Functions
-
-### HTML & DOM Manipulation
-
-* {@link angular.element angular.element()}
-
-### Misc
-
-* {@link angular.bind angular.bind() }
-* {@link angular.extend angular.extend() }
-* {@link angular.forEach angular.forEach() }
-* {@link angular.identity angular.identity() }
-* {@link angular.noop angular.noop() }
-
-
-## Type Identification
-
-* {@link angular.isArray angular.isArray() }
-* {@link angular.isDate angular.isDate() }
-* {@link angular.isDefined angular.isDefined() }
-* {@link angular.isFunction angular.isFunction() }
-* {@link angular.isNumber angular.isNumber() }
-* {@link angular.isObject angular.isObject() }
-* {@link angular.isString angular.isString() }
-* {@link angular.isUndefined angular.isUndefined() }
-
-## Strings
-
-* {@link angular.lowercase angular.lowercase() }
-* {@link angular.uppercase angular.uppercase() }
-
-### JSON
-
-* {@link angular.fromJson angular.fromJson() }
-* {@link angular.toJson angular.toJson() }
+Use the API Refference documentation when you need more information about a specific feature. Check out
+{@link guide/ Developer Guide} for AngularJS concepts. If you are new to AngularJS we recomend the
+{@link tutorial/ Tutorial}.

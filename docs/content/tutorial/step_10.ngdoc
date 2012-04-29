@@ -2,13 +2,13 @@
 @name Tutorial: 10 - Event Handlers
 @description
 
-<ul doc:tutorial-nav="10"></ul>
+<ul doc-tutorial-nav="10"></ul>
 
 
 In this step, you will add a clickable phone image swapper to the phone details page.
 
 
-<doc:tutorial-instructions step="10"></doc:tutorial-instructions>
+<div doc-tutorial-reset="10"></div>
 
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
@@ -70,7 +70,7 @@ url of the thumbnail image.
 
 <div style="display: none">
 TODO!
-<img src="img/tutorial/tutorial_10-11_final.png">
+<img  class="diagram" src="img/tutorial/tutorial_10-11_final.png">
 </div>
 
 ## Test
@@ -138,4 +138,4 @@ With the phone image swapper in place, we're ready for {@link step_11 step 11} (
 learn an even better way to fetch data.
 
 
-<ul doc:tutorial-nav="10"></ul>
+<ul doc-tutorial-nav="10"></ul>

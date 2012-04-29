@@ -70,9 +70,7 @@ DOM.prototype = {
   },
 
   code: function(text) {
-    this.tag('div', {'ng:non-bindable':''}, function() {
-      this.tag('pre', {'class':"brush: js; html-script: true;"}, text);
-    });
+    this.tag('pre', {'class':"prettyprint linenums"}, text);
   },
 
   div: function(attr, text) {

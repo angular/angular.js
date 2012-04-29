@@ -1,5 +1,5 @@
 @ngdoc overview
-@name angular.module.ng.$compileProvider.directive
+@name directive
 @description
 
 Directives are a way to teach HTML new tricks. During DOM compilation directives are matched
@@ -47,7 +47,7 @@ the following example.
    </div>
   </doc:source>
   <doc:scenario>
-    it('should load template1.html', function() {
+    it('should show off bindings', function() {
       expect(element('div[ng-controller="Ctrl1"] span[ng-bind]').text()).toBe('angular');
     });
   </doc:scenario>
@@ -55,11 +55,11 @@ the following example.
 
 # String interpolation
 
-During the compilation process the {@link angular.module.ng.$compile compiler} matches text and
-attributes using the {@link angular.module.ng.$interpolate $interpolate} service to see if they
+During the compilation process the {@link api/angular.module.ng.$compile compiler} matches text and
+attributes using the {@link api/angular.module.ng.$interpolate $interpolate} service to see if they
 contain embedded expressions. These expressions are registered as {@link
-angular.module.ng.$rootScope.Scope#$watch watches} and will update as part of normal {@link
-angular.module.ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is shown
+api/angular.module.ng.$rootScope.Scope#$watch watches} and will update as part of normal {@link
+api/angular.module.ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is shown
 here:
 
 <pre>
@@ -74,21 +74,21 @@ Compilation of HTML happens in three phases:
   realize because the templates must be parsable HTML. This is in contrast to most templating
   systems that operate on strings, rather then on DOM elements.
 
-  2. The compilation of the DOM is performed by the call to {@link angular.module.ng.$compile
+  2. The compilation of the DOM is performed by the call to {@link api/angular.module.ng.$compile
   $compile()} method. The method traverses the DOM and matches the directives. If a match is found
   it is added to the list of directives associated with the given DOM element. Once all directives
   for a given DOM element have been identified they are sorted by priority and their `compile()`
   functions are executed. The directive compile function has a chance to modify the DOM structure
   and is responsible for producing a `link()` function explained next. The {@link
-  angular.module.ng.$compile $compile()} method returns a combined linking function, which is a
+  api/angular.module.ng.$compile $compile()} method returns a combined linking function, which is a
   collection of all of the linking functions returned from the individual directive compile
   functions.
 
   3. Link the template with scope by calling the linking function returned from the previous step.
   This in turn will call the linking function of the individual directives allowing them to
   register any listeners on the elements and set up any {@link
-  angular.module.ng.$rootScope.Scope#$watch watches} with the {@link
-  angular.module.ng.$rootScope.Scope scope}. The result of this is a live binding between the
+  api/angular.module.ng.$rootScope.Scope#$watch watches} with the {@link
+  api/angular.module.ng.$rootScope.Scope scope}. The result of this is a live binding between the
   scope and the DOM. A change in the scope is reflected in the DOM.
 
 <pre>
@@ -125,14 +125,14 @@ The short answer is that compile and link separation is needed any time a change
 a change in DOM structure such as in repeaters.
 
 When the above example is compiled, the compiler visits every node and looks for directives. The
-`{{user}}` is an example of {@link angular.module.ng.$interpolate interpolation} directive. {@link
-angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} is another directive. But {@link
-angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} has a dilemma. It needs to be
+`{{user}}` is an example of {@link api/angular.module.ng.$interpolate interpolation} directive. {@link
+api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} is another directive. But {@link
+api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} has a dilemma. It needs to be
 able to quickly stamp out new `li`s for every `action` in `user.actions`. This means that it needs
 to save a clean copy of the `li` element for cloning purposes and as new `action`s are inserted,
 the template `li` element needs to be cloned and inserted into `ul`. But cloning the `li` element
 is not enough. It also needs to compile the `li` so that its directives such as
-`{{action.descriptions}}` evaluate against the right {@link angular.module.ng.$rootScope.Scope
+`{{action.descriptions}}` evaluate against the right {@link api/angular.module.ng.$rootScope.Scope
 scope}. A naive method would be to simply insert a copy of the `li` elemnt and then compile it.
 But compiling on every `li` element clone would be slow, since the compilation requires that we
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
@@ -140,17 +140,17 @@ repeater which needs to unroll 100 items we would quickly run into performance p
 
 The solution is to break the compilation process into two phases the compile phase where all of
 the directives are identified and sorted by priority, and a linking phase where any work which
-links a specific instance of the {@link angular.module.ng.$rootScope.Scope scope} and the specific
+links a specific instance of the {@link api/angular.module.ng.$rootScope.Scope scope} and the specific
 instance of an `li` is performed.
 
-{@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} works by preventing the
+{@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} works by preventing the
 compilation process form descending into `li` element. Instead the {@link
-angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} directive compiles `li`
+api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} directive compiles `li`
 seperatly. The result of of the `li` element compilation is a linking function which contains all
 of the directives contained in the `li` element ready to be attached to a specific clone of `li`
-element. At runtime the {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}
+element. At runtime the {@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}
 watches the expression and as items are added to the array it clones the `li` element, creates a
-new {@link angular.module.ng.$rootScope.Scope scope} for the cloned `li` element and calls the
+new {@link api/angular.module.ng.$rootScope.Scope scope} for the cloned `li` element and calls the
 link function on the cloned `li`.
 
 Summary:
@@ -288,14 +288,14 @@ further simplification:
 ## Factory method
 
 The factory method is responsible for creating the directive. It is invoked only once, when the
-{@link angular.module.ng.$compile compiler} matches the directive for the first time. You can
+{@link api/angular.module.ng.$compile compiler} matches the directive for the first time. You can
 perform any initialization work here. The method is invoked using the {@link
 http://localhost:8000/build/docs/api/angular.module.AUTO.$injector#invoke $injector.invoke} which
 makes it injectable following all of the rules of injection annotation.
 
 ## Directive Definition Object
 
-The directive definition object provides instructions to the {@link angular.module.ng.$compile
+The directive definition object provides instructions to the {@link api/angular.module.ng.$compile
 compiler}. The attributes are:
 
   * `name` - Name of the current scope. Optional defaults to the name at registration.
@@ -440,8 +440,8 @@ compiler}. The attributes are:
 Compile function deals with transforming the template DOM. Since most directives do not do
 template transformation, it is not used often. Examples which require compile functions are
 directives which transform template DOM such as {@link
-angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} or load the contents
-asynchronously such as {@link angular.module.ng.$compileProvider.directive.ngView ngView}. The
+api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} or load the contents
+asynchronously such as {@link api/angular.module.ng.$compileProvider.directive.ngView ngView}. The
 compile functions takes the following arguments.
 
   * `tElement` - template element - The element where the directive has been declared. It is
@@ -478,8 +478,8 @@ Link function is responsible for registering DOM listeners as well as updating t
 executed after the template has been cloned. This is where most of the directive logic will be
 put.
 
-  * `scope` - {@link angular.module.ng.$rootScope.Scope Scope} - The scope to be used by the
-    directive for registering {@link angular.module.ng.$rootScope.Scope#$watch watches}.
+  * `scope` - {@link api/angular.module.ng.$rootScope.Scope Scope} - The scope to be used by the
+    directive for registering {@link api/angular.module.ng.$rootScope.Scope#$watch watches}.
 
   * `iElement` - instance element - The element where the directive is to be used. It is safe to
     manipulate the children of the element only in `postLink` function since the children have

@@ -7,8 +7,7 @@
  *
  * @description
  * Creates a binding that will sanitize the result of evaluating the `expression` with the
- * {@link angular.module.ngSanitize.$sanitize $sanitize} service and innerHTML the result into the
- * current element.
+ * {@link angular.module.ngSanitize.$sanitize $sanitize} service and innerHTML the result into the current element.
  *
  * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
  *

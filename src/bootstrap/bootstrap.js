@@ -19,7 +19,7 @@ directive.dropdownToggle =
 
         element.bind('click', function(event) {
           event.preventDefault();
-          event.stopImmediatePropagation();
+          event.stopPropagation();
 
           var iWasOpen = false;
 
@@ -34,7 +34,7 @@ directive.dropdownToggle =
 
             close = function (event) {
               event && event.preventDefault();
-              event && event.stopImmediatePropagation();
+              event && event.stopPropagation();
               $document.unbind('click', close);
               element.parent().removeClass('open');
               close = null;

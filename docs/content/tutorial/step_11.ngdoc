@@ -2,13 +2,13 @@
 @name Tutorial: 11 - REST and Custom Services
 @description
 
-<ul doc:tutorial-nav="11"></ul>
+<ul doc-tutorial-nav="11"></ul>
 
 
 In this step, you will improve the way our app fetches data.
 
 
-<doc:tutorial-instructions step="11"></doc:tutorial-instructions>
+<div doc-tutorial-reset="11"></div>
 
 
 The last improvement we will make to our app is to define a custom service that represents a {@link
@@ -220,4 +220,4 @@ There you have it!  We have created a web app in a relatively short amount of ti
 the_end closing notes} we'll cover were to go from here.
 
 
-<ul doc:tutorial-nav="11"></ul>
+<ul doc-tutorial-nav="11"></ul>
