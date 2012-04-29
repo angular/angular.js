@@ -13,15 +13,20 @@
  *      keys.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
         <input type="button" value="set" ng-click="myStyle={color:'red'}">
         <input type="button" value="clear" ng-click="myStyle={}">
         <br/>
         <span ng-style="myStyle">Sample Text</span>
         <pre>myStyle={{myStyle}}</pre>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="style.css">
+       span {
+         color: black;
+       }
+     </file>
+     <file name="scenario.js">
        it('should check ng-style', function() {
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
          element('.doc-example-live :button[value=set]').click();
@@ -29,8 +34,8 @@
          element('.doc-example-live :button[value=clear]').click();
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngStyleDirective = ngDirective(function(scope, element, attr) {
   scope.$watch(attr.ngStyle, function(newStyles, oldStyles) {

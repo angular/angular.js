@@ -402,7 +402,7 @@ In this examples we use `<base href="/base/index.html" />`
   </div>
 </div>
 
-<script type="text/javascript">
+<script>
   function FakeBrowser(initUrl, baseHref) {
     this.onUrlChange = function(fn) {
       this.urlChange = fn;

@@ -2,7 +2,7 @@
 @name Tutorial: 0 - Bootstrapping
 @description
 
-<ul doc:tutorial-nav="0"></ul>
+<ul doc-tutorial-nav="0"></ul>
 
 
 You are now ready to build the AngularJS phonecat app. In this step, you will become familiar
@@ -10,11 +10,11 @@ with the most important source code files, learn how to start the development se
 angular-seed, and run the application in the browser.
 
 
-<doc:tutorial-instructions show="true">
-  <doc:tutorial-instruction id="git-mac" title="Git on Mac/Linux">
+<div class="tabbable" show="true" ng-model="$cookies.platformPreference">
+  <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux" value="gitUnix">
     <ol>
       <li><p>In angular-phonecat directory, run this command:</p>
-      <pre><code>git checkout -f step-0</code></pre>
+      <pre>git checkout -f step-0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
@@ -41,13 +41,13 @@ directory.</li>
         </ul>
       </li>
     </ol>
-  </doc:tutorial-instruction>
+  </div>
 
 
-  <doc:tutorial-instruction id="git-win" title="Git on Windows">
+  <div class="tab-pane well" id="git-win" title="Git on Windows" value="gitWin">
     <ol>
       <li><p>Open msysGit bash and run this command (in angular-phonecat directory):</p>
-      <pre><code>git checkout -f step-0</code></pre>
+      <pre>git checkout -f step-0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
@@ -73,13 +73,13 @@ directory.</li>
         </ul>
       </li>
     </ol>
-  </doc:tutorial-instruction>
+  </div>
 
 
-  <doc:tutorial-instruction id="ss-mac" title="Snapshots on Mac/Linux">
+  <div class="tab-pane well" id="ss-mac" title="Snapshots on Mac/Linux" value="snapshotUnix">
     <ol>
       <li><p>In the angular-phonecat directory, run this command:</p>
-      <pre><code>./goto_step.sh 0</code></pre>
+      <pre>./goto_step.sh 0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
@@ -105,13 +105,13 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
         </ul>
       </li>
     </ol>
-  </doc:tutorial-instruction>
+  </div>
 
 
-  <doc:tutorial-instruction id="ss-win" title="Snapshots on Windows">
+  <div class="tab-pane well" id="ss-win" title="Snapshots on Windows" value="snapshotWin">
     <ol>
       <li><p>Open windows command line and run this command (in the angular-phonecat directory):</p>
-      <pre><code>goto_step.bat 0</code></pre>
+      <pre>goto_step.bat 0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
@@ -137,8 +137,8 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
         </ul>
       </li>
     </ol>
-  </doc:tutorial-instruction>
-</doc:tutorial-instructions>
+  </div>
+</div>
 
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
@@ -233,7 +233,7 @@ in the view by updating all of the affected bindings.
 The structure of our application is currently very simple. The template contains just one directive
 and one static binding, and our model is empty. That will soon change!
 
-<img src="img/tutorial/tutorial_00.png">
+<img class="diagram" src="img/tutorial/tutorial_00.png">
 
 
 ## What are all these files in my working directory?
@@ -265,7 +265,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 
-<ul doc:tutorial-nav="0"></ul>
+<ul doc-tutorial-nav="0"></ul>
 
 <div style="display: none">
 Note: During the bootstrap the injector and the root scope will then be associated with the

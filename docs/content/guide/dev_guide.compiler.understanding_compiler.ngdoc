@@ -3,7 +3,7 @@
 @description
 
 The {@link api/angular.module.ng.$compile compiler} is responsible for applying
-{@link api/angular.module.ng.$compileProvider.directive directives} to the HTML. The directives
+{@link guide/directive directives} to the HTML. The directives
 extend the behavior of HTML elements and can effect the DOM structure, presentation, and behavior.
 This allows Angular to teach the browser new tricks.
 
@@ -21,7 +21,7 @@ Since directives allow attachment of behavior to the HTML, the angular philosoph
 HTML as Domain Specific Language (DSL) when building an application. For example it may be useful
 to declare `TabPanel` directive, or `KeyboardShortcut` directive when for an application.
 
-For details on how directives are created see {@link api/angular.module.ng.$compileProvider.directive
+For details on how directives are created see {@link guide/directive
 directives}
 
 ## Related Topics

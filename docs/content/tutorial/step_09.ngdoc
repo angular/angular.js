@@ -2,13 +2,13 @@
 @name Tutorial: 9 - Filters
 @description
 
-<ul doc:tutorial-nav="9"></ul>
+<ul doc-tutorial-nav="9"></ul>
 
 
 In this step you will learn how to create your own custom display filter.
 
 
-<doc:tutorial-instructions step="9"></doc:tutorial-instructions>
+<div doc-tutorial-reset="9"></div>
 
 
 Navigate to one of the detail pages.
@@ -140,4 +140,4 @@ Now that you have learned how to write and test a custom filter, go to {@link st
 learn how we can use angular to enhance the phone details page further.
 
 
-<ul doc:tutorial-nav="9"></ul>
+<ul doc-tutorial-nav="9"></ul>

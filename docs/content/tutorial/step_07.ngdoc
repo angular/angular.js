@@ -2,14 +2,14 @@
 @name Tutorial: 7 - Routing & Multiple Views
 @description
 
-<ul doc:tutorial-nav="7"></ul>
+<ul doc-tutorial-nav="7"></ul>
 
 
 In this step, you will learn how to create a layout template and how to build an app that has
 multiple views by adding routing.
 
 
-<doc:tutorial-instructions step="7"></doc:tutorial-instructions>
+<div doc-tutorial-reset="7"></div>
 
 
 Note that when you now navigate to `app/index.html`, you are redirected to `app/index.html#/phones`
@@ -191,7 +191,7 @@ __`app/partials/phone-list.html`:__
 
 <div style="display:none">
 TODO!
-<img src="img/tutorial/tutorial_07_final.png">
+<img  class="diagram" src="img/tutorial/tutorial_07_final.png">
 </div>
 
 We also added a placeholder template for the phone details view:
@@ -258,4 +258,4 @@ With the routing set up and the phone list view implemented, we're ready to go t
 step 8} to implement the phone details view.
 
 
-<ul doc:tutorial-nav="7"></ul>
+<ul doc-tutorial-nav="7"></ul>

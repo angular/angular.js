@@ -30,72 +30,111 @@ In this example we have a simple app which consist of two screens:
 * Welcome: url `welcome` Show the user contact information.
 * Settings: url `settings` Show an edit screen for user contact information.
 
+<example module="deepLinking" deps="angular-sanitize.js">
+ <file name="script.js">
+   angular.module('deepLinking', ['ngSanitize'])
+     .config(function($routeProvider) {
+        $routeProvider.
+          when("/welcome",  {template:'welcome.html',  controller:WelcomeCntl}).
+          when("/settings", {template:'settings.html', controller:SettingsCntl});
+     });
 
-The two partials are defined in the following URLs:
+   AppCntl.$inject = ['$scope', '$route']
+   function AppCntl($scope, $route) {
+    $scope.$route = $route;
 
-* <a href="examples/settings.html" target="_self">./examples/settings.html</a>
-* <a href="examples/welcome.html" target="_self">./examples/welcome.html</a>
+    // initialize the model to something useful
+    $scope.person = {
+     name:'anonymous',
+     contacts:[{type:'email', url:'anonymous@example.com'}]
+    };
+   }
 
-<doc:example module="deepLinking">
- <doc:source jsfiddle="false">
-    <script>
-     angular.module('deepLinking', ['ngSanitize'])
-       .config(function($routeProvider) {
-          $routeProvider.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
-          $routeProvider.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
-       });
+   function WelcomeCntl($scope) {
+    $scope.greet = function() {
+     alert("Hello " + $scope.person.name);
+    };
+   }
 
-     AppCntl.$inject = ['$scope', '$route']
-     function AppCntl($scope, $route) {
-      // initialize the model to something useful
-      $scope.person = {
-       name:'anonymous',
-       contacts:[{type:'email', url:'anonymous@example.com'}]
-      };
-     }
+   function SettingsCntl($scope, $location) {
+    $scope.cancel = function() {
+     $scope.form = angular.copy($scope.person);
+    };
 
-     function WelcomeCntl($scope) {
-      $scope.greet = function() {
-       alert("Hello " + $scope.person.name);
-      };
-     }
+    $scope.save = function() {
+     angular.copy($scope.form, $scope.person);
+     $location.path('/welcome');
+    };
 
-     function SettingsCntl($scope, $location) {
-      $scope.cancel = function() {
-       $scope.form = angular.copy($scope.person);
-      };
+    $scope.cancel();
+   }
+ </file>
+ <file name="style.css">
+   [ng-view] {
+     border: 1px solid blue;
+     margin: 0;
+     padding:1em;
+   }
 
-      $scope.save = function() {
-       angular.copy($scope.form, $scope.person);
-       $location.path('/welcome');
-      };
-
-      $scope.cancel();
-     }
-    </script>
+   .partial-info {
+      background-color: blue;
+      color: white;
+      padding: 3px;
+    }
+ </file>
+ <file name="index.html">
     <div ng-controller="AppCntl">
       <h1>Your App Chrome</h1>
       [ <a href="welcome">Welcome</a> | <a href="settings">Settings</a> ]
       <hr/>
-      <span style="background-color: blue; color: white; padding: 3px;">
+      <span class="partial-info">
         Partial: {{$route.current.template}}
       </span>
-      <ng:view style="border: 1px solid blue; margin: 0; display:block; padding:1em;"></ng:view>
+      <div ng-view></div>
       <small>Your app footer </small>
     </div>
- </doc:source>
- <doc:scenario>
+ </file>
+ <file name="settings.html">
+   <label>Name:</label>
+   <input type="text" ng:model="form.name" required>
+
+   <div ng:repeat="contact in form.contacts">
+     <select ng:model="contact.type">
+       <option>url</option>
+       <option>email</option>
+       <option>phone</option>
+     </select>
+     <input type="text" ng:model="contact.url">
+     [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
+   </div>
+   <div>
+     [ <a href="" ng:click="form.contacts.$add()">add</a> ]
+   </div>
+
+   <button ng:click="cancel()">Cancel</button>
+   <button ng:click="save()">Save</button>
+ </file>
+ <file name="welcome.html">
+   Hello {{person.name}},
+   <div>
+     Your contact information:
+     <div ng:repeat="contact in person.contacts">{{contact.type}}:
+       <span ng-bind-html="contact.url|linky"></span>
+     </div>
+   </div>
+ </file>
+ <file name="scenario.js">
    it('should navigate to URL', function() {
-    element('a:contains(Welcome)').click();
-    expect(element('ng\\:view').text()).toMatch(/Hello anonymous/);
-    element('a:contains(Settings)').click();
-    input('form.name').enter('yourname');
-    element(':button:contains(Save)').click();
-    element('a:contains(Welcome)').click();
-    expect(element('ng\\:view').text()).toMatch(/Hello yourname/);
+     element('a:contains(Welcome)').click();
+     expect(element('[ng-view]').text()).toMatch(/Hello anonymous/);
+     element('a:contains(Settings)').click();
+     input('form.name').enter('yourname');
+     element(':button:contains(Save)').click();
+     element('a:contains(Welcome)').click();
+     expect(element('[ng-view]').text()).toMatch(/Hello yourname/);
    });
- </doc:scenario>
-</doc:example>
+ </file>
+</example>
 
 
 

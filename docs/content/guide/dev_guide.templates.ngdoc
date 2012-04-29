@@ -10,7 +10,7 @@ the dynamic view DOM.
 
 These are the types of angular elements and element attributes you can use in a template:
 
-* {@link api/angular.module.ng.$compileProvider.directive Directive} — An attribute or element that
+* {@link guide/directive Directive} — An attribute or element that
   augments an existing DOM element or represents a reusable DOM component - a widget.
 * {@link api/angular.module.ng.$interpolate  Markup} — The double
 curly brace notation `{{ }}` to bind expressions to elements is built-in angular markup.
@@ -21,7 +21,7 @@ Note:  In addition to declaring the elements above in templates, you can also ac
 in JavaScript code.
 
 The following code snippet shows a simple angular template made up of standard HTML tags along with
-angular {@link api/angular.module.ng.$compileProvider.directive directives} and curly-brace bindings
+angular {@link guide/directive directives} and curly-brace bindings
 with {@link dev_guide.expressions expressions}:
 
 <pre>

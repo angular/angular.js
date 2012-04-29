@@ -2,7 +2,7 @@
 @name Tutorial: 6 - Templating Links & Images
 @description
 
-<ul doc:tutorial-nav="6"></ul>
+<ul doc-tutorial-nav="6"></ul>
 
 
 In this step, you will add thumbnail images for the phones in the phone list, and links that, for
@@ -10,7 +10,7 @@ now, will go nowhere. In subsequent steps you will use the links to display addi
 about the phones in the catalog.
 
 
-<doc:tutorial-instructions step="6"></doc:tutorial-instructions>
+<div doc-tutorial-reset="6"></div>
 
 
 You should now see links and images of the phones in the list.
@@ -64,7 +64,7 @@ We also added phone images next to each record using an image tag with the {@lin
 api/angular.module.ng.$compileProvider.directive.ngSrc ngSrc} directive. That directive prevents the
 browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
 invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
-specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
+specified an attribute binding in a regular `src` attribute (`<img  class="diagram" src="{{phone.imageUrl}}">`).
 Using `ngSrc` (`ng-src`) prevents the browser from making an http request to an invalid location.
 
 
@@ -103,4 +103,4 @@ Now that you have added phone images and links, go to {@link step_07 step 7} to 
 layout templates and how angular makes it easy to create applications that have multiple views.
 
 
-<ul doc:tutorial-nav="6"></ul>
+<ul doc-tutorial-nav="6"></ul>

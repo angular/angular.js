@@ -90,6 +90,10 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
   concat_module('resource', ['src/ngResource/resource.js'])
   concat_module('cookies', ['src/ngCookies/cookies.js'])
+  concat_module('bootstrap', ['src/bootstrap/bootstrap.js'])
+  concat_module('bootstrap-prettify', ['src/bootstrap/bootstrap-prettify.js',
+                                       'src/bootstrap/google-prettify/prettify.js'],
+                               gen_css('src/bootstrap/google-prettify/prettify.css', true))
 
 
   FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
@@ -99,6 +103,8 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
   closure_compile('angular-loader.js')
   closure_compile('angular-resource.js')
   closure_compile('angular-sanitize.js')
+  closure_compile('angular-bootstrap.js')
+  closure_compile('angular-bootstrap-prettify.js')
 
 end
 
@@ -159,10 +165,7 @@ task :package => [:clean, :compile, :docs] do
     "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-debug.html"
   ].each do |src|
     rewrite_file(src) do |content|
-      content.sub!('angular.js', "angular-#{NG_VERSION.full}.js").
-              sub!('angular-resource.js', "angular-resource-#{NG_VERSION.full}.js").
-              sub!('angular-cookies.js', "angular-cookies-#{NG_VERSION.full}.js").
-              sub!('angular-sanitize.js', "angular-sanitize-#{NG_VERSION.full}.js")
+      content.gsub!(/'angular(.*)\.js/, '\'angular\1-' + NG_VERSION.full + '.js')
     end
   end
 
@@ -305,8 +308,8 @@ def concat_file(filename, deps, footer='')
 end
 
 
-def concat_module(name, files)
-  concat_file('angular-' + name + '.js', ['src/module.prefix'] + files + ['src/module.suffix'])
+def concat_module(name, files, footer='')
+  concat_file('angular-' + name + '.js', ['src/module.prefix'] + files + ['src/module.suffix'], footer)
 end
 
 
