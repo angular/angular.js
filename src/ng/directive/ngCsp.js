@@ -1,17 +1,18 @@
 'use strict';
 
 /**
- * TODO(i): this directive is not publicly documented until we know for sure that CSP can't be
- *   safely feature-detected.
- *
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ngCsp
  * @priority 1000
  *
  * @description
- * Enables CSP (Content Security Protection) support. This directive should be used on the `<html>`
- * element before any kind of interpolation or expression is processed.
+ * Enables [CSP (Content Security Policy)](https://developer.mozilla.org/en/Security/CSP) support.
+ * This directive should be used on the root element of the application (typically the `<html>`
+ * element or other element with the {@link angular.module.ng.$compileProvider.directive.ngApp ngApp}
+ * directive).
  *
- * If enabled the performance of $parse will suffer.
+ * If enabled the performance of template expression evaluator will suffer slightly, so don't enable
+ * this mode unless you need it.
  *
  * @element html
  */
