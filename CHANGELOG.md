@@ -1,3 +1,30 @@
+<a name="1.0.0rc7"></a>
+# 1.0.0rc7  rc-generation (2012-04-30)
+
+## Features
+
+- **$parse:** CSP compatibility
+  ([2b87c814](https://github.com/angular/angular.js/commit/2b87c814ab70eaaff6359ce1a118f348c8bd2197),
+   [#893](https://github.com/angular/angular.js/issues/893))
+
+
+## Bug Fixes
+
+- **jqlite:**
+  - correctly reset event properties in IE8
+  ([a18926f9](https://github.com/angular/angular.js/commit/a18926f986166048a21097636f03ab29f107b154))
+  - mouseenter on FF no longer throws exceptions
+  ([43d15f83](https://github.com/angular/angular.js/commit/43d15f830f9d419c41c41f0682e47e86839e3917))
+
+
+## Docs
+
+- Tutorial has been finally updated to AngularJS v1.0! Check it out and provide feedback to make it
+  even better: <http://docs.angularjs.org/tutorial>
+- <http://docs-next.angularjs.org> now redirects to <http://docs.angularjs.org>
+
+
+
 <a name="v1.0.0rc6"></a>
 # v1.0.0rc6 runny-nose (2012-04-20)
 
