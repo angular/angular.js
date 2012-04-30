@@ -121,7 +121,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * @description
  * Creates a binding that will innerHTML the result of evaluating the `expression` into the current
  * element. *The innerHTML-ed content will not be sanitized!* You should use this directive only if
- * {@link angular.module.ng.$compileProvider.directive.ngBindHtml ngBindHtml} directive is too
+ * {@link angular.module.ngSanitize.directive.ngBindHtml ngBindHtml} directive is too
  * restrictive and when you absolutely trust the source of the content you are binding to.
  *
  * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
