@@ -11,7 +11,7 @@ angularFiles = {
     'src/ng/anchorScroll.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
-    'src/ng/compiler.js',
+    'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/defer.js',
     'src/ng/document.js',
