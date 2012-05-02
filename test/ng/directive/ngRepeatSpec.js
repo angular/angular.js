@@ -108,7 +108,7 @@ describe('ngRepeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="item in items" ng-bind="item + \':\' + $first+'-'+$middle+'-'+$last + \'|\'"></li>' +
+        '<li ng-repeat="item in items" ng-bind="item + \':\' + $first+\'-\'+$middle+\'-\'+$last + \'|\'"></li>' +
       '</ul>')($rootScope);
     $rootScope.items = ['misko', 'shyam', 'doug'];
     $rootScope.$digest();
@@ -133,7 +133,7 @@ describe('ngRepeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(key, val) in items" ng-bind="key + \':\' + val + \':\' + $first+'-'+$middle+'-'+$last + \'|\'">' +
+        '<li ng-repeat="(key, val) in items" ng-bind="key + \':\' + val + \':\' + $first+\'-\'+$middle+\'-\'+$last + \'|\'">' +
         '</li>' +
       '</ul>')($rootScope);
     $rootScope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
