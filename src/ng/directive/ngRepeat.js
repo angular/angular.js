@@ -12,10 +12,9 @@
  * Special properties are exposed on the local scope of each template instance, including:
  *
  *   * `$index` – `{number}` – iterator offset of the repeated element (0..length-1)
- *   * `$position` – `{string}` – position of the repeated element in the iterator. One of:
- *        * `'first'`,
- *        * `'middle'`
- *        * `'last'`
+ *   * `$first` – `{boolean}` – true if the repeated element is first in the iterator. 
+ *   * `$middle` – `{boolean}` – true if the repeated element is between the first and last in the iterator.
+ *   * `$last` – `{boolean}` – true if the repeated element is last in the iterator. 
  *
  *
  * @element ANY
