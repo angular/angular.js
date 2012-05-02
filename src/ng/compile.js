@@ -819,7 +819,9 @@ function $CompileProvider($provide) {
           originalWidgetNode = tElement[0],
           asyncWidgetDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
-          syncWidgetDirective = extend({}, asyncWidgetDirective, {templateUrl:null, transclude:null}),
+          syncWidgetDirective = extend({}, asyncWidgetDirective, {
+            controller: null, templateUrl: null, transclude: null
+          }),
           html = tElement.html();
 
       tElement.html('');
