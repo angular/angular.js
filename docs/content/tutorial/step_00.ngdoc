@@ -204,7 +204,7 @@ being the element on which the `ngApp` directive was defined.
   evaluated by Angular in the context of the current model scope, rather than within the scope of
   the global context (`window`).
 
-  As expected, once this template is processed by Angular, the html page will contains text:
+  As expected, once this template is processed by Angular, the html page contains the text:
   "Nothing here yet!".
 
 ## Bootstrapping AngularJS apps
@@ -226,7 +226,7 @@ There are 3 important things that happen during the app bootstrap:
 
 
 Once an application is bootstrapped, it will then wait for incoming browser events (such as mouse
-click, key press or incoming HTTP response) that might change the model. Once such event occurs,
+click, key press or incoming HTTP response) that might change the model. Once such an event occurs,
 Angular detects if it caused any model changes and if changes are found, Angular will reflect them
 in the view by updating all of the affected bindings.
 
