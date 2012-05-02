@@ -145,10 +145,11 @@ var ngRepeatDirective = ngDirective({
           childScope[valueIdent] = value;
           if (keyIdent) childScope[keyIdent] = key;
           childScope.$index = index;
-          childScope.$position = index === 0 ?
-              'first' :
-              (index == collectionLength - 1 ? 'last' : 'middle');
-
+          
+          childScope.$first = index === 0;
+          childScope.$middle = index > 0 && index < collectionLength-1;
+          childScope.$last = index == collectionLength - 1;
+          
           if (!last) {
             linker(childScope, function(clone){
               cursor.after(clone);
