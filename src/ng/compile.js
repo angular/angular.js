@@ -127,7 +127,6 @@ function $CompileProvider($provide) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      CONTENT_REGEXP = /\<\<content\>\>/i,
       HAS_ROOT_ELEMENT = /^\<[\s\S]*\>$/;
 
 
@@ -569,9 +568,7 @@ function $CompileProvider($provide) {
           assertNoDuplicate('template', templateDirective, directive, element);
           templateDirective = directive;
 
-          // include the contents of the original element into the template and replace the element
-          var content = directiveValue.replace(CONTENT_REGEXP, element.html());
-          templateNode = jqLite(content)[0];
+          templateNode = jqLite(directiveValue)[0];
           if (directive.replace) {
             replaceWith(rootElement, element, templateNode);
 
@@ -593,7 +590,7 @@ function $CompileProvider($provide) {
 
             ii = directives.length;
           } else {
-            element.html(content);
+            element.html(directiveValue);
           }
         }
 
@@ -828,7 +825,6 @@ function $CompileProvider($provide) {
 
       $http.get(asyncWidgetDirective.templateUrl, {cache: $templateCache}).
         success(function(content) {
-          content = trim(content).replace(CONTENT_REGEXP, html);
           if (replace && !content.match(HAS_ROOT_ELEMENT)) {
             throw Error('Template must have exactly one root element: ' + content);
           }

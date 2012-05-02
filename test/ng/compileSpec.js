@@ -364,7 +364,7 @@ describe('$compile', function() {
           $compileProvider.directive('replace', valueFn({
             restrict: 'CAM',
             replace: true,
-            template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
+            template: '<div class="log" style="width: 10px" high-log>Replace!</div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
@@ -372,7 +372,7 @@ describe('$compile', function() {
           }));
           $compileProvider.directive('append', valueFn({
             restrict: 'CAM',
-            template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
+            template: '<div class="log" style="width: 10px" high-log>Append!</div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
@@ -382,34 +382,34 @@ describe('$compile', function() {
 
 
         it('should replace element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div replace>content</div><div>')($rootScope);
-          expect(element.text()).toEqual('Hello: content');
+          element = $compile('<div><div replace>ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
 
         it('should append element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div append>content</div><div>')($rootScope);
-          expect(element.text()).toEqual('Hello: content');
+          element = $compile('<div><div append>ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Append!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
 
-        it('should compile replace template', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div replace medium-log>{{ "angular"  }}</div><div>')
+        it('should compile template when replacing', inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div replace medium-log>ignore</div><div>')
             ($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: angular');
+          expect(element.text()).toEqual('Replace!');
           // HIGH goes after MEDIUM since it executes as part of replaced template
           expect(log).toEqual('MEDIUM; HIGH; LOG');
         }));
 
 
-        it('should compile append template', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div append medium-log>{{ "angular"  }}</div><div>')
+        it('should compile template when appending', inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div append medium-log>ignore</div><div>')
             ($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: angular');
+          expect(element.text()).toEqual('Append!');
           expect(log).toEqual('HIGH; LOG; MEDIUM');
         }));
 
@@ -436,23 +436,23 @@ describe('$compile', function() {
           }
         }));
 
-        it('should play nice with repeater when inline', inject(function($compile, $rootScope) {
+        it('should play nice with repeater when replacing', inject(function($compile, $rootScope) {
           element = $compile(
             '<div>' +
-              '<div ng-repeat="i in [1,2]" replace>{{i}}; </div>' +
+              '<div ng-repeat="i in [1,2]" replace></div>' +
             '</div>')($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: 1; Hello: 2; ');
+          expect(element.text()).toEqual('Replace!Replace!');
         }));
 
 
-        it('should play nice with repeater when append', inject(function($compile, $rootScope) {
+        it('should play nice with repeater when appending', inject(function($compile, $rootScope) {
           element = $compile(
             '<div>' +
-              '<div ng-repeat="i in [1,2]" append>{{i}}; </div>' +
+              '<div ng-repeat="i in [1,2]" append></div>' +
             '</div>')($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: 1; Hello: 2; ');
+          expect(element.text()).toEqual('Append!Append!');
         }));
 
 
@@ -494,8 +494,12 @@ describe('$compile', function() {
 
         beforeEach(module(
           function($compileProvider) {
-            $compileProvider.directive('hello', valueFn({ restrict: 'CAM', templateUrl: 'hello.html' }));
-            $compileProvider.directive('cau', valueFn({ restrict: 'CAM', templateUrl:'cau.html' }));
+            $compileProvider.directive('hello', valueFn({
+              restrict: 'CAM', templateUrl: 'hello.html', transclude: true
+            }));
+            $compileProvider.directive('cau', valueFn({
+              restrict: 'CAM', templateUrl:'cau.html'
+            }));
 
             $compileProvider.directive('cError', valueFn({
               restrict: 'CAM',
@@ -930,9 +934,10 @@ describe('$compile', function() {
         }));
 
 
-        it('should work when widget is in root element', inject(
+        it('should work when directive is on the root element', inject(
           function($compile, $httpBackend, $rootScope) {
-            $httpBackend.expect('GET', 'hello.html').respond('<span>3==<<content>></span>');
+            $httpBackend.expect('GET', 'hello.html').
+                respond('<span>3==<span ng-transclude></span></span>');
             element = jqLite('<b class="hello">{{1+2}}</b>');
             $compile(element)($rootScope);
 
@@ -942,9 +947,10 @@ describe('$compile', function() {
         ));
 
 
-        it('should work when widget is a repeater', inject(
+        it('should work when directive is a repeater', inject(
           function($compile, $httpBackend, $rootScope) {
-            $httpBackend.expect('GET', 'hello.html').respond('<span>i=<<content>>;</span>');
+            $httpBackend.expect('GET', 'hello.html').
+                respond('<span>i=<span ng-transclude></span>;</span>');
             element = jqLite('<div><b class=hello ng-repeat="i in [1,2]">{{i}}</b></div>');
             $compile(element)($rootScope);
 
