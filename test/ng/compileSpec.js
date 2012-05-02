@@ -1692,7 +1692,45 @@ describe('$compile', function() {
         element = $compile('<div c1 c2><div dep></div></div>')($rootScope);
         expect(log).toEqual('dep:c1-c2');
       });
+    });
 
+
+    it('should instantiate the controller just once when template/templateUrl', function() {
+      var syncCtrlSpy = jasmine.createSpy('sync controller'),
+          asyncCtrlSpy = jasmine.createSpy('async controller');
+
+      module(function($compileProvider) {
+        $compileProvider.directive('myDirectiveSync', valueFn({
+          template: '<div>Hello!</div>',
+          controller: syncCtrlSpy
+        }));
+        $compileProvider.directive('myDirectiveAsync', valueFn({
+          templateUrl: 'myDirectiveAsync.html',
+          controller: asyncCtrlSpy,
+          compile: function() {
+            return function() {
+            }
+          }
+        }));
+      });
+
+      inject(function($templateCache, $compile, $rootScope) {
+        expect(syncCtrlSpy).not.toHaveBeenCalled();
+        expect(asyncCtrlSpy).not.toHaveBeenCalled();
+
+        $templateCache.put('myDirectiveAsync.html', '<div>Hello!</div>');
+        element = $compile('<div>'+
+                   '<span xmy-directive-sync></span>' +
+                   '<span my-directive-async></span>' +
+                 '</div>')($rootScope);
+        expect(syncCtrlSpy).not.toHaveBeenCalled();
+        expect(asyncCtrlSpy).not.toHaveBeenCalled();
+
+        $rootScope.$apply();
+
+        //expect(syncCtrlSpy).toHaveBeenCalledOnce();
+        expect(asyncCtrlSpy).toHaveBeenCalledOnce();
+      });
     });
   });
 
