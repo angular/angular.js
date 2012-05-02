@@ -117,12 +117,23 @@ function $HttpProvider() {
   };
 
   var providerResponseInterceptors = this.responseInterceptors = [];
+  var providerRequestInterceptors = this.requestInterceptors = [];
 
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http'),
-        responseInterceptors = [];
+        responseInterceptors = [],
+        requestInterceptors = []
+        ;
+
+    forEach(providerRequestInterceptors, function(interceptor) {
+      requestInterceptors.push(
+          isString(interceptor)
+              ? $injector.get(interceptor)
+              : $injector.invoke(interceptor)
+      );
+    });
 
     forEach(providerResponseInterceptors, function(interceptor) {
       responseInterceptors.push(
@@ -483,6 +494,11 @@ function $HttpProvider() {
         delete reqHeaders['Content-Type'];
       }
 
+      // apply request interceptors
+      forEach(requestInterceptors, function(interceptor) {
+        interceptor(config, reqHeaders);
+      });
+
       // send request
       promise = sendReq(config, reqData, reqHeaders);
 
@@ -490,7 +506,7 @@ function $HttpProvider() {
       // transform future response
       promise = promise.then(transformResponse, transformResponse);
 
-      // apply interceptors
+      // apply response interceptors
       forEach(responseInterceptors, function(interceptor) {
         promise = interceptor(promise);
       });
