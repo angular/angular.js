@@ -126,12 +126,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
   return {
     restrict: 'E',
     require: ['select', '?ngModel'],
-    controller: ['$element', '$scope', function($element, $scope) {
+    controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
       var self = this,
           optionsMap = {},
           ngModelCtrl = nullModelCtrl,
           nullOption,
           unknownOption;
+
+
+      self.databound = $attrs.ngModel;
+
 
       self.init = function(ngModelCtrl_, nullOption_, unknownOption_) {
         ngModelCtrl = ngModelCtrl_;
@@ -509,6 +513,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 }];
 
 var optionDirective = ['$interpolate', function($interpolate) {
+  var nullSelectCtrl = {
+    addOption: noop,
+    removeOption: noop
+  };
+
   return {
     restrict: 'E',
     priority: 100,
@@ -521,11 +530,15 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
       }
 
-      // For some reason Opera defaults to true and if not overridden this messes up the repeater.
-      // We don't want the view to drive the initialization of the model anyway.
-      element.prop('selected', false);
-
       return function (scope, element, attr, selectCtrl) {
+        if (selectCtrl.databound) {
+          // For some reason Opera defaults to true and if not overridden this messes up the repeater.
+          // We don't want the view to drive the initialization of the model anyway.
+          element.prop('selected', false);
+        } else {
+          selectCtrl = nullSelectCtrl;
+        }
+
         if (interpolateFn) {
           scope.$watch(interpolateFn, function(newVal, oldVal) {
             attr.$set('value', newVal);
