@@ -1088,6 +1088,21 @@ describe('$compile', function() {
         }));
 
 
+        it('should allow creation of new scopes for replace directives with templates in a repeater',
+            inject(function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'trscope.html').
+              respond('<p><a log>{{name}}; scopeId: {{$id}} |</a></p>');
+          element = $compile('<div><span ng-repeat="i in [1,2,3]" trscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-003-002; 003; LOG; log-005-004; 005; LOG; log-007-006; 007');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 003 |Jozo; scopeId: 005 |Jozo; scopeId: 007 |');
+          expect(element.find('p').scope().$id).toBe('003');
+          expect(element.find('a').scope().$id).toBe('003');
+        }));
+
+
         it('should allow creation of new isolated scopes for directives with templates', inject(
             function($rootScope, $compile, log, $httpBackend) {
           $httpBackend.expect('GET', 'tiscope.html').respond('<a log></a>');
