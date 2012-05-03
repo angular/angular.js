@@ -46,15 +46,39 @@ function MockWindow() {
   };
 }
 
+function MockDocument() {
+  var self = this;
+
+  this[0] = window.document
+  this.basePath = '/';
+
+  this.find = function(name) {
+    if (name == 'base') {
+      return {
+        attr: function(name){
+          if (name == 'href') {
+            return self.basePath;
+          } else {
+            throw new Error(name);
+          }
+        }
+      }
+    } else {
+      throw new Error(name);
+    }
+  }
+}
+
 describe('browser', function() {
 
-  var browser, fakeWindow, logs, scripts, removedScripts, sniffer;
+  var browser, fakeWindow, fakeDocument, logs, scripts, removedScripts, sniffer;
 
   beforeEach(function() {
     scripts = [];
     removedScripts = [];
     sniffer = {history: true, hashchange: true};
     fakeWindow = new MockWindow();
+    fakeDocument = new MockDocument();
 
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
@@ -66,7 +90,7 @@ describe('browser', function() {
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
-    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, fakeLog, sniffer);
+    browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
   });
 
   it('should contain cookie cruncher', function() {
@@ -137,12 +161,17 @@ describe('browser', function() {
 
     function deleteAllCookies() {
       var cookies = document.cookie.split(";");
+      var path = location.pathname;
 
       for (var i = 0; i < cookies.length; i++) {
         var cookie = cookies[i];
         var eqPos = cookie.indexOf("=");
         var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        var parts = path.split('/');
+        while (parts.length) {
+          document.cookie = name + "=;path=" + (parts.join('/') || '/') + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+          parts.pop();
+        }
       }
     }
 
@@ -171,7 +200,7 @@ describe('browser', function() {
     describe('remove via cookies(cookieName, undefined)', function() {
 
       it('should remove a cookie when it is present', function() {
-        document.cookie = 'foo=bar';
+        document.cookie = 'foo=bar;path=/';
 
         browser.cookies('foo', undefined);
 
@@ -198,7 +227,7 @@ describe('browser', function() {
 
 
       it('should overwrite an existing unsynced cookie', function() {
-        document.cookie = "cookie=new";
+        document.cookie = "cookie=new;path=/";
 
         var oldVal = browser.cookies('cookie', 'newer');
 
@@ -220,7 +249,7 @@ describe('browser', function() {
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for(i=0; i<4091; i++) {
+        for(i=0; i<4083; i++) {
           longVal += '+';
         }
 
@@ -286,13 +315,13 @@ describe('browser', function() {
 
 
       it ('should return a value for an existing cookie', function() {
-        document.cookie = "foo=bar=baz";
+        document.cookie = "foo=bar=baz;path=/";
         expect(browser.cookies().foo).toEqual('bar=baz');
       });
 
 
       it ('should unescape cookie values that were escaped by puts', function() {
-        document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due";
+        document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
         expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
       });
 
@@ -308,8 +337,8 @@ describe('browser', function() {
     describe('getAll via cookies()', function() {
 
       it('should return cookies as hash', function() {
-        document.cookie = "foo1=bar1";
-        document.cookie = "foo2=bar2";
+        document.cookie = "foo1=bar1;path=/";
+        document.cookie = "foo2=bar2;path=/";
         expect(browser.cookies()).toEqual({'foo1':'bar1', 'foo2':'bar2'});
       });
 
@@ -324,13 +353,13 @@ describe('browser', function() {
       browser.cookies('oatmealCookie', 'drool');
       expect(browser.cookies()).toEqual({'oatmealCookie':'drool'});
 
-      document.cookie = 'oatmealCookie=changed';
+      document.cookie = 'oatmealCookie=changed;path=/';
       expect(browser.cookies().oatmealCookie).toEqual('changed');
     });
 
 
     it('should initialize cookie cache with existing cookies', function() {
-      document.cookie = "existingCookie=existingValue";
+      document.cookie = "existingCookie=existingValue;path=/";
       expect(browser.cookies()).toEqual({'existingCookie':'existingValue'});
     });
 
@@ -530,35 +559,25 @@ describe('browser', function() {
   describe('baseHref', function() {
     var jqDocHead;
 
-    function setDocumentBaseHrefTo(href) {
-      clearDocumentBaseHref();
-      jqDocHead.append('<base href="' + href +'" />');
-    }
-
-    function clearDocumentBaseHref() {
-      jqDocHead.find('base').remove();
-    }
-
     beforeEach(function() {
       jqDocHead = jqLite(document).find('head');
     });
 
-    afterEach(clearDocumentBaseHref);
-
     it('should return value from <base href>', function() {
-      setDocumentBaseHrefTo('/base/path/');
+      fakeDocument.basePath = '/base/path/';
       expect(browser.baseHref()).toEqual('/base/path/');
     });
 
     it('should return undefined if no <base href>', function() {
+      fakeDocument.basePath = undefined;
       expect(browser.baseHref()).toBeUndefined();
     });
 
     it('should remove domain from <base href>', function() {
-      setDocumentBaseHrefTo('http://host.com/base/path/');
+      fakeDocument.basePath = 'http://host.com/base/path/';
       expect(browser.baseHref()).toEqual('/base/path/');
 
-      setDocumentBaseHrefTo('http://host.com/base/path/index.html');
+      fakeDocument.basePath = 'http://host.com/base/path/index.html';
       expect(browser.baseHref()).toEqual('/base/path/index.html');
     });
   });
