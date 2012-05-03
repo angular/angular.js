@@ -232,3 +232,7 @@ function provideLog($provide) {
 function pending() {
   dump('PENDING');
 };
+
+function trace(name) {
+  dump(new Error(name).stack);
+}
