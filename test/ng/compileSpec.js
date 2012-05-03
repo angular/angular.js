@@ -1255,7 +1255,7 @@ describe('$compile', function() {
         return function(scope, elm, attr) {
           observeSpy = jasmine.createSpy('$observe attr');
 
-          attr.$observe('someAttr', observeSpy);
+          expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
           attrValueDuringLinking = attr.someAttr;
         };
       });
