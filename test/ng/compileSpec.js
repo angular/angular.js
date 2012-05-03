@@ -991,6 +991,33 @@ describe('$compile', function() {
                 }
               };
             });
+            $compileProvider.directive('tscope' + uppercase(name), function(log) {
+              return {
+                scope: true,
+                restrict: 'CA',
+                templateUrl: 'tscope.html',
+                compile: function() {
+                  return function (scope, element) {
+                    log(scope.$id);
+                    expect(element.data('$scope')).toBe(scope);
+                  };
+                }
+              };
+            });
+            $compileProvider.directive('trscope' + uppercase(name), function(log) {
+              return {
+                scope: true,
+                replace: true,
+                restrict: 'CA',
+                templateUrl: 'trscope.html',
+                compile: function() {
+                  return function (scope, element) {
+                    log(scope.$id);
+                    expect(element.data('$scope')).toBe(scope);
+                  };
+                }
+              };
+            });
             $compileProvider.directive('tiscope' + uppercase(name), function(log) {
               return {
                 scope: {},
@@ -1031,6 +1058,33 @@ describe('$compile', function() {
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
+        }));
+
+
+        it('should allow creation of new scopes for directives with templates', inject(
+            function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'tscope.html').respond('<a log>{{name}}; scopeId: {{$id}}</a>');
+          element = $compile('<div><span tscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-002-001; 002');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 002');
+          expect(element.find('span').scope().$id).toBe('002');
+        }));
+
+
+        it('should allow creation of new scopes for replace directives with templates', inject(
+            function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'trscope.html').
+              respond('<p><a log>{{name}}; scopeId: {{$id}}</a></p>');
+          element = $compile('<div><span trscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-002-001; 002');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 002');
+          expect(element.find('a').scope().$id).toBe('002');
         }));
 
 

@@ -852,13 +852,24 @@ function $CompileProvider($provide) {
                 linkRootElement = linkQueue.pop(),
                 cLinkNode = linkQueue.pop(),
                 scope = linkQueue.pop(),
-                node = templateNode;
+                node = templateNode,
+                cLinkNodeJq = jqLite(cLinkNode);
 
             if (cLinkNode !== originalWidgetNode) {
               // it was cloned therefore we have to clone as well.
               node = JQLiteClone(templateNode);
               replaceWith(linkRootElement, jqLite(cLinkNode), node);
             }
+
+            if (replace) {
+              if (cLinkNodeJq.data('$scope')) {
+                // if the original element before replacement had a new scope, the replacement should
+                // get it as well
+                jqLite(node).data('$scope', scope);
+              }
+              dealoc(cLinkNodeJq);
+            }
+
             afterWidgetLinkFn(function() {
               beforeWidgetLinkFn(afterWidgetChildrenLinkFn, scope, node, rootElement, controller);
             }, scope, node, rootElement, controller);
