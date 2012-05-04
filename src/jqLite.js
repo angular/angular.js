@@ -84,7 +84,7 @@ var jqCache = {},
       ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
       : function(element, type, fn) {element.detachEvent('on' + type, fn); });
 
-function jqNextId() { return (jqId++); }
+function jqNextId() { return ++jqId; }
 
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
@@ -187,7 +187,8 @@ function JQLiteDealoc(element){
 
 function JQLiteRemoveData(element) {
   var cacheId = element[jqName],
-  cache = jqCache[cacheId];
+      cache = jqCache[cacheId];
+
   if (cache) {
     if (cache.bind) {
       forEach(cache.bind, function(fn, type){
@@ -206,6 +207,7 @@ function JQLiteRemoveData(element) {
 function JQLiteData(element, key, value) {
   var cacheId = element[jqName],
       cache = jqCache[cacheId || -1];
+
   if (isDefined(value)) {
     if (!cache) {
       element[jqName] = cacheId = jqNextId();
@@ -452,10 +454,16 @@ forEach({
     // in a way that survives minification.
     if (((fn.length == 2 && (fn !== JQLiteHasClass && fn !== JQLiteController)) ? arg1 : arg2) === undefined) {
       if (isObject(arg1)) {
+
         // we are a write, but the object properties are the key/values
         for(i=0; i < this.length; i++) {
-          for (key in arg1) {
-            fn(this[i], key, arg1[key]);
+          if (fn === JQLiteData) {
+            // data() takes the whole object in jQuery
+            fn(this[i], arg1);
+          } else {
+            for (key in arg1) {
+              fn(this[i], key, arg1[key]);
+            }
           }
         }
         // return self for chaining
