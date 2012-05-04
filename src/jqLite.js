@@ -215,7 +215,21 @@ function JQLiteData(element, key, value) {
     }
     cache[key] = value;
   } else {
-    return cache ? cache[key] : null;
+    if (isDefined(key)) {
+      if (isObject(key)) {
+        if (!cacheId) element[jqName] = cacheId = jqNextId();
+        jqCache[cacheId] = cache = (jqCache[cacheId] || {});
+        extend(cache, key);
+      } else {
+        return cache ? cache[key] : undefined;
+      }
+    } else {
+      if (!cacheId) element[jqName] = cacheId = jqNextId();
+
+      return cache
+          ? cache
+          : cache = jqCache[cacheId] = {};
+    }
   }
 }
 
