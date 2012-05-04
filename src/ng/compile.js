@@ -829,7 +829,7 @@ function $CompileProvider($provide) {
       var linkQueue = [],
           afterTemplateNodeLinkFn,
           afterTemplateChildLinkFn,
-          origCompileNode = $compileNode[0],
+          beforeTemplateCompileNode = $compileNode[0],
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
@@ -853,7 +853,7 @@ function $CompileProvider($provide) {
             collectDirectives(compileNode, directives, tempTemplateAttrs);
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
-            compileNode = origCompileNode;
+            compileNode = beforeTemplateCompileNode;
             $compileNode.html(content);
           }
 
@@ -865,14 +865,14 @@ function $CompileProvider($provide) {
           while(linkQueue.length) {
             var controller = linkQueue.pop(),
                 linkRootElement = linkQueue.pop(),
-                origLinkNode = linkQueue.pop(),
+                beforeTemplateLinkNode = linkQueue.pop(),
                 scope = linkQueue.pop(),
                 linkNode = compileNode;
 
-            if (origLinkNode !== origCompileNode) {
+            if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               // it was cloned therefore we have to clone as well.
               linkNode = JQLiteClone(compileNode);
-              replaceWith(linkRootElement, jqLite(origLinkNode), linkNode);
+              replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
             afterTemplateNodeLinkFn(function() {
