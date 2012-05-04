@@ -52,7 +52,7 @@ afterEach(function() {
     });
   });
   if (count) {
-    throw new Error('Found jqCache references that were not deallocated!');
+    throw new Error('Found jqCache references that were not deallocated! count: ' + count);
   }
 });
 
