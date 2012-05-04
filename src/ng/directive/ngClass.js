@@ -36,30 +36,35 @@ function classDirective(name, selector) {
  *   names, an array, or a map of class names to boolean values.
  *
  * @example
-   <doc:example>
-     <doc:source>
-      <input type="button" value="set" ng-click="myVar='ng-invalid'">
+   <example>
+     <file name="index.html">
+      <input type="button" value="set" ng-click="myVar='my-class'">
       <input type="button" value="clear" ng-click="myVar=''">
       <br>
-      <span ng-class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
-     </doc:source>
-     <doc:scenario>
+      <span ng-class="myVar">Sample Text</span>
+     </file>
+     <file name="style.css">
+       .my-class {
+         color: red;
+       }
+     </file>
+     <file name="scenario.js">
        it('should check ng-class', function() {
          expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/ng-invalid/);
+           toMatch(/my-class/);
 
          using('.doc-example-live').element(':button:first').click();
 
          expect(element('.doc-example-live span').prop('className')).
-           toMatch(/ng-invalid/);
+           toMatch(/my-class/);
 
          using('.doc-example-live').element(':button:last').click();
 
          expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/ng-invalid/);
+           toMatch(/my-class/);
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngClassDirective = classDirective('', true);
 
@@ -80,26 +85,33 @@ var ngClassDirective = classDirective('', true);
  *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
         <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng-repeat="name in names">
-           <span ng-class-odd="'ng-format-negative'"
-                 ng-class-even="'ng-invalid'">
-             {{name}} &nbsp; &nbsp; &nbsp;
+           <span ng-class-odd="'odd'" ng-class-even="'even'">
+             {{name}}
            </span>
           </li>
         </ol>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="style.css">
+       .odd {
+         color: red;
+       }
+       .even {
+         color: blue;
+       }
+     </file>
+     <file name="scenario.js">
        it('should check ng-class-odd and ng-class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
-           toMatch(/ng-format-negative/);
+           toMatch(/odd/);
          expect(element('.doc-example-live li:last span').prop('className')).
-           toMatch(/ng-invalid/);
+           toMatch(/even/);
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngClassOddDirective = classDirective('Odd', 0);
 
@@ -120,8 +132,8 @@ var ngClassOddDirective = classDirective('Odd', 0);
  *   result of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
-   <doc:example>
-     <doc:source>
+   <example>
+     <file name="index.html">
         <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng-repeat="name in names">
            <span ng-class-odd="'odd'" ng-class-even="'even'">
@@ -129,15 +141,23 @@ var ngClassOddDirective = classDirective('Odd', 0);
            </span>
           </li>
         </ol>
-     </doc:source>
-     <doc:scenario>
+     </file>
+     <file name="style.css">
+       .odd {
+         color: red;
+       }
+       .even {
+         color: blue;
+       }
+     </file>
+     <file name="scenario.js">
        it('should check ng-class-odd and ng-class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/odd/);
          expect(element('.doc-example-live li:last span').prop('className')).
            toMatch(/even/);
        });
-     </doc:scenario>
-   </doc:example>
+     </file>
+   </example>
  */
 var ngClassEvenDirective = classDirective('Even', 1);

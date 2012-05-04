@@ -1,2 +1,2 @@
 
-})(window.angular);
+})(window, window.angular);

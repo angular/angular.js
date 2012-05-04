@@ -14,51 +14,8 @@
  *
  * @scope
  * @example
-    <doc:example module="ngView">
-      <doc:source>
-        <script type="text/ng-template" id="examples/book.html">
-          controller: {{name}}<br />
-          Book Id: {{params.bookId}}<br />
-        </script>
-
-        <script type="text/ng-template" id="examples/chapter.html">
-          controller: {{name}}<br />
-          Book Id: {{params.bookId}}<br />
-          Chapter Id: {{params.chapterId}}
-        </script>
-
-        <script>
-          angular.module('ngView', [], function($routeProvider, $locationProvider) {
-            $routeProvider.when('/Book/:bookId', {
-              template: 'examples/book.html',
-              controller: BookCntl
-            });
-            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-              template: 'examples/chapter.html',
-              controller: ChapterCntl
-            });
-
-            // configure html5 to get links working on jsfiddle
-            $locationProvider.html5Mode(true);
-          });
-
-          function MainCntl($scope, $route, $routeParams, $location) {
-            $scope.$route = $route;
-            $scope.$location = $location;
-            $scope.$routeParams = $routeParams;
-          }
-
-          function BookCntl($scope, $routeParams) {
-            $scope.name = "BookCntl";
-            $scope.params = $routeParams;
-          }
-
-          function ChapterCntl($scope, $routeParams) {
-            $scope.name = "ChapterCntl";
-            $scope.params = $routeParams;
-          }
-        </script>
-
+    <example module="ngView">
+      <file name="index.html">
         <div ng-controller="MainCntl">
           Choose:
           <a href="Book/Moby">Moby</a> |
@@ -76,8 +33,52 @@
           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
           <pre>$routeParams = {{$routeParams}}</pre>
         </div>
-      </doc:source>
-      <doc:scenario>
+      </file>
+
+      <file name="book.html">
+        controller: {{name}}<br />
+        Book Id: {{params.bookId}}<br />
+      </file>
+
+      <file name="chapter.html">
+        controller: {{name}}<br />
+        Book Id: {{params.bookId}}<br />
+        Chapter Id: {{params.chapterId}}
+      </file>
+
+      <file name="script.js">
+        angular.module('ngView', [], function($routeProvider, $locationProvider) {
+          $routeProvider.when('/Book/:bookId', {
+            template: 'book.html',
+            controller: BookCntl
+          });
+          $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+            template: 'chapter.html',
+            controller: ChapterCntl
+          });
+
+          // configure html5 to get links working on jsfiddle
+          $locationProvider.html5Mode(true);
+        });
+
+        function MainCntl($scope, $route, $routeParams, $location) {
+          $scope.$route = $route;
+          $scope.$location = $location;
+          $scope.$routeParams = $routeParams;
+        }
+
+        function BookCntl($scope, $routeParams) {
+          $scope.name = "BookCntl";
+          $scope.params = $routeParams;
+        }
+
+        function ChapterCntl($scope, $routeParams) {
+          $scope.name = "ChapterCntl";
+          $scope.params = $routeParams;
+        }
+      </file>
+
+      <file name="scenario.js">
         it('should load and compile correct template', function() {
           element('a:contains("Moby: Ch1")').click();
           var content = element('.doc-example-live [ng-view]').text();
@@ -90,8 +91,8 @@
           expect(content).toMatch(/controller\: BookCntl/);
           expect(content).toMatch(/Book Id\: Scarlet/);
         });
-      </doc:scenario>
-    </doc:example>
+      </file>
+    </example>
  */
 
 

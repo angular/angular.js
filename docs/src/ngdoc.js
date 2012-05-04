@@ -5,7 +5,9 @@
 var Showdown = require('../../lib/showdown').Showdown;
 var DOM = require('./dom.js').DOM;
 var htmlEscape = require('./dom.js').htmlEscape;
+var Example = require('./example.js').Example;
 var NEW_LINE = /\n\r?/;
+var globalID = 0;
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -98,72 +100,85 @@ Doc.prototype = {
     if (!text) return text;
 
     var self = this,
-        IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
-        IS_ANGULAR = /^(api\/)?angular\./,
-        IS_HASH = /^#/,
-        parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
+      IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
+      IS_ANGULAR = /^(api\/)?angular\./,
+      IS_HASH = /^#/,
+      parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
+      seq = 0,
+      placeholderMap = {};
+
+    function placeholder(text) {
+      var id = 'REPLACEME' + (seq++);
+      placeholderMap[id] = text;
+      return id;
+    }
 
     parts.forEach(function(text, i) {
+      parts[i] = (text || '').
+        replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?>([\s\S]*?)<\/example>/gmi, function(_, module, deps, content) {
+          var example = new Example(self.scenarios);
 
-      function isDocWidget(name) {
-        if ((i + 1) % 3 != 2) return false;
-        if (name) return parts[i+1] == name;
-        return !!parts[i+1];
-      }
+          example.setModule(module);
+          example.addDeps(deps);
+          content.replace(/<file\s+name="([^"]*)"\s*>([\s\S]*?)<\/file>/gmi, function(_, name, content) {
+            example.addSource(name, content);
+          });
+          return placeholder(example.toHtml());
+        }).
+        replace(/^<doc:example(\s+[^>]*)?>([\s\S]*)<\/doc:example>/mi, function(_, attrs, content) {
+          var html, script, scenario,
+            example = new Example(self.scenarios);
 
-      // ignore each third item which is doc widget tag
-      if (!((i + 1) % 3)) {
-        parts[i] = '';
-        return;
-      }
+          example.setModule((attrs||'module=""').match(/^\s*module=["'](.*)["']\s*$/)[1]);
+          content.
+            replace(/<doc:source(\s+[^>]*)?>([\s\S]*)<\/doc:source>/mi, function(_, attrs, content) {
+              example.addSource('index.html', content.
+                replace(/<script>([\s\S]*)<\/script>/mi, function(_, script) {
+                  example.addSource('script.js', script);
+                  return '';
+                }).
+                replace(/<style>([\s\S]*)<\/style>/mi, function(_, style) {
+                  example.addSource('style.css', style);
+                  return '';
+                })
+              );
+            }).
+            replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi, function(_, before, content){
+              example.addSource('scenario.js', content);
+            });
 
-      if (text.match(/^<pre>/)) {
-        text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
-          var clazz = 'brush: js;';
-          if (content.match(/\<\w/)) {
-            // we are HTML
-            clazz += ' html-script: true;';
-          }
-          return '<div ng:non-bindable><pre class="' + clazz +'">' +
-                  content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
-                 '</pre></div>';
+          return placeholder(example.toHtml());
+        }).
+        replace(/^<pre>([\s\S]*?)<\/pre>/mi, function(_, content){
+          return placeholder(
+            '<pre class="prettyprint linenums">' +
+              content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+              '</pre>');
+        }).
+        replace(/<div([^>]*)><\/div>/, '<div$1>\n<\/div>').
+        replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g, function(_all, url, title){
+          var isFullUrl = url.match(IS_URL),
+            isAngular = url.match(IS_ANGULAR),
+            isHash = url.match(IS_HASH),
+            absUrl = isHash
+              ? url
+              : (isFullUrl ? url : self.convertUrlToAbsolute(url));
+
+          if (!isFullUrl) self.links.push(absUrl);
+
+          return '<a href="' + absUrl + '">' +
+            (isAngular ? '<code>' : '') +
+            (title || url).replace(/^#/g, '').replace(/\n/g, ' ') +
+            (isAngular ? '</code>' : '') +
+            '</a>';
         });
-      } else if (isDocWidget('example')) {
-        text = text.replace(/<doc:source(\s+[^>]*)?>([\s\S]*)<\/doc:source>/mi,
-          function(_, attrs, content){
-            return '<pre class="doc-source"' + (attrs || '') +'>' +
-                      htmlEscape(content) +
-                   '</pre>';
-          });
-        text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
-          function(_, before, content){
-            self.scenarios.push(content);
-            return '<pre class="doc-scenario">' + htmlEscape(content) + '</pre>';
-          });
-      } else if (!isDocWidget()) {
-        text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-        text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
-          function(_all, url, title){
-            var isFullUrl = url.match(IS_URL),
-                isAngular = url.match(IS_ANGULAR),
-                isHash = url.match(IS_HASH),
-                absUrl = isHash
-                  ? url
-                  : (isFullUrl ? url : self.convertUrlToAbsolute(url));
-
-            if (!isFullUrl) self.links.push(absUrl);
-
-            return '<a href="' + absUrl + '">' +
-              (isAngular ? '<code>' : '') +
-              (title || url).replace(/^#/g, '').replace(/\n/g, ' ') +
-              (isAngular ? '</code>' : '') +
-              '</a>';
-          });
-        text = new Showdown.converter().makeHtml(text);
-      }
-      parts[i] = text;
     });
-    return parts.join('');
+    text = parts.join('');
+    text = new Showdown.converter().makeHtml(text);
+    text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
+      return placeholderMap[id];
+    });
+    return text;
   },
 
   parse: function() {
@@ -200,7 +215,7 @@ Doc.prototype = {
         var text = trim(atText.join('\n')), match;
         if (atName == 'param') {
           match = text.match(/^\{([^}=]+)(=)?\}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
-                                //  1      12 2     34       4   5   5 6      6  3   7  7
+          //  1      12 2     34       4   5   5 6      6  3   7  7
           if (!match) {
             throw new Error("Not a valid 'param' format: " + text);
           }
@@ -233,11 +248,11 @@ Doc.prototype = {
             throw new Error("Not a valid 'property' format: " + text);
           }
           var property = new Doc({
-              type: match[1],
-              name: match[2],
-              shortName: match[2],
-              description: self.markdown(text.replace(match[0], match[4]))
-            });
+            type: match[1],
+            name: match[2],
+            shortName: match[2],
+            description: self.markdown(text.replace(match[0], match[4]))
+          });
           self.properties.push(property);
         } else if(atName == 'eventType') {
           match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
@@ -252,9 +267,9 @@ Doc.prototype = {
 
   html: function() {
     var dom = new DOM(),
-        self = this;
+      self = this;
 
-    dom.h(this.name, function() {
+    dom.h(title(this.name), function() {
       notice('deprecated', 'Deprecated API', self.deprecated);
 
       if (self.ngdoc != 'overview') {
@@ -336,9 +351,11 @@ Doc.prototype = {
 
   html_usage_function: function(dom){
     var self = this;
+    var name = self.name.match(/^angular(\.mock)?\.(\w+)$/) ? self.name : self.name.split(/\./).pop()
+
     dom.h('Usage', function() {
       dom.code(function() {
-        dom.text(self.name.split(/\./).pop());
+        dom.text(name);
         dom.text('(');
         self.parameters(dom, ', ');
         dom.text(');');
@@ -549,12 +566,12 @@ Doc.prototype = {
       dom.div({class:'member property'}, function(){
         dom.h('Properties', self.properties, function(property){
           dom.h(property.shortName, function() {
-           dom.html(property.description);
-           if (!property.html_usage_returns) {
-             console.log(property);
-           }
-           property.html_usage_returns(dom);
-           dom.h('Example', property.example, dom.html);
+            dom.html(property.description);
+            if (!property.html_usage_returns) {
+              console.log(property);
+            }
+            property.html_usage_returns(dom);
+            dom.h('Example', property.example, dom.html);
           });
         });
       });
@@ -605,6 +622,74 @@ Doc.prototype = {
 
 
 //////////////////////////////////////////////////////////
+var GLOBALS = /^angular\.([^\.]*)$/,
+  MODULE = /^angular\.module\.([^\.]*)$/,
+  MODULE_MOCK = /^angular\.mock\.([^\.]*)$/,
+  MODULE_DIRECTIVE = /^angular\.module\.([^\.]*)(?:\.\$compileProvider)?\.directive\.([^\.]*)$/,
+  MODULE_DIRECTIVE_INPUT = /^angular\.module\.([^\.]*)\.\$compileProvider\.directive\.input\.([^\.]*)$/,
+  MODULE_FILTER = /^angular\.module\.([^\.]*)\.\$?filter\.([^\.]*)$/,
+  MODULE_SERVICE = /^angular\.module\.([^\.]*)\.([^\.]*?)(Provider)?$/,
+  MODULE_TYPE = /^angular\.module\.([^\.]*)\..*\.([A-Z][^\.]*)$/;
+
+function title(text) {
+  if (!text) return text;
+  var match,
+    module,
+    type,
+    name;
+
+  if (text == 'angular.Module') {
+    module = 'ng';
+    name = 'Module';
+    type = 'Type';
+  } else if (match = text.match(GLOBALS)) {
+    module = 'ng';
+    name = 'angular.' + match[1];
+    type = 'API';
+  } else if (match = text.match(MODULE)) {
+    module = match[1];
+  } else if (match = text.match(MODULE_MOCK)) {
+    module = 'ng';
+    name = 'angular.mock.' + match[1];
+    type = 'API';
+  } else if (match = text.match(MODULE_DIRECTIVE)) {
+    module = match[1];
+    name = match[2];
+    type = 'directive';
+  } else if (match = text.match(MODULE_DIRECTIVE_INPUT)) {
+    module = match[1];
+    name = 'input [' + match[2] + ']';
+    type = 'directive';
+  } else if (match = text.match(MODULE_FILTER)) {
+    module = match[1];
+    name = match[2];
+    type = 'filter';
+  } else if (match = text.match(MODULE_SERVICE)) {
+    module = match[1];
+    name = match[2] + (match[3] || '');
+    type = 'service';
+  } else if (match = text.match(MODULE_TYPE)) {
+    module = match[1];
+    name = match[2];
+    type = 'type';
+  } else {
+    return text;
+  }
+  return function() {
+    this.tag('code', name);
+    this.tag('span', { class: 'hint'}, function() {
+      if (type) {
+        this.text('(');
+        this.text(type);
+        this.text(' in module ');
+        this.tag('code', module);
+        this.text(')');
+      }
+    });
+  };
+}
+
+
 function scenarios(docs){
   var specs = [];
 
@@ -629,7 +714,7 @@ function scenarios(docs){
       specs.push('    });');
       specs.push('  ');
       doc.scenarios.forEach(function(scenario){
-        specs.push(indent(trim(scenario), 4));
+        specs.push(indentCode(trim(scenario), 4));
         specs.push('');
       });
       specs.push('});');
@@ -647,13 +732,16 @@ function metadata(docs){
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
-    var depth = path.length - 1;
     var shortName = path.pop();
+
+    if (path.pop() == 'input') {
+      shortName = 'input [' + shortName + ']';
+    }
+
     words.push({
       section: doc.section,
       id: doc.id,
-      name: doc.name,
-      depth: depth,
+      name: title(doc.name),
       shortName: shortName,
       type: doc.ngdoc,
       keywords:doc.keywords()
@@ -669,12 +757,8 @@ var KEYWORD_PRIORITY = {
   '.angular': 7,
   '.angular.Module': 7,
   '.angular.module': 8,
-  '.angular.module.ng.$filter': 7,
-  '.angular.module.ng.$rootScope.Scope': 7,
-  '.angular.module.ng': 7,
-  '.angular.mock': 8,
-  '.angular.directive': 6,
-  '.angular.module.ngMock': 8,
+  '.angular.module.ng': 2,
+  '.angular.module.AUTO': 1,
   '.dev_guide.overview': 1,
   '.dev_guide.bootstrap': 2,
   '.dev_guide.bootstrap.auto_bootstrap': 1,
@@ -718,7 +802,7 @@ function trim(text) {
   var minIndent = MAX_INDENT;
   var indentRegExp;
   var ignoreLine = (lines[0][0] != ' '  && lines.length > 1);
-                  // ignore first line if it has no indentation and there is more than one line
+  // ignore first line if it has no indentation and there is more than one line
 
   lines.forEach(function(line){
     if (ignoreLine) {
@@ -750,10 +834,10 @@ function trim(text) {
   return lines.join('\n');
 }
 
-function indent(text, spaceCount) {
+function indentCode(text, spaceCount) {
   var lines = text.split('\n'),
-      indent = '',
-      fixedLines = [];
+    indent = '',
+    fixedLines = [];
 
   while(spaceCount--) indent += ' ';
 
@@ -802,7 +886,7 @@ function merge(docs){
     var parent = byFullId['api/' + parentName];
     if (!parent)
       throw new Error("No parent named '" + parentName + "' for '" +
-          doc.name + "' in @" + name + "Of.");
+        doc.name + "' in @" + name + "Of.");
 
     var listName = (name + 's').replace(/ys$/, 'ies');
     var list = parent[listName] = (parent[listName] || []);

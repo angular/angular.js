@@ -2,14 +2,14 @@
 @name Tutorial: 8 - More Templating
 @description
 
-<ul doc:tutorial-nav="8"></ul>
+<ul doc-tutorial-nav="8"></ul>
 
 
 In this step, you will implement the phone details view, which is displayed when a user clicks on a
 phone in the phone list.
 
 
-<doc:tutorial-instructions step="8"></doc:tutorial-instructions>
+<div doc-tutorial-reset="8"></div>
 
 
 Now when you click on a phone on the list, the phone details page with phone-specific information
@@ -113,7 +113,7 @@ __`app/partials/phone-details.html`:__
 
 <div style="display: none">
 TODO!
-<img src="img/tutorial/tutorial_08-09_final.png">
+<img  class="diagram" src="img/tutorial/tutorial_08-09_final.png">
 </div>
 
 ## Test
@@ -194,4 +194,4 @@ Now that the phone details view is in place, proceed to {@link step_09 step 9} t
 write your own custom display filter.
 
 
-<ul doc:tutorial-nav="8"></ul>
+<ul doc-tutorial-nav="8"></ul>

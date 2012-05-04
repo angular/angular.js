@@ -2,7 +2,7 @@
 @name Tutorial: 1 - Static Template
 @description
 
-<ul doc:tutorial-nav="1"></ul>
+<ul doc-tutorial-nav="1"></ul>
 
 
 In order to illustrate how angular enhances standard HTML, you will create a purely *static* HTML
@@ -12,7 +12,7 @@ dynamically display the same result with any set of data.
 In this step you will add some basic information about two cell phones to an HTML page.
 
 
-<doc:tutorial-instructions step="1" show="true"></doc:tutorial-instructions>
+<div doc-tutorial-reset="1"></div>
 
 
 The page now contains a list with information about two phones.
@@ -22,7 +22,6 @@ https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
 
 __`app/index.html`:__
 <pre>
-...
   <ul>
     <li>
       <span>Nexus S</span>
@@ -37,7 +36,6 @@ __`app/index.html`:__
       </p>
     </li>
   </ul>
-...
 </pre>
 
 
@@ -54,4 +52,4 @@ This addition to your app uses static HTML to display the list. Now, let's go to
 step 2} to learn how to use AngularJS to dynamically generate the same list.
 
 
-<ul doc:tutorial-nav="1"></ul>
+<ul doc-tutorial-nav="1"></ul>

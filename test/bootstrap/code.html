@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="../../src/angular-bootstrap.js"></script>
+    <script type="text/javascript">
+      $script('src/bootstrap/google-prettify/prettify', 'prettify');
+      $script.ready('angular', function() {
+        $script(['src/bootstrap/bootstrap-prettify', 'src/bootstrap/bootstrap'], 'myCode');
+        angular.module('myApp', []).run(function($rootScope){ $rootScope.text = 'WORKS!' });
+      });
+      $script.ready(['myCode', 'prettify'], function() {
+        angular.bootstrap(document, ['bootstrapPrettify', 'bootstrap']);
+      });
+    </script>
+    <link rel="stylesheet" href="../../src/bootstrap/google-prettify/prettify.css" type="text/css">
+    <link rel="stylesheet" href="../../src/bootstrap/css/bootstrap.css" type="text/css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <h1>AngularJS is {{'working'}}</h1>
+
+          <h2>Directive: <code>prettify</code></h2>
+          <pre class="prettyprint linenums">
+            &lt;p&gt;Sample text here...&lt;/p&gt;
+          </pre>
+
+
+          <h2>Directive: <code>ng-set-text</code></h2>
+          <pre class="prettyprint linenums" ng-set-text="hello.html"></pre>
+          <script type="text/html" id="hello.html">
+            <h1>Hello World!</h1>
+          </script>
+
+          <h2>Directive: <code>ng-html-wrap</code></h2>
+          <pre class="prettyprint linenums" ng-set-text="hello.html" ng-html-wrap="angular.js angular-resource.js myApp abc.js abc.css"></pre>
+
+          <h2>Directive <code>ng-embed-app</code></h2>
+          <div ng-embed-app="myApp">{{text}}</div>
+
+          <h1>Bootstrap</h1>
+
+          <h2>Directive <code>drop-down-toggle</code></h2>
+          <div class="btn btn-primary dropdown">
+            <a href="#ABC" class="dropdown-toggle">
+              Account
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li>One</li>
+              <li>Two</li>
+            </ul>
+          </div>
+
+          <h2 ng-init="state = 'tab-2' ">Directive <code>tabbable</code></h2>
+          state = {{state}}
+
+          <div class="tabbable" ng-model="state">
+            <div class="tab-pane" ng-repeat="id in [1,2,3]" title="Tab {{id}}" value='tab-{{id}}'>
+              Tab content {{id}}!
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="tabbable" ng-model="state">
+            <div class="tab-pane" ng-repeat="id in [1,2,3]" title="Tab {{id}}" value='tab-{{id}}'>
+              Tab content {{id}}!
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="tabbable">
+            <div class="tab-pane" ng-repeat="id in [1,2,3]" title="Tab {{id}}" value='tab-{{id}}'>
+              Tab content {{id}}!
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+  </body>
+</html>

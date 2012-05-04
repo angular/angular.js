@@ -117,78 +117,85 @@ function $RouteProvider(){
        Note that this example is using {@link angular.module.ng.$compileProvider.directive.script inlined templates}
        to get it working on jsfiddle as well.
 
-      <doc:example module="route">
-        <doc:source>
-          <script type="text/ng-template" id="examples/book.html">
-            controller: {{name}}<br />
-            Book Id: {{params.bookId}}<br />
-          </script>
+     <example module="ngView">
+       <file name="index.html">
+         <div ng-controller="MainCntl">
+           Choose:
+           <a href="Book/Moby">Moby</a> |
+           <a href="Book/Moby/ch/1">Moby: Ch1</a> |
+           <a href="Book/Gatsby">Gatsby</a> |
+           <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
+           <a href="Book/Scarlet">Scarlet Letter</a><br/>
 
-          <script type="text/ng-template" id="examples/chapter.html">
-            controller: {{name}}<br />
-            Book Id: {{params.bookId}}<br />
-            Chapter Id: {{params.chapterId}}
-          </script>
+           <div ng-view></div>
+           <hr />
 
-          <script>
-            angular.module('route', [], function($routeProvider, $locationProvider) {
-              $routeProvider.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
-              $routeProvider.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
+           <pre>$location.path() = {{$location.path()}}</pre>
+           <pre>$route.current.template = {{$route.current.template}}</pre>
+           <pre>$route.current.params = {{$route.current.params}}</pre>
+           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+           <pre>$routeParams = {{$routeParams}}</pre>
+         </div>
+       </file>
 
-              // configure html5 to get links working on jsfiddle
-              $locationProvider.html5Mode(true);
-            });
+       <file name="book.html">
+         controller: {{name}}<br />
+         Book Id: {{params.bookId}}<br />
+       </file>
 
-            function MainCntl($scope, $route, $routeParams, $location) {
-              $scope.$route = $route;
-              $scope.$location = $location;
-              $scope.$routeParams = $routeParams;
-            }
+       <file name="chapter.html">
+         controller: {{name}}<br />
+         Book Id: {{params.bookId}}<br />
+         Chapter Id: {{params.chapterId}}
+       </file>
 
-            function BookCntl($scope, $routeParams) {
-              $scope.name = "BookCntl";
-              $scope.params = $routeParams;
-            }
+       <file name="script.js">
+         angular.module('ngView', [], function($routeProvider, $locationProvider) {
+           $routeProvider.when('/Book/:bookId', {
+             template: 'book.html',
+             controller: BookCntl
+           });
+           $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+             template: 'chapter.html',
+             controller: ChapterCntl
+           });
 
-            function ChapterCntl($scope, $routeParams) {
-              $scope.name = "ChapterCntl";
-              $scope.params = $routeParams;
-            }
-          </script>
+           // configure html5 to get links working on jsfiddle
+           $locationProvider.html5Mode(true);
+         });
 
-          <div ng-controller="MainCntl">
-            Choose:
-            <a href="Book/Moby">Moby</a> |
-            <a href="Book/Moby/ch/1">Moby: Ch1</a> |
-            <a href="Book/Gatsby">Gatsby</a> |
-            <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
-            <a href="Book/Scarlet">Scarlet Letter</a><br/>
+         function MainCntl($scope, $route, $routeParams, $location) {
+           $scope.$route = $route;
+           $scope.$location = $location;
+           $scope.$routeParams = $routeParams;
+         }
 
-            <div ng-view></div>
-            <hr />
+         function BookCntl($scope, $routeParams) {
+           $scope.name = "BookCntl";
+           $scope.params = $routeParams;
+         }
 
-            <pre>$location.path() = {{$location.path()}}</pre>
-            <pre>$route.current.template = {{$route.current.template}}</pre>
-            <pre>$route.current.params = {{$route.current.params}}</pre>
-            <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
-            <pre>$routeParams = {{$routeParams}}</pre>
-          </div>
-        </doc:source>
-        <doc:scenario>
-          it('should load and compile correct template', function() {
-            element('a:contains("Moby: Ch1")').click();
-            var content = element('.doc-example-live [ng-view]').text();
-            expect(content).toMatch(/controller\: ChapterCntl/);
-            expect(content).toMatch(/Book Id\: Moby/);
-            expect(content).toMatch(/Chapter Id\: 1/);
+         function ChapterCntl($scope, $routeParams) {
+           $scope.name = "ChapterCntl";
+           $scope.params = $routeParams;
+         }
+       </file>
 
-            element('a:contains("Scarlet")').click();
-            content = element('.doc-example-live [ng-view]').text();
-            expect(content).toMatch(/controller\: BookCntl/);
-            expect(content).toMatch(/Book Id\: Scarlet/);
-          });
-        </doc:scenario>
-      </doc:example>
+       <file name="scenario.js">
+         it('should load and compile correct template', function() {
+           element('a:contains("Moby: Ch1")').click();
+           var content = element('.doc-example-live [ng-view]').text();
+           expect(content).toMatch(/controller\: ChapterCntl/);
+           expect(content).toMatch(/Book Id\: Moby/);
+           expect(content).toMatch(/Chapter Id\: 1/);
+
+           element('a:contains("Scarlet")').click();
+           content = element('.doc-example-live [ng-view]').text();
+           expect(content).toMatch(/controller\: BookCntl/);
+           expect(content).toMatch(/Book Id\: Scarlet/);
+         });
+       </file>
+     </example>
      */
 
     /**
@@ -238,7 +245,7 @@ function $RouteProvider(){
            * @methodOf angular.module.ng.$route
            *
            * @description
-           * Causes `$route` service to reload the current route even if
+           * Causes `$route` service to reload theR current route even if
            * {@link angular.module.ng.$location $location} hasn't changed.
            *
            * As a result of that, {@link angular.module.ng.$compileProvider.directive.ngView ngView}

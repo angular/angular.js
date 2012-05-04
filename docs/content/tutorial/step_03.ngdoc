@@ -2,7 +2,7 @@
 @name Tutorial: 3 - Filtering Repeaters
 @description
 
-<ul doc:tutorial-nav="3"></ul>
+<ul doc-tutorial-nav="3"></ul>
 
 
 We did a lot of work in laying a foundation for the app in the last step, so now we'll do something
@@ -11,7 +11,7 @@ test, because a good end-to-end test is a good friend. It stays with your app, k
 and quickly detects regressions.
 
 
-<doc:tutorial-instructions step="3"></doc:tutorial-instructions>
+<div doc-tutorial-reset="3"></div>
 
 
 The app now has a search box. Notice that the phone list on the page changes depending on what a
@@ -31,7 +31,6 @@ We made no changes to the controller.
 
 __`app/index.html`:__
 <pre>
-...
   <div class="container-fluid">
     <div class="row-fluid">
       <div class="span2">
@@ -53,7 +52,6 @@ __`app/index.html`:__
       </div>
     </div>
   </div>
-...
 </pre>
 
 We added a standard HTML `<input>` tag and used angular's
@@ -71,7 +69,7 @@ available as a filter input in the list repeater (`phone in phones | filter:`__`
 changes to the data model cause the repeater's input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.
 
-      <img src="img/tutorial/tutorial_03.png">
+      <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
 * Use of `filter` filter. The {@link api/angular.module.ng.$filter.filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
@@ -192,5 +190,5 @@ We have now added full text search and included a test to verify that search wor
 to {@link step_04 step 4} to learn how to add sorting capability to the phone app.
 
 
-<ul doc:tutorial-nav="3"></ul>
+<ul doc-tutorial-nav="3"></ul>
 

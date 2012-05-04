@@ -2,7 +2,7 @@
 @name Tutorial: 2 - Angular Templates
 @description
 
-<ul doc:tutorial-nav="2"></ul>
+<ul doc-tutorial-nav="2"></ul>
 
 
 Now it's time to make the web page dynamic — with AngularJS. We'll also add a test that verifies the
@@ -14,7 +14,7 @@ design pattern} to decouple the code and to separate concerns. With that in mind
 little Angular and JavaScript to add model, view, and controller components to our app.
 
 
-<doc:tutorial-instructions step="2"></doc:tutorial-instructions>
+<div doc-tutorial-reset="2"></div>
 
 
 The app now contains a list with three phones.
@@ -64,7 +64,7 @@ tag as the template.
 bindings. As opposed to evaluating constants, these expression are refering to our application
 model, which was set up in our `PhoneListCtrl` controller.
 
-      <img src="img/tutorial/tutorial_02.png">
+      <img class="diagram" src="img/tutorial/tutorial_02.png">
 
 
 ## Model and Controller
@@ -209,4 +209,4 @@ are testing as you go. Now, let's go to {@link step_03 step 3} to learn how to a
 to the app.
 
 
-<ul doc:tutorial-nav="2"></ul>
+<ul doc-tutorial-nav="2"></ul>

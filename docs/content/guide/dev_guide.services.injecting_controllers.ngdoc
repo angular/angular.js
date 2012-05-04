@@ -30,7 +30,7 @@ myController.$inject = ['$location', '$log'];
 
 <doc:example module="MyServiceModule">
 <doc:source>
-<script type="text/javascript">
+<script>
 angular.
  module('MyServiceModule', []).
  factory('notify', ['$window', function(win) {
@@ -74,7 +74,7 @@ Let's rewrite the above example to show the use of this implicit dependency inje
 
 <doc:example module="MyServiceModuleDI">
 <doc:source>
-<script type="text/javascript">
+<script>
 angular.
  module('MyServiceModuleDI', []).
  factory('notify', function($window) {

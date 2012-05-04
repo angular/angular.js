@@ -75,7 +75,7 @@
           <ul>
             <li ng-repeat="color in colors">
               Name: <input ng-model="color.name">
-              [<a href ng-click="colors.$remove(color)">X</a>]
+              [<a href ng-click="colors.splice($index, 1)">X</a>]
             </li>
             <li>
               [<a href ng-click="colors.push({})">add</a>]

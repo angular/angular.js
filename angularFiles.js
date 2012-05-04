@@ -59,7 +59,7 @@ angularFiles = {
     'src/ng/directive/ngView.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js'
+    'src/ng/directive/style.js',
   ],
 
   'angularSrcModules': [
@@ -68,7 +68,9 @@ angularFiles = {
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
-    'src/ngMock/angular-mocks.js'
+    'src/ngMock/angular-mocks.js',
+
+    'src/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
@@ -96,6 +98,7 @@ angularFiles = {
     'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
+    'test/bootstrap/*.js',
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',

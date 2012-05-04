@@ -17,14 +17,32 @@ describe('$controller', function() {
 
     it('should allow registration of controllers', function() {
       var FooCtrl = function($scope) { $scope.foo = 'bar' },
-          scope = {},
-          ctrl;
+        scope = {},
+        ctrl;
 
       $controllerProvider.register('FooCtrl', FooCtrl);
       ctrl = $controller('FooCtrl', {$scope: scope});
 
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+
+    it('should allow registration of map of controllers', function() {
+      var FooCtrl = function($scope) { $scope.foo = 'foo' },
+          BarCtrl = function($scope) { $scope.bar = 'bar' },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register({FooCtrl: FooCtrl, BarCtrl: BarCtrl} );
+
+      ctrl = $controller('FooCtrl', {$scope: scope});
+      expect(scope.foo).toBe('foo');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+
+      ctrl = $controller('BarCtrl', {$scope: scope});
+      expect(scope.bar).toBe('bar');
+      expect(ctrl instanceof BarCtrl).toBe(true);
     });
 
 
