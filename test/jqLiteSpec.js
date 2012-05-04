@@ -222,22 +222,23 @@ describe('jqLite', function() {
     it('should set and get and remove data', function() {
       var selected = jqLite([a, b, c]);
 
-      expect(selected.data('prop', 'value')).toEqual(selected);
-      expect(selected.data('prop')).toEqual('value');
-      expect(jqLite(a).data('prop')).toEqual('value');
-      expect(jqLite(b).data('prop')).toEqual('value');
-      expect(jqLite(c).data('prop')).toEqual('value');
+      expect(selected.data('prop')).toBeUndefined();
+      expect(selected.data('prop', 'value')).toBe(selected);
+      expect(selected.data('prop')).toBe('value');
+      expect(jqLite(a).data('prop')).toBe('value');
+      expect(jqLite(b).data('prop')).toBe('value');
+      expect(jqLite(c).data('prop')).toBe('value');
 
       jqLite(a).data('prop', 'new value');
-      expect(jqLite(a).data('prop')).toEqual('new value');
-      expect(selected.data('prop')).toEqual('new value');
-      expect(jqLite(b).data('prop')).toEqual('value');
-      expect(jqLite(c).data('prop')).toEqual('value');
+      expect(jqLite(a).data('prop')).toBe('new value');
+      expect(selected.data('prop')).toBe('new value');
+      expect(jqLite(b).data('prop')).toBe('value');
+      expect(jqLite(c).data('prop')).toBe('value');
 
-      expect(selected.removeData('prop')).toEqual(selected);
-      expect(jqLite(a).data('prop')).toEqual(undefined);
-      expect(jqLite(b).data('prop')).toEqual(undefined);
-      expect(jqLite(c).data('prop')).toEqual(undefined);
+      expect(selected.removeData('prop')).toBe(selected);
+      expect(jqLite(a).data('prop')).toBeUndefined();
+      expect(jqLite(b).data('prop')).toBeUndefined();
+      expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
     it('should call $destroy function if element removed', function() {
@@ -246,6 +247,49 @@ describe('jqLite', function() {
       element.bind('$destroy', function() {log+= 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
+    });
+
+    it('should retrieve all data if called without params', function() {
+      var element = jqLite(a);
+      expect(element.data()).toEqual({});
+
+      element.data('foo', 'bar');
+      expect(element.data()).toEqual({foo: 'bar'});
+
+      element.data().baz = 'xxx';
+      expect(element.data()).toEqual({foo: 'bar', baz: 'xxx'});
+    });
+
+    it('should create a new data object if called without args', function() {
+      var element = jqLite(a),
+          data = element.data();
+
+      expect(data).toEqual({});
+      element.data('foo', 'bar');
+      expect(data).toEqual({foo: 'bar'});
+    });
+
+    it('should create a new data object if called with a single object arg', function() {
+      var element = jqLite(a),
+          newData = {foo: 'bar'};
+
+      element.data(newData);
+      expect(element.data()).toEqual({foo: 'bar'});
+      expect(element.data()).not.toBe(newData); // create a copy
+    });
+
+    it('should merge existing data object with a new one if called with a single object arg',
+        function() {
+      var element = jqLite(a);
+      element.data('existing', 'val');
+      expect(element.data()).toEqual({existing: 'val'});
+
+      var oldData = element.data(),
+          newData = {meLike: 'turtles', 'youLike': 'carrots'};
+
+      expect(element.data(newData)).toBe(element);
+      expect(element.data()).toEqual({meLike: 'turtles', youLike: 'carrots', existing: 'val'});
+      expect(element.data()).toBe(oldData); // merge into the old object
     });
   });
 
