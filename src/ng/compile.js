@@ -145,7 +145,7 @@ function $CompileProvider($provide) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      HAS_ROOT_ELEMENT = /^\<[\s\S]*\>$/;
+      MULTI_ROOT_TEMPLATE_ERROR = 'Template must have exactly one root element. was: ';
 
 
   this.directive = function registerDirective(name, directiveFactory) {
@@ -587,8 +587,14 @@ function $CompileProvider($provide) {
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
 
-          compileNode = jqLite(directiveValue)[0];
+          $template = jqLite('<div>' + trim(directiveValue) + '</div>').contents();
+          compileNode = $template[0];
+
           if (directive.replace) {
+            if ($template.length != 1 || compileNode.nodeType !== 1) {
+              throw new Error(MULTI_ROOT_TEMPLATE_ERROR + directiveValue);
+            }
+
             replaceWith($rootElement, $compileNode, compileNode);
 
             var newTemplateAttrs = {$attr: {}};
@@ -840,15 +846,17 @@ function $CompileProvider($provide) {
 
       $http.get(origAsyncDirective.templateUrl, {cache: $templateCache}).
         success(function(content) {
-          if (replace && !content.match(HAS_ROOT_ELEMENT)) {
-            throw Error('Template must have exactly one root element: ' + content);
-          }
-
-          var compileNode, tempTemplateAttrs;
+          var compileNode, tempTemplateAttrs, $template;
 
           if (replace) {
+            $template = jqLite('<div>' + trim(content) + '</div>').contents();
+            compileNode = $template[0];
+
+            if ($template.length != 1 || compileNode.nodeType !== 1) {
+              throw new Error(MULTI_ROOT_TEMPLATE_ERROR + content);
+            }
+
             tempTemplateAttrs = {$attr: {}};
-            compileNode = jqLite(content)[0];
             replaceWith($rootElement, $compileNode, compileNode);
             collectDirectives(compileNode, directives, tempTemplateAttrs);
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);

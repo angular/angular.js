@@ -487,10 +487,48 @@ describe('$compile', function() {
           expect(child).toHaveClass('three');
           expect(child).toHaveClass('log'); // merged from replace directive template
         }));
+
+        it("should fail if replacing and template doesn't have a single root element", function() {
+          module(function($compileProvider) {
+            $compileProvider.directive('noRootElem', function() {
+              return {
+                replace: true,
+                template: 'dada'
+              }
+            });
+            $compileProvider.directive('multiRootElem', function() {
+              return {
+                replace: true,
+                template: '<div></div><div></div>'
+              }
+            });
+            $compileProvider.directive('singleRootWithWhiteSpace', function() {
+              return {
+                replace: true,
+                template: '  <div></div> \n'
+              }
+            });
+          });
+
+          inject(function($compile) {
+            expect(function() {
+              $compile('<p no-root-elem></p>');
+            }).toThrow('Template must have exactly one root element. was: dada');
+
+            expect(function() {
+              $compile('<p multi-root-elem></p>');
+            }).toThrow('Template must have exactly one root element. was: <div></div><div></div>');
+
+            // ws is ok
+            expect(function() {
+              $compile('<p single-root-with-white-space></p>');
+            }).not.toThrow();
+          });
+        });
       });
 
 
-      describe('async templates', function() {
+      describe('templateUrl', function() {
 
         beforeEach(module(
           function($compileProvider) {
@@ -916,15 +954,6 @@ describe('$compile', function() {
         });
 
 
-        it('should check that template has root element', inject(function($compile, $httpBackend) {
-          $httpBackend.expect('GET', 'hello.html').respond('before <b>mid</b> after');
-          $compile('<div i-hello></div>');
-          expect(function(){
-            $httpBackend.flush();
-          }).toThrow('Template must have exactly one root element: before <b>mid</b> after');
-        }));
-
-
         it('should allow multiple elements in template', inject(function($compile, $httpBackend) {
           $httpBackend.expect('GET', 'hello.html').respond('before <b>mid</b> after');
           element = jqLite('<div hello></div>');
@@ -958,6 +987,42 @@ describe('$compile', function() {
             expect(element.text()).toEqual('i=1;i=2;');
           }
         ));
+
+
+        it("should fail if replacing and template doesn't have a single root element", function() {
+          module(function($exceptionHandlerProvider, $compileProvider) {
+            $exceptionHandlerProvider.mode('log');
+
+            $compileProvider.directive('template', function() {
+              return {
+                replace: true,
+                templateUrl: 'template.html'
+              }
+            });
+          });
+
+          inject(function($compile, $templateCache, $rootScope, $exceptionHandler) {
+            // no root element
+            $templateCache.put('template.html', 'dada');
+            $compile('<p template></p>');
+            $rootScope.$digest();
+            expect($exceptionHandler.errors.pop().message).
+                toBe('Template must have exactly one root element. was: dada');
+
+            // multi root
+            $templateCache.put('template.html', '<div></div><div></div>');
+            $compile('<p template></p>');
+            $rootScope.$digest();
+            expect($exceptionHandler.errors.pop().message).
+                toBe('Template must have exactly one root element. was: <div></div><div></div>');
+
+            // ws is ok
+            $templateCache.put('template.html', '  <div></div> \n');
+            $compile('<p template></p>');
+            $rootScope.$apply();
+            expect($exceptionHandler.errors).toEqual([]);
+          });
+        });
       });
 
 
