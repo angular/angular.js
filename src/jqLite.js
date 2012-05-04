@@ -75,7 +75,7 @@
  */
 
 var jqCache = {},
-    jqName = 'ng-' + new Date().getTime(),
+    jqName = JQLite.expando = 'ng-' + new Date().getTime(),
     jqId = 1,
     addEventListenerFn = (window.document.addEventListener
       ? function(element, type, fn) {element.addEventListener(type, fn, false);}
