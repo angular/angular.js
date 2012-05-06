@@ -80,7 +80,8 @@ describe('boolean attr directives', function() {
 describe('ngSrc', function() {
 
   it('should interpolate the expression and bind to src', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope)
+    var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+
     $rootScope.$digest();
     expect(element.attr('src')).toEqual('some/');
 
@@ -91,6 +92,27 @@ describe('ngSrc', function() {
 
     dealoc(element);
   }));
+
+  if (msie) {
+    it('should update the element property as well as the attribute', inject(
+        function($compile, $rootScope) {
+      // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+      // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
+      // to set the property as well to achieve the desired effect
+
+      var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+
+      $rootScope.$digest();
+      expect(element.prop('src')).toEqual('some/');
+
+      $rootScope.$apply(function() {
+        $rootScope.id = 1;
+      });
+      expect(element.prop('src')).toEqual('some/1');
+
+      dealoc(element);
+    }));
+  }
 });
 
 
