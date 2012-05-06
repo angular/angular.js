@@ -45,10 +45,10 @@ describe('$sniffer', function() {
     });
 
 
-    it('should return true if "oninput" is present in a div element', function() {
-      mockDivElement = {oninput: noop};
+    it('should return true if "onchange" is present in a div element', function() {
+      mockDivElement = {onchange: noop};
 
-      expect($sniffer.hasEvent('input')).toBe(true);
+      expect($sniffer.hasEvent('change')).toBe(true);
     });
 
 
@@ -62,11 +62,19 @@ describe('$sniffer', function() {
     it('should only create the element once', function() {
       mockDivElement = {};
 
-      $sniffer.hasEvent('input');
-      $sniffer.hasEvent('input');
-      $sniffer.hasEvent('input');
+      $sniffer.hasEvent('change');
+      $sniffer.hasEvent('change');
+      $sniffer.hasEvent('change');
 
       expect(mockDocument.createElement).toHaveBeenCalledOnce();
+    });
+
+
+    it('should claim that IE9 doesn\'t have support for "oninput"', function() {
+      // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
+      mockDivElement = {oninput: noop};
+
+      expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
     });
   });
 });
