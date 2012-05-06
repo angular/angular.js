@@ -379,7 +379,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   };
 
-  // if the browser does support "input" event, we are fine
+  // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
+  // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
     element.bind('input', listener);
   } else {
