@@ -59,7 +59,7 @@ angularFiles = {
     'src/ng/directive/ngView.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js',
+    'src/ng/directive/style.js'
   ],
 
   'angularSrcModules': [

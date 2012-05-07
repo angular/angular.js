@@ -116,7 +116,7 @@ exports.Example.prototype.toHtmlTabs = function() {
 
 exports.Example.prototype.toHtmlEmbed = function() {
   var out = [];
-  out.push('<div class="well  doc-example-live"');
+  out.push('<div class="well doc-example-live"');
   out.push(' ng-embed-app="' + this.module + '"');
   out.push(' ng-set-html="' + this.html[0].id + '"');
   out.push(' ng-eval-javascript="' + ids(this.js) + '">');
