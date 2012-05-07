@@ -123,7 +123,8 @@ function Browser(window, document, $log, $sniffer) {
   // URL API
   //////////////////////////////////////////////////////////////
 
-  var lastBrowserUrl = location.href;
+  var lastBrowserUrl = location.href,
+      baseElement = document.find('base');
 
   /**
    * @ngdoc method
@@ -152,7 +153,11 @@ function Browser(window, document, $log, $sniffer) {
       lastBrowserUrl = url;
       if ($sniffer.history) {
         if (replace) history.replaceState(null, '', url);
-        else history.pushState(null, '', url);
+        else {
+          history.pushState(null, '', url);
+          // Crazy Opera Bug: http://my.opera.com/community/forums/topic.dml?id=1185462
+          baseElement.attr('href', baseElement.attr('href'));
+        }
       } else {
         if (replace) location.replace(url);
         else location.href = url;
@@ -231,7 +236,7 @@ function Browser(window, document, $log, $sniffer) {
    * @returns {string=}
    */
   self.baseHref = function() {
-    var href = document.find('base').attr('href');
+    var href = baseElement.attr('href');
     return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
   };
 
