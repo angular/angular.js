@@ -1,5 +1,49 @@
+<a name="1.0.0rc8"></a>
+# 1.0.0rc8 blooming-touch (2012-05-06)
+
+## Features
+
+- **jqLite:** support data() getter and data(obj) setter
+  ([ee579a07](https://github.com/angular/angular.js/commit/ee579a071a91cbade729d3cb97e097568e71f8fc))
+
+
+## Bug Fixes
+
+- **$compile:**
+  - have $observe return registration function
+    ([7f0eb151](https://github.com/angular/angular.js/commit/7f0eb1516165fcb73f1c9953018b7c9b70acfae1))
+  - ignore ws when checking if template has single root
+    ([9c0418cf](https://github.com/angular/angular.js/commit/9c0418cf1abd609bf0ffbe71fbdfa75905cf8e0f),
+     [#910](https://github.com/angular/angular.js/issues/910))
+  - fix replaceWith
+    ([b431ee38](https://github.com/angular/angular.js/commit/b431ee38509724ba9098a7be7a8d6c5dcded4fe9))
+  - attach scope to the directive element when templateUrl and replace=true
+    ([705f4bbf](https://github.com/angular/angular.js/commit/705f4bbf115d2408e33b25f56edbf1f383aabb82))
+  - prevent duplicate directive controller instantiation
+    ([843f762c](https://github.com/angular/angular.js/commit/843f762c573e38a044f920c5575c6feb46bc7226),
+     [#876](https://github.com/angular/angular.js/issues/876))
+- **$parse:** support methods on falsy primitive types
+  ([499a76a0](https://github.com/angular/angular.js/commit/499a76a08cc7a7604dab5e1dd9cca675b8e29333))
+- **ngModel:** use keydown/change events on IE9 instead of input
+  ([49dfdf8f](https://github.com/angular/angular.js/commit/49dfdf8f0238ef8c473fcb44694f6b5696ecde70),
+   [#879](https://github.com/angular/angular.js/issues/879))
+- **ngSrc,ngHref:** binding should set element prop as well as attr
+  ([b24cc63b](https://github.com/angular/angular.js/commit/b24cc63bcbd45741d21757653f05d54db09e0f20),
+   [#935](https://github.com/angular/angular.js/issues/935))
+- **scenario:** make browser().location() working if ng-app on other than <html>
+  ([5bcb749a](https://github.com/angular/angular.js/commit/5bcb749abb91dba0847cb9bc900777a67fd55aa8))
+- **select:** don't interfere with selection if not databound
+  ([3bd3cc57](https://github.com/angular/angular.js/commit/3bd3cc571dcd721f9d71f971aefee23115a5e458),
+   [#926](https://github.com/angular/angular.js/issues/926))
+
+
+## Docs
+
+- Brand new bootstrap-based skin for api docs: <http://docs.angularjs.org/>
+
+
 <a name="1.0.0rc7"></a>
-# 1.0.0rc7  rc-generation (2012-04-30)
+# 1.0.0rc7 rc-generation (2012-04-30)
 
 ## Features
 
