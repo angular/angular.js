@@ -37,6 +37,89 @@ describe('ngRepeat', function() {
   }));
 
 
+  it('should ngRepeat over array of primitive correctly', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
+      '</ul>')($rootScope);
+
+    Array.prototype.extraProperty = "should be ignored";
+    // INIT
+    $rootScope.items = [true, true, true];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('true;true;true;');
+    delete Array.prototype.extraProperty;
+
+    $rootScope.items = [false, true, true];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('false;true;true;');
+
+    $rootScope.items = [false, true, false];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('false;true;false;');
+
+    $rootScope.items = [true];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(1);
+    expect(element.text()).toEqual('true;');
+
+    $rootScope.items = [true, true, false];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('true;true;false;');
+
+    $rootScope.items = [true, false, false];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('true;false;false;');
+
+    // string
+    $rootScope.items = ['a', 'a', 'a'];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('a;a;a;');
+
+    $rootScope.items = ['ab', 'a', 'a'];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('ab;a;a;');
+
+    $rootScope.items = ['test'];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(1);
+    expect(element.text()).toEqual('test;');
+	
+    $rootScope.items = ['same', 'value'];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('same;value;');
+	
+	// number
+    $rootScope.items = [12, 12, 12];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('12;12;12;');
+
+    $rootScope.items = [53, 12, 27];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('53;12;27;');
+
+    $rootScope.items = [89];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(1);
+    expect(element.text()).toEqual('89;');
+
+    $rootScope.items = [89, 23];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('89;23;');
+  }));
+
+
   it('should ngRepeat over object', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
@@ -45,6 +128,38 @@ describe('ngRepeat', function() {
     $rootScope.items = {misko:'swe', shyam:'set'};
     $rootScope.$digest();
     expect(element.text()).toEqual('misko:swe;shyam:set;');
+  }));
+
+  
+  it('should ngRepeat over object with primitive value correctly', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li>' +
+      '</ul>')($rootScope);
+    $rootScope.items = {misko:'true', shyam:'true', zhenbo: 'true'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
+	
+    $rootScope.items = {misko:'false', shyam:'true', zhenbo: 'true'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
+	
+    $rootScope.items = {misko:'false', shyam:'false', zhenbo: 'false'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('misko:false;shyam:false;zhenbo:false;');
+	
+    $rootScope.items = {misko:'true'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(1);
+    expect(element.text()).toEqual('misko:true;');
+
+    $rootScope.items = {shyam:'true', zhenbo: 'false'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('shyam:true;zhenbo:false;');
   }));
 
 
