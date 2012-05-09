@@ -291,11 +291,37 @@ describe('jqLite', function() {
       expect(element.data()).toEqual({meLike: 'turtles', youLike: 'carrots', existing: 'val'});
       expect(element.data()).toBe(oldData); // merge into the old object
     });
+
+    describe('data cleanup', function() {
+      it('should remove data on element removal', function() {
+        var div = jqLite('<div><span>text</span></div>'),
+            span = div.find('span');
+
+        span.data('name', 'angular');
+        span.remove();
+        expect(span.data('name')).toBeUndefined();
+      });
+
+      it('should remove event listeners on element removal', function() {
+        var div = jqLite('<div><span>text</span></div>'),
+            span = div.find('span'),
+            log = '';
+
+        span.bind('click', function() { log+= 'click;'});
+        browserTrigger(span);
+        expect(log).toEqual('click;');
+
+        span.remove();
+
+        browserTrigger(span);
+        expect(log).toEqual('click;');
+      });
+    });
   });
 
 
   describe('attr', function() {
-    it('shoul read write and remove attr', function() {
+    it('should read write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -667,7 +693,7 @@ describe('jqLite', function() {
       var jWindow = jqLite(window).bind('hashchange', function() {
         log = 'works!';
       });
-      eventFn({});
+      eventFn({type: 'hashchange'});
       expect(log).toEqual('works!');
       dealoc(jWindow);
     });
