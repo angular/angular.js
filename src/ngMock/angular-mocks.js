@@ -1546,6 +1546,12 @@ window.jstestdriver && (function(window) {
 
 window.jasmine && (function(window) {
 
+  afterEach(function() {
+    var spec = getCurrentSpec();
+    spec.$injector = null;
+    spec.$modules = null;
+  });
+
   function getCurrentSpec() {
     return jasmine.getEnv().currentSpec;
   }
