@@ -42,7 +42,6 @@ afterEach(function() {
   var count = 0;
   forEachSorted(jqCache, function(value, key){
     count ++;
-    delete jqCache[key];
     forEach(value, function(value, key){
       if (value.$element) {
         dump('LEAK', key, value.$id, sortedHtml(value.$element));

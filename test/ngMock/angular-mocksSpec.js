@@ -148,6 +148,7 @@ describe('ngMock', function() {
     });
   });
 
+
   describe('$log', function() {
     var $log;
     beforeEach(inject(['$log', function(log) {
@@ -228,6 +229,7 @@ describe('ngMock', function() {
       expect(passed).toBe(true);
     });
   });
+
 
   describe('defer', function() {
     var browser, log;
@@ -340,6 +342,44 @@ describe('ngMock', function() {
       expect(window.dump instanceof Function).toBe(true);
     });
   });
+
+
+  describe('angular.mock.clearDataCache', function() {
+    function keys(obj) {
+      var keys = [];
+      for(var key in obj) {
+        if (obj.hasOwnProperty(key)) keys.push(key);
+      }
+      return keys.sort();
+    }
+
+    it('should remove data', function() {
+      expect(angular.element.cache).toEqual({});
+      var div = angular.element('<div></div>');
+      div.data('name', 'angular');
+      expect(keys(angular.element.cache)).not.toEqual([]);
+      angular.mock.clearDataCache();
+      expect(keys(angular.element.cache)).toEqual([]);
+    });
+
+    it('should deregister event handlers', function() {
+      expect(keys(angular.element.cache)).toEqual([]);
+
+      var div = angular.element('<div></div>');
+
+      div.bind('click', angular.noop);
+      div.bind('mousemove', angular.noop);
+      div.data('some', 'data');
+      expect(keys(angular.element.cache).length).toBe(1);
+
+      angular.mock.clearDataCache();
+      expect(keys(angular.element.cache)).toEqual([]);
+      expect(div.data('some')).toBeUndefined();
+
+      div.remove();
+    });
+  });
+
 
   describe('jasmine module and inject', function(){
     var log;
