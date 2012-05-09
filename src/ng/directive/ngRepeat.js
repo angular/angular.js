@@ -126,7 +126,7 @@ var ngRepeatDirective = ngDirective({
           // if collection is not array, need to always check index to avoid shifting wrong value
           if (lastOrder.peek(value)) {
             last = collection === array ?
-              ((typeof value == 'object') ? lastOrder.shift(value) :
+              ((isObject(value)) ? lastOrder.shift(value) :
                     (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
               (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined);
           } else {
@@ -152,7 +152,7 @@ var ngRepeatDirective = ngDirective({
               cursor = last.element;
             }
           } else {
-            if (indexValues[index] !== undefined && collection !== array) {
+            if (indexValues.hasOwnProperty(index) && collection !== array) {
               var preValue = indexValues[index];
               var v = lastOrder.shift(preValue);
               v.element.remove();
@@ -181,6 +181,11 @@ var ngRepeatDirective = ngDirective({
               indexValues[index] = value;
             });
           }
+        }
+
+        var i, l;
+        for (i = 0, l = indexValues.length - length; i < l; i++) {
+          indexValues.pop();
         }
 		
 		//shrink children

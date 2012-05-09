@@ -99,7 +99,7 @@ HashQueueMap.prototype = {
     }
   },
   
-   /**
+  /**
    * return the first item without deleting it
    */
   peek: function(key) {
@@ -107,5 +107,5 @@ HashQueueMap.prototype = {
 	if (array) {
 		return array[0];
 	}
-}
+  }
 };

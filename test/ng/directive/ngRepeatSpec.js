@@ -36,11 +36,12 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('brad;');
   }));
 
+
   it('should ngRepeat over array of primitive correctly', inject(function($rootScope, $compile) {
     element = $compile(
-        '<ul>' +
-            '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
-            '</ul>')($rootScope);
+      '<ul>' +
+        '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
+      '</ul>')($rootScope);
 
     Array.prototype.extraProperty = "should be ignored";
     // INIT
@@ -97,23 +98,21 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('same;value;');
 	
 	// number
-    $rootScope.items = ['12', '12', '12'];
+    $rootScope.items = [12, 12, 12];
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('12;12;12;');
 
-    $rootScope.items = ['53', '12', '27'];
+    $rootScope.items = [53, 12, 27];
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('53;12;27;');
 
-    $rootScope.items = ['89'];
+    $rootScope.items = [89];
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(1);
     expect(element.text()).toEqual('89;');
-
   }));
-
 
 
   it('should ngRepeat over object', inject(function($rootScope, $compile) {
@@ -125,6 +124,7 @@ describe('ngRepeat', function() {
     $rootScope.$digest();
     expect(element.text()).toEqual('misko:swe;shyam:set;');
   }));
+
   
   it('should ngRepeat over object with primitive value correctly', inject(function($rootScope, $compile) {
     element = $compile(
@@ -150,7 +150,11 @@ describe('ngRepeat', function() {
     $rootScope.$digest();
 	expect(element.find('li').length).toEqual(1);
     expect(element.text()).toEqual('misko:true;');
-	
+
+    $rootScope.items = {shyam:'true', zhenbo: 'false'};
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('shyam:true;zhenbo:false;');
   }));
 
 
