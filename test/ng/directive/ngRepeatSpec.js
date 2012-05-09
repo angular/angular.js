@@ -133,22 +133,22 @@ describe('ngRepeat', function() {
       '</ul>')($rootScope);
     $rootScope.items = {misko:'true', shyam:'true', zhenbo: 'true'};
     $rootScope.$digest();
-	expect(element.find('li').length).toEqual(3);
+    expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
 	
-	$rootScope.items = {misko:'false', shyam:'true', zhenbo: 'true'};
+    $rootScope.items = {misko:'false', shyam:'true', zhenbo: 'true'};
     $rootScope.$digest();
-	expect(element.find('li').length).toEqual(3);
+    expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
 	
-	$rootScope.items = {misko:'false', shyam:'false', zhenbo: 'false'};
+    $rootScope.items = {misko:'false', shyam:'false', zhenbo: 'false'};
     $rootScope.$digest();
-	expect(element.find('li').length).toEqual(3);
+    expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('misko:false;shyam:false;zhenbo:false;');
 	
-	$rootScope.items = {misko:'true'};
+    $rootScope.items = {misko:'true'};
     $rootScope.$digest();
-	expect(element.find('li').length).toEqual(1);
+    expect(element.find('li').length).toEqual(1);
     expect(element.text()).toEqual('misko:true;');
 
     $rootScope.items = {shyam:'true', zhenbo: 'false'};

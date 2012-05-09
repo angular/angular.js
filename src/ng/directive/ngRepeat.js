@@ -127,7 +127,7 @@ var ngRepeatDirective = ngDirective({
           if (lastOrder.peek(value)) {
             last = collection === array ?
               ((isObject(value)) ? lastOrder.shift(value) :
-                    (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
+                (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
               (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined);
           } else {
             last = undefined;
@@ -188,7 +188,7 @@ var ngRepeatDirective = ngDirective({
           indexValues.pop();
         }
 		
-		//shrink children
+        //shrink children
         for (key in lastOrder) {
           if (lastOrder.hasOwnProperty(key)) {
             array = lastOrder[key];

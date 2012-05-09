@@ -103,9 +103,9 @@ HashQueueMap.prototype = {
    * return the first item without deleting it
    */
   peek: function(key) {
-	var array = this[key = hashKey(key)];
-	if (array) {
-		return array[0];
-	}
+    var array = this[key = hashKey(key)];
+    if (array) {
+    return array[0];
+    }
   }
 };
