@@ -284,7 +284,7 @@ angular.module('ngResource', ['ng']).
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
           encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
-          url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
+          url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
         });
         url = url.replace(/\/?#$/, '');
         var query = [];
