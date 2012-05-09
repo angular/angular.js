@@ -186,8 +186,8 @@ function JQLiteDealoc(element){
 }
 
 function JQLiteUnbind(element, type, fn) {
-  var events = JQLiteData(element, 'events'),
-      handle = JQLiteData(element, 'handle');
+  var events = JQLiteExpandoStore(element, 'events'),
+      handle = JQLiteExpandoStore(element, 'handle');
 
   if (!handle) return; //no listeners registered
 
@@ -207,44 +207,56 @@ function JQLiteUnbind(element, type, fn) {
 }
 
 function JQLiteRemoveData(element) {
-  var cacheId = element[jqName],
-      cache = jqCache[cacheId];
+  var expandoId = element[jqName],
+      expandoStore = jqCache[expandoId];
 
-  if (cache) {
-    if (cache.handle) {
-      cache.events.$destroy && cache.handle({}, '$destroy');
+  if (expandoStore) {
+    if (expandoStore.handle) {
+      expandoStore.events.$destroy && expandoStore.handle({}, '$destroy');
       JQLiteUnbind(element);
     }
-    delete jqCache[cacheId];
+    delete jqCache[expandoId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
   }
 }
 
-function JQLiteData(element, key, value) {
-  var cacheId = element[jqName],
-      cache = jqCache[cacheId || -1];
+function JQLiteExpandoStore(element, key, value) {
+  var expandoId = element[jqName],
+      expandoStore = jqCache[expandoId || -1];
 
   if (isDefined(value)) {
-    if (!cache) {
-      element[jqName] = cacheId = jqNextId();
-      cache = jqCache[cacheId] = {};
+    if (!expandoStore) {
+      element[jqName] = expandoId = jqNextId();
+      expandoStore = jqCache[expandoId] = {};
     }
-    cache[key] = value;
+    expandoStore[key] = value;
   } else {
-    if (isDefined(key)) {
-      if (isObject(key)) {
-        if (!cacheId) element[jqName] = cacheId = jqNextId();
-        jqCache[cacheId] = cache = (jqCache[cacheId] || {});
-        extend(cache, key);
+    return expandoStore && expandoStore[key];
+  }
+}
+
+function JQLiteData(element, key, value) {
+  var data = JQLiteExpandoStore(element, 'data'),
+      isSetter = isDefined(value),
+      keyDefined = !isSetter && isDefined(key),
+      isSimpleGetter = keyDefined && !isObject(key);
+
+  if (!data && !isSimpleGetter) {
+    JQLiteExpandoStore(element, 'data', data = {});
+  }
+
+  if (isSetter) {
+    data[key] = value;
+  } else {
+    if (keyDefined) {
+      if (isSimpleGetter) {
+        // don't create data in this case.
+        return data && data[key];
       } else {
-        return cache ? cache[key] : undefined;
+        extend(data, key);
       }
     } else {
-      if (!cacheId) element[jqName] = cacheId = jqNextId();
-
-      return cache
-          ? cache
-          : cache = jqCache[cacheId] = {};
+      return data;
     }
   }
 }
@@ -583,11 +595,11 @@ forEach({
   dealoc: JQLiteDealoc,
 
   bind: function bindFn(element, type, fn){
-    var events = JQLiteData(element, 'events'),
-        handle = JQLiteData(element, 'handle');
+    var events = JQLiteExpandoStore(element, 'events'),
+        handle = JQLiteExpandoStore(element, 'handle');
 
-    if (!events) JQLiteData(element, 'events', events = {});
-    if (!handle) JQLiteData(element, 'handle', handle = createEventHandler(element, events));
+    if (!events) JQLiteExpandoStore(element, 'events', events = {});
+    if (!handle) JQLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
 
     forEach(type.split(' '), function(type){
       var eventFns = events[type];

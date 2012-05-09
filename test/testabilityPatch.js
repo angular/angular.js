@@ -40,9 +40,14 @@ afterEach(function() {
 
   // complain about uncleared jqCache references
   var count = 0;
-  forEachSorted(jqCache, function(value, key){
-    count ++;
-    forEach(value, function(value, key){
+
+  // This line should be enabled as soon as this bug is fixed: http://bugs.jquery.com/ticket/11775
+  //var cache = jqLite.cache;
+  var cache = JQLite.cache;
+
+  forEachSorted(cache, function(expando, key){
+    forEach(expando.data, function(value, key){
+      count ++;
       if (value.$element) {
         dump('LEAK', key, value.$id, sortedHtml(value.$element));
       } else {
@@ -57,20 +62,25 @@ afterEach(function() {
 
 
 function dealoc(obj) {
+  var jqCache = jqLite.cache;
   if (obj) {
     if (isElement(obj)) {
-      var element = obj;
-      if (element.nodeName) element = jqLite(element);
-      if (element.dealoc) element.dealoc();
+      cleanup(jqLite(obj));
     } else {
       for(var key in jqCache) {
         var value = jqCache[key];
-        if (value.$scope == obj) {
+        if (value.data && value.data.$scope == obj) {
           delete jqCache[key];
         }
       }
     }
+  }
 
+  function cleanup(element) {
+    element.unbind().removeData();
+    for ( var i = 0, children = element.children() || []; i < children.length; i++) {
+      cleanup(jqLite(children[i]));
+    }
   }
 }
 
