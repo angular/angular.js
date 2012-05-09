@@ -112,6 +112,11 @@ describe('ngRepeat', function() {
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(1);
     expect(element.text()).toEqual('89;');
+
+    $rootScope.items = [89, 23];
+    $rootScope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('89;23;');
   }));
 
 
