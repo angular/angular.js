@@ -186,8 +186,8 @@ function JQLiteDealoc(element){
 }
 
 function JQLiteUnbind(element, type, fn) {
-  var events = JQLiteData(element, 'events'),
-      handle = JQLiteData(element, 'handle');
+  var events = JQLiteExpando(element, 'events'),
+      handle = JQLiteExpando(element, 'handle');
 
   if (!handle) return; //no listeners registered
 
@@ -207,20 +207,20 @@ function JQLiteUnbind(element, type, fn) {
 }
 
 function JQLiteRemoveData(element) {
-  var cacheId = element[jqName],
-      cache = jqCache[cacheId];
+  var expandoId = element[jqName],
+      expando = jqCache[expandoId];
 
-  if (cache) {
-    if (cache.handle) {
-      cache.events.$destroy && cache.handle({}, '$destroy');
+  if (expando) {
+    if (expando.handle) {
+      expando.events.$destroy && expando.handle({}, '$destroy');
       JQLiteUnbind(element);
     }
-    delete jqCache[cacheId];
+    delete jqCache[expandoId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
   }
 }
 
-function JQLiteData(element, key, value) {
+function JQLiteExpando(element, key, value) {
   var cacheId = element[jqName],
       cache = jqCache[cacheId || -1];
 
@@ -231,20 +231,32 @@ function JQLiteData(element, key, value) {
     }
     cache[key] = value;
   } else {
-    if (isDefined(key)) {
-      if (isObject(key)) {
-        if (!cacheId) element[jqName] = cacheId = jqNextId();
-        jqCache[cacheId] = cache = (jqCache[cacheId] || {});
-        extend(cache, key);
+    return cache && cache[key];
+  }
+}
+
+function JQLiteData(element, key, value) {
+  var data = JQLiteExpando(element, 'data'),
+      isSetter = isDefined(value),
+      keyDefined = !isSetter && isDefined(key),
+      isSimpleGetter = keyDefined && !isObject(key);
+
+  if (!data && !isSimpleGetter) {
+    JQLiteExpando(element, 'data', data = {});
+  }
+
+  if (isSetter) {
+    data[key] = value;
+  } else {
+    if (keyDefined) {
+      if (isSimpleGetter) {
+        // don't create data in this case.
+        return data && data[key];
       } else {
-        return cache ? cache[key] : undefined;
+        extend(data, key);
       }
     } else {
-      if (!cacheId) element[jqName] = cacheId = jqNextId();
-
-      return cache
-          ? cache
-          : cache = jqCache[cacheId] = {};
+      return data;
     }
   }
 }
@@ -583,11 +595,11 @@ forEach({
   dealoc: JQLiteDealoc,
 
   bind: function bindFn(element, type, fn){
-    var events = JQLiteData(element, 'events'),
-        handle = JQLiteData(element, 'handle');
+    var events = JQLiteExpando(element, 'events'),
+        handle = JQLiteExpando(element, 'handle');
 
-    if (!events) JQLiteData(element, 'events', events = {});
-    if (!handle) JQLiteData(element, 'handle', handle = createEventHandler(element, events));
+    if (!events) JQLiteExpando(element, 'events', events = {});
+    if (!handle) JQLiteExpando(element, 'handle', handle = createEventHandler(element, events));
 
     forEach(type.split(' '), function(type){
       var eventFns = events[type];
