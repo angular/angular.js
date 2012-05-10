@@ -279,12 +279,17 @@ angular.module('ngResource', ['ng']).
       url: function(params) {
         var self = this,
             url = this.template,
+            val,
             encodedVal;
 
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
-          encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
-          url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+          if (val = (params[urlParam] || self.defaults[urlParam])) {
+            encodedVal = encodeUriSegment(val);
+            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+          } else {
+            url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
+          }
         });
         url = url.replace(/\/?#$/, '');
         var query = [];

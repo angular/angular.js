@@ -48,12 +48,14 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/Path');
     $httpBackend.expect('GET', '/Path/1');
     $httpBackend.expect('GET', '/Path/2/3');
-    $httpBackend.expect('GET', '/Path/4/5/6');
+    $httpBackend.expect('GET', '/Path/4/5');
+    $httpBackend.expect('GET', '/Path/6/7/8');
 
     R.get({});
     R.get({a:1});
     R.get({a:2, b:3});
-    R.get({a:4, b:5, c:6});
+    R.get({a:4, c:5});
+    R.get({a:6, b:7, c:8});
   });
 
 
