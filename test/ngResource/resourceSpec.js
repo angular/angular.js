@@ -55,12 +55,14 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/Path');
     $httpBackend.expect('GET', '/Path/1');
     $httpBackend.expect('GET', '/Path/2/3');
-    $httpBackend.expect('GET', '/Path/4/5/6');
+    $httpBackend.expect('GET', '/Path/4/5');
+    $httpBackend.expect('GET', '/Path/6/7/8');
 
     R.get({});
     R.get({a:1});
     R.get({a:2, b:3});
-    R.get({a:4, b:5, c:6});
+    R.get({a:4, c:5});
+    R.get({a:6, b:7, c:8});
   });
 
 
@@ -120,6 +122,27 @@ describe("resource", function() {
 
     $httpBackend.flush();
     expect(item).toEqualData({id: 'abc'});
+  });
+
+
+  it('should build resource with action default param reading the value from instance', function() {
+    $httpBackend.expect('POST', '/Customer/123').respond();
+    var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id'}}});
+
+    var inst = new R({id:123});
+    expect(inst.id).toBe(123);
+
+    inst.$post();
+  });
+
+
+  it('should handle multiple params with same name', function() {
+    var R = $resource('/:id/:id');
+
+    $httpBackend.when('GET').respond('{}');
+    $httpBackend.expect('GET', '/1/1');
+
+    R.get({id:1});
   });
 
 
