@@ -310,8 +310,9 @@ angular.module('ngResource', ['ng']).
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
-      function extractParams(data){
+      function extractParams(data, actionParams){
         var ids = {};
+        paramDefaults = extend(paramDefaults, actionParams);
         forEach(paramDefaults || {}, function(value, key){
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
@@ -366,7 +367,7 @@ angular.module('ngResource', ['ng']).
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
           $http({
             method: action.method,
-            url: route.url(extend({}, extractParams(data), action.params || {}, params)),
+            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
             data: data
           }).then(function(response) {
               var data = response.data;

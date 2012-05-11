@@ -118,6 +118,17 @@ describe("resource", function() {
   });
 
 
+  it('should build resource with action default param reading the value from instance', function() {
+    $httpBackend.expect('POST', '/Customer/123').respond();
+    var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id'}}});
+
+    var inst = new R({id:123});
+    expect(inst.id).toBe(123);
+
+    inst.$post();
+  });
+
+
   it('should handle multiple params with same name', function() {
     var R = $resource('/:id/:id');
 
