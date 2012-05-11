@@ -280,12 +280,17 @@ angular.module('ngResource', ['ng']).
       url: function(params) {
         var self = this,
             url = this.template,
+            val,
             encodedVal;
 
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
-          encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
-          url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
+          if (val = (params[urlParam] || self.defaults[urlParam])) {
+            encodedVal = encodeUriSegment(val);
+            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+          } else {
+            url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
+          }
         });
         url = url.replace(/\/?#$/, '');
         var query = [];
@@ -306,8 +311,9 @@ angular.module('ngResource', ['ng']).
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
-      function extractParams(data){
+      function extractParams(data, actionParams){
         var ids = {};
+        paramDefaults = extend(paramDefaults, actionParams);
         forEach(paramDefaults || {}, function(value, key){
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
@@ -362,7 +368,7 @@ angular.module('ngResource', ['ng']).
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
           $http({
             method: action.method,
-            url: route.url(extend({}, extractParams(data), action.params || {}, params)),
+            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
             data: data,
             headers: extend({}, action.headers || {})
           }).then(function(response) {
