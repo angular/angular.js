@@ -632,6 +632,17 @@ describe('$location', function() {
 
       expect(match[10]).toBe('?book=moby');
     });
+
+
+    it('should parse chrome extension urls', function() {
+      var match = URL_MATCH.exec('chrome-extension://jjcldkdmokihdaomalanmlohibnoplog/index.html?foo#bar');
+
+      expect(match[1]).toBe('chrome-extension');
+      expect(match[3]).toBe('jjcldkdmokihdaomalanmlohibnoplog');
+      expect(match[6]).toBe('/index.html');
+      expect(match[8]).toBe('foo');
+      expect(match[10]).toBe('bar');
+    });
   });
 
 
