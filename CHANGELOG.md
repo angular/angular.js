@@ -1,3 +1,26 @@
+<a name="1.0.0rc9"></a>
+# 1.0.0rc9 eggplant-teleportation (2012-05-14)
+
+
+## Bug Fixes
+
+- **$location:**
+  - single quote in url causes infinite digest in FF
+    ([679cb8a7](https://github.com/angular/angular.js/commit/679cb8a74a684454fe38fa9e1ddad396bb598c52),
+     [#920](https://github.com/angular/angular.js/issues/920))
+  - support urls with any protocol
+    ([c1533ef5](https://github.com/angular/angular.js/commit/c1533ef5762199bea18d3bf3bcba7fcf89272931))
+  - don't use buggy history.pushState api on Android < 4
+    ([7b739c97](https://github.com/angular/angular.js/commit/7b739c97028be2a5d5aef679ef1f8064cd10d386),
+     [#904](https://github.com/angular/angular.js/issues/904))
+  - work around Opera's base href issue
+    ([b99f65f6](https://github.com/angular/angular.js/commit/b99f65f64d1e54315b3210d78a9a9adbcf34c96c),
+     [#938](https://github.com/angular/angular.js/issues/938))
+- **docs app:** get docs app to work on IE8
+  ([aa025348](https://github.com/angular/angular.js/commit/aa02534865c8e43dcef9e218b12c8c717c837205))
+
+
+
 <a name="1.0.0rc8"></a>
 # 1.0.0rc8 blooming-touch (2012-05-06)
 
