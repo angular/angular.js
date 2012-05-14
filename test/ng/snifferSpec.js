@@ -3,6 +3,7 @@
 describe('$sniffer', function() {
 
   function sniffer($window) {
+    $window.navigator = {};
     return new $SnifferProvider().$get[1]($window);
   }
 
