@@ -462,6 +462,12 @@ describe('browser', function() {
     it('should return $browser to allow chaining', function() {
       expect(browser.url('http://any.com')).toBe(browser);
     });
+
+
+    it('should decode single quotes to work around FF bug 407273', function() {
+      fakeWindow.location.href = "http://ff-bug/?single%27quote";
+      expect(browser.url()).toBe("http://ff-bug/?single'quote");
+    });
   });
 
   describe('urlChange', function() {
