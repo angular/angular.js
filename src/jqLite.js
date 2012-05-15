@@ -74,7 +74,7 @@
  * @returns {Object} jQuery object.
  */
 
-var jqCache = {},
+var jqCache = JQLite.cache = {},
     jqName = JQLite.expando = 'ng-' + new Date().getTime(),
     jqId = 1,
     addEventListenerFn = (window.document.addEventListener
@@ -122,15 +122,15 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
         fireEvent = dispatchThis,
         set, setIndex, setLength,
         element, childIndex, childLength, children,
-        fns, data;
+        fns, events;
 
     while(list.length) {
       set = list.shift();
       for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
         element = jqLite(set[setIndex]);
         if (fireEvent) {
-          data = element.data('events');
-          if ( (fns = data && data.$destroy) ) {
+          events = element.data('events');
+          if ( (fns = events && events.$destroy) ) {
             forEach(fns, function(fn){
               fn.handler();
             });
@@ -185,19 +185,35 @@ function JQLiteDealoc(element){
   }
 }
 
+function JQLiteUnbind(element, type, fn) {
+  var events = JQLiteData(element, 'events'),
+      handle = JQLiteData(element, 'handle');
+
+  if (!handle) return; //no listeners registered
+
+  if (isUndefined(type)) {
+    forEach(events, function(eventHandler, type) {
+      removeEventListenerFn(element, type, eventHandler);
+      delete events[type];
+    });
+  } else {
+    if (isUndefined(fn)) {
+      removeEventListenerFn(element, type, events[type]);
+      delete events[type];
+    } else {
+      arrayRemove(events[type], fn);
+    }
+  }
+}
+
 function JQLiteRemoveData(element) {
   var cacheId = element[jqName],
       cache = jqCache[cacheId];
 
   if (cache) {
-    if (cache.bind) {
-      forEach(cache.bind, function(fn, type){
-        if (type == '$destroy') {
-          fn({});
-        } else {
-          removeEventListenerFn(element, type, fn);
-        }
-      });
+    if (cache.handle) {
+      cache.events.$destroy && cache.handle({}, '$destroy');
+      JQLiteUnbind(element);
     }
     delete jqCache[cacheId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
@@ -499,8 +515,8 @@ forEach({
   };
 });
 
-function createEventHandler(element) {
-  var eventHandler = function (event) {
+function createEventHandler(element, events) {
+  var eventHandler = function (event, type) {
     if (!event.preventDefault) {
       event.preventDefault = function() {
         event.returnValue = false; //ie
@@ -530,8 +546,12 @@ function createEventHandler(element) {
       return event.defaultPrevented;
     };
 
-    forEach(eventHandler.fns, function(fn){
-      fn.call(element, event);
+    forEach(events[type || event.type], function(fn) {
+      try {
+        fn.call(element, event);
+      } catch (e) {
+        // Not much to do here since jQuery ignores these anyway
+      }
     });
 
     // Remove monkey-patched methods (IE),
@@ -548,7 +568,7 @@ function createEventHandler(element) {
       delete event.isDefaultPrevented;
     }
   };
-  eventHandler.fns = [];
+  eventHandler.elem = element;
   return eventHandler;
 }
 
@@ -563,61 +583,45 @@ forEach({
   dealoc: JQLiteDealoc,
 
   bind: function bindFn(element, type, fn){
-    var bind = JQLiteData(element, 'bind');
+    var events = JQLiteData(element, 'events'),
+        handle = JQLiteData(element, 'handle');
 
+    if (!events) JQLiteData(element, 'events', events = {});
+    if (!handle) JQLiteData(element, 'handle', handle = createEventHandler(element, events));
 
-    if (!bind) JQLiteData(element, 'bind', bind = {});
     forEach(type.split(' '), function(type){
-      var eventHandler = bind[type];
+      var eventFns = events[type];
 
-
-      if (!eventHandler) {
+      if (!eventFns) {
         if (type == 'mouseenter' || type == 'mouseleave') {
-          var mouseenter = bind.mouseenter = createEventHandler(element);
-          var mouseleave = bind.mouseleave = createEventHandler(element);
           var counter = 0;
 
+          events.mouseenter = [];
+          events.mouseleave = [];
 
           bindFn(element, 'mouseover', function(event) {
             counter++;
             if (counter == 1) {
-              mouseenter(event);
+              handle(event, 'mouseenter');
             }
           });
           bindFn(element, 'mouseout', function(event) {
             counter --;
             if (counter == 0) {
-              mouseleave(event);
+              handle(event, 'mouseleave');
             }
           });
-          eventHandler = bind[type];
         } else {
-          eventHandler = bind[type] = createEventHandler(element);
-          addEventListenerFn(element, type, eventHandler);
+          addEventListenerFn(element, type, handle);
+          events[type] = [];
         }
+        eventFns = events[type]
       }
-      eventHandler.fns.push(fn);
+      eventFns.push(fn);
     });
   },
 
-  unbind: function(element, type, fn) {
-    var bind = JQLiteData(element, 'bind');
-    if (!bind) return; //no listeners registered
-
-    if (isUndefined(type)) {
-      forEach(bind, function(eventHandler, type) {
-        removeEventListenerFn(element, type, eventHandler);
-        delete bind[type];
-      });
-    } else {
-      if (isUndefined(fn)) {
-        removeEventListenerFn(element, type, bind[type]);
-        delete bind[type];
-      } else {
-        arrayRemove(bind[type].fns, fn);
-      }
-    }
-  },
+  unbind: JQLiteUnbind,
 
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
