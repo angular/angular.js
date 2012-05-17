@@ -22,7 +22,7 @@ describe('$route', function() {
 
     module(function($routeProvider) {
       $routeProvider.when('/Book/:book/Chapter/:chapter',
-          {controller: noop, template: 'Chapter.html'});
+          {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
@@ -62,7 +62,7 @@ describe('$route', function() {
 
   it('should match a route that contains special chars in the path', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/$test.23/foo(bar)/:baz', {template: 'test.html'});
+      $routeProvider.when('/$test.23/foo(bar)/:baz', {templateUrl: 'test.html'});
     });
     inject(function($route, $location, $rootScope) {
 
@@ -87,7 +87,7 @@ describe('$route', function() {
 
   it('should change route even when only search param changes', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/test', {template: 'test.html'});
+      $routeProvider.when('/test', {templateUrl: 'test.html'});
     });
 
     inject(function($route, $location, $rootScope) {
@@ -108,7 +108,7 @@ describe('$route', function() {
 
   it('should allow routes to be defined with just templates without controllers', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'foo.html'});
+      $routeProvider.when('/foo', {templateUrl: 'foo.html'});
     });
 
     inject(function($route, $location, $rootScope) {
@@ -121,7 +121,7 @@ describe('$route', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      expect($route.current.template).toEqual('foo.html');
+      expect($route.current.templateUrl).toEqual('foo.html');
       expect($route.current.controller).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
@@ -132,8 +132,8 @@ describe('$route', function() {
     function NotFoundCtrl() {}
 
     module(function($routeProvider){
-      $routeProvider.when('/foo', {template: 'foo.html'});
-      $routeProvider.otherwise({template: '404.html', controller: NotFoundCtrl});
+      $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+      $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
     });
 
     inject(function($route, $location, $rootScope) {
@@ -146,7 +146,7 @@ describe('$route', function() {
       $location.path('/unknownRoute');
       $rootScope.$digest();
 
-      expect($route.current.template).toBe('404.html');
+      expect($route.current.templateUrl).toBe('404.html');
       expect($route.current.controller).toBe(NotFoundCtrl);
       expect(onChangeSpy).toHaveBeenCalled();
 
@@ -154,7 +154,7 @@ describe('$route', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      expect($route.current.template).toEqual('foo.html');
+      expect($route.current.templateUrl).toEqual('foo.html');
       expect($route.current.controller).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
@@ -163,18 +163,18 @@ describe('$route', function() {
 
   it('should chain whens and otherwise', function() {
     module(function($routeProvider){
-      $routeProvider.when('/foo', {template: 'foo.html'}).
-                     otherwise({template: 'bar.html'}).
-                     when('/baz', {template: 'baz.html'});
+      $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
+                     otherwise({templateUrl: 'bar.html'}).
+                     when('/baz', {templateUrl: 'baz.html'});
     });
 
     inject(function($route, $location, $rootScope) {
       $rootScope.$digest();
-      expect($route.current.template).toBe('bar.html');
+      expect($route.current.templateUrl).toBe('bar.html');
 
       $location.url('/baz');
       $rootScope.$digest();
-      expect($route.current.template).toBe('baz.html');
+      expect($route.current.templateUrl).toBe('baz.html');
     });
   });
 
@@ -209,7 +209,7 @@ describe('$route', function() {
           deferB = $q.defer();
           return deferB.promise;
         });
-        $routeProvider.when('/path', { template: 'foo.html', resolve: {
+        $routeProvider.when('/path', { templateUrl: 'foo.html', resolve: {
           a: function($q) {
             deferA = $q.defer();
             return deferA.promise;
@@ -253,13 +253,8 @@ describe('$route', function() {
       inject(function($location, $route, $rootScope) {
         var log = '';
 
-<<<<<<< HEAD
-        $rootScope.$on('$beforeRouteChange', function() { log += 'before();'; });
-        $rootScope.$on('$routeChangeError', function(e, n, l, reason) { log += 'failed(' + reason + ');'; });
-=======
         $rootScope.$on('$routeChangeStart', function() { log += 'before();'; });
-        $rootScope.$on('$routeChangeFailed', function(e, n, l, reason) { log += 'failed(' + reason + ');'; });
->>>>>>> ebebe46... chore($route): rename events
+        $rootScope.$on('$routeChangeError', function(e, n, l, reason) { log += 'failed(' + reason + ');'; });
 
         $location.path('/path');
         $rootScope.$digest();
@@ -275,14 +270,14 @@ describe('$route', function() {
     it('should fetch templates', function() {
       module(function($routeProvider) {
         $routeProvider.
-          when('/r1', { template: 'r1.html' }).
-          when('/r2', { template: 'r2.html' });
+          when('/r1', { templateUrl: 'r1.html' }).
+          when('/r2', { templateUrl: 'r2.html' });
       });
 
       inject(function($route, $httpBackend, $location, $rootScope) {
         var log = '';
-        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.template + ');'});
-        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.template + ');'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.templateUrl + ');'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.templateUrl + ');'});
 
         $httpBackend.expectGET('r1.html').respond('R1');
         $httpBackend.expectGET('r2.html').respond('R2');
@@ -305,8 +300,8 @@ describe('$route', function() {
     it('should not update $routeParams until $routeChangeSuccess', function() {
       module(function($routeProvider) {
         $routeProvider.
-          when('/r1/:id', { template: 'r1.html' }).
-          when('/r2/:id', { template: 'r2.html' });
+          when('/r1/:id', { templateUrl: 'r1.html' }).
+          when('/r2/:id', { templateUrl: 'r2.html' });
       });
 
       inject(function($route, $httpBackend, $location, $rootScope, $routeParams) {
@@ -337,14 +332,14 @@ describe('$route', function() {
     it('should drop in progress route change when new route change occurs', function() {
       module(function($routeProvider) {
         $routeProvider.
-          when('/r1', { template: 'r1.html' }).
-          when('/r2', { template: 'r2.html' });
+          when('/r1', { templateUrl: 'r1.html' }).
+          when('/r2', { templateUrl: 'r2.html' });
       });
 
       inject(function($route, $httpBackend, $location, $rootScope) {
         var log = '';
-        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.template + ');'});
-        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.template + ');'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.templateUrl + ');'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.templateUrl + ');'});
 
         $httpBackend.expectGET('r1.html').respond('R1');
         $httpBackend.expectGET('r2.html').respond('R2');
@@ -421,30 +416,30 @@ describe('$route', function() {
   
   it('should match route with and without trailing slash', function() {
     module(function($routeProvider){
-      $routeProvider.when('/foo', {template: 'foo.html'});
-      $routeProvider.when('/bar/', {template: 'bar.html'});
+      $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+      $routeProvider.when('/bar/', {templateUrl: 'bar.html'});
     });
 
     inject(function($route, $location, $rootScope) {
       $location.path('/foo');
       $rootScope.$digest();
       expect($location.path()).toBe('/foo');
-      expect($route.current.template).toBe('foo.html');
+      expect($route.current.templateUrl).toBe('foo.html');
 
       $location.path('/foo/');
       $rootScope.$digest();
       expect($location.path()).toBe('/foo');
-      expect($route.current.template).toBe('foo.html');
+      expect($route.current.templateUrl).toBe('foo.html');
 
       $location.path('/bar');
       $rootScope.$digest();
       expect($location.path()).toBe('/bar/');
-      expect($route.current.template).toBe('bar.html');
+      expect($route.current.templateUrl).toBe('bar.html');
 
       $location.path('/bar/');
       $rootScope.$digest();
       expect($location.path()).toBe('/bar/');
-      expect($route.current.template).toBe('bar.html');
+      expect($route.current.templateUrl).toBe('bar.html');
     });
   });
 
@@ -453,10 +448,10 @@ describe('$route', function() {
     it('should support redirection via redirectTo property by updating $location', function() {
       module(function($routeProvider) {
         $routeProvider.when('/', {redirectTo: '/foo'});
-        $routeProvider.when('/foo', {template: 'foo.html'});
-        $routeProvider.when('/bar', {template: 'bar.html'});
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.when('/bar', {templateUrl: 'bar.html'});
         $routeProvider.when('/baz', {redirectTo: '/bar'});
-        $routeProvider.otherwise({template: '404.html'});
+        $routeProvider.otherwise({templateUrl: '404.html'});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -469,14 +464,14 @@ describe('$route', function() {
         $location.path('/');
         $rootScope.$digest();
         expect($location.path()).toBe('/foo');
-        expect($route.current.template).toBe('foo.html');
+        expect($route.current.templateUrl).toBe('foo.html');
         expect(onChangeSpy.callCount).toBe(2);
 
         onChangeSpy.reset();
         $location.path('/baz');
         $rootScope.$digest();
         expect($location.path()).toBe('/bar');
-        expect($route.current.template).toBe('bar.html');
+        expect($route.current.templateUrl).toBe('bar.html');
         expect(onChangeSpy.callCount).toBe(2);
       });
     });
@@ -485,7 +480,7 @@ describe('$route', function() {
     it('should interpolate route vars in the redirected path from original path', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
+        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -494,14 +489,14 @@ describe('$route', function() {
 
         expect($location.path()).toEqual('/bar/id1/subid3/23');
         expect($location.search()).toEqual({extraId: 'gah'});
-        expect($route.current.template).toEqual('bar.html');
+        expect($route.current.templateUrl).toEqual('bar.html');
       });
     });
 
 
     it('should interpolate route vars in the redirected path from original search', function() {
       module(function($routeProvider) {
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
+        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id/:subid/99'});
       });
 
@@ -511,7 +506,7 @@ describe('$route', function() {
 
         expect($location.path()).toEqual('/bar/id3/sid1/99');
         expect($location.search()).toEqual({appended: 'true', extra: 'eId'});
-        expect($route.current.template).toEqual('bar.html');
+        expect($route.current.templateUrl).toEqual('bar.html');
       });
     });
 
@@ -525,7 +520,7 @@ describe('$route', function() {
       }
 
       module(function($routeProvider){
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
+        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {redirectTo: customRedirectFn});
       });
 
@@ -540,7 +535,7 @@ describe('$route', function() {
 
     it('should replace the url when redirecting',  function() {
       module(function($routeProvider) {
-        $routeProvider.when('/bar/:id', {template: 'bar.html'});
+        $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
       });
       inject(function($route, $location, $rootScope) {
