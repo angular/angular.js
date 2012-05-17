@@ -227,10 +227,10 @@ Doc.prototype = {
             'default':match[6]
           };
           self.param.push(param);
-        } else if (atName == 'returns') {
+        } else if (atName == 'returns' || atName == 'return') {
           match = text.match(/^\{([^}=]+)\}\s+(.*)/);
           if (!match) {
-            throw new Error("Not a valid 'returns' format: " + text);
+            throw new Error("Not a valid 'returns' format: " + text + ' in ' + self.file + ':' + self.line);
           }
           self.returns = {
             type: match[1],
