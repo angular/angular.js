@@ -14,7 +14,14 @@ describe("resource", function() {
       },
       patch: {
         method: 'PATCH'
+      },
+      conditionalPut: {
+        method: 'PUT',
+        headers: {
+          'If-None-Match': '*'
+        }
       }
+
     });
     callback = jasmine.createSpy();
   }));
@@ -143,6 +150,15 @@ describe("resource", function() {
     expect(cc).toEqualData({id: 123, number: '9876'});
     expect(callback.mostRecentCall.args[0]).toEqual(cc);
     expect(callback.mostRecentCall.args[1]()).toEqual({});
+  });
+
+
+  it('should send correct headers', function() {
+    $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
+       return headers['If-None-Match'] == "*";
+    }).respond({id:123});
+
+    CreditCard.conditionalPut({id: {key:123}});
   });
 
 
