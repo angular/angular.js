@@ -6,8 +6,8 @@
     <script>
       setupModuleLoader(window);
       angular.module('example', [], function($routeProvider) {
-        $routeProvider.when('/view1', {controller: MyCtrl, template: 'view1.html'});
-        $routeProvider.when('/view2', {controller: MyCtrl, template: 'view2.html'});
+        $routeProvider.when('/view1', {controller: MyCtrl, templateUrl: 'view1.html'});
+        $routeProvider.when('/view2', {controller: MyCtrl, templateUrl: 'view2.html'});
 
         function MyCtrl($location, $scope) {
           $scope.url = function() {
