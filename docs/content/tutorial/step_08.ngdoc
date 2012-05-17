@@ -2,23 +2,21 @@
 @name Tutorial: 8 - More Templating
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
-<ul doc:tutorial-nav="8"></ul>
+<ul doc-tutorial-nav="8"></ul>
 
 
 In this step, you will implement the phone details view, which is displayed when a user clicks on a
 phone in the phone list.
 
 
-<doc:tutorial-instructions step="8"></doc:tutorial-instructions>
+<div doc-tutorial-reset="8"></div>
 
 
 Now when you click on a phone on the list, the phone details page with phone-specific information
 is displayed.
 
-To implement the phone details view we will use {@link api/angular.module.ng.$xhr $xhr} to fetch our
-data, and we'll flesh out the `phone-details.html` view template.
+To implement the phone details view we will use {@link api/angular.module.ng.$http $http} to fetch
+our data, and we'll flesh out the `phone-details.html` view template.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-7...step-8
@@ -58,44 +56,42 @@ show this data in the phone detail view.
 
 ## Controller
 
-We'll expand the `PhoneDetailCtrl` by using the `$xhr` service to fetch the json files. This works
+We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the json files. This works
 the same way as the phone list controller.
 
 __`app/js/controller.js`:__
 <pre>
-function PhoneDetailCtrl($xhr) {
-  var self = this;
-
-  $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
-    self.phone = response;
+function PhoneDetailCtrl($scope, $routeParams, $http) {
+  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+    $scope.phone = data;
   });
 }
 
-//PhoneDetailCtrl.$inject = ['$xhr'];
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
 </pre>
 
-To construct the URL for the HTTP request, we use `params.phoneId` extracted from the current route
-in the `PhoneCatCtrl` controller.
+To construct the URL for the HTTP request, we use `$routeParams.phoneId` extracted from the current
+route by the `$route` service.
 
 
 ## Template
 
 The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
-Note where we use the angular `{{expression}}` markup and `ng:repeater`s to project phone data from
+Note where we use the angular `{{expression}}` markup and `ngRepeater`s to project phone data from
 our model into the view.
 
 
 __`app/partials/phone-details.html`:__
 <pre>
-<img ng:src="{{phone.images[0]}}" class="phone"/>
+<img ng-src="{{phone.images[0]}}" class="phone">
 
 <h1>{{phone.name}}</h1>
 
 <p>{{phone.description}}</p>
 
 <ul class="phone-thumbs">
-  <li ng:repeat="img in phone.images">
-    <img ng:src="{{img}}"/>
+  <li ng-repeat="img in phone.images">
+    <img ng-src="{{img}}">
   </li>
 </ul>
 
@@ -104,7 +100,7 @@ __`app/partials/phone-details.html`:__
     <span>Availability and Networks</span>
     <dl>
       <dt>Availability</dt>
-      <dd ng:repeat="availability in phone.availability">{{availability}}</dd>
+      <dd ng-repeat="availability in phone.availability">{{availability}}</dd>
     </dl>
   </li>
     ...
@@ -115,7 +111,10 @@ __`app/partials/phone-details.html`:__
 </ul>
 </pre>
 
-<img src="img/tutorial/tutorial_08-09_final.png">
+<div style="display: none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_08-09_final.png">
+</div>
 
 ## Test
 
@@ -125,16 +124,26 @@ step 5.
 __`test/unit/controllerSpec.js`:__
 <pre>
 ...
+  describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl;
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond({name:'phone xyz'});
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+    }));
+
+
     it('should fetch phone detail', function() {
-      scope.params = {phoneId:'xyz'};
-      $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
-      ctrl = scope.$new(PhoneDetailCtrl);
+      expect(scope.phone).toBeUndefined();
+      $httpBackend.flush();
 
-      expect(ctrl.phone).toBeUndefined();
-      $browser.xhr.flush();
-
-      expect(ctrl.phone).toEqual({name:'phone xyz'});
+      expect(scope.phone).toEqual({name:'phone xyz'});
     });
+  });
 ...
 </pre>
 
@@ -144,7 +153,7 @@ output.
     Chrome: Runner reset.
     ...
     Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
+      Chrome 19.0.1084.36 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
 
 
 We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
@@ -185,4 +194,4 @@ Now that the phone details view is in place, proceed to {@link step_09 step 9} t
 write your own custom display filter.
 
 
-<ul doc:tutorial-nav="8"></ul>
+<ul doc-tutorial-nav="8"></ul>

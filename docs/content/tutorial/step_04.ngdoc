@@ -2,7 +2,7 @@
 @name Tutorial: 4 - Two-way Data Binding
 @description
 
-<ul doc:tutorial-nav="4"></ul>
+<ul doc-tutorial-nav="4"></ul>
 
 
 In this step, you will add a feature to let your users control the order of the items in the phone
@@ -10,7 +10,7 @@ list. The dynamic ordering is implemented by creating a new model property, wiri
 the repeater, and letting the data binding magic do the rest of the work.
 
 
-<doc:tutorial-instructions step="4"></doc:tutorial-instructions>
+<div doc-tutorial-reset="4"></div>
 
 
 You should see that in addition to the search box, the app displays a drop down menu that allows
@@ -24,19 +24,13 @@ The most important differences between Steps 3 and 4 are listed below. You can s
 
 __`app/index.html`:__
 <pre>
-...
-  <ul class="controls">
-    <li>
-      Search: <input ng-model="query">
-    </li>
-    <li>
-      Sort by:
-      <select ng-model="orderProp">
-        <option value="name">Alphabetical</option>
-        <option value="age">Newest</option>
-      </select>
-    </li>
-  </ul>
+  Search: <input ng-model="query">
+  Sort by:
+  <select ng-model="orderProp">
+    <option value="name">Alphabetical</option>
+    <option value="age">Newest</option>
+  </select>
+
 
   <ul class="phones">
     <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
@@ -44,7 +38,6 @@ __`app/index.html`:__
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
-...
 </pre>
 
 We made the following changes to the `index.html` template:
@@ -52,7 +45,7 @@ We made the following changes to the `index.html` template:
 * First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
 two provided sorting options.
 
-      <img src="img/tutorial/tutorial_04.png">
+      <img  class="diagram" src="img/tutorial/tutorial_04.png">
 
 * We then chained the `filter` filter with {@link api/angular.module.ng.$filter.orderBy `orderBy`}
 filter to further process the input into the repeater. `orderBy` is a filter that takes an input
@@ -72,18 +65,18 @@ necessary!
 
 __`app/js/controller.js`:__
 <pre>
-/* App Controllers */
-
 function PhoneListCtrl($scope) {
-  $scope.phones = [{"name": "Nexus S",
-                  "snippet": "Fast just got faster with Nexus S.",
-                  "age": 0},
-                 {"name": "Motorola XOOM™ with Wi-Fi",
-                  "snippet": "The Next, Next Generation tablet.",
-                  "age": 1},
-                 {"name": "MOTOROLA XOOM™",
-                  "snippet": "The Next, Next Generation tablet.",
-                  "age": 2}];
+  $scope.phones = [
+    {"name": "Nexus S",
+     "snippet": "Fast just got faster with Nexus S.",
+     "age": 0},
+    {"name": "Motorola XOOM™ with Wi-Fi",
+     "snippet": "The Next, Next Generation tablet.",
+     "age": 1},
+    {"name": "MOTOROLA XOOM™",
+     "snippet": "The Next, Next Generation tablet.",
+     "age": 2}
+  ];
 
   $scope.orderProp = 'age';
 }
@@ -114,11 +107,11 @@ __`test/unit/controllerSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
 
-  describe('PhoneListCtrl', function() {
-    var scope, $browser, ctrl;
+  describe('PhoneListCtrl', function(){
+    var scope, ctrl;
 
     beforeEach(function() {
-      scope = {};
+      scope = {},
       ctrl = new PhoneListCtrl(scope);
     });
 
@@ -147,7 +140,7 @@ following output.
         Chrome: Runner reset.
         ..
         Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-          Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+          Chrome 19.0.1084.36 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
 
 
 Let's turn our attention to the end-to-end test.
@@ -157,15 +150,14 @@ __`test/e2e/scenarios.js`:__
 ...
     it('should be possible to control phone order via the drop down select box',
         function() {
-
-      // narrow the dataset to make the test assertions shorter
+      //let's narrow the dataset to make the test assertions shorter
       input('query').enter('tablet');
 
       expect(repeater('.phones li', 'Phone List').column('phone.name')).
           toEqual(["Motorola XOOM\u2122 with Wi-Fi",
                    "MOTOROLA XOOM\u2122"]);
 
-      select('orderProp').option('alphabetical');
+      select('orderProp').option('Alphabetical');
 
       expect(repeater('.phones li', 'Phone List').column('phone.name')).
           toEqual(["MOTOROLA XOOM\u2122",
@@ -183,12 +175,9 @@ Angular's server}.
 
 # Experiments
 
-<div style="display:none">
-!!!!! TODO(i): we need to fix select/option to support unknown option !!!!!
 * In the `PhoneListCtrl` controller, remove the statement that sets the `orderProp` value and
-you'll see that the ordering as well as the current selection in the dropdown menu will default to
-"Alphabetical".
-</div>
+you'll see that Angular will temporarily add a new "unknown" option to the drop-down list and the
+ordering will default to unordered/natural order.
 
 * Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
 text.
@@ -199,4 +188,4 @@ Now that you have added list sorting and tested the app, go to {@link step_05 st
 about Angular services and how Angular uses dependency injection.
 
 
-<ul doc:tutorial-nav="4"></ul>
+<ul doc-tutorial-nav="4"></ul>

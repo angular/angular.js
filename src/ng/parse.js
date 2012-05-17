@@ -27,7 +27,7 @@ var OPERATORS = {
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-function lex(text){
+function lex(text, csp){
   var tokens = [],
       token,
       index = 0,
@@ -187,7 +187,7 @@ function lex(text){
     if (OPERATORS.hasOwnProperty(ident)) {
       token.fn = token.json = OPERATORS[ident];
     } else {
-      var getter = getterFn(ident);
+      var getter = getterFn(ident, csp);
       token.fn = extend(function(self, locals) {
         return (getter(self, locals));
       }, {
@@ -261,10 +261,10 @@ function lex(text){
 
 /////////////////////////////////////////
 
-function parser(text, json, $filter){
+function parser(text, json, $filter, csp){
   var ZERO = valueFn(0),
       value,
-      tokens = lex(text),
+      tokens = lex(text, csp),
       assignment = _assignment,
       functionCall = _functionCall,
       fieldAccess = _fieldAccess,
@@ -532,7 +532,7 @@ function parser(text, json, $filter){
 
   function _fieldAccess(object) {
     var field = expect().text;
-    var getter = getterFn(field);
+    var getter = getterFn(field, csp);
     return extend(
         function(self, locals) {
           return getter(object(self, locals), locals);
@@ -685,32 +685,122 @@ function getter(obj, path, bindFnToScope) {
 
 var getterFnCache = {};
 
-function getterFn(path) {
+/**
+ * Implementation of the "Black Hole" variant from:
+ * - http://jsperf.com/angularjs-parse-getter/4
+ * - http://jsperf.com/path-evaluation-simplified/7
+ */
+function cspSafeGetterFn(key0, key1, key2, key3, key4) {
+  return function(scope, locals) {
+    var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
+        promise;
+
+    if (pathVal === null || pathVal === undefined) return pathVal;
+
+    pathVal = pathVal[key0];
+    if (pathVal && pathVal.then) {
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+    if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
+
+    pathVal = pathVal[key1];
+    if (pathVal && pathVal.then) {
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+    if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
+
+    pathVal = pathVal[key2];
+    if (pathVal && pathVal.then) {
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+    if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
+
+    pathVal = pathVal[key3];
+    if (pathVal && pathVal.then) {
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+    if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
+
+    pathVal = pathVal[key4];
+    if (pathVal && pathVal.then) {
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+    return pathVal;
+  };
+};
+
+function getterFn(path, csp) {
   if (getterFnCache.hasOwnProperty(path)) {
     return getterFnCache[path];
   }
 
-  var fn, code = 'var l, fn, p;\n';
-  forEach(path.split('.'), function(key, index) {
-    code += 'if(!s) return s;\n' +
-            'l=s;\n' +
-            's='+ (index
-                    // we simply direference 's' on any .dot notation
-                    ? 's'
-                    // but if we are first then we check locals firs, and if so read it first
-                    : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
-            'if (s && s.then) {\n' +
-              ' if (!("$$v" in s)) {\n' +
-                ' p=s;\n' +
-                ' p.$$v = undefined;\n' +
-                ' p.then(function(v) {p.$$v=v;});\n' +
-                '}\n' +
-              ' s=s.$$v\n' +
-            '}\n';
-  });
-  code += 'return s;';
-  fn = Function('s', 'k', code);
-  fn.toString = function() { return code; };
+  var pathKeys = path.split('.'),
+      pathKeysLength = pathKeys.length,
+      fn;
+
+  if (csp) {
+    fn = (pathKeysLength < 6)
+        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4])
+        : function(scope, locals) {
+          var i = 0, val
+          do {
+            val = cspSafeGetterFn(
+                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++]
+                  )(scope, locals);
+
+            locals = undefined; // clear after first iteration
+            scope = val;
+          } while (i < pathKeysLength);
+          return val;
+        }
+  } else {
+    var code = 'var l, fn, p;\n';
+    forEach(pathKeys, function(key, index) {
+      code += 'if(s === null || s === undefined) return s;\n' +
+              'l=s;\n' +
+              's='+ (index
+                      // we simply dereference 's' on any .dot notation
+                      ? 's'
+                      // but if we are first then we check locals first, and if so read it first
+                      : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
+              'if (s && s.then) {\n' +
+                ' if (!("$$v" in s)) {\n' +
+                  ' p=s;\n' +
+                  ' p.$$v = undefined;\n' +
+                  ' p.then(function(v) {p.$$v=v;});\n' +
+                  '}\n' +
+                ' s=s.$$v\n' +
+              '}\n';
+    });
+    code += 'return s;';
+    fn = Function('s', 'k', code); // s=scope, k=locals
+    fn.toString = function() { return code; };
+  }
 
   return getterFnCache[path] = fn;
 }
@@ -719,13 +809,13 @@ function getterFn(path) {
 
 function $ParseProvider() {
   var cache = {};
-  this.$get = ['$filter', function($filter) {
+  this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     return function(exp) {
       switch(typeof exp) {
         case 'string':
           return cache.hasOwnProperty(exp)
             ? cache[exp]
-            : cache[exp] =  parser(exp, false, $filter);
+            : cache[exp] =  parser(exp, false, $filter, $sniffer.csp);
         case 'function':
           return exp;
         default:

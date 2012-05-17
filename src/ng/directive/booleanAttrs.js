@@ -310,10 +310,16 @@ forEach(['src', 'href'], function(attrName) {
             attr.$$observers[attrName] = [];
             attr.$observe(normalized, function(value) {
               attr.$set(attrName, value);
+
+              // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+              // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
+              // to set the property as well to achieve the desired effect
+              if (msie) element.prop(attrName, value);
             });
           } else {
             // value present means that no interpolation, so copy to native attribute.
             attr.$set(attrName, value);
+            element.prop(attrName, value);
           }
         };
       }

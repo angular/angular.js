@@ -3,7 +3,7 @@
 @description
 
 The core of Angular is its HTML compiler.  The compiler processes Angular 
-{@link api/angular.module.ng.$compileProvider.directive directives} allowing them to transform a 
+{@link guide/directive directives} allowing them to transform a
 static HTML page into a dynamic web application.
 
 The default HTML transformations that the Angular compiler provides are useful for building generic
@@ -21,4 +21,4 @@ All compilation takes place in the web browser; no server is involved.
 ## Related API
 
 * {@link api/angular.module.ng.$compile Angular Compiler API}
-* {@link api/angular.module.ng.$compileProvider.directive Directives API}
+* {@link guide/directive Directives API}

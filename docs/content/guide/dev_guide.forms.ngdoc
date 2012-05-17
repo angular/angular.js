@@ -31,7 +31,7 @@ In addition it provides {@link api/angular.module.ng.$compileProvider.directive.
   <pre>master = {{master | json}}</pre>
 </div>
 
-<script type="text/javascript">
+<script>
   function Controller($scope) {
     $scope.master= {};
 
@@ -91,7 +91,7 @@ This ensures that the user is not distracted with an error until after interacti
   }
 </style>
 
-<script type="text/javascript">
+<script>
   function Controller($scope) {
     $scope.master= {};
 
@@ -152,7 +152,7 @@ This allows us to extend the above example with these features:
   </form>
 </div>
 
-<script type="text/javascript">
+<script>
   function Controller($scope) {
     $scope.master= {};
 
@@ -227,7 +227,7 @@ In the following example we create two directives.
   </form>
 </div>
 
-<script type="text/javascript">
+<script>
   var app = angular.module('form-example1', []);
 
   var INTEGER_REGEXP = /^\-?\d*$/;
@@ -281,13 +281,13 @@ In order for custom control to work with `ngModel` and to achieve two-way data-b
   - implement `render` method, which is responsible for rendering the data after it passed the {@link   api/angular.module.ng.$compileProvider.directive.ngModel.NgModelController#$formatters NgModelController#$formatters},
   - call `$setViewValue` method, whenever the user interacts with the control and model needs to be updated. This is usually done inside a DOM Event listener.
 
-See {@link api/angular.module.ng.$compileProvider.directive $compileProvider.directive} for more info.
+See {@link guide/directive $compileProvider.directive} for more info.
 
 The following example shows how to add two-way data-binding to contentEditable elements.
 
 <doc:example module="form-example2">
 <doc:source>
-<script type="text/javascript">
+<script>
   angular.module('form-example2', []).directive('contenteditable', function() {
     return {
       require: 'ngModel',

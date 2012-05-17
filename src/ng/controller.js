@@ -23,7 +23,11 @@ function $ControllerProvider() {
    *    annotations in the array notation).
    */
   this.register = function(name, constructor) {
-    controllers[name] = constructor;
+    if (isObject(name)) {
+      extend(controllers, name)
+    } else {
+      controllers[name] = constructor;
+    }
   };
 
 

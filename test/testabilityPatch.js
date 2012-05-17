@@ -42,7 +42,6 @@ afterEach(function() {
   var count = 0;
   forEachSorted(jqCache, function(value, key){
     count ++;
-    delete jqCache[key];
     forEach(value, function(value, key){
       if (value.$element) {
         dump('LEAK', key, value.$id, sortedHtml(value.$element));
@@ -52,7 +51,7 @@ afterEach(function() {
     });
   });
   if (count) {
-    throw new Error('Found jqCache references that were not deallocated!');
+    throw new Error('Found jqCache references that were not deallocated! count: ' + count);
   }
 });
 
@@ -232,3 +231,7 @@ function provideLog($provide) {
 function pending() {
   dump('PENDING');
 };
+
+function trace(name) {
+  dump(new Error(name).stack);
+}

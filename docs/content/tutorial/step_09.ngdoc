@@ -2,15 +2,13 @@
 @name Tutorial: 9 - Filters
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
-<ul doc:tutorial-nav="9"></ul>
+<ul doc-tutorial-nav="9"></ul>
 
 
 In this step you will learn how to create your own custom display filter.
 
 
-<doc:tutorial-instructions step="9"></doc:tutorial-instructions>
+<div doc-tutorial-reset="9"></div>
 
 
 Navigate to one of the detail pages.
@@ -26,19 +24,31 @@ GitHub}:
 
 ## Custom Filter
 
-In order to create a new filter, simply register your custom filter function with the {@link
-api/angular.module.ng.$filter `angular.module.ng.$filter`} API.
+In order to create a new filter, you are going to create a `phonecatFilters` module and register
+your custom filter with this module:
 
 __`app/js/filters.js`:__
 <pre>
-angular.module.ng.$filter('checkmark', function(input) {
-  return input ? '\u2713' : '\u2718';
+angular.module('phonecatFilters', []).filter('checkmark', function() {
+  return function(input) {
+    return input ? '\u2713' : '\u2718';
+  };
 });
 </pre>
 
 The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
 return one of two unicode characters we have chosen to represent true or false (`\u2713` and
 `\u2718`).
+
+Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
+our main `phonecat` module.
+
+__`app/js/app.js`:__
+<pre>
+...
+angular.module('phonecat', ['phonecatFilters']).
+...
+</pre>
 
 
 ## Template
@@ -81,14 +91,24 @@ Filters, like any other component, should be tested and these tests are very eas
 
 __`test/unit/filtersSpec.js`:__
 <pre>
-describe('checkmark filter', function() {
+describe('filter', function() {
 
-  it('should convert boolean values to unicode checkmark or cross', function() {
-    expect(angular.module.ng.$filter.checkmark(true)).toBe('\u2713');
-    expect(angular.module.ng.$filter.checkmark(false)).toBe('\u2718');
+  beforeEach(module('phonecatFilters'));
+
+
+  describe('checkmark', function() {
+
+    it('should convert boolean values to unicode checkmark or cross',
+        inject(function(checkmarkFilter) {
+      expect(checkmarkFilter(true)).toBe('\u2713');
+      expect(checkmarkFilter(false)).toBe('\u2718');
+    }));
   });
-})
+});
 </pre>
+
+Note that you need to configure our test injector with the `phonecatFilters` module before any of
+our filter tests execute.
 
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
@@ -96,7 +116,7 @@ output.
         Chrome: Runner reset.
         ....
         Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
-          Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
+          Chrome 19.0.1084.36 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
 
 # Experiments
@@ -111,7 +131,7 @@ following bindings to `index.html`:
 *  We can also create a model with an input element, and combine it with a filtered binding. Add
 the following to index.html:
 
-        <input ng:model="userInput"> Uppercased: {{ userInput | uppercase }}
+        <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
 
 
 # Summary
@@ -120,4 +140,4 @@ Now that you have learned how to write and test a custom filter, go to {@link st
 learn how we can use angular to enhance the phone details page further.
 
 
-<ul doc:tutorial-nav="9"></ul>
+<ul doc-tutorial-nav="9"></ul>

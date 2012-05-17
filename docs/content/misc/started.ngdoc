@@ -77,7 +77,7 @@ After the refresh, the page should look something like this:
 
 These are some of the important points to note from this example:
 
-* The text input {@link api/angular.module.ng.$compileProvider.directive directive}
+* The text input {@link guide/directive directive}
   is bound to a model variable called `yourname`.
 * The double curly braces notation binds the `yourname` model to the greeting text.
 

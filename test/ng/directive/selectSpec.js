@@ -61,6 +61,17 @@ describe('select', function() {
     });
 
 
+    it('should not interfere with selection via selected attr if ngModel directive is not present',
+        function() {
+      compile('<select>' +
+                '<option>not me</option>' +
+                '<option selected>me!</option>' +
+                '<option>nah</option>' +
+              '</select>');
+      expect(element).toEqualSelect('not me', ['me!'], 'nah');
+    });
+
+
     it('should require', function() {
       compile(
         '<select name="select" ng-model="selection" required ng-change="change()">' +

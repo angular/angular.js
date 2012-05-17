@@ -2,15 +2,13 @@
 @name Tutorial: 10 - Event Handlers
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
-<ul doc:tutorial-nav="10"></ul>
+<ul doc-tutorial-nav="10"></ul>
 
 
 In this step, you will add a clickable phone image swapper to the phone details page.
 
 
-<doc:tutorial-instructions step="10"></doc:tutorial-instructions>
+<div doc-tutorial-reset="10"></div>
 
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
@@ -27,52 +25,53 @@ GitHub}:
 __`app/js/controllers.js`:__
 <pre>
 ...
-function PhoneDetailCtrl($xhr) {
-  var self = this;
-
-  $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
-    self.phone = response;
-    self.mainImageUrl = response.images[0];
+function PhoneDetailCtrl($scope, $routeParams, $http) {
+  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+    $scope.phone = data;
+    $scope.mainImageUrl = data.images[0];
   });
 
-  self.setImage = function(imageUrl) {
-    self.mainImageUrl = imageUrl;
+  $scope.setImage = function(imageUrl) {
+    $scope.mainImageUrl = imageUrl;
   }
 }
 
-//PhoneDetailCtrl.$inject = ['$xhr'];
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
 </pre>
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image url.
 
-We also created a `setImage` controller method to change the value of `mainImageUrl`.
+We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
 
 
 ## Template
 
 __`app/partials/phone-detail.html`:__
 <pre>
-<img ng:src="{{mainImageUrl}}" class="phone"/>
+<img ng-src="{{mainImageUrl}}" class="phone">
 
 ...
 
 <ul class="phone-thumbs">
-  <li ng:repeat="img in phone.images">
-    <img ng:src="{{img}}" ng:click="setImage(img)">
+  <li ng-repeat="img in phone.images">
+    <img ng-src="{{img}}" ng-click="setImage(img)">
   </li>
 </ul>
 ...
 </pre>
 
-We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
+We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
 
-We also registered an {@link api/angular.directive.ng:click `ng:click`} handler with thumbnail
-images. When a user clicks on one of the thumbnail images, the handler will use the `setImage`
-controller method to change the value of the `mainImageUrl` property to the url of the thumbnail
-image.
+We also registered an {@link api/angular.module.ng.$compileProvider.directive.ngClick `ngClick`}
+handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
+use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
+url of the thumbnail image.
 
-<img src="img/tutorial/tutorial_10-11_final.png">
+<div style="display: none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_10-11_final.png">
+</div>
 
 ## Test
 
@@ -85,13 +84,10 @@ __`test/e2e/scenarios.js`:__
 ...
   describe('Phone detail view', function() {
 
-    beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/phones/nexus-s');
-    });
-
+...
 
     it('should display the first phone image as the main phone image', function() {
-       expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
     });
 
 
@@ -113,24 +109,27 @@ angular's server}.
 
 # Experiments
 
-* Let's add a new controller method to `PhoneCatCtrl`:
+* Let's add a new controller method to `PhoneDetailCtrl`:
 
-          this.hello = function(name) {
+          $scope.hello = function(name) {
               alert('Hello ' + (name || 'world') + '!');
           }
 
   and add:
 
-          <button ng:click="hello('Elmo')">Hello</button>
+          <button ng-click="hello('Elmo')">Hello</button>
 
-  to the `index.html` template.
+  to the `phone-details.html` template.
 
+<div style="display: none">
+TODO!
   The controller methods are inherited between controllers/scopes, so you can use the same snippet
 in the `phone-list.html` template as well.
 
 * Move the `hello` method from `PhoneCatCtrl` to `PhoneListCtrl` and you'll see that the button
 declared in `index.html` will stop working, while the one declared in the `phone-list.html`
 template remains operational.
+</div>
 
 
 # Summary
@@ -139,4 +138,4 @@ With the phone image swapper in place, we're ready for {@link step_11 step 11} (
 learn an even better way to fetch data.
 
 
-<ul doc:tutorial-nav="10"></ul>
+<ul doc-tutorial-nav="10"></ul>

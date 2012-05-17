@@ -165,467 +165,502 @@ describe('parser', function() {
     });
   });
 
-  var scope, $filterProvider;
+  var $filterProvider, scope;
+
   beforeEach(module(['$filterProvider', function (filterProvider) {
     $filterProvider = filterProvider;
   }]));
-  beforeEach(inject(function ($rootScope) {
-    scope = $rootScope;
-  }));
-
-  it('should parse expressions', function() {
-    expect(scope.$eval("-1")).toEqual(-1);
-    expect(scope.$eval("1 + 2.5")).toEqual(3.5);
-    expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
-    expect(scope.$eval("1+2*3/4")).toEqual(1+2*3/4);
-    expect(scope.$eval("0--1+1.5")).toEqual(0- -1 + 1.5);
-    expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0- -1+ +2*-3/-4);
-    expect(scope.$eval("1/2*3")).toEqual(1/2*3);
-  });
-
-  it('should parse comparison', function() {
-    expect(scope.$eval("false")).toBeFalsy();
-    expect(scope.$eval("!true")).toBeFalsy();
-    expect(scope.$eval("1==1")).toBeTruthy();
-    expect(scope.$eval("1!=2")).toBeTruthy();
-    expect(scope.$eval("1<2")).toBeTruthy();
-    expect(scope.$eval("1<=1")).toBeTruthy();
-    expect(scope.$eval("1>2")).toEqual(1>2);
-    expect(scope.$eval("2>=1")).toEqual(2>=1);
-    expect(scope.$eval("true==2<3")).toEqual(true === 2<3);
-  });
-
-  it('should parse logical', function() {
-    expect(scope.$eval("0&&2")).toEqual(0&&2);
-    expect(scope.$eval("0||2")).toEqual(0||2);
-    expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
-  });
-
-  it('should parse string', function() {
-    expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
-  });
-
-  it('should parse filters', function() {
-    $filterProvider.register('substring', valueFn(function(input, start, end) {
-      return input.substring(start, end);
-    }));
-
-    expect(function() {
-      scope.$eval("1|nonexistent");
-    }).toThrow(new Error("Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
-
-    scope.offset =  3;
-    expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
-    expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
-  });
-
-  it('should access scope', function() {
-    scope.a =  123;
-    scope.b = {c: 456};
-    expect(scope.$eval("a", scope)).toEqual(123);
-    expect(scope.$eval("b.c", scope)).toEqual(456);
-    expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
-  });
-
-  it('should support property names that colide with native object properties', function() {
-    // regression
-    scope.watch = 1;
-    scope.constructor = 2;
-    scope.toString = 3;
-
-    expect(scope.$eval('watch', scope)).toBe(1);
-    expect(scope.$eval('constructor', scope)).toBe(2);
-    expect(scope.$eval('toString', scope)).toBe(3);
-  });
-
-  it('should evaluate grouped expressions', function() {
-    expect(scope.$eval("(1+2)*3")).toEqual((1+2)*3);
-  });
-
-  it('should evaluate assignments', function() {
-    expect(scope.$eval("a=12")).toEqual(12);
-    expect(scope.a).toEqual(12);
-
-    expect(scope.$eval("x.y.z=123;")).toEqual(123);
-    expect(scope.x.y.z).toEqual(123);
-
-    expect(scope.$eval("a=123; b=234")).toEqual(234);
-    expect(scope.a).toEqual(123);
-    expect(scope.b).toEqual(234);
-  });
-
-  it('should evaluate function call without arguments', function() {
-    scope['const'] =  function(a,b){return 123;};
-    expect(scope.$eval("const()")).toEqual(123);
-  });
-
-  it('should evaluate function call with arguments', function() {
-    scope.add =  function(a,b) {
-      return a+b;
-    };
-    expect(scope.$eval("add(1,2)")).toEqual(3);
-  });
-
-  it('should evaluate function call from a return value', function() {
-    scope.val = 33;
-    scope.getter = function() { return function() { return this.val; }};
-    expect(scope.$eval("getter()()")).toBe(33);
-  });
-
-  it('should evaluate multiplication and division', function() {
-    scope.taxRate =  8;
-    scope.subTotal =  100;
-    expect(scope.$eval("taxRate / 100 * subTotal")).toEqual(8);
-    expect(scope.$eval("subTotal * taxRate / 100")).toEqual(8);
-  });
-
-  it('should evaluate array', function() {
-    expect(scope.$eval("[]").length).toEqual(0);
-    expect(scope.$eval("[1, 2]").length).toEqual(2);
-    expect(scope.$eval("[1, 2]")[0]).toEqual(1);
-    expect(scope.$eval("[1, 2]")[1]).toEqual(2);
-  });
-
-  it('should evaluate array access', function() {
-    expect(scope.$eval("[1][0]")).toEqual(1);
-    expect(scope.$eval("[[1]][0][0]")).toEqual(1);
-    expect(scope.$eval("[].length")).toEqual(0);
-    expect(scope.$eval("[1, 2].length")).toEqual(2);
-  });
-
-  it('should evaluate object', function() {
-    expect(toJson(scope.$eval("{}"))).toEqual("{}");
-    expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
-    expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
-    expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
-  });
-
-  it('should evaluate object access', function() {
-    expect(scope.$eval("{false:'WC', true:'CC'}[false]")).toEqual("WC");
-  });
-
-  it('should evaluate JSON', function() {
-    expect(toJson(scope.$eval("[{}]"))).toEqual("[{}]");
-    expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
-  });
-
-  it('should evaluate multiple statements', function() {
-    expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
-    expect(scope.$eval(";;1;;")).toEqual(1);
-  });
-
-  it('should evaluate object methods in correct context (this)', function() {
-    var C = function () {
-      this.a = 123;
-    };
-    C.prototype.getA = function() {
-      return this.a;
-    };
-
-    scope.obj = new C();
-    expect(scope.$eval("obj.getA()")).toEqual(123);
-    expect(scope.$eval("obj['getA']()")).toEqual(123);
-  });
-
-  it('should evaluate methods in correct context (this) in argument', function() {
-    var C = function () {
-      this.a = 123;
-    };
-    C.prototype.sum = function(value) {
-      return this.a + value;
-    };
-    C.prototype.getA = function() {
-      return this.a;
-    };
-
-    scope.obj = new C();
-    expect(scope.$eval("obj.sum(obj.getA())")).toEqual(246);
-    expect(scope.$eval("obj['sum'](obj.getA())")).toEqual(246);
-  });
-
-  it('should evaluate objects on scope context', function() {
-    scope.a =  "abc";
-    expect(scope.$eval("{a:a}").a).toEqual("abc");
-  });
-
-  it('should evaluate field access on function call result', function() {
-    scope.a =  function() {
-      return {name:'misko'};
-    };
-    expect(scope.$eval("a().name")).toEqual("misko");
-  });
-
-  it('should evaluate field access after array access', function () {
-    scope.items =  [{}, {name:'misko'}];
-    expect(scope.$eval('items[1].name')).toEqual("misko");
-  });
-
-  it('should evaluate array assignment', function() {
-    scope.items =  [];
-
-    expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
-    expect(scope.$eval('items[1]')).toEqual("abc");
-//    Dont know how to make this work....
-//    expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
-//    expect(scope.$eval('books[1]')).toEqual("moby");
-  });
-
-  it('should evaluate grouped filters', function() {
-    scope.name = 'MISKO';
-    expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
-    expect(scope.$eval('n')).toEqual('misko');
-  });
-
-  it('should evaluate remainder', function() {
-    expect(scope.$eval('1%2')).toEqual(1);
-  });
-
-  it('should evaluate sum with undefined', function() {
-    expect(scope.$eval('1+undefined')).toEqual(1);
-    expect(scope.$eval('undefined+1')).toEqual(1);
-  });
-
-  it('should throw exception on non-closed bracket', function() {
-    expect(function() {
-      scope.$eval('[].count(');
-    }).toThrow('Unexpected end of expression: [].count(');
-  });
-
-  it('should evaluate double negation', function() {
-    expect(scope.$eval('true')).toBeTruthy();
-    expect(scope.$eval('!true')).toBeFalsy();
-    expect(scope.$eval('!!true')).toBeTruthy();
-    expect(scope.$eval('{true:"a", false:"b"}[!!true]')).toEqual('a');
-  });
-
-  it('should evaluate negation', function() {
-    expect(scope.$eval("!false || true")).toEqual(!false || true);
-    expect(scope.$eval("!11 == 10")).toEqual(!11 == 10);
-    expect(scope.$eval("12/6/2")).toEqual(12/6/2);
-  });
-
-  it('should evaluate exclamation mark', function() {
-    expect(scope.$eval('suffix = "!"')).toEqual('!');
-  });
-
-  it('should evaluate minus', function() {
-    expect(scope.$eval("{a:'-'}")).toEqual({a: "-"});
-  });
-
-  it('should evaluate undefined', function() {
-    expect(scope.$eval("undefined")).not.toBeDefined();
-    expect(scope.$eval("a=undefined")).not.toBeDefined();
-    expect(scope.a).not.toBeDefined();
-  });
-
-  it('should allow assignment after array dereference', function() {
-    scope.obj = [{}];
-    scope.$eval('obj[0].name=1');
-    expect(scope.obj.name).toBeUndefined();
-    expect(scope.obj[0].name).toEqual(1);
-  });
-
-  it('should short-circuit AND operator', function() {
-    scope.run = function() {
-      throw "IT SHOULD NOT HAVE RUN";
-    };
-    expect(scope.$eval('false && run()')).toBe(false);
-  });
-
-  it('should short-circuit OR operator', function() {
-    scope.run = function() {
-      throw "IT SHOULD NOT HAVE RUN";
-    };
-    expect(scope.$eval('true || run()')).toBe(true);
-  });
 
 
-  describe('promises', function() {
-    var deferred, promise, q;
+  forEach([true, false], function(cspEnabled) {
 
-    beforeEach(inject(function($q) {
-      q = $q;
-      deferred = q.defer();
-      promise = deferred.promise;
-    }));
+    describe('csp ' + cspEnabled, function() {
 
-    describe('{{promise}}', function() {
-      it('should evaluated resolved promise and get its value', function() {
-        deferred.resolve('hello!');
-        scope.greeting = promise;
-        expect(scope.$eval('greeting')).toBe(undefined);
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe('hello!');
+      beforeEach(inject(function ($rootScope, $sniffer) {
+        scope = $rootScope;
+        $sniffer.csp = cspEnabled;
+        getterFnCache = {}; // clear cache
+      }));
+
+
+      it('should parse expressions', function() {
+        expect(scope.$eval("-1")).toEqual(-1);
+        expect(scope.$eval("1 + 2.5")).toEqual(3.5);
+        expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
+        expect(scope.$eval("1+2*3/4")).toEqual(1+2*3/4);
+        expect(scope.$eval("0--1+1.5")).toEqual(0- -1 + 1.5);
+        expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0- -1+ +2*-3/-4);
+        expect(scope.$eval("1/2*3")).toEqual(1/2*3);
+      });
+
+      it('should parse comparison', function() {
+        expect(scope.$eval("false")).toBeFalsy();
+        expect(scope.$eval("!true")).toBeFalsy();
+        expect(scope.$eval("1==1")).toBeTruthy();
+        expect(scope.$eval("1!=2")).toBeTruthy();
+        expect(scope.$eval("1<2")).toBeTruthy();
+        expect(scope.$eval("1<=1")).toBeTruthy();
+        expect(scope.$eval("1>2")).toEqual(1>2);
+        expect(scope.$eval("2>=1")).toEqual(2>=1);
+        expect(scope.$eval("true==2<3")).toEqual(true === 2<3);
+      });
+
+      it('should parse logical', function() {
+        expect(scope.$eval("0&&2")).toEqual(0&&2);
+        expect(scope.$eval("0||2")).toEqual(0||2);
+        expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
+      });
+
+      it('should parse string', function() {
+        expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
+      });
+
+      it('should parse filters', function() {
+        $filterProvider.register('substring', valueFn(function(input, start, end) {
+          return input.substring(start, end);
+        }));
+
+        expect(function() {
+          scope.$eval("1|nonexistent");
+        }).toThrow(new Error("Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
+
+        scope.offset =  3;
+        expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
+        expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
+      });
+
+      it('should access scope', function() {
+        scope.a =  123;
+        scope.b = {c: 456};
+        expect(scope.$eval("a", scope)).toEqual(123);
+        expect(scope.$eval("b.c", scope)).toEqual(456);
+        expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
+      });
+
+      it('should resolve deeply nested paths (important for CSP mode)', function() {
+        scope.a = {b: {c: {d: {e: {f: {g: {h: {i: {j: {k: {l: {m: {n: 'nooo!'}}}}}}}}}}}}};
+        expect(scope.$eval("a.b.c.d.e.f.g.h.i.j.k.l.m.n", scope)).toBe('nooo!');
+      });
+
+      it('should be forgiving', function() {
+        scope.a = {b: 23};
+        expect(scope.$eval('b')).toBeUndefined();
+        expect(scope.$eval('a.x')).toBeUndefined();
+        expect(scope.$eval('a.b.c.d')).toBeUndefined();
+      });
+
+      it('should support property names that collide with native object properties', function() {
+        // regression
+        scope.watch = 1;
+        scope.constructor = 2;
+        scope.toString = 3;
+
+        expect(scope.$eval('watch', scope)).toBe(1);
+        expect(scope.$eval('constructor', scope)).toBe(2);
+        expect(scope.$eval('toString', scope)).toBe(3);
+      });
+
+      it('should evaluate grouped expressions', function() {
+        expect(scope.$eval("(1+2)*3")).toEqual((1+2)*3);
+      });
+
+      it('should evaluate assignments', function() {
+        expect(scope.$eval("a=12")).toEqual(12);
+        expect(scope.a).toEqual(12);
+
+        expect(scope.$eval("x.y.z=123;")).toEqual(123);
+        expect(scope.x.y.z).toEqual(123);
+
+        expect(scope.$eval("a=123; b=234")).toEqual(234);
+        expect(scope.a).toEqual(123);
+        expect(scope.b).toEqual(234);
+      });
+
+      it('should evaluate function call without arguments', function() {
+        scope['const'] =  function(a,b){return 123;};
+        expect(scope.$eval("const()")).toEqual(123);
+      });
+
+      it('should evaluate function call with arguments', function() {
+        scope.add =  function(a,b) {
+          return a+b;
+        };
+        expect(scope.$eval("add(1,2)")).toEqual(3);
+      });
+
+      it('should evaluate function call from a return value', function() {
+        scope.val = 33;
+        scope.getter = function() { return function() { return this.val; }};
+        expect(scope.$eval("getter()()")).toBe(33);
+      });
+
+      it('should evaluate multiplication and division', function() {
+        scope.taxRate =  8;
+        scope.subTotal =  100;
+        expect(scope.$eval("taxRate / 100 * subTotal")).toEqual(8);
+        expect(scope.$eval("subTotal * taxRate / 100")).toEqual(8);
+      });
+
+      it('should evaluate array', function() {
+        expect(scope.$eval("[]").length).toEqual(0);
+        expect(scope.$eval("[1, 2]").length).toEqual(2);
+        expect(scope.$eval("[1, 2]")[0]).toEqual(1);
+        expect(scope.$eval("[1, 2]")[1]).toEqual(2);
+      });
+
+      it('should evaluate array access', function() {
+        expect(scope.$eval("[1][0]")).toEqual(1);
+        expect(scope.$eval("[[1]][0][0]")).toEqual(1);
+        expect(scope.$eval("[].length")).toEqual(0);
+        expect(scope.$eval("[1, 2].length")).toEqual(2);
+      });
+
+      it('should evaluate object', function() {
+        expect(toJson(scope.$eval("{}"))).toEqual("{}");
+        expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
+        expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
+        expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
+      });
+
+      it('should evaluate object access', function() {
+        expect(scope.$eval("{false:'WC', true:'CC'}[false]")).toEqual("WC");
+      });
+
+      it('should evaluate JSON', function() {
+        expect(toJson(scope.$eval("[{}]"))).toEqual("[{}]");
+        expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
+      });
+
+      it('should evaluate multiple statements', function() {
+        expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
+        expect(scope.$eval(";;1;;")).toEqual(1);
+      });
+
+      it('should evaluate object methods in correct context (this)', function() {
+        var C = function () {
+          this.a = 123;
+        };
+        C.prototype.getA = function() {
+          return this.a;
+        };
+
+        scope.obj = new C();
+        expect(scope.$eval("obj.getA()")).toEqual(123);
+        expect(scope.$eval("obj['getA']()")).toEqual(123);
+      });
+
+      it('should evaluate methods in correct context (this) in argument', function() {
+        var C = function () {
+          this.a = 123;
+        };
+        C.prototype.sum = function(value) {
+          return this.a + value;
+        };
+        C.prototype.getA = function() {
+          return this.a;
+        };
+
+        scope.obj = new C();
+        expect(scope.$eval("obj.sum(obj.getA())")).toEqual(246);
+        expect(scope.$eval("obj['sum'](obj.getA())")).toEqual(246);
+      });
+
+      it('should evaluate objects on scope context', function() {
+        scope.a =  "abc";
+        expect(scope.$eval("{a:a}").a).toEqual("abc");
+      });
+
+      it('should evaluate field access on function call result', function() {
+        scope.a =  function() {
+          return {name:'misko'};
+        };
+        expect(scope.$eval("a().name")).toEqual("misko");
+      });
+
+      it('should evaluate field access after array access', function () {
+        scope.items =  [{}, {name:'misko'}];
+        expect(scope.$eval('items[1].name')).toEqual("misko");
+      });
+
+      it('should evaluate array assignment', function() {
+        scope.items =  [];
+
+        expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
+        expect(scope.$eval('items[1]')).toEqual("abc");
+    //    Dont know how to make this work....
+    //    expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
+    //    expect(scope.$eval('books[1]')).toEqual("moby");
+      });
+
+      it('should evaluate grouped filters', function() {
+        scope.name = 'MISKO';
+        expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
+        expect(scope.$eval('n')).toEqual('misko');
+      });
+
+      it('should evaluate remainder', function() {
+        expect(scope.$eval('1%2')).toEqual(1);
+      });
+
+      it('should evaluate sum with undefined', function() {
+        expect(scope.$eval('1+undefined')).toEqual(1);
+        expect(scope.$eval('undefined+1')).toEqual(1);
+      });
+
+      it('should throw exception on non-closed bracket', function() {
+        expect(function() {
+          scope.$eval('[].count(');
+        }).toThrow('Unexpected end of expression: [].count(');
+      });
+
+      it('should evaluate double negation', function() {
+        expect(scope.$eval('true')).toBeTruthy();
+        expect(scope.$eval('!true')).toBeFalsy();
+        expect(scope.$eval('!!true')).toBeTruthy();
+        expect(scope.$eval('{true:"a", false:"b"}[!!true]')).toEqual('a');
+      });
+
+      it('should evaluate negation', function() {
+        expect(scope.$eval("!false || true")).toEqual(!false || true);
+        expect(scope.$eval("!11 == 10")).toEqual(!11 == 10);
+        expect(scope.$eval("12/6/2")).toEqual(12/6/2);
+      });
+
+      it('should evaluate exclamation mark', function() {
+        expect(scope.$eval('suffix = "!"')).toEqual('!');
+      });
+
+      it('should evaluate minus', function() {
+        expect(scope.$eval("{a:'-'}")).toEqual({a: "-"});
+      });
+
+      it('should evaluate undefined', function() {
+        expect(scope.$eval("undefined")).not.toBeDefined();
+        expect(scope.$eval("a=undefined")).not.toBeDefined();
+        expect(scope.a).not.toBeDefined();
+      });
+
+      it('should allow assignment after array dereference', function() {
+        scope.obj = [{}];
+        scope.$eval('obj[0].name=1');
+        expect(scope.obj.name).toBeUndefined();
+        expect(scope.obj[0].name).toEqual(1);
+      });
+
+      it('should short-circuit AND operator', function() {
+        scope.run = function() {
+          throw "IT SHOULD NOT HAVE RUN";
+        };
+        expect(scope.$eval('false && run()')).toBe(false);
+      });
+
+      it('should short-circuit OR operator', function() {
+        scope.run = function() {
+          throw "IT SHOULD NOT HAVE RUN";
+        };
+        expect(scope.$eval('true || run()')).toBe(true);
       });
 
 
-      it('should evaluated rejected promise and ignore the rejection reason', function() {
-        deferred.reject('sorry');
-        scope.greeting = promise;
-        expect(scope.$eval('gretting')).toBe(undefined);
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe(undefined);
+      it('should support method calls on primitive types', function() {
+        scope.empty = '';
+        scope.zero = 0;
+        scope.bool = false;
+
+        expect(scope.$eval('empty.substr(0)')).toBe('');
+        expect(scope.$eval('zero.toString()')).toBe('0');
+        expect(scope.$eval('bool.toString()')).toBe('false');
       });
 
 
-      it('should evaluate a promise and eventualy get its value', function() {
-        scope.greeting = promise;
-        expect(scope.$eval('greeting')).toBe(undefined);
+      describe('promises', function() {
+        var deferred, promise, q;
 
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe(undefined);
+        beforeEach(inject(function($q) {
+          q = $q;
+          deferred = q.defer();
+          promise = deferred.promise;
+        }));
 
-        deferred.resolve('hello!');
-        expect(scope.$eval('greeting')).toBe(undefined);
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe('hello!');
+        describe('{{promise}}', function() {
+          it('should evaluated resolved promise and get its value', function() {
+            deferred.resolve('hello!');
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe('hello!');
+          });
+
+
+          it('should evaluated rejected promise and ignore the rejection reason', function() {
+            deferred.reject('sorry');
+            scope.greeting = promise;
+            expect(scope.$eval('gretting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+          });
+
+
+          it('should evaluate a promise and eventualy get its value', function() {
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            deferred.resolve('hello!');
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe('hello!');
+          });
+
+
+          it('should evaluate a promise and eventualy ignore its rejection', function() {
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            deferred.reject('sorry');
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+          });
+        });
+
+        describe('dereferencing', function() {
+          it('should evaluate and dereference properties leading to and from a promise', function() {
+            scope.obj = {greeting: promise};
+            expect(scope.$eval('obj.greeting')).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('obj.greeting')).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+
+            deferred.resolve({polite: 'Good morning!'});
+            scope.$digest();
+            expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
+          });
+
+          it('should evaluate and dereference properties leading to and from a promise via bracket ' +
+              'notation', function() {
+            scope.obj = {greeting: promise};
+            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+
+            deferred.resolve({polite: 'Good morning!'});
+            scope.$digest();
+            expect(scope.$eval('obj["greeting"]')).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe('Good morning!');
+          });
+
+
+          it('should evaluate and dereference array references leading to and from a promise',
+              function() {
+            scope.greetings = [promise];
+            expect(scope.$eval('greetings[0]')).toBe(undefined);
+            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greetings[0]')).toBe(undefined);
+            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+
+            deferred.resolve(['Hi!', 'Cau!']);
+            scope.$digest();
+            expect(scope.$eval('greetings[0]')).toEqual(['Hi!', 'Cau!']);
+            expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
+          });
+
+
+          it('should evaluate and dereference promises used as function arguments', function() {
+            scope.greet = function(name) { return 'Hi ' + name + '!'; };
+            scope.name = promise;
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            scope.$digest();
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            deferred.resolve('Veronica');
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            scope.$digest();
+            expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
+          });
+
+
+          it('should evaluate and dereference promises used as array indexes', function() {
+            scope.childIndex = promise;
+            scope.kids = ['Adam', 'Veronica', 'Elisa'];
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            deferred.resolve(1);
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
+          });
+
+
+          it('should evaluate and dereference promises used as keys in bracket notation', function() {
+            scope.childKey = promise;
+            scope.kids = {'a': 'Adam', 'v': 'Veronica', 'e': 'Elisa'};
+
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            deferred.resolve('v');
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childKey]')).toBe('Veronica');
+          });
+
+
+          it('should not mess with the promise if it was not directly evaluated', function() {
+            scope.obj = {greeting: promise, username: 'hi'};
+            var obj = scope.$eval('obj');
+            expect(obj.username).toEqual('hi');
+            expect(typeof obj.greeting.then).toBe('function');
+          });
+        });
       });
 
 
-      it('should evaluate a promise and eventualy ignore its rejection', function() {
-        scope.greeting = promise;
-        expect(scope.$eval('greeting')).toBe(undefined);
+      describe('assignable', function() {
+        it('should expose assignment function', inject(function($parse) {
+          var fn = $parse('a');
+          expect(fn.assign).toBeTruthy();
+          var scope = {};
+          fn.assign(scope, 123);
+          expect(scope).toEqual({a:123});
+        }));
+      });
 
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe(undefined);
 
-        deferred.reject('sorry');
-        expect(scope.$eval('greeting')).toBe(undefined);
-        scope.$digest();
-        expect(scope.$eval('greeting')).toBe(undefined);
+      describe('locals', function() {
+        it('should expose local variables', inject(function($parse) {
+          expect($parse('a')({a: 0}, {a: 1})).toEqual(1);
+          expect($parse('add(a,b)')({b: 1, add: function(a, b) { return a + b; }}, {a: 2})).toEqual(3);
+        }));
+
+        it('should expose traverse locals', inject(function($parse) {
+          expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
+          expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
+          expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+        }));
       });
     });
-
-    describe('dereferencing', function() {
-      it('should evaluate and dereference properties leading to and from a promise', function() {
-        scope.obj = {greeting: promise};
-        expect(scope.$eval('obj.greeting')).toBe(undefined);
-        expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('obj.greeting')).toBe(undefined);
-        expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
-
-        deferred.resolve({polite: 'Good morning!'});
-        scope.$digest();
-        expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
-        expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
-      });
-
-      it('should evaluate and dereference properties leading to and from a promise via bracket ' +
-          'notation', function() {
-        scope.obj = {greeting: promise};
-        expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-        expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-        expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
-
-        deferred.resolve({polite: 'Good morning!'});
-        scope.$digest();
-        expect(scope.$eval('obj["greeting"]')).toEqual({polite: 'Good morning!'});
-        expect(scope.$eval('obj["greeting"]["polite"]')).toBe('Good morning!');
-      });
-
-
-      it('should evaluate and dereference array references leading to and from a promise',
-          function() {
-        scope.greetings = [promise];
-        expect(scope.$eval('greetings[0]')).toBe(undefined);
-        expect(scope.$eval('greetings[0][0]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('greetings[0]')).toBe(undefined);
-        expect(scope.$eval('greetings[0][0]')).toBe(undefined);
-
-        deferred.resolve(['Hi!', 'Cau!']);
-        scope.$digest();
-        expect(scope.$eval('greetings[0]')).toEqual(['Hi!', 'Cau!']);
-        expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
-      });
-
-
-      it('should evaluate and dereference promises used as function arguments', function() {
-        scope.greet = function(name) { return 'Hi ' + name + '!'; };
-        scope.name = promise;
-        expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-        scope.$digest();
-        expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-        deferred.resolve('Veronica');
-        expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-        scope.$digest();
-        expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
-      });
-
-
-      it('should evaluate and dereference promises used as array indexes', function() {
-        scope.childIndex = promise;
-        scope.kids = ['Adam', 'Veronica', 'Elisa'];
-        expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-        deferred.resolve(1);
-        expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
-      });
-
-
-      it('should evaluate and dereference promises used as keys in bracket notation', function() {
-        scope.childKey = promise;
-        scope.kids = {'a': 'Adam', 'v': 'Veronica', 'e': 'Elisa'};
-
-        expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-        deferred.resolve('v');
-        expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-        scope.$digest();
-        expect(scope.$eval('kids[childKey]')).toBe('Veronica');
-      });
-
-
-      it('should not mess with the promise if it was not directly evaluated', function() {
-        scope.obj = {greeting: promise, username: 'hi'};
-        var obj = scope.$eval('obj');
-        expect(obj.username).toEqual('hi');
-        expect(typeof obj.greeting.then).toBe('function');
-      });
-    });
-  });
-
-
-  describe('assignable', function() {
-    it('should expose assignment function', inject(function($parse) {
-      var fn = $parse('a');
-      expect(fn.assign).toBeTruthy();
-      var scope = {};
-      fn.assign(scope, 123);
-      expect(scope).toEqual({a:123});
-    }));
-  });
-
-
-  describe('locals', function() {
-    it('should expose local variables', inject(function($parse) {
-      expect($parse('a')({a: 0}, {a: 1})).toEqual(1);
-      expect($parse('add(a,b)')({b: 1, add: function(a, b) { return a + b; }}, {a: 2})).toEqual(3);
-    }));
-
-    it('should expose traverse locals', inject(function($parse) {
-      expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
-      expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
-      expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
-    }));
   });
 });

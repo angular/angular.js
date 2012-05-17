@@ -151,6 +151,16 @@ function $CacheFactoryProvider() {
   };
 }
 
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$templateCache
+ *
+ * @description
+ * Cache used for storing html templates.
+ *
+ * See {@link angular.module.ng.$cacheFactory $cacheFactory}.
+ *
+ */
 function $TemplateCacheProvider() {
   this.$get = ['$cacheFactory', function($cacheFactory) {
     return $cacheFactory('templates');

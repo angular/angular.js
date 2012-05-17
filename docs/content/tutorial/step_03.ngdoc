@@ -2,7 +2,7 @@
 @name Tutorial: 3 - Filtering Repeaters
 @description
 
-<ul doc:tutorial-nav="3"></ul>
+<ul doc-tutorial-nav="3"></ul>
 
 
 We did a lot of work in laying a foundation for the app in the last step, so now we'll do something
@@ -11,7 +11,7 @@ test, because a good end-to-end test is a good friend. It stays with your app, k
 and quickly detects regressions.
 
 
-<doc:tutorial-instructions step="3"></doc:tutorial-instructions>
+<div doc-tutorial-reset="3"></div>
 
 
 The app now has a search box. Notice that the phone list on the page changes depending on what a
@@ -31,16 +31,27 @@ We made no changes to the controller.
 
 __`app/index.html`:__
 <pre>
-...
-   Fulltext Search: <input ng-model="query">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span2">
+        <!--Sidebar content-->
 
-  <ul class="phones">
-    <li ng-repeat="phone in phones | filter:query">
-      {{phone.name}}
-      <p>{{phone.snippet}}</p>
-    </li>
-  </ul>
-...
+        Search: <input ng-model="query">
+
+      </div>
+      <div class="span10">
+        <!--Body content-->
+
+        <ul class="phones">
+          <li ng-repeat="phone in phones | filter:query">
+            {{phone.name}}
+            <p>{{phone.snippet}}</p>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
 </pre>
 
 We added a standard HTML `<input>` tag and used angular's
@@ -54,11 +65,11 @@ list. This new code demonstrates the following:
 name of the input box to a variable of the same name in the data model and keeps the two in sync.
 
   In this code, the data that a user types into the input box (named __`query`__) is immediately
-available as a filter input in the list repeater (`phone in phones | filter(`__`query`__`)`). When
+available as a filter input in the list repeater (`phone in phones | filter:`__`query`__). When
 changes to the data model cause the repeater's input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.
 
-      <img src="img/tutorial/tutorial_03.png">
+      <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
 * Use of `filter` filter. The {@link api/angular.module.ng.$filter.filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
@@ -85,6 +96,7 @@ describe('PhoneCat App', function() {
     beforeEach(function() {
       browser().navigateTo('../../app/index.html');
     });
+
 
     it('should filter the phone list as user types into the search box', function() {
       expect(repeater('.phones li').count()).toBe(3);
@@ -178,5 +190,5 @@ We have now added full text search and included a test to verify that search wor
 to {@link step_04 step 4} to learn how to add sorting capability to the phone app.
 
 
-<ul doc:tutorial-nav="3"></ul>
+<ul doc-tutorial-nav="3"></ul>
 

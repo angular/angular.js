@@ -2,9 +2,7 @@
 @name Tutorial: 6 - Templating Links & Images
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
-<ul doc:tutorial-nav="6"></ul>
+<ul doc-tutorial-nav="6"></ul>
 
 
 In this step, you will add thumbnail images for the phones in the phone list, and links that, for
@@ -12,7 +10,7 @@ now, will go nowhere. In subsequent steps you will use the links to display addi
 about the phones in the catalog.
 
 
-<doc:tutorial-instructions step="6"></doc:tutorial-instructions>
+<div doc-tutorial-reset="6"></div>
 
 
 You should now see links and images of the phones in the list.
@@ -47,26 +45,27 @@ __`app/phones/phones.json`__ (sample snippet):
 __`app/index.html`:__
 <pre>
 ...
-  <ul class="phones">
-    <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
-      <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
-      <a href="#/phones/{{phone.id}}" class="thumb"><img ng:src="{{phone.imageUrl}}"></a>
-      <p>{{phone.snippet}}</p>
-    </li>
-  </ul>
+        <ul class="phones">
+          <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
+            <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+            <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+            <p>{{phone.snippet}}</p>
+          </li>
+        </ul>
 ...
 </pre>
 
 To dynamically generate links that will in the future lead to phone detail pages, we used the
-now-familiar {@link guide/dev_guide.compiler.markup double-curly brace markup} in the `href`
-attribute values. In step 2, we added the `{{phone.name}}` binding as the element content. In this
-step the `{{phone.id}}` binding is used in the element attribute.
+now-familiar double-curly brace binding in the `href` attribute values. In step 2, we added the
+`{{phone.name}}` binding as the element content. In this step the `{{phone.id}}` binding is used in
+the element attribute.
 
 We also added phone images next to each record using an image tag with the {@link
-api/angular.directive.ng:src ng:src} directive. That directive prevents the browser from treating
-the angular `{{ expression }}` markup literally, which it would have done if we had only specified
-an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`). Using
-`ng:src` prevents the browser from making an http request to an invalid location.
+api/angular.module.ng.$compileProvider.directive.ngSrc ngSrc} directive. That directive prevents the
+browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
+invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
+specified an attribute binding in a regular `src` attribute (`<img  class="diagram" src="{{phone.imageUrl}}">`).
+Using `ngSrc` (`ng-src`) prevents the browser from making an http request to an invalid location.
 
 
 ## Test
@@ -77,7 +76,7 @@ __`test/e2e/scenarios.js`__:
     it('should render phone specific links', function() {
       input('query').enter('nexus');
       element('.phones li a').click();
-      expect(browser().location().hash()).toBe('/phones/nexus-s');
+      expect(browser().location().url()).toBe('/phones/nexus-s');
     });
 ...
 </pre>
@@ -92,10 +91,10 @@ angular's server}.
 
 # Experiments
 
-* Replace the `ng:src` directive with a plain old `<src>` attribute. Using tools such as Firebug,
+* Replace the `ng-src` directive with a plain old `src` attribute. Using tools such as Firebug,
 or Chrome's Web Inspector, or inspecting the webserver access logs, confirm that the app is indeed
 making an extraneous request to `/app/%7B%7Bphone.imageUrl%7D%7D` (or
-`/app/index.html/{{phone.imageUrl}}`).
+`/app/{{phone.imageUrl}}`).
 
 
 # Summary
@@ -104,4 +103,4 @@ Now that you have added phone images and links, go to {@link step_07 step 7} to 
 layout templates and how angular makes it easy to create applications that have multiple views.
 
 
-<ul doc:tutorial-nav="6"></ul>
+<ul doc-tutorial-nav="6"></ul>

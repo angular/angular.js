@@ -347,7 +347,7 @@ function $RootScopeProvider(){
            scope.counter = 0;
 
            expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(scope, newValue, oldValue) {
+           scope.$watch('name', function(newValue, oldValue) {
              counter = counter + 1;
            });
            expect(scope.counter).toEqual(0);

@@ -46,7 +46,7 @@ reside on a child scope, if a property read does not find the property on a scop
 recursively check the parent scope, grandparent scope, etc. all the way to the root scope before
 defaulting to undefined.
 
-{@link api/angular.module.ng.$compileProvider.directive directives} associated with elements
+{@link guide/directive directives} associated with elements
 (ngController, ngRepeat, ngInclude, etc.) create new child scopes that inherit properties from
 the current parent scope. Any code in Angular is free to create a new scope. Whether or not your
 code does so is an implementation detail of the directive, that is, you can decide when or if this
@@ -117,9 +117,9 @@ scopes come into play throughout and get a sense of their interactions.
 1. At application compile time, a root scope is created and is attached to the root `<HTML>` DOM
 element.
 2. During the compilation phase, the {@link dev_guide.compiler compiler} matches {@link
-api/angular.module.ng.$compileProvider.directive directives} against the DOM template. The directives
+guide/directive directives} against the DOM template. The directives
 usually fall into one of two categories:
-   - Observing {@link api/angular.module.ng.$compileProvider.directive directives}, such as double-curly
+   - Observing {@link guide/directive directives}, such as double-curly
     expressions `{{expression}}`, register listeners using the {@link
     api/angular.module.ng.$rootScope.Scope#$watch $watch()} method. This type of directive needs to
     be notified whenever the expression changes so that it can update the view.
@@ -133,7 +133,7 @@ api/angular.module.ng.$rootScope.Scope#$apply $apply()} method so that all liste
 
 
 ### Directives that create scopes
-In most cases, {@link api/angular.module.ng.$compileProvider.directive directives} and scopes interact but do not create new
+In most cases, {@link guide/directive directives} and scopes interact but do not create new
 instances of scope. However, some directives, such as {@link api/angular.module.ng.$compileProvider.directive.ngController
 ngController} and {@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}, create new child scopes using
 the {@link api/angular.module.ng.$rootScope.Scope#$new $new()} method and then attach the child scope to the

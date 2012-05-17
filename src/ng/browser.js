@@ -17,12 +17,11 @@
 /**
  * @param {object} window The global window object.
  * @param {object} document jQuery wrapped document.
- * @param {object} body jQuery wrapped document.body.
  * @param {function()} XHR XMLHttpRequest constructor.
  * @param {object} $log console.log or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, body, $log, $sniffer) {
+function Browser(window, document, $log, $sniffer) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
@@ -124,7 +123,8 @@ function Browser(window, document, body, $log, $sniffer) {
   // URL API
   //////////////////////////////////////////////////////////////
 
-  var lastBrowserUrl = location.href;
+  var lastBrowserUrl = location.href,
+      baseElement = document.find('base');
 
   /**
    * @ngdoc method
@@ -153,7 +153,11 @@ function Browser(window, document, body, $log, $sniffer) {
       lastBrowserUrl = url;
       if ($sniffer.history) {
         if (replace) history.replaceState(null, '', url);
-        else history.pushState(null, '', url);
+        else {
+          history.pushState(null, '', url);
+          // Crazy Opera Bug: http://my.opera.com/community/forums/topic.dml?id=1185462
+          baseElement.attr('href', baseElement.attr('href'));
+        }
       } else {
         if (replace) location.replace(url);
         else location.href = url;
@@ -161,7 +165,8 @@ function Browser(window, document, body, $log, $sniffer) {
       return self;
     // getter
     } else {
-      return location.href;
+      // the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
+      return location.href.replace(/%27/g,"'");
     }
   };
 
@@ -222,10 +227,26 @@ function Browser(window, document, body, $log, $sniffer) {
   };
 
   //////////////////////////////////////////////////////////////
+  // Misc API
+  //////////////////////////////////////////////////////////////
+
+  /**
+   * Returns current <base href>
+   * (always relative - without domain)
+   *
+   * @returns {string=}
+   */
+  self.baseHref = function() {
+    var href = baseElement.attr('href');
+    return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
+  };
+
+  //////////////////////////////////////////////////////////////
   // Cookies API
   //////////////////////////////////////////////////////////////
   var lastCookies = {};
   var lastCookieString = '';
+  var cookiePath = self.baseHref();
 
   /**
    * @ngdoc method
@@ -253,12 +274,10 @@ function Browser(window, document, body, $log, $sniffer) {
 
     if (name) {
       if (value === undefined) {
-        rawDocument.cookie = escape(name) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          rawDocument.cookie = escape(name) + '=' + escape(value);
-
-          cookieLength = name.length + value.length + 1;
+          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath).length + 1;
           if (cookieLength > 4096) {
             $log.warn("Cookie '"+ name +"' possibly not set or overflowed because it was too large ("+
               cookieLength + " > 4096 bytes)!");
@@ -338,26 +357,11 @@ function Browser(window, document, body, $log, $sniffer) {
     return false;
   };
 
-
-  //////////////////////////////////////////////////////////////
-  // Misc API
-  //////////////////////////////////////////////////////////////
-
-  /**
-   * Returns current <base href>
-   * (always relative - without domain)
-   *
-   * @returns {string=}
-   */
-  self.baseHref = function() {
-    var href = document.find('base').attr('href');
-    return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
-  };
 }
 
 function $BrowserProvider(){
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function( $window,   $log,   $sniffer,   $document){
-        return new Browser($window, $document, $document.find('body'), $log, $sniffer);
+        return new Browser($window, $document, $log, $sniffer);
       }];
 }

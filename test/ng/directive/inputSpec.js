@@ -254,7 +254,7 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('invalid-again');
-    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    browserTrigger(element, ($sniffer.hasEvent('input')) ? 'input' : 'change');
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(false);

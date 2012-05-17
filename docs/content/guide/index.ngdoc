@@ -33,7 +33,7 @@ of the following documents before returning here to the Developer Guide:
 
 ## {@link dev_guide.compiler Angular HTML Compiler}
 
-* {@link api/angular.module.ng.$compileProvider.directive Understanding Angular Directives}
+* {@link guide/directive Understanding Angular Directives}
 
 ## {@link dev_guide.templates Angular Templates}
 

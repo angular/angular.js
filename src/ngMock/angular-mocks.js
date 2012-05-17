@@ -1526,6 +1526,20 @@ angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator = ['$delegate', '$browser', createHttpBackendMock];
 
 
+angular.mock.clearDataCache = function() {
+  var key,
+      cache = angular.element.cache;
+
+  for(key in cache) {
+    if (cache.hasOwnProperty(key)) {
+      var handle = cache[key].handle;
+
+      handle && angular.element(handle.elem).unbind();
+      delete cache[key];
+    }
+  }
+};
+
 
 window.jstestdriver && (function(window) {
   /**
@@ -1545,6 +1559,13 @@ window.jstestdriver && (function(window) {
 
 
 window.jasmine && (function(window) {
+
+  afterEach(function() {
+    var spec = getCurrentSpec();
+    spec.$injector = null;
+    spec.$modules = null;
+    angular.mock.clearDataCache();
+  });
 
   function getCurrentSpec() {
     return jasmine.getEnv().currentSpec;

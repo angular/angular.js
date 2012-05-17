@@ -11,7 +11,7 @@ angularFiles = {
     'src/ng/anchorScroll.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
-    'src/ng/compiler.js',
+    'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/defer.js',
     'src/ng/document.js',
@@ -45,6 +45,7 @@ angularFiles = {
     'src/ng/directive/ngClass.js',
     'src/ng/directive/ngCloak.js',
     'src/ng/directive/ngController.js',
+    'src/ng/directive/ngCsp.js',
     'src/ng/directive/ngEventDirs.js',
     'src/ng/directive/ngInclude.js',
     'src/ng/directive/ngInit.js',
@@ -67,7 +68,9 @@ angularFiles = {
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
-    'src/ngMock/angular-mocks.js'
+    'src/ngMock/angular-mocks.js',
+
+    'src/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
@@ -95,6 +98,7 @@ angularFiles = {
     'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
+    'test/bootstrap/*.js',
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',

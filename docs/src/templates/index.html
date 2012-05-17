@@ -1,13 +1,17 @@
 <!doctype html>
-<html xmlns:ng="http://angularjs.org/"
-      xmlns:doc="http://docs.angularjs.org/"
-      id="ng:app" ng:app="ngdocs"
-      ng:controller="DocsController"
-      doc:manifest>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ng-app: docsApp;" lang="en" ng-controller="DocsController"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ng-app: docsApp;" lang="en" ng-controller="DocsController"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ng-app: docsApp;" lang="en" ng-controller="DocsController"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js ng-app: docsApp;" lang="en" ng-controller="DocsController"> <!--<![endif]-->
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="Description"
+        content="AngularJS is what HTML would have been, had it been designed for building web-apps.
+                 Declarative templates with data-binding, MVC, dependency injection and great
+                 testability story all implemented with pure client-side JavaScript!">
   <meta name="fragment" content="!">
-  <title ng:bind-template="AngularJS: {{partialTitle | title}}">AngularJS</title>
+  <title ng-bind-template="AngularJS: {{partialTitle}}">AngularJS</title>
   <script type="text/javascript">
     // dynamically add base tag as well as css and javascript files.
     // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
@@ -22,17 +26,18 @@
           sync = true;
 
       addTag('base', {href: baseUrl});
-      addTag('link', {rel: 'stylesheet', href: 'docs-combined.css', type: 'text/css'});
-      addTag('link', {rel: 'stylesheet', href: 'syntaxhighlighter/syntaxhighlighter-combined.css',
-                      type: 'text/css'});
-      addTag('script', {src: 'syntaxhighlighter/syntaxhighlighter-combined.js'}, sync);
-      if (jQuery) addTag('script', {src: debug ? 'jquery.js' : 'jquery.min.js'});
+      addTag('link', {rel: 'stylesheet', href: 'css/bootstrap.min.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'http://angularjs.org/css/font-awesome.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
+      if (jQuery) addTag('script', {src: debug ? 'js/jquery.js' : 'js/jquery.min.js'});
       addTag('script', {src: path('angular.js')}, sync);
       addTag('script', {src: path('angular-resource.js') }, sync);
       addTag('script', {src: path('angular-cookies.js') }, sync);
       addTag('script', {src: path('angular-sanitize.js') }, sync);
-      addTag('script', {src: 'docs-combined.js'}, sync);
-      addTag('script', {src: 'docs-keywords.js'}, sync);
+      addTag('script', {src: path('angular-bootstrap.js') }, sync);
+      addTag('script', {src: path('angular-bootstrap-prettify.js') }, sync);
+      addTag('script', {src: 'js/docs.js'}, sync);
+      addTag('script', {src: 'js/docs-keywords.js'}, sync);
 
       function path(name) {
         return '../' + name.replace(/\.js$/, debug ? '.js' : '.min.js');
@@ -86,70 +91,193 @@
 </head>
 
 <body>
-  <div id="container">
-
-    <!--[if lt IE 9]>
-      <div id="oldIePrompt">
-        You are using an old version of Internet Explorer.
-        For better and safer browsing experience please <a href="http://www.microsoft.com/IE9">upgrade IE</a>
-        or install <a href="http://google.com/chrome">Google Chrome browser</a>.
+  <header class="header">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="http://angularjs.org" style="padding-top: 6px; padding-bottom: 0px;">
+            <img class="AngularJS-small" src="http://angularjs.org/img/AngularJS-small.png">
+          </a>
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            <li><a href="http://angularjs.org"><i class="icon-home icon-white"></i> Home</a></li>
+            <li class="divider-vertical"></li>
+            <li class="dropdown">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="disabled"><a href="">Why AngularJS?</a></li>
+                <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
+                <li><a href="tutorial">Tutorial</a></li>
+                <li><a href="https://github.com/angular/angular.js/wiki/Projects-using-AngularJS">Case Studies</a></li>
+                <li><a href="misc/faq">FAQ</a></li>
+              </ul>
+            </li>
+            <li class="divider-vertical"></li>
+            <li class="dropdown active">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="tutorial">Tutorial</a></li>
+                <li><a href="guide/">Developer Guide</a></li>
+                <li><a href="api/">API Reference</a></li>
+                <li><a href="misc/contribute">Contribute</a></li>
+                <li><a href="http://code.angularjs.org/">Download</a></li>
+              </ul>
+            </li>
+            <li class="divider-vertical"></li>
+            <li class="dropdown">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
+                <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
+                <li class="divider"></li>
+                <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
+                <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
+                <li class="divider"></li>
+                <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
+                <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
+              </ul>
+            </li>
+            <li class="divider-vertical"></li>
+          </ul>
+          <form class="navbar-search pull-right" method="GET" action="https://www.google.com/search">
+            <input type="text" name="as_q" class="search-query" placeholder="Search">
+            <input type="hidden" name="as_sitesearch" value="angularjs.org">
+          </form>
+        </div>
       </div>
-    <![endif]-->
+    </div>
+  </header>
 
-    <ul id="navbar">
-      <li><a href="http://angularjs.org/">AngularJS</a></li>
-      <li><a href="misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
-      <li><a href="tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
-      <li><a href="api" ng:class="selectedSection('api')">API Reference</a></li>
-      <li><a href="cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
-      <li><a href="guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
-    </ul>
+  <div role="main" class="container">
+    <div class="row clear-navbar"></div>
 
-    <div id="sidebar">
-      <input type="text" ng:model="search" id="search-box" placeholder="search the docs"
-             tabindex="1" accesskey="s">
+    <div class="row">
+      <div class="span12">
+        <!--[if lt IE 7]>
+        <p class="alert alert-error">Your browser is <em>ancient!</em>
+          <a href="http://browsehappy.com/">Upgrade to a different browser</a> or
+          <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to
+          experience this site.
+        </p>
+        <![endif]-->
 
-      <ul id="content-list" ng:class="sectionId" ng:cloak>
-        <li ng:repeat="page in pages | filter:search" ng:class="getClass(page)">
-          <a href="{{getUrl(page)}}" ng:class="selectedPartial(page)"
-             ng:bind="page.shortName"
-             tabindex="2"></a>
-        </li>
-      </ul>
+        <!--[if lt IE 9]>
+        <div class="alert">
+          You are using an old version of Internet Explorer.
+          For better and safer browsing experience please <a href="http://www.microsoft.com/IE9">upgrade IE</a>
+          or install <a href="http://google.com/chrome">Google Chrome browser</a>.
+        </div>
+        <![endif]-->
+      </div>
+
     </div>
 
-    <div id="loading" ng:show="loading">Loading...</div>
+    <div class="row">
+      <div class="span3">
+        <form class="well form-search" ng-submit="submitForm()">
+          <div class="dropdown search"
+               ng-class="{open: focused && bestMatch.rank > 0 && bestMatch.page != currentPage}">
+            <input type="text" ng-model="search" placeholder="search the docs"
+                   tabindex="1" accesskey="s" class="input-medium search-query" focused="focused">
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{bestMatch.page.url}}">{{bestMatch.page.shortName}}</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="spacer"></div>
+          <div ng-show="search">Filtered results:</div>
+
+          <ul class="nav nav-list" ng-hide="page">
+            <li ng-repeat="page in pages" ng-class="navClass(page)">
+              <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
+            </li>
+          </ul>
 
 
-    <div class="content-panel">
-      <h2 ng:bind="partialTitle | title"></h2>
-      <ng:include id="content" class="content-panel-content" autoscroll
-                  src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
-    </div>
+          <ul class="nav nav-list well" ng-repeat="module in modules">
+            <li class="nav-header module">
+              <a class="guide" href="{{URL.module}}">module</a>
+              <a class="code" href="{{module.url}}">{{module.name}}</a>
+            </li>
 
-    <div id="disqus" class="content-panel">
-      <h2>Discussion</h2>
-      <div id="disqus_thread" class="content-panel-content"></div>
-    </div>
+            <li class="nav-header section" ng-show="module.directives">
+              <a href="{{URL.directive}}" class="guide">directive</a>
+            </li>
+            <li ng-repeat="page in module.directives" ng-class="navClass(page)">
+              <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
+            </li>
 
-    <div id="footer" ng:cloak>
-      <a id="version"
-         ng:href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
-         ng:bind-template="v{{version}}">
-      </a>
-      <!-- TODO(i): enable
-      <a ng:hide="offlineEnabled" ng:click ="subpage = true">(enable offline support)</a>
-      <span ng:show="offlineEnabled">(offline support enabled)</span>
-      -->
-      <span id="copyright">© 2010-2012 AngularJS</span>
+            <li class="nav-header section" ng-show="module.filters">
+              <a href="{{URL.filter}}" class="guide">filter</a>
+            </li>
+            <li ng-repeat="page in module.filters" ng-class="navClass(page)">
+              <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
+            </li>
+
+            <li class="nav-header section" ng-show="module.services">
+              <a href="{{URL.service}}" class="guide">service</a>
+            </li>
+            <li ng-repeat="service in module.services" ng-class="navClass(service.instance, service.provider)">
+              <a ng-show="service.provider" class="pull-right" href="{{service.provider.url}}" tabindex="2"><i class="icon-cog"></i></a>
+              <a href="{{service.instance.url}}" tabindex="2">{{service.name}}</a>
+            </li>
+
+            <li class="nav-header section" ng-show="module.types">
+              <a href="{{URL.type}}" class="guide">Types</a>
+            </li>
+            <li ng-repeat="page in module.types" ng-class="navClass(page)">
+              <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
+            </li>
+
+            <li class="nav-header section" ng-show="module.globals">
+              <a href="{{URL.api}}" class="global guide">global APIs</a>
+              &nbsp;
+            </li>
+            <li ng-repeat="page in module.globals" ng-class="navClass(page)">
+              <a href="{{page.url}}" tabindex="2">{{page.id}}</a>
+            </li>
+
+          </ul>
+
+        </form>
+      </div>
+      <div class="span9">
+
+        <ul class="breadcrumb">
+          <li ng-repeat="crumb in breadcrumb">
+            <span ng-hide="crumb.url">{{crumb.name}}</span>
+            <a ng-show="crumb.url" href="{{crumb.url}}">{{crumb.name}}</a>
+            <span ng-show="crumb.url" class="divider">/</span>
+          </li>
+        </ul>
+
+        <div id="loading" ng-show="loading">Loading...</div>
+
+        <div ng-hide="loading" ng-include src="currentPage.partialUrl" onload="afterPartialLoaded()" autoscroll class="content"></div>
+
+        <div id="disqus" class="disqus">
+          <h2>Discussion</h2>
+          <div id="disqus_thread" class="content-panel-content"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="fader" ng:show="subpage" style="display: none"></div>
-  <div id="subpage" ng:show="subpage" style="display: none">
+
+
+  <div id="fader" ng-show="subpage" style="display: none"></div>
+  <div id="subpage" ng-show="subpage" style="display: none">
     <div>
       <h2>Would you like full offline support for this AngularJS Docs App?</h2>
-      <a ng:click="subpage=false">&#10005;</a>
+      <a ng-click="subpage=false">&#10005;</a>
       <p>
         If you want to be able to access the entire AngularJS documentation offline, click the
         button below. This will reload the current page and trigger background downloads of all the
@@ -159,8 +287,34 @@
         This feature is supported on all modern browsers, except for IE9 which lacks application
         cache support.
       </p>
-      <button id="cacheButton" ng:click="enableOffline()">Let me have them all!</button>
+      <button id="cacheButton" ng-click="enableOffline()">Let me have them all!</button>
     </div>
   </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="pull-right"><a href="#">Back to top</a></p>
+
+      <p>
+        Super-powered by Google  ©2010-2012
+        ( <a id="version"
+             ng-href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
+             ng-bind-template="v{{version}}">
+          </a>
+          <!-- TODO(i): enable
+          <a ng-hide="offlineEnabled" ng-click ="subpage = true">(enable offline support)</a>
+          <span ng-show="offlineEnabled">(offline support enabled)</span>
+          -->
+        )
+      </p>
+      <p>
+        Code licensed under the
+        <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank">The
+          MIT License</a>. Documentation licensed under <a
+            href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
+      </p>
+    </div>
+  </footer>
+
 </body>
 </html>

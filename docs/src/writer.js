@@ -7,7 +7,8 @@ var Q = require('qq');
 var OUTPUT_DIR = "build/docs/";
 var fs = require('fs');
 
-exports.output = function(file, content) {
+exports.output = output;
+function output(file, content) {
   var fullPath = OUTPUT_DIR + file;
   var dir = parent(fullPath);
   return Q.when(exports.makeDir(dir), function(error) {
@@ -39,7 +40,7 @@ exports.makeDir = function(path) {
 };
 
 exports.copyTpl = function(filename) {
-  return exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename);
+  return exports.copy('docs/src/templates/' + filename, filename);
 };
 
 /* Copy files from one place to another.
@@ -56,7 +57,7 @@ exports.copy = function(from, to, transform) {
       args.unshift(content.toString());
       content = transform.apply(null, args);
     }
-    qfs.write(to, content);
+    return output(to, content);
   });
 }
 
@@ -72,25 +73,15 @@ exports.replace = function(content, replacements) {
 }
 
 exports.copyDir = function copyDir(dir) {
-  return qfs.listDirectoryTree('docs/' + dir).then(function(dirs) {
-    var done;
-    dirs.forEach(function(dirToMake) {
-      done = Q.when(done, function() {
-       return exports.makeDir("./build/" + dirToMake);
-      });
-    });
-    return done;
-  }).then(function() {
-    return qfs.listTree('docs/' + dir);
-  }).then(function(files) {
-    files.forEach( function(file) {
-      exports.copy(file,'./build/' + file);
+  return qfs.listTree('docs/' + dir).then(function(files) {
+    files.forEach(function(file) {
+      exports.copy(file, file.replace(/^docs\//, ''));
     });
   });
 };
 
 exports.merge = function(srcs, to) {
-  return merge(srcs.map(function(src) { return 'docs/src/templates/' + src; }), OUTPUT_DIR + to);
+  return merge(srcs.map(function(src) { return 'docs/src/templates/' + src; }), to);
 };
 
 function merge(srcs, to) {
@@ -107,7 +98,7 @@ function merge(srcs, to) {
   // write to file
   return Q.when(done, function(content) {
     contents.push(content);
-    qfs.write(to, contents.join('\n'));
+    return output(to, contents.join('\n'));
   });
 }
 
@@ -130,6 +121,8 @@ exports.toString = function toString(obj) {
         obj[key] = toString(value);
       });
       return obj.join('');
+    } else if (obj.constructor.name == 'Buffer'){
+      // do nothing it is Buffer Object
     } else {
       return JSON.stringify(obj);
     }

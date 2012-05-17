@@ -2,21 +2,19 @@
 @name Tutorial: 11 - REST and Custom Services
 @description
 
-<h2 style="color: red">This page has not been updated for AngularJS 1.0 yet</h2>
-
-<ul doc:tutorial-nav="11"></ul>
+<ul doc-tutorial-nav="11"></ul>
 
 
 In this step, you will improve the way our app fetches data.
 
 
-<doc:tutorial-instructions step="11"></doc:tutorial-instructions>
+<div doc-tutorial-reset="11"></div>
 
 
 The last improvement we will make to our app is to define a custom service that represents a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this client we
 can make xhr requests for data in an easier way, without having to deal with the lower-level {@link
-api/angular.module.ng.$xhr $xhr} API, HTTP methods and URLs.
+api/angular.module.ng.$http $http} API, HTTP methods and URLs.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-10...step-11
@@ -26,12 +24,14 @@ GitHub}:
 ## Template
 
 The custom service is defined in `app/js/services.js` so we need to include this file in our layout
-template:
+template. Additionally, we also need to load the `angular-resource.js` file, which contains the
+`ngResource` module and in it the `$resource` service, that we'll soon use:
 
 __`app/index.html`.__
 <pre>
 ...
   <script src="js/services.js"></script>
+  <script src="lib/angular/angular-resource.js"></script>
 ...
 </pre>
 
@@ -39,64 +39,68 @@ __`app/index.html`.__
 
 __`app/js/services.js`.__
 <pre>
- angular.module.ng('Phone', function($resource) {
+angular.module('phonecatServices', ['ngResource']).
+    factory('Phone', function($resource){
   return $resource('phones/:phoneId.json', {}, {
-    query: {method: 'GET', params: {phoneId: 'phones'}, isArray: true}
+    query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
   });
- });
+});
 </pre>
 
-We used the {@link api/angular.module.ng} API to register a custom service. We passed in the name of
-the service - 'Phone' - and a factory function. The factory function is similar to a controller's
-constructor in that both can declare dependencies via function arguments. The Phone service
-declared a dependency on the `$resource` service.
+We used the module API to register a custom service using a factory function. We passed in the name
+of the service - 'Phone' - and the factory function. The factory function is similar to a
+controller's constructor in that both can declare dependencies via function arguments. The Phone
+service declared a dependency on the `$resource` service.
 
-The {@link api/angular.module.ng.$resource `$resource`} service makes it easy to create a {@link
-http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few lines
-of code. This client can then be used in our application, instead of the lower-level {@link
-api/angular.module.ng.$xhr $xhr} service.
+The {@link api/angular.module.ngResource.$resource `$resource`} service makes it easy to create a
+{@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few
+lines of code. This client can then be used in our application, instead of the lower-level {@link
+api/angular.module.ng.$http $http} service.
 
 
 ## Controller
 
 We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
-lower-level {@link api/angular.module.ng.$xhr $xhr} service, replacing it with a new service called
-`Phone`. Angular's {@link api/angular.module.ng.$resource `$resource`} service is easier to use than
-{@link api/angular.module.ng.$xhr $xhr} for interacting with data sources exposed as RESTful
-resources. It is also easier now to understand what the code in our controllers is doing.
+lower-level {@link api/angular.module.ng.$http $http} service, replacing it with a new service called
+`Phone`. Angular's {@link api/angular.module.ngResource.$resource `$resource`} service is easier to
+use than `$http for interacting with data sources exposed as RESTful resources. It is also easier
+now to understand what the code in our controllers is doing.
 
 __`app/js/controllers.js`.__
 <pre>
 ...
 
-function PhoneListCtrl(Phone) {
-  this.orderProp = 'age';
-  this.phones = Phone.query();
+function PhoneListCtrl($scope, Phone) {
+  $scope.phones = Phone.query();
+  $scope.orderProp = 'age';
 }
-//PhoneListCtrl.$inject = ['Phone'];
+
+//PhoneListCtrl.$inject = ['$scope', 'Phone'];
 
 
-function PhoneDetailCtrl(Phone) {
-  var self = this;
 
-  self.phone = Phone.get({phoneId: self.params.phoneId}, function(phone) {
-    self.mainImageUrl = phone.images[0];
+function PhoneDetailCtrl($scope, $routeParams, Phone) {
+  $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+    $scope.mainImageUrl = phone.images[0];
   });
 
-  ...
+  $scope.setImage = function(imageUrl) {
+    $scope.mainImageUrl = imageUrl;
+  }
 }
-//PhoneDetailCtrl.$inject = ['Phone'];
+
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', 'Phone'];
 </pre>
 
 Notice how in `PhoneListCtrl` we replaced:
 
-    $xhr('GET', 'phones/phones.json', function(code, response) {
-      self.phones = response;
+    $http.get('phones/phones.json').success(function(data) {
+      $scope.phones = data;
     });
 
 with:
 
-    this.phones = Phone.query();
+    $scope.phones = Phone.query();
 
 This is a simple statement that we want to query for all phones.
 
@@ -118,10 +122,10 @@ We have modified our unit tests to verify that our new service is issuing HTTP r
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
 
-The {@link api/angular.module.ng.$resource $resource} service augments the response object with
-methods for updating and deleting the resource. If we were to use the standard `toEqual` matcher,
-our tests would fail because the test values would not match the responses exactly. To solve the
-problem, we use a newly-defined `toEqualData` {@link
+The {@link api/angular.module.ngResource.$resource $resource} service augments the response object
+with methods for updating and deleting the resource. If we were to use the standard `toEqual`
+matcher, our tests would fail because the test values would not match the responses exactly. To
+solve the problem, we use a newly-defined `toEqualData` {@link
 http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine matcher}. When the
 `toEqualData` matcher compares two objects, it takes only object properties into account and
 ignores methods.
@@ -131,7 +135,7 @@ __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
 
-  beforeEach(function() {
+  beforeEach(function(){
     this.addMatchers({
       toEqualData: function(expected) {
         return angular.equals(this.actual, expected);
@@ -139,54 +143,63 @@ describe('PhoneCat controllers', function() {
     });
   });
 
-  describe('PhoneListCtrl', function() {
-    var scope, $browser, ctrl;
 
-    beforeEach(function() {
-      scope = angular.module.ng.$rootScope.Scope();
-      $browser = scope.$service('$browser');
+  beforeEach(module('phonecatServices'));
 
-      $browser.xhr.expectGET('phones/phones.json')
-          .respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
-      ctrl = scope.$new(PhoneListCtrl);
-    });
+
+  describe('PhoneListCtrl', function(){
+    var scope, ctrl, $httpBackend;
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/phones.json').
+          respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneListCtrl, {$scope: scope});
+    }));
+
 
     it('should create "phones" model with 2 phones fetched from xhr', function() {
-      expect(ctrl.phones).toEqual([]);
-      $browser.xhr.flush();
+      expect(scope.phones).toEqual([]);
+      $httpBackend.flush();
 
-      expect(ctrl.phones).toEqualData([{name: 'Nexus S'},
-                                       {name: 'Motorola DROID'}]);
+      expect(scope.phones).toEqualData(
+          [{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
     });
 
+
     it('should set the default value of orderProp model', function() {
-      expect(ctrl.orderProp).toBe('age');
+      expect(scope.orderProp).toBe('age');
     });
   });
 
 
-  describe('PhoneDetailCtrl', function() {
-    var scope, $browser, ctrl;
+  describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl,
+        xyzPhoneData = function() {
+          return {
+            name: 'phone xyz',
+                images: ['image/url1.png', 'image/url2.png']
+          }
+        };
 
-    beforeEach(function() {
-      scope = angular.module.ng.$rootScope.Scope();
-      $browser = scope.$service('$browser');
-    });
 
-    beforeEach(function() {
-      scope = angular.module.ng.$rootScope.Scope();
-      $browser = scope.$service('$browser');
-    });
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+    }));
+
 
     it('should fetch phone detail', function() {
-      scope.params = {phoneId:'xyz'};
-      $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
-      ctrl = scope.$new(PhoneDetailCtrl);
+      expect(scope.phone).toEqualData({});
+      $httpBackend.flush();
 
-      expect(ctrl.phone).toEqualData({});
-      $browser.xhr.flush();
-
-      expect(ctrl.phone).toEqualData({name:'phone xyz'});
+      expect(scope.phone).toEqualData(xyzPhoneData());
     });
   });
 });
@@ -198,7 +211,7 @@ output.
     Chrome: Runner reset.
     ....
     Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
+      Chrome 19.0.1084.36 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
 
 # Summary
@@ -207,4 +220,4 @@ There you have it!  We have created a web app in a relatively short amount of ti
 the_end closing notes} we'll cover were to go from here.
 
 
-<ul doc:tutorial-nav="11"></ul>
+<ul doc-tutorial-nav="11"></ul>

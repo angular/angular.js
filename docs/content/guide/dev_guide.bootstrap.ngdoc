@@ -38,7 +38,7 @@ Compatibility} doc.
 
 ## Creating Your Own Namespaces
 
-When you are ready to define your own {@link api/angular.module.ng.$compileProvider.directive
+When you are ready to define your own {@link guide/directive
 directive}, you may chose to create your own namespace in addition to specifying the Angular
 namespace. You use your own namespace to form the fully qualified name for directives that you
 create.

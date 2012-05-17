@@ -1,4 +1,4 @@
-
+'use strict';
 
 
 /**
@@ -7,10 +7,9 @@
  *
  * @description
  * Creates a binding that will sanitize the result of evaluating the `expression` with the
- * {@link angular.module.ng.$sanitize $sanitize} service and innerHTML the result into the current
- * element.
+ * {@link angular.module.ngSanitize.$sanitize $sanitize} service and innerHTML the result into the current element.
  *
- * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
+ * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
  * @param {expression} ngBindHtml {@link guide/dev_guide.expressions Expression} to evaluate.

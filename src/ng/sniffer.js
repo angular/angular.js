@@ -14,21 +14,33 @@
  */
 function $SnifferProvider() {
   this.$get = ['$window', function($window) {
-    var eventSupport = {};
+    var eventSupport = {},
+        android = int((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]);
 
     return {
-      history: !!($window.history && $window.history.pushState),
+      // Android has history.pushState, but it does not update location correctly
+      // so let's not use the history API at all.
+      // http://code.google.com/p/android/issues/detail?id=17471
+      // https://github.com/angular/angular.js/issues/904
+      history: !!($window.history && $window.history.pushState && !(android < 4)),
       hashchange: 'onhashchange' in $window &&
                   // IE8 compatible mode lies
                   (!$window.document.documentMode || $window.document.documentMode > 7),
       hasEvent: function(event) {
+        // IE9 implements 'input' event it's so fubared that we rather pretend that it doesn't have
+        // it. In particular the event is not fired when backspace or delete key are pressed or
+        // when cut operation is performed.
+        if (event == 'input' && msie == 9) return false;
+
         if (isUndefined(eventSupport[event])) {
           var divElm = $window.document.createElement('div');
           eventSupport[event] = 'on' + event in divElm;
         }
 
         return eventSupport[event];
-      }
+      },
+      // TODO(i): currently there is no way to feature detect CSP without triggering alerts
+      csp: false
     };
   }];
 }

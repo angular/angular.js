@@ -3,4 +3,4 @@
  * (c) 2010-2012 Google, Inc. http://angularjs.org
  * License: MIT
  */
-(function(angular) {
+(function(window, angular, undefined) {

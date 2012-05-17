@@ -364,7 +364,7 @@ describe('$compile', function() {
           $compileProvider.directive('replace', valueFn({
             restrict: 'CAM',
             replace: true,
-            template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
+            template: '<div class="log" style="width: 10px" high-log>Replace!</div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
@@ -372,7 +372,7 @@ describe('$compile', function() {
           }));
           $compileProvider.directive('append', valueFn({
             restrict: 'CAM',
-            template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
+            template: '<div class="log" style="width: 10px" high-log>Append!</div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
@@ -382,34 +382,34 @@ describe('$compile', function() {
 
 
         it('should replace element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div replace>content</div><div>')($rootScope);
-          expect(element.text()).toEqual('Hello: content');
+          element = $compile('<div><div replace>ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
 
         it('should append element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div append>content</div><div>')($rootScope);
-          expect(element.text()).toEqual('Hello: content');
+          element = $compile('<div><div append>ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Append!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
 
-        it('should compile replace template', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div replace medium-log>{{ "angular"  }}</div><div>')
+        it('should compile template when replacing', inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div replace medium-log>ignore</div><div>')
             ($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: angular');
+          expect(element.text()).toEqual('Replace!');
           // HIGH goes after MEDIUM since it executes as part of replaced template
           expect(log).toEqual('MEDIUM; HIGH; LOG');
         }));
 
 
-        it('should compile append template', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div append medium-log>{{ "angular"  }}</div><div>')
+        it('should compile template when appending', inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div append medium-log>ignore</div><div>')
             ($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: angular');
+          expect(element.text()).toEqual('Append!');
           expect(log).toEqual('HIGH; LOG; MEDIUM');
         }));
 
@@ -436,23 +436,23 @@ describe('$compile', function() {
           }
         }));
 
-        it('should play nice with repeater when inline', inject(function($compile, $rootScope) {
+        it('should play nice with repeater when replacing', inject(function($compile, $rootScope) {
           element = $compile(
             '<div>' +
-              '<div ng-repeat="i in [1,2]" replace>{{i}}; </div>' +
+              '<div ng-repeat="i in [1,2]" replace></div>' +
             '</div>')($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: 1; Hello: 2; ');
+          expect(element.text()).toEqual('Replace!Replace!');
         }));
 
 
-        it('should play nice with repeater when append', inject(function($compile, $rootScope) {
+        it('should play nice with repeater when appending', inject(function($compile, $rootScope) {
           element = $compile(
             '<div>' +
-              '<div ng-repeat="i in [1,2]" append>{{i}}; </div>' +
+              '<div ng-repeat="i in [1,2]" append></div>' +
             '</div>')($rootScope);
           $rootScope.$digest();
-          expect(element.text()).toEqual('Hello: 1; Hello: 2; ');
+          expect(element.text()).toEqual('Append!Append!');
         }));
 
 
@@ -487,15 +487,57 @@ describe('$compile', function() {
           expect(child).toHaveClass('three');
           expect(child).toHaveClass('log'); // merged from replace directive template
         }));
+
+        it("should fail if replacing and template doesn't have a single root element", function() {
+          module(function($compileProvider) {
+            $compileProvider.directive('noRootElem', function() {
+              return {
+                replace: true,
+                template: 'dada'
+              }
+            });
+            $compileProvider.directive('multiRootElem', function() {
+              return {
+                replace: true,
+                template: '<div></div><div></div>'
+              }
+            });
+            $compileProvider.directive('singleRootWithWhiteSpace', function() {
+              return {
+                replace: true,
+                template: '  <div></div> \n'
+              }
+            });
+          });
+
+          inject(function($compile) {
+            expect(function() {
+              $compile('<p no-root-elem></p>');
+            }).toThrow('Template must have exactly one root element. was: dada');
+
+            expect(function() {
+              $compile('<p multi-root-elem></p>');
+            }).toThrow('Template must have exactly one root element. was: <div></div><div></div>');
+
+            // ws is ok
+            expect(function() {
+              $compile('<p single-root-with-white-space></p>');
+            }).not.toThrow();
+          });
+        });
       });
 
 
-      describe('async templates', function() {
+      describe('templateUrl', function() {
 
         beforeEach(module(
           function($compileProvider) {
-            $compileProvider.directive('hello', valueFn({ restrict: 'CAM', templateUrl: 'hello.html' }));
-            $compileProvider.directive('cau', valueFn({ restrict: 'CAM', templateUrl:'cau.html' }));
+            $compileProvider.directive('hello', valueFn({
+              restrict: 'CAM', templateUrl: 'hello.html', transclude: true
+            }));
+            $compileProvider.directive('cau', valueFn({
+              restrict: 'CAM', templateUrl:'cau.html'
+            }));
 
             $compileProvider.directive('cError', valueFn({
               restrict: 'CAM',
@@ -912,15 +954,6 @@ describe('$compile', function() {
         });
 
 
-        it('should check that template has root element', inject(function($compile, $httpBackend) {
-          $httpBackend.expect('GET', 'hello.html').respond('before <b>mid</b> after');
-          $compile('<div i-hello></div>');
-          expect(function(){
-            $httpBackend.flush();
-          }).toThrow('Template must have exactly one root element: before <b>mid</b> after');
-        }));
-
-
         it('should allow multiple elements in template', inject(function($compile, $httpBackend) {
           $httpBackend.expect('GET', 'hello.html').respond('before <b>mid</b> after');
           element = jqLite('<div hello></div>');
@@ -930,9 +963,10 @@ describe('$compile', function() {
         }));
 
 
-        it('should work when widget is in root element', inject(
+        it('should work when directive is on the root element', inject(
           function($compile, $httpBackend, $rootScope) {
-            $httpBackend.expect('GET', 'hello.html').respond('<span>3==<<content>></span>');
+            $httpBackend.expect('GET', 'hello.html').
+                respond('<span>3==<span ng-transclude></span></span>');
             element = jqLite('<b class="hello">{{1+2}}</b>');
             $compile(element)($rootScope);
 
@@ -942,9 +976,10 @@ describe('$compile', function() {
         ));
 
 
-        it('should work when widget is a repeater', inject(
+        it('should work when directive is a repeater', inject(
           function($compile, $httpBackend, $rootScope) {
-            $httpBackend.expect('GET', 'hello.html').respond('<span>i=<<content>>;</span>');
+            $httpBackend.expect('GET', 'hello.html').
+                respond('<span>i=<span ng-transclude></span>;</span>');
             element = jqLite('<div><b class=hello ng-repeat="i in [1,2]">{{i}}</b></div>');
             $compile(element)($rootScope);
 
@@ -952,6 +987,42 @@ describe('$compile', function() {
             expect(element.text()).toEqual('i=1;i=2;');
           }
         ));
+
+
+        it("should fail if replacing and template doesn't have a single root element", function() {
+          module(function($exceptionHandlerProvider, $compileProvider) {
+            $exceptionHandlerProvider.mode('log');
+
+            $compileProvider.directive('template', function() {
+              return {
+                replace: true,
+                templateUrl: 'template.html'
+              }
+            });
+          });
+
+          inject(function($compile, $templateCache, $rootScope, $exceptionHandler) {
+            // no root element
+            $templateCache.put('template.html', 'dada');
+            $compile('<p template></p>');
+            $rootScope.$digest();
+            expect($exceptionHandler.errors.pop().message).
+                toBe('Template must have exactly one root element. was: dada');
+
+            // multi root
+            $templateCache.put('template.html', '<div></div><div></div>');
+            $compile('<p template></p>');
+            $rootScope.$digest();
+            expect($exceptionHandler.errors.pop().message).
+                toBe('Template must have exactly one root element. was: <div></div><div></div>');
+
+            // ws is ok
+            $templateCache.put('template.html', '  <div></div> \n');
+            $compile('<p template></p>');
+            $rootScope.$apply();
+            expect($exceptionHandler.errors).toEqual([]);
+          });
+        });
       });
 
 
@@ -979,6 +1050,33 @@ describe('$compile', function() {
                 compile: function() {
                   return function (scope, element) {
                     iscope = scope;
+                    log(scope.$id);
+                    expect(element.data('$scope')).toBe(scope);
+                  };
+                }
+              };
+            });
+            $compileProvider.directive('tscope' + uppercase(name), function(log) {
+              return {
+                scope: true,
+                restrict: 'CA',
+                templateUrl: 'tscope.html',
+                compile: function() {
+                  return function (scope, element) {
+                    log(scope.$id);
+                    expect(element.data('$scope')).toBe(scope);
+                  };
+                }
+              };
+            });
+            $compileProvider.directive('trscope' + uppercase(name), function(log) {
+              return {
+                scope: true,
+                replace: true,
+                restrict: 'CA',
+                templateUrl: 'trscope.html',
+                compile: function() {
+                  return function (scope, element) {
                     log(scope.$id);
                     expect(element.data('$scope')).toBe(scope);
                   };
@@ -1025,6 +1123,48 @@ describe('$compile', function() {
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
+        }));
+
+
+        it('should allow creation of new scopes for directives with templates', inject(
+            function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'tscope.html').respond('<a log>{{name}}; scopeId: {{$id}}</a>');
+          element = $compile('<div><span tscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-002-001; 002');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 002');
+          expect(element.find('span').scope().$id).toBe('002');
+        }));
+
+
+        it('should allow creation of new scopes for replace directives with templates', inject(
+            function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'trscope.html').
+              respond('<p><a log>{{name}}; scopeId: {{$id}}</a></p>');
+          element = $compile('<div><span trscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-002-001; 002');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 002');
+          expect(element.find('a').scope().$id).toBe('002');
+        }));
+
+
+        it('should allow creation of new scopes for replace directives with templates in a repeater',
+            inject(function($rootScope, $compile, log, $httpBackend) {
+          $httpBackend.expect('GET', 'trscope.html').
+              respond('<p><a log>{{name}}; scopeId: {{$id}} |</a></p>');
+          element = $compile('<div><span ng-repeat="i in [1,2,3]" trscope></span></div>')($rootScope);
+          $httpBackend.flush();
+          expect(log).toEqual('LOG; log-003-002; 003; LOG; log-005-004; 005; LOG; log-007-006; 007');
+          $rootScope.name = 'Jozo';
+          $rootScope.$apply();
+          expect(element.text()).toBe('Jozo; scopeId: 003 |Jozo; scopeId: 005 |Jozo; scopeId: 007 |');
+          expect(element.find('p').scope().$id).toBe('003');
+          expect(element.find('a').scope().$id).toBe('003');
         }));
 
 
@@ -1115,7 +1255,7 @@ describe('$compile', function() {
         return function(scope, elm, attr) {
           observeSpy = jasmine.createSpy('$observe attr');
 
-          attr.$observe('someAttr', observeSpy);
+          expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
           attrValueDuringLinking = attr.someAttr;
         };
       });
@@ -1692,7 +1832,45 @@ describe('$compile', function() {
         element = $compile('<div c1 c2><div dep></div></div>')($rootScope);
         expect(log).toEqual('dep:c1-c2');
       });
+    });
 
+
+    it('should instantiate the controller just once when template/templateUrl', function() {
+      var syncCtrlSpy = jasmine.createSpy('sync controller'),
+          asyncCtrlSpy = jasmine.createSpy('async controller');
+
+      module(function($compileProvider) {
+        $compileProvider.directive('myDirectiveSync', valueFn({
+          template: '<div>Hello!</div>',
+          controller: syncCtrlSpy
+        }));
+        $compileProvider.directive('myDirectiveAsync', valueFn({
+          templateUrl: 'myDirectiveAsync.html',
+          controller: asyncCtrlSpy,
+          compile: function() {
+            return function() {
+            }
+          }
+        }));
+      });
+
+      inject(function($templateCache, $compile, $rootScope) {
+        expect(syncCtrlSpy).not.toHaveBeenCalled();
+        expect(asyncCtrlSpy).not.toHaveBeenCalled();
+
+        $templateCache.put('myDirectiveAsync.html', '<div>Hello!</div>');
+        element = $compile('<div>'+
+                   '<span xmy-directive-sync></span>' +
+                   '<span my-directive-async></span>' +
+                 '</div>')($rootScope);
+        expect(syncCtrlSpy).not.toHaveBeenCalled();
+        expect(asyncCtrlSpy).not.toHaveBeenCalled();
+
+        $rootScope.$apply();
+
+        //expect(syncCtrlSpy).toHaveBeenCalledOnce();
+        expect(asyncCtrlSpy).toHaveBeenCalledOnce();
+      });
     });
   });
 
