@@ -578,7 +578,7 @@ angular.mock.$LogProvider = function() {
  * This method is also available on window, where it can be used to display objects on debug console.
  *
  * @param {*} object - any object to turn into string.
- * @return a serialized string of the argument
+ * @return {string} a serialized string of the argument
  */
 angular.mock.dump = function(object) {
   return serialize(object);
