@@ -135,7 +135,7 @@ function inferInjectionArgs(fn) {
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @return the value returned by the invoked `fn` function.
+ * @returns {*} the value returned by the invoked `fn` function.
  */
 
 /**
@@ -149,7 +149,7 @@ function inferInjectionArgs(fn) {
  * @param {function} Type Annotated constructor function.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @return new instance of `Type`.
+ * @returns {Object} new instance of `Type`.
  */
 
 
