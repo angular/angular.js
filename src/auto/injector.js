@@ -42,19 +42,32 @@ var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(.+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-function inferInjectionArgs(fn) {
-  assertArgFn(fn);
-  if (!fn.$inject) {
-    var args = fn.$inject = [];
-    var fnText = fn.toString().replace(STRIP_COMMENTS, '');
-    var argDecl = fnText.match(FN_ARGS);
-    forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-      arg.replace(FN_ARG, function(all, underscore, name){
-        args.push(name);
+function annotate(fn) {
+  var $inject,
+      fnText,
+      argDecl,
+      last;
+
+  if (typeof fn == 'function') {
+    if (!($inject = fn.$inject)) {
+      $inject = [];
+      fnText = fn.toString().replace(STRIP_COMMENTS, '');
+      argDecl = fnText.match(FN_ARGS);
+      forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
+        arg.replace(FN_ARG, function(all, underscore, name){
+          $inject.push(name);
+        });
       });
-    });
+      fn.$inject = $inject;
+    }
+  } else if (isArray(fn)) {
+    last = fn.length - 1;
+    assertArgFn(fn[last], 'fn')
+    $inject = fn.slice(0, last);
+  } else {
+    assertArgFn(fn, 'fn', true);
   }
-  return fn.$inject;
+  return $inject;
 }
 
 ///////////////////////////////////////
@@ -151,6 +164,87 @@ function inferInjectionArgs(fn) {
  *   the `$injector` is consulted.
  * @returns {Object} new instance of `Type`.
  */
+
+/**
+ * @ngdoc method
+ * @name angular.module.AUTO.$injector#annotate
+ * @methodOf angular.module.AUTO.$injector
+ *
+ * @description
+ * Returns an array of service names which the function is requesting for injection. This API is used by the injector
+ * to determine which services need to be injected into the function when the function is invoked. There are three
+ * ways in which the function can be annotated with the needed dependencies.
+ *
+ * # Argument names
+ *
+ * The simplest form is to extract the dependencies from the arguments of the function. This is done by converting
+ * the function into a string using `toString()` method and extracting the argument names.
+ * <pre>
+ *   // Given
+ *   function MyController($scope, $route) {
+ *     // ...
+ *   }
+ *
+ *   // Then
+ *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+ * </pre>
+ *
+ * This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
+ * are supported.
+ *
+ * # The `$injector` property
+ *
+ * If a function has an `$inject` property and its value is an array of strings, then the strings represent names of
+ * services to be injected into the function.
+ * <pre>
+ *   // Given
+ *   var MyController = function(obfuscatedScope, obfuscatedRoute) {
+ *     // ...
+ *   }
+ *   // Define function dependencies
+ *   MyController.$inject = ['$scope', '$route'];
+ *
+ *   // Then
+ *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+ * </pre>
+ *
+ * # The array notation
+ *
+ * It is often desirable to inline Injected functions and that's when setting the `$inject` property is very
+ * inconvenient. In these situations using the array notation to specify the dependencies in a way that survives
+ * minification is a better choice:
+ *
+ * <pre>
+ *   // We wish to write this (not minification / obfuscation safe)
+ *   injector.invoke(function($compile, $rootScope) {
+ *     // ...
+ *   });
+ *
+ *   // We are forced to write break inlining
+ *   var tmpFn = function(obfuscatedCompile, obfuscatedRootScope) {
+ *     // ...
+ *   };
+ *   tmpFn.$inject = ['$compile', '$rootScope'];
+ *   injector.invoke(tempFn);
+ *
+ *   // To better support inline function the inline annotation is supported
+ *   injector.invoke(['$compile', '$rootScope', function(obfCompile, obfRootScope) {
+ *     // ...
+ *   }]);
+ *
+ *   // Therefore
+ *   expect(injector.annotate(
+ *      ['$compile', '$rootScope', function(obfus_$compile, obfus_$rootScope) {}])
+ *    ).toEqual(['$compile', '$rootScope']);
+ * </pre>
+ *
+ * @param {function|Array.<string|Function>} fn Function for which dependent service names need to be retrieved as described
+ *   above.
+ *
+ * @returns {Array.<string>} The names of the services which the function requires.
+ */
+
+
 
 
 /**
@@ -454,23 +548,11 @@ function createInjector(modulesToLoad) {
 
     function invoke(fn, self, locals){
       var args = [],
-          $inject,
-          length,
+          $inject = annotate(fn),
+          length, i,
           key;
 
-      if (typeof fn == 'function') {
-        $inject = inferInjectionArgs(fn);
-        length = $inject.length;
-      } else {
-        if (isArray(fn)) {
-          $inject = fn;
-          length = $inject.length - 1;
-          fn = $inject[length];
-        }
-        assertArgFn(fn, 'fn');
-      }
-
-      for(var i = 0; i < length; i++) {
+      for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
         args.push(
           locals && locals.hasOwnProperty(key)
@@ -478,6 +560,11 @@ function createInjector(modulesToLoad) {
           : getService(key, path)
         );
       }
+      if (!fn.$inject) {
+        // this means that we must be an array.
+        fn = fn[length];
+      }
+
 
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
       switch (self ? -1 : args.length) {
@@ -510,7 +597,8 @@ function createInjector(modulesToLoad) {
     return {
       invoke: invoke,
       instantiate: instantiate,
-      get: getService
+      get: getService,
+      annotate: annotate
     };
   }
 }
