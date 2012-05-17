@@ -186,8 +186,8 @@ function JQLiteDealoc(element){
 }
 
 function JQLiteUnbind(element, type, fn) {
-  var events = JQLiteExpando(element, 'events'),
-      handle = JQLiteExpando(element, 'handle');
+  var events = JQLiteExpandoStore(element, 'events'),
+      handle = JQLiteExpandoStore(element, 'handle');
 
   if (!handle) return; //no listeners registered
 
@@ -208,11 +208,11 @@ function JQLiteUnbind(element, type, fn) {
 
 function JQLiteRemoveData(element) {
   var expandoId = element[jqName],
-      expando = jqCache[expandoId];
+      expandoStore = jqCache[expandoId];
 
-  if (expando) {
-    if (expando.handle) {
-      expando.events.$destroy && expando.handle({}, '$destroy');
+  if (expandoStore) {
+    if (expandoStore.handle) {
+      expandoStore.events.$destroy && expandoStore.handle({}, '$destroy');
       JQLiteUnbind(element);
     }
     delete jqCache[expandoId];
@@ -220,29 +220,29 @@ function JQLiteRemoveData(element) {
   }
 }
 
-function JQLiteExpando(element, key, value) {
-  var cacheId = element[jqName],
-      cache = jqCache[cacheId || -1];
+function JQLiteExpandoStore(element, key, value) {
+  var expandoId = element[jqName],
+      expandoStore = jqCache[expandoId || -1];
 
   if (isDefined(value)) {
-    if (!cache) {
-      element[jqName] = cacheId = jqNextId();
-      cache = jqCache[cacheId] = {};
+    if (!expandoStore) {
+      element[jqName] = expandoId = jqNextId();
+      expandoStore = jqCache[expandoId] = {};
     }
-    cache[key] = value;
+    expandoStore[key] = value;
   } else {
-    return cache && cache[key];
+    return expandoStore && expandoStore[key];
   }
 }
 
 function JQLiteData(element, key, value) {
-  var data = JQLiteExpando(element, 'data'),
+  var data = JQLiteExpandoStore(element, 'data'),
       isSetter = isDefined(value),
       keyDefined = !isSetter && isDefined(key),
       isSimpleGetter = keyDefined && !isObject(key);
 
   if (!data && !isSimpleGetter) {
-    JQLiteExpando(element, 'data', data = {});
+    JQLiteExpandoStore(element, 'data', data = {});
   }
 
   if (isSetter) {
@@ -595,11 +595,11 @@ forEach({
   dealoc: JQLiteDealoc,
 
   bind: function bindFn(element, type, fn){
-    var events = JQLiteExpando(element, 'events'),
-        handle = JQLiteExpando(element, 'handle');
+    var events = JQLiteExpandoStore(element, 'events'),
+        handle = JQLiteExpandoStore(element, 'handle');
 
-    if (!events) JQLiteExpando(element, 'events', events = {});
-    if (!handle) JQLiteExpando(element, 'handle', handle = createEventHandler(element, events));
+    if (!events) JQLiteExpandoStore(element, 'events', events = {});
+    if (!handle) JQLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
 
     forEach(type.split(' '), function(type){
       var eventFns = events[type];
