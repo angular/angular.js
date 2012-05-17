@@ -29,7 +29,11 @@ function $RouteProvider(){
    *
    *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
    *      created scope.
-   *    - `template` – `{string=}` – path to an html template that should be used by
+   *    - `template` – `{string=}` –  html template that should be used by
+   *      {@link angular.module.ng.$compileProvider.directive.ngView ngView} or
+   *      {@link angular.module.ng.$compileProvider.directive.ngInclude ngInclude} directives.
+   *      this property takes precedence over `templateUrl`.
+   *    - `templateUrl` – `{string=}` – path to an html template that should be used by
    *      {@link angular.module.ng.$compileProvider.directive.ngView ngView} or
    *      {@link angular.module.ng.$compileProvider.directive.ngInclude ngInclude} directives.
    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which can
@@ -38,9 +42,9 @@ function $RouteProvider(){
    *      `$aftreRouteChange` event can be fired. The map object is:
    *
    *      - `key` – `{string}`: a name of a dependency which can be injected into the controller.
-   *      - `factory` - `{string|function}`: If `string` then it is an alias to the service.
-   *        Otherwise if function, then it is invoked and the return value is treated as the
-   *        dependency. If the result is a promise, it is resolved before its value is injected
+   *      - `factory` - `{string|function}`: If `string` then it is an ID of the service to be
+   *        injected. Otherwise if function, then it is invoked and the return value is treated as
+   *        the dependency. If the result is a promise, it is resolved before its value is injected
    *        into the controller.
    *
    *    - `redirectTo` – {(string|function())=} – value to update
@@ -49,7 +53,7 @@ function $RouteProvider(){
    *      If `redirectTo` is a function, it will be called with the following parameters:
    *
    *      - `{Object.<string>}` - route parameters extracted from the current
-   *        `$location.path()` by applying the current route template.
+   *        `$location.path()` by applying the current route templateUrl.
    *      - `{string}` - current `$location.path()`
    *      - `{Object}` - current `$location.search()`
    *
@@ -152,7 +156,7 @@ function $RouteProvider(){
            <hr />
 
            <pre>$location.path() = {{$location.path()}}</pre>
-           <pre>$route.current.template = {{$route.current.template}}</pre>
+           <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>
            <pre>$route.current.params = {{$route.current.params}}</pre>
            <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
            <pre>$routeParams = {{$routeParams}}</pre>
@@ -173,7 +177,7 @@ function $RouteProvider(){
        <file name="script.js">
          angular.module('ngView', [], function($routeProvider, $locationProvider) {
            $routeProvider.when('/Book/:bookId', {
-             template: 'book.html',
+             templateUrl: 'book.html',
              controller: BookCntl,
              resolve: {
                // I will cause a 1 second delay
@@ -185,7 +189,7 @@ function $RouteProvider(){
              }
            });
            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-             template: 'chapter.html',
+             templateUrl: 'chapter.html',
              controller: ChapterCntl
            });
 
@@ -365,17 +369,21 @@ function $RouteProvider(){
 
             if (next) {
               var keys = [],
-                  values = [];
+                  values = [],
+                  template;
 
               forEach(next.resolve || {}, function(value, key) {
                 keys.push(key);
                 values.push(isFunction(value) ? $injector.invoke(value) : $injector.get(value));
               });
-              if (next.template) {
+              if (isDefined(template = next.template)) {
+              } else if (isDefined(template = next.templateUrl)) {
+                template = $http.get(template, {cache: $templateCache}).
+                    then(function(response) { return response.data; });
+              }
+              if (isDefined(template)) {
                 keys.push('$template');
-                values.push($http.
-                  get(next.template, {cache: $templateCache}).
-                  then(function(response) { return response.data; }));
+                values.push(template);
               }
               return $q.all(values).then(function(values) {
                 var locals = next.locals = {};
