@@ -616,9 +616,10 @@ function $RootScopeProvider(){
        *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
        *   - `currentScope` - {Scope}: the current scope which is handling the event.
        *   - `name` - {string}: Name of the event.
-       *   - `cancel` - {function=}: calling `cancel` function will cancel further event propagation
+       *   - `stopPropagation` - {function=}: calling `stopPropagation` function will cancel further event propagation
        *     (available only for events that were `$emit`-ed).
-       *   - `cancelled` - {boolean}: Whether the event was cancelled.
+       *   - `preventDefault` - {function}: calling `preventDefault` sets `defaultPrevented` flag to true.
+       *   - `defaultPrevented` - {boolean}: true if `preventDefault` was called.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -659,11 +660,15 @@ function $RootScopeProvider(){
         var empty = [],
             namedListeners,
             scope = this,
+            stopPropagation = false,
             event = {
               name: name,
               targetScope: scope,
-              cancel: function() {event.cancelled = true;},
-              cancelled: false
+              stopPropagation: function() {stopPropagation = true;},
+              preventDefault: function() {
+                event.defaultPrevented = true;
+              },
+              defaultPrevented: false
             },
             listenerArgs = concat([event], arguments, 1),
             i, length;
@@ -674,7 +679,7 @@ function $RootScopeProvider(){
           for (i=0, length=namedListeners.length; i<length; i++) {
             try {
               namedListeners[i].apply(null, listenerArgs);
-              if (event.cancelled) return event;
+              if (stopPropagation) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -713,8 +718,14 @@ function $RootScopeProvider(){
         var target = this,
             current = target,
             next = target,
-            event = { name: name,
-                      targetScope: target },
+            event = {
+              name: name,
+              targetScope: target,
+              preventDefault: function() {
+                event.defaultPrevented = true;
+              },
+              defaultPrevented: false
+            },
             listenerArgs = concat([event], arguments, 1);
 
         //down while you can, then up and next sibling or up and next sibling until back at root
