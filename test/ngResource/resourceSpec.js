@@ -21,6 +21,7 @@ describe("resource", function() {
           'If-None-Match': '*'
         }
       }
+       
     });
     callback = jasmine.createSpy();
   }));
