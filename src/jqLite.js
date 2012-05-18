@@ -559,11 +559,7 @@ function createEventHandler(element, events) {
     };
 
     forEach(events[type || event.type], function(fn) {
-      try {
-        fn.call(element, event);
-      } catch (e) {
-        // Not much to do here since jQuery ignores these anyway
-      }
+      fn.call(element, event);
     });
 
     // Remove monkey-patched methods (IE),
