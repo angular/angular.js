@@ -1348,6 +1348,15 @@ function MockXhr() {
  */
 
 /**
+ *
+ */
+angular.mock.$RootElementProvider = function() {
+  this.$get = function() {
+    return angular.element('<div ng-app></div>');
+  }
+};
+
+/**
  * @ngdoc overview
  * @name angular.module.ngMock
  * @description
@@ -1359,7 +1368,8 @@ angular.module('ngMock', ['ng']).provider({
   $browser: angular.mock.$BrowserProvider,
   $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
   $log: angular.mock.$LogProvider,
-  $httpBackend: angular.mock.$HttpBackendProvider
+  $httpBackend: angular.mock.$HttpBackendProvider,
+  $rootElement: angular.mock.$RootElementProvider
 }).config(function($provide) {
   $provide.decorator('$timeout', function($delegate, $browser) {
     $delegate.flush = function() {
@@ -1368,7 +1378,6 @@ angular.module('ngMock', ['ng']).provider({
     return $delegate;
   });
 });
-
 
 
 /**
