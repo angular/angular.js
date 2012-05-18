@@ -11,3 +11,6 @@
  * location where the applications {@link angular.module.AUTO.$injector $injector} service gets
  * published, it can be retrieved using `$rootElement.injector()`.
  */
+
+
+// the implementation is in angular.bootstrap
