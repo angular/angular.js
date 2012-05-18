@@ -498,8 +498,8 @@ describe('$location', function() {
   // html5 history enabled, but not supported by browser
   describe('history on old browser', function() {
 
-    afterEach(inject(function($document){
-      dealoc($document);
+    afterEach(inject(function($rootElement){
+      dealoc($rootElement);
     }));
 
     it('should use hashbang url with hash prefix', function() {
@@ -532,8 +532,8 @@ describe('$location', function() {
   // html5 history enabled and supported by browser
   describe('history on new browser', function() {
 
-    afterEach(inject(function($document){
-      dealoc($document);
+    afterEach(inject(function($rootElement){
+      dealoc($rootElement);
     }));
 
     it('should use new url', function() {
@@ -681,7 +681,6 @@ describe('$location', function() {
 
     function configureService(linkHref, html5Mode, supportHist, attrs, content) {
       module(function($provide, $locationProvider) {
-        var jqRoot = jqLite('<div></div>');
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
         // fake the base behavior
@@ -692,14 +691,16 @@ describe('$location', function() {
         }
 
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
-        root = jqRoot.append(link)[0];
 
-        jqLite(document.body).append(jqRoot);
-
-        $provide.value('$document', jqRoot);
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
         $locationProvider.hashPrefix('!');
+        return function($rootElement, $document) {
+          $rootElement.append(link);
+          root = $rootElement[0];
+          // we need to do this otherwise we can't simulate events
+          $document.find('body').append($rootElement);
+        };
       });
     }
 
@@ -711,11 +712,11 @@ describe('$location', function() {
     }
 
     function initLocation() {
-      return function($browser, $location, $document) {
+      return function($browser, $location, $rootElement) {
         originalBrowser = $browser.url();
         // we have to prevent the default operation, as we need to test absolute links (http://...)
         // and navigating to these links would kill jstd
-        $document.bind('click', function(e) {
+        $rootElement.bind('click', function(e) {
           lastEventPreventDefault = e.isDefaultPrevented();
           e.preventDefault();
         });

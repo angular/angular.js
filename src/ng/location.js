@@ -405,7 +405,7 @@ function locationGetterSetter(property, preprocess) {
  *
  * @requires $browser
  * @requires $sniffer
- * @requires $document
+ * @requires $rootElement
  *
  * @description
  * The $location service parses the URL in the browser address bar (based on the {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL available to your application. Changes to the URL in the address bar are reflected into $location service and changes to $location are reflected into the browser address bar.
@@ -468,8 +468,8 @@ function $LocationProvider(){
     }
   };
 
-  this.$get = ['$rootScope', '$browser', '$sniffer', '$document',
-      function( $rootScope,   $browser,   $sniffer,   $document) {
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
+      function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var currentUrl,
         basePath = $browser.baseHref() || '/',
         pathPrefix = pathPrefixFromBase(basePath),
@@ -487,7 +487,7 @@ function $LocationProvider(){
       var u = currentUrl,
           absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
 
-      $document.bind('click', function(event) {
+      $rootElement.bind('click', function(event) {
         // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
         // currently we open nice url link and redirect then
 
