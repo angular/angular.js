@@ -46,6 +46,126 @@ describe('$route', function() {
   });
 
 
+  it("should support regexp constraints", function() {
+    module(function ($routeProvider) {
+      $routeProvider.when('/user/:id/:age', {template:'user.html'}, {id:"[0-9]*", age:"[0-9]*"});
+    });
+    inject(function ($route, $routeParams, $location, $rootScope) {
+      $location.path('/user/1/32');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.id).toBe('1');
+      expect($routeParams.age).toBe('32');
+
+      $location.path('/user/id/age');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+
+  it("should support list of values as regexp", function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some/:param', {template:'foo.html'}, {param:"one|two|tree"});
+    });
+    inject(function ($route, $routeParams, $location, $rootScope) {
+      $location.path('/some/two');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.param).toBe('two');
+
+      $location.path('/some/four');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+  it("should support int constraint shortcut", function() {
+    module(function ($routeProvider) {
+      $routeProvider.when('/user/:id/:age', {template:'user.html'}, {id:"int", age:"int"});
+    });
+    inject(function ($route, $routeParams, $location, $rootScope) {
+      $location.path('/user/1/32');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.id).toBe(1);
+      expect($routeParams.age).toBe(32);
+
+      $location.path('/user/id/age');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+
+  it("should support float constraint shortcut", function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some/:param', {template:'foo.html'}, {param:"float"});
+    });
+    inject(function($route, $routeParams, $location, $rootScope) {
+      $location.path('/some/12.3456');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.param).toBe(12.3456);
+
+      $location.path('/some/param');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+  it("should support bool constraint shortcut", function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some/:param1/:param2', {template:'foo.html'}, {param1:"bool",param2:"bool"});
+    });
+    inject(function($route, $routeParams, $location, $rootScope) {
+      $location.path('/some/true/false');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.param1).toBe(true);
+      expect($routeParams.param2).toBe(false);
+
+      $location.path('/some/footrue');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+  it("should support string constraint shortcut", function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some/:param', {template:'foo.html'}, {param:"string"});
+    });
+    inject(function($route, $routeParams, $location, $rootScope) {
+      $location.path('/some/string');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.param).toBe('string');
+    });
+  });
+
+
+  it("constraint shortcuts should be extensible", function() {
+    module(function($routeProvider) {
+      angular.extend($routeProvider.shortcuts, {
+        "cardnumber": {
+          regex: "[0-9]{16}"
+        }
+      });
+      $routeProvider.when('/card/:id', {template:'foo.html'}, {id:"cardnumber"});
+    });
+    inject(function($route, $routeParams, $location, $rootScope) {
+      $location.path('/card/1234567898765432');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+      expect($routeParams.id).toBe('1234567898765432');
+
+      $location.path('/card/123456');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    });
+  });
+
+
   it('should match a route that contains special chars in the path', function() {
     module(function($routeProvider) {
       $routeProvider.when('/$test.23/foo(bar)/:baz', {template: 'test.html'});

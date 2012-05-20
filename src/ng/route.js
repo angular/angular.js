@@ -56,8 +56,12 @@ function $RouteProvider(){
    * @description
    * Adds a new route definition to the `$route` service.
    */
-  this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true}, route);
+  this.when = function(path, route, constraints) {
+    var regex;
+    routes[path] = extend({reloadOnSearch: true}, route, {
+      routeParams:extractParams(path, constraints)
+    });
+    routes[path].regex = regex = getRouteMatchingRegex(path, routes[path].routeParams);
 
     // create redirection for trailing slashes
     if (path) {
@@ -65,7 +69,14 @@ function $RouteProvider(){
           ? path.substr(0, path.length-1)
           : path +'/';
 
-      routes[redirectPath] = {redirectTo: path};
+      routes[redirectPath] = {
+        redirectTo: path,
+        routeParams: routes[path].routeParams
+      };
+
+      routes[redirectPath].regex = (regex[regex.length - 2] == '/')
+        ? regex.substr(0, regex.length - 2) + '$'
+        : regex.substr(0, regex.length - 1) + '/$';
     }
 
     return this;
@@ -86,6 +97,25 @@ function $RouteProvider(){
   this.otherwise = function(params) {
     this.when(null, params);
     return this;
+  };
+
+
+  var shortcuts = this.shortcuts = {
+    "int": {
+      regex: "\\d+?",
+      parse: function(value) { return parseInt(value, 10); }
+    },
+    "float": {
+      regex: "\\d+\\.\\d+?",
+      parse: function(value) { return parseFloat(value); }
+    },
+    "bool": {
+      regex: "true|false",
+      parse: function(value) { return angular.lowercase(value) === "true"; }
+    },
+    "string": {
+      regex: "\\w+?"
+    }
   };
 
 
@@ -264,24 +294,15 @@ function $RouteProvider(){
     /////////////////////////////////////////////////////
 
     function switchRouteMatcher(on, when) {
-      // TODO(i): this code is convoluted and inefficient, we should construct the route matching
-      //   regex only once and then reuse it
-      var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
-          params = [],
-          dst = {};
-      forEach(when.split(/\W/), function(param) {
-        if (param) {
-          var paramRegExp = new RegExp(":" + param + "([\\W])");
-          if (regex.match(paramRegExp)) {
-            regex = regex.replace(paramRegExp, "([^\\/]*)$1");
-            params.push(param);
-          }
-        }
-      });
-      var match = on.match(new RegExp(regex));
+      var dst = {};
+      var match = routes[when].regex && on.match(new RegExp(routes[when].regex));
       if (match) {
-        forEach(params, function(name, index) {
-          dst[name] = match[index + 1];
+        forEach(routes[when].routeParams, function(param, index) {
+          if (shortcuts[param[1]] && isFunction(shortcuts[param[1]].parse)) {
+            dst[param[0]] = shortcuts[param[1]].parse(match[index + 1]);
+          } else {
+            dst[param[0]] = match[index + 1];
+          }
         });
       }
       return match ? dst : null;
@@ -355,4 +376,41 @@ function $RouteProvider(){
       return result.join('');
     }
   }];
+
+  function extractParams(when, constraints) {
+    constraints = constraints || {};
+
+    if (when == null)
+      return [];
+
+    var params = [];
+    forEach(when.split(/\W/), function(param) {
+      if (param && when.match(new RegExp(":" + param + "(\\W|$)"))) {
+        if (constraints[param] && isString(constraints[param])) {
+          params.push([param, constraints[param]]);
+        } else {
+          params.push([param]);
+        }
+      }
+    });
+    return params;
+  }
+
+  function getRouteMatchingRegex(when, params) {
+    if (when == null)
+      return;
+
+    var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
+      paramRegExp;
+
+    forEach(params, function(param) {
+      if (param[1]) {
+        paramRegExp = "(" + (shortcuts[param[1]] && shortcuts[param[1]].regex || param[1]) + ")$1";
+      } else {
+        paramRegExp = "([^\\/]*)$1";
+      }
+      regex = regex.replace(new RegExp(":" + param[0] + "([\\W])"), paramRegExp);
+    });
+    return regex;
+  }
 }
