@@ -1,0 +1,8 @@
+
+<span id="test">testing</span>
+<script src="js/jquery-1.7.2.min.js"></script>
+<script>
+  $('#test').click(function () {
+    chrome.extension.sendRequest('showScopes', function (response) {});
+  });
+</script>

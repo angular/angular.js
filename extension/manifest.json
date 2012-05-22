@@ -1,0 +1,11 @@
+{
+  "name": "AngularJS Dev Tools",
+  "version": "0.1",
+  "description": "Extends the Developer Tools, adding a sidebar that displays the AngularJS data associated with the selected DOM element.",
+  "background_page": "background.html",
+  "devtools_page": "devtools.html",
+  "manifest_version": 1,
+  "permissions": [
+    "tabs", "<all_urls>"
+  ]
+}
