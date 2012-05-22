@@ -286,7 +286,6 @@ function $RouteProvider(){
      */
 
     var matcher = switchRouteMatcher,
-        dirty = 0,
         forceReload = false,
         $route = {
           routes: routes,
@@ -304,12 +303,12 @@ function $RouteProvider(){
            * creates new scope, reinstantiates the controller.
            */
           reload: function() {
-            dirty++;
             forceReload = true;
+            $rootScope.$evalAsync(updateRoute);
           }
         };
 
-    $rootScope.$watch(function() { return dirty + $location.url(); }, updateRoute);
+    $rootScope.$on('$locationChangeSuccess', updateRoute);
 
     return $route;
 
