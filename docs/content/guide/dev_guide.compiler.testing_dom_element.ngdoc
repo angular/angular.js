@@ -2,8 +2,93 @@
 @name Developer Guide: Angular HTML Compiler: Testing a New DOM Element
 @description
 
+"The angular compiler teaches your browser new tricks." Let's take a look at some of the magic
+possible with the angular {@link api/angular.module.ng.$compileProvider.directive directive}.
+Below is the `myState` directive defined in `myModule` module. It shows examples of use of other
+directives such as
+{@link api/angular.module.ng.$compileProvider.directive.ng-init ng-init},
+{@link api/angular.module.ng.$compileProvider.directive.ng-click ng-click},
+{@link api/angular.module.ng.$compileProvider.directive.ng-mouseenter ng-mouseenter}, and
+{@link api/angular.module.ng.$compileProvider.directive.ng-mouseleave ng-mouseleave} directives
+as well.
 
-"Testing, testing, come in, over?"
+Essentially it allows elements in the DOM that have the `my-state` attribute to be modified,
+in this case replaced, with the `template` code below. The `link` function is responsible for the
+code that actually updates the DOM
+
+<doc:example module="myModule">
+<doc:source>
+<script type="text/javascript">
+angular.module("myModule", [])
+  .directive('myState', function($compile) {
+     return {
+        replace: true,
+        restrict: 'A',  // restrict to Attribute
+        scope: {
+            myState: 'accessor'
+        },
+        template: '<span>{{selected()}}{{over()}}</span>',
+        link: function(scope, element, attrs) {
+            scope.selected = function() {
+                return scope.myState().selected ? 'S' : 's';
+            };
+
+            scope.over = function() {
+                return scope.myState().over ? 'O' : 'o';
+            };
+        }
+     }
+  }
+);
+</script>
+<span ng-init="myState = {over: false, selected: true}"
+    ng-click="myState.selected=!myState.selected" ng-mouseenter="myState.over=true"
+    ng-mouseleave="myState.over=false">
+   <span my-state="myState"></span>
+</span>
+<hr/>
+$rootScope.myState: {{myState}}
+</doc:source>
+</doc:example>
+
+Let's look at how to test this code, paying special attention to scoping. Note the `scope`
+attribute in the directive definition object. This means a new 'isolate' scope is created for
+this directive. Also, we have employed a common technique of using the directive name as a variable,
+thus we see `myState` within the scope. Additionally we have used the same name for the variable
+being passed in from the rootScope. So, in this code, we have three items named `myState`:
+
+* The directive, referenced with the attribute `my-state`
+* The variable in the root scope, declared in `ng-init`
+* The variable in the directive isolate scope, declared as an `accessor` function within the
+directive.
+
+These last two variables require us to be especially attentive when setting up the scope of our
+tests. In the rootScope `myState` is an object, but in the directive's isolate scope,
+`myState' is a function!
+
+<pre>
+describe('directives', function() {
+    var directiveScope, element, compile;
+
+    beforeEach(module('myModule'));  // Define the module context for the test
+
+    it('myState', inject(function($rootScope, $compile) {
+        var isolate = true;
+        directiveScope = $rootScope.$new(isolate); // The directive has isolate scope
+        $rootScope.myState = {              //
+            over: false,                    // Set the values in $rootScope before $compile
+            selected: true                  //
+        };
+        element = $compile('<div my-state="myState"></div>')(directiveScope);
+        directiveScope.$apply();
+        expect(element.text()).toBe("So");
+    }));
+});
+</pre>
+
+If we had not created a separate directiveScope for the test above, and instead compiled and called
+`$apply` in the `$rootScope`, the directive would have overwritten the `myState` object with the
+accessor function, and the test would not be accurate.
 
 
 ## Related Topics
