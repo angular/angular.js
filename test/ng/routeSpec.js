@@ -60,6 +60,28 @@ describe('$route', function() {
   });
 
 
+  it('should not change route when location is canceled', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/somePath', {template: 'some path'});
+    });
+    inject(function($route, $location, $rootScope, $log) {
+      $rootScope.$on('$locationChangeStart', function(event) {
+        $log.info('$locationChangeStart');
+        event.preventDefault();
+      });
+
+      $rootScope.$on('$beforeRouteChange', function(event) {
+        throw new Error('Should not get here');
+      });
+
+      $location.path('/somePath');
+      $rootScope.$digest();
+
+      expect($log.info.logs.shift()).toEqual(['$locationChangeStart']);
+    });
+  });
+
+
   it('should match a route that contains special chars in the path', function() {
     module(function($routeProvider) {
       $routeProvider.when('/$test.23/foo(bar)/:baz', {templateUrl: 'test.html'});
@@ -540,8 +562,11 @@ describe('$route', function() {
       });
       inject(function($route, $location, $rootScope) {
         var replace;
-        $rootScope.$watch(function() {
-          if (isUndefined(replace)) replace = $location.$$replace;
+
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          if (oldUrl == 'http://server/#/foo/id3/eId') {
+            replace = $location.$$replace;
+          }
         });
 
         $location.path('/foo/id3/eId');
