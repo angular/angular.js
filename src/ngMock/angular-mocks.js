@@ -578,7 +578,7 @@ angular.mock.$LogProvider = function() {
  * This method is also available on window, where it can be used to display objects on debug console.
  *
  * @param {*} object - any object to turn into string.
- * @return a serialized string of the argument
+ * @return {string} a serialized string of the argument
  */
 angular.mock.dump = function(object) {
   return serialize(object);
@@ -1329,6 +1329,15 @@ function MockXhr() {
 }
 
 /**
+ *
+ */
+angular.mock.$RootElementProvider = function() {
+  this.$get = function() {
+    return angular.element('<div ng-app></div>');
+  }
+};
+
+/**
  * @ngdoc overview
  * @name angular.module.ngMock
  * @description
@@ -1340,9 +1349,9 @@ angular.module('ngMock', ['ng']).provider({
   $browser: angular.mock.$BrowserProvider,
   $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
   $log: angular.mock.$LogProvider,
-  $httpBackend: angular.mock.$HttpBackendProvider
+  $httpBackend: angular.mock.$HttpBackendProvider,
+  $rootElement: angular.mock.$RootElementProvider
 });
-
 
 
 /**

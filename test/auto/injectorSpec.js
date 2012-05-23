@@ -179,6 +179,14 @@ describe('injector', function() {
         inferInjectionArgs({});
       }).toThrow();
     });
+
+
+    it('should publish annotation API', function() {
+      expect(injector.annotation(angular.noop)).toEqual([]);
+      expect(injector.annotation(['a', noop])).toEqual(['a']);
+      expect(injector.annotation(function(a, b){})).toEqual(['a', 'b']);
+      expect(injector.annotation(extend(function(){}, {$inject:['b', 'c']}))).toEqual(['b', 'c']);
+    });
   });
 
 

@@ -933,6 +933,13 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$rootElement', function() {
+    it('should create mock application root', inject(function($rootElement) {
+      expect($rootElement.text()).toEqual('');
+    }));
+  });
 });
 
 
