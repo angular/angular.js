@@ -86,6 +86,7 @@ docsApp.directive.docTutorialNav = function(templateMerge) {
   };
 };
 
+
 docsApp.directive.docTutorialReset = function() {
   function tab(name, command, id, step) {
     return '' +
@@ -186,7 +187,6 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, getEmbeddedTemplat
     });
   };
 };
-
 
 
 docsApp.serviceFactory.sections = function sections() {
