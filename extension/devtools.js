@@ -31,7 +31,7 @@ $panels.elements.createSidebarPane(
 // Angular panel
 $panels.create(
   "AngularJS",
-  "angular.png",
+  "angular_28.png",
   "panel.html",
   function (panel) {});
 
