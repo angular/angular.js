@@ -5,6 +5,7 @@ describe('$defer', function() {
     $provide.factory('$exceptionHandler', function(){
       return jasmine.createSpy('$exceptionHandler');
     });
+    $provide.value('$log', {warn: noop});
   }));
 
 
