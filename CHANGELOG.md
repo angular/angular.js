@@ -1,3 +1,53 @@
+<a name="1.0.0rc10"></a>
+# 1.0.0rc10 tesseract-giftwrapping (2012-05-23)
+
+## Features
+
+- **$timeout:** add `$timeout` service that supersedes `$defer`
+  ([4511d39c](https://github.com/angular/angular.js/commit/4511d39cc748288df70bdc258f98a8f36652e683),
+   [#704](https://github.com/angular/angular.js/issues/704),
+   [#532](https://github.com/angular/angular.js/issues/532))
+- **scope:** add `event.preventDefault()` and `event.defaultPrevented`
+  ([84542d24](https://github.com/angular/angular.js/commit/84542d2431d20de42d6ec27c9d3435dd72dbe2ee))
+
+
+## Bug Fixes
+
+- **ngRepeat:** expose `$first`, `$middle` and `$last` instead of `$position`
+  ([1d388676](https://github.com/angular/angular.js/commit/1d388676e3b97b6171fc498e82545bd437ee6fd1),
+   [#912](https://github.com/angular/angular.js/issues/912))
+- **jqLite:** use the same expando store structure as jQuery
+  ([acf095d1](https://github.com/angular/angular.js/commit/acf095d1783e30e750d046ef24e81b5a0a31fbd4))
+- **$rootScope:** infinite digest exception does not clear $$phase
+  ([5989a1ed](https://github.com/angular/angular.js/commit/5989a1eda2b9e289b467ef9741fb1476549c8fd9),
+   [#979](https://github.com/angular/angular.js/issues/979))
+
+
+## Breaking Changes
+
+- **ngRepeat - `$position` is not exposed in repeater scopes any more**
+
+  To update, search for `/\$position/` and replace it with one of `$first`, `$middle` or `$last`.
+  ([1d388676](https://github.com/angular/angular.js/commit/1d388676e3b97b6171fc498e82545bd437ee6fd1))
+
+- **scope event's `cancel` method was renamed to `stopPropagation`**
+
+  The name was corrected in order to align better with DOM terminology.
+  To update, search for `/\.\s*cancel\s*(/` and replace it with `.stopPropagation(` or
+  `.preventDefault(` (or both) depending on what you actually need.
+  ([91db9920](https://github.com/angular/angular.js/commit/91db99208e197a73584a88a8d835eeb55c466335))
+
+
+## Deprecation Warnings
+
+- **`$defer` service has been deprecated in favor of `$timeout` service**
+
+  The `$defer` service will be removed before 1.0 final, so please migrate your code.
+  ([4511d39c](https://github.com/angular/angular.js/commit/4511d39cc748288df70bdc258f98a8f36652e683))
+
+
+
+
 <a name="1.0.0rc9"></a>
 # 1.0.0rc9 eggplant-teleportation (2012-05-14)
 
