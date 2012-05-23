@@ -293,8 +293,8 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       expect(element.text()).toBe('bound-value');
-      expect(log).toEqual(['$beforeRouteChange', '$afterRouteChange', 'init-ctrl',
-                           '$viewContentLoaded']);
+      expect(log).toEqual([
+        '$beforeRouteChange', 'init-ctrl', '$viewContentLoaded', '$afterRouteChange' ]);
     });
   });
 
