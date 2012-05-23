@@ -1,8 +1,36 @@
+<div>
+  <input type="checkbox" id="scope" name="scope"><label for="scope">Show scopes</label>
+</div>
+<div>
+  <input type="checkbox" id="binding" name="binding"><label for="binding">Show bindings</label>
+</div>
 
-<span id="test">testing</span>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script>
-  $('#test').click(function () {
-    chrome.extension.sendRequest('showScopes', function (response) {});
+  var $sendRequest = function (requestName) {
+    chrome.extension.sendRequest(requestName, function () {});
+  };
+
+  var scopesShown = false;
+
+  $('#scope').change(function () {
+    if (scopesShown) {
+      $sendRequest('hideScopes');
+    } else {
+      $sendRequest('showScopes');
+    }
+    scopesShown = !scopesShown;
   });
+
+  var bingingsShown = false;
+
+  $('#binding').change(function () {
+    if (bingingsShown) {
+      $sendRequest('hideBindings');
+    } else {
+      $sendRequest('showBindings');
+    }
+    bingingsShown = !bingingsShown;
+  });
+
 </script>

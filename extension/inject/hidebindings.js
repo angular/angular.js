@@ -1,0 +1,1 @@
+$('#ng-ext-bindings').remove();

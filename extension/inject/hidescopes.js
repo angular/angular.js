@@ -1,0 +1,1 @@
+$('#ng-ext-scopes').remove();

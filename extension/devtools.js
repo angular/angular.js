@@ -33,18 +33,9 @@ $panels.create(
   "AngularJS",
   "angular.png",
   "panel.html",
-  function (panel) {
-    /*
-    panel.onShown.addListener(function (window) {
-      // Send request to the background page
-      chrome.extension.sendRequest({}, function(response) {
-        // Handle response
-      });
-    });
-    */
-  });
+  function (panel) {});
 
-// forward request to background page ?
+// forward request to background page
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
   chrome.extension.sendRequest(request, function () {});
 });

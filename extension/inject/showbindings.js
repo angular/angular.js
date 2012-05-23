@@ -1,0 +1,1 @@
+$('body').append('<style id="ng-ext-bindings">.ng-binding {border: 1px solid blue;}</style>');
