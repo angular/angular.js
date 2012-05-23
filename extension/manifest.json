@@ -6,7 +6,9 @@
   "devtools_page": "devtools.html",
   "manifest_version": 1,
   "permissions": [
-    "tabs", "<all_urls>"
+  "experimental",
+    "tabs",
+    "<all_urls>"
   ],
   "content_scripts": [
     {

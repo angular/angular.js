@@ -1,6 +1,3 @@
-
-var jQueryInjected = false;
-
 var responses = {
   showScopes: function () {
     chrome.tabs.executeScript({
@@ -24,9 +21,13 @@ var responses = {
   }
 }
 
+var $extension = chrome.extension;
+
 // forward messages
-chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
+$extension.onRequest.addListener(function (request, sender, sendResponse) {
   if (responses[request]) {
     responses[request]();
+  } else {
+    console.log(request);
   }
 });

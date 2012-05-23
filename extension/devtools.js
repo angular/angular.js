@@ -31,7 +31,7 @@ $panels.elements.createSidebarPane(
 // Angular panel
 $panels.create(
   "AngularJS",
-  "angular_28.png",
+  "angular.png",
   "panel.html",
   function (panel) {});
 
@@ -39,3 +39,4 @@ $panels.create(
 chrome.extension.onRequest.addListener(function (request, sender, callback) {
   chrome.extension.sendRequest(request, function () {});
 });
+

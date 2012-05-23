@@ -1,36 +1,37 @@
-<div>
-  <input type="checkbox" id="scope" name="scope"><label for="scope">Show scopes</label>
-</div>
-<div>
-  <input type="checkbox" id="binding" name="binding"><label for="binding">Show bindings</label>
-</div>
+<!doctype html>
+<html ng-app="panelApp">
+<head>
+  <!--
+    <script src="js/jquery-1.7.2.min.js"></script>
+  -->
+  <script src="js/angular-1.0.0rc9.min.js"></script>
+  <script src="panelApp.js"></script>
+</head>
+<body>
 
-<script src="js/jquery-1.7.2.min.js"></script>
-<script>
-  var $sendRequest = function (requestName) {
-    chrome.extension.sendRequest(requestName, function () {});
-  };
+  <div class="col" ng-controller="OptionsCtrl">
+    <h2>Options</h2>
+    <div>
+      <input type="checkbox" ng-change="toggleScope()" id="scope"><label for="scope">Show scopes</label>
+    </div>
+    <div>
+      <input type="checkbox" ng-change="toggleBinding()" id="binding"><label for="binding">Show bindings</label>
+    </div>
+  </div>
 
-  var scopesShown = false;
+  <div class="col" ng-controller="TreeCtrl">
+    <pre>
+      <tree val="tree"></tree>
+    </pre>
+  </div>
 
-  $('#scope').change(function () {
-    if (scopesShown) {
-      $sendRequest('hideScopes');
-    } else {
-      $sendRequest('showScopes');
-    }
-    scopesShown = !scopesShown;
-  });
+  <div>
+    <p>{{name}}</p>
+  </div>
+  <!--
+  <script>
 
-  var bingingsShown = false;
-
-  $('#binding').change(function () {
-    if (bingingsShown) {
-      $sendRequest('hideBindings');
-    } else {
-      $sendRequest('showBindings');
-    }
-    bingingsShown = !bingingsShown;
-  });
-
-</script>
+  </script>
+  -->
+</body>
+</html>
