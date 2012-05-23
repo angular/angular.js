@@ -125,6 +125,7 @@ function publishExternalAPI(angular){
         $q: $QProvider,
         $sniffer: $SnifferProvider,
         $templateCache: $TemplateCacheProvider,
+        $timeout: $TimeoutProvider,
         $window: $WindowProvider
       });
     }
