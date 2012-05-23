@@ -372,7 +372,7 @@ function $RootScopeProvider(){
             watchLog = [],
             logIdx, logMsg;
 
-        flagPhase(target, '$digest');
+        beginPhase('$digest');
 
         do {
           dirty = false;
@@ -429,12 +429,13 @@ function $RootScopeProvider(){
           } while ((current = next));
 
           if(dirty && !(ttl--)) {
+            clearPhase();
             throw Error(TTL + ' $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
           }
         } while (dirty || asyncQueue.length);
 
-        this.$root.$$phase = null;
+        clearPhase();
       },
 
 
@@ -469,7 +470,7 @@ function $RootScopeProvider(){
        * perform any necessary cleanup.
        */
       $destroy: function() {
-        if (this.$root == this) return; // we can't remove the root node;
+        if ($rootScope == this) return; // we can't remove the root node;
         var parent = this.$parent;
 
         this.$broadcast('$destroy');
@@ -586,13 +587,18 @@ function $RootScopeProvider(){
        */
       $apply: function(expr) {
         try {
-          flagPhase(this, '$apply');
+          beginPhase('$apply');
           return this.$eval(expr);
         } catch (e) {
           $exceptionHandler(e);
         } finally {
-          this.$root.$$phase = null;
-          this.$root.$digest();
+          clearPhase();
+          try {
+            $rootScope.$digest();
+          } catch (e) {
+            $exceptionHandler(e);
+            throw e;
+          }
         }
       },
 
@@ -754,18 +760,22 @@ function $RootScopeProvider(){
       }
     };
 
+    var $rootScope = new Scope();
 
-    function flagPhase(scope, phase) {
-      var root = scope.$root;
+    return $rootScope;
 
-      if (root.$$phase) {
-        throw Error(root.$$phase + ' already in progress');
+
+    function beginPhase(phase) {
+      if ($rootScope.$$phase) {
+        throw Error($rootScope.$$phase + ' already in progress');
       }
 
-      root.$$phase = phase;
+      $rootScope.$$phase = phase;
     }
 
-    return new Scope();
+    function clearPhase() {
+      $rootScope.$$phase = null;
+    }
 
     function compileToFn(exp, name) {
       var fn = $parse(exp);
