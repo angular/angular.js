@@ -75,14 +75,14 @@ concepts which the application developer may face:
   * computing new values based on the model.
   * formatting output in a user specific locale.
 
-<doc-example>
-  <doc-source>
-    <script>
-      function InvoiceCntl($scope) {
-        $scope.qty = 1;
-        $scope.cost = 19.95;
-      }
-    </script>
+<example>
+  <file name="script.js">
+    function InvoiceCntl($scope) {
+      $scope.qty = 1;
+      $scope.cost = 19.95;
+    }
+  </file>
+  <file name="index.html">
     <div ng-controller="InvoiceCntl">
       <b>Invoice:</b>
       <br>
@@ -97,16 +97,16 @@ concepts which the application developer may face:
       <hr>
       <b>Total:</b> {{qty * cost | currency}}
     </div>
-  </doc-source>
-  <doc-scenario>
+  </file>
+  <file name="scenario.js">
     it('should show of angular binding', function() {
       expect(binding('qty * cost')).toEqual('$19.95');
       input('qty').enter('2');
       input('cost').enter('5.00');
       expect(binding('qty * cost')).toEqual('$10.00');
     });
-  </doc-scenario>
-</doc-example>
+  </file>
+</example>
 
 Try out the Live Preview above, and then let's walk through the example and describe what's going
 on.
