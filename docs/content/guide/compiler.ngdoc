@@ -66,45 +66,45 @@ to write directives.
 Here is a directive which makes any element draggable. Notice the `draggable` attribute on the
 `<span>` element.
 
-<doc-example module="drag">
-  <doc-source>
-    <script>
-      angular.module('drag', []).
-        directive('draggable', function($document) {
-          var startX=0, startY=0, x = 0, y = 0;
-          return function(scope, element, attr) {
+<example module="drag">
+  <file name="script.js">
+    angular.module('drag', []).
+      directive('draggable', function($document) {
+        var startX=0, startY=0, x = 0, y = 0;
+        return function(scope, element, attr) {
+          element.css({
+           position: 'relative',
+           border: '1px solid red',
+           backgroundColor: 'lightgrey',
+           cursor: 'pointer'
+          });
+          element.bind('mousedown', function(event) {
+            startX = event.screenX - x;
+            startY = event.screenY - y;
+            $document.bind('mousemove', mousemove);
+            $document.bind('mouseup', mouseup);
+          });
+
+          function mousemove(event) {
+            y = event.screenY - startY;
+            x = event.screenX - startX;
             element.css({
-             position: 'relative',
-             border: '1px solid red',
-             backgroundColor: 'lightgrey',
-             cursor: 'pointer'
+              top: y + 'px',
+              left:  x + 'px'
             });
-            element.bind('mousedown', function(event) {
-              startX = event.screenX - x;
-              startY = event.screenY - y;
-              $document.bind('mousemove', mousemove);
-              $document.bind('mouseup', mouseup);
-            });
-            
-            function mousemove(event) {
-              y = event.screenY - startY;
-              x = event.screenX - startX;
-              element.css({
-                top: y + 'px',
-                left:  x + 'px'
-              });
-            }
-            
-            function mouseup() {
-              $document.unbind('mousemove', mousemove);
-              $document.unbind('mouseup', mouseup);
-            }
           }
-        });
-    </script>
+
+          function mouseup() {
+            $document.unbind('mousemove', mousemove);
+            $document.unbind('mouseup', mouseup);
+          }
+        }
+      });
+  </file>
+  <file name="index.html">
     <span draggable>Drag ME</span>
-  </doc-source>
-</doc-example>
+  </file>
+</file>
 
 
 The presence of `draggable` attribute an any element gives the element new behavior. The beauty of
