@@ -26,7 +26,7 @@ occurs in controllers:
              $scope.foo = 'bar';
          }
 
-* Use an {@link dev_guide.expressions angular expression} with an assignment operator in templates:
+* Use an {@link expression angular expression} with an assignment operator in templates:
 
          <button ng-click="{{foos='ball'}}">Click me</button>
 

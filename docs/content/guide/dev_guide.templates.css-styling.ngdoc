@@ -20,4 +20,4 @@ Angular sets these CSS classes. It is up to your application to provide useful s
 ## Related Topics
 
 * {@link dev_guide.templates Angular Templates}
-* {@link dev_guide.forms Angular Forms}
+* {@link forms Angular Forms}

@@ -21,7 +21,7 @@
  * @element ANY
  * @scope
  * @param {expression} ngController Name of a globally accessible constructor function or an
- *     {@link guide/dev_guide.expressions expression} that on the current scope evaluates to a
+ *     {@link guide/expression expression} that on the current scope evaluates to a
  *     constructor function.
  *
  * @example

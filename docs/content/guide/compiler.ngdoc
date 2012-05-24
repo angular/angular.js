@@ -39,7 +39,7 @@ process happens into two phases.
   scope model are reflected in the view, and any user interactions with the view are reflected
   in the scope model. Making the scope model a single source of truth.
 
-Some directives such {@link api/angular.module.ng.$compileProvider.directive.ng:repeat
+Some directives such {@link api/angular.module.ng.$compileProvider.directive.ngRepeat
 `ng-repeat`} clone DOM elements once for each item in collection. Having a compile and link phase
 improves performance since the cloned template only needs to be compiled once, and then linked
 once for each clone instance.
@@ -50,7 +50,7 @@ once for each clone instance.
 Directive is a behavior which should be triggered when specific HTML constructs are encountered in
 compilation process. The directives can be placed in element names, attributes, class names, as
 well as comments. Here are some equivalent examples of invoking {@link
-api/angular.module.ng.$compileProvider.directive.ng:bind `ng-bind`} directive.
+api/angular.module.ng.$compileProvider.directive.ngBind `ng-bind`} directive.
 
 <pre>
   <span ng-bind="exp"></span>

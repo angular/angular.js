@@ -58,7 +58,7 @@ Putting any presentation logic into controllers significantly affects testabilit
 logic. Angular offers {@link dev_guide.templates.databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
-- Input formatting — Use {@link dev_guide.forms angular form controls} instead.
+- Input formatting — Use {@link forms angular form controls} instead.
 - Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
 - Run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
 services} instead.

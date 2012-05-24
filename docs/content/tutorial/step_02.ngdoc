@@ -53,7 +53,7 @@ __`app/index.html`:__
 
 We replaced the hard-coded phone list with the
 {@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat directive} and two
-{@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
+{@link guide/expression Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
 * The `ng-repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
