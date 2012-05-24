@@ -59,7 +59,7 @@ text upper-case and assigns color.
 ## Related Topics
 
 * {@link dev_guide.templates.filters Understanding Angular Filters}
-* {@link dev_guide.compiler Angular HTML Compiler}
+* {@link compiler Angular HTML Compiler}
 
 ## Related API
 

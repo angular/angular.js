@@ -31,7 +31,7 @@ function classDirective(name, selector) {
  * new classes are added.
  *
  * @element ANY
- * @param {expression} ngClass {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class
  *   names, an array, or a map of class names to boolean values.
  *
@@ -81,7 +81,7 @@ var ngClassDirective = classDirective('', true);
  * {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}.
  *
  * @element ANY
- * @param {expression} ngClassOdd {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ngClassOdd {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
@@ -128,7 +128,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
  * {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}.
  *
  * @element ANY
- * @param {expression} ngClassEven {@link guide/dev_guide.expressions Expression} to eval. The
+ * @param {expression} ngClassEven {@link guide/expression Expression} to eval. The
  *   result of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example

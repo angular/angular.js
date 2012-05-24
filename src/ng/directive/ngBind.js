@@ -22,7 +22,7 @@
  *
  *
  * @element ANY
- * @param {expression} ngBind {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBind {@link guide/expression Expression} to evaluate.
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
@@ -127,7 +127,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} ngBindHtmlUnsafe {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBindHtmlUnsafe {@link guide/expression Expression} to evaluate.
  */
 var ngBindHtmlUnsafeDirective = [function() {
   return function(scope, element, attr) {

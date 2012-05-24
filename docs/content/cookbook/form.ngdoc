@@ -108,8 +108,7 @@ allow a user to enter data.
   is going on.
 * The {@link api/angular.module.ng.$compileProvider.directive.input input directives} simply refer
   to the model and are data-bound.
-* The inputs {@link guide/dev_guide.forms validate}. (Try leaving them blank or entering non digits
-  in the zip field)
+* The inputs validate. (Try leaving them blank or entering non digits in the zip field)
 * In your application you can simply read from or write to the model and the form will be updated.
 * By clicking the 'add' link you are adding new items into the `user.contacts` array which are then
   reflected in the view.

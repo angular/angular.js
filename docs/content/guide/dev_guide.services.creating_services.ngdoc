@@ -49,7 +49,7 @@ create this instance when called.
 # Dependencies
 
 Services can not only be depended upon, but also have its own dependencies. These can be specified
-as arguments of the factory function. {@link di.understanding_di Read more} about the DI
+as arguments of the factory function. {@link di Read more} about the DI
 in Angular and the use of array notation and $inject property to make DI annotation
 minification-proof.
 
