@@ -9,7 +9,7 @@
  * conditionally.
  *
  * @element ANY
- * @param {expression} ngShow If the {@link guide/dev_guide.expressions expression} is truthy
+ * @param {expression} ngShow If the {@link guide/expression expression} is truthy
  *     then the element is shown or hidden respectively.
  *
  * @example
@@ -49,7 +49,7 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  * of the HTML conditionally.
  *
  * @element ANY
- * @param {expression} ngHide If the {@link guide/dev_guide.expressions expression} truthy then
+ * @param {expression} ngHide If the {@link guide/expression expression} truthy then
  *     the element is shown or hidden respectively.
  *
  * @example

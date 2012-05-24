@@ -15,14 +15,14 @@ These are the types of angular elements and element attributes you can use in a 
 * {@link api/angular.module.ng.$interpolate  Markup} — The double
 curly brace notation `{{ }}` to bind expressions to elements is built-in angular markup.
 * {@link dev_guide.templates.filters Filter} — Formats your data for display to the user.
-* {@link dev_guide.forms Form controls} — Lets you validate user input.
+* {@link forms Form controls} — Lets you validate user input.
 
 Note:  In addition to declaring the elements above in templates, you can also access these elements
 in JavaScript code.
 
 The following code snippet shows a simple angular template made up of standard HTML tags along with
 angular {@link guide/directive directives} and curly-brace bindings
-with {@link dev_guide.expressions expressions}:
+with {@link expression expressions}:
 
 <pre>
 <html ng-app>
@@ -50,7 +50,7 @@ eight.
 ## Related Topics
 
 * {@link dev_guide.templates.filters Angular Filters}
-* {@link dev_guide.forms Angular Forms}
+* {@link forms Angular Forms}
 
 ## Related API
 

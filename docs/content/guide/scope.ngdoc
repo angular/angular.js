@@ -164,7 +164,7 @@ where the `department` property is defined.
 Scopes are attached to the DOM as `$scope` data property, and can be retrieved for debugging
 purposes. (It is unlikely that one would need to retrieve scopes in this way inside the
 application.) The location where the root scope is attached to the DOM is defined by the location
-of {@link api/angular.module.ng.$compileProvider.directive.ng:app `ng-app`} directive. Typically
+of {@link api/angular.module.ng.$compileProvider.directive.ngApp `ng-app`} directive. Typically
 `ng-app` is placed an the `<html>` element, but it can be placed on other elements as well, if,
 for example, only a portion of the view needs to be controlled by angular.
 
@@ -228,7 +228,7 @@ modifications the execution has to enter the Angular execution context using the
 api/angular.module.ng.$rootScope.Scope#$apply `$apply`} method. Only model modifications which
 execute inside the `$apply` method will be properly accounted for by Angular. For example if a
 directive listens on DOM events, such as {@link
-api/angular.module.ng.$compileProvider.directive.ng:click `ng-click`} it must evaluate the
+api/angular.module.ng.$compileProvider.directive.ngClick `ng-click`} it must evaluate the
 expression inside the `$apply` method.
 
 After evaluating the expression `$apply` method performs a {@link
@@ -287,8 +287,8 @@ usually fall into one of two categories:
     api/angular.module.ng.$rootScope.Scope#$watch $watch()} method. This type of directive needs
     to be notified whenever the expression changes so that it can update the view.
 
-  - Listener directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng:click
-    ng:click}, register a listener with the DOM. When the DOM listener fires, the directive
+  - Listener directives, such as {@link api/angular.module.ng.$compileProvider.directive.ngClick
+    ng-click}, register a listener with the DOM. When the DOM listener fires, the directive
     executes the associated expression and updates the view using the {@link
     api/angular.module.ng.$rootScope.Scope#$apply $apply()} method.
 
@@ -301,8 +301,8 @@ correctly.
 
 In most cases, {@link api/angular.module.ng.$compileProvider.directive directives} and scopes interact
 but do not create new instances of scope. However, some directives, such as {@link
-api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller} and {@link
-api/angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}, create new child scopes
+api/angular.module.ng.$compileProvider.directive.ngController ng-controller} and {@link
+api/angular.module.ng.$compileProvider.directive.ngRepeat ng-repeat}, create new child scopes
 and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
 element by using an `angular.element(aDomElement).scope()` method call.
 
@@ -311,14 +311,15 @@ element by using an `angular.element(aDomElement).scope()` method call.
 Scopes and controllers interact with each other in the following situations:
 
    - Controllers use scopes to expose controller methods to templates (see {@link
-     api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller}).
+     api/angular.module.ng.$compileProvider.directive.ngController ng-controller}).
 
    - Controllers define methods (behavior) that can mutate the model (properties on the scope).
 
    - Controllers may register {@link api/angular.module.ng.$rootScope.Scope#$watch watches} on
      the model. These watches execute immediately after the controller behavior executes.
 
-See the {@link controller controller documentation} for more information.
+See the {@link api/angular.module.ng.$compileProvider.directive.ngController ng-controller} for more
+information.
 
 
 ### Scope `$watch` Performance Considerations

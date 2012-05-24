@@ -7,7 +7,7 @@
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
 from our server using one of angular's built-in {@link api/angular.module.ng services} called {@link
-api/angular.module.ng.$http $http}. We will use angular's {@link guide/dev_guide.di dependency
+api/angular.module.ng.$http $http}. We will use angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 
@@ -47,7 +47,7 @@ request to your web server to fetch the data in the `app/phones/phones.json` fil
 one of several built-in {@link api/angular.module.ng angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
-Services are managed by angular's {@link guide/dev_guide.di DI subsystem}. Dependency injection
+Services are managed by angular's {@link guide/di DI subsystem}. Dependency injection
 helps to make your web apps both well-structured (e.g., separate components for presentation, data,
 and control) and loosely coupled (dependencies between components are not resolved by the
 components themselves, but by the DI subsystem).

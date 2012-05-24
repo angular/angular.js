@@ -12,7 +12,7 @@
  * See {@link angular.module.ngSanitize.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} ngBindHtml {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
  */
 angular.module('ngSanitize').directive('ngBindHtml', ['$sanitize', function($sanitize) {
   return function(scope, element, attr) {
