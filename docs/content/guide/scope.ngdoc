@@ -38,17 +38,17 @@ arrangement isolates the controller from the directive as well as from DOM. This
 point since it makes the controllers view agnostic, which greatly improves the testing story of
 the applications.
 
-<doc-example>
-  <doc-source>
-    <script>
-      function MyController($scope) {
-        $scope.username = 'World';
+<example>
+  <file name="script.js">
+    function MyController($scope) {
+      $scope.username = 'World';
 
-        $scope.sayHello = function() {
-          $scope.greeting = 'Hello ' + $scope.username + '!';
-        };
-      }
-    </script>
+      $scope.sayHello = function() {
+        $scope.greeting = 'Hello ' + $scope.username + '!';
+      };
+    }
+  </file>
+  <file name="index.html">
     <div ng-controller="MyController">
       Your name:
         <input type="text" ng-model="username">
@@ -56,8 +56,8 @@ the applications.
       <hr>
       {{greeting}}
     </div>
-  </doc-source>
-</doc-example>
+  </file>
+</example>
 
 In the above example notice that the `MyController` assigns `World` to the `username` property of
 the scope. The scope then notifies the `input` of the assignment, which then renders the input
@@ -117,26 +117,26 @@ inheritance, and child scopes prototypically inherit from their parents.
 
 This example illustrates scopes in application, and prototypical inheritance of properties.
 
-<doc-example>
-  <doc-source>
-    <style>
-      /* remove .doc-example-live in jsfiddle */
-      .doc-example-live .ng-scope {
-        border: 1px dashed red;
-      }
-    </style>
-    <script>
-      function EmployeeController($scope) {
-        $scope.department = 'Engineering';
-        $scope.employee = {
-          name: 'Joe the Manager',
-          reports: [
-            {name: 'John Smith'},
-            {name: 'Mary Run'}
-          ]
-        };
-      }
-    </script>
+<example>
+  <file name="style.css">
+    /* remove .doc-example-live in jsfiddle */
+    .doc-example-live .ng-scope {
+      border: 1px dashed red;
+    }
+  </file>
+  <file name="script.js">
+    function EmployeeController($scope) {
+      $scope.department = 'Engineering';
+      $scope.employee = {
+        name: 'Joe the Manager',
+        reports: [
+          {name: 'John Smith'},
+          {name: 'Mary Run'}
+        ]
+      };
+    }
+  </file>
+  <file name="index.html">
     <div ng-controller="EmployeeController">
       Manager: {{employee.name}} [ {{department}} ]<br>
       Reports:
@@ -148,8 +148,8 @@ This example illustrates scopes in application, and prototypical inheritance of 
       <hr>
       {{greeting}}
     </div>
-  </doc-source>
-</doc-example>
+  </file>
+</example>
 
 Notice that the Angular automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
@@ -185,16 +185,16 @@ Scopes can propagate events in similar fashion to DOM events. The event can be {
 api/angular.module.ng.$rootScope.Scope#$broadcast broadcasted} to the scope children or {@link
 api/angular.module.ng.$rootScope.Scope#$emit emitted} to scope parents.
 
-<doc-example>
-  <doc-source>
-    <script>
-      function EventController($scope) {
-        $scope.count = 0;
-        $scope.$on('MyEvent', function() {
-          $scope.count++;
-        });
-      }
-    </script>
+<example>
+  <file name="script.js">
+    function EventController($scope) {
+      $scope.count = 0;
+      $scope.$on('MyEvent', function() {
+        $scope.count++;
+      });
+    }
+  </file>
+  <file name="index.html">
     <div ng-controller="EventController">
       Root scope <tt>MyEvent</tt> count: {{count}}
       <ul>
@@ -211,8 +211,8 @@ api/angular.module.ng.$rootScope.Scope#$emit emitted} to scope parents.
         </li>
       </ul>
     </div>
-  </doc-source>
-</doc-example>
+  </file>
+</example>
 
 
 
