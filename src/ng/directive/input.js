@@ -628,6 +628,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.textarea
+ * @restrict E
  *
  * @description
  * HTML textarea element control with angular data-binding. The data-binding and validation
@@ -782,6 +783,79 @@ var VALID_CLASS = 'ng-valid',
  *
  * @description
  *
+ * `NgModelController` provides API for the `ng-model` directive. The controller contains
+ * services for data-binding, validation, CSS update, value formatting and parsing. It
+ * specifically does not contain any logic which deals with DOM rendering or listening to
+ * DOM events. The `NgModelController` is meant to be extended by other directives where, the
+ * directive provides DOM manipulation and the `NgModelController` provides the data-binding.
+ *
+ * This example shows how to use `NgModelController` with a custom control to achieve
+ * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
+ * collaborate together to achieve the desired result.
+ *
+ * <example module="customControl">
+    <file name="style.css">
+      [contenteditable] {
+        border: 1px solid black;
+        background-color: white;
+        min-height: 20px;
+      }
+
+      .ng-invalid {
+        border: 1px solid red;
+      }
+
+    </file>
+    <file name="script.js">
+      angular.module('customControl', []).
+        directive('contenteditable', function() {
+          return {
+            restrict: 'A', // only activate on element attribute
+            require: '?ngModel', // get a hold of NgModelController
+            link: function(scope, element, attrs, ngModel) {
+              if(!ngModel) return; // do nothing if no ng-model
+
+              // Specify how UI should be updated
+              ngModel.$render = function() {
+                element.html(ngModel.$viewValue || '');
+              };
+
+              // Listen for change events to enable binding
+              element.bind('blur keyup change', function() {
+                scope.$apply(read);
+              });
+              read(); // initialize
+
+              // Write data to the model
+              function read() {
+                ngModel.$setViewValue(element.html());
+              }
+            }
+          };
+        });
+    </file>
+    <file name="index.html">
+      <form name="myForm">
+       <div contenteditable
+            name="myWidget" ng-model="userContent"
+            required>Change me!</div>
+        <span ng-show="myForm.myWidget.$error.required">Required!</span>
+       <hr>
+       <textarea ng-model="userContent"></textarea>
+      </form>
+    </file>
+    <file name="scenario.js">
+      it('should data-bind and become invalid', function() {
+        var contentEditable = element('[contenteditable]');
+
+        expect(contentEditable.text()).toEqual('Change me!');
+        input('userContent').enter('');
+        expect(contentEditable.text()).toEqual('');
+        expect(contentEditable.prop('className')).toMatch(/ng-invalid-required/);
+      });
+    </file>
+ * </example>
+ *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$element',
     function($scope, $exceptionHandler, $attr, ngModel, $element) {
@@ -794,8 +868,18 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
-  this.$render = noop;
   this.$name = $attr.name;
+
+  /**
+   * @ngdoc function
+   * @name angular.module.ng.$compileProvider.directive.ngModel.NgModelController#$render
+   * @methodOf angular.module.ng.$compileProvider.directive.ngModel.NgModelController
+   *
+   * @description
+   * Called when the view needs to be updated. It is expected that the user of the ng-model
+   * directive will implement this method.
+   */
+  this.$render = noop;
 
   var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
@@ -958,7 +1042,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
  *  - {@link angular.module.ng.$compileProvider.directive.textarea textarea}
  *
  */
-var ngModelDirective = [function() {
+var ngModelDirective = function() {
   return {
     inject: {
       ngModel: 'accessor'
@@ -978,7 +1062,7 @@ var ngModelDirective = [function() {
       });
     }
   };
-}];
+};
 
 
 /**
@@ -1039,11 +1123,12 @@ var ngChangeDirective = valueFn({
 });
 
 
-var requiredDirective = [function() {
+var requiredDirective = function() {
   return {
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
+      attr.required = true; // force truthy in case we are on non input element
 
       var validator = function(value) {
         if (attr.required && (isEmpty(value) || value === false)) {
@@ -1063,7 +1148,7 @@ var requiredDirective = [function() {
       });
     }
   };
-}];
+};
 
 
 /**
@@ -1144,7 +1229,7 @@ var ngListDirective = function() {
 
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 
-var ngValueDirective = [function() {
+var ngValueDirective = function() {
   return {
     priority: 100,
     compile: function(tpl, tplAttr) {
@@ -1162,4 +1247,4 @@ var ngValueDirective = [function() {
       }
     }
   };
-}];
+};

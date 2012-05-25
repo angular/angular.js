@@ -3,16 +3,16 @@
 @description
 
 Angular is pure client-side technology, written entirely in JavaScript. It works with the
-long-established technologies of the web (HTML, CSS, and JavaScript) to make the development of web
-apps easier and faster than ever before.
+long-established technologies of the web (HTML, CSS, and JavaScript) to make the development of
+web apps easier and faster than ever before.
 
 One important way that angular simplifies web development is by increasing the level of abstraction
 between the developer and most low-level web app development tasks. Angular automatically takes
 care of many of these tasks, including:
 
-* DOM Manipulation
-* Setting Up Listeners and Notifiers
-* Input Validation
+  * DOM Manipulation
+  * Setting Up Listeners and Notifiers
+  * Input Validation
 
 Because angular handles much of the work involved in these tasks, developers can concentrate more
 on application logic and less on repetitive, error-prone, lower-level coding.
@@ -20,12 +20,12 @@ on application logic and less on repetitive, error-prone, lower-level coding.
 At the same time that angular simplifies the development of web apps, it brings relatively
 sophisticated techniques to the client-side, including:
 
-* Separation of data, application logic, and presentation components
-* Data Binding between data and presentation components
-* Services (common web app operations, implemented as substitutable objects)
-* Dependency Injection (used primarily for wiring together services)
-* An extensible HTML compiler (written entirely in JavaScript)
-* Ease of Testing
+  * Separation of data, application logic, and presentation components
+  * Data Binding between data and presentation components
+  * Services (common web app operations, implemented as substitutable objects)
+  * Dependency Injection (used primarily for wiring together services)
+  * An extensible HTML compiler (written entirely in JavaScript)
+  * Ease of Testing
 
 These techniques have been for the most part absent from the client-side for far too long.
 

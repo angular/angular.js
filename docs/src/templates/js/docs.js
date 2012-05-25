@@ -253,7 +253,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
   $scope.navClass = function(page1, page2) {
     return {
-      last: this.$position == 'last',
+      last: this.$last,
       active: page1 && this.currentPage == page1 || page2 && this.currentPage == page2
     };
   }

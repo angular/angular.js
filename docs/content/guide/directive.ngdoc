@@ -1,5 +1,5 @@
 @ngdoc overview
-@name directive
+@name Directives
 @description
 
 Directives are a way to teach HTML new tricks. During DOM compilation directives are matched

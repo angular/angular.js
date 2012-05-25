@@ -9,7 +9,7 @@
  * element is clicked.
  *
  * @element ANY
- * @param {expression} ngClick {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngClick {@link guide/expression Expression} to evaluate upon
  * click. (Event object is available as `$event`)
  *
  * @example
@@ -61,7 +61,7 @@ forEach(
  * The `ngDblclick` directive allows you to specify custom behavior on dblclick event.
  *
  * @element ANY
- * @param {expression} ngDblclick {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngDblclick {@link guide/expression Expression} to evaluate upon
  * dblclick. (Event object is available as `$event`)
  *
  * @example
@@ -77,7 +77,7 @@ forEach(
  * The ngMousedown directive allows you to specify custom behavior on mousedown event.
  *
  * @element ANY
- * @param {expression} ngMousedown {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMousedown {@link guide/expression Expression} to evaluate upon
  * mousedown. (Event object is available as `$event`)
  *
  * @example
@@ -93,7 +93,7 @@ forEach(
  * Specify custom behavior on mouseup event.
  *
  * @element ANY
- * @param {expression} ngMouseup {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMouseup {@link guide/expression Expression} to evaluate upon
  * mouseup. (Event object is available as `$event`)
  *
  * @example
@@ -108,7 +108,7 @@ forEach(
  * Specify custom behavior on mouseover event.
  *
  * @element ANY
- * @param {expression} ngMouseover {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMouseover {@link guide/expression Expression} to evaluate upon
  * mouseover. (Event object is available as `$event`)
  *
  * @example
@@ -124,7 +124,7 @@ forEach(
  * Specify custom behavior on mouseenter event.
  *
  * @element ANY
- * @param {expression} ngMouseenter {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMouseenter {@link guide/expression Expression} to evaluate upon
  * mouseenter. (Event object is available as `$event`)
  *
  * @example
@@ -140,7 +140,7 @@ forEach(
  * Specify custom behavior on mouseleave event.
  *
  * @element ANY
- * @param {expression} ngMouseleave {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMouseleave {@link guide/expression Expression} to evaluate upon
  * mouseleave. (Event object is available as `$event`)
  *
  * @example
@@ -156,7 +156,7 @@ forEach(
  * Specify custom behavior on mousemove event.
  *
  * @element ANY
- * @param {expression} ngMousemove {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * @param {expression} ngMousemove {@link guide/expression Expression} to evaluate upon
  * mousemove. (Event object is available as `$event`)
  *
  * @example
@@ -175,7 +175,7 @@ forEach(
  * server and reloading the current page).
  *
  * @element form
- * @param {expression} ngSubmit {@link guide/dev_guide.expressions Expression} to eval.
+ * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>

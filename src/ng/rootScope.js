@@ -56,7 +56,7 @@
  *
  * Every application has a single root {@link angular.module.ng.$rootScope.Scope scope}.
  * All other scopes are child scopes of the root scope. Scopes provide mechanism for watching the model and provide
- * event processing life-cycle. See {@link guide/dev_guide.scopes developer guide on scopes}.
+ * event processing life-cycle. See {@link guide/scope developer guide on scopes}.
  */
 function $RootScopeProvider(){
   var TTL = 10;
@@ -119,9 +119,6 @@ function $RootScopeProvider(){
          expect(parent.salutation).toEqual('Hello');
      * </pre>
      *
-     * # Dependency Injection
-     * See {@link guide/dev_guide.di dependency injection}.
-     *
      *
      * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
      *     for the current scope. Defaults to {@link angular.module.ng}.
@@ -168,7 +165,7 @@ function $RootScopeProvider(){
        * the scope and its child scopes to be permanently detached from the parent and thus stop
        * participating in model change detection and listener notification by invoking.
        *
-       * @params {boolean} isolate if true then the scoped does not prototypically inherit from the
+       * @param {boolean} isolate if true then the scoped does not prototypically inherit from the
        *         parent scope. The scope is isolated, as it can not se parent scope properties.
        *         When creating widgets it is useful for the widget to not accidently read parent
        *         state.
@@ -273,12 +270,12 @@ function $RootScopeProvider(){
        *    {@link angular.module.ng.$rootScope.Scope#$digest $digest} cycle. A change in the return value triggers a
        *    call to the `listener`.
        *
-       *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+       *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(scope)`: called with current `scope` as a parameter.
        * @param {(function()|string)=} listener Callback called whenever the return value of
        *   the `watchExpression` changes.
        *
-       *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+       *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
        *
        * @param {boolean=} objectEquality Compare object for equality rather then for refference.
@@ -325,7 +322,7 @@ function $RootScopeProvider(){
        * Because a {@link angular.module.ng.$rootScope.Scope#$watch watcher}'s listener can change the model, the
        * `$digest()` keeps calling the {@link angular.module.ng.$rootScope.Scope#$watch watchers} until no more listeners are
        * firing. This means that it is possible to get into an infinite loop. This function will throw
-       * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
+       * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 10.
        *
        * Usually you don't call `$digest()` directly in
        * {@link angular.module.ng.$compileProvider.directive.ngController controllers} or in
@@ -503,9 +500,8 @@ function $RootScopeProvider(){
        *
        * @param {(string|function())=} expression An angular expression to be executed.
        *
-       *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
-       *    - `function(scope, locals)`: execute the function with the current `scope` parameter.
-       * @param {Object=} locals Hash object of local variables for the expression.
+       *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
+       *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
        * @returns {*} The result of evaluating the expression.
        */
@@ -533,7 +529,7 @@ function $RootScopeProvider(){
        *
        * @param {(string|function())=} expression An angular expression to be executed.
        *
-       *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
+       *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
        */
@@ -570,7 +566,7 @@ function $RootScopeProvider(){
        *
        * Scope's `$apply()` method transitions through the following stages:
        *
-       * 1. The {@link guide/dev_guide.expressions expression} is executed using the
+       * 1. The {@link guide/expression expression} is executed using the
        *    {@link angular.module.ng.$rootScope.Scope#$eval $eval()} method.
        * 2. Any exceptions from the execution of the expression are forwarded to the
        *    {@link angular.module.ng.$exceptionHandler $exceptionHandler} service.
@@ -580,7 +576,7 @@ function $RootScopeProvider(){
        *
        * @param {(string|function())=} exp An angular expression to be executed.
        *
-       *    - `string`: execute using the rules as defined in {@link guide/dev_guide.expressions expression}.
+       *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with current `scope` parameter.
        *
        * @returns {*} The result of evaluating the expression.

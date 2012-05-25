@@ -164,7 +164,7 @@ myClass.doWork();
 
 Notice that no global variables were harmed in the writing of this test.
 
-Angular comes with {@link dev_guide.di dependency-injection} built in which makes the right thing
+Angular comes with {@link di dependency-injection} built in which makes the right thing
 easy to do, but you still need to do it if you wish to take advantage of the testability story.
 
 ## Controllers

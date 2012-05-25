@@ -7,7 +7,7 @@ either a single object representing one entity (for example, a model called "pho
 being an array of phones) or the entire data model for the application (all entities).
 
 In angular, a model is any data that is reachable as a property of an angular {@link
-dev_guide.scopes Scope} object. The name of the property is the model identifier and the value is
+scope Scope} object. The name of the property is the model identifier and the value is
 any JavaScript object (including arrays and primitives).
 
 The only requirement for a JavaScript object to be a model in angular is that the object must be
@@ -26,7 +26,7 @@ occurs in controllers:
              $scope.foo = 'bar';
          }
 
-* Use an {@link dev_guide.expressions angular expression} with an assignment operator in templates:
+* Use an {@link expression angular expression} with an assignment operator in templates:
 
          <button ng-click="{{foos='ball'}}">Click me</button>
 

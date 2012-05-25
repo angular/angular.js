@@ -807,6 +807,39 @@ function getterFn(path, csp) {
 
 ///////////////////////////////////
 
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$parse
+ * @function
+ *
+ * @description
+ *
+ * Converts Angular {@link guide/expression expression} into a function.
+ *
+ * <pre>
+ *   var getter = $parse('user.name');
+ *   var setter = getter.assign;
+ *   var context = {user:{name:'angular'}};
+ *   var locals = {user:{name:'local'}};
+ *
+ *   expect(getter(context)).toEqual('angular');
+ *   setter(context, 'newValue');
+ *   expect(context.user.name).toEqual('newValue');
+ *   expect(getter(context, locals)).toEqual('local');
+ * </pre>
+ *
+ *
+ * @param {string} expression String expression to compile.
+ * @returns {function(context, locals)} a function which represents the compiled expression:
+ *
+ *    * `context`: an object against which any expressions embedded in the strings are evaluated
+ *      against (Topically a scope object).
+ *    * `locals`: local variables context object, useful for overriding values in `context`.
+ *
+ *    The return function also has an `assign` property, if the expression is assignable, which
+ *    allows one to set values to expressions.
+ *
+ */
 function $ParseProvider() {
   var cache = {};
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {

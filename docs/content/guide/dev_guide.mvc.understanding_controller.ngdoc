@@ -3,7 +3,7 @@
 @description
 
 In angular, a controller is a JavaScript function(type/class) that is used to augment instances of
-angular {@link dev_guide.scopes Scope}, excluding the root scope. When you or angular create a new
+angular {@link scope Scope}, excluding the root scope. When you or angular create a new
 child scope object via the {@link api/angular.module.ng.$rootScope.Scope#$new scope.$new} API        , there is an
 option to pass in a controller as a method argument. This will tell angular to associate the
 controller with the new scope and to augment its behavior.
@@ -47,7 +47,7 @@ needed for a single view.
 
 The most common way to keep controllers slim is by encapsulating work that doesn't belong to
 controllers into services and then using these services in controllers via dependency injection.
-This is discussed in the {@link dev_guide.di Dependency Injection} {@link dev_guide.services
+This is discussed in the {@link di Dependency Injection} {@link dev_guide.services
 Services} sections of this guide.
 
 Do not use controllers for:
@@ -58,7 +58,7 @@ Putting any presentation logic into controllers significantly affects testabilit
 logic. Angular offers {@link dev_guide.templates.databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
-- Input formatting — Use {@link dev_guide.forms angular form controls} instead.
+- Input formatting — Use {@link forms angular form controls} instead.
 - Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
 - Run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
 services} instead.
