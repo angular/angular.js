@@ -1,33 +1,25 @@
-var responses = {
-  showScopes: function () {
-    chrome.tabs.executeScript({
-      file: 'inject/showscopes.js'
-    });
-  },
-  hideScopes: function () {
-    chrome.tabs.executeScript({
-      file: 'inject/hidescopes.js'
-    });
-  },
-  showBindings: function () {
-    chrome.tabs.executeScript({
-      file: 'inject/showbindings.js'
-    });
-  },
-  hideBindings: function () {
-    chrome.tabs.executeScript({
-      file: 'inject/hidebindings.js'
-    });
-  }
-}
+var lruTab;
 
-var $extension = chrome.extension;
+chrome.tabs.onActivated.addListener(function (activeTab) {
+  //lruTab = tab.tabId;
+  chrome.tabs.get(activeTab.tabId, function (tab) {
+    if (tab.url.indexOf('chrome://') === -1 && tab.url.indexOf('chrome-devtools://') === -1) {
+      console.log(tab);
+      lruTab = tab.id;
+    }
+  });
+});
 
-// forward messages
-$extension.onRequest.addListener(function (request, sender, sendResponse) {
-  if (responses[request]) {
-    responses[request]();
+
+chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
+  
+  if (request === 'getTab') {
+    console.log(lruTab);
+    sendResponse(lruTab);
   } else {
-    console.log(request);
+    chrome.tabs.executeScript(request.tab, {
+      file: 'inject/' + request.script + '.js'
+    });
   }
+
 });

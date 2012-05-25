@@ -1,3 +1,9 @@
+var currTabId;
+
+chrome.extension.sendRequest('getTab', function (tab) {
+  currTabId = tab;
+});
+
 var app = angular.module('panelApp',[]);
 
 angular.module('components', [])
@@ -28,30 +34,37 @@ angular.module('panelApp', ['components']);
 
 function OptionsCtrl($scope) {
   var $sendRequest = function (requestName) {
-    chrome.extension.sendRequest(requestName, function () {});
+    chrome.extension.sendRequest({
+      script: requestName,
+      tab: currTabId
+    });
   };
 
-  var scopesShown = false;
-  $scope.toggleScope = function () {
-    if (scopesShown) {
-      $sendRequest('hideScopes');
-    } else {
+  $scope.debugger = {
+    scopes: false,
+    bindings: false
+  };
+
+  //$scope.$watch('debugger.scope', );
+
+  $scope.$watch('debugger.scopes', function (newVal, oldVal) {
+    if (newVal) {
       $sendRequest('showScopes');
-    }
-    scopesShown = !scopesShown;
-  };
-
-  var bindingsShown = false;
-  $scope.toggleBinding = function () {
-    if (bindingsShown) {
-      $sendRequest('hideBindings');
     } else {
-      $sendRequest('showBindings');
+      $sendRequest('hideScopes');
     }
-    bindingsShown = !bindingsShown;
-  };
+  });
+
+  $scope.$watch('debugger.bindings', function (newVal, oldVal) {
+    if (newVal) {
+      $sendRequest('showBindings');
+    } else {
+      $sendRequest('hideBindings');
+    }
+  });
 }
 
 function TreeCtrl($scope) {
   $scope.tree = ['a','b',['c1','c2',['a2','a3']]];
 }
+
