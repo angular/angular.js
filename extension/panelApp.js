@@ -62,5 +62,10 @@ function OptionsCtrl($scope) {
 
 function TreeCtrl($scope) {
   $scope.tree = ['a','b',['c1','c2',['a2','a3']]];
+
+  chrome.devtools.inspectedWindow.eval('window.angular.element(document).scope().$root.$id', function (result) {
+    $scope.output = result;
+    $scope.$apply();
+  });
 }
 
