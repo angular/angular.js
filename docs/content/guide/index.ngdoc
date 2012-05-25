@@ -10,33 +10,3 @@ of the following documents before returning here to the Developer Guide:
 
 * {@link misc/started Getting Started}
 * {@link tutorial/index Angular Tutorial}
-
-<hr>
-
-## {@link overview Overview of Angular}
-
-## {@link bootstrap Initializing Angular}
-
-## {@link dev_guide.mvc About MVC in Angular}
-
-* {@link dev_guide.mvc.understanding_model Understanding the Model Component}
-* {@link dev_guide.mvc.understanding_controller Understanding the Controller Component}
-* {@link dev_guide.mvc.understanding_view Understanding the View Component}
-
-## {@link scope Angular Scope Objects}
-
-## {@link compiler Angular HTML Compiler}
-
-## {@link dev_guide.templates Angular Templates}
-
-* {@link dev_guide.templates.filters Understanding Angular Filters}
-* {@link forms Understanding Angular Forms}
-
-## {@link dev_guide.services Angular Services}
-
-* {@link dev_guide.services.understanding_services Understanding Angular Services}
-* {@link dev_guide.services.creating_services Creating Angular Services}
-* {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
-* {@link dev_guide.services.testing_services Testing Angular Services}
-
-## {@link di About Dependency Injection}
