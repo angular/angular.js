@@ -1,1 +1,1 @@
-$('#ng-ext-bindings').remove();
+removeCssRule('.ng-binding', 'border: 1px solid blue');

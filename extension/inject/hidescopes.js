@@ -1,1 +1,1 @@
-$('#ng-ext-scopes').remove();
+removeCssRule('.ng-scope', 'border: 1px solid red');
