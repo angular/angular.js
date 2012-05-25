@@ -51,7 +51,7 @@ initialization.
 Angular initializes automatically upon `DOMContentLoaded` event, at which point angular looks for
 the {@link api/angular.module.ng.$compileProvider.directive.ngApp `ng-app`} directive which
 designates your application root. If {@link
-api/angular.module.ng.$compileProvider.directive.ng:app `ng-app`} directive is found then Angular
+api/angular.module.ng.$compileProvider.directive.ngApp `ng-app`} directive is found then Angular
 will:
 
   * load the {@link guide/module module} associated with the directive.
