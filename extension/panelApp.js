@@ -1,8 +1,4 @@
-var currTabId;
-
-chrome.extension.sendRequest('getTab', function (tab) {
-  currTabId = tab;
-});
+var currTabId = chrome.devtools.inspectedWindow.tabId;
 
 var app = angular.module('panelApp',[]);
 
