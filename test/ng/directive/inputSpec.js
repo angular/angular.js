@@ -285,8 +285,9 @@ describe('input', function() {
   var formElm, inputElm, scope, $compile, changeInputValueTo;
 
   function compileInput(inputHtml) {
-    formElm = jqLite('<form name="form">' + inputHtml + '</form>');
-    inputElm = formElm.find('input');
+    inputElm = jqLite(inputHtml);
+    formElm = jqLite('<form name="form"></form>');
+    formElm.append(inputElm);
     $compile(formElm)(scope);
   }
 
@@ -632,6 +633,17 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(inputElm.val()).toBe('0')
         expect(scope.form.alias.$error.required).toBeFalsy();
+      });
+
+      it('should register required on non boolean elements', function() {
+        compileInput('<div ng-model="value" name="alias" required>');
+
+        scope.$apply(function() {
+          scope.value = '';
+        });
+
+        expect(inputElm).toBeInvalid();
+        expect(scope.form.alias.$error.required).toBeTruthy();
       });
     });
   });
