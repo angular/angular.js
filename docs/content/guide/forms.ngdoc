@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Forms
+@name Forms
 @description
 
 Controls (`input`, `select`, `textarea`) are a way for user to enter data.
