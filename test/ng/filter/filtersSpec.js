@@ -270,5 +270,18 @@ describe('filters', function() {
       //no time
       expect(date('2003-09-10', format)).toEqual('2003-09 00');
     });
+
+    it('should support different degrees of subsecond precision', function () {
+      var format = 'yyyy-MM-dd';
+
+      expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.123456Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.12345Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1234Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.123Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-10');
+    });
   });
 });
