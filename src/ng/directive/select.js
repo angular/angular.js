@@ -189,7 +189,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
       var selectCtrl = ctrls[0],
           ngModelCtrl = ctrls[1],
-          multiple = attr.multiple,
+          multiple = attr.ngMultiple,
           optionsExp = attr.ngOptions,
           nullOption = false, // if false, user will not be able to select it (used by ngOptions)
           emptyOption,
