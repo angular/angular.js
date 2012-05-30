@@ -9,6 +9,7 @@ angular.module('components', [])
       terminal: true,
       scope: {
         val: 'accessor',
+        edit: 'accessor',
         inspect: 'accessor'
       },
       link: function (scope, element, attrs) {
@@ -20,11 +21,14 @@ angular.module('components', [])
           '<a href="#" ng-click="inspect()()">Scope ({{val().id}})</a>' +
           //'<h3>Locals:</h3>' +
           '<ul>' +
-            '<li ng-repeat="(key, item) in val().locals">{{key}}{{item}}</li>' +
+            '<li ng-repeat="(key, item) in val().locals">'+
+              '{{key}}' +
+              '<input ng-model="item" ng-change="edit()()">' +
+            '</li>' +
           '</ul>' +
           //'<h3>Children Scopes:</h3>' +
           '<div ng-repeat="child in val().children">' +
-            '<tree val="child" inspect="inspect()"></tree>' +
+            '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
           '</div>' +
         '</div>');
 
@@ -82,6 +86,27 @@ function TreeCtrl($scope) {
       "}())");
   };
 
+  $scope.edit = function () {
+    var scopeId = this.val().id;
+    var name = this.key;
+    var value = JSON.parse(this.item);
+
+    chrome.devtools.inspectedWindow.eval(
+      "(function () {" +
+        "$('.ng-scope').each(function (i, elt) {" +
+          "var $scope = angular.element(elt).scope();" +
+          "if ($scope.$id === '" + scopeId + "') {" +
+            "$scope." + name + " = "
+              + (typeof value === 'string'?"'":'') +
+              value
+              + (typeof value === 'string'?"'":'') +
+              ";" +
+            "$scope.$apply();" +
+          "}" +
+        "});" +
+      "}())");
+  };
+
   // evaluates in the context of a window
   var _eval = function (fn, cb) {
     chrome.devtools.inspectedWindow.eval('(' + fn.toString() + '(window))', cb);
@@ -110,11 +135,12 @@ function TreeCtrl($scope) {
             if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
               //node.locals[i] = scope[i];
               if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
-                node.locals[i] = ' = ' + scope[i];
+                node.locals[i] = scope[i];
               } else if (typeof scope[i] === 'string') {
-                node.locals[i] = ' = "' + scope[i] + '"';
+                node.locals[i] = '"' + scope[i] + '"';
               } else {
-                node.locals[i] = ': ' + typeof scope[i];
+                //node.locals[i] = ': ' + typeof scope[i];
+                node.locals[i] = '';
               }
             }
           }

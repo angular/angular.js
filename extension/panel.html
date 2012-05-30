@@ -1,6 +1,8 @@
 <!doctype html>
 <html ng-app="panelApp">
 <head>
+  <link rel="stylesheet" type="text/css" href="css/panel.css">
+  
   <script src="js/angular-1.0.0rc9.js"></script>
   <script src="panelApp.js"></script>
 </head>
@@ -20,7 +22,7 @@
 
   <div class="col" ng-controller="TreeCtrl">
     <pre>
-      <tree val="tree" inspect="inspect"></tree>
+      <tree val="tree" inspect="inspect" edit="edit"></tree>
     </pre>
   </div>
 </body>
