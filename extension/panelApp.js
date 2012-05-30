@@ -8,22 +8,23 @@ angular.module('components', [])
       restrict: 'E',
       terminal: true,
       scope: {
-        val: 'accessor'
+        val: 'accessor',
+        inspect: 'accessor'
       },
       link: function (scope, element, attrs) {
 
       // this is more complicated then it should be
       // see: https://github.com/angular/angular.js/issues/898
       element.append(
-        '<div style="margin-left: 30px;">' +
-          '<h2>Scope</h2>' +
-          '<h3>Locals:</h3>' +
+        '<div style="margin-left: 30px; background-color:rgba(0,0,0,0.06);">' +
+          '<a href="#" ng-click="inspect()()">Scope ({{val().id}})</a>' +
+          //'<h3>Locals:</h3>' +
           '<ul>' +
-            '<li ng-repeat="(key, item) in val().locals">{{key}}</li>' +
+            '<li ng-repeat="(key, item) in val().locals">{{key}}{{item}}</li>' +
           '</ul>' +
-          '<h3>Children Scopes:</h3>' +
+          //'<h3>Children Scopes:</h3>' +
           '<div ng-repeat="child in val().children">' +
-            '<tree val="child"></tree>' +
+            '<tree val="child" inspect="inspect()"></tree>' +
           '</div>' +
         '</div>');
 
@@ -68,12 +69,26 @@ function OptionsCtrl($scope) {
 
 function TreeCtrl($scope) {
 
+  $scope.inspect = function () {
+    var scopeId = this.val().id;
+    chrome.devtools.inspectedWindow.eval(
+      "(function () {" +
+        "$('.ng-scope').each(function (i, elt) {" +
+          "var $scope = angular.element(elt).scope();" +
+          "if ($scope.$id === '" + scopeId + "') {" +
+            "inspect(elt);" +
+          "}" +
+        "});" +
+      "}())");
+  };
+
+  // evaluates in the context of a window
   var _eval = function (fn, cb) {
-    chrome.devtools.inspectedWindow.eval('(' + fn.toString() + '())', cb);
+    chrome.devtools.inspectedWindow.eval('(' + fn.toString() + '(window))', cb);
   };
 
   var getScopeTree = function (callback) {
-    _eval(function () {
+    _eval(function (window) {
         var roots = (function () {
           var res = [];
           window.$('.ng-scope').each(function (i, elt) {
@@ -94,10 +109,17 @@ function TreeCtrl($scope) {
           for (var i in scope) {
             if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
               //node.locals[i] = scope[i];
-              node.locals[i] = i;
+              if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
+                node.locals[i] = ' = ' + scope[i];
+              } else if (typeof scope[i] === 'string') {
+                node.locals[i] = ' = "' + scope[i] + '"';
+              } else {
+                node.locals[i] = ': ' + typeof scope[i];
+              }
             }
           }
 
+          node.id = scope.$id;
 
           // recursively get children scopes
           node.children = [];
@@ -115,8 +137,8 @@ function TreeCtrl($scope) {
         getScopeNode(roots[roots.length - 1], tree);
 
         // exposed to debug console
-        window.$roots = tree;
-        window.$tree = tree;
+        //window.$roots = tree;
+        //window.$tree = tree;
 
         // TODO: return a single array of all roots
         return tree;
@@ -130,23 +152,5 @@ function TreeCtrl($scope) {
     });
   });
 
-
-  $scope.fakeData = function () {
-    $scope.tree = {
-      locals: {
-        a: 1,
-        b: 2
-      },
-      children: [
-        {
-          locals: {
-            c: 3,
-            d: 4
-          },
-          children: []
-        }
-      ]
-    };
-  };
 }
 

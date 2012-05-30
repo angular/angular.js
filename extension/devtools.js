@@ -6,7 +6,11 @@
 
 // The function below is executed in the context of the inspected page.
 var page_getProperties = function () {
-  return window.angular && $0 ? window.angular.element($0).scope() : {};
+  if (window.angular && $0) {
+    return window.$scope = window.angular.element($0).scope();
+  } else {
+    return {};
+  }
 };
 
 chrome.
