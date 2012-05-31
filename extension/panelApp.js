@@ -131,14 +131,23 @@ function TreeCtrl($scope, chromeExtension, appContext) {
 
   var getRoots = function (callback) {
     chromeExtension.eval(function (window) {
-      var res = [];
+      var res = [],
+        unique = [];
+
       window.$('.ng-scope').each(function (i, elt) {
         var $scope = angular.element(elt).scope();
-        if ($scope === $scope.$root) {
+        var id;
+
+        while ($scope.$parent) {
+          $scope = $scope.$parent;
+        }
+        if ($scope === $scope.$root && unique.indexOf($scope.$id) === -1) {
+          id = $scope.$id;
           res.push({
-            value: $scope.$id,
-            label: $scope.$id
+            value: id,
+            label: id
           });
+          unique.push(id);
         }
       });
       return res;
@@ -149,12 +158,18 @@ function TreeCtrl($scope, chromeExtension, appContext) {
     chromeExtension.eval(function (window) {
       var roots = (function () {
         var res = [];
+
         window.$('.ng-scope').each(function (i, elt) {
           var $scope = angular.element(elt).scope();
-          if ($scope === $scope.$root) {
+
+          while ($scope.$parent) {
+            $scope = $scope.$parent;
+          }
+          if ($scope === $scope.$root && res.indexOf($scope.$id) === -1) {
             res.push($scope);
           }
         });
+        
         return res;
       }());
 
