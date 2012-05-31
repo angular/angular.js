@@ -13,13 +13,15 @@ function createChromeExtensionMock() {
           }
         }
       }
-      throw new Error('unknown sleector');
+      throw new Error('unknown selector');
     }
   };
 
   return {
     eval: function (fn, args, cb) {
-      fn(windowMock, args, cb);
+      if (cb) {
+        cb();
+      }
     },
     sendRequest: jasmine.createSpy('sendRequest')
   };

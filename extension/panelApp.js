@@ -9,25 +9,24 @@ angular.module('components', [])
         inspect: 'accessor'
       },
       link: function (scope, element, attrs) {
-
-      // this is more complicated then it should be
-      // see: https://github.com/angular/angular.js/issues/898
-      element.append(
-        '<div style="margin-left: 30px; background-color:rgba(0,0,0,0.06);">' +
-          '<a href="#" ng-click="inspect()()">Scope ({{val().id}})</a> | ' +
-          '<a href="#" ng-click="showState = !showState">toggle</a>' +
-          '<div ng-class="{hidden: showState}">' +
-            '<ul>' +
-              '<li ng-repeat="(key, item) in val().locals">' +
-                '{{key}}' +
-                '<input ng-model="item" ng-change="edit()()">' +
-              '</li>' +
-            '</ul>' +
-            '<div ng-repeat="child in val().children">' +
-              '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
+        // this is more complicated then it should be
+        // see: https://github.com/angular/angular.js/issues/898
+        element.append(
+          '<div style="margin-left: 30px; background-color:rgba(0,0,0,0.06);">' +
+            '<a href="#" ng-click="inspect()()">Scope ({{val().id}})</a> | ' +
+            '<a href="#" ng-click="showState = !showState">toggle</a>' +
+            '<div ng-class="{hidden: showState}">' +
+              '<ul>' +
+                '<li ng-repeat="(key, item) in val().locals">' +
+                  '{{key}}' +
+                  '<input ng-model="item" ng-change="edit()()">' +
+                '</li>' +
+              '</ul>' +
+              '<div ng-repeat="child in val().children">' +
+                '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
+              '</div>' +
             '</div>' +
-          '</div>' +
-        '</div>');
+          '</div>');
 
         $compile(element.contents())(scope.$new());
       }
@@ -74,7 +73,7 @@ angular.module('panelApp', ['components']).
             "if ($scope.$id === args.scopeId) {" +
               "(" +
                 args.fn +
-              "($scope, elt));" +
+              "($scope, elt, args));" +
             "}" +
           "});" +
         "}", args, cb);
@@ -121,7 +120,7 @@ function TreeCtrl($scope, chromeExtension, appContext) {
   };
 
   $scope.edit = function () {
-    appContext.executeOnScope(this.val().id, function (scope, elt) {
+    appContext.executeOnScope(this.val().id, function (scope, elt, args) {
       scope[args.name] = args.value;
       scope.$apply();
     }, {
