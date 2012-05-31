@@ -100,8 +100,6 @@ describe('panelApp:TreeCtrl', function () {
 
       $scope.edit();
 
-      console.log($scope);
-
       expect($scope.someKey).toBe('someNewValue');
     });
   });
