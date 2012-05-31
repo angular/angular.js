@@ -25,7 +25,6 @@ describe('panelApp', function () {
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('hideBindings');
     });
 
-
     it('should notify chrome of state changes to the showScopes option', function () {
       $scope.$digest();
       chromeExtension.sendRequest.reset();
@@ -35,6 +34,7 @@ describe('panelApp', function () {
 
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('showScopes');
     });
+    
     it('should notify chrome of state changes  to the showBindings option', function () {
       $scope.$digest();
 

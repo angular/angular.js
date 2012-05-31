@@ -70,7 +70,7 @@ describe('panelApp:TreeCtrl', function () {
       expect(inspect).toHaveBeenCalledWith('elementMock');
     });
 
-    it('should not call inspect when there no element', function () {
+    it('should not call inspect when there is no element associated with the scope', function () {
 
       // mock accessor
       $scope.val = function () {
