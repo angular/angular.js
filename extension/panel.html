@@ -22,7 +22,7 @@
 
   <div class="col" ng-controller="TreeCtrl">
     <h2>Scope Tree</h2>
-    <div ng-class="{{roots.length > 1}}">
+    <div ng-class="{hidden: roots.length <= 1}">
       <label for="select-root">Root</label> <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
     </div>
     <pre>
