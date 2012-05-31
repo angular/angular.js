@@ -1,3 +1,11 @@
 .hidden {
   display: none;
 }
+.col {
+  float: left;
+  width: 200px;
+}
+.col-2 {
+  float: left;
+  width: 400px;
+}

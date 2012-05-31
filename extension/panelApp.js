@@ -49,6 +49,9 @@ angular.module('panelApp', ['components']).
       // with two args
       if (!cb && typeof args === 'function') {
         cb = args;
+        args = {};
+      } else if (!args) {
+        args = {};
       }
       chrome.devtools.inspectedWindow.eval('(' +
         fn.toString() +
@@ -62,6 +65,8 @@ angular.module('panelApp', ['components']).
       executeOnScope: function(scopeId, fn, args, cb) {
         if (typeof args === 'function') {
           cb = args;
+          args = {};
+        } else if (!args) {
           args = {};
         }
         args.scopeId = scopeId;
@@ -169,7 +174,7 @@ function TreeCtrl($scope, chromeExtension, appContext) {
             res.push($scope);
           }
         });
-        
+
         return res;
       }());
 
