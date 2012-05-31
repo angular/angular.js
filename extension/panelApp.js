@@ -136,7 +136,7 @@ function TreeCtrl($scope, chromeExtension, appContext) {
         var $scope = angular.element(elt).scope();
         if ($scope === $scope.$root) {
           res.push({
-            val: $scope.$id,
+            value: $scope.$id,
             label: $scope.$id
           });
         }
@@ -197,9 +197,9 @@ function TreeCtrl($scope, chromeExtension, appContext) {
         return tree;
       };
 
-      var trees = [];
+      var trees = {};
       roots.forEach(function (root) {
-        trees.push(getScopeTree(root));
+        trees[root.$id] = getScopeTree(root);
       });
 
       return trees;
@@ -207,9 +207,13 @@ function TreeCtrl($scope, chromeExtension, appContext) {
     callback);
   };
 
-  getScopeTrees(function (result) {
-    $scope.$apply(function () {
-      $scope.trees = result;
+  getRoots(function (roots) {
+    getScopeTrees(function (result) {
+      $scope.$apply(function () {
+        $scope.roots = roots;
+        $scope.selectedRoot = roots[0].value;
+        $scope.trees = result;
+      });
     });
   });
 
