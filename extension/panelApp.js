@@ -83,8 +83,98 @@ panelApp.factory('appContext', function(chromeExtension) {
           "}" +
         "});" +
       "}", args, cb);
+    },
+    getRoots: function (callback) {
+      chromeExtension.eval(function (window) {
+        var res = [],
+          unique = [];
+
+        window.$('.ng-scope').each(function (i, elt) {
+          var $scope = angular.element(elt).scope(),
+            id;
+
+          while ($scope.$parent) {
+            $scope = $scope.$parent;
+          }
+          if ($scope === $scope.$root && unique.indexOf($scope.$id) === -1) {
+            id = $scope.$id;
+            res.push({
+              value: id,
+              label: id
+            });
+            unique.push(id);
+          }
+        });
+        return res;
+      }, callback);
+    },
+    getScopeTrees: function (callback) {
+      chromeExtension.eval(function (window) {
+        var roots = (function () {
+          var res = [];
+
+          window.$('.ng-scope').each(function (i, elt) {
+            var $scope = angular.element(elt).scope();
+
+            while ($scope.$parent) {
+              $scope = $scope.$parent;
+            }
+            if ($scope === $scope.$root && res.indexOf($scope.$id) === -1) {
+              res.push($scope);
+            }
+          });
+
+          return res;
+        }());
+
+        var getScopeTree = function (scope) {
+          var tree = {};
+          var getScopeNode = function (scope, node) {
+
+            // copy scope's locals
+            node.locals = {};
+            for (var i in scope) {
+              if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
+                //node.locals[i] = scope[i];
+                if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
+                  node.locals[i] = scope[i];
+                } else if (typeof scope[i] === 'string') {
+                  node.locals[i] = '"' + scope[i] + '"';
+                } else {
+                  //node.locals[i] = ': ' + typeof scope[i];
+                  node.locals[i] = '';
+                }
+              }
+            }
+
+            node.id = scope.$id;
+
+            // recursively get children scopes
+            node.children = [];
+            var child;
+            if (scope.$$childHead) {
+              child = scope.$$childHead;
+
+              do {
+                getScopeNode(child, node.children[node.children.length] = {});
+              } while (child = child.$$nextSibling);
+            }
+          };
+
+          getScopeNode(scope, tree);
+          return tree;
+        };
+
+        var trees = {};
+        roots.forEach(function (root) {
+          trees[root.$id] = getScopeTree(root);
+        });
+
+        return trees;
+      },
+      callback);
     }
-  };
+  }
 });
 
 
@@ -136,101 +226,8 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
     });
   };
 
-  var getRoots = function (callback) {
-    chromeExtension.eval(function (window) {
-      var res = [],
-        unique = [];
-
-      window.$('.ng-scope').each(function (i, elt) {
-        var $scope = angular.element(elt).scope(),
-          id;
-
-        while ($scope.$parent) {
-          $scope = $scope.$parent;
-        }
-        if ($scope === $scope.$root && unique.indexOf($scope.$id) === -1) {
-          id = $scope.$id;
-          res.push({
-            value: id,
-            label: id
-          });
-          unique.push(id);
-        }
-      });
-      return res;
-    }, callback);
-  };
-
-  var getScopeTrees = function (callback) {
-    chromeExtension.eval(function (window) {
-      var roots = (function () {
-        var res = [];
-
-        window.$('.ng-scope').each(function (i, elt) {
-          var $scope = angular.element(elt).scope();
-
-          while ($scope.$parent) {
-            $scope = $scope.$parent;
-          }
-          if ($scope === $scope.$root && res.indexOf($scope.$id) === -1) {
-            res.push($scope);
-          }
-        });
-
-        return res;
-      }());
-
-
-      var getScopeTree = function (scope) {
-        var tree = {};
-        var getScopeNode = function (scope, node) {
-
-          // copy scope's locals
-          node.locals = {};
-          for (var i in scope) {
-            if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
-              //node.locals[i] = scope[i];
-              if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
-                node.locals[i] = scope[i];
-              } else if (typeof scope[i] === 'string') {
-                node.locals[i] = '"' + scope[i] + '"';
-              } else {
-                //node.locals[i] = ': ' + typeof scope[i];
-                node.locals[i] = '';
-              }
-            }
-          }
-
-          node.id = scope.$id;
-
-          // recursively get children scopes
-          node.children = [];
-          var child;
-          if (scope.$$childHead) {
-            child = scope.$$childHead;
-
-            do {
-              getScopeNode(child, node.children[node.children.length] = {});
-            } while (child = child.$$nextSibling);
-          }
-        };
-
-        getScopeNode(scope, tree);
-        return tree;
-      };
-
-      var trees = {};
-      roots.forEach(function (root) {
-        trees[root.$id] = getScopeTree(root);
-      });
-
-      return trees;
-    },
-    callback);
-  };
-
-  getRoots(function (roots) {
-    getScopeTrees(function (result) {
+  appContext.getRoots(function (roots) {
+    appContext.getScopeTrees(function (result) {
       $scope.$apply(function () {
         $scope.roots = roots;
         $scope.selectedRoot = roots[0].value;

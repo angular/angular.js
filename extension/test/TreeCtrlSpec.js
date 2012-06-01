@@ -32,6 +32,15 @@ function createAppContextMock () {
     },
     registerScope: function (scope) {
       regScope = scope;
+    },
+    getRoots: function (cb) {
+      cb([{
+        label: "YYY",
+        value: "YYY"
+      }]);
+    },
+    getScopeTrees: function (cb) {
+      cb({});
     }
   }
 }
