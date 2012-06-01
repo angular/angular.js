@@ -70,12 +70,12 @@ function $TimeoutProvider() {
       * Cancels a task associated with the `promise`. As a result of this the promise will be
       * resolved with a rejection.
       *
-      * @param {Promise} promise Promise returned by the `$timeout` function.
+      * @param {Promise=} promise Promise returned by the `$timeout` function.
       * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfully
       *   canceled.
       */
     timeout.cancel = function(promise) {
-      if (promise.$$timeoutId in deferreds) {
+      if (promise && promise.$$timeoutId in deferreds) {
         deferreds[promise.$$timeoutId].reject('canceled');
         return $browser.defer.cancel(promise.$$timeoutId);
       }
