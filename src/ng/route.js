@@ -230,7 +230,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name angular.module.ng.$route#$beforeRouteChange
+     * @name angular.module.ng.$route#$routeChangeStart
      * @eventOf angular.module.ng.$route
      * @eventType broadcast on root scope
      * @description
@@ -238,7 +238,7 @@ function $RouteProvider(){
      * resolving all of the dependencies needed for the route change to occurs.
      * Typically this involves fetching the view template as well as any dependencies
      * defined in `resolve` route property. Once  all of the dependencies are resolved
-     * `$afterRouteChange` is fired.
+     * `$routeChangeSuccess` is fired.
      *
      * @param {Route} next Future route information.
      * @param {Route} current Current route information.
@@ -246,7 +246,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name angular.module.ng.$route#$afterRouteChange
+     * @name angular.module.ng.$route#$routeChangeSuccess
      * @eventOf angular.module.ng.$route
      * @eventType broadcast on root scope
      * @description
@@ -347,7 +347,7 @@ function $RouteProvider(){
         $rootScope.$broadcast('$routeUpdate', last);
       } else if (next || last) {
         forceReload = false;
-        $rootScope.$broadcast('$beforeRouteChange', next, last);
+        $rootScope.$broadcast('$routeChangeStart', next, last);
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
@@ -393,7 +393,7 @@ function $RouteProvider(){
                 next.locals = locals;
                 copy(next.params, $routeParams);
               }
-              $rootScope.$broadcast('$afterRouteChange', next, last);
+              $rootScope.$broadcast('$routeChangeSuccess', next, last);
             }
           }, function(error) {
             if (next == $route.current) {

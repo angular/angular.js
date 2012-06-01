@@ -76,7 +76,7 @@ provided by Angular's web framework:
     $provide.factory('routeTemplateMonitor',
                 ['$route', 'batchLog', '$rootScope',
          function($route,   batchLog,   $rootScope) {
-      $rootScope.$on('$afterRouteChange', function() {
+      $rootScope.$on('$routeChangeSuccess', function() {
         batchLog($route.current ? $route.current.template : null);
       });
     }]);

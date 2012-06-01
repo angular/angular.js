@@ -115,7 +115,7 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
       var lastScope,
           onloadExp = attr.onload || '';
 
-      scope.$on('$afterRouteChange', update);
+      scope.$on('$routeChangeSuccess', update);
       update();
 
 
