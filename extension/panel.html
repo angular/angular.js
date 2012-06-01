@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <div class="col" ng-controller="OptionsCtrl">
+  <div class="col-2" ng-controller="OptionsCtrl">
     <h2>Options</h2>
     <div>
       <input type="checkbox" ng-model="debugger.scopes" id="scopes">
@@ -17,6 +17,11 @@
     <div>
       <input type="checkbox" ng-model="debugger.bindings" id="bindings">
       <label for="bindings">Show bindings</label>
+    </div>
+    <h2>Additional Debug Features</h2>
+    <div>
+      <input type="checkbox" ng-model="debugger.extra" id="extra">
+      <label for="extra">Enable</label> (Causes tab to refresh)
     </div>
   </div>
 

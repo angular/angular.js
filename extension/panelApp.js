@@ -173,17 +173,28 @@ panelApp.factory('appContext', function(chromeExtension) {
         return trees;
       },
       callback);
+    },
+    injectOnRefresh: function (fn) {
+      chromeExtension.eval(function (window, fn) {
+        window.document.location.reload();
+
+        var script = window.document.createElement('script');
+        //script.src = 'http://google.com';
+        script.innerHTML = '(' + fn + '(window))' ;
+        window.document.getElementsByTagName('head')[0].appendChild(script);
+      }, fn.toString());
     }
   }
 });
 
 
 
-panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension) {
+panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension, appContext) {
 
   $scope.debugger = {
     scopes: false,
-    bindings: false
+    bindings: false,
+    extra: false
   };
 
   //$scope.$watch('debugger.scope', );
@@ -203,6 +214,21 @@ panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension)
       chromeExtension.sendRequest('hideBindings');
     }
   });
+
+  var first = true;
+
+  $scope.$watch('debugger.extra', function (newVal, oldVal) {
+
+    // prevent refresh on initial pageload
+    if (first) {
+      first = false;
+      return;
+    }
+    appContext.injectOnRefresh(function (window) {
+      window.alert('this is a test');
+    });
+  });
+
 });
 
 
@@ -237,4 +263,5 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
   });
 
 });
+
 
