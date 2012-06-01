@@ -1219,7 +1219,7 @@ var ngListDirective = function() {
 
       ctrl.$parsers.push(parse);
       ctrl.$formatters.push(function(value) {
-        if (isArray(value) && !equals(parse(ctrl.$viewValue), value)) {
+        if (isArray(value)) {
           return value.join(', ');
         }
 
