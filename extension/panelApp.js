@@ -1,94 +1,95 @@
-angular.module('components', [])
-  .directive('tree', function($compile) {
-    return {
-      restrict: 'E',
-      terminal: true,
-      scope: {
-        val: 'accessor',
-        edit: 'accessor',
-        inspect: 'accessor'
-      },
-      link: function (scope, element, attrs) {
-        // this is more complicated then it should be
-        // see: https://github.com/angular/angular.js/issues/898
-        element.append(
-          '<div style="margin-left: 30px; background-color:rgba(0,0,0,0.06);">' +
-            '<a href="#" ng-click="inspect()()">Scope ({{val().id}})</a> | ' +
-            '<a href="#" ng-click="showState = !showState">toggle</a>' +
-            '<div ng-class="{hidden: showState}">' +
-              '<ul>' +
-                '<li ng-repeat="(key, item) in val().locals">' +
-                  '{{key}}' +
-                  '<input ng-model="item" ng-change="edit()()">' +
-                '</li>' +
-              '</ul>' +
-              '<div ng-repeat="child in val().children">' +
-                '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
-              '</div>' +
-            '</div>' +
-          '</div>');
+var panelApp = angular.module('panelApp', []);
 
-        $compile(element.contents())(scope.$new());
-      }
-    }
-  });
-
-angular.module('panelApp', ['components']).
-  value('chromeExtension', {
-    sendRequest: function (requestName) {
-      chrome.extension.sendRequest({
-        script: requestName,
-        tab: chrome.devtools.inspectedWindow.tabId
-      });
+panelApp.directive('tree', function($compile) {
+  return {
+    restrict: 'E',
+    terminal: true,
+    scope: {
+      val: 'accessor',
+      edit: 'accessor',
+      inspect: 'accessor'
     },
+    link: function (scope, element, attrs) {
+      // this is more complicated then it should be
+      // see: https://github.com/angular/angular.js/issues/898
+      element.append(
+        '<div class="scope-branch">' +
+          '<a href ng-click="inspect()()">Scope ({{val().id}})</a> | ' +
+          '<a href ng-click="showState = !showState">toggle</a>' +
+          '<div ng-class="{hidden: showState}">' +
+            '<ul>' +
+              '<li ng-repeat="(key, item) in val().locals">' +
+                '{{key}}' +
+                '<input ng-model="item" ng-change="edit()()">' +
+              '</li>' +
+            '</ul>' +
+            '<div ng-repeat="child in val().children">' +
+              '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
+            '</div>' +
+          '</div>' +
+        '</div>');
 
-    // evaluates in the context of a window
-    //written because I don't like the API for chrome.devtools.inspectedWindow.eval;
-    // passing strings instead of functions are gross.
-    eval: function (fn, args, cb) {
-      // with two args
-      if (!cb && typeof args === 'function') {
+      $compile(element.contents())(scope.$new());
+    }
+  }
+});
+
+panelApp.value('chromeExtension', {
+  sendRequest: function (requestName) {
+    chrome.extension.sendRequest({
+      script: requestName,
+      tab: chrome.devtools.inspectedWindow.tabId
+    });
+  },
+
+  // evaluates in the context of a window
+  //written because I don't like the API for chrome.devtools.inspectedWindow.eval;
+  // passing strings instead of functions are gross.
+  eval: function (fn, args, cb) {
+    // with two args
+    if (!cb && typeof args === 'function') {
+      cb = args;
+      args = {};
+    } else if (!args) {
+      args = {};
+    }
+    chrome.devtools.inspectedWindow.eval('(' +
+      fn.toString() +
+      '(window, ' +
+      JSON.stringify(args) +
+      '));', cb);
+  }
+});
+
+panelApp.factory('appContext', function(chromeExtension) {
+  return {
+    executeOnScope: function(scopeId, fn, args, cb) {
+      if (typeof args === 'function') {
         cb = args;
         args = {};
       } else if (!args) {
         args = {};
       }
-      chrome.devtools.inspectedWindow.eval('(' +
-        fn.toString() +
-        '(window, ' +
-        JSON.stringify(args) +
-        '));', cb);
+      args.scopeId = scopeId;
+      args.fn = fn.toString();
+
+      chromeExtension.eval("function (window, args) {" +
+        "window.$('.ng-scope').each(function (i, elt) {" +
+          "var $scope = angular.element(elt).scope();" +
+          "if ($scope.$id === args.scopeId) {" +
+            "(" +
+              args.fn +
+            "($scope, elt, args));" +
+          "}" +
+        "});" +
+      "}", args, cb);
     }
-  }).
-  factory('appContext', function(chromeExtension) {
-    return {
-      executeOnScope: function(scopeId, fn, args, cb) {
-        if (typeof args === 'function') {
-          cb = args;
-          args = {};
-        } else if (!args) {
-          args = {};
-        }
-        args.scopeId = scopeId;
-        args.fn = fn.toString();
-
-        chromeExtension.eval("function (window, args) {" +
-          "window.$('.ng-scope').each(function (i, elt) {" +
-            "var $scope = angular.element(elt).scope();" +
-            "if ($scope.$id === args.scopeId) {" +
-              "(" +
-                args.fn +
-              "($scope, elt, args));" +
-            "}" +
-          "});" +
-        "}", args, cb);
-      }
-    };
-  });
+  };
+});
 
 
 
-function OptionsCtrl($scope, chromeExtension) {
+panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension) {
 
   $scope.debugger = {
     scopes: false,
@@ -112,9 +113,10 @@ function OptionsCtrl($scope, chromeExtension) {
       chromeExtension.sendRequest('hideBindings');
     }
   });
-}
+});
 
-function TreeCtrl($scope, chromeExtension, appContext) {
+
+panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appContext) {
 
   $scope.inspect = function () {
     var scopeId = this.val().id;
@@ -140,8 +142,8 @@ function TreeCtrl($scope, chromeExtension, appContext) {
         unique = [];
 
       window.$('.ng-scope').each(function (i, elt) {
-        var $scope = angular.element(elt).scope();
-        var id;
+        var $scope = angular.element(elt).scope(),
+          id;
 
         while ($scope.$parent) {
           $scope = $scope.$parent;
@@ -237,5 +239,5 @@ function TreeCtrl($scope, chromeExtension, appContext) {
     });
   });
 
-}
+});
 

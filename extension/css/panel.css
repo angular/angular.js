@@ -9,3 +9,7 @@
   float: left;
   width: 400px;
 }
+.scope-branch {
+  margin-left: 30px;
+  background-color:rgba(0,0,0,0.06);
+}

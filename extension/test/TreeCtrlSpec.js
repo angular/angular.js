@@ -50,7 +50,7 @@ describe('panelApp:TreeCtrl', function () {
       appContext,
       chromeExtension;
 
-    beforeEach(inject(function(_$rootScope_, _appContext_, _chromeExtension_) {
+    beforeEach(inject(function(_$rootScope_, _appContext_, _chromeExtension_, $controller) {
       $scope = _$rootScope_;
 
       // mock accessor
@@ -62,7 +62,7 @@ describe('panelApp:TreeCtrl', function () {
       inspect.reset();
       appContext = _appContext_;
       chromeExtension = _chromeExtension_;
-      ctrl = new TreeCtrl($scope, chromeExtension, appContext);
+      ctrl = $controller('TreeCtrl', {$scope: $scope});
     }));
 
     it('should call inspect when there is an element to inspect', function () {

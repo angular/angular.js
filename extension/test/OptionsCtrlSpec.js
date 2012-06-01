@@ -8,10 +8,10 @@ describe('panelApp', function () {
   describe('OptionsCtrl', function() {
     var ctrl, $scope, chromeExtension;
 
-    beforeEach(inject(function(_$rootScope_, _chromeExtension_) {
+    beforeEach(inject(function(_$rootScope_, _chromeExtension_, $controller) {
       $scope = _$rootScope_;
       chromeExtension = _chromeExtension_;
-      ctrl = new OptionsCtrl($scope, chromeExtension);
+      ctrl = $controller('OptionsCtrl', {$scope: $scope});
     }));
 
 
@@ -34,7 +34,7 @@ describe('panelApp', function () {
 
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('showScopes');
     });
-    
+
     it('should notify chrome of state changes  to the showBindings option', function () {
       $scope.$digest();
 
