@@ -26,13 +26,13 @@ describe('$route', function() {
       $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
-      $rootScope.$on('$beforeRouteChange', function(event, next, current) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
         log += 'before();';
         expect(current).toBe($route.current);
         lastRoute = current;
         nextRoute = next;
       });
-      $rootScope.$on('$afterRouteChange', function(event, current, last) {
+      $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
         log += 'after();';
         expect(current).toBe($route.current);
         expect(lastRoute).toBe(last);
@@ -93,7 +93,7 @@ describe('$route', function() {
     inject(function($route, $location, $rootScope) {
       var callback = jasmine.createSpy('onRouteChange');
 
-      $rootScope.$on('$beforeRouteChange', callback);
+      $rootScope.$on('$routeChangeStart', callback);
       $location.path('/test');
       $rootScope.$digest();
       callback.reset();
@@ -114,7 +114,7 @@ describe('$route', function() {
     inject(function($route, $location, $rootScope) {
       var onChangeSpy = jasmine.createSpy('onChange');
 
-      $rootScope.$on('$beforeRouteChange', onChangeSpy);
+      $rootScope.$on('$routeChangeStart', onChangeSpy);
       expect($route.current).toBeUndefined();
       expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -139,7 +139,7 @@ describe('$route', function() {
     inject(function($route, $location, $rootScope) {
       var onChangeSpy = jasmine.createSpy('onChange');
 
-      $rootScope.$on('$beforeRouteChange', onChangeSpy);
+      $rootScope.$on('$routeChangeStart', onChangeSpy);
       expect($route.current).toBeUndefined();
       expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -188,8 +188,8 @@ describe('$route', function() {
       });
 
       inject(function($rootScope, $route, $location) {
-        $rootScope.$on('$beforeRouteChange', routeChangeSpy);
-        $rootScope.$on('$afterRouteChange', routeChangeSpy);
+        $rootScope.$on('$routeChangeStart', routeChangeSpy);
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
 
         $rootScope.$digest();
         expect(routeChangeSpy).not.toHaveBeenCalled();
@@ -200,7 +200,7 @@ describe('$route', function() {
       });
     });
 
-    it('should fire $beforeRouteChange and resolve promises', function() {
+    it('should fire $routeChangeStart and resolve promises', function() {
       var deferA,
           deferB;
 
@@ -253,8 +253,13 @@ describe('$route', function() {
       inject(function($location, $route, $rootScope) {
         var log = '';
 
+<<<<<<< HEAD
         $rootScope.$on('$beforeRouteChange', function() { log += 'before();'; });
         $rootScope.$on('$routeChangeError', function(e, n, l, reason) { log += 'failed(' + reason + ');'; });
+=======
+        $rootScope.$on('$routeChangeStart', function() { log += 'before();'; });
+        $rootScope.$on('$routeChangeFailed', function(e, n, l, reason) { log += 'failed(' + reason + ');'; });
+>>>>>>> ebebe46... chore($route): rename events
 
         $location.path('/path');
         $rootScope.$digest();
@@ -276,8 +281,8 @@ describe('$route', function() {
 
       inject(function($route, $httpBackend, $location, $rootScope) {
         var log = '';
-        $rootScope.$on('$beforeRouteChange', function(e, next) { log += '$before(' + next.template + ');'});
-        $rootScope.$on('$afterRouteChange', function(e, next) { log += '$after(' + next.template + ');'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.template + ');'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.template + ');'});
 
         $httpBackend.expectGET('r1.html').respond('R1');
         $httpBackend.expectGET('r2.html').respond('R2');
@@ -297,7 +302,7 @@ describe('$route', function() {
     });
 
 
-    it('should not update $routeParams until $afterRouteChange', function() {
+    it('should not update $routeParams until $routeChangeSuccess', function() {
       module(function($routeProvider) {
         $routeProvider.
           when('/r1/:id', { template: 'r1.html' }).
@@ -306,8 +311,8 @@ describe('$route', function() {
 
       inject(function($route, $httpBackend, $location, $rootScope, $routeParams) {
         var log = '';
-        $rootScope.$on('$beforeRouteChange', function(e, next) { log += '$before' + toJson($routeParams) + ';'});
-        $rootScope.$on('$afterRouteChange', function(e, next) { log += '$after' + toJson($routeParams) + ';'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before' + toJson($routeParams) + ';'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after' + toJson($routeParams) + ';'});
 
         $httpBackend.whenGET('r1.html').respond('R1');
         $httpBackend.whenGET('r2.html').respond('R2');
@@ -338,8 +343,8 @@ describe('$route', function() {
 
       inject(function($route, $httpBackend, $location, $rootScope) {
         var log = '';
-        $rootScope.$on('$beforeRouteChange', function(e, next) { log += '$before(' + next.template + ');'});
-        $rootScope.$on('$afterRouteChange', function(e, next) { log += '$after(' + next.template + ');'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.template + ');'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.template + ');'});
 
         $httpBackend.expectGET('r1.html').respond('R1');
         $httpBackend.expectGET('r2.html').respond('R2');
@@ -371,8 +376,8 @@ describe('$route', function() {
         $rootScope.$on('$routeChangeError', function(e, next, last, error) {
           log += '$failed(' + next.templateUrl + ', ' + error.status + ');';
         });
-        $rootScope.$on('$beforeRouteChange', function(e, next) { log += '$before(' + next.templateUrl + ');'});
-        $rootScope.$on('$afterRouteChange', function(e, next) { log += '$after(' + next.templateUrl + ');'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before(' + next.templateUrl + ');'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after(' + next.templateUrl + ');'});
 
         $httpBackend.expectGET('r1.html').respond(404, 'R1');
         $httpBackend.expectGET('r2.html').respond('R2');
@@ -457,7 +462,7 @@ describe('$route', function() {
       inject(function($route, $location, $rootScope) {
         var onChangeSpy = jasmine.createSpy('onChange');
 
-        $rootScope.$on('$beforeRouteChange', onChangeSpy);
+        $rootScope.$on('$routeChangeStart', onChangeSpy);
         expect($route.current).toBeUndefined();
         expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -563,7 +568,7 @@ describe('$route', function() {
       });
 
       inject(function($route, $location, $rootScope, $routeParams) {
-        $rootScope.$on('$beforeRouteChange', reloaded);
+        $rootScope.$on('$routeChangeStart', reloaded);
         $location.path('/foo');
         $rootScope.$digest();
         expect(reloaded).toHaveBeenCalled();
@@ -588,8 +593,8 @@ describe('$route', function() {
       });
 
       inject(function($route, $location, $rootScope) {
-        $rootScope.$on('$beforeRouteChange', routeChange);
-        $rootScope.$on('$afterRouteChange', routeChange);
+        $rootScope.$on('$routeChangeStart', routeChange);
+        $rootScope.$on('$routeChangeSuccess', routeChange);
         $rootScope.$on('$routeUpdate', routeUpdate);
 
         expect(routeChange).not.toHaveBeenCalled();
@@ -618,8 +623,8 @@ describe('$route', function() {
       });
 
       inject(function($route, $location, $rootScope) {
-        $rootScope.$on('$beforeRouteChange', routeChange);
-        $rootScope.$on('$afterRouteChange', routeChange);
+        $rootScope.$on('$routeChangeStart', routeChange);
+        $rootScope.$on('$routeChangeSuccess', routeChange);
 
         expect(routeChange).not.toHaveBeenCalled();
 
@@ -693,7 +698,7 @@ describe('$route', function() {
         });
 
         inject(function($route, $location, $rootScope, $routeParams) {
-          $rootScope.$on('$afterRouteChange', routeChangeSpy);
+          $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
 
           $location.path('/bar/123');
           $rootScope.$digest();

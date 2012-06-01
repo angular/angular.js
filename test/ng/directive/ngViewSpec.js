@@ -266,8 +266,8 @@ describe('ngView', function() {
     });
 
     inject(function($templateCache, $rootScope, $location) {
-      $rootScope.$on('$beforeRouteChange', logger('$beforeRouteChange'));
-      $rootScope.$on('$afterRouteChange', logger('$afterRouteChange'));
+      $rootScope.$on('$routeChangeStart', logger('$routeChangeStart'));
+      $rootScope.$on('$routeChangeSuccess', logger('$routeChangeSuccess'));
       $rootScope.$on('$viewContentLoaded', logger('$viewContentLoaded'));
 
       $templateCache.put('tpl.html', [200, '{{value}}', {}]);
@@ -276,7 +276,7 @@ describe('ngView', function() {
 
       expect(element.text()).toBe('bound-value');
       expect(log).toEqual([
-        '$beforeRouteChange', 'init-ctrl', '$viewContentLoaded', '$afterRouteChange' ]);
+        '$routeChangeStart', 'init-ctrl', '$viewContentLoaded', '$routeChangeSuccess' ]);
     });
   });
 
