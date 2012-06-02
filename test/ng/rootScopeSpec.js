@@ -182,7 +182,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should repeat watch cycle from the root elemnt', inject(function($rootScope) {
+    it('should repeat watch cycle from the root element', inject(function($rootScope) {
       var log = '';
       var child = $rootScope.$new();
       $rootScope.$watch(function() { log += 'a'; });
