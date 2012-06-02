@@ -913,10 +913,13 @@ function angularInit(element, bootstrap) {
 function bootstrap(element, modules) {
   element = jqLite(element);
   modules = modules || [];
+  modules.unshift(['$provide', function($provide) {
+    $provide.value('$rootElement', element);
+  }]);
   modules.unshift('ng');
   var injector = createInjector(modules);
   injector.invoke(
-    ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+    ['$rootScope', '$rootElement', '$compile', '$injector', function(scope, element, compile, injector){
       scope.$apply(function() {
         element.data('$injector', injector);
         compile(element)(scope);

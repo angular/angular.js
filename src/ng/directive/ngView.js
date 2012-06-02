@@ -49,11 +49,11 @@
       <file name="script.js">
         angular.module('ngView', [], function($routeProvider, $locationProvider) {
           $routeProvider.when('/Book/:bookId', {
-            template: 'book.html',
+            templateUrl: 'book.html',
             controller: BookCntl
           });
           $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-            template: 'chapter.html',
+            templateUrl: 'chapter.html',
             controller: ChapterCntl
           });
 
@@ -112,11 +112,10 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
     restrict: 'ECA',
     terminal: true,
     link: function(scope, element, attr) {
-      var changeCounter = 0,
-          lastScope,
+      var lastScope,
           onloadExp = attr.onload || '';
 
-      scope.$on('$afterRouteChange', update);
+      scope.$on('$routeChangeSuccess', update);
       update();
 
 
@@ -127,43 +126,36 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
         }
       }
 
-      function update() {
-        var template = $route.current && $route.current.template,
-            thisChangeId = ++changeCounter;
+      function clearContent() {
+        element.html('');
+        destroyLastScope();
+      }
 
-        function clearContent() {
-          // ignore callback if another route change occured since
-          if (thisChangeId === changeCounter) {
-            element.html('');
-            destroyLastScope();
-          }
-        }
+      function update() {
+        var locals = $route.current && $route.current.locals,
+            template = locals && locals.$template;
 
         if (template) {
-          $http.get(template, {cache: $templateCache}).success(function(response) {
-            // ignore callback if another route change occured since
-            if (thisChangeId === changeCounter) {
-              element.html(response);
-              destroyLastScope();
+          element.html(template);
+          destroyLastScope();
 
-              var link = $compile(element.contents()),
-                  current = $route.current,
-                  controller;
+          var link = $compile(element.contents()),
+              current = $route.current,
+              controller;
 
-              lastScope = current.scope = scope.$new();
-              if (current.controller) {
-                controller = $controller(current.controller, {$scope: lastScope});
-                element.contents().data('$ngControllerController', controller);
-              }
+          lastScope = current.scope = scope.$new();
+          if (current.controller) {
+            locals.$scope = lastScope;
+            controller = $controller(current.controller, locals);
+            element.contents().data('$ngControllerController', controller);
+          }
 
-              link(lastScope);
-              lastScope.$emit('$viewContentLoaded');
-              lastScope.$eval(onloadExp);
+          link(lastScope);
+          lastScope.$emit('$viewContentLoaded');
+          lastScope.$eval(onloadExp);
 
-              // $anchorScroll might listen on event...
-              $anchorScroll();
-            }
-          }).error(clearContent);
+          // $anchorScroll might listen on event...
+          $anchorScroll();
         } else {
           clearContent();
         }

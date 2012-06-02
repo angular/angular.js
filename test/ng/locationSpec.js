@@ -498,8 +498,8 @@ describe('$location', function() {
   // html5 history enabled, but not supported by browser
   describe('history on old browser', function() {
 
-    afterEach(inject(function($document){
-      dealoc($document);
+    afterEach(inject(function($rootElement){
+      dealoc($rootElement);
     }));
 
     it('should use hashbang url with hash prefix', function() {
@@ -532,8 +532,8 @@ describe('$location', function() {
   // html5 history enabled and supported by browser
   describe('history on new browser', function() {
 
-    afterEach(inject(function($document){
-      dealoc($document);
+    afterEach(inject(function($rootElement){
+      dealoc($rootElement);
     }));
 
     it('should use new url', function() {
@@ -681,7 +681,6 @@ describe('$location', function() {
 
     function configureService(linkHref, html5Mode, supportHist, attrs, content) {
       module(function($provide, $locationProvider) {
-        var jqRoot = jqLite('<div></div>');
         attrs = attrs ? ' ' + attrs + ' ' : '';
 
         // fake the base behavior
@@ -692,14 +691,16 @@ describe('$location', function() {
         }
 
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
-        root = jqRoot.append(link)[0];
 
-        jqLite(document.body).append(jqRoot);
-
-        $provide.value('$document', jqRoot);
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
         $locationProvider.hashPrefix('!');
+        return function($rootElement, $document) {
+          $rootElement.append(link);
+          root = $rootElement[0];
+          // we need to do this otherwise we can't simulate events
+          $document.find('body').append($rootElement);
+        };
       });
     }
 
@@ -711,11 +712,11 @@ describe('$location', function() {
     }
 
     function initLocation() {
-      return function($browser, $location, $document) {
+      return function($browser, $location, $rootElement) {
         originalBrowser = $browser.url();
         // we have to prevent the default operation, as we need to test absolute links (http://...)
         // and navigating to these links would kill jstd
-        $document.bind('click', function(e) {
+        $rootElement.bind('click', function(e) {
           lastEventPreventDefault = e.isDefaultPrevented();
           e.preventDefault();
         });
@@ -785,19 +786,6 @@ describe('$location', function() {
         function($browser) {
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
-        }
-      );
-    });
-
-
-    it('should not rewrite when history disabled', function() {
-      configureService('#new', false);
-      inject(
-        initBrowser(),
-        initLocation(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
         }
       );
     });
@@ -980,5 +968,149 @@ describe('$location', function() {
         );
       });
     }
+  });
+
+
+  describe('location cancellation', function() {
+    it('should fire $before/afterLocationChange event', inject(function($location, $browser, $rootScope, $log) {
+      expect($browser.url()).toEqual('http://server/');
+
+      $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+        $log.info('before', newUrl, oldUrl, $browser.url());
+      });
+      $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+        $log.info('after', newUrl, oldUrl, $browser.url());
+      });
+
+      expect($location.url()).toEqual('');
+      $location.url('/somePath');
+      expect($location.url()).toEqual('/somePath');
+      expect($browser.url()).toEqual('http://server/');
+      expect($log.info.logs).toEqual([]);
+
+      $rootScope.$apply();
+
+      expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+      expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/somePath', 'http://server/', 'http://server/#/somePath']);
+      expect($location.url()).toEqual('/somePath');
+      expect($browser.url()).toEqual('http://server/#/somePath');
+    }));
+
+
+    it('should allow $locationChangeStart event cancellation', inject(function($location, $browser, $rootScope, $log) {
+      expect($browser.url()).toEqual('http://server/');
+      expect($location.url()).toEqual('');
+
+      $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+        $log.info('before', newUrl, oldUrl, $browser.url());
+        event.preventDefault();
+      });
+      $rootScope.$on('$locationChangeCompleted', function(event, newUrl, oldUrl) {
+        throw Error('location should have been canceled');
+      });
+
+      expect($location.url()).toEqual('');
+      $location.url('/somePath');
+      expect($location.url()).toEqual('/somePath');
+      expect($browser.url()).toEqual('http://server/');
+      expect($log.info.logs).toEqual([]);
+
+      $rootScope.$apply();
+
+      expect($log.info.logs.shift()).
+          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+      expect($log.info.logs[1]).toBeUndefined();
+      expect($location.url()).toEqual('');
+      expect($browser.url()).toEqual('http://server/');
+    }));
+
+    it ('should fire $locationChangeCompleted event when change from browser location bar',
+      inject(function($log, $location, $browser, $rootScope) {
+        $rootScope.$apply(); // clear initial $locationChangeStart
+
+        expect($browser.url()).toEqual('http://server/');
+        expect($location.url()).toEqual('');
+
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          throw Error('there is no before when user enters URL directly to browser');
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl);
+        });
+
+
+        $browser.url('http://server/#/somePath');
+        $browser.poll();
+
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/#/somePath', 'http://server/']);
+      })
+    );
+
+
+    it('should listen on click events on href and prevent browser default in hasbang mode', function() {
+      module(function() {
+        return function($rootElement, $compile, $rootScope) {
+          $rootElement.html('<a href="http://server/#/somePath">link</a>');
+          $compile($rootElement)($rootScope);
+          jqLite(document.body).append($rootElement);
+        }
+      });
+
+      inject(function($location, $rootScope, $browser, $rootElement) {
+        var log = '',
+            link = $rootElement.find('a');
+
+
+        $rootScope.$on('$locationChangeStart', function(event) {
+          event.preventDefault();
+          log += '$locationChangeStart';
+        });
+        $rootScope.$on('$locationChangeCompleted', function() {
+          throw new Error('after cancellation in hashbang mode');
+        });
+
+        browserTrigger(link, 'click');
+
+        expect(log).toEqual('$locationChangeStart');
+        expect($browser.url()).toEqual('http://server/');
+
+        dealoc($rootElement);
+      });
+    });
+
+
+    it('should listen on click events on href and prevent browser default in html5 mode', function() {
+      module(function($locationProvider) {
+        $locationProvider.html5Mode(true);
+        return function($rootElement, $compile, $rootScope) {
+          $rootElement.html('<a href="http://server/somePath">link</a>');
+          $compile($rootElement)($rootScope);
+          jqLite(document.body).append($rootElement);
+        }
+      });
+
+      inject(function($location, $rootScope, $browser, $rootElement) {
+        var log = '',
+          link = $rootElement.find('a');
+
+        $rootScope.$on('$locationChangeStart', function(event) {
+          event.preventDefault();
+          log += '$locationChangeStart';
+        });
+        $rootScope.$on('$locationChangeCompleted', function() {
+          throw new Error('after cancalation in html5 mode');
+        });
+
+        browserTrigger(link, 'click');
+
+        expect(log).toEqual('$locationChangeStart');
+        expect($browser.url()).toEqual('http://server/');
+
+        dealoc($rootElement);
+      });
+    });
   });
 });

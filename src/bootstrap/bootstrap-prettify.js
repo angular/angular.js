@@ -190,7 +190,12 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         $provide.value('$anchorScroll', angular.noop);
         $provide.value('$browser', $browser);
         $provide.provider('$location', function() {
-          this.$get = function() { return $location; };
+          this.$get = ['$rootScope', function($rootScope) {
+            docsRootScope.$on('$locationChangeSuccess', function(event, oldUrl, newUrl) {
+              $rootScope.$broadcast('$locationChangeSuccess', oldUrl, newUrl);
+            });
+            return $location;
+          }];
           this.html5Mode = angular.noop;
         });
         $provide.decorator('$defer', ['$rootScope', '$delegate', function($rootScope, $delegate) {

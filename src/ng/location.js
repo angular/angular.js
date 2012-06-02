@@ -405,10 +405,13 @@ function locationGetterSetter(property, preprocess) {
  *
  * @requires $browser
  * @requires $sniffer
- * @requires $document
+ * @requires $rootElement
  *
  * @description
- * The $location service parses the URL in the browser address bar (based on the {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL available to your application. Changes to the URL in the address bar are reflected into $location service and changes to $location are reflected into the browser address bar.
+ * The $location service parses the URL in the browser address bar (based on the
+ * {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL
+ * available to your application. Changes to the URL in the address bar are reflected into
+ * $location service and changes to $location are reflected into the browser address bar.
  *
  * **The $location service:**
  *
@@ -421,7 +424,8 @@ function locationGetterSetter(property, preprocess) {
  *   - Clicks on a link.
  * - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
  *
- * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
+ * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular
+ * Services: Using $location}
  */
 
 /**
@@ -468,67 +472,75 @@ function $LocationProvider(){
     }
   };
 
-  this.$get = ['$rootScope', '$browser', '$sniffer', '$document',
-      function( $rootScope,   $browser,   $sniffer,   $document) {
-    var currentUrl,
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
+      function( $rootScope,   $browser,   $sniffer,   $rootElement) {
+    var $location,
         basePath = $browser.baseHref() || '/',
         pathPrefix = pathPrefixFromBase(basePath),
-        initUrl = $browser.url();
+        initUrl = $browser.url(),
+        absUrlPrefix;
 
     if (html5Mode) {
       if ($sniffer.history) {
-        currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
+        $location = new LocationUrl(
+          convertToHtml5Url(initUrl, basePath, hashPrefix),
+          pathPrefix);
       } else {
-        currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
-                                             hashPrefix);
+        $location = new LocationHashbangUrl(
+          convertToHashbangUrl(initUrl, basePath, hashPrefix),
+          hashPrefix);
       }
-
-      // link rewriting
-      var u = currentUrl,
-          absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
-
-      $document.bind('click', function(event) {
-        // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
-        // currently we open nice url link and redirect then
-
-        if (event.ctrlKey || event.metaKey || event.which == 2) return;
-
-        var elm = jqLite(event.target);
-
-        // traverse the DOM up to find first A tag
-        while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
-          elm = elm.parent();
-        }
-
-        var absHref = elm.prop('href');
-
-        if (!absHref ||
-            elm.attr('target') ||
-            absHref.indexOf(absUrlPrefix) !== 0) { // link to different domain or base path
-          return;
-        }
-
-        // update location with href without the prefix
-        currentUrl.url(absHref.substr(absUrlPrefix.length));
-        $rootScope.$apply();
-        event.preventDefault();
-        // hack to work around FF6 bug 684208 when scenario runner clicks on links
-        window.angular['ff-684208-preventDefault'] = true;
-      });
     } else {
-      currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
+      $location = new LocationHashbangUrl(initUrl, hashPrefix);
     }
 
+    // link rewriting
+    absUrlPrefix = composeProtocolHostPort(
+        $location.protocol(), $location.host(), $location.port()) + pathPrefix;
+
+    $rootElement.bind('click', function(event) {
+      // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
+      // currently we open nice url link and redirect then
+
+      if (event.ctrlKey || event.metaKey || event.which == 2) return;
+
+      var elm = jqLite(event.target);
+
+      // traverse the DOM up to find first A tag
+      while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
+        elm = elm.parent();
+      }
+
+      var absHref = elm.prop('href');
+
+      if (!absHref ||
+        elm.attr('target') ||
+        absHref.indexOf(absUrlPrefix) !== 0) { // link to different domain or base path
+        return;
+      }
+
+      // update location with href without the prefix
+      $location.url(absHref.substr(absUrlPrefix.length));
+      $rootScope.$apply();
+      event.preventDefault();
+      // hack to work around FF6 bug 684208 when scenario runner clicks on links
+      window.angular['ff-684208-preventDefault'] = true;
+    });
+
+
     // rewrite hashbang url <> html5 url
-    if (currentUrl.absUrl() != initUrl) {
-      $browser.url(currentUrl.absUrl(), true);
+    if ($location.absUrl() != initUrl) {
+      $browser.url($location.absUrl(), true);
     }
 
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
-      if (currentUrl.absUrl() != newUrl) {
+      if ($location.absUrl() != newUrl) {
         $rootScope.$evalAsync(function() {
-          currentUrl.$$parse(newUrl);
+          var oldUrl = $location.absUrl();
+
+          $location.$$parse(newUrl);
+          afterLocationChange(oldUrl);
         });
         if (!$rootScope.$$phase) $rootScope.$digest();
       }
@@ -537,17 +549,29 @@ function $LocationProvider(){
     // update browser
     var changeCounter = 0;
     $rootScope.$watch(function $locationWatch() {
-      if ($browser.url() != currentUrl.absUrl()) {
+      var oldUrl = $browser.url();
+
+      if (!changeCounter || oldUrl != $location.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
-          $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
-          currentUrl.$$replace = false;
+          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
+              defaultPrevented) {
+            $location.$$parse(oldUrl);
+          } else {
+            $browser.url($location.absUrl(), $location.$$replace);
+            $location.$$replace = false;
+            afterLocationChange(oldUrl);
+          }
         });
       }
 
       return changeCounter;
     });
 
-    return currentUrl;
+    return $location;
+
+    function afterLocationChange(oldUrl) {
+      $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
+    }
 }];
 }

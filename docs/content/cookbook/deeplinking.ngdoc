@@ -35,8 +35,8 @@ In this example we have a simple app which consist of two screens:
    angular.module('deepLinking', ['ngSanitize'])
      .config(function($routeProvider) {
         $routeProvider.
-          when("/welcome",  {template:'welcome.html',  controller:WelcomeCntl}).
-          when("/settings", {template:'settings.html', controller:SettingsCntl});
+          when("/welcome",  {templateUrl:'welcome.html',  controller:WelcomeCntl}).
+          when("/settings", {templateUrl:'settings.html', controller:SettingsCntl});
      });
 
    AppCntl.$inject = ['$scope', '$route']
