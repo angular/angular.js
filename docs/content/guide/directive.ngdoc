@@ -125,7 +125,7 @@ The short answer is that compile and link separation is needed any time a change
 a change in DOM structure such as in repeaters.
 
 When the above example is compiled, the compiler visits every node and looks for directives. The
-`{{user}}` is an example of {@link api/ng.$interpolate interpolation} directive. {@link
+`{{user}}` is an example of an {@link api/ng.$interpolate interpolation} directive. {@link
 api/ng.directive:ngRepeat ngRepeat} is another directive. But {@link
 api/ng.directive:ngRepeat ngRepeat} has a dilemma. It needs to be
 able to quickly stamp out new `li`s for every `action` in `user.actions`. This means that it needs
@@ -138,16 +138,16 @@ But compiling on every `li` element clone would be slow, since the compilation r
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
 repeater which needs to unroll 100 items we would quickly run into performance problems.
 
-The solution is to break the compilation process into two phases the compile phase where all of
+The solution is to break the compilation process into two phases; the compile phase where all of
 the directives are identified and sorted by priority, and a linking phase where any work which
 links a specific instance of the {@link api/ng.$rootScope.Scope scope} and the specific
 instance of an `li` is performed.
 
 {@link api/ng.directive:ngRepeat ngRepeat} works by preventing the
-compilation process form descending into `li` element. Instead the {@link
+compilation process form descending into the `li` element. Instead the {@link
 api/ng.directive:ngRepeat ngRepeat} directive compiles `li`
 separately. The result of of the `li` element compilation is a linking function which contains all
-of the directives contained in the `li` element ready to be attached to a specific clone of `li`
+of the directives contained in the `li` element, ready to be attached to a specific clone of the `li`
 element. At runtime the {@link api/ng.directive:ngRepeat ngRepeat}
 watches the expression and as items are added to the array it clones the `li` element, creates a
 new {@link api/ng.$rootScope.Scope scope} for the cloned `li` element and calls the
