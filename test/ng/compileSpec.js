@@ -1249,15 +1249,15 @@ describe('$compile', function() {
 
 
   describe('interpolation', function() {
-    var observeSpy, attrValueDuringLinking;
+    var observeSpy, directiveAttrs;
 
     beforeEach(module(function() {
       directive('observer', function() {
         return function(scope, elm, attr) {
+          directiveAttrs = attr;
           observeSpy = jasmine.createSpy('$observe attr');
 
           expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
-          attrValueDuringLinking = attr.someAttr;
         };
       });
     }));
@@ -1295,19 +1295,21 @@ describe('$compile', function() {
 
 
     it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
-      attrValueDuringLinking = null;
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
-      expect(attrValueDuringLinking).toBeUndefined();
+      expect(directiveAttrs.someAttr).toBeUndefined();
     }));
 
 
-    it('should not call observer of non-interpolated attr', inject(function($rootScope, $compile) {
-      $compile('<div some-attr="nonBound" observer></div>')($rootScope);
-      expect(attrValueDuringLinking).toBe('nonBound');
+    it('should call observer of non-interpolated attr through $evalAsync',
+      inject(function($rootScope, $compile) {
+        $compile('<div some-attr="nonBound" observer></div>')($rootScope);
+        expect(directiveAttrs.someAttr).toBe('nonBound');
 
-      $rootScope.$digest();
-      expect(observeSpy).not.toHaveBeenCalled();
-    }));
+        expect(observeSpy).not.toHaveBeenCalled();
+        $rootScope.$digest();
+        expect(observeSpy).toHaveBeenCalled();
+      })
+    );
 
 
     it('should delegate exceptions to $exceptionHandler', function() {
