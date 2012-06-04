@@ -58,6 +58,10 @@ panelApp.value('chromeExtension', {
       '(window, ' +
       JSON.stringify(args) +
       '));', cb);
+  },
+
+  listen: function () {
+    this.sendRequest('debug');
   }
 });
 
@@ -174,15 +178,17 @@ panelApp.factory('appContext', function(chromeExtension) {
       },
       callback);
     },
-    injectOnRefresh: function (fn) {
-      chromeExtension.eval(function (window, fn) {
+    
+    refresh: function (cb) {
+      chromeExtension.eval(function (window) {
         window.document.location.reload();
+      }, cb);
+    },
 
-        var script = window.document.createElement('script');
-        //script.src = 'http://google.com';
-        script.innerHTML = '(' + fn + '(window))' ;
-        window.document.getElementsByTagName('head')[0].appendChild(script);
-      }, fn.toString());
+    injectOnRefresh: function (fn) {
+      this.refresh(function () {
+        chromeExtension.listen();
+      });
     }
   }
 });
@@ -224,11 +230,12 @@ panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension,
       first = false;
       return;
     }
-    appContext.injectOnRefresh(function (window) {
-      window.alert('this is a test');
-    });
+    if (newVal) {
+      appContext.injectOnRefresh();
+    } else {
+      appContext.refresh();
+    }
   });
-
 });
 
 
