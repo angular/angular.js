@@ -142,5 +142,14 @@ describe('$timeout', function() {
       expect($timeout.cancel(promise1)).toBe(false);
       expect($timeout.cancel(promise2)).toBe(true);
     }));
+
+
+    it('should not throw a runtime exception when given an undefined promise', inject(function($timeout) {
+      try {
+        expect($timeout.cancel()).toBe(false);
+      } catch(e) {
+        fail(e);
+      }
+    }));
   });
 });
