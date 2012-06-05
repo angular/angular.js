@@ -63,6 +63,7 @@ describe("resource", function() {
     R.get({a:4, b:5, c:6});
   });
 
+
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');
 
@@ -151,6 +152,7 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
+
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
        return headers['If-None-Match'] == "*";
@@ -158,7 +160,8 @@ describe("resource", function() {
     
     CreditCard.conditionalPut({id: {key:123}});
   });
-  
+
+
   it("should read partial resource", function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:{key:123}}]);
     var ccs = CreditCard.query();
