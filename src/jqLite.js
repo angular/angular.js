@@ -366,7 +366,10 @@ forEach('input,select,option,textarea,button,form'.split(','), function(value) {
 });
 
 function isBooleanAttr(element, name) {
-  return BOOLEAN_ELEMENTS[element.nodeName] && BOOLEAN_ATTR[name.toLowerCase()];
+  // check dom last since we will most likely fail on name
+  var booleanAttr = BOOLEAN_ATTR[name.toLowerCase()];
+
+  return booleanAttr && BOOLEAN_ELEMENTS[element.nodeName] && booleanAttr;
 }
 
 forEach({
