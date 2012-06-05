@@ -1,23 +1,26 @@
 var injectPrereqs = {};
 
+var cbs = {};
+
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-  if (request.script === 'debug') {
+  if (request.script === 'debug-true') {
 
-    (function () {
-      
-      var req = request;
-
-      chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-        if (tabId !== req.tab) {
+    cbs[request.tab] = (function (req) {
+      return function (tabId, changeInfo, tab) {
+        if (tabId !== req.tab || changeInfo.status) {
           return;
         }
         chrome.tabs.executeScript(tabId, {
           file: 'inject/debug.js'
         });
-      });
-
-    }());
-
+      };
+    }(request));
+    chrome.tabs.onUpdated.addListener(cbs[request.tab]);
+  } else if (request.script === 'debug-false') {
+    if (cbs[request.tab]) {
+      chrome.tabs.onUpdated.removeListener(cbs[request.tab]);
+      delete cbs[request.tab];
+    }
   } else if (!injectPrereqs[request.tab]) {
     chrome.tabs.executeScript(request.tab, {
       file: 'js/css-inject.js'
@@ -31,5 +34,8 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     chrome.tabs.executeScript(request.tab, {
       file: 'inject/' + request.script + '.js'
     });
+  }
+  if (sendResponse) {
+    sendResponse();
   }
 });

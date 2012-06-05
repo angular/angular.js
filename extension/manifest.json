@@ -17,7 +17,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/jquery-1.7.2.min.js"]
+      "js": ["js/jquery-1.7.2.min.js", "inject/debug.js"],
+      "run_at": "document_start"
     }
   ]
 }

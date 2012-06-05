@@ -35,11 +35,11 @@ panelApp.directive('tree', function($compile) {
 });
 
 panelApp.value('chromeExtension', {
-  sendRequest: function (requestName) {
+  sendRequest: function (requestName, cb) {
     chrome.extension.sendRequest({
       script: requestName,
       tab: chrome.devtools.inspectedWindow.tabId
-    });
+    }, cb || function () {});
   },
 
   // evaluates in the context of a window
@@ -58,10 +58,6 @@ panelApp.value('chromeExtension', {
       '(window, ' +
       JSON.stringify(args) +
       '));', cb);
-  },
-
-  listen: function () {
-    this.sendRequest('debug');
   }
 });
 
@@ -185,9 +181,12 @@ panelApp.factory('appContext', function(chromeExtension) {
       }, cb);
     },
 
-    injectOnRefresh: function (fn) {
-      this.refresh(function () {
-        chromeExtension.listen();
+    // takes a bool
+    debug: function (setting) {
+      chromeExtension.sendRequest('debug-' + setting, function () {
+        chromeExtension.eval(function (window) {
+          window.document.location.reload();
+        });
       });
     }
   }
@@ -230,11 +229,7 @@ panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension,
       first = false;
       return;
     }
-    if (newVal) {
-      appContext.injectOnRefresh();
-    } else {
-      appContext.refresh();
-    }
+    appContext.debug(newVal);
   });
 });
 
