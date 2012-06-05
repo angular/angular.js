@@ -15,6 +15,7 @@ describe('$interpolate', function() {
 
   it('should suppress falsy objects', inject(function($interpolate) {
     expect($interpolate('{{undefined}}')()).toEqual('');
+    expect($interpolate('{{undefined+undefined}}')()).toEqual('');
     expect($interpolate('{{null}}')()).toEqual('');
     expect($interpolate('{{a.b}}')()).toEqual('');
   }));
@@ -30,6 +31,18 @@ describe('$interpolate', function() {
     $rootScope.name = 'Misko';
     expect($interpolate('Hello {{name}}!')($rootScope)).toEqual('Hello Misko!');
   }));
+
+
+  it('should ignore undefined model', inject(function($interpolate) {
+    expect($interpolate("Hello {{'World' + foo}}")()).toEqual('Hello World');
+  }));
+
+
+  it('should ignore undefined return value', inject(function($interpolate, $rootScope) {
+    $rootScope.foo = function() {return undefined};
+    expect($interpolate("Hello {{'World' + foo()}}")($rootScope)).toEqual('Hello World');
+  }));
+
 
   describe('provider', function() {
     beforeEach(module(function($interpolateProvider) {
