@@ -388,6 +388,14 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithInterpolatedClass', valueFn({
+            replace: true,
+            template: '<div class="class_{{1+1}}">Replace with interpolated class!</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+	    }
+          }));
         }));
 
 
@@ -463,6 +471,14 @@ describe('$compile', function() {
             '</div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!Append!');
+        }));
+
+
+        it('should handle interpolated css from replacing directive', inject(
+            function($compile, $rootScope) {
+          element = $compile('<div replace-with-interpolated-class></div>')($rootScope);
+          $rootScope.$digest();
+          expect(element).toHaveClass('class_2');
         }));
 
 
