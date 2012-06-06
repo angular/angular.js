@@ -7,7 +7,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
     cbs[request.tab] = (function (req) {
       return function (tabId, changeInfo, tab) {
-        if (tabId !== req.tab || changeInfo.status) {
+        if (tabId !== req.tab) {
           return;
         }
         chrome.tabs.executeScript(tabId, {

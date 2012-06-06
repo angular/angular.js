@@ -194,7 +194,7 @@ panelApp.factory('appContext', function(chromeExtension) {
 
 
 
-panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, chromeExtension, appContext) {
+panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chromeExtension) {
 
   $scope.debugger = {
     scopes: false,
