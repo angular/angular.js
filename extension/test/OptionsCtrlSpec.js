@@ -3,14 +3,20 @@ describe('panelApp', function () {
   beforeEach(module('panelApp'));
   beforeEach(module(function($provide) {
     $provide.factory('chromeExtension', createChromeExtensionMock);
+    $provide.factory('appContext', function () {
+      return {
+        debug: jasmine.createSpy('inspect')
+      };
+    });
   }));
 
   describe('OptionsCtrl', function() {
-    var ctrl, $scope, chromeExtension;
+    var ctrl, $scope, appContext, chromeExtension;
 
-    beforeEach(inject(function(_$rootScope_, _chromeExtension_, $controller) {
+    beforeEach(inject(function(_$rootScope_, _appContext_, _chromeExtension_, $controller) {
       $scope = _$rootScope_;
       chromeExtension = _chromeExtension_;
+      appContext = _appContext_;
       ctrl = $controller('OptionsCtrl', {$scope: $scope});
     }));
 
@@ -36,7 +42,7 @@ describe('panelApp', function () {
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('showScopes');
     });
 
-    it('should notify chrome of state changes  to the showBindings option', function () {
+    it('should notify chrome of state changes to the showBindings option', function () {
       $scope.$digest();
 
       chromeExtension.sendRequest.reset();
@@ -45,6 +51,11 @@ describe('panelApp', function () {
       $scope.$digest();
 
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('showBindings');
+    });
+
+    it('should not refresh upon initial panel load', function () {
+      $scope.$digest();
+      expect(appContext.debug).not.toHaveBeenCalled();
     });
   });
 });
