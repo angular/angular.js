@@ -990,7 +990,7 @@ function $CompileProvider($provide) {
       directives.push({
         priority: 100,
         compile: valueFn(function(scope, element, attr) {
-          if (name === 'class') {
+          if (name === 'class' && attr[name]) {
             // we need to interpolate classes again, in the case the element was replaced
             // and therefore the two class attrs got merged - we want to interpolate the result
             interpolateFn = $interpolate(attr[name], true);
