@@ -11,7 +11,8 @@
  * {@link angular.module.ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
-  var controllers = {};
+  var controllers = {},
+      CNTRL_REG = /^(\w+)(\s+as\s+(\w+))?$/;
 
 
   /**
@@ -57,8 +58,11 @@ function $ControllerProvider() {
      * BC version}.
      */
     return function(constructor, locals) {
+      var instance, match, name, ident;
       if(isString(constructor)) {
-        var name = constructor;
+        match = constructor.match(CNTRL_REG),
+        name = match[1],
+        ident = match[3];
         constructor = controllers.hasOwnProperty(name)
             ? controllers[name]
             : getter(locals.$scope, name, true) || getter($window, name, true);
@@ -66,7 +70,11 @@ function $ControllerProvider() {
         assertArgFn(constructor, name, true);
       }
 
-      return $injector.instantiate(constructor, locals);
+      instance = $injector.instantiate(constructor, locals);
+      if (ident) {
+        locals.$scope[ident] = instance;
+      }
+      return instance;
     };
   }];
 }
