@@ -201,7 +201,8 @@ describe('ngClass', function() {
     expect(e2.hasClass('C')).toBeFalsy();
     expect(e2.hasClass('D')).toBeFalsy();
   }));
-  
+
+
   it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
     element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
 
