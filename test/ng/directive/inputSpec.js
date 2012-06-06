@@ -4,7 +4,7 @@ describe('NgModelController', function() {
   var ctrl, scope, ngModelAccessor, element, parentFormCtrl;
 
   beforeEach(inject(function($rootScope, $controller) {
-    var attrs = {name: 'testAlias'};
+    var attrs = {name: 'testAlias', ngModel: 'value'};
 
     parentFormCtrl = {
       $setValidity: jasmine.createSpy('$setValidity'),
@@ -17,12 +17,7 @@ describe('NgModelController', function() {
     scope = $rootScope;
     ngModelAccessor = jasmine.createSpy('ngModel accessor');
     ctrl = $controller(NgModelController, {
-      $scope: scope, $element: element.find('input'), ngModel: ngModelAccessor, $attrs: attrs
-    });
-    // mock accessor (locals)
-    ngModelAccessor.andCallFake(function(val) {
-      if (isDefined(val)) scope.value = val;
-      return scope.value;
+      $scope: scope, $element: element.find('input'), $attrs: attrs
     });
   }));
 
@@ -30,6 +25,17 @@ describe('NgModelController', function() {
   afterEach(function() {
     dealoc(element);
   });
+
+
+  it('should fail on non-assignable model binding', inject(function($controller) {
+    expect(function() {
+      $controller(NgModelController, {
+        $scope: null, $element: null, $attrs: {
+          ngModel: '1+2'
+        }
+      });
+    }).toThrow('Non-assignable: 1+2');
+  }));
 
 
   it('should init the properties', function() {
