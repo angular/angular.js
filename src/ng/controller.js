@@ -11,7 +11,8 @@
  * {@link ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
-  var controllers = {};
+  var controllers = {},
+      CNTRL_REG = /^(\w+)(\s+as\s+(\w+))?$/;
 
 
   /**
@@ -57,8 +58,12 @@ function $ControllerProvider() {
      * BC version}.
      */
     return function(constructor, locals) {
+      var instance, match, name, identifier;
+
       if(isString(constructor)) {
-        var name = constructor;
+        match = constructor.match(CNTRL_REG),
+        name = match[1],
+        identifier = match[3];
         constructor = controllers.hasOwnProperty(name)
             ? controllers[name]
             : getter(locals.$scope, name, true) || getter($window, name, true);
@@ -66,7 +71,18 @@ function $ControllerProvider() {
         assertArgFn(constructor, name, true);
       }
 
-      return $injector.instantiate(constructor, locals);
+      instance = $injector.instantiate(constructor, locals);
+
+      if (identifier) {
+        if (typeof locals.$scope !== 'object') {
+          throw new Error('Can not export controller as "' + identifier + '". ' +
+              'No scope object provided!');
+        }
+
+        locals.$scope[identifier] = instance;
+      }
+
+      return instance;
     };
   }];
 }
