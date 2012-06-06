@@ -2,19 +2,35 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return ngDirective(function(scope, element, attr) {
-    scope.$watch(attr[name], function(newVal, oldVal) {
-      if (selector === true || scope.$index % 2 === selector) {
-        if (oldVal && (newVal !== oldVal)) {
-           if (isObject(oldVal) && !isArray(oldVal))
-             oldVal = map(oldVal, function(v, k) { if (v) return k });
-           element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-         }
-         if (isObject(newVal) && !isArray(newVal))
+  return ['$interpolate', function($interpolate) {
+    return function(scope, element, attr) {
+      // Reusable function for re-applying the ngClass
+      function reapply(newVal, oldVal) {
+        if (selector === true || scope.$index % 2 === selector) {
+          if (oldVal && (newVal !== oldVal)) {
+            if (isObject(oldVal) && !isArray(oldVal))
+              oldVal = map(oldVal, function(v, k) { if (v) return k });
+            element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          }
+          if (isObject(newVal) && !isArray(newVal))
             newVal = map(newVal, function(v, k) { if (v) return k });
-         if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);      }
-    }, true);
-  });
+          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+        }
+      };
+      scope.$watch(attr[name], reapply, true);
+      
+      // Watch class attribute for changes
+      if (attr['class']) {
+        var interpolateFn = $interpolate(attr['class'], true);
+        scope.$watch(interpolateFn, function(newClass, oldClass) {
+          // Reapply ngClass
+          var ngClass = scope.$eval(attr[name]);
+          reapply(ngClass, ngClass);
+        });
+      }
+
+    };
+  }];
 }
 
 /**

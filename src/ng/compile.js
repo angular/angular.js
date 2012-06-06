@@ -999,7 +999,9 @@ function $CompileProvider($provide) {
           // we define observers array only for interpolated attrs
           // and ignore observers for non interpolated attrs to save some memory
           attr.$$observers[name] = [];
-          attr[name] = undefined;
+          if (name !== 'class') {
+        	  attr[name] = undefined;
+          }
           scope.$watch(interpolateFn, function(value) {
             attr.$set(name, value);
           });
