@@ -88,4 +88,15 @@ describe('$controller', function() {
 
     expect(ctrl.$scope).toBe(scope);
   });
+
+
+  it('should publish controller instance into scope', function() {
+    var scope = {};
+
+    $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+    var foo = $controller('FooCtrl as foo', {$scope: scope});
+    expect(scope.foo).toBe(foo);
+    expect(scope.foo.mark).toBe('foo');
+  });
 });

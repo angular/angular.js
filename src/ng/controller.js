@@ -11,7 +11,8 @@
  * {@link ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
-  var controllers = {};
+  var controllers = {},
+      CNTRL_REG = /^(\w+)(\s+as\s+(\w+))?$/;
 
 
   /**
@@ -56,17 +57,32 @@ function $ControllerProvider() {
      * a service, so that one can override this service with {@link https://gist.github.com/1649788
      * BC version}.
      */
-    return function(constructor, locals) {
-      if(isString(constructor)) {
-        var name = constructor;
-        constructor = controllers.hasOwnProperty(name)
-            ? controllers[name]
-            : getter(locals.$scope, name, true) || getter($window, name, true);
+    return function(expression, locals) {
+      var instance, match, constructor, identifier;
 
-        assertArgFn(constructor, name, true);
+      if(isString(expression)) {
+        match = expression.match(CNTRL_REG),
+        constructor = match[1],
+        identifier = match[3];
+        expression = controllers.hasOwnProperty(constructor)
+            ? controllers[constructor]
+            : getter(locals.$scope, constructor, true) || getter($window, constructor, true);
+
+        assertArgFn(expression, constructor, true);
       }
 
-      return $injector.instantiate(constructor, locals);
+      instance = $injector.instantiate(expression, locals);
+
+      if (identifier) {
+        if (typeof locals.$scope !== 'object') {
+          throw new Error('Can not export controller as "' + identifier + '". ' +
+              'No scope object provided!');
+        }
+
+        locals.$scope[identifier] = instance;
+      }
+
+      return instance;
     };
   }];
 }
