@@ -8,10 +8,30 @@ var inject = function () {
           //alert('script');
           var patch = function () {
             if (window.angular && typeof window.angular.bootstrap === 'function') {
-              window.angular.bootstrap = function () {
-                alert('nope.');
+
+              var bootstrap = window.angular.bootstrap;
+              var debug = window.__ngDebug = {
+                watchers: []
               };
-              console.log(angular);
+              var ng = angular.module('ng');
+              ng.config(function ($provide) {
+                $provide.decorator('$rootScope',
+                  function ($delegate) {
+                    var watch = $delegate.__proto__.$watch;
+                    $delegate.$watch = function() {
+                      debug.watchers.push(arguments);
+                      watch.apply($delegate, arguments);
+                    };
+
+                    return $delegate;
+                  });
+              });
+
+              /*
+              window.angular.bootstrap = function (arg1, arg2, arg3) {
+                bootstrap(arg1, arg2, arg3);
+              };
+              */
             } else {
               setTimeout(patch, 1);
             }
