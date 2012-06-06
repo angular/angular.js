@@ -18,6 +18,9 @@
  */
 
 
+var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
+
+
 /**
  * @ngdoc function
  * @name angular.module.ng.$compile
@@ -224,47 +227,6 @@ function $CompileProvider($provide) {
             '$controller', '$rootScope',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
              $controller,   $rootScope) {
-
-    var LOCAL_MODE = {
-      attribute: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = attr[localName];
-      },
-
-      evaluate: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = parentScope.$eval(attr[localName]);
-      },
-
-      bind: function(localName, mode, parentScope, scope, attr) {
-        var getter = $interpolate(attr[localName]);
-        scope.$watch(
-          function() { return getter(parentScope); },
-          function(v) { scope[localName] = v; }
-        );
-      },
-
-      accessor: function(localName, mode, parentScope, scope, attr) {
-        var getter = noop,
-            setter = noop,
-            exp = attr[localName];
-
-        if (exp) {
-          getter = $parse(exp);
-          setter = getter.assign || function() {
-            throw Error("Expression '" + exp + "' not assignable.");
-          };
-        }
-
-        scope[localName] = function(value) {
-          return arguments.length ? setter(parentScope, value) : getter(parentScope);
-        };
-      },
-
-      expression: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = function(locals) {
-          $parse(attr[localName])(parentScope, locals);
-        };
-      }
-    };
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -746,9 +708,67 @@ function $CompileProvider($provide) {
         $element = attrs.$$element;
 
         if (newScopeDirective && isObject(newScopeDirective.scope)) {
-          forEach(newScopeDirective.scope, function(mode, name) {
-            (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                scope.$parent || scope, scope, attrs);
+          var LOCAL_REGEXP = /^\s*([@=&])\s*(\w*)\s*$/;
+
+          var parentScope = scope.$parent || scope;
+
+          forEach(newScopeDirective.scope, function(definiton, scopeName) {
+            var match = definiton.match(LOCAL_REGEXP) || [],
+                attrName = match[2]|| scopeName,
+                mode = match[1], // @, =, or &
+                lastValue,
+                parentGet, parentSet;
+
+            switch (mode) {
+
+              case '@': {
+                attrs.$observe(attrName, function(value) {
+                  scope[scopeName] = value;
+                });
+                attrs.$$observers[attrName].$$scope = parentScope;
+                break;
+              }
+
+              case '=': {
+                parentGet = $parse(attrs[attrName]);
+                parentSet = parentGet.assign || function() {
+                  // reset the change, or we will throw this exception on every $digest
+                  lastValue = scope[scopeName] = parentGet(parentScope);
+                  throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
+                      ' (directive: ' + newScopeDirective.name + ')');
+                };
+                lastValue = scope[scopeName] = parentGet(parentScope);
+                scope.$watch(function() {
+                  var parentValue = parentGet(parentScope);
+
+                  if (parentValue !== scope[scopeName]) {
+                    // we are out of sync and need to copy
+                    if (parentValue !== lastValue) {
+                      // parent changed and it has precedence
+                      lastValue = scope[scopeName] = parentValue;
+                    } else {
+                      // if the parent can be assigned then do so
+                      parentSet(parentScope, lastValue = scope[scopeName]);
+                    }
+                  }
+                  return parentValue;
+                });
+                break;
+              }
+
+              case '&': {
+                parentGet = $parse(attrs[attrName]);
+                scope[scopeName] = function(locals) {
+                  return parentGet(parentScope, locals);
+                }
+                break;
+              }
+
+              default: {
+                throw Error('Invalid isolate scope definition for directive ' +
+                    newScopeDirective.name + ': ' + definiton);
+              }
+            }
           });
         }
 
@@ -760,12 +780,6 @@ function $CompileProvider($provide) {
               $attrs: attrs,
               $transclude: boundTranscludeFn
             };
-
-
-            forEach(directive.inject || {}, function(mode, name) {
-              (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                  newScopeDirective ? scope.$parent || scope : scope, locals, attrs);
-            });
 
             controller = directive.controller;
             if (controller == '@') {
@@ -1007,9 +1021,10 @@ function $CompileProvider($provide) {
 
           attr[name] = undefined;
           ($$observers[name] || ($$observers[name] = [])).$$inter = true;
-          scope.$watch(interpolateFn, function(value) {
-            attr.$set(name, value);
-          });
+          (attr.$$observers && attr.$$observers[name].$$scope || scope).
+            $watch(interpolateFn, function(value) {
+              attr.$set(name, value);
+            });
         })
       });
     }

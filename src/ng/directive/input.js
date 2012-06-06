@@ -857,8 +857,8 @@ var VALID_CLASS = 'ng-valid',
  * </example>
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$element',
-    function($scope, $exceptionHandler, $attr, ngModel, $element) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
+    function($scope, $exceptionHandler, $attr, $element, $parse) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -869,6 +869,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
   this.$valid = true;
   this.$invalid = false;
   this.$name = $attr.name;
+
+  var ngModelGet = $parse($attr.ngModel),
+      ngModelSet = ngModelGet.assign;
+
+  if (!ngModelSet) {
+    throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + $attr.ngModel +
+        ' (' + startingTag($element) + ')');
+  }
 
   /**
    * @ngdoc function
@@ -974,7 +982,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
 
     if (this.$modelValue !== value) {
       this.$modelValue = value;
-      ngModel(value);
+      ngModelSet($scope, value);
       forEach(this.$viewChangeListeners, function(listener) {
         try {
           listener();
@@ -987,9 +995,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
 
   // model -> value
   var ctrl = this;
-  $scope.$watch(function() {
-    return ngModel();
-  }, function(value) {
+  $scope.$watch(ngModelGet, function(value) {
 
     // ignore change from view
     if (ctrl.$modelValue === value) return;
@@ -1044,9 +1050,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
  */
 var ngModelDirective = function() {
   return {
-    inject: {
-      ngModel: 'accessor'
-    },
     require: ['ngModel', '^?form'],
     controller: NgModelController,
     link: function(scope, element, attr, ctrls) {
