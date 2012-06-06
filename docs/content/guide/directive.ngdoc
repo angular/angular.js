@@ -321,34 +321,32 @@ compiler}. The attributes are:
       parent scope. <br/>
       The 'isolate' scope takes an object hash which defines a set of local scope properties
       derived from the parent scope. These local properties are useful for aliasing values for
-      templates. Locals definition is a hash of normalized element attribute name to their
-      corresponding binding strategy. Valid binding strategies are:
+      templates. Locals definition is a hash of local scope property to its source:
 
-      * `attribute` - one time read of element attribute value and save it to widget scope. <br/>
-        Given `<widget my-attr='abc'>` and widget definition of `scope: {myAttr:'attribute'}`,
-        then widget scope property `myAttr` will be `"abc"`.
+      * `@` or `@attr` - bind a local scope property to the DOM attribute. The result is always a
+        string since DOM attributes are strings. If no `attr` name is specified then the local name
+        and attribute name are same. Given `<widget my-attr="hello {{name}}">` and widget definition
+        of `scope: { localName:'@myAttr' }`, then widget scope property `localName` will reflect
+        the interpolated value of `hello {{name}}`. As the `name` attribute changes so will the
+        `localName` property on the widget scope. The `name` is read from the parent scope (not
+        component scope).
 
-      * `evaluate` - one time evaluation of expression stored in the attribute. <br/> Given
-        `<widget my-attr='name'>` and widget definition of `scope: {myAttr:'evaluate'}`, and
-        parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`.
+      * `=` or `=expression` - set up bi-directional binding between a local scope property and the
+        parent scope property. If no `attr` name is specified then the local name and attribute
+        name are same. Given `<widget my-attr="parentModel">` and widget definition of
+        `scope: { localModel:'=myAttr' }`, then widget scope property `localName` will reflect the
+        value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
+        in `localModel` and any changes in `localModel` will reflect in `parentModel`.
 
-      * `bind` - Set up one way binding from the element attribute to the widget scope. <br/>
-        Given `<widget my-attr='{{name}}'>` and widget definition of `scope: {myAttr:'bind'}`,
-        and parent scope `{name:'angular'}` then widget scope property `myAttr` will be
-        `"angular"`, but any changes in the parent scope will be reflected in the widget scope.
-
-      * `accessor` - Set up getter/setter function for the expression in the widget element
-        attribute to the widget scope. <br/> Given `<widget my-attr='name'>` and widget definition
-        of `scope: {myAttr:'prop'}`, and parent scope `{name:'angular'}` then widget scope
-        property `myAttr` will be a function such that `myAttr()` will return `"angular"` and
-        `myAttr('new value')` will update the parent scope `name` property. This is useful for
-        treating the element as a data-model for reading/writing.
-
-      * `expression` - Treat element attribute as an expression to be executed on the parent scope.
-        <br/>
-        Given `<widget my-attr='doSomething()'>` and widget definition of `scope:
-        {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then calling the
-        widget scope function `myAttr` will execute the expression against the parent scope.
+      * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
+        If no `attr` name is specified then the local name and attribute name are same.
+        Given `<widget my-attr="count = count + value">` and widget definition of
+        `scope: { localFn:'increment()' }`, then isolate scope property `localFn` will point to
+        a function wrapper for the `increment()` expression. Often it's desirable to pass data from
+        the isolate scope via an expression and to the parent scope, this can be done by passing a
+        map of local variable names and values into the expression wrapper fn. For example if the
+        expression is `increment(amount)` then we can specify the amount value by calling the
+        `localFn` as `localFn({amount: 22})`.
 
   * `controller` - Controller constructor function. The controller is instantiated before the
     pre-linking phase and it is shared with other directives if they request it by name (see
@@ -368,32 +366,6 @@ compiler}. The attributes are:
     * `?` - Don't raise an error. This makes the require dependency optional.
     * `^` - Look for the controller on parent elements as well.
 
-
-  * `inject` (object hash) -  Specifies a way to inject bindings into a controller. Injection
-    definition is a hash of normalized element attribute names to their corresponding binding
-    strategy. Valid binding strategies are:
-
-    * `attribute` - inject attribute value. <br/>
-      Given `<widget my-attr='abc'>` and widget definition of `inject: {myAttr:'attribute'}`, then
-      `myAttr` will inject `"abc"`.
-
-    * `evaluate` - inject one time evaluation of expression stored in the attribute. <br/>
-      Given `<widget my-attr='name'>` and widget definition of `inject: {myAttr:'evaluate'}`, and
-      parent scope `{name:'angular'}` then `myAttr` will inject `"angular"`.
-
-    * `accessor` - inject a getter/setter function for the expression in the widget element
-      attribute to the widget scope. <br/>
-      Given `<widget my-attr='name'>` and widget definition of `inject: {myAttr:'prop'}`, and
-      parent scope `{name:'angular'}` then injecting `myAttr` will inject a function such
-      that `myAttr()` will return `"angular"` and `myAttr('new value')` will update the parent
-      scope `name` property. This is usefull for treating the element as a data-model for
-      reading/writing.
-
-    * `expression` - Inject expression function. <br/>
-      Given `<widget my-attr='doSomething()'>` and widget definition of
-      `inject: {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then
-      injecting `myAttr` will inject a function which when called will execute the expression
-      against the parent scope.
 
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
     declaration style. If omitted directives are allowed on attributes only.
@@ -649,9 +621,9 @@ Following is an example of building a reusable widget.
            // This HTML will replace the zippy directive.
            replace: true,
            transclude: true,
-           scope: { zippyTitle:'bind' },
+           scope: { title:'@zippyTitle' },
            template: '<div>' +
-                       '<div class="title">{{zippyTitle}}</div>' +
+                       '<div class="title">{{title}}</div>' +
                        '<div class="body" ng-transclude></div>' +
                      '</div>',
            // The linking function will add behavior to the template

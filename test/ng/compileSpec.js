@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$compile', function() {
-  var element, directive;
+  var element, directive, $compile, $rootScope;
 
   beforeEach(module(provideLog, function($provide, $compileProvider){
     element = null;
@@ -54,8 +54,17 @@ describe('$compile', function() {
       priority: -100, // even with negative priority we still should be able to stop descend
       terminal: true
     }));
+
+    return function(_$compile_, _$rootScope_) {
+      $rootScope = _$rootScope_;
+      $compile = _$compile_;
+    };
   }));
 
+  function compile(html) {
+    element = angular.element(html);
+    $compile(element)($rootScope);
+  }
 
   afterEach(function(){
     dealoc(element);
@@ -1633,105 +1642,166 @@ describe('$compile', function() {
   });
 
 
-  describe('locals', function() {
-    it('should marshal to locals', function() {
-      module(function() {
-        directive('widget', function(log) {
-          return {
-            scope: {
-              attr: 'attribute',
-              prop: 'evaluate',
-              bind: 'bind',
-              assign: 'accessor',
-              read: 'accessor',
-              exp: 'expression',
-              nonExist: 'accessor',
-              nonExistExpr: 'expression'
-            },
-            link: function(scope, element, attrs) {
-              scope.nonExist(); // noop
-              scope.nonExist(123); // noop
-              scope.nonExistExpr(); // noop
-              scope.nonExistExpr(123); // noop
-              log(scope.attr);
-              log(scope.prop);
-              log(scope.assign());
-              log(scope.read());
-              log(scope.assign('ng'));
-              scope.exp({myState:'OK'});
-              expect(function() { scope.read(undefined); }).
-                  toThrow("Expression ''D'' not assignable.");
-              scope.$watch('bind', log);
-            }
-          };
-        });
+  describe('isolated locals', function() {
+    var componentScope;
+
+    beforeEach(module(function() {
+      directive('myComponent', function() {
+        return {
+          scope: {
+            attr: '@',
+            attrAlias: '@attr',
+            ref: '=',
+            refAlias: '= ref',
+            expr: '&',
+            exprAlias: '&expr'
+          },
+          link: function(scope) {
+            componentScope = scope;
+          }
+        };
       });
-      inject(function(log, $compile, $rootScope) {
-        $rootScope.myProp = 'B';
-        $rootScope.bi = {nd: 'C'};
-        $rootScope.name = 'C';
-        element = $compile(
-            '<div><div widget attr="A" prop="myProp" bind="{{bi.nd}}" assign="name" read="\'D\'" ' +
-                'exp="state=myState">{{bind}}</div></div>')
-            ($rootScope);
-        expect(log).toEqual('A; B; C; D; ng');
-        expect($rootScope.name).toEqual('ng');
-        expect($rootScope.state).toEqual('OK');
-        log.reset();
-        $rootScope.$apply();
-        expect(element.text()).toEqual('C');
-        expect(log).toEqual('C');
-        $rootScope.bi.nd = 'c';
-        $rootScope.$apply();
-        expect(log).toEqual('C; c');
+      directive('badDeclaration', function() {
+        return {
+          scope: { attr: 'xxx' }
+        };
       });
+    }));
+
+    describe('attribute', function() {
+      it('should copy simple attribute', inject(function() {
+        compile('<div><span my-component attr="some text">');
+        expect(componentScope.attr).toEqual(undefined);
+        expect(componentScope.attrAlias).toEqual(undefined);
+
+        $rootScope.$apply();
+
+        expect(componentScope.attr).toEqual('some text');
+        expect(componentScope.attrAlias).toEqual('some text');
+        expect(componentScope.attrAlias).toEqual(componentScope.attr);
+      }));
+
+
+      it('should update when interpolated attribute updates', inject(function() {
+        compile('<div><span my-component attr="hello {{name}}">');
+        expect(componentScope.attr).toEqual(undefined);
+        expect(componentScope.attrAlias).toEqual(undefined);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+
+        expect(componentScope.attr).toEqual('hello misko');
+        expect(componentScope.attrAlias).toEqual('hello misko');
+
+        $rootScope.name = 'igor';
+        $rootScope.$apply();
+
+        expect(componentScope.attr).toEqual('hello igor');
+        expect(componentScope.attrAlias).toEqual('hello igor');
+      }));
     });
+
+
+    describe('object reference', function() {
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component ref="name">');
+        expect(componentScope.ref).toBe(undefined);
+        expect(componentScope.refAlias).toBe(componentScope.ref);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.ref).toBe($rootScope.name);
+        expect(componentScope.refAlias).toBe($rootScope.name);
+
+        $rootScope.name = {};
+        $rootScope.$apply();
+        expect(componentScope.ref).toBe($rootScope.name);
+        expect(componentScope.refAlias).toBe($rootScope.name);
+      }));
+
+
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component ref="name">');
+        expect(componentScope.ref).toBe(undefined);
+        expect(componentScope.refAlias).toBe(componentScope.ref);
+
+        componentScope.ref = 'misko';
+        $rootScope.$apply();
+        expect($rootScope.name).toBe('misko');
+        expect(componentScope.ref).toBe('misko');
+        expect($rootScope.name).toBe(componentScope.ref);
+        expect(componentScope.refAlias).toBe(componentScope.ref);
+
+        componentScope.name = {};
+        $rootScope.$apply();
+        expect($rootScope.name).toBe(componentScope.ref);
+        expect(componentScope.refAlias).toBe(componentScope.ref);
+      }));
+
+
+      it('should update local when both change', inject(function() {
+        compile('<div><span my-component ref="name">');
+        $rootScope.name = {mark:123};
+        componentScope.ref = 'misko';
+
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual({mark:123})
+        expect(componentScope.ref).toBe($rootScope.name);
+        expect(componentScope.refAlias).toBe($rootScope.name);
+
+        $rootScope.name = 'igor';
+        componentScope.ref = {};
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual('igor')
+        expect(componentScope.ref).toBe($rootScope.name);
+        expect(componentScope.refAlias).toBe($rootScope.name);
+      }));
+
+      it('should complain on non assignable changes', inject(function() {
+        compile('<div><span my-component ref="\'hello \' + name">');
+        $rootScope.name = 'world';
+        $rootScope.$apply();
+        expect(componentScope.ref).toBe('hello world');
+
+        componentScope.ref = 'ignore me';
+        expect($rootScope.$apply).
+            toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
+        expect(componentScope.ref).toBe('hello world');
+        // reset since the exception was rethrown which prevented phase clearing
+        $rootScope.$$phase = null;
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.ref).toBe('hello misko');
+      }));
+    });
+
+
+    describe('executable expression', function() {
+      it('should allow expression execution with locals', inject(function() {
+        compile('<div><span my-component expr="count = count + offset">');
+        $rootScope.count = 2;
+
+        expect(typeof componentScope.expr).toBe('function');
+        expect(typeof componentScope.exprAlias).toBe('function');
+
+        expect(componentScope.expr({offset: 1})).toEqual(3);
+        expect($rootScope.count).toEqual(3);
+
+        expect(componentScope.exprAlias({offset: 10})).toEqual(13);
+        expect($rootScope.count).toEqual(13);
+      }));
+    });
+
+    it('should throw on unknown definition', inject(function() {
+      expect(function() {
+        compile('<div><span bad-declaration>');
+      }).toThrow('Invalid isolate scope definition for directive badDeclaration: xxx');
+    }));
   });
 
 
   describe('controller', function() {
-    it('should inject locals to controller', function() {
-      module(function() {
-        directive('widget', function(log) {
-          return {
-            controller: function(attr, prop, assign, read, exp){
-              log(attr);
-              log(prop);
-              log(assign());
-              log(read());
-              log(assign('ng'));
-              exp();
-              expect(function() { read(undefined); }).
-                  toThrow("Expression ''D'' not assignable.");
-              this.result = 'OK';
-            },
-            inject: {
-              attr: 'attribute',
-              prop: 'evaluate',
-              assign: 'accessor',
-              read: 'accessor',
-              exp: 'expression'
-            },
-            link: function(scope, element, attrs, controller) {
-              log(controller.result);
-            }
-          };
-        });
-      });
-      inject(function(log, $compile, $rootScope) {
-        $rootScope.myProp = 'B';
-        $rootScope.bi = {nd: 'C'};
-        $rootScope.name = 'C';
-        element = $compile(
-            '<div><div widget attr="A" prop="myProp" bind="{{bi.nd}}" assign="name" read="\'D\'" ' +
-                'exp="state=\'OK\'">{{bind}}</div></div>')
-            ($rootScope);
-        expect(log).toEqual('A; B; C; D; ng; OK');
-        expect($rootScope.name).toEqual('ng');
-      });
-    });
-
-
     it('should get required controller', function() {
       module(function() {
         directive('main', function(log) {
@@ -1986,11 +2056,11 @@ describe('$compile', function() {
       module(function() {
         directive('box', valueFn({
           transclude: 'content',
-          scope: { name: 'evaluate', show: 'accessor' },
+          scope: { name: '=', show: '=' },
           template: '<div><h1>Hello: {{name}}!</h1><div ng-transclude></div></div>',
           link: function(scope, element) {
             scope.$watch(
-                function() { return scope.show(); },
+                'show',
                 function(show) {
                   if (!show) {
                     element.find('div').find('div').remove();

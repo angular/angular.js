@@ -4,7 +4,7 @@ describe('NgModelController', function() {
   var ctrl, scope, ngModelAccessor, element, parentFormCtrl;
 
   beforeEach(inject(function($rootScope, $controller) {
-    var attrs = {name: 'testAlias'};
+    var attrs = {name: 'testAlias', ngModel: 'value'};
 
     parentFormCtrl = {
       $setValidity: jasmine.createSpy('$setValidity'),
@@ -17,12 +17,7 @@ describe('NgModelController', function() {
     scope = $rootScope;
     ngModelAccessor = jasmine.createSpy('ngModel accessor');
     ctrl = $controller(NgModelController, {
-      $scope: scope, $element: element.find('input'), ngModel: ngModelAccessor, $attrs: attrs
-    });
-    // mock accessor (locals)
-    ngModelAccessor.andCallFake(function(val) {
-      if (isDefined(val)) scope.value = val;
-      return scope.value;
+      $scope: scope, $element: element.find('input'), $attrs: attrs
     });
   }));
 
@@ -30,6 +25,26 @@ describe('NgModelController', function() {
   afterEach(function() {
     dealoc(element);
   });
+
+
+  it('should fail on non-assignable model binding', inject(function($controller) {
+    var exception;
+
+    try {
+      $controller(NgModelController, {
+        $scope: null,
+        $element: jqLite('<input ng-model="1+2">'),
+        $attrs: {
+          ngModel: '1+2'
+        }
+      });
+    } catch (e) {
+      exception = e;
+    }
+
+    expect(exception.message).
+        toMatch(/Non-assignable model expression: 1\+2 \(<input( value="")? ng-model="1\+2">\)/);
+  }));
 
 
   it('should init the properties', function() {
