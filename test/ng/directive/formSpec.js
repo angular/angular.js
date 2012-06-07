@@ -284,6 +284,9 @@ describe('form', function() {
       inputB.$setValidity('MyError', true);
       expect(parent.$error.MyError).toBe(false);
       expect(child.$error.MyError).toBe(false);
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeTruthy();
     });
 
 
