@@ -201,4 +201,37 @@ describe('ngClass', function() {
     expect(e2.hasClass('C')).toBeFalsy();
     expect(e2.hasClass('D')).toBeFalsy();
   }));
+
+
+  it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
+    element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "two";
+      $rootScope.four = true;
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('two'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four');
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "too";
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('too'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four'); // should still be there
+    expect(element.hasClass('two')).toBeFalsy();
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "to";
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('to'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four'); // should still be there
+    expect(element.hasClass('two')).toBeFalsy();
+    expect(element.hasClass('too')).toBeFalsy();
+  }));
 });
