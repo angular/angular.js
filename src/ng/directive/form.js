@@ -117,6 +117,7 @@ function FormController(element, attrs) {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
+    parentForm.$setDirty();
   };
 
 }
