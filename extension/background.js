@@ -3,7 +3,10 @@ var injectPrereqs = {};
 var cbs = {};
 
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-  if (request.script === 'debug-true') {
+  if (request.script === 'register') {
+    chrome.tabs.onUpdated.addListener(cbs[request.tab]);
+
+  } else if (request.script === 'debug-true') {
 
     cbs[request.tab] = (function (req) {
       return function (tabId, changeInfo, tab) {
@@ -39,3 +42,27 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     sendResponse();
   }
 });
+
+// notify of page refreshes
+chrome.extension.onConnect.addListener(function(port) {
+  //console.assert(port.name == "knockknock");
+  port.onMessage.addListener(function (msg) {
+    if (msg.action === 'register') {
+      var respond = function (tabId, changeInfo, tab) {
+        if (tabId !== msg.inspectedTabId) {
+          return;
+        }
+        port.postMessage('refresh');
+      };
+
+      chrome.tabs.onUpdated.addListener(respond);
+      port.onDisconnect.addListener(function () {
+        chrome.tabs.onUpdated.removeListener(respond);
+      });
+    }
+  });
+  port.onDisconnect.addListener(function () {
+    console.log('disconnected');
+  });
+});
+

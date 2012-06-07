@@ -11,7 +11,7 @@ var inject = function () {
 
               var bootstrap = window.angular.bootstrap;
               var debug = window.__ngDebug = {
-                watchers: []
+                watchers: {}
               };
               var ng = angular.module('ng');
               ng.config(function ($provide) {
@@ -19,7 +19,10 @@ var inject = function () {
                   function ($delegate) {
                     var watch = $delegate.__proto__.$watch;
                     $delegate.$watch = function() {
-                      debug.watchers.push(arguments);
+                      if (!debug.watchers[$delegate.$id]) {
+                        debug.watchers[$delegate.$id] = [];
+                      }
+                      debug.watchers[$delegate.$id].push(arguments[0].toString());
                       watch.apply($delegate, arguments);
                     };
 

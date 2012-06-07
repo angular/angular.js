@@ -23,6 +23,12 @@ panelApp.directive('tree', function($compile) {
                 '<input ng-model="item" ng-change="edit()()">' +
               '</li>' +
             '</ul>' +
+            '<h3 ng-class="{hidden: val().listeners.length < 1}">Listeners</h3>' +
+            '<ul>' +
+              '<li ng-repeat="item in val().watchers">' +
+                '{{item}}' +
+              '</li>' +
+            '</ul>' +
             '<div ng-repeat="child in val().children">' +
               '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
             '</div>' +
@@ -133,6 +139,7 @@ panelApp.factory('appContext', function(chromeExtension) {
 
             // copy scope's locals
             node.locals = {};
+
             for (var i in scope) {
               if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
                 //node.locals[i] = scope[i];
@@ -148,6 +155,10 @@ panelApp.factory('appContext', function(chromeExtension) {
             }
 
             node.id = scope.$id;
+
+            if (window.__ngDebug) {
+              node.watch = __ngDebug.watchers[scope.$id];
+            }
 
             // recursively get children scopes
             node.children = [];
@@ -254,16 +265,33 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
     });
   };
 
-  appContext.getRoots(function (roots) {
-    appContext.getScopeTrees(function (result) {
-      $scope.$apply(function () {
-        $scope.roots = roots;
-        $scope.selectedRoot = roots[0].value;
-        $scope.trees = result;
+  var updateTree = function () {    
+    appContext.getRoots(function (roots) {
+      appContext.getScopeTrees(function (result) {
+        $scope.$apply(function () {
+          $scope.roots = roots;
+          $scope.selectedRoot = roots[0].value;
+          $scope.trees = result;
+        });
       });
     });
-  });
+  };
 
+  updateTree();
+
+  var port = chrome.extension.connect();
+  port.postMessage({
+    action: 'register',
+    inspectedTabId: chrome.devtools.inspectedWindow.tabId
+  });
+  port.onMessage.addListener(function(msg) {
+    if (msg === 'refresh') {
+      updateTree();
+    }
+  });
+  port.onDisconnect.addListener(function (a) {
+    console.log(a);
+  });
 });
 
 
