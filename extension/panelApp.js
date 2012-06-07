@@ -23,7 +23,7 @@ panelApp.directive('tree', function($compile) {
                 '<input ng-model="item" ng-change="edit()()">' +
               '</li>' +
             '</ul>' +
-            '<h3 ng-class="{hidden: val().listeners.length < 1}">Listeners</h3>' +
+            '<h3 ng-class="{hidden: val().watchers.length < 1}">Watchers</h3>' +
             '<ul>' +
               '<li ng-repeat="item in val().watchers">' +
                 '{{item}}' +
@@ -90,48 +90,30 @@ panelApp.factory('appContext', function(chromeExtension) {
         "});" +
       "}", args, cb);
     },
-    getRoots: function (callback) {
+    getDebugInfo: function (callback) {
       chromeExtension.eval(function (window) {
-        var res = [],
-          unique = [];
+
+        var rootIds = [];
+        var rootScopes = [];
+
+        // Detect whether or not this is an AngularJS app
+        if (!window.angular) {
+          return {
+            err: 'Not an AngularJS App'
+          };
+        }
 
         window.$('.ng-scope').each(function (i, elt) {
-          var $scope = angular.element(elt).scope(),
-            id;
+          var $scope = angular.element(elt).scope();
 
           while ($scope.$parent) {
             $scope = $scope.$parent;
           }
-          if ($scope === $scope.$root && unique.indexOf($scope.$id) === -1) {
-            id = $scope.$id;
-            res.push({
-              value: id,
-              label: id
-            });
-            unique.push(id);
+          if ($scope === $scope.$root && rootScopes.indexOf($scope) === -1) {
+            rootScopes.push($scope);
+            rootIds.push($scope.$id);
           }
         });
-        return res;
-      }, callback);
-    },
-    getScopeTrees: function (callback) {
-      chromeExtension.eval(function (window) {
-        var roots = (function () {
-          var res = [];
-
-          window.$('.ng-scope').each(function (i, elt) {
-            var $scope = angular.element(elt).scope();
-
-            while ($scope.$parent) {
-              $scope = $scope.$parent;
-            }
-            if ($scope === $scope.$root && res.indexOf($scope.$id) === -1) {
-              res.push($scope);
-            }
-          });
-
-          return res;
-        }());
 
         var getScopeTree = function (scope) {
           var tree = {};
@@ -156,8 +138,10 @@ panelApp.factory('appContext', function(chromeExtension) {
 
             node.id = scope.$id;
 
+            console.log(window.__ngDebug);
+            
             if (window.__ngDebug) {
-              node.watch = __ngDebug.watchers[scope.$id];
+              node.watchers = __ngDebug.watchers[scope.$id];
             }
 
             // recursively get children scopes
@@ -177,11 +161,14 @@ panelApp.factory('appContext', function(chromeExtension) {
         };
 
         var trees = {};
-        roots.forEach(function (root) {
+        rootScopes.forEach(function (root) {
           trees[root.$id] = getScopeTree(root);
         });
 
-        return trees;
+        return {
+          roots: rootIds,
+          trees: trees
+        };
       },
       callback);
     },
@@ -198,6 +185,22 @@ panelApp.factory('appContext', function(chromeExtension) {
         chromeExtension.eval(function (window) {
           window.document.location.reload();
         });
+      });
+    },
+
+    watchRefresh: function (cb) {
+      var port = chrome.extension.connect();
+      port.postMessage({
+        action: 'register',
+        inspectedTabId: chrome.devtools.inspectedWindow.tabId
+      });
+      port.onMessage.addListener(function(msg) {
+        if (msg === 'refresh') {
+          cb();
+        }
+      });
+      port.onDisconnect.addListener(function (a) {
+        console.log(a);
       });
     }
   }
@@ -266,32 +269,40 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
   };
 
   var updateTree = function () {    
-    appContext.getRoots(function (roots) {
-      appContext.getScopeTrees(function (result) {
-        $scope.$apply(function () {
-          $scope.roots = roots;
-          $scope.selectedRoot = roots[0].value;
-          $scope.trees = result;
-        });
+    appContext.getDebugInfo(function (info) {
+      if (!info) {
+        setTimeout(updateTree, 50);
+        return;
+      }
+
+      $scope.$apply(function () {
+        if (info.err) {
+          $scope.err = info.err;
+          $scope.roots = [null];
+          $scope.selectedRoot = null;
+          $scope.trees = {};
+        } else {
+          var rootIdPairs = [];
+          info.roots.forEach(function (item) {
+            rootIdPairs.push({
+              label: item,
+              value: item
+            });
+          });
+          $scope.roots = rootIdPairs;
+          if (rootIdPairs.length === 0) {
+            $scope.selectedRoot = null;
+          } else {
+            $scope.selectedRoot = rootIdPairs[0].value;
+          }
+          $scope.trees = info.trees;
+        }
       });
     });
   };
 
   updateTree();
-
-  var port = chrome.extension.connect();
-  port.postMessage({
-    action: 'register',
-    inspectedTabId: chrome.devtools.inspectedWindow.tabId
-  });
-  port.onMessage.addListener(function(msg) {
-    if (msg === 'refresh') {
-      updateTree();
-    }
-  });
-  port.onDisconnect.addListener(function (a) {
-    console.log(a);
-  });
+  appContext.watchRefresh(updateTree);
 });
 
 

@@ -8,7 +8,9 @@ var inject = function () {
           //alert('script');
           var patch = function () {
             if (window.angular && typeof window.angular.bootstrap === 'function') {
-
+                if (window.__ngDebug) {
+                return;
+              }
               var bootstrap = window.angular.bootstrap;
               var debug = window.__ngDebug = {
                 watchers: {}
@@ -35,6 +37,7 @@ var inject = function () {
                 bootstrap(arg1, arg2, arg3);
               };
               */
+              console.log('patched');
             } else {
               setTimeout(patch, 1);
             }
