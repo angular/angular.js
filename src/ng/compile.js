@@ -221,54 +221,12 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller',
+            '$controller', '$rootScope',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller) {
-
-    var LOCAL_MODE = {
-      attribute: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = attr[localName];
-      },
-
-      evaluate: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = parentScope.$eval(attr[localName]);
-      },
-
-      bind: function(localName, mode, parentScope, scope, attr) {
-        var getter = $interpolate(attr[localName]);
-        scope.$watch(
-          function() { return getter(parentScope); },
-          function(v) { scope[localName] = v; }
-        );
-      },
-
-      accessor: function(localName, mode, parentScope, scope, attr) {
-        var getter = noop,
-            setter = noop,
-            exp = attr[localName];
-
-        if (exp) {
-          getter = $parse(exp);
-          setter = getter.assign || function() {
-            throw Error("Expression '" + exp + "' not assignable.");
-          };
-        }
-
-        scope[localName] = function(value) {
-          return arguments.length ? setter(parentScope, value) : getter(parentScope);
-        };
-      },
-
-      expression: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = function(locals) {
-          $parse(attr[localName])(parentScope, locals);
-        };
-      }
-    };
+             $controller,   $rootScope) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
-      this.$$observers = {};
       this.$attr = attr || {};
     };
 
@@ -286,7 +244,8 @@ function $CompileProvider($provide) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        var booleanKey = isBooleanAttr(this.$$element[0], key.toLowerCase());
+        var booleanKey = isBooleanAttr(this.$$element[0], key.toLowerCase()),
+            $$observers = this.$$observers;
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -314,7 +273,7 @@ function $CompileProvider($provide) {
         }
 
         // fire observers
-        forEach(this.$$observers[key], function(fn) {
+        $$observers && forEach($$observers[key], function(fn) {
           try {
             fn(value);
           } catch (e) {
@@ -333,10 +292,17 @@ function $CompileProvider($provide) {
        * @returns {function(*)} the `fn` Function passed in.
        */
       $observe: function(key, fn) {
-        // keep only observers for interpolated attrs
-        if (this.$$observers[key]) {
-          this.$$observers[key].push(fn);
-        }
+        var attrs = this,
+            $$observers = (attrs.$$observers || (attrs.$$observers = {})),
+            listeners = ($$observers[key] || ($$observers[key] = []));
+
+        listeners.push(fn);
+        $rootScope.$evalAsync(function() {
+          if (!listeners.$$inter) {
+            // no one registered attribute interpolation function, so lets call it manually
+            fn(attrs[key]);
+          }
+        });
         return fn;
       }
     };
@@ -739,9 +705,53 @@ function $CompileProvider($provide) {
         $element = attrs.$$element;
 
         if (newScopeDirective && isObject(newScopeDirective.scope)) {
-          forEach(newScopeDirective.scope, function(mode, name) {
-            (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                scope.$parent || scope, scope, attrs);
+          var LOCAL_REGEXP = /^\s*([@=&])\s*(\w*)\s*$/;
+
+          var parentScope = scope.$parent || scope;
+
+          forEach(newScopeDirective.scope, function(definiton, scopeName) {
+            var match = definiton.match(LOCAL_REGEXP) || [],
+                attrName = match[2]|| scopeName,
+                mode = match[1], // @, =, or &
+                lastValue,
+                parentGet, parentSet;
+
+            if (mode == '@') {
+              attrs.$observe(attrName, function(value) {
+                scope[scopeName] = value;
+              });
+              attrs.$$observers[attrName].$$scope = parentScope;
+            } else if (mode == '=') {
+              parentGet = $parse(attrs[attrName]);
+              parentSet = parentGet.assign || function() {
+                // reset the change, or we will throw this exception on every $digest
+                lastValue = scope[scopeName] = parentGet(parentScope);
+                throw Error("Can't assign to: " + attrs[attrName]);
+              };
+              lastValue = scope[scopeName] = parentGet(parentScope);
+              scope.$watch(function() {
+                var parentValue = parentGet(parentScope);
+
+                if (parentValue !== scope[scopeName]) {
+                  // we are out of sync and need to copy
+                  if (parentValue !== lastValue) {
+                    // parent changed and it has precedence
+                    lastValue = scope[scopeName] = parentValue;
+                  } else {
+                    // if the parent can be assigned then do so
+                    parentSet(parentScope, lastValue = scope[scopeName]);
+                  }
+                }
+                return parentValue;
+              });
+            } else if (mode == '&') {
+              parentGet = $parse(attrs[attrName]);
+              scope[scopeName] = function(locals) {
+                return parentGet(parentScope, locals);
+              }
+            } else {
+              throw Error('Unknown locals definition: ' + definiton);
+            }
           });
         }
 
@@ -753,12 +763,6 @@ function $CompileProvider($provide) {
               $attrs: attrs,
               $transclude: boundTranscludeFn
             };
-
-
-            forEach(directive.inject || {}, function(mode, name) {
-              (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                  newScopeDirective ? scope.$parent || scope : scope, locals, attrs);
-            });
 
             controller = directive.controller;
             if (controller == '@') {
@@ -990,19 +994,20 @@ function $CompileProvider($provide) {
       directives.push({
         priority: 100,
         compile: valueFn(function(scope, element, attr) {
+          var $$observers = (attr.$$observers || (attr.$$observers = {}));
+
           if (name === 'class') {
             // we need to interpolate classes again, in the case the element was replaced
             // and therefore the two class attrs got merged - we want to interpolate the result
             interpolateFn = $interpolate(attr[name], true);
           }
 
-          // we define observers array only for interpolated attrs
-          // and ignore observers for non interpolated attrs to save some memory
-          attr.$$observers[name] = [];
           attr[name] = undefined;
-          scope.$watch(interpolateFn, function(value) {
-            attr.$set(name, value);
-          });
+          ($$observers[name] || ($$observers[name] = [])).$$inter = true;
+          (attr.$$observers && attr.$$observers[name].$$scope || scope).
+            $watch(interpolateFn, function(value) {
+              attr.$set(name, value);
+            });
         })
       });
     }
