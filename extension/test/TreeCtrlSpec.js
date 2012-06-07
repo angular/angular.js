@@ -33,15 +33,13 @@ function createAppContextMock () {
     registerScope: function (scope) {
       regScope = scope;
     },
-    getRoots: function (cb) {
-      cb([{
-        label: "YYY",
-        value: "YYY"
-      }]);
+    getDebugInfo: function (cb) {
+      cb({
+        roots: [ "YYY" ],
+        trees: {}
+      });
     },
-    getScopeTrees: function (cb) {
-      cb({});
-    }
+    watchRefresh: function (cb) {}
   }
 }
 
