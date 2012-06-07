@@ -20,7 +20,7 @@ describe('ngdoc', function() {
 
       it('should find keywords', function() {
         expect(new Doc('\nHello: World! @ignore. $abc').keywords()).toEqual('$abc hello world');
-        expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
+        expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and class ng odd the');
       });
 
       it('should get property and methods', function() {
