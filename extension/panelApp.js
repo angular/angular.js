@@ -104,7 +104,7 @@ panelApp.factory('appContext', function(chromeExtension) {
         }
 
         window.$('.ng-scope').each(function (i, elt) {
-          var $scope = angular.element(elt).scope();
+          var $scope = window.angular.element(elt).scope();
 
           while ($scope.$parent) {
             $scope = $scope.$parent;

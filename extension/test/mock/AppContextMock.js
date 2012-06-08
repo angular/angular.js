@@ -37,6 +37,7 @@ function createAppContextMock () {
         trees: {}
       });
     },
-    watchRefresh: function (cb) {}
+    watchRefresh: function (cb) {},
+    debug: jasmine.createSpy('debug')
   }
 }

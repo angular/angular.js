@@ -3,11 +3,7 @@ describe('panelApp', function () {
   beforeEach(module('panelApp'));
   beforeEach(module(function($provide) {
     $provide.factory('chromeExtension', createChromeExtensionMock);
-    $provide.factory('appContext', function () {
-      return {
-        debug: jasmine.createSpy('inspect')
-      };
-    });
+    $provide.factory('appContext', createAppContextMock);
   }));
 
   describe('OptionsCtrl', function() {
