@@ -111,8 +111,8 @@ function $HttpProvider() {
         'Accept': 'application/json, text/plain, */*',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      post: {'Content-Type': 'application/json'},
-      put:  {'Content-Type': 'application/json'}
+      post: {'Content-Type': 'application/json;charset=utf-8'},
+      put:  {'Content-Type': 'application/json;charset=utf-8'}
     }
   };
 
