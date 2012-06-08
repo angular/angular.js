@@ -849,8 +849,8 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('Multiple directives [sync, async] asking for template on: <'+
-                (msie <= 8 ? 'DIV' : 'div') + ' class="sync async">');
+            }).toThrow('Multiple directives [sync, async] asking for template on: '+
+                '<div class="sync async">');
           });
         });
 
@@ -1237,8 +1237,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrow('Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
-                '<' + (msie < 9 ? 'DIV' : 'div') +
-                ' class="iscope-a; scope-b ng-isolate-scope ng-scope">');
+                '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
 
@@ -1248,8 +1247,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
             }).toThrow('Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
-                '<' + (msie < 9 ? 'DIV' : 'div') +
-                ' class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
+                '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
 
@@ -2064,8 +2062,8 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('Multiple directives [first, second] asking for transclusion on: <' +
-            (msie <= 8 ? 'DIV' : 'div') + ' class="first second ng-isolate-scope ng-scope">');
+        }).toThrow('Multiple directives [first, second] asking for transclusion on: ' +
+            '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
 
