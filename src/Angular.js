@@ -757,7 +757,7 @@ function startingTag(element) {
   } catch(e) {}
   return jqLite('<div>').append(element).html().
       match(/^(<[^>]+>)/)[1].
-      replace(/^([\w\-]+)/, function(match, nodeName) { return lowercase(nodeName); });
+      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
 }
 
 
