@@ -286,7 +286,7 @@ function $CompileProvider($provide) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        var booleanKey = isBooleanAttr(this.$$element[0], key.toLowerCase());
+        var booleanKey = getBooleanAttrName(this.$$element[0], key);
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -498,7 +498,7 @@ function $CompileProvider($provide) {
               attrs[nName] = value = trim((msie && name == 'href')
                 ? decodeURIComponent(node.getAttribute(name, 2))
                 : attr.value);
-              if (isBooleanAttr(node, nName)) {
+              if (getBooleanAttrName(node, nName)) {
                 attrs[nName] = true; // presence means true
               }
               addAttrInterpolateDirective(node, directives, value, nName);
