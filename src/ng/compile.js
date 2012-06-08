@@ -18,6 +18,9 @@
  */
 
 
+var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
+
+
 /**
  * @ngdoc function
  * @name angular.module.ng.$compile
@@ -716,41 +719,55 @@ function $CompileProvider($provide) {
                 lastValue,
                 parentGet, parentSet;
 
-            if (mode == '@') {
-              attrs.$observe(attrName, function(value) {
-                scope[scopeName] = value;
-              });
-              attrs.$$observers[attrName].$$scope = parentScope;
-            } else if (mode == '=') {
-              parentGet = $parse(attrs[attrName]);
-              parentSet = parentGet.assign || function() {
-                // reset the change, or we will throw this exception on every $digest
-                lastValue = scope[scopeName] = parentGet(parentScope);
-                throw Error("Can't assign to: " + attrs[attrName]);
-              };
-              lastValue = scope[scopeName] = parentGet(parentScope);
-              scope.$watch(function() {
-                var parentValue = parentGet(parentScope);
+            switch (mode) {
 
-                if (parentValue !== scope[scopeName]) {
-                  // we are out of sync and need to copy
-                  if (parentValue !== lastValue) {
-                    // parent changed and it has precedence
-                    lastValue = scope[scopeName] = parentValue;
-                  } else {
-                    // if the parent can be assigned then do so
-                    parentSet(parentScope, lastValue = scope[scopeName]);
-                  }
-                }
-                return parentValue;
-              });
-            } else if (mode == '&') {
-              parentGet = $parse(attrs[attrName]);
-              scope[scopeName] = function(locals) {
-                return parentGet(parentScope, locals);
+              case '@': {
+                attrs.$observe(attrName, function(value) {
+                  scope[scopeName] = value;
+                });
+                attrs.$$observers[attrName].$$scope = parentScope;
+                break;
               }
-            } else {
-              throw Error('Unknown locals definition: ' + definiton);
+
+              case '=': {
+                parentGet = $parse(attrs[attrName]);
+                parentSet = parentGet.assign || function() {
+                  // reset the change, or we will throw this exception on every $digest
+                  lastValue = scope[scopeName] = parentGet(parentScope);
+                  throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
+                      ' (directive: ' + newScopeDirective.name + ')');
+                };
+                lastValue = scope[scopeName] = parentGet(parentScope);
+                scope.$watch(function() {
+                  var parentValue = parentGet(parentScope);
+
+                  if (parentValue !== scope[scopeName]) {
+                    // we are out of sync and need to copy
+                    if (parentValue !== lastValue) {
+                      // parent changed and it has precedence
+                      lastValue = scope[scopeName] = parentValue;
+                    } else {
+                      // if the parent can be assigned then do so
+                      parentSet(parentScope, lastValue = scope[scopeName]);
+                    }
+                  }
+                  return parentValue;
+                });
+                break;
+              }
+
+              case '&': {
+                parentGet = $parse(attrs[attrName]);
+                scope[scopeName] = function(locals) {
+                  return parentGet(parentScope, locals);
+                }
+                break;
+              }
+
+              default: {
+                throw Error('Invalid isolate scope definition for directive ' +
+                    newScopeDirective.name + ': ' + definiton);
+              }
             }
           });
         }

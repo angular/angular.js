@@ -1766,7 +1766,8 @@ describe('$compile', function() {
         expect(componentScope.ref).toBe('hello world');
 
         componentScope.ref = 'ignore me';
-        expect($rootScope.$apply).toThrow("Can't assign to: 'hello ' + name");
+        expect($rootScope.$apply).
+            toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -1797,7 +1798,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow('Unknown locals definition: xxx');
+      }).toThrow('Invalid isolate scope definition for directive badDeclaration: xxx');
     }));
   });
 

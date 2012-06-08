@@ -28,13 +28,22 @@ describe('NgModelController', function() {
 
 
   it('should fail on non-assignable model binding', inject(function($controller) {
-    expect(function() {
+    var exception;
+
+    try {
       $controller(NgModelController, {
-        $scope: null, $element: null, $attrs: {
+        $scope: null,
+        $element: jqLite('<input ng-model="1+2">'),
+        $attrs: {
           ngModel: '1+2'
         }
       });
-    }).toThrow('Non-assignable: 1+2');
+    } catch (e) {
+      exception = e;
+    }
+
+    expect(exception.message).
+        toMatch(/Non-assignable model expression: 1\+2 \(<input( value="")? ng-model="1\+2">\)/);
   }));
 
 
