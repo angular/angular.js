@@ -755,7 +755,9 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {}
-  return jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1];
+  return jqLite('<div>').append(element).html().
+      match(/^(<[^>]+>)/)[1].
+      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
 }
 
 
