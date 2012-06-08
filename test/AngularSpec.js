@@ -101,7 +101,7 @@ describe('angular', function() {
 
   describe('elementHTML', function() {
     it('should dump element', function() {
-      expect(lowercase(startingTag('<div attr="123">something<span></span></div>'))).
+      expect(startingTag('<div attr="123">something<span></span></div>')).
         toEqual('<div attr="123">');
     });
   });
@@ -541,7 +541,7 @@ describe('angular', function() {
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
       expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
-          toBeOneOf('<ng-abc x="2A">', '<NG-ABC x="2A">');
+          toBe('<ng-abc x="2A">');
     });
   });
 
