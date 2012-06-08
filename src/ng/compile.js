@@ -880,7 +880,7 @@ function $CompileProvider($provide) {
       forEach(src, function(value, key) {
         if (key == 'class') {
           safeAddClass($element, value);
-          dst.class = (dst.class ? dst.class + ' ' : '') + value;
+          dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
         } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
