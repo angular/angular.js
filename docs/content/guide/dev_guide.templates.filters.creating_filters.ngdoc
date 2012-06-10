@@ -2,16 +2,10 @@
 @name Developer Guide: Templates: Filters: Creating Angular Filters
 @description
 
-Writing your own filter is very easy: just define a JavaScript function on the `angular.module.ng.$filter`
-object.
-The framework passes in the input value as the first argument to your function. Any filter
-arguments are passed in as additional function arguments.
-
-You can use these variables in the function:
-
-* `this` — The current scope.
-* `this.$element` — The DOM element containing the binding. The `$element` variable allows the
-filter to manipulate the DOM.
+Writing your own filter is very easy: just register a new filter (injectable) factory function with
+your module. This factory function should return a new filter function which takes the input value
+as the first argument. Any filter arguments are passed in as additional arguments to the filter
+function.
 
 The following sample filter reverses a text string. In addition, it conditionally makes the
 text upper-case and assigns color.

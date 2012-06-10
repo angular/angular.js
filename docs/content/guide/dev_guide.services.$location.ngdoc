@@ -622,11 +622,11 @@ example:
 </pre>
 <pre>
 // js - controller
-this.$watch('locationPath', function(path) {
+$scope.$watch('locationPath', function(path) {
   $location.path(path);
 });
 
-this.$watch('$location.path()', function(path) {
+$scope.$watch('$location.path()', function(path) {
   scope.locationPath = path;
 });
 </pre>
