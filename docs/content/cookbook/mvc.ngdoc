@@ -6,9 +6,10 @@ MVC allows for a clean an testable separation between the behavior (controller) 
 (HTML template). A Controller is just a JavaScript class which is grafted onto the scope of the
 view. This makes it very easy for the controller and the view to share the model.
 
-The model is simply the controller's this. This makes it very easy to test the controller in
-isolation since one can simply instantiate the controller and test without a view, because there is
-no connection between the controller and the view.
+The model is a set of objects and primitives that are referenced from the Scope ($scope) object.
+This makes it very easy to test the controller in isolation since one can simply instantiate the
+controller and test without a view, because there is no connection between the controller and the
+view.
 
 
 <doc:example>

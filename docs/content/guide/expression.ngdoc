@@ -55,14 +55,14 @@ You can try evaluating different expressions here:
 <doc:source>
  <script>
    function Cntl2($scope) {
-     $scope.exprs = [];
+     var exprs = $scope.exprs = [];
      $scope.expr = '3*10|currency';
      $scope.addExp = function(expr) {
-        this.exprs.push(expr);
+        exprs.push(expr);
      };
 
      $scope.removeExp = function(index) {
-       this.exprs.splice(index, 1);
+       exprs.splice(index, 1);
      };
    }
  </script>
@@ -104,7 +104,7 @@ prevent accidental access to the global state (a common source of subtle bugs).
      $scope.name = 'World';
 
      $scope.greet = function() {
-       ($window.mockWindow || $window).alert('Hello ' + this.name);
+       ($window.mockWindow || $window).alert('Hello ' + $scope.name);
      }
    }
  </script>

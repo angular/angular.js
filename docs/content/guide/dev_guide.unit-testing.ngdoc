@@ -218,16 +218,16 @@ In angular the controllers are strictly separated from the DOM manipulation logi
 a much easier testability story as can be seen in this example:
 
 <pre>
-function PasswordCntrl() {
-  this.password = '';
-  this.grade = function() {
-    var size = this.password.length;
+function PasswordCntrl($scope) {
+  $scope.password = '';
+  $scope.grade = function() {
+    var size = $scope.password.length;
     if (size > 8) {
-      this.strength = 'strong';
+      $scope.strength = 'strong';
     } else if (size > 3) {
-      this.strength = 'medium';
+      $scope.strength = 'medium';
     } else {
-      this.strength = 'weak';
+      $scope.strength = 'weak';
     }
   };
 }
