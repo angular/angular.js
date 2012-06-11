@@ -1,6 +1,7 @@
 var panelApp = angular.module('panelApp', []);
 
-panelApp.directive('tree', function($compile) {
+
+panelApp.directive('mtree', function($compile) {
   return {
     restrict: 'E',
     terminal: true,
@@ -23,14 +24,42 @@ panelApp.directive('tree', function($compile) {
                 '<input ng-model="item" ng-change="edit()()">' +
               '</li>' +
             '</ul>' +
-            '<h3 ng-class="{hidden: !val().watchers || val().watchers.length < 1}">Watchers</h3>' +
+            '<div ng-repeat="child in val().children">' +
+              '<mtree val="child" inspect="inspect()" edit="edit()"></mtree>' +
+            '</div>' +
+          '</div>' +
+        '</div>');
+
+      $compile(element.contents())(scope.$new());
+    }
+  }
+});
+
+
+panelApp.directive('wtree', function($compile) {
+  return {
+    restrict: 'E',
+    terminal: true,
+    scope: {
+      val: 'accessor',
+      edit: 'accessor',
+      inspect: 'accessor'
+    },
+    link: function (scope, element, attrs) {
+      // this is more complicated then it should be
+      // see: https://github.com/angular/angular.js/issues/898
+      element.append(
+        '<div class="scope-branch">' +
+          '<a href ng-click="inspect()()">Scope ({{val().id}})</a> | ' +
+          '<a href ng-click="showState = !showState">toggle</a>' +
+          '<div ng-class="{hidden: showState}">' +
             '<ul>' +
               '<li ng-repeat="item in val().watchers">' +
                 '{{item}}' +
               '</li>' +
             '</ul>' +
             '<div ng-repeat="child in val().children">' +
-              '<tree val="child" inspect="inspect()" edit="edit()"></tree>' +
+              '<wtree val="child" inspect="inspect()" edit="edit()"></wtree>' +
             '</div>' +
           '</div>' +
         '</div>');
@@ -212,45 +241,6 @@ panelApp.controller('TabCtrl', function TabCtrl($scope) {
 });
 
 
-panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chromeExtension) {
-
-  $scope.debugger = {
-    scopes: false,
-    bindings: false,
-    extra: false
-  };
-
-  //$scope.$watch('debugger.scope', );
-
-  $scope.$watch('debugger.scopes', function (newVal, oldVal) {
-    if (newVal) {
-      chromeExtension.sendRequest('showScopes');
-    } else {
-      chromeExtension.sendRequest('hideScopes');
-    }
-  });
-
-  $scope.$watch('debugger.bindings', function (newVal, oldVal) {
-    if (newVal) {
-      chromeExtension.sendRequest('showBindings');
-    } else {
-      chromeExtension.sendRequest('hideBindings');
-    }
-  });
-
-  var first = true;
-
-  $scope.$watch('debugger.extra', function (newVal, oldVal) {
-
-    // prevent refresh on initial pageload
-    if (first) {
-      first = false;
-      return;
-    }
-    appContext.debug(newVal);
-  });
-});
-
 panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appContext) {
 
   $scope.inspect = function () {
@@ -309,3 +299,81 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
 });
 
 
+panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
+
+  $scope.enable = false;
+
+  var first = true;
+  $scope.$watch('enable', function (newVal, oldVal) {
+
+    // prevent refresh on initial pageload
+    if (first) {
+      first = false;
+    } else {
+      appContext.debug(newVal);
+    }
+  });
+
+  var updateTree = function () {    
+    appContext.getDebugInfo(function (info) {
+      if (!info) {
+        setTimeout(updateTree, 50);
+        return;
+      }
+
+      $scope.$apply(function () {
+        if (info.err) {
+          $scope.err = info.err;
+          $scope.roots = [null];
+          $scope.selectedRoot = null;
+          $scope.trees = {};
+        } else {
+          var rootIdPairs = [];
+          info.roots.forEach(function (item) {
+            rootIdPairs.push({
+              label: item,
+              value: item
+            });
+          });
+          $scope.roots = rootIdPairs;
+          if (rootIdPairs.length === 0) {
+            $scope.selectedRoot = null;
+          } else {
+            $scope.selectedRoot = rootIdPairs[0].value;
+          }
+          $scope.trees = info.trees;
+        }
+      });
+    });
+  };
+
+  updateTree();
+  appContext.watchRefresh(updateTree);
+});
+
+
+panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chromeExtension) {
+
+  $scope.debugger = {
+    scopes: false,
+    bindings: false
+  };
+
+  //$scope.$watch('debugger.scope', );
+
+  $scope.$watch('debugger.scopes', function (newVal, oldVal) {
+    if (newVal) {
+      chromeExtension.sendRequest('showScopes');
+    } else {
+      chromeExtension.sendRequest('hideScopes');
+    }
+  });
+
+  $scope.$watch('debugger.bindings', function (newVal, oldVal) {
+    if (newVal) {
+      chromeExtension.sendRequest('showBindings');
+    } else {
+      chromeExtension.sendRequest('hideBindings');
+    }
+  });
+});
