@@ -23,7 +23,7 @@ panelApp.directive('tree', function($compile) {
                 '<input ng-model="item" ng-change="edit()()">' +
               '</li>' +
             '</ul>' +
-            '<h3 ng-class="{hidden: val().watchers.length < 1}">Watchers</h3>' +
+            '<h3 ng-class="{hidden: !val().watchers || val().watchers.length < 1}">Watchers</h3>' +
             '<ul>' +
               '<li ng-repeat="item in val().watchers">' +
                 '{{item}}' +
@@ -138,7 +138,7 @@ panelApp.factory('appContext', function(chromeExtension) {
 
             node.id = scope.$id;
 
-            console.log(window.__ngDebug);
+            //console.log(window.__ngDebug);
             
             if (window.__ngDebug) {
               node.watchers = __ngDebug.watchers[scope.$id];
@@ -207,6 +207,10 @@ panelApp.factory('appContext', function(chromeExtension) {
 });
 
 
+panelApp.controller('TabCtrl', function TabCtrl($scope) {
+  $scope.selectedTab = 'Model';
+});
+
 
 panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chromeExtension) {
 
@@ -246,7 +250,6 @@ panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chro
     appContext.debug(newVal);
   });
 });
-
 
 panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appContext) {
 

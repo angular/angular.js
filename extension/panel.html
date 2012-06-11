@@ -1,31 +1,45 @@
 <!doctype html>
 <html ng-app="panelApp">
 <head>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="css/panel.css">
 
   <script src="js/angular.js"></script>
   <script src="panelApp.js"></script>
 </head>
-<body>
+<body ng-controller="TabCtrl">
 
-  <div class="col-2" ng-controller="OptionsCtrl">
+  <ul class="nav nav-tabs">
+
+    <li ng-repeat="tabId in ['Model', 'Performance', 'Options']"
+      ng-class="{active: $parent.selectedTab == tabId}"
+      ng-click="$parent.selectedTab = tabId">
+
+      <a href="#">{{tabId}}</a>
+    </li>
+  </ul>
+
+  <div ng-class="{hidden: $parent.selectedTab != 'Options'}" ng-controller="OptionsCtrl">
     <h2>Options</h2>
     <div>
-      <input type="checkbox" ng-model="debugger.scopes" id="scopes">
-      <label for="scopes">Show scopes</label>
+      <label class="checkbox" for="scopes">
+        <input type="checkbox" ng-model="debugger.scopes" id="scopes"> Show scopes
+      </label>
     </div>
     <div>
-      <input type="checkbox" ng-model="debugger.bindings" id="bindings">
-      <label for="bindings">Show bindings</label>
+      <label class="checkbox" for="bindings">
+        <input type="checkbox" ng-model="debugger.bindings" id="bindings"> Show bindings
+      </label>
     </div>
     <h2>Additional Debug Features</h2>
     <div>
-      <input type="checkbox" ng-model="debugger.extra" id="extra">
-      <label for="extra">Enable</label> (Causes tab to refresh)
+      <label class="checkbox" for="extra">
+        <input type="checkbox" ng-model="debugger.extra" id="extra"> Enable (Causes tab to refresh)
+      </label>
     </div>
   </div>
 
-  <div class="col-2" ng-controller="TreeCtrl">
+  <div ng-class="{hidden: $parent.selectedTab != 'Model'}" ng-controller="TreeCtrl">
     <h2>Scope Tree</h2>
     <div ng-class="{hidden: roots.length <= 1}">
       <label for="select-root">Root</label> <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
@@ -34,5 +48,6 @@
       <tree val="trees[selectedRoot]" inspect="inspect" edit="edit"></tree>
     </pre>
   </div>
+
 </body>
 </html>

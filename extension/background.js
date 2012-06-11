@@ -24,7 +24,10 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
       chrome.tabs.onUpdated.removeListener(cbs[request.tab]);
       delete cbs[request.tab];
     }
+  /*
   } else if (!injectPrereqs[request.tab]) {
+  */
+  } else {
     chrome.tabs.executeScript(request.tab, {
       file: 'js/css-inject.js'
     }, function () {
@@ -33,11 +36,14 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
         file: 'inject/' + request.script + '.js'
       });
     });
+  }
+  /*
   } else {
     chrome.tabs.executeScript(request.tab, {
       file: 'inject/' + request.script + '.js'
     });
   }
+  */
   if (sendResponse) {
     sendResponse();
   }
