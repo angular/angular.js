@@ -1007,7 +1007,7 @@ describe('$location', function() {
         $log.info('before', newUrl, oldUrl, $browser.url());
         event.preventDefault();
       });
-      $rootScope.$on('$locationChangeCompleted', function(event, newUrl, oldUrl) {
+      $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
         throw Error('location should have been canceled');
       });
 
@@ -1026,7 +1026,7 @@ describe('$location', function() {
       expect($browser.url()).toEqual('http://server/');
     }));
 
-    it ('should fire $locationChangeCompleted event when change from browser location bar',
+    it ('should fire $locationChangeSuccess event when change from browser location bar',
       inject(function($log, $location, $browser, $rootScope) {
         $rootScope.$apply(); // clear initial $locationChangeStart
 
@@ -1068,7 +1068,7 @@ describe('$location', function() {
           event.preventDefault();
           log += '$locationChangeStart';
         });
-        $rootScope.$on('$locationChangeCompleted', function() {
+        $rootScope.$on('$locationChangeSuccess', function() {
           throw new Error('after cancellation in hashbang mode');
         });
 
@@ -1100,7 +1100,7 @@ describe('$location', function() {
           event.preventDefault();
           log += '$locationChangeStart';
         });
-        $rootScope.$on('$locationChangeCompleted', function() {
+        $rootScope.$on('$locationChangeSuccess', function() {
           throw new Error('after cancalation in html5 mode');
         });
 
