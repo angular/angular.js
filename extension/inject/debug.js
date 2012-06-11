@@ -8,10 +8,12 @@ var inject = function () {
           //alert('script');
           var patch = function () {
             if (window.angular && typeof window.angular.bootstrap === 'function') {
-                if (window.__ngDebug) {
+
+              // do not patch twice
+              if (window.__ngDebug) {
                 return;
               }
-              var bootstrap = window.angular.bootstrap;
+              //var bootstrap = window.angular.bootstrap;
               var debug = window.__ngDebug = {
                 watchers: {}
               };
@@ -21,10 +23,10 @@ var inject = function () {
                   function ($delegate) {
                     var watch = $delegate.__proto__.$watch;
                     $delegate.$watch = function() {
-                      if (!debug.watchers[$delegate.$id]) {
-                        debug.watchers[$delegate.$id] = [];
+                      if (!debug.watchers[this.$id]) {
+                        debug.watchers[this.$id] = [];
                       }
-                      debug.watchers[$delegate.$id].push(arguments[0].toString());
+                      debug.watchers[this.$id].push(arguments[0].toString());
                       watch.apply($delegate, arguments);
                     };
 
@@ -37,7 +39,7 @@ var inject = function () {
                 bootstrap(arg1, arg2, arg3);
               };
               */
-              console.log('patched');
+              //console.log('patched');
             } else {
               setTimeout(patch, 1);
             }
