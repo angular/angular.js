@@ -1,3 +1,92 @@
+<a name="1.0.0rc11"></a>
+# 1.0.0rc11 promise-resolution (2012-06-10)
+
+## Features
+
+- **$route:**
+  - allow defining route async dependencies as promises and defer route change until all promises
+    are resolved
+    ([885fb0dd](https://github.com/angular/angular.js/commit/885fb0dd0743859a8985c23e4d0c1855a2be711e))
+  - rename template -> tempalteUrl and add support for inline templates
+    ([0a6e464a](https://github.com/angular/angular.js/commit/0a6e464a93d9a1e76a624b356054ce9ca4015f55))
+- **$compile:** simplify isolate scope bindings and introduce true two-way data-binding between
+  parent scope and isolate scope
+  ([c3a41ff9](https://github.com/angular/angular.js/commit/c3a41ff9fefe894663c4d4f40a83794521deb14f))
+- **$injector:** provide API for retrieving function annotations
+  ([4361efb0](https://github.com/angular/angular.js/commit/4361efb03b79e71bf0cea92b94ff377ed718bad4))
+- **$location:** add $locatonChange[start|success] event - since events are cancelable, it's now
+  possible to cancel route and location changes.
+  ([92a2e180](https://github.com/angular/angular.js/commit/92a2e1807657c69e1372106b0727675a30f4cbd7))
+- **$rootElement:** expose application root element as $rootElement service
+  ([85632cb4](https://github.com/angular/angular.js/commit/85632cb44c95617d73c369f3a03fb476a4d5c8a2))
+
+
+## Bug Fixes
+
+- **$compile:** correctly merge class attr for replace directives (contributed by Max Martinsson,
+   [fb99b539](https://github.com/angular/angular.js/commit/fb99b539b4d851773b43f1564f7032adb157c0db),
+   [#1006](https://github.com/angular/angular.js/issues/1006))
+- **$http:** add utf-8 to default Content-Type header (post/put)
+  ([10f80d7d](https://github.com/angular/angular.js/commit/10f80d7d2918f98262090b425ecc294d9518aa7e))
+- **$timeout:** allow calling $timeout.cancel() with undefined (contributed by Ali Mills,
+   [1904596e](https://github.com/angular/angular.js/commit/1904596e0c2330299e92f092bd7a6ceca8e97c30))
+- **jqLite:** don't eat event exceptions
+  ([416a7830](https://github.com/angular/angular.js/commit/416a7830403a579cc57cf3a0198193790dcd0bc6))
+
+
+## Breaking Changes
+
+- **$beforeRouteChange and $routeChangeStart events were renamed to $afterRouteChange and
+  $routeChangeSuccess**
+
+  This was done to make the naming consistent with $location events and also get events to
+  categorize and order nicely just by alphabetical sorting.
+
+  ([7c242821](https://github.com/angular/angular.js/commit/7c2428218893f59c6a4499667488009ca67f3385))
+
+
+- **`template` option in $route definition was renamed to `templateUrl`**
+
+  The `template` options in $route definition now represents the actual template string. To provide
+  the template url use `templateUrl` option instead. This was done to unify the directive and $route
+  definitions.
+
+  To migrate just rename `template` to `templateUrl`.
+  ([0a6e464a](https://github.com/angular/angular.js/commit/0a6e464a93d9a1e76a624b356054ce9ca4015f55))
+
+
+- **isolate scope bindings definition has changed**
+
+  To migrate the code follow the example below:
+
+  Before:
+
+        scope: {
+          myAttr: 'attribute',
+          myBind: 'bind',
+          myExpression: 'expression',
+          myEval: 'evaluate',
+          myAccessor: 'accessor'
+        }
+
+  After:
+
+        scope: {
+          myAttr: '@',
+          myBind: '@',
+          myExpression: '&',
+          // myEval - usually not useful, but in cases where the expression is assignable, you can use '='
+          myAccessor: '=' // in directive's template change myAccessor() to myAccessor
+        }
+
+
+- **the inject option for the directive controller injection was removed**
+
+  The removed `inject` wasn't generally useful for directives so there should be no code using it.
+  ([c3a41ff9](https://github.com/angular/angular.js/commit/c3a41ff9fefe894663c4d4f40a83794521deb14f))
+
+
+
 <a name="1.0.0rc10"></a>
 # 1.0.0rc10 tesseract-giftwrapping (2012-05-23)
 
