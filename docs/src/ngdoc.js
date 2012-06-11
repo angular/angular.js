@@ -52,15 +52,13 @@ Doc.prototype = {
     Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
 
     function extractWords(text) {
-      var tokens = text.toLowerCase().split(/[,\.\`\'\"\#\s]+/mg);
+      text = text.toLowerCase();
+      text = text.replace(/@\w+/g, '');
+      var tokens = text.split(/[^\w]+/mg);
       tokens.forEach(function(key){
-        var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]+)/);
-        if (match){
-          key = match[1];
-          if (!keywords[key]) {
-            keywords[key] = true;
-            words.push(key);
-          }
+        if (!keywords[key]) {
+          keywords[key] = true;
+          words.push(key);
         }
       });
     }
