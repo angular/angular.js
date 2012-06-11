@@ -35,6 +35,11 @@ panelApp.directive('mtree', function($compile) {
   }
 });
 
+panelApp.filter('first', function () {
+  return function (input, output) {
+    return input.split("\n")[0];
+  };
+})
 
 panelApp.directive('wtree', function($compile) {
   return {
@@ -55,7 +60,11 @@ panelApp.directive('wtree', function($compile) {
           '<div ng-class="{hidden: showState}">' +
             '<ul>' +
               '<li ng-repeat="item in val().watchers">' +
-                '{{item}}' +
+                '<a href ng-click="showState = !showState">toggle</a> ' +
+                '<span ng-class="{hidden: showState}">{{item | first}} ...</span>' +
+                '<div ng-class="{hidden: !showState}">' +
+                  '{{item}}' +
+                '</div>' +
               '</li>' +
             '</ul>' +
             '<div ng-repeat="child in val().children">' +
