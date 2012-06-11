@@ -323,6 +323,14 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     }
   });
 
+  $scope.inspect = function () {
+    var scopeId = this.val().id;
+
+    appContext.executeOnScope(scopeId, function (scope, elt) {
+      inspect(elt);
+    });
+  };
+
   var updateTree = function () {    
     appContext.getDebugInfo(function (info) {
       if (!info) {
