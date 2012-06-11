@@ -1,4 +1,4 @@
 # AngularJS build config file
 ---
-version: 1.0.0rc11
-codename: promise-resolution
+version: 1.0.0rc12-snapshot
+codename: regression-exterminator
