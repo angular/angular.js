@@ -16,7 +16,9 @@ var inject = function () {
               //var bootstrap = window.angular.bootstrap;
               var debug = window.__ngDebug = {
                 watchers: {},
-                timeline: []
+                timeline: [],
+                watchExp: {},
+                watchList: {}
               };
               var ng = angular.module('ng');
               ng.config(function ($provide) {
@@ -41,7 +43,59 @@ var inject = function () {
                       if (!debug.watchers[this.$id]) {
                         debug.watchers[this.$id] = [];
                       }
-                      debug.watchers[this.$id].push(watchFnToHumanReadableString(arguments[0]));
+                      var str = watchFnToHumanReadableString(arguments[0]);
+
+                      debug.watchers[this.$id].push(str);
+                      
+                      
+                      var w = arguments[0];
+                      if (typeof w === 'function') {
+                        arguments[0] = function () {
+                          var start = window.performance.webkitNow();
+                          var ret = w.apply(this, arguments);
+                          var end = window.performance.webkitNow();
+                          if (!debug.watchExp[str]) {
+                            debug.watchExp[str] = [];
+                          }
+                          debug.watchExp[str].push({
+                            start: start,
+                            end: end
+                          });
+                          return ret;
+                        };
+                      } else {
+                        var thatScope = this;
+                        arguments[0] = function () {
+                          var start = window.performance.webkitNow();
+                          var ret = thatScope.$eval(w);
+                          var end = window.performance.webkitNow();
+                          if (!debug.watchExp[str]) {
+                            debug.watchExp[str] = [];
+                          }
+                          debug.watchExp[str].push({
+                            start: start,
+                            end: end
+                          });
+                          return ret;
+                        };
+                      }
+
+                      var fn = arguments[1];
+                      arguments[1] = function () {
+                        var start = window.performance.webkitNow();
+                        var ret = fn.apply(this, arguments);
+                        var end = window.performance.webkitNow();
+                        var str = fn.toString();
+                        if (!debug.watchList[str]) {
+                          debug.watchList[str] = [];
+                        }
+                        debug.watchList[str].push({
+                          start: start,
+                          end: end
+                        });
+                        return ret;
+                      };
+
                       return watch.apply(this, arguments);
                     };
 
@@ -55,14 +109,14 @@ var inject = function () {
                       return destroy.apply(this, arguments);
                     };
                     */
-                    var firstLog;
+                    var firstLog = 0;
                     // patch apply
                     var apply = $delegate.__proto__.$apply;
                     $delegate.__proto__.$apply = function (fn) {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
                       var end = window.performance.webkitNow();
-                      if (!firstLog) {
+                      if (window.__ngDebug.timeline.length === 0) {
                         firstLog = start;
                       }
                       window.__ngDebug.timeline.push({

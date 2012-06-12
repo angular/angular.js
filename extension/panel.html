@@ -48,6 +48,7 @@
     </div>
 
     <h3>Timeline</h3>
+    <button ng-click="clear()">Clear Timeline</button>
     <div style="height: 400px; background-color: blue; position: relative; overflow: scroll;">
       <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
     </div>

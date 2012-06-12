@@ -216,6 +216,12 @@ panelApp.factory('appContext', function(chromeExtension) {
         return window.__ngDebug.timeline;
       }, cb);
     },
+
+    clearTimeline: function (cb) {
+      chromeExtension.eval(function (window) {
+        window.__ngDebug.timeline = [];
+      }, cb);
+    },
     
     refresh: function (cb) {
       chromeExtension.eval(function (window) {
@@ -334,6 +340,10 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
       end: 4700
     }
   ];
+
+  $scope.clear = function () {
+    appContext.clearTimeline();
+  };
 
   var first = true;
   $scope.$watch('enable', function (newVal, oldVal) {
