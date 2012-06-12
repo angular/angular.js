@@ -525,7 +525,7 @@ function $LocationProvider(){
 
       // update location with href without the prefix
       href = absHref.substr(absUrlPrefix.length);
-      if (href.charAt(0) == '#') href = href.substr(1);
+      if (href.indexOf('#' + hashPrefix) == 0) href = href.substr(hashPrefix.length + 1);
       $location.url(href);
       $rootScope.$apply();
       event.preventDefault();
