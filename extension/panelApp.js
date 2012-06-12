@@ -118,14 +118,15 @@ panelApp.factory('appContext', function(chromeExtension) {
       args.fn = fn.toString();
 
       chromeExtension.eval("function (window, args) {" +
-        "window.$('.ng-scope').each(function (i, elt) {" +
-          "var $scope = angular.element(elt).scope();" +
-          "if ($scope.$id === args.scopeId) {" +
-            "(" +
-              args.fn +
-            "($scope, elt, args));" +
-          "}" +
-        "});" +
+        "var elts = window.document.getElementsByClassName('ng-scope'), i;" +
+        "for (i = 0; i < elts.length; i++) {" +
+          "(function (elt) {" +
+            "var $scope = window.angular.element(elt).scope();" +
+            "if ($scope.$id === args.scopeId) {" +
+              "(" + args.fn + "($scope, elt, args));" +
+            "}" +
+          "}(elts[i]));" +
+        "}" +
       "}", args, cb);
     },
     getDebugInfo: function (callback) {
