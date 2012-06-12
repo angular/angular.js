@@ -61,9 +61,12 @@ var inject = function () {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
                       //console.log(arguments);
-                      
-                      //watchFnToHumanReadableString() + 
-                      console.log('fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
+                      if (fn) {
+                        fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
+                      } else {
+                        fn = '$apply';
+                      }
+                      console.log(fn + '\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
                       return ret;
                     };
 
