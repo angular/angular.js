@@ -3,7 +3,7 @@ var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
   throw new Error("This browser does not support XMLHttpRequest.");
-};
+}, XDR = window.XDomainRequest || null;
 
 
 /**
@@ -25,14 +25,14 @@ var XHR = window.XMLHttpRequest || function() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, XHR, $browser.defer, $window.angular.callbacks,
+    return createHttpBackend($browser, XHR, XDR, $browser.defer, $window.angular.callbacks,
         $document[0], $window.location.protocol.replace(':', ''));
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
+function createHttpBackend($browser, XHR, XDR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, useXDomain) {
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -51,36 +51,70 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         }
         delete callbacks[callbackId];
       });
-    } else {
-      var xhr = new XHR();
-      xhr.open(method, url, true);
-      forEach(headers, function(value, key) {
-        if (value) xhr.setRequestHeader(key, value);
-      });
-
+     } else {
       var status;
+      if (useXDomain && XDR) {
+        var xdr = new XDR();        
+        xdr.open(method.toLowerCase(), url);
 
-      // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
-      // response is in the cache. the promise api will ensure that to the app code the api is
-      // always async
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-          completeRequest(
-              callback, status || xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
+        // Required to XDomainRequest works
+        xdr.timeout = timeout;
+        xdr.onprogress = function() {};
+        xdr.ontimeout = function() {
+          completeRequest(callback, 408, 'Timeout', 'Content-Type: text/plain');
+          xdr.abort();
+        };
+
+        xdr.onload = function() {
+          completeRequest(callback, 200, xdr.responseText, 'Content-Type: ' + xdr.contentType);          
+        };
+
+        xdr.onerror = function() {
+          completeRequest(callback, 500, 'Error', 'Content-Type: text/plain');
+          xdr.abort();
+        };
+
+        
+        setTimeout(xdr.send, 0); //fix IE bug that raises '$apply already in progress' on cached requests
+
+        if (timeout > 0) {
+          $browserDefer(function() {
+            status = -1;
+            xdr.abort();
+          }, timeout);
         }
-      };
 
-      if (withCredentials) {
-        xhr.withCredentials = true;
-      }
+      } else {
+        var xhr = new XHR();
+        xhr.open(method, url, true);
 
-      xhr.send(post || '');
+        forEach(headers, function(value, key) {
+          if (value) xhr.setRequestHeader(key, value);
+        });       
 
-      if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
+        // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
+        // response is in the cache. the promise api will ensure that to the app code the api is
+        // always async
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            completeRequest(
+                callback, status || xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
+          }
+        };        
+
+        if (withCredentials) {
+          xhr.withCredentials = true;
+        }
+
+        xhr.send(post || '');
+
+        if (timeout > 0) {
+          $browserDefer(function() {
+            status = -1;
+            xhr.abort();
+          }, timeout);
+        }
+
       }
     }
 
@@ -93,7 +127,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-      status = status == 1223 ? 204 : status;
+      status = status == 1223 ? 204 : status;      
 
       callback(status, response, headersString);
       $browser.$$completeOutstandingRequest(noop);
