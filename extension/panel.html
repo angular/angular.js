@@ -46,6 +46,11 @@
     <div ng-class="{hidden: !enable}">
       <wtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></wtree>
     </div>
+
+    <h3>Timeline</h3>
+    <div style="height: 400px; background-color: blue; position: relative; overflow: scroll;">
+      <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
+    </div>
   </div>
 
 

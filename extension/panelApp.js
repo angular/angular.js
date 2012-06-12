@@ -210,6 +210,12 @@ panelApp.factory('appContext', function(chromeExtension) {
       },
       callback);
     },
+
+    getTimelineInfo: function (cb) {
+      chromeExtension.eval(function (window) {
+        return window.__ngDebug.timeline;
+      }, cb);
+    },
     
     refresh: function (cb) {
       chromeExtension.eval(function (window) {
@@ -319,6 +325,16 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 
   $scope.enable = false;
 
+  $scope.timeline = [
+    {
+      start: 10,
+      end: 20
+    }, {
+      start: 25,
+      end: 4700
+    }
+  ];
+
   var first = true;
   $scope.$watch('enable', function (newVal, oldVal) {
 
@@ -327,6 +343,9 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
       first = false;
     } else {
       appContext.debug(newVal);
+    }
+    if (newVal) {
+      updateTimeline();
     }
   });
 
@@ -345,6 +364,17 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 
     appContext.executeOnScope(scopeId, function (scope, elt) {
       inspect(elt);
+    });
+  };
+
+  var updateTimeline = function () {
+    appContext.getTimelineInfo(function (info) {
+      $scope.$apply(function () {
+        $scope.timeline = info;
+      });
+      if ($scope.enable) {
+        setTimeout(updateTimeline, 500);
+      }
     });
   };
 

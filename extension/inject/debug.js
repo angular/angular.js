@@ -15,7 +15,8 @@ var inject = function () {
               }
               //var bootstrap = window.angular.bootstrap;
               var debug = window.__ngDebug = {
-                watchers: {}
+                watchers: {},
+                timeline: []
               };
               var ng = angular.module('ng');
               ng.config(function ($provide) {
@@ -54,21 +55,29 @@ var inject = function () {
                       return destroy.apply(this, arguments);
                     };
                     */
-
+                    var firstLog;
                     // patch apply
                     var apply = $delegate.__proto__.$apply;
                     $delegate.__proto__.$apply = function (fn) {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
-                      
+                      var end = window.performance.webkitNow();
+                      if (!firstLog) {
+                        firstLog = start;
+                      }
+                      window.__ngDebug.timeline.push({
+                        start: Math.round(start - firstLog),
+                        end: Math.round(end - firstLog)
+                      });
                       if (window.__ngDebug.log) {
                         if (fn) {
                           fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
                         } else {
                           fn = '$apply';
                         }
-                        console.log(fn + '\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
+                        console.log(fn + '\t\t' + (end - start).toPrecision(4) + 'ms');
                       }
+
                       return ret;
                     };
 
