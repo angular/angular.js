@@ -36,6 +36,9 @@
       <label class="checkbox" for="extra">
         <input type="checkbox" ng-model="enable" id="extra"> Enable (Causes tab to refresh)
       </label>
+      <label class="checkbox" for="log">
+        <input type="checkbox" ng-model="log" id="log"> Log to console
+      </label>
     </div>
     <div ng-class="{hidden: !enable || roots.length <= 1}">
       <label for="select-root">Root <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select></label>

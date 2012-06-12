@@ -60,13 +60,15 @@ var inject = function () {
                     $delegate.__proto__.$apply = function (fn) {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
-                      //console.log(arguments);
-                      if (fn) {
-                        fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
-                      } else {
-                        fn = '$apply';
+                      
+                      if (window.__ngDebug.log) {
+                        if (fn) {
+                          fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
+                        } else {
+                          fn = '$apply';
+                        }
+                        console.log(fn + '\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
                       }
-                      console.log(fn + '\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
                       return ret;
                     };
 

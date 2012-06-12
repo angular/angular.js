@@ -7,7 +7,6 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     chrome.tabs.onUpdated.addListener(cbs[request.tab]);
 
   } else if (request.script === 'debug-true') {
-
     cbs[request.tab] = (function (req) {
       return function (tabId, changeInfo, tab) {
         if (tabId !== req.tab) {
@@ -19,14 +18,11 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
       };
     }(request));
     chrome.tabs.onUpdated.addListener(cbs[request.tab]);
-  } else if (request.script === 'debug-false') {
-    if (cbs[request.tab]) {
-      chrome.tabs.onUpdated.removeListener(cbs[request.tab]);
-      delete cbs[request.tab];
-    }
-  /*
-  } else if (!injectPrereqs[request.tab]) {
-  */
+
+  } else if (request.script === 'debug-false' && cbs[request.tab]) {
+    chrome.tabs.onUpdated.removeListener(cbs[request.tab]);
+    delete cbs[request.tab];
+    
   } else {
     chrome.tabs.executeScript(request.tab, {
       file: 'js/css-inject.js'
@@ -37,13 +33,6 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
       });
     });
   }
-  /*
-  } else {
-    chrome.tabs.executeScript(request.tab, {
-      file: 'inject/' + request.script + '.js'
-    });
-  }
-  */
   if (sendResponse) {
     sendResponse();
   }

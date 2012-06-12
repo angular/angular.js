@@ -226,6 +226,13 @@ panelApp.factory('appContext', function(chromeExtension) {
       });
     },
 
+    // takes a bool
+    setLog: function (setting) {
+      chromeExtension.eval('function (window) {' +
+        'window.__ngDebug.log = ' + setting.toString() + ';' +
+      '}');
+    },
+
     watchRefresh: function (cb) {
       var port = chrome.extension.connect();
       port.postMessage({
@@ -321,6 +328,16 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     } else {
       appContext.debug(newVal);
     }
+  });
+
+  $scope.log = false;
+  
+  $scope.$watch('log', function (newVal, oldVal) {
+    appContext.setLog(newVal);
+    
+    appContext.watchRefresh(function () {
+      appContext.setLog(newVal);
+    });
   });
 
   $scope.inspect = function () {
