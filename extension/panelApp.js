@@ -32,14 +32,14 @@ panelApp.directive('mtree', function($compile) {
 
       $compile(element.contents())(scope.$new());
     }
-  }
+  };
 });
 
 panelApp.filter('first', function () {
   return function (input, output) {
     return input.split("\n")[0];
   };
-})
+});
 
 panelApp.directive('wtree', function($compile) {
   return {
@@ -75,7 +75,7 @@ panelApp.directive('wtree', function($compile) {
 
       $compile(element.contents())(scope.$new());
     }
-  }
+  };
 });
 
 panelApp.value('chromeExtension', {
@@ -241,7 +241,7 @@ panelApp.factory('appContext', function(chromeExtension) {
         console.log(a);
       });
     }
-  }
+  };
 });
 
 
@@ -270,7 +270,7 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
     });
   };
 
-  var updateTree = function () {    
+  var updateTree = function () {
     appContext.getDebugInfo(function (info) {
       if (!info) {
         setTimeout(updateTree, 50);
@@ -331,7 +331,7 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     });
   };
 
-  var updateTree = function () {    
+  var updateTree = function () {
     appContext.getDebugInfo(function (info) {
       if (!info) {
         setTimeout(updateTree, 50);
@@ -375,8 +375,6 @@ panelApp.controller('OptionsCtrl', function OptionsCtrl($scope, appContext, chro
     scopes: false,
     bindings: false
   };
-
-  //$scope.$watch('debugger.scope', );
 
   $scope.$watch('debugger.scopes', function (newVal, oldVal) {
     if (newVal) {
