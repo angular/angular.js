@@ -5,16 +5,18 @@ var docsApp = {
 };
 
 
-docsApp.directive.focused = function($defer) {
+docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
     element[0].focus();
     element.bind('focus', function() {
       scope.$apply(attrs.focused + '=true');
     });
     element.bind('blur', function() {
-      // have to use defer, so that we close the drop-down after the user clicks,
+      // have to use $timeout, so that we close the drop-down after the user clicks,
       // otherwise when the user clicks we process the closing before we process the click.
-      $defer(attrs.focused + '=false');
+      $timeout(function() {
+        scope.$eval(attrs.focused + '=false');
+      });
     });
     scope.$eval(attrs.focused + '=true')
   }
