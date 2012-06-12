@@ -115,6 +115,23 @@ describe("resource", function() {
     expect(item).toEqualData({id: 'abc'});
   });
 
+  it("should let custom action httpConfig and parseResponse override defaults", function() {
+    $httpBackend.expect('GET', '/Book/234').respond({result: {author: 'Dickens'}});
+    var Book = $resource(
+      '/Book/:id',
+      {id:'@bookId'},
+      {get: {
+        method: 'POST', 
+        parseResponse: function(response) { return response.data.result }, 
+        httpConfig: { method: 'GET' } //custom httpConfig overrides default 
+      }}
+    );
+    var book = Book.get({bookId: 234});
+
+    $httpBackend.flush();
+    expect(book).toEqualData({author: 'Dickens'});
+  });
+
 
   it("should create resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});

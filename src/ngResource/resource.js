@@ -359,12 +359,18 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
+          var config = angular.extend({
             method: action.method,
             url: route.url(extend({}, extractParams(data), action.params || {}, params)),
             data: data
-          }).then(function(response) {
-              var data = response.data;
+          }, (action.httpConfig || {}));
+          $http(config).then(function(response) {
+              var data;
+              if (action.parseResponse) {
+                data = action.parseResponse(response);
+              } else {
+                data = response.data;
+              }
 
               if (data) {
                 if (action.isArray) {
