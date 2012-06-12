@@ -2,7 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
-  <script src="http://code.angularjs.org/angular-1.0.0rc12.min.js"></script>
+  <script src="http://code.angularjs.org/angular-1.0.0rc12.js"></script>
   <script>
     function TodoCtrl($scope) {
       $scope.todos = [
@@ -36,6 +36,9 @@
       text-decoration: line-through;
       color: grey;
     }
+    body {
+      margin: 30px;
+    }
   </style>
 </head>
 <body>
@@ -57,7 +60,9 @@
   </div>
   <script>
     angular.element(document).ready(function() {
-      angular.bootstrap(document);
+      setTimeout(function () {
+        angular.bootstrap(document);
+      }, 50);
     });
   </script>
 </body>
