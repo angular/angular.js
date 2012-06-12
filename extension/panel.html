@@ -22,7 +22,7 @@
   <div ng-class="{hidden: $parent.selectedTab != 'Model'}" ng-controller="TreeCtrl">
     <h2>Model Tree</h2>
     <div ng-class="{hidden: roots.length <= 1}">
-      <label for="select-root">Root</label> <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
+      <label for="select-root">Root <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select></label>
     </div>
     <pre>
       <mtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></mtree>
@@ -38,7 +38,7 @@
       </label>
     </div>
     <div ng-class="{hidden: !enable || roots.length <= 1}">
-      <label for="select-root">Root</label> <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
+      <label for="select-root">Root <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select></label>
     </div>
     <div ng-class="{hidden: !enable}">
       <wtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></wtree>
