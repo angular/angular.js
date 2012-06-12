@@ -17,7 +17,8 @@
 angular.mock = {};
 
 /**
- * @ngdoc object
+ * ! This is a private undocumented service !
+ *
  * @name ngMock.$browser
  *
  * @description
@@ -95,7 +96,6 @@ angular.mock.$Browser = function() {
 
 
   /**
-   * @ngdoc method
    * @name ngMock.$browser#defer.flush
    * @methodOf ngMock.$browser
    *
@@ -120,7 +120,6 @@ angular.mock.$Browser = function() {
     }
   };
   /**
-   * @ngdoc property
    * @name ngMock.$browser#defer.now
    * @propertyOf ngMock.$browser
    *

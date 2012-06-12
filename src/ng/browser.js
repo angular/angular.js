@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc object
+ * ! This is a private undocumented service !
+ *
  * @name ng.$browser
  * @requires $log
  * @description
@@ -86,7 +87,6 @@ function Browser(window, document, $log, $sniffer) {
       pollTimeout;
 
   /**
-   * @ngdoc method
    * @name ng.$browser#addPollFn
    * @methodOf ng.$browser
    *
@@ -127,7 +127,6 @@ function Browser(window, document, $log, $sniffer) {
       baseElement = document.find('base');
 
   /**
-   * @ngdoc method
    * @name ng.$browser#url
    * @methodOf ng.$browser
    *
@@ -183,7 +182,6 @@ function Browser(window, document, $log, $sniffer) {
   }
 
   /**
-   * @ngdoc method
    * @name ng.$browser#onUrlChange
    * @methodOf ng.$browser
    * @TODO(vojta): refactor to use node's syntax for events
@@ -249,7 +247,6 @@ function Browser(window, document, $log, $sniffer) {
   var cookiePath = self.baseHref();
 
   /**
-   * @ngdoc method
    * @name ng.$browser#cookies
    * @methodOf ng.$browser
    *
@@ -308,7 +305,6 @@ function Browser(window, document, $log, $sniffer) {
 
 
   /**
-   * @ngdoc method
    * @name ng.$browser#defer
    * @methodOf ng.$browser
    * @param {function()} fn A function, who's execution should be defered.
@@ -336,8 +332,6 @@ function Browser(window, document, $log, $sniffer) {
 
 
   /**
-   * THIS DOC IS NOT VISIBLE because ngdocs can't process docs for foo#method.method
-   *
    * @name ng.$browser#defer.cancel
    * @methodOf ng.$browser.defer
    *
