@@ -27,11 +27,6 @@ angular.mock = {};
  *
  * The api of this service is the same as that of the real {@link ng.$browser $browser}, except
  * that there are several helper methods available which can be used in tests.
- *
- * The following apis can be used in tests:
- *
- * - $browser.defer — enables testing of code that uses
- *   {@link ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
 angular.mock.$BrowserProvider = function() {
   this.$get = function(){

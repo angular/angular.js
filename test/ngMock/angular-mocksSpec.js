@@ -989,7 +989,7 @@ describe('ngMockE2E', function() {
 
 
     describe('autoflush', function() {
-      it('should flush responses via $defer', inject(function($browser) {
+      it('should flush responses via $browser.defer', inject(function($browser) {
         hb.when('GET', '/foo').respond('bar');
         hb('GET', '/foo', null, callback);
 
