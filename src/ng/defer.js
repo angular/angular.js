@@ -2,15 +2,15 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$defer
+ * @name ng.$defer
  * @deprecated Made obsolete by $timeout service. Please migrate your code. This service will be
  *   removed with 1.0 final.
  * @requires $browser
  *
  * @description
- * Delegates to {@link angular.module.ng.$browser#defer $browser.defer}, but wraps the `fn` function
+ * Delegates to {@link ng.$browser#defer $browser.defer}, but wraps the `fn` function
  * into a try/catch block and delegates any exceptions to
- * {@link angular.module.ng.$exceptionHandler $exceptionHandler} service.
+ * {@link ng.$exceptionHandler $exceptionHandler} service.
  *
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
@@ -21,8 +21,8 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$defer#cancel
- * @methodOf angular.module.ng.$defer
+ * @name ng.$defer#cancel
+ * @methodOf ng.$defer
  *
  * @description
  * Cancels a defered task identified with `deferId`.

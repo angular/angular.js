@@ -809,7 +809,7 @@ function getterFn(path, csp) {
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$parse
+ * @name ng.$parse
  * @function
  *
  * @description

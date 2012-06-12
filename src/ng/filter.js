@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$filterProvider
+ * @name ng.$filterProvider
  * @description
  *
  * Filters are just functions which transform input to an output. However filters need to be Dependency Injected. To
@@ -50,8 +50,8 @@
  */
 /**
  * @ngdoc method
- * @name angular.module.ng.$filterProvider#register
- * @methodOf angular.module.ng.$filterProvider
+ * @name ng.$filterProvider#register
+ * @methodOf ng.$filterProvider
  * @description
  * Register filter factory function.
  *
@@ -62,7 +62,7 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$filter
+ * @name ng.$filter
  * @function
  * @description
  * Filters are used for formatting data displayed to the user.

@@ -121,7 +121,7 @@ output.
 
 # Experiments
 
-* Let's experiment with some of the {@link api/angular.module.ng.$filter built-in angular filters} and add the
+* Let's experiment with some of the {@link api/ng.$filter built-in angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`

@@ -4,7 +4,7 @@
 
 In angular, a controller is a JavaScript function(type/class) that is used to augment instances of
 angular {@link scope Scope}, excluding the root scope. When you or angular create a new
-child scope object via the {@link api/angular.module.ng.$rootScope.Scope#$new scope.$new} API        , there is an
+child scope object via the {@link api/ng.$rootScope.Scope#$new scope.$new} API        , there is an
 option to pass in a controller as a method argument. This will tell angular to associate the
 controller with the new scope and to augment its behavior.
 
@@ -38,7 +38,7 @@ template/view. This behavior interacts with and modifies the application model.
 As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any functions assigned to
 the scope are available in the template/view, and can be invoked via angular expressions
-and `ng` event handler directives (e.g. {@link api/angular.module.ng.$compileProvider.directive.ngClick ngClick}).
+and `ng` event handler directives (e.g. {@link api/ng.directive:ngClick ngClick}).
 
 # Using Controllers Correctly
 
@@ -68,9 +68,9 @@ instances).
 
 # Associating Controllers with Angular Scope Objects
 
-You can associate controllers with scope objects explicitly via the {@link api/angular.module.ng.$rootScope.Scope#$new
-scope.$new} api or implicitly via the {@link api/angular.module.ng.$compileProvider.directive.ngController ngController
-directive} or {@link api/angular.module.ng.$route $route service}.
+You can associate controllers with scope objects explicitly via the {@link api/ng.$rootScope.Scope#$new
+scope.$new} api or implicitly via the {@link api/ng.directive:ngController ngController
+directive} or {@link api/ng.$route $route service}.
 
 
 ## Controller Constructor and Methods Example
@@ -157,7 +157,7 @@ input box) in the second button.
 
 ## Controller Inheritance Example
 
-Controller inheritance in angular is based on {@link api/angular.module.ng.$rootScope.Scope Scope} inheritance. Let's
+Controller inheritance in angular is based on {@link api/ng.$rootScope.Scope Scope} inheritance. Let's
 have a look at an example:
 
 <pre>

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngNonBindable
+ * @name ng.directive:ngNonBindable
  * @priority 1000
  *
  * @description

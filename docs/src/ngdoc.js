@@ -101,7 +101,7 @@ Doc.prototype = {
 
     var self = this,
       IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
-      IS_ANGULAR = /^(api\/)?angular\./,
+      IS_ANGULAR = /^(api\/)?(angular|ng|AUTO)\./,
       IS_HASH = /^#/,
       parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
       seq = 0,
@@ -201,7 +201,7 @@ Doc.prototype = {
       }
     });
     flush();
-    this.shortName = this.name.split(this.name.match(/#/) ? /#/ : /\./ ).pop();
+    this.shortName = this.name.split(/[\.:#]/).pop();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
       this.name; // default to name
@@ -277,7 +277,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/angular.module.ng.' + require.name}, require.name);
+          dom.tag('a', {href: 'api/ng.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -622,14 +622,15 @@ Doc.prototype = {
 
 
 //////////////////////////////////////////////////////////
-var GLOBALS = /^angular\.([^\.]*)$/,
-  MODULE = /^angular\.module\.([^\.]*)$/,
-  MODULE_MOCK = /^angular\.mock\.([^\.]*)$/,
-  MODULE_DIRECTIVE = /^angular\.module\.([^\.]*)(?:\.\$compileProvider)?\.directive\.([^\.]*)$/,
-  MODULE_DIRECTIVE_INPUT = /^angular\.module\.([^\.]*)\.\$compileProvider\.directive\.input\.([^\.]*)$/,
-  MODULE_FILTER = /^angular\.module\.([^\.]*)\.\$?filter\.([^\.]*)$/,
-  MODULE_SERVICE = /^angular\.module\.([^\.]*)\.([^\.]*?)(Provider)?$/,
-  MODULE_TYPE = /^angular\.module\.([^\.]*)\..*\.([A-Z][^\.]*)$/;
+var GLOBALS = /^angular\.([^\.]+)$/,
+    MODULE = /^((?:(?!^angular\.)[^\.])+)$/,
+    MODULE_MOCK = /^angular\.mock\.([^\.]+)$/,
+    MODULE_DIRECTIVE = /^((?:(?!^angular\.)[^\.])+)\.directive:([^\.]+)$/,
+    MODULE_DIRECTIVE_INPUT = /^((?:(?!^angular\.)[^\.])+)\.directive:input\.([^\.]+)$/,
+    MODULE_FILTER = /^((?:(?!^angular\.)[^\.])+)\.filter:([^\.]+)$/,
+    MODULE_SERVICE = /^((?:(?!^angular\.)[^\.])+)\.([^\.]+?)(Provider)?$/,
+    MODULE_TYPE = /^((?:(?!^angular\.)[^\.])+)\..+\.([A-Z][^\.]+)$/;
+
 
 function title(text) {
   if (!text) return text;
@@ -728,7 +729,7 @@ function scenarios(docs){
 function metadata(docs){
   var pages = [];
   docs.forEach(function(doc){
-    var path = (doc.name || '').split(/(\.|\:\s+)/);
+    var path = (doc.name || '').split(/(\.|\:)/);
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }

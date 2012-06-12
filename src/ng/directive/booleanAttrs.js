@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngHref
+ * @name ng.directive:ngHref
  * @restrict A
  *
  * @description
@@ -82,7 +82,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSrc
+ * @name ng.directive:ngSrc
  * @restrict A
  *
  * @description
@@ -107,7 +107,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngDisabled
+ * @name ng.directive:ngDisabled
  * @restrict A
  *
  * @description
@@ -146,7 +146,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngChecked
+ * @name ng.directive:ngChecked
  * @restrict A
  *
  * @description
@@ -176,7 +176,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMultiple
+ * @name ng.directive:ngMultiple
  * @restrict A
  *
  * @description
@@ -212,7 +212,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngReadonly
+ * @name ng.directive:ngReadonly
  * @restrict A
  *
  * @description
@@ -242,7 +242,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSelected
+ * @name ng.directive:ngSelected
  * @restrict A
  *
  * @description

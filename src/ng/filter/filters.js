@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.currency
+ * @name ng.filter:currency
  * @function
  *
  * @description
@@ -53,7 +53,7 @@ function currencyFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.number
+ * @name ng.filter:number
  * @function
  *
  * @description
@@ -239,7 +239,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.date
+ * @name ng.filter:date
  * @function
  *
  * @description
@@ -386,7 +386,7 @@ function dateFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.json
+ * @name ng.filter:json
  * @function
  *
  * @description
@@ -421,7 +421,7 @@ function jsonFilter() {
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.lowercase
+ * @name ng.filter:lowercase
  * @function
  * @description
  * Converts string to lowercase.
@@ -432,7 +432,7 @@ var lowercaseFilter = valueFn(lowercase);
 
 /**
  * @ngdoc filter
- * @name angular.module.ng.$filter.uppercase
+ * @name ng.filter:uppercase
  * @function
  * @description
  * Converts string to uppercase.

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.select
+ * @name ng.directive:select
  * @restrict E
  *
  * @description
@@ -23,7 +23,7 @@
  * option. See example below for demonstration.
  *
  * Note: `ngOptions` provides iterator facility for `<option>` element which should be used instead
- * of {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat} when you want the
+ * of {@link ng.directive:ngRepeat ngRepeat} when you want the
  * `select` model to be bound to a non-string value. This is because an option element can currently
  * be bound to string values only.
  *

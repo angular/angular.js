@@ -88,10 +88,10 @@ provided by Angular's web framework:
 
 Things to notice in this example:
 
-* The `batchLog` service depends on the built-in {@link api/angular.module.ng.$defer $defer} and
-{@link api/angular.module.ng.$log $log} services, and allows messages to be logged into the
+* The `batchLog` service depends on the built-in {@link api/ng.$defer $defer} and
+{@link api/ng.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
-* The `routeTemplateMonitor` service depends on the built-in {@link api/angular.module.ng.$route
+* The `routeTemplateMonitor` service depends on the built-in {@link api/ng.$route
 $route} service as well as our custom `batchLog` service.
 * Both of our services use the factory function signature and array notation for inject annotations
 to declare their dependencies. It is important that the order of the string identifiers in the array
@@ -110,5 +110,5 @@ that the injector uses to determine which services and in which order to inject.
 
 ## Related API
 
-* {@link api/angular.module.ng Angular Service API}
+* {@link api/ng Angular Service API}
 * {@link api/angular.injector Angular Injector API}

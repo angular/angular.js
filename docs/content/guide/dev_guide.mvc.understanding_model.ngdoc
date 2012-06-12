@@ -30,7 +30,7 @@ occurs in controllers:
 
          <button ng-click="{{foos='ball'}}">Click me</button>
 
-* Use {@link api/angular.module.ng.$compileProvider.directive.ngInit ngInit directive} in templates (for toy/example apps
+* Use {@link api/ng.directive:ngInit ngInit directive} in templates (for toy/example apps
 only, not recommended for real applications):
 
          <body ng-init=" foo = 'bar' ">
@@ -45,7 +45,7 @@ when processing the following template constructs:
    The code above creates a model called "query" on the current scope with the value set to "fluffy
 cloud".
 
-* An iterator declaration in {@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeater}:
+* An iterator declaration in {@link api/ng.directive:ngRepeat ngRepeater}:
 
          <p ng-repeat="phone in phones"></p>
 

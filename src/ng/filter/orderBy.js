@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$filter.orderBy
+ * @name ng.filter:orderBy
  * @function
  *
  * @description
  * Orders a specified `array` by the `expression` predicate.
  *
  * Note: this function is used to augment the `Array` type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more informaton about Angular arrays.
+ * {@link ng.$filter} for more informaton about Angular arrays.
  *
  * @param {Array} array The array to sort.
  * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$window
+ * @name ng.$window
  *
  * @description
  * A reference to the browser's `window` object. While `window`

@@ -8,7 +8,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.text
+   * @name ng.directive:input.text
    *
    * @description
    * Standard HTML text input with angular data binding.
@@ -74,7 +74,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.number
+   * @name ng.directive:input.number
    *
    * @description
    * Text input with number validation and transformation. Sets the `number` validation
@@ -142,7 +142,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.url
+   * @name ng.directive:input.url
    *
    * @description
    * Text input with URL validation. Sets the `url` validation error key if the content is not a
@@ -207,7 +207,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.email
+   * @name ng.directive:input.email
    *
    * @description
    * Text input with email validation. Sets the `email` validation error key if not a valid email
@@ -270,7 +270,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.radio
+   * @name ng.directive:input.radio
    *
    * @description
    * HTML radio button.
@@ -311,7 +311,7 @@ var inputType = {
 
   /**
    * @ngdoc inputType
-   * @name angular.module.ng.$compileProvider.directive.input.checkbox
+   * @name ng.directive:input.checkbox
    *
    * @description
    * HTML checkbox.
@@ -627,13 +627,13 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.textarea
+ * @name ng.directive:textarea
  * @restrict E
  *
  * @description
  * HTML textarea element control with angular data-binding. The data-binding and validation
  * properties of this element are exactly the same as those of the
- * {@link angular.module.ng.$compileProvider.directive.input input element}.
+ * {@link ng.directive:input input element}.
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
@@ -652,7 +652,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.input
+ * @name ng.directive:input
  * @restrict E
  *
  * @description
@@ -764,7 +764,7 @@ var VALID_CLASS = 'ng-valid',
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$compileProvider.directive.ngModel.NgModelController
+ * @name ng.directive:ngModel.NgModelController
  *
  * @property {string} $viewValue Actual string value in the view.
  * @property {*} $modelValue The value in the model, that the control is bound to.
@@ -880,8 +880,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ngModel.NgModelController#$render
-   * @methodOf angular.module.ng.$compileProvider.directive.ngModel.NgModelController
+   * @name ng.directive:ngModel.NgModelController#$render
+   * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
    * Called when the view needs to be updated. It is expected that the user of the ng-model
@@ -908,8 +908,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ngModel.NgModelController#$setValidity
-   * @methodOf angular.module.ng.$compileProvider.directive.ngModel.NgModelController
+   * @name ng.directive:ngModel.NgModelController#$setValidity
+   * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
    * Change the validity state, and notifies the form when the control changes validity. (i.e. it
@@ -950,15 +950,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ngModel.NgModelController#$setViewValue
-   * @methodOf angular.module.ng.$compileProvider.directive.ngModel.NgModelController
+   * @name ng.directive:ngModel.NgModelController#$setViewValue
+   * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
    * Read a value from view.
    *
    * This method should be called from within a DOM event handler.
-   * For example {@link angular.module.ng.$compileProvider.directive.input input} or
-   * {@link angular.module.ng.$compileProvider.directive.select select} directives call it.
+   * For example {@link ng.directive:input input} or
+   * {@link ng.directive:select select} directives call it.
    *
    * It internally calls all `formatters` and if resulted value is valid, updates the model and
    * calls all registered change listeners.
@@ -1018,7 +1018,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngModel
+ * @name ng.directive:ngModel
  *
  * @element input
  *
@@ -1033,19 +1033,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - providing validation behavior (i.e. required, number, email, url),
  * - keeping state of the control (valid/invalid, dirty/pristine, validation errors),
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
- * - register the control with parent {@link angular.module.ng.$compileProvider.directive.form form}.
+ * - register the control with parent {@link ng.directive:form form}.
  *
  * For basic examples, how to use `ngModel`, see:
  *
- *  - {@link angular.module.ng.$compileProvider.directive.input input}
- *    - {@link angular.module.ng.$compileProvider.directive.input.text text}
- *    - {@link angular.module.ng.$compileProvider.directive.input.checkbox checkbox}
- *    - {@link angular.module.ng.$compileProvider.directive.input.radio radio}
- *    - {@link angular.module.ng.$compileProvider.directive.input.number number}
- *    - {@link angular.module.ng.$compileProvider.directive.input.email email}
- *    - {@link angular.module.ng.$compileProvider.directive.input.url url}
- *  - {@link angular.module.ng.$compileProvider.directive.select select}
- *  - {@link angular.module.ng.$compileProvider.directive.textarea textarea}
+ *  - {@link ng.directive:input input}
+ *    - {@link ng.directive:input.text text}
+ *    - {@link ng.directive:input.checkbox checkbox}
+ *    - {@link ng.directive:input.radio radio}
+ *    - {@link ng.directive:input.number number}
+ *    - {@link ng.directive:input.email email}
+ *    - {@link ng.directive:input.url url}
+ *  - {@link ng.directive:select select}
+ *  - {@link ng.directive:textarea textarea}
  *
  */
 var ngModelDirective = function() {
@@ -1070,7 +1070,7 @@ var ngModelDirective = function() {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngChange
+ * @name ng.directive:ngChange
  * @restrict E
  *
  * @description
@@ -1156,7 +1156,7 @@ var requiredDirective = function() {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngList
+ * @name ng.directive:ngList
  *
  * @description
  * Text input that converts between comma-seperated string into an array of strings.

@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngView
+ * @name ng.directive:ngView
  * @restrict ECA
  *
  * @description
  * # Overview
- * `ngView` is a directive that complements the {@link angular.module.ng.$route $route} service by
+ * `ngView` is a directive that complements the {@link ng.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
@@ -98,8 +98,8 @@
 
 /**
  * @ngdoc event
- * @name angular.module.ng.$compileProvider.directive.ngView#$viewContentLoaded
- * @eventOf angular.module.ng.$compileProvider.directive.ngView
+ * @name ng.directive:ngView#$viewContentLoaded
+ * @eventOf ng.directive:ngView
  * @eventType emit on the current ngView scope
  * @description
  * Emitted every time the ngView content is reloaded.

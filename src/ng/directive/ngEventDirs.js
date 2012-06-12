@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngClick
+ * @name ng.directive:ngClick
  *
  * @description
  * The ngClick allows you to specify custom behavior when
@@ -55,7 +55,7 @@ forEach(
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngDblclick
+ * @name ng.directive:ngDblclick
  *
  * @description
  * The `ngDblclick` directive allows you to specify custom behavior on dblclick event.
@@ -65,13 +65,13 @@ forEach(
  * dblclick. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMousedown
+ * @name ng.directive:ngMousedown
  *
  * @description
  * The ngMousedown directive allows you to specify custom behavior on mousedown event.
@@ -81,13 +81,13 @@ forEach(
  * mousedown. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMouseup
+ * @name ng.directive:ngMouseup
  *
  * @description
  * Specify custom behavior on mouseup event.
@@ -97,12 +97,12 @@ forEach(
  * mouseup. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMouseover
+ * @name ng.directive:ngMouseover
  *
  * @description
  * Specify custom behavior on mouseover event.
@@ -112,13 +112,13 @@ forEach(
  * mouseover. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMouseenter
+ * @name ng.directive:ngMouseenter
  *
  * @description
  * Specify custom behavior on mouseenter event.
@@ -128,13 +128,13 @@ forEach(
  * mouseenter. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMouseleave
+ * @name ng.directive:ngMouseleave
  *
  * @description
  * Specify custom behavior on mouseleave event.
@@ -144,13 +144,13 @@ forEach(
  * mouseleave. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMousemove
+ * @name ng.directive:ngMousemove
  *
  * @description
  * Specify custom behavior on mousemove event.
@@ -160,13 +160,13 @@ forEach(
  * mousemove. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ngClick ngClick}
+ * See {@link ng.directive:ngClick ngClick}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSubmit
+ * @name ng.directive:ngSubmit
  *
  * @description
  * Enables binding angular expressions to onsubmit events.

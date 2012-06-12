@@ -2,7 +2,7 @@
 @name Developer Guide: Templates: Filters: Using Angular Filters
 @description
 
-Filters can be part of any {@link api/angular.module.ng.$rootScope.Scope} evaluation but are typically used to format
+Filters can be part of any {@link api/ng.$rootScope.Scope} evaluation but are typically used to format
 expressions in bindings in your templates:
 
         {{ expression | filter }}
@@ -37,4 +37,4 @@ argument that specifies how many digits to display to the right of the decimal p
 
 ## Related API
 
-* {@link api/angular.module.ng.$filter Angular Filter API}
+* {@link api/ng.$filter Angular Filter API}
