@@ -40,9 +40,9 @@
     <div ng-class="{hidden: !enable || roots.length <= 1}">
       <label for="select-root">Root</label> <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
     </div>
-    <pre ng-class="{hidden: !enable}">
+    <div ng-class="{hidden: !enable}">
       <wtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></wtree>
-    </pre>
+    </div>
   </div>
 
 

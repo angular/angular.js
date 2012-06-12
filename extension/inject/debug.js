@@ -19,19 +19,57 @@ var inject = function () {
               };
               var ng = angular.module('ng');
               ng.config(function ($provide) {
+
+
                 $provide.decorator('$rootScope',
                   function ($delegate) {
+
+                    var watchFnToHumanReadableString = function (fn) {
+                      if (fn.exp) {
+                        return fn.exp.trim();
+                      } else if (fn.name) {
+                        return fn.name.trim();
+                      } else {
+                        return fn.toString();
+                      }
+                    };
+
+                    // patch registering watchers
                     var watch = $delegate.__proto__.$watch;
-                    $delegate.$watch = function() {
+                    $delegate.__proto__.$watch = function() {
                       if (!debug.watchers[this.$id]) {
                         debug.watchers[this.$id] = [];
                       }
-                      debug.watchers[this.$id].push(arguments[0].toString());
-                      watch.apply($delegate, arguments);
+                      debug.watchers[this.$id].push(watchFnToHumanReadableString(arguments[0]));
+                      return watch.apply(this, arguments);
+                    };
+
+                    // patch $destroy()
+                    /*
+                    var destroy = $delegate.__proto__.$destroy;
+                    $delegate.__proto__.$destroy = function () {
+                      if (debug.watchers[this.$id]) {
+                        delete debug.watchers[this.$id];
+                      }
+                      return destroy.apply(this, arguments);
+                    };
+                    */
+
+                    // patch apply
+                    var apply = $delegate.__proto__.$apply;
+                    $delegate.__proto__.$apply = function (fn) {
+                      var start = window.performance.webkitNow();
+                      var ret = apply.apply(this, arguments);
+                      //console.log(arguments);
+                      
+                      //watchFnToHumanReadableString() + 
+                      console.log('fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }\t\t' + (window.performance.webkitNow() - start).toPrecision(4) + 'ms');
+                      return ret;
                     };
 
                     return $delegate;
                   });
+
               });
 
               /*

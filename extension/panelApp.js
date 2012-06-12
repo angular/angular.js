@@ -60,11 +60,11 @@ panelApp.directive('wtree', function($compile) {
           '<div ng-class="{hidden: showState}">' +
             '<ul>' +
               '<li ng-repeat="item in val().watchers">' +
-                '<a href ng-click="showState = !showState">toggle</a> ' +
-                '<span ng-class="{hidden: showState}">{{item | first}} ...</span>' +
-                '<div ng-class="{hidden: !showState}">' +
+                '<a href ng-class="{hidden: item.split(\'\n\').length < 2}" ng-click="showState = !showState">toggle</a> ' +
+                '<span ng-class="{hidden: showState || item.split(\'\n\').length < 2}">{{item | first}} ...</span>' +
+                '<pre ng-class="{hidden: !showState && item.split(\'\n\').length > 1}">' +
                   '{{item}}' +
-                '</div>' +
+                '</pre>' +
               '</li>' +
             '</ul>' +
             '<div ng-repeat="child in val().children">' +
