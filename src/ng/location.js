@@ -476,12 +476,14 @@ function $LocationProvider(){
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
-        basePath = $browser.baseHref() || '/',
-        pathPrefix = pathPrefixFromBase(basePath),
+        basePath,
+        pathPrefix,
         initUrl = $browser.url(),
         absUrlPrefix;
 
     if (html5Mode) {
+      basePath = $browser.baseHref() || '/';
+      pathPrefix = pathPrefixFromBase(basePath);
       if ($sniffer.history) {
         $location = new LocationUrl(
           convertToHtml5Url(initUrl, basePath, hashPrefix),
@@ -491,13 +493,13 @@ function $LocationProvider(){
           convertToHashbangUrl(initUrl, basePath, hashPrefix),
           hashPrefix);
       }
+      // link rewriting
+      absUrlPrefix = composeProtocolHostPort(
+        $location.protocol(), $location.host(), $location.port()) + pathPrefix;
     } else {
       $location = new LocationHashbangUrl(initUrl, hashPrefix);
+      absUrlPrefix = $location.absUrl().split('#')[0];
     }
-
-    // link rewriting
-    absUrlPrefix = composeProtocolHostPort(
-        $location.protocol(), $location.host(), $location.port()) + pathPrefix;
 
     $rootElement.bind('click', function(event) {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
@@ -512,7 +514,8 @@ function $LocationProvider(){
         elm = elm.parent();
       }
 
-      var absHref = elm.prop('href');
+      var absHref = elm.prop('href'),
+          href;
 
       if (!absHref ||
         elm.attr('target') ||
@@ -521,7 +524,9 @@ function $LocationProvider(){
       }
 
       // update location with href without the prefix
-      $location.url(absHref.substr(absUrlPrefix.length));
+      href = absHref.substr(absUrlPrefix.length);
+      if (href.charAt(0) == '#') href = href.substr(1);
+      $location.url(href);
       $rootScope.$apply();
       event.preventDefault();
       // hack to work around FF6 bug 684208 when scenario runner clicks on links

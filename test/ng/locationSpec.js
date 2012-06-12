@@ -968,6 +968,37 @@ describe('$location', function() {
         );
       });
     }
+
+
+    it('should not mess up hash urls when clicking on links in hashbang mode', function() {
+      var base;
+      module(function() {
+        return function($browser) {
+          window.location.hash = 'someHash';
+          base = window.location.href
+          $browser.url(base);
+          base = base.split('#')[0];
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#/view1">v1</a><a href="#/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#/view2');
+
+        $rootElement.remove();
+      });
+    });
   });
 
 
