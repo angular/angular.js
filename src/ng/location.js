@@ -85,7 +85,7 @@ function convertToHashbangUrl(url, basePath, hashPrefix) {
         path = match.path.substr(pathPrefix.length);
 
     if (match.path.indexOf(pathPrefix) !== 0) {
-      throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
+      throw Error('Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !');
     }
 
     return composeProtocolHostPort(match.protocol, match.host, match.port) + basePath +
@@ -114,7 +114,7 @@ function LocationUrl(url, pathPrefix) {
     var match = matchUrl(url, this);
 
     if (match.path.indexOf(pathPrefix) !== 0) {
-      throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
+      throw Error('Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !');
     }
 
     this.$$path = decodeURIComponent(match.path.substr(pathPrefix.length));
@@ -160,8 +160,9 @@ function LocationHashbangUrl(url, hashPrefix) {
   this.$$parse = function(url) {
     var match = matchUrl(url, this);
 
+
     if (match.hash && match.hash.indexOf(hashPrefix) !== 0) {
-      throw 'Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !';
+      throw Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !');
     }
 
     basePath = match.path + (match.search ? '?' + match.search : '');
@@ -475,12 +476,14 @@ function $LocationProvider(){
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
-        basePath = $browser.baseHref() || '/',
-        pathPrefix = pathPrefixFromBase(basePath),
+        basePath,
+        pathPrefix,
         initUrl = $browser.url(),
         absUrlPrefix;
 
     if (html5Mode) {
+      basePath = $browser.baseHref() || '/';
+      pathPrefix = pathPrefixFromBase(basePath);
       if ($sniffer.history) {
         $location = new LocationUrl(
           convertToHtml5Url(initUrl, basePath, hashPrefix),
@@ -490,13 +493,13 @@ function $LocationProvider(){
           convertToHashbangUrl(initUrl, basePath, hashPrefix),
           hashPrefix);
       }
+      // link rewriting
+      absUrlPrefix = composeProtocolHostPort(
+        $location.protocol(), $location.host(), $location.port()) + pathPrefix;
     } else {
       $location = new LocationHashbangUrl(initUrl, hashPrefix);
+      absUrlPrefix = $location.absUrl().split('#')[0];
     }
-
-    // link rewriting
-    absUrlPrefix = composeProtocolHostPort(
-        $location.protocol(), $location.host(), $location.port()) + pathPrefix;
 
     $rootElement.bind('click', function(event) {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
@@ -511,7 +514,8 @@ function $LocationProvider(){
         elm = elm.parent();
       }
 
-      var absHref = elm.prop('href');
+      var absHref = elm.prop('href'),
+          href;
 
       if (!absHref ||
         elm.attr('target') ||
@@ -520,7 +524,9 @@ function $LocationProvider(){
       }
 
       // update location with href without the prefix
-      $location.url(absHref.substr(absUrlPrefix.length));
+      href = absHref.substr(absUrlPrefix.length);
+      if (href.charAt(0) == '#') href = href.substr(1);
+      $location.url(href);
       $rootScope.$apply();
       event.preventDefault();
       // hack to work around FF6 bug 684208 when scenario runner clicks on links

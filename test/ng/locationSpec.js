@@ -971,6 +971,36 @@ describe('$location', function() {
   });
 
 
+  describe('link clicking', function() {
+    it('should change between two hash links', function() {
+      var base;
+      module(function() {
+        return function($browser) {
+          window.location.hash = 'someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#/view1">v1</a><a href="#/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#/view2');
+      });
+    });
+  });
+
+
   describe('location cancellation', function() {
     it('should fire $before/afterLocationChange event', inject(function($location, $browser, $rootScope, $log) {
       expect($browser.url()).toEqual('http://server/');
