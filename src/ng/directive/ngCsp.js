@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngCsp
+ * @name ng.directive:ngCsp
  * @priority 1000
  *
  * @description
  * Enables [CSP (Content Security Policy)](https://developer.mozilla.org/en/Security/CSP) support.
  * This directive should be used on the root element of the application (typically the `<html>`
- * element or other element with the {@link angular.module.ng.$compileProvider.directive.ngApp ngApp}
+ * element or other element with the {@link ng.directive:ngApp ngApp}
  * directive).
  *
  * If enabled the performance of template expression evaluator will suffer slightly, so don't enable

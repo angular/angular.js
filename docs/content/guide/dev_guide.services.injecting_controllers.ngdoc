@@ -115,4 +115,4 @@ dependencies with the `$inject` property.
 
 ## Related API
 
-{@link api/angular.module.ng Angular Service API}
+{@link api/ng Angular Service API}

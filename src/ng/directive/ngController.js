@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngController
+ * @name ng.directive:ngController
  *
  * @description
  * The `ngController` directive assigns behavior to a scope. This is a key aspect of how angular
@@ -15,7 +15,7 @@
  * * Controller — The `ngController` directive specifies a Controller class; the class has
  *   methods that typically express the business logic behind the application.
  *
- * Note that an alternative way to define controllers is via the `{@link angular.module.ng.$route}`
+ * Note that an alternative way to define controllers is via the `{@link ng.$route}`
  * service.
  *
  * @element ANY

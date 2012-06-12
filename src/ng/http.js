@@ -135,7 +135,7 @@ function $HttpProvider() {
 
     /**
      * @ngdoc function
-     * @name angular.module.ng.$http
+     * @name ng.$http
      * @requires $httpBacked
      * @requires $browser
      * @requires $cacheFactory
@@ -149,19 +149,19 @@ function $HttpProvider() {
      * XMLHttpRequest} object or via {@link http://en.wikipedia.org/wiki/JSONP JSONP}.
      *
      * For unit testing applications that use `$http` service, see
-     * {@link angular.module.ngMock.$httpBackend $httpBackend mock}.
+     * {@link ngMock.$httpBackend $httpBackend mock}.
      *
-     * For a higher level of abstraction, please check out the {@link angular.module.ngResource.$resource
+     * For a higher level of abstraction, please check out the {@link ngResource.$resource
      * $resource} service.
      *
-     * The $http API is based on the {@link angular.module.ng.$q deferred/promise APIs} exposed by
+     * The $http API is based on the {@link ng.$q deferred/promise APIs} exposed by
      * the $q service. While for simple usage patters this doesn't matter much, for advanced usage,
      * it is important to familiarize yourself with these apis and guarantees they provide.
      *
      *
      * # General usage
      * The `$http` service is a function which takes a single argument — a configuration object —
-     * that is used to generate an http request and returns  a {@link angular.module.ng.$q promise}
+     * that is used to generate an http request and returns  a {@link ng.$q promise}
      * with two $http specific methods: `success` and `error`.
      *
      * <pre>
@@ -196,12 +196,12 @@ function $HttpProvider() {
      *
      * Complete list of shortcut methods:
      *
-     * - {@link angular.module.ng.$http#get $http.get}
-     * - {@link angular.module.ng.$http#head $http.head}
-     * - {@link angular.module.ng.$http#post $http.post}
-     * - {@link angular.module.ng.$http#put $http.put}
-     * - {@link angular.module.ng.$http#delete $http.delete}
-     * - {@link angular.module.ng.$http#jsonp $http.jsonp}
+     * - {@link ng.$http#get $http.get}
+     * - {@link ng.$http#head $http.head}
+     * - {@link ng.$http#post $http.post}
+     * - {@link ng.$http#put $http.put}
+     * - {@link ng.$http#delete $http.delete}
+     * - {@link ng.$http#jsonp $http.jsonp}
      *
      *
      * # Setting HTTP Headers
@@ -265,18 +265,18 @@ function $HttpProvider() {
      * # Response interceptors
      *
      * Before you start creating interceptors, be sure to understand the
-     * {@link angular.module.ng.$q $q and deferred/promise APIs}.
+     * {@link ng.$q $q and deferred/promise APIs}.
      *
      * For purposes of global error handling, authentication or any kind of synchronous or
      * asynchronous preprocessing of received responses, it is desirable to be able to intercept
      * responses for http requests before they are handed over to the application code that
-     * initiated these requests. The response interceptors leverage the {@link angular.module.ng.$q
+     * initiated these requests. The response interceptors leverage the {@link ng.$q
      * promise apis} to fulfil this need for both synchronous and asynchronous preprocessing.
      *
      * The interceptors are service factories that are registered with the $httpProvider by
      * adding them to the `$httpProvider.responseInterceptors` array. The factory is called and
      * injected with dependencies (if specified) and returns the interceptor  — a function that
-     * takes a {@link angular.module.ng.$q promise} and returns the original or a new promise.
+     * takes a {@link ng.$q promise} and returns the original or a new promise.
      *
      * <pre>
      *   // register the interceptor as a service
@@ -375,14 +375,14 @@ function $HttpProvider() {
      *      response body and headers and returns its transformed (typically deserialized) version.
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
      *      GET request, otherwise if a cache instance built with
-     *      {@link angular.module.ng.$cacheFactory $cacheFactory}, this cache will be used for
+     *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
      *      caching.
      *    - **timeout** – `{number}` – timeout in milliseconds.
      *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
      *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
      *      requests with credentials} for more information.
      *
-     * @returns {HttpPromise} Returns a {@link angular.module.ng.$q promise} object with the
+     * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
      *   method takes two arguments a success and an error callback which will be called with a
      *   response object. The `success` and `error` methods take a single argument - a function that
@@ -529,8 +529,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#get
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#get
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `GET` request
@@ -542,8 +542,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#delete
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#delete
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `DELETE` request
@@ -555,8 +555,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#head
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#head
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `HEAD` request
@@ -568,8 +568,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#jsonp
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#jsonp
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `JSONP` request
@@ -583,8 +583,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#post
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#post
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `POST` request
@@ -597,8 +597,8 @@ function $HttpProvider() {
 
     /**
      * @ngdoc method
-     * @name angular.module.ng.$http#put
-     * @methodOf angular.module.ng.$http
+     * @name ng.$http#put
+     * @methodOf ng.$http
      *
      * @description
      * Shortcut method to perform `PUT` request
@@ -612,8 +612,8 @@ function $HttpProvider() {
 
         /**
          * @ngdoc property
-         * @name angular.module.ng.$http#defaults
-         * @propertyOf angular.module.ng.$http
+         * @name ng.$http#defaults
+         * @propertyOf ng.$http
          *
          * @description
          * Runtime equivalent of the `$httpProvider.defaults` property. Allows configuration of

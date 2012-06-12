@@ -5,7 +5,7 @@
 While angular offers several useful services, for any nontrivial application you'll find it useful
 to write your own custom services. To do this you begin by registering a service factory function
 with a module either via the {@link api/angular.module Module#factory api} or directly
-via the {@link api/angular.module.AUTO.$provide $provide} api inside of module config function.
+via the {@link api/AUTO.$provide $provide} api inside of module config function.
 
 All angular services participate in {@link di dependency injection (DI)} by registering
 themselves with Angular's DI system (injector) under a `name` (id) as well as by declaring
@@ -18,7 +18,7 @@ testable.
 
 To register a service, you must have a module that this service will be part of. Afterwards, you
 can register the service with the module either via the {@link api/angular.Module Module api} or
-by using the {@link api/angular.module.AUTO.$provide $provide} service in the module configuration
+by using the {@link api/AUTO.$provide $provide} service in the module configuration
 function.The following pseudo-code shows both approaches:
 
 Using the angular.Module api:
@@ -101,4 +101,4 @@ important.
 
 ## Related API
 
-* {@link api/angular.module.ng Angular Service API}
+* {@link api/ng Angular Service API}

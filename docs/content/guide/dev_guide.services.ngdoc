@@ -18,4 +18,4 @@ most often used with {@link di dependency injection}, also a key feature of angu
 
 ## Related API
 
-* {@link api/angular.module.ng Angular Service API}
+* {@link api/ng Angular Service API}

@@ -68,7 +68,7 @@ manipulate the DOM.
 ### What is testability like in angular?
 
 Very testable. It has an integrated dependency injection framework. See
-{@link api/angular.module.ng service} for details.
+{@link api/ng service} for details.
 
 ### How can I learn more about angular?
 

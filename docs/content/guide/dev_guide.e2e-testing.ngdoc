@@ -78,19 +78,19 @@ Returns the window.location.search of the currently loaded page in the test fram
 Returns the window.location.hash (without `#`) of the currently loaded page in the test frame.
 
 ## browser().location().url()
-Returns the {@link api/angular.module.ng.$location $location.url()} of the currently loaded page in
+Returns the {@link api/ng.$location $location.url()} of the currently loaded page in
 the test frame.
 
 ## browser().location().path()
-Returns the {@link api/angular.module.ng.$location $location.path()} of the currently loaded page in
+Returns the {@link api/ng.$location $location.path()} of the currently loaded page in
 the test frame.
 
 ## browser().location().search()
-Returns the {@link api/angular.module.ng.$location $location.search()} of the currently loaded page
+Returns the {@link api/ng.$location $location.search()} of the currently loaded page
 in the test frame.
 
 ## browser().location().hash()
-Returns the {@link api/angular.module.ng.$location $location.hash()} of the currently loaded page in
+Returns the {@link api/ng.$location $location.hash()} of the currently loaded page in
 the test frame.
 
 ## expect(future).{matcher}

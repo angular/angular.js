@@ -141,11 +141,11 @@ In this example we have a simple app which consist of two screens:
 # Things to notice
 
 * Routes are defined in the `AppCntl` class. The initialization of the controller causes the
-  initialization of the {@link api/angular.module.ng.$route $route} service with the proper URL
+  initialization of the {@link api/ng.$route $route} service with the proper URL
   routes.
-* The  {@link api/angular.module.ng.$route $route} service then watches the URL and instantiates the
+* The  {@link api/ng.$route $route} service then watches the URL and instantiates the
   appropriate controller when the URL changes.
-* The  {@link api/angular.module.ng.$compileProvider.directive.ngView ngView} widget loads the
+* The  {@link api/ng.directive:ngView ngView} widget loads the
   view when the URL changes. It also sets the view scope to the newly instantiated controller.
 * Changing the URL is sufficient to change the controller and view. It makes no difference whether
   the URL is changed programatically or by the user.

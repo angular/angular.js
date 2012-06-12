@@ -10,7 +10,7 @@ var nullFormCtrl = {
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$compileProvider.directive.form.FormController
+ * @name ng.directive:form.FormController
  *
  * @property {boolean} $pristine True if user has not interacted with the form yet.
  * @property {boolean} $dirty True if user has already interacted with the form.
@@ -27,7 +27,7 @@ var nullFormCtrl = {
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
  *
- * Each {@link angular.module.ng.$compileProvider.directive.form form} directive creates an instance
+ * Each {@link ng.directive:form form} directive creates an instance
  * of `FormController`.
  *
  */
@@ -124,11 +124,11 @@ function FormController(element, attrs) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngForm
+ * @name ng.directive:ngForm
  * @restrict EAC
  *
  * @description
- * Nestable alias of {@link angular.module.ng.$compileProvider.directive.form `form`} directive. HTML
+ * Nestable alias of {@link ng.directive:form `form`} directive. HTML
  * does not allow nesting of form elements. It is useful to nest forms, for example if the validity of a
  * sub-group of controls needs to be determined.
  *
@@ -139,21 +139,21 @@ function FormController(element, attrs) {
 
  /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.form
+ * @name ng.directive:form
  * @restrict E
  *
  * @description
  * Directive that instantiates
- * {@link angular.module.ng.$compileProvider.directive.form.FormController FormController}.
+ * {@link ng.directive:form.FormController FormController}.
  *
  * If `name` attribute is specified, the form controller is published onto the current scope under
  * this name.
  *
- * # Alias: {@link angular.module.ng.$compileProvider.directive.ngForm `ngForm`}
+ * # Alias: {@link ng.directive:ngForm `ngForm`}
  *
  * In angular forms can be nested. This means that the outer form is valid when all of the child
  * forms are valid as well. However browsers do not allow nesting of `<form>` elements, for this
- * reason angular provides {@link angular.module.ng.$compileProvider.directive.ngForm `ngForm`} alias
+ * reason angular provides {@link ng.directive:ngForm `ngForm`} alias
  * which behaves identical to `<form>` but allows form nesting.
  *
  *
@@ -177,8 +177,8 @@ function FormController(element, attrs) {
  * You can use one of the following two ways to specify what javascript method should be called when
  * a form is submitted:
  *
- * - {@link angular.module.ng.$compileProvider.directive.ngSubmit ngSubmit} directive on the form element
- * - {@link angular.module.ng.$compileProvider.directive.ngClick ngClick} directive on the first
+ * - {@link ng.directive:ngSubmit ngSubmit} directive on the form element
+ * - {@link ng.directive:ngClick ngClick} directive on the first
   *  button or input field of type submit (input[type=submit])
  *
  * To prevent double execution of the handler, use only one of ngSubmit or ngClick directives. This

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$exceptionHandler
+ * @name ng.$exceptionHandler
  * @requires $log
  *
  * @description
@@ -11,7 +11,7 @@
  * the browser console.
  *
  * In unit tests, if `angular-mocks.js` is loaded, this service is overridden by
- * {@link angular.module.ngMock.$exceptionHandler mock $exceptionHandler}
+ * {@link ngMock.$exceptionHandler mock $exceptionHandler}
  *
  * @param {Error} exception Exception associated with the error.
  * @param {string=} cause optional information about the context in which

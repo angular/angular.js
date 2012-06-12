@@ -55,7 +55,7 @@ __`app/index.html`:__
 </pre>
 
 We added a standard HTML `<input>` tag and used angular's
-{@link api/angular.module.ng.$filter.filter $filter} function to process the input for the
+{@link api/ng.filter:filter $filter} function to process the input for the
 `ngRepeate` directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
@@ -71,7 +71,7 @@ the DOM to reflect the current state of the model.
 
       <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
-* Use of `filter` filter. The {@link api/angular.module.ng.$filter.filter filter} function uses the
+* Use of `filter` filter. The {@link api/ng.filter:filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
 
   `ngRepeat` automatically updates the view in response to the changing number of phones returned
@@ -152,8 +152,8 @@ and title elements:
 
   While using double curlies works fine in within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link api/angular.module.ng.$compileProvider.directive.ngBind
-ngBind} or {@link api/angular.module.ng.$compileProvider.directive.ngBindTemplate
+solution would be to use the {@link api/ng.directive:ngBind
+ngBind} or {@link api/ng.directive:ngBindTemplate
 ngBindTemplate} directives, which are invisible to the user while the page is loading:
 
           <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>

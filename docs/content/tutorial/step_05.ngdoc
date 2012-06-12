@@ -6,8 +6,8 @@
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of angular's built-in {@link api/angular.module.ng services} called {@link
-api/angular.module.ng.$http $http}. We will use angular's {@link guide/di dependency
+from our server using one of angular's built-in {@link api/ng services} called {@link
+api/ng.$http $http}. We will use angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 
@@ -42,9 +42,9 @@ Following is a sample of the file:
 
 ## Controller
 
-We'll use angular's {@link api/angular.module.ng.$http $http} service in our controller to make an HTTP
+We'll use angular's {@link api/ng.$http $http} service in our controller to make an HTTP
 request to your web server to fetch the data in the `app/phones/phones.json` file. `$http` is just
-one of several built-in {@link api/angular.module.ng angular services} that handle common operations
+one of several built-in {@link api/ng angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
 Services are managed by angular's {@link guide/di DI subsystem}. Dependency injection
@@ -71,7 +71,7 @@ relative to our `index.html` file). The server responds by providing the data in
 browser and our app they both look the same. For the sake of simplicity we used a json file in this
 tutorial.)
 
-The `$http` service returns a {@link api/angular.module.ng.$q promise object} with a `success`
+The `$http` service returns a {@link api/ng.$q promise object} with a `success`
 method. We call this method to handle the asynchronous response and assign the phone data to the
 scope controlled by this controller, as a model called `phones`. Notice that angular detected the
 json response and parsed it for us!
@@ -155,9 +155,9 @@ use to access and configure the injector.
 We created the controller in the test environment, as follows:
 
 * We used the `inject` helper method to inject instances of
-{@link api/angular.module.ng.$rootScope $rootScope},
-{@link api/angular.module.ng.$controller $controller} and
-{@link api/angular.module.ng.$httpBackend $httpBackend} services into the Jasmine's `beforeEach`
+{@link api/ng.$rootScope $rootScope},
+{@link api/ng.$controller $controller} and
+{@link api/ng.$httpBackend $httpBackend} services into the Jasmine's `beforeEach`
 function. These instances come from an injector which is recreated from scratch for every single
 test. This guarantees that each test starts from a well known starting point and each test is
 isolated from the work done in other tests.

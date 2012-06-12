@@ -61,7 +61,6 @@ var Error             = window.Error,
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
-    /** @name angular.module.ng */
     nodeName_,
     uid               = ['0', '0', '0'];
 
@@ -520,7 +519,7 @@ function isLeafNode (node) {
  * * If  `source` is not an object or array, `source` is returned.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more information about Angular arrays.
+ * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
@@ -830,7 +829,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngApp
+ * @name ng.directive:ngApp
  *
  * @element ANY
  * @param {angular.Module} ngApp on optional application
@@ -910,7 +909,7 @@ function angularInit(element, bootstrap) {
  *
  * @param {Element} element DOM element which is the root of angular application.
  * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
- * @returns {angular.module.auto.$injector} Returns the newly created injector for this app.
+ * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   element = jqLite(element);

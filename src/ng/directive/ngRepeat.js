@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngRepeat
+ * @name ng.directive:ngRepeat
  *
  * @description
  * The `ngRepeat` directive instantiates a template once per item from a collection. Each template

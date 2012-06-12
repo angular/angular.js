@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$document
+ * @name ng.$document
  * @requires $window
  *
  * @description

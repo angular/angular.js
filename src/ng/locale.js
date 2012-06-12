@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$locale
+ * @name ng.$locale
  *
  * @description
  * $locale service provides localization rules for various Angular components. As of right now the

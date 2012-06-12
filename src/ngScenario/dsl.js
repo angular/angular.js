@@ -38,10 +38,10 @@ angular.scenario.dsl('sleep', function() {
  *    browser().window.path() window.location.pathname
  *    browser().window.search() window.location.search
  *    browser().window.hash() window.location.hash without # prefix
- *    browser().location().url() see angular.module.ng.$location#url
- *    browser().location().path() see angular.module.ng.$location#path
- *    browser().location().search() see angular.module.ng.$location#search
- *    browser().location().hash() see angular.module.ng.$location#hash
+ *    browser().location().url() see ng.$location#url
+ *    browser().location().path() see ng.$location#path
+ *    browser().location().search() see ng.$location#search
+ *    browser().location().hash() see ng.$location#hash
  */
 angular.scenario.dsl('browser', function() {
   var chain = {};

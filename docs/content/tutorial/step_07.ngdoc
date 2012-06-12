@@ -36,8 +36,8 @@ our application. Other "partial templates" are then included into this layout te
 the current "route" — the view that is currently displayed to the user.
 
 Application routes in angular are declared via the
-{@link api/angular.module.ng.$routeProvider $routeProvider}, which is the provider of the
-{@link api/angular.module.ng.$route $route service}. This service makes it easy to wire together
+{@link api/ng.$routeProvider $routeProvider}, which is the provider of the
+{@link api/ng.$route $route service}. This service makes it easy to wire together
 controllers, view templates, and the current
 URL location in the browser. Using this feature we can implement {@link
 http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
@@ -104,11 +104,11 @@ the browser address doesn't match either of our routes.
 Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
 the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
 URL. All variables defined with the `:` notation are extracted into the
-{@link api/angular.module.ng.$routeParams $routeParams} object.
+{@link api/ng.$routeParams $routeParams} object.
 
 
 In order for our application to bootstrap with our newly created module we'll also need to specify
-the module name as the value of the {@link api/angular.module.ng.$compileProvider.directive.ngApp ngApp}
+the module name as the value of the {@link api/ng.directive:ngApp ngApp}
 directive:
 
 __`app/index.html`:__
@@ -134,7 +134,7 @@ function PhoneDetailCtrl($scope, $routeParams) {
 
 ## Template
 
-The `$route` service is usually used in conjunction with the {@link api/angular.module.ng.$compileProvider.directive.ngView
+The `$route` service is usually used in conjunction with the {@link api/ng.directive:ngView
 ngView} directive. The role of the `ngView` directive is to include the view template for the current
 route into the layout template, which makes it a perfect fit for our `index.html` template.
 

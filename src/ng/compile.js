@@ -23,20 +23,20 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$compile
+ * @name ng.$compile
  * @function
  *
  * @description
  * Compiles a piece of HTML string or DOM into a template and produces a template function, which
- * can then be used to link {@link angular.module.ng.$rootScope.Scope scope} and the template together.
+ * can then be used to link {@link ng.$rootScope.Scope scope} and the template together.
  *
  * The compilation is a process of walking the DOM tree and trying to match DOM elements to
- * {@link angular.module.ng.$compileProvider.directive directives}. For each match it
+ * {@link ng.$compileProvider.directive directives}. For each match it
  * executes corresponding template function and collects the
  * instance functions into a single template function which is then returned.
  *
  * The template function can then be used once to produce the view or as it is the case with
- * {@link angular.module.ng.$compileProvider.directive.ngRepeat repeater} many-times, in which
+ * {@link ng.directive:ngRepeat repeater} many-times, in which
  * case each call results in a view that is a DOM clone of the original template.
  *
  <doc:example module="compile">
@@ -99,7 +99,7 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
  * @returns {function(scope[, cloneAttachFn])} a link function which is used to bind template
  * (a DOM element/tree) to a scope. Where:
  *
- *  * `scope` - A {@link angular.module.ng.$rootScope.Scope Scope} to bind to.
+ *  * `scope` - A {@link ng.$rootScope.Scope Scope} to bind to.
  *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
  *               cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
@@ -144,7 +144,7 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
 /**
  * @ngdoc service
- * @name angular.module.ng.$compileProvider
+ * @name ng.$compileProvider
  * @function
  *
  * @description
@@ -152,8 +152,8 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$compileProvider#directive
- * @methodOf angular.module.ng.$compileProvider
+ * @name ng.$compileProvider#directive
+ * @methodOf ng.$compileProvider
  * @function
  *
  * @description
@@ -161,7 +161,7 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
  *
  * @param {string} name name of the directive.
  * @param {function} directiveFactory An injectable directive factory function.
- * @returns {angular.module.ng.$compileProvider} Self for chaining.
+ * @returns {ng.$compileProvider} Self for chaining.
  */
 $CompileProvider.$inject = ['$provide'];
 function $CompileProvider($provide) {
@@ -174,8 +174,8 @@ function $CompileProvider($provide) {
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive
-   * @methodOf angular.module.ng.$compileProvider
+   * @name ng.$compileProvider.directive
+   * @methodOf ng.$compileProvider
    * @function
    *
    * @description
@@ -1085,7 +1085,7 @@ function directiveNormalize(name) {
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$compile.directive.Attributes
+ * @name ng.$compile.directive.Attributes
  * @description
  *
  * A shared object between directive compile / linking functions which contains normalized DOM element
@@ -1097,8 +1097,8 @@ function directiveNormalize(name) {
 
 /**
  * @ngdoc property
- * @name angular.module.ng.$compile.directive.Attributes#$attr
- * @propertyOf angular.module.ng.$compile.directive.Attributes
+ * @name ng.$compile.directive.Attributes#$attr
+ * @propertyOf ng.$compile.directive.Attributes
  * @returns {object} A map of DOM element attribute names to the normalized name. This is
  *          needed to do reverse lookup from normalized name back to actual name.
  */
@@ -1106,8 +1106,8 @@ function directiveNormalize(name) {
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$compile.directive.Attributes#$set
- * @methodOf angular.module.ng.$compile.directive.Attributes
+ * @name ng.$compile.directive.Attributes#$set
+ * @methodOf ng.$compile.directive.Attributes
  * @function
  *
  * @description
@@ -1115,7 +1115,7 @@ function directiveNormalize(name) {
  *
  *
  * @param {string} name Normalized element attribute name of the property to modify. The name is
- *          revers translated using the {@link angular.module.ng.$compile.directive.Attributes#$attr $attr}
+ *          revers translated using the {@link ng.$compile.directive.Attributes#$attr $attr}
  *          property to the original name.
  * @param {string} value Value to set the attribute to.
  */

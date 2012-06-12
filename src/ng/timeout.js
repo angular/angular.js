@@ -9,26 +9,26 @@ function $TimeoutProvider() {
 
      /**
       * @ngdoc function
-      * @name angular.module.ng.$timeout
+      * @name ng.$timeout
       * @requires $browser
       *
       * @description
       * Angular's wrapper for `window.setTimeout`. The `fn` function is wrapped into a try/catch
       * block and delegates any exceptions to
-      * {@link angular.module.ng.$exceptionHandler $exceptionHandler} service.
+      * {@link ng.$exceptionHandler $exceptionHandler} service.
       *
       * The return value of registering a timeout function is a promise which will be resolved when
       * the timeout is reached and the timeout function is executed.
       *
       * To cancel a the timeout request, call `$timeout.cancel(promise)`.
       *
-      * In tests you can use {@link angular.module.ngMock.$timeout `$timeout.flush()`} to
+      * In tests you can use {@link ngMock.$timeout `$timeout.flush()`} to
       * synchronously flush the queue of deferred functions.
       *
       * @param {function()} fn A function, who's execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to false skips model dirty checking, otherwise
-      *   will invoke `fn` within the {@link angular.module.ng.$rootScope.Scope#$apply $apply} block.
+      *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
       * @returns {*} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       */
@@ -63,8 +63,8 @@ function $TimeoutProvider() {
 
      /**
       * @ngdoc function
-      * @name angular.module.ng.$timeout#cancel
-      * @methodOf angular.module.ng.$timeout
+      * @name ng.$timeout#cancel
+      * @methodOf ng.$timeout
       *
       * @description
       * Cancels a task associated with the `promise`. As a result of this the promise will be

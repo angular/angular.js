@@ -14,7 +14,7 @@ In this step, you will improve the way our app fetches data.
 The last improvement we will make to our app is to define a custom service that represents a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this client we
 can make xhr requests for data in an easier way, without having to deal with the lower-level {@link
-api/angular.module.ng.$http $http} API, HTTP methods and URLs.
+api/ng.$http $http} API, HTTP methods and URLs.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-10...step-11
@@ -52,17 +52,17 @@ of the service - 'Phone' - and the factory function. The factory function is sim
 controller's constructor in that both can declare dependencies via function arguments. The Phone
 service declared a dependency on the `$resource` service.
 
-The {@link api/angular.module.ngResource.$resource `$resource`} service makes it easy to create a
+The {@link api/ngResource.$resource `$resource`} service makes it easy to create a
 {@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few
 lines of code. This client can then be used in our application, instead of the lower-level {@link
-api/angular.module.ng.$http $http} service.
+api/ng.$http $http} service.
 
 
 ## Controller
 
 We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
-lower-level {@link api/angular.module.ng.$http $http} service, replacing it with a new service called
-`Phone`. Angular's {@link api/angular.module.ngResource.$resource `$resource`} service is easier to
+lower-level {@link api/ng.$http $http} service, replacing it with a new service called
+`Phone`. Angular's {@link api/ngResource.$resource `$resource`} service is easier to
 use than `$http for interacting with data sources exposed as RESTful resources. It is also easier
 now to understand what the code in our controllers is doing.
 
@@ -122,7 +122,7 @@ We have modified our unit tests to verify that our new service is issuing HTTP r
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
 
-The {@link api/angular.module.ngResource.$resource $resource} service augments the response object
+The {@link api/ngResource.$resource $resource} service augments the response object
 with methods for updating and deleting the resource. If we were to use the standard `toEqual`
 matcher, our tests would fail because the test values would not match the responses exactly. To
 solve the problem, we use a newly-defined `toEqualData` {@link

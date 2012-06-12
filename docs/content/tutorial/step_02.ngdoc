@@ -52,7 +52,7 @@ __`app/index.html`:__
 </pre>
 
 We replaced the hard-coded phone list with the
-{@link api/angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat directive} and two
+{@link api/ng.directive:ngRepeat ngRepeat directive} and two
 {@link guide/expression Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
@@ -96,7 +96,7 @@ as follows:
 
 * `PhoneListCtrl` — the name of our controller function (located in the JavaScript file
 `controllers.js`), matches the value of the
-{@link api/angular.module.ng.$compileProvider.directive.ngController ngController} directive located
+{@link api/ng.directive:ngController ngController} directive located
 on the `<body>` tag.
 
 * The phone data is then attached to the *scope* (`$scope`) that was injected into our controller
@@ -110,7 +110,7 @@ contained in the template, data model, and controller, to keep models and views 
 sync. Any changes made to the model are reflected in the view; any changes that occur in the view
 are reflected in the model.
 
-  To learn more about Angular scopes, see the {@link api/angular.module.ng.$rootScope.Scope angular scope documentation}.
+  To learn more about Angular scopes, see the {@link api/ng.$rootScope.Scope angular scope documentation}.
 
 
 ## Tests

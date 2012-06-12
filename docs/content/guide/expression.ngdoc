@@ -3,7 +3,7 @@
 @description
 
 Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
-expression }}`. Expressions are process by the {@link api/angular.module.ng.$parse $parse}
+expression }}`. Expressions are process by the {@link api/ng.$parse $parse}
 service.
 
 For example, these are all valid expressions in angular:
@@ -35,7 +35,7 @@ differences:
 
 If, on the other hand, you do want to run arbitrary JavaScript code, you should make it a
 controller method and call the method. If you want to `eval()` an angular expression from
-JavaScript, use the {@link api/angular.module.ng.$rootScope.Scope#$eval `$eval()`} method.
+JavaScript, use the {@link api/ng.$rootScope.Scope#$eval `$eval()`} method.
 
 ## Example
 <doc:example>
@@ -92,7 +92,7 @@ You can try evaluating different expressions here:
 # Property Evaluation
 
 Evaluation of all properties takes place against a scope. Unlike JavaScript, where names default
-to global window properties, angular expressions have to use {@link api/angular.module.ng.$window
+to global window properties, angular expressions have to use {@link api/ng.$window
 `$window`} to refer to the global `window` object. For example, if you want to call `alert()`, which is
 defined on `window`, in an expression must use `$window.alert()`. This is done intentionally to
 prevent accidental access to the global state (a common source of subtle bugs).
@@ -162,7 +162,7 @@ of filters like this:
        name | uppercase
 
 The expression evaluator simply passes the value of name to {@link
-api/angular.module.ng.$filter.uppercase `uppercase`} filter.
+api/ng.filter:uppercase `uppercase`} filter.
 
 Chain filters using this syntax:
 

@@ -3,7 +3,7 @@
 /**
  * !!! This is an undocumented "private" service !!!
  *
- * @name angular.module.ng.$sniffer
+ * @name ng.$sniffer
  * @requires $window
  *
  * @property {boolean} history Does the browser support html5 history api ?

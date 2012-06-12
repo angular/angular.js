@@ -102,11 +102,11 @@ allow a user to enter data.
 
 # Things to notice
 
-* The user data model is initialized {@link api/angular.module.ng.$compileProvider.directive.ngController controller} and is
-  available in the {@link api/angular.module.ng.$rootScope.Scope scope} with the initial data.
+* The user data model is initialized {@link api/ng.directive:ngController controller} and is
+  available in the {@link api/ng.$rootScope.Scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.
-* The {@link api/angular.module.ng.$compileProvider.directive.input input directives} simply refer
+* The {@link api/ng.directive:input input directives} simply refer
   to the model and are data-bound.
 * The inputs validate. (Try leaving them blank or entering non digits in the zip field)
 * In your application you can simply read from or write to the model and the form will be updated.

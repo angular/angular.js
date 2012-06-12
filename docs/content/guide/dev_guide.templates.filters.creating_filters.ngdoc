@@ -57,4 +57,4 @@ text upper-case and assigns color.
 
 ## Related API
 
-* {@link api/angular.module.ng.$filter Angular Filter API}
+* {@link api/ng.$filter Angular Filter API}

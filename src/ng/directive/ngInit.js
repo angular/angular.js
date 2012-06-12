@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngInit
+ * @name ng.directive:ngInit
  *
  * @description
  * The `ngInit` directive specifies initialization tasks to be executed

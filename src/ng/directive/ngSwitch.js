@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSwitch
+ * @name ng.directive:ngSwitch
  * @restrict EA
  *
  * @description
