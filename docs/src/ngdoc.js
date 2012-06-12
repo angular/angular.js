@@ -201,7 +201,7 @@ Doc.prototype = {
       }
     });
     flush();
-    this.shortName = this.name.split(/[\.:#]/).pop();
+    this.shortName = this.name.split(/[\.:#]/).pop().trim();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
       this.name; // default to name
@@ -737,7 +737,7 @@ function metadata(docs){
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
-    var shortName = path.pop();
+    var shortName = path.pop().trim();
 
     if (path.pop() == 'input') {
       shortName = 'input [' + shortName + ']';
