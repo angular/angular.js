@@ -55,12 +55,9 @@ var inject = function () {
                           var ret = w.apply(this, arguments);
                           var end = window.performance.webkitNow();
                           if (!debug.watchExp[str]) {
-                            debug.watchExp[str] = [];
+                            debug.watchExp[str] = 0;
                           }
-                          debug.watchExp[str].push({
-                            start: start,
-                            end: end
-                          });
+                          debug.watchExp[str] += (end - start);
                           return ret;
                         };
                       } else {
@@ -69,13 +66,10 @@ var inject = function () {
                           var start = window.performance.webkitNow();
                           var ret = thatScope.$eval(w);
                           var end = window.performance.webkitNow();
-                          if (!debug.watchExp[str]) {
-                            debug.watchExp[str] = [];
+                          if (typeof debug.watchExp[str] !== 'number') {
+                            debug.watchExp[str] = 0;
                           }
-                          debug.watchExp[str].push({
-                            start: start,
-                            end: end
-                          });
+                          debug.watchExp[str] += (end - start);
                           return ret;
                         };
                       }
@@ -86,13 +80,12 @@ var inject = function () {
                         var ret = fn.apply(this, arguments);
                         var end = window.performance.webkitNow();
                         var str = fn.toString();
-                        if (!debug.watchList[str]) {
-                          debug.watchList[str] = [];
+                        if (typeof debug.watchList[str] !== 'number') {
+                          debug.watchList[str] = 0;
+                          //debug.watchList[str].total = 0;
                         }
-                        debug.watchList[str].push({
-                          start: start,
-                          end: end
-                        });
+                        debug.watchList[str] += (end - start);
+                        //debug.watchList[str].total += (end - start);
                         return ret;
                       };
 

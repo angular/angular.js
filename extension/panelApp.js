@@ -141,17 +141,21 @@ panelApp.factory('appContext', function(chromeExtension) {
           };
         }
 
-        window.$('.ng-scope').each(function (i, elt) {
-          var $scope = window.angular.element(elt).scope();
+        var elts = window.document.getElementsByClassName('ng-scope');
+        var i;
+        for (i = 0; i < elts.length; i++) {
+          (function (elt) {
+            var $scope = window.angular.element(elt).scope();
 
-          while ($scope.$parent) {
-            $scope = $scope.$parent;
-          }
-          if ($scope === $scope.$root && rootScopes.indexOf($scope) === -1) {
-            rootScopes.push($scope);
-            rootIds.push($scope.$id);
-          }
-        });
+            while ($scope.$parent) {
+              $scope = $scope.$parent;
+            }
+            if ($scope === $scope.$root && rootScopes.indexOf($scope) === -1) {
+              rootScopes.push($scope);
+              rootIds.push($scope.$id);
+            }
+          }(elts[i]));
+        }
 
         var getScopeTree = function (scope) {
           var tree = {};
@@ -215,6 +219,23 @@ panelApp.factory('appContext', function(chromeExtension) {
       chromeExtension.eval(function (window) {
         return window.__ngDebug.timeline;
       }, cb);
+    },
+
+    getHistogramInfo: function (cb) {
+      chromeExtension.eval(function (window) {
+        return window.__ngDebug.watchExp;
+      }, function (info) {
+        var out = [];
+        for (exp in info) {
+          if (info.hasOwnProperty(exp)) {
+            out.push({
+              name: exp,
+              calls: info[exp]
+            });
+          }
+        }
+        cb(out);
+      });
     },
 
     clearTimeline: function (cb) {
@@ -341,6 +362,16 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     }
   ];
 
+  $scope.histogram = [
+  {
+    name: 'test',
+    calls: [{
+      start: 10,
+      end: 20
+    }]
+  }
+  ];
+
   $scope.clear = function () {
     appContext.clearTimeline();
   };
@@ -355,7 +386,8 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
       appContext.debug(newVal);
     }
     if (newVal) {
-      updateTimeline();
+      //updateTimeline();
+      updateHistogram();
     }
   });
 
@@ -387,6 +419,28 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
       }
     });
   };
+
+  var updateHistogram = function () {
+    appContext.getHistogramInfo(function (info) {
+      $scope.$apply(function () {
+        info = info.sort(function (a, b) {
+          return b.calls - a.calls;
+        });
+        var total = 0;
+        info.forEach(function (elt) {
+          total += elt.calls;
+        });
+        info.forEach(function (elt) {
+          elt.calls = (100 * elt.calls / total).toPrecision(3);
+        });
+
+        $scope.histogram = info;
+      });
+      if ($scope.enable) {
+        setTimeout(updateHistogram, 1000);
+      }
+    })
+  }
 
   var updateTree = function () {
     appContext.getDebugInfo(function (info) {
