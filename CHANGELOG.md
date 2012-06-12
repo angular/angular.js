@@ -1,3 +1,22 @@
+<a name="v1.0.0rc12"></a>
+# 1.0.0rc12 regression-extermination (2012-06-12)
+
+## Bug Fixes
+
+- **$location:** correctly parse link urls in hashbang mode
+  ([74fa65ec](https://github.com/angular/angular.js/commit/74fa65ecb7c4e2df966a179952b35700912e065f),
+   [#1037](https://github.com/angular/angular.js/issues/1037))
+
+
+## Cleanup
+
+- **$defer:** remove deprecated `$defer` service
+  ([9af7a919](https://github.com/angular/angular.js/commit/9af7a9198e2d30608ea6c40eedde03e44a6ef569))
+- **docs:** simplify api urls
+  ([f16150d5](https://github.com/angular/angular.js/commit/f16150d5f1b20b3d633b4402095ea89baa4be042))
+
+
+
 <a name="1.0.0rc11"></a>
 # 1.0.0rc11 promise-resolution (2012-06-10)
 
