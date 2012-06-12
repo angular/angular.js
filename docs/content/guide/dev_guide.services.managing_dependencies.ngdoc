@@ -50,7 +50,7 @@ provided by Angular's web framework:
  * @param {*} message Message to be logged.
  */
   function batchLogModule($provide){
-    $provide.factory('batchLog', ['$defer', '$log', function($defer, $log) {
+    $provide.factory('batchLog', ['$timeout', '$log', function($timeout, $log) {
       var messageQueue = [];
 
       function log() {
@@ -58,7 +58,7 @@ provided by Angular's web framework:
           $log('batchLog messages: ', messageQueue);
           messageQueue = [];
         }
-        $defer(log, 50000);
+        $timeout(log, 50000);
       }
 
       // start periodic checking
@@ -88,7 +88,7 @@ provided by Angular's web framework:
 
 Things to notice in this example:
 
-* The `batchLog` service depends on the built-in {@link api/ng.$defer $defer} and
+* The `batchLog` service depends on the built-in {@link api/ng.$timeout $timeout} and
 {@link api/ng.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
 * The `routeTemplateMonitor` service depends on the built-in {@link api/ng.$route
