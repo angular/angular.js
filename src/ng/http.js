@@ -381,6 +381,7 @@ function $HttpProvider() {
      *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
      *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
      *      requests with credentials} for more information.
+     *    - **useXDomain** 0 `{boolean}` - use XDomainRequest in IE requests 
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -697,7 +698,7 @@ function $HttpProvider() {
       // if we won't have the response in cache, send the request to the backend
       if (!cachedResp) {
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials);
+            config.withCredentials, config.useXDomain);
       }
 
       return promise;

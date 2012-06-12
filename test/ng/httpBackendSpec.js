@@ -1,7 +1,7 @@
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
-      xhr, fakeDocument, callback;
+      xhr, xdr, fakeDocument, callback;
 
   // TODO(vojta): should be replaced by $defer mock
   function fakeTimeout(fn, delay) {
@@ -38,7 +38,7 @@ describe('$httpBackend', function() {
         })
       }
     };
-    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeDocument);
+    $backend = createHttpBackend($browser, MockXhr, MockXhr, fakeTimeout, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -234,7 +234,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr, null, null, null, null, 'http');
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -245,7 +245,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+      $backend = createHttpBackend($browser, MockXhr, null, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -256,7 +256,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr, null, null, null, null, 'http');
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -267,7 +267,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+      $backend = createHttpBackend($browser, MockXhr, null, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
       respond(0, '');
@@ -277,4 +277,3 @@ describe('$httpBackend', function() {
     });
   });
 });
-
