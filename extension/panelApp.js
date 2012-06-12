@@ -136,9 +136,7 @@ panelApp.factory('appContext', function(chromeExtension) {
 
         // Detect whether or not this is an AngularJS app
         if (!window.angular) {
-          return {
-            err: 'Not an AngularJS App'
-          };
+          return false;
         }
 
         var elts = window.document.getElementsByClassName('ng-scope');
@@ -312,7 +310,7 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
 
   var updateTree = function () {
     appContext.getDebugInfo(function (info) {
-      if (!info) {
+      if (!info || info.roots.length === 0) {
         setTimeout(updateTree, 50);
         return;
       }
@@ -431,6 +429,7 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
           total += elt.calls;
         });
         info.forEach(function (elt) {
+          elt.time = elt.calls.toPrecision(3);
           elt.calls = (100 * elt.calls / total).toPrecision(3);
         });
 
@@ -444,7 +443,7 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 
   var updateTree = function () {
     appContext.getDebugInfo(function (info) {
-      if (!info) {
+      if (!info || info.roots.length === 0) {
         setTimeout(updateTree, 50);
         return;
       }

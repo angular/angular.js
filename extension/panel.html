@@ -45,21 +45,21 @@
     </div>
     <div ng-class="{hidden: !enable}">
       <wtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></wtree>
-    </div>
 
-    <!--
-    <h3>Timeline</h3>
-    <button ng-click="clear()">Clear Timeline</button>
-    <div style="height: 400px; background-color: blue; position: relative; overflow: scroll;">
-      <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
-    </div>
-    -->
-    <h3>Histogram</h3>
-    <div style="height: 400px; overflow-y: auto;">
-      <div ng-repeat="watch in histogram">
-        <span style="display: inline-block; width: 300px; overflow: none;">{{watch.name | first}}</span>
-        <div class="progress">
-          <div ng-style="{width: (watch.calls) + '%'}" class= "bar">
+      <!--
+      <h3>Timeline</h3>
+      <button ng-click="clear()">Clear Timeline</button>
+      <div style="height: 400px; background-color: blue; position: relative; overflow: scroll;">
+        <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
+      </div>
+      -->
+      <h3>Histogram</h3>
+      <div style="height: 400px; overflow-y: auto;">
+        <div ng-repeat="watch in histogram">
+          <span style="font-family: monospace;">{{watch.name | first}} </span><span> | {{watch.calls}}% | {{watch.time}}ms</span>
+          <div class="progress">
+            <div ng-style="{width: (watch.calls) + '%'}" class= "bar">
+            </div>
           </div>
         </div>
       </div>
