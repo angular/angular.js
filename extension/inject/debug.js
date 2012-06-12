@@ -1,4 +1,3 @@
-
 var inject = function () {
   if (document.head) {
 
@@ -22,7 +21,6 @@ var inject = function () {
               };
               var ng = angular.module('ng');
               ng.config(function ($provide) {
-
 
                 $provide.decorator('$rootScope',
                   function ($delegate) {
@@ -133,12 +131,6 @@ var inject = function () {
 
               });
 
-              /*
-              window.angular.bootstrap = function (arg1, arg2, arg3) {
-                bootstrap(arg1, arg2, arg3);
-              };
-              */
-              //console.log('patched');
             } else {
               setTimeout(patch, 1);
             }

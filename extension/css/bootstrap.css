@@ -4678,11 +4678,6 @@ a.badge:hover {
      -moz-box-sizing: border-box;
       -ms-box-sizing: border-box;
           box-sizing: border-box;
-  -webkit-transition: width 0.6s ease;
-     -moz-transition: width 0.6s ease;
-      -ms-transition: width 0.6s ease;
-       -o-transition: width 0.6s ease;
-          transition: width 0.6s ease;
 }
 
 .progress-striped .bar {

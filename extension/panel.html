@@ -55,11 +55,11 @@
     </div>
     -->
     <h3>Histogram</h3>
-    <div style="height: 400px; overflow-y: scroll;">
+    <div style="height: 400px; overflow-y: auto;">
       <div ng-repeat="watch in histogram">
         <span style="display: inline-block; width: 300px; overflow: none;">{{watch.name | first}}</span>
-        <div style="height: 50px;">
-          <div ng-style="{width: (watch.calls) + '%'}"  style="display: inline-block; height: 50px; background-color: red;">
+        <div class="progress">
+          <div ng-style="{width: (watch.calls) + '%'}" class= "bar">
           </div>
         </div>
       </div>
