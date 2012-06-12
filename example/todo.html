@@ -2,9 +2,16 @@
 <html>
 <head>
   <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
-  <script src="http://code.angularjs.org/angular-1.0.0rc12.js"></script>
+  <script src="angular-1.0.0rc12.hax.js"></script>
+  <script src="leet.js"></script>
   <script>
+    var myApp = angular.module('myApp', []);
+
+
     function TodoCtrl($scope) {
+
+      $scope.listName = 'Todo';
+
       $scope.todos = [
         {text:'learn angular', done:true},
         {text:'build an angular app', done:false}];
@@ -30,6 +37,49 @@
         });
       };
     }
+
+    // filters
+    // =======
+
+    myApp.filter('leet', function () {
+      return function (input) {
+        return l33t(input);
+      }
+    });
+
+    myApp.filter('bogosort', function () {
+
+      // check if the array is sorted
+      var isSorted = function (ar) {
+        var i;
+        for (i = 1; i < ar.length; i++) {
+          if (ar[i - 1].text > ar[i].text) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      var bogosort = function (input) {
+        while (!isSorted(input)) {
+          input = input.sort(function () {
+            return Math.random() - 0.5;
+          });
+        }
+        return input;
+      };
+
+      return function (input, option) {
+        return bogosort(input);
+      };
+    });
+
+    myApp.filter('nativesort', function () {
+      return function (input, option) {
+        return input.sort();
+      };
+    });
+
   </script>
   <style>
     .done-true {
@@ -42,14 +92,14 @@
   </style>
 </head>
 <body>
-  <h2>Todo</h2>
   <div ng-controller="TodoCtrl">
+    <h2>{{listName}}</h2>
     <span>{{remaining()}} of {{todos.length}} remaining</span>
     [ <a href="" ng-click="archive()">archive</a> ]
     <ul class="unstyled">
-      <li ng-repeat="todo in todos">
+      <li ng-repeat="todo in todos|bogosort">
         <input type="checkbox" ng-model="todo.done">
-        <span class="done-{{todo.done}}">{{todo.text}}</span>
+        <span class="done-{{todo.done}}">{{todo.text|leet}}</span>
       </li>
     </ul>
     <form ng-submit="addTodo()">
@@ -61,7 +111,7 @@
   <script>
     angular.element(document).ready(function() {
       setTimeout(function () {
-        angular.bootstrap(document);
+        angular.bootstrap(document, ['myApp']);
       }, 50);
     });
   </script>
