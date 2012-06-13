@@ -410,9 +410,10 @@ function createInjector(modulesToLoad) {
             decorator: decorator
           }
       },
-      providerInjector = createInternalInjector(providerCache, function() {
-        throw Error("Unknown provider: " + path.join(' <- '));
-      }),
+      providerInjector = (providerCache.$injector =
+          createInternalInjector(providerCache, function() {
+            throw Error("Unknown provider: " + path.join(' <- '));
+          })),
       instanceCache = {},
       instanceInjector = (instanceCache.$injector =
           createInternalInjector(instanceCache, function(servicename) {
@@ -489,9 +490,7 @@ function createInjector(modulesToLoad) {
         try {
           for(var invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
             var invokeArgs = invokeQueue[i],
-                provider = invokeArgs[0] == '$injector'
-                    ? providerInjector
-                    : providerInjector.get(invokeArgs[0]);
+                provider = providerInjector.get(invokeArgs[0]);
 
             provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
           }
