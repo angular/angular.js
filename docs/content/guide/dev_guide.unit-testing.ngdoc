@@ -164,7 +164,7 @@ myClass.doWork();
 
 Notice that no global variables were harmed in the writing of this test.
 
-Angular comes with {@link dev_guide.di dependency-injection} built in which makes the right thing
+Angular comes with {@link di dependency-injection} built in which makes the right thing
 easy to do, but you still need to do it if you wish to take advantage of the testability story.
 
 ## Controllers
@@ -218,16 +218,16 @@ In angular the controllers are strictly separated from the DOM manipulation logi
 a much easier testability story as can be seen in this example:
 
 <pre>
-function PasswordCntrl() {
-  this.password = '';
-  this.grade = function() {
-    var size = this.password.length;
+function PasswordCntrl($scope) {
+  $scope.password = '';
+  $scope.grade = function() {
+    var size = $scope.password.length;
     if (size > 8) {
-      this.strength = 'strong';
+      $scope.strength = 'strong';
     } else if (size > 3) {
-      this.strength = 'medium';
+      $scope.strength = 'medium';
     } else {
-      this.strength = 'weak';
+      $scope.strength = 'weak';
     }
   };
 }
@@ -247,7 +247,7 @@ that such a test tells a story, rather then asserting random bits which don't se
 
 
 ## Filters
-{@link api/angular.module.ng.$filter Filters} are functions which transform the data into user readable
+{@link api/ng.$filter Filters} are functions which transform the data into user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 

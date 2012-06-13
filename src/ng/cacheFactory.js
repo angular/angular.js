@@ -1,6 +1,6 @@
 /**
  * @ngdoc object
- * @name angular.module.ng.$cacheFactory
+ * @name ng.$cacheFactory
  *
  * @description
  * Factory that constructs cache objects.
@@ -153,12 +153,12 @@ function $CacheFactoryProvider() {
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$templateCache
+ * @name ng.$templateCache
  *
  * @description
  * Cache used for storing html templates.
  *
- * See {@link angular.module.ng.$cacheFactory $cacheFactory}.
+ * See {@link ng.$cacheFactory $cacheFactory}.
  *
  */
 function $TemplateCacheProvider() {

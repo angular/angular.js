@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngShow
+ * @name ng.directive:ngShow
  *
  * @description
  * The `ngShow` and `ngHide` directives show or hide a portion of the DOM tree (HTML)
  * conditionally.
  *
  * @element ANY
- * @param {expression} ngShow If the {@link guide/dev_guide.expressions expression} is truthy
+ * @param {expression} ngShow If the {@link guide/expression expression} is truthy
  *     then the element is shown or hidden respectively.
  *
  * @example
@@ -42,14 +42,14 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngHide
+ * @name ng.directive:ngHide
  *
  * @description
  * The `ngHide` and `ngShow` directives hide or show a portion
  * of the HTML conditionally.
  *
  * @element ANY
- * @param {expression} ngHide If the {@link guide/dev_guide.expressions expression} truthy then
+ * @param {expression} ngHide If the {@link guide/expression expression} truthy then
  *     the element is shown or hidden respectively.
  *
  * @example

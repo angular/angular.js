@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngInclude
+ * @name ng.directive:ngInclude
  * @restrict ECA
  *
  * @description
@@ -18,7 +18,7 @@
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
- * @param {string=} autoscroll Whether `ngInclude` should call {@link angular.module.ng.$anchorScroll
+ * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
  *                  $anchorScroll} to scroll the viewport after the content is loaded.
  *
  *                  - If the attribute is not set, disable scrolling.
@@ -72,8 +72,8 @@
 
 /**
  * @ngdoc event
- * @name angular.module.ng.$compileProvider.directive.ngInclude#$includeContentLoaded
- * @eventOf angular.module.ng.$compileProvider.directive.ngInclude
+ * @name ng.directive:ngInclude#$includeContentLoaded
+ * @eventOf ng.directive:ngInclude
  * @eventType emit on the current ngInclude scope
  * @description
  * Emitted every time the ngInclude content is reloaded.

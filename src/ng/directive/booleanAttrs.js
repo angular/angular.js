@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngHref
+ * @name ng.directive:ngHref
  * @restrict A
  *
  * @description
@@ -82,7 +82,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSrc
+ * @name ng.directive:ngSrc
  * @restrict A
  *
  * @description
@@ -107,7 +107,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngDisabled
+ * @name ng.directive:ngDisabled
  * @restrict A
  *
  * @description
@@ -146,7 +146,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngChecked
+ * @name ng.directive:ngChecked
  * @restrict A
  *
  * @description
@@ -176,7 +176,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngMultiple
+ * @name ng.directive:ngMultiple
  * @restrict A
  *
  * @description
@@ -212,7 +212,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngReadonly
+ * @name ng.directive:ngReadonly
  * @restrict A
  *
  * @description
@@ -242,7 +242,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngSelected
+ * @name ng.directive:ngSelected
  * @restrict A
  *
  * @description
@@ -284,7 +284,6 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
       priority: 100,
       compile: function() {
         return function(scope, element, attr) {
-          attr.$$observers[attrName] = [];
           scope.$watch(attr[normalized], function(value) {
             attr.$set(attrName, !!value);
           });
@@ -301,27 +300,15 @@ forEach(['src', 'href'], function(attrName) {
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       priority: 99, // it needs to run after the attributes are interpolated
-      compile: function() {
-        return function(scope, element, attr) {
-          var value = attr[normalized];
-          if (value == undefined) {
-            // undefined value means that the directive is being interpolated
-            // so just register observer
-            attr.$$observers[attrName] = [];
-            attr.$observe(normalized, function(value) {
-              attr.$set(attrName, value);
+      link: function(scope, element, attr) {
+        attr.$observe(normalized, function(value) {
+          attr.$set(attrName, value);
 
-              // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
-              // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
-              // to set the property as well to achieve the desired effect
-              if (msie) element.prop(attrName, value);
-            });
-          } else {
-            // value present means that no interpolation, so copy to native attribute.
-            attr.$set(attrName, value);
-            element.prop(attrName, value);
-          }
-        };
+          // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+          // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
+          // to set the property as well to achieve the desired effect
+          if (msie) element.prop(attrName, value);
+        });
       }
     };
   };

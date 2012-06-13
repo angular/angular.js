@@ -313,6 +313,23 @@ describe('ngMock', function() {
   });
 
 
+  describe('$timeout', function() {
+    it('should expose flush method that will flush the pending queue of tasks', inject(
+        function($timeout) {
+      var logger = [],
+          logFn = function(msg) { return function() { logger.push(msg) }};
+
+      $timeout(logFn('t1'));
+      $timeout(logFn('t2'), 200);
+      $timeout(logFn('t3'));
+      expect(logger).toEqual([]);
+
+      $timeout.flush();
+      expect(logger).toEqual(['t1', 't3', 't2']);
+    }));
+  });
+
+
   describe('angular.mock.dump', function(){
     var d = angular.mock.dump;
 
@@ -353,6 +370,18 @@ describe('ngMock', function() {
       return keys.sort();
     }
 
+    function browserTrigger(element, eventType) {
+      element = element[0];
+      if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent(eventType, true, true, window, 0, 0, 0, 0, 0, false, false,
+          false, false, 0, element);
+        element.dispatchEvent(event);
+      } else {
+        element.fireEvent('on' + eventType);
+      }
+    }
+
     it('should remove data', function() {
       expect(angular.element.cache).toEqual({});
       var div = angular.element('<div></div>');
@@ -364,17 +393,29 @@ describe('ngMock', function() {
 
     it('should deregister event handlers', function() {
       expect(keys(angular.element.cache)).toEqual([]);
-
+      var log = '';
       var div = angular.element('<div></div>');
 
-      div.bind('click', angular.noop);
-      div.bind('mousemove', angular.noop);
-      div.data('some', 'data');
-      expect(keys(angular.element.cache).length).toBe(1);
+      // crazy IE9 requires div to be connected to render DOM for click event to work
+      // mousemove works even when not connected. This is a heisen-bug since stepping
+      // through the code makes the test pass. Viva IE!!!
+      angular.element(document.body).append(div)
+
+      div.bind('click', function() { log += 'click1;'});
+      div.bind('click', function() { log += 'click2;'});
+      div.bind('mousemove', function() { log += 'mousemove;'});
+
+      browserTrigger(div, 'click');
+      browserTrigger(div, 'mousemove');
+      expect(log).toEqual('click1;click2;mousemove;');
+      log = '';
 
       angular.mock.clearDataCache();
+
+      browserTrigger(div, 'click');
+      browserTrigger(div, 'mousemove');
+      expect(log).toEqual('');
       expect(keys(angular.element.cache)).toEqual([]);
-      expect(div.data('some')).toBeUndefined();
 
       div.remove();
     });
@@ -909,6 +950,13 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$rootElement', function() {
+    it('should create mock application root', inject(function($rootElement) {
+      expect($rootElement.text()).toEqual('');
+    }));
+  });
 });
 
 
@@ -941,7 +989,7 @@ describe('ngMockE2E', function() {
 
 
     describe('autoflush', function() {
-      it('should flush responses via $defer', inject(function($browser) {
+      it('should flush responses via $browser.defer', inject(function($browser) {
         hb.when('GET', '/foo').respond('bar');
         hb('GET', '/foo', null, callback);
 

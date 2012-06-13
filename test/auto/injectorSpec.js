@@ -123,11 +123,11 @@ describe('injector', function() {
     it('should return $inject', function() {
       function fn() {}
       fn.$inject = ['a'];
-      expect(inferInjectionArgs(fn)).toBe(fn.$inject);
-      expect(inferInjectionArgs(function() {})).toEqual([]);
-      expect(inferInjectionArgs(function () {})).toEqual([]);
-      expect(inferInjectionArgs(function  () {})).toEqual([]);
-      expect(inferInjectionArgs(function /* */ () {})).toEqual([]);
+      expect(annotate(fn)).toBe(fn.$inject);
+      expect(annotate(function() {})).toEqual([]);
+      expect(annotate(function () {})).toEqual([]);
+      expect(annotate(function  () {})).toEqual([]);
+      expect(annotate(function /* */ () {})).toEqual([]);
     });
 
 
@@ -142,42 +142,47 @@ describe('injector', function() {
                  */
           _c,
           /* {some type} */ d) { extraParans();}
-      expect(inferInjectionArgs($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
+      expect(annotate($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });
 
 
     it('should strip leading and trailing underscores from arg name during inference', function() {
       function beforeEachFn(_foo_) { /* foo = _foo_ */ };
-      expect(inferInjectionArgs(beforeEachFn)).toEqual(['foo']);
+      expect(annotate(beforeEachFn)).toEqual(['foo']);
     });
 
 
     it('should handle no arg functions', function() {
       function $f_n0() {}
-      expect(inferInjectionArgs($f_n0)).toEqual([]);
+      expect(annotate($f_n0)).toEqual([]);
       expect($f_n0.$inject).toEqual([]);
     });
 
 
     it('should handle no arg functions with spaces in the arguments list', function() {
       function fn( ) {}
-      expect(inferInjectionArgs(fn)).toEqual([]);
+      expect(annotate(fn)).toEqual([]);
       expect(fn.$inject).toEqual([]);
     });
 
 
     it('should handle args with both $ and _', function() {
       function $f_n0($a_) {}
-      expect(inferInjectionArgs($f_n0)).toEqual(['$a_']);
+      expect(annotate($f_n0)).toEqual(['$a_']);
       expect($f_n0.$inject).toEqual(['$a_']);
     });
 
 
     it('should throw on non function arg', function() {
       expect(function() {
-        inferInjectionArgs({});
+        annotate({});
       }).toThrow();
+    });
+
+
+    it('should publish annotate API', function() {
+      expect(injector.annotate).toBe(annotate);
     });
   });
 

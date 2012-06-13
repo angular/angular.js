@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$controllerProvider
+ * @name ng.$controllerProvider
  * @description
- * The {@link angular.module.ng.$controller $controller service} is used by Angular to create new
+ * The {@link ng.$controller $controller service} is used by Angular to create new
  * controllers.
  *
  * This provider allows controller registration via the
- * {@link angular.module.ng.$controllerProvider#register register} method.
+ * {@link ng.$controllerProvider#register register} method.
  */
 function $ControllerProvider() {
   var controllers = {};
@@ -16,8 +16,8 @@ function $ControllerProvider() {
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$controllerProvider#register
-   * @methodOf angular.module.ng.$controllerProvider
+   * @name ng.$controllerProvider#register
+   * @methodOf ng.$controllerProvider
    * @param {string} name Controller name
    * @param {Function|Array} constructor Controller constructor fn (optionally decorated with DI
    *    annotations in the array notation).
@@ -35,7 +35,7 @@ function $ControllerProvider() {
 
     /**
      * @ngdoc function
-     * @name angular.module.ng.$controller
+     * @name ng.$controller
      * @requires $injector
      *
      * @param {Function|string} constructor If called with a function then it's considered to be the
@@ -52,7 +52,7 @@ function $ControllerProvider() {
      * @description
      * `$controller` service is responsible for instantiating controllers.
      *
-     * It's just simple call to {@link angular.module.AUTO.$injector $injector}, but extracted into
+     * It's just simple call to {@link AUTO.$injector $injector}, but extracted into
      * a service, so that one can override this service with {@link https://gist.github.com/1649788
      * BC version}.
      */

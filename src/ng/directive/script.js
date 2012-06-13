@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.script
+ * @name ng.directive:script
  *
  * @description
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the

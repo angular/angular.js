@@ -39,7 +39,7 @@ describe('ngView', function() {
         };
       });
 
-      $routeProvider.when('/some', {template: '/tpl.html', controller: Ctrl});
+      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl});
     });
 
     inject(function($route, $rootScope, $templateCache, $location) {
@@ -59,7 +59,7 @@ describe('ngView', function() {
 
     module(function($controllerProvider, $routeProvider) {
       $controllerProvider.register('MyCtrl', ['$scope', MyCtrl]);
-      $routeProvider.when('/foo', {controller: 'MyCtrl', template: '/tpl.html'});
+      $routeProvider.when('/foo', {controller: 'MyCtrl', templateUrl: '/tpl.html'});
     });
 
     inject(function($route, $location, $rootScope, $templateCache) {
@@ -75,8 +75,8 @@ describe('ngView', function() {
 
   it('should load content via xhr when route changes', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'myUrl1'});
-      $routeProvider.when('/bar', {template: 'myUrl2'});
+      $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
+      $routeProvider.when('/bar', {templateUrl: 'myUrl2'});
     });
 
     inject(function($rootScope, $compile, $httpBackend, $location, $route) {
@@ -97,9 +97,34 @@ describe('ngView', function() {
   });
 
 
+  it('should use inline content route changes', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {template: '<div>{{1+3}}</div>'});
+      $routeProvider.when('/bar', {template: 'angular is da best'});
+      $routeProvider.when('/blank', {template: ''});
+    });
+
+    inject(function($rootScope, $compile, $location, $route) {
+      expect(element.text()).toEqual('');
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('4');
+
+      $location.path('/bar');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('angular is da best');
+
+      $location.path('/blank');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('');
+    });
+  });
+
+
   it('should remove all content when location changes to an unknown route', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'myUrl1'});
+      $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
     });
 
     inject(function($rootScope, $compile, $location, $httpBackend, $route) {
@@ -118,7 +143,7 @@ describe('ngView', function() {
 
   it('should chain scopes and propagate evals to the child scope', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'myUrl1'});
+      $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
     });
 
     inject(function($rootScope, $compile, $location, $httpBackend, $route) {
@@ -140,7 +165,7 @@ describe('ngView', function() {
   it('should be possible to nest ngView in ngInclude', function() {
 
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'viewPartial.html'});
+      $routeProvider.when('/foo', {templateUrl: 'viewPartial.html'});
     });
 
     inject(function($httpBackend, $location, $route, $compile, $rootScope) {
@@ -156,7 +181,7 @@ describe('ngView', function() {
       $httpBackend.flush();
 
       expect(elm.text()).toEqual('include: view: content');
-      expect($route.current.template).toEqual('viewPartial.html');
+      expect($route.current.templateUrl).toEqual('viewPartial.html');
       dealoc(elm)
     });
   });
@@ -170,7 +195,7 @@ describe('ngView', function() {
     }
 
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
+      $routeProvider.when('/foo', {controller: ParentCtrl, templateUrl: 'viewPartial.html'});
     });
 
 
@@ -209,8 +234,8 @@ describe('ngView', function() {
     // this is a test for a bad race condition that affected feedback
 
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'myUrl1'});
-      $routeProvider.when('/bar', {template: 'myUrl2'});
+      $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
+      $routeProvider.when('/bar', {templateUrl: 'myUrl2'});
     });
 
     inject(function($route, $rootScope, $location, $httpBackend) {
@@ -229,27 +254,9 @@ describe('ngView', function() {
   });
 
 
-  it('should clear the content when error during xhr request', function() {
-    module(function($routeProvider) {
-      $routeProvider.when('/foo', {controller: noop, template: 'myUrl1'});
-    });
-
-    inject(function($route, $location, $rootScope, $httpBackend) {
-      $location.path('/foo');
-      $httpBackend.expect('GET', 'myUrl1').respond(404, '');
-      element.text('content');
-
-      $rootScope.$digest();
-      $httpBackend.flush();
-
-      expect(element.text()).toBe('');
-    });
-  });
-
-
   it('should be async even if served from cache', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {controller: noop, template: 'myUrl1'});
+      $routeProvider.when('/foo', {controller: noop, templateUrl: 'myUrl1'});
     });
 
     inject(function($route, $rootScope, $location, $templateCache) {
@@ -280,12 +287,12 @@ describe('ngView', function() {
     };
 
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'tpl.html', controller: Ctrl});
+      $routeProvider.when('/foo', {templateUrl: 'tpl.html', controller: Ctrl});
     });
 
     inject(function($templateCache, $rootScope, $location) {
-      $rootScope.$on('$beforeRouteChange', logger('$beforeRouteChange'));
-      $rootScope.$on('$afterRouteChange', logger('$afterRouteChange'));
+      $rootScope.$on('$routeChangeStart', logger('$routeChangeStart'));
+      $rootScope.$on('$routeChangeSuccess', logger('$routeChangeSuccess'));
       $rootScope.$on('$viewContentLoaded', logger('$viewContentLoaded'));
 
       $templateCache.put('tpl.html', [200, '{{value}}', {}]);
@@ -293,14 +300,14 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       expect(element.text()).toBe('bound-value');
-      expect(log).toEqual(['$beforeRouteChange', '$afterRouteChange', 'init-ctrl',
-                           '$viewContentLoaded']);
+      expect(log).toEqual([
+        '$routeChangeStart', 'init-ctrl', '$viewContentLoaded', '$routeChangeSuccess' ]);
     });
   });
 
   it('should destroy previous scope', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'tpl.html'});
+      $routeProvider.when('/foo', {templateUrl: 'tpl.html'});
     });
 
     inject(function($templateCache, $rootScope, $location) {
@@ -337,8 +344,8 @@ describe('ngView', function() {
     };
 
     module(function($routeProvider) {
-      $routeProvider.when('/one', {template: 'one.html', controller: createCtrl('ctrl1')});
-      $routeProvider.when('/two', {template: 'two.html', controller: createCtrl('ctrl2')});
+      $routeProvider.when('/one', {templateUrl: 'one.html', controller: createCtrl('ctrl1')});
+      $routeProvider.when('/two', {templateUrl: 'two.html', controller: createCtrl('ctrl2')});
     });
 
     inject(function($httpBackend, $rootScope, $location) {
@@ -386,9 +393,9 @@ describe('ngView', function() {
     }
 
     module(function($routeProvider) {
-      $routeProvider.when('/bar', {template: 'tpl.html', controller: createController('bar')});
+      $routeProvider.when('/bar', {templateUrl: 'tpl.html', controller: createController('bar')});
       $routeProvider.when('/foo', {
-          template: 'tpl.html', controller: createController('foo'), reloadOnSearch: false});
+          templateUrl: 'tpl.html', controller: createController('foo'), reloadOnSearch: false});
     });
 
     inject(function($templateCache, $location, $rootScope) {
@@ -411,7 +418,7 @@ describe('ngView', function() {
 
   it('should evaluate onload expression after linking the content', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'tpl.html'});
+      $routeProvider.when('/foo', {templateUrl: 'tpl.html'});
     });
 
     inject(function($templateCache, $location, $rootScope) {
@@ -432,7 +439,7 @@ describe('ngView', function() {
     }
 
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'tpl.html', controller: MyCtrl});
+      $routeProvider.when('/foo', {templateUrl: 'tpl.html', controller: MyCtrl});
     });
 
     inject(function($templateCache, $location, $rootScope, $route) {

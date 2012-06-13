@@ -19,7 +19,7 @@ function classDirective(name, selector) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngClass
+ * @name ng.directive:ngClass
  *
  * @description
  * The `ngClass` allows you to set CSS class on HTML element dynamically by databinding an
@@ -31,7 +31,7 @@ function classDirective(name, selector) {
  * new classes are added.
  *
  * @element ANY
- * @param {expression} ngClass {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class
  *   names, an array, or a map of class names to boolean values.
  *
@@ -70,18 +70,18 @@ var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngClassOdd
+ * @name ng.directive:ngClassOdd
  *
  * @description
  * The `ngClassOdd` and `ngClassEven` directives work exactly as
- * {@link angular.module.ng.$compileProvider.directive.ngClass ngClass}, except it works in
+ * {@link ng.directive:ngClass ngClass}, except it works in
  * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}.
+ * {@link ng.directive:ngRepeat ngRepeat}.
  *
  * @element ANY
- * @param {expression} ngClassOdd {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ngClassOdd {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
@@ -117,18 +117,18 @@ var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngClassEven
+ * @name ng.directive:ngClassEven
  *
  * @description
  * The `ngClassOdd` and `ngClassEven` works exactly as
- * {@link angular.module.ng.$compileProvider.directive.ngClass ngClass}, except it works in
+ * {@link ng.directive:ngClass ngClass}, except it works in
  * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.module.ng.$compileProvider.directive.ngRepeat ngRepeat}.
+ * {@link ng.directive:ngRepeat ngRepeat}.
  *
  * @element ANY
- * @param {expression} ngClassEven {@link guide/dev_guide.expressions Expression} to eval. The
+ * @param {expression} ngClassEven {@link guide/expression Expression} to eval. The
  *   result of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example

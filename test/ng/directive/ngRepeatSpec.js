@@ -104,42 +104,58 @@ describe('ngRepeat', function() {
   }));
 
 
-  it('should expose iterator position as $position when iterating over arrays',
+  it('should expose iterator position as $first, $middle and $last when iterating over arrays',
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="item in items" ng-bind="item + \':\' + $position + \'|\'"></li>' +
+        '<li ng-repeat="item in items">{{item}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
       '</ul>')($rootScope);
     $rootScope.items = ['misko', 'shyam', 'doug'];
     $rootScope.$digest();
-    expect(element.text()).toEqual('misko:first|shyam:middle|doug:last|');
+    expect(element.text()).
+        toEqual('misko:true-false-false|shyam:false-true-false|doug:false-false-true|');
 
     $rootScope.items.push('frodo');
     $rootScope.$digest();
-    expect(element.text()).toEqual('misko:first|shyam:middle|doug:middle|frodo:last|');
+    expect(element.text()).
+        toEqual('misko:true-false-false|' +
+                'shyam:false-true-false|' +
+                'doug:false-true-false|' +
+                'frodo:false-false-true|');
 
     $rootScope.items.pop();
     $rootScope.items.pop();
     $rootScope.$digest();
-    expect(element.text()).toEqual('misko:first|shyam:last|');
+    expect(element.text()).toEqual('misko:true-false-false|shyam:false-false-true|');
+
+    $rootScope.items.pop();
+    $rootScope.$digest();
+    expect(element.text()).toEqual('misko:true-false-true|');
   }));
 
 
-  it('should expose iterator position as $position when iterating over objects',
+  it('should expose iterator position as $first, $middle and $last when iterating over objects',
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(key, val) in items" ng-bind="key + \':\' + val + \':\' + $position + \'|\'">' +
-        '</li>' +
+        '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
       '</ul>')($rootScope);
     $rootScope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
     $rootScope.$digest();
-    expect(element.text()).toEqual('doug:d:first|frodo:f:middle|misko:m:middle|shyam:s:last|');
+    expect(element.text()).
+        toEqual('doug:d:true-false-false|' +
+                'frodo:f:false-true-false|' +
+                'misko:m:false-true-false|' +
+                'shyam:s:false-false-true|');
 
     delete $rootScope.items.doug;
     delete $rootScope.items.frodo;
     $rootScope.$digest();
-    expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
+    expect(element.text()).toEqual('misko:m:true-false-false|shyam:s:false-false-true|');
+
+    delete $rootScope.items.shyam;
+    $rootScope.$digest();
+    expect(element.text()).toEqual('misko:m:true-false-true|');
   }));
 
 
@@ -207,7 +223,7 @@ describe('ngRepeat', function() {
     beforeEach(inject(function($rootScope, $compile) {
       element = $compile(
         '<ul>' +
-          '<li ng-repeat="item in items" ng-bind="key + \':\' + val + \':\' + $position + \'|\'"></li>' +
+          '<li ng-repeat="item in items">{{key}}:{{val}}|></li>' +
         '</ul>')($rootScope);
       a = {};
       b = {};

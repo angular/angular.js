@@ -17,15 +17,15 @@ abstracted bits.
 **What level of support for i18n/l10n is currently in Angular?**
 
 Currently, Angular supports i18n/l10n for {@link
-http://docs.angularjs.org/#!/api/angular.module.ng.$filter.date datetime}, {@link
-http://docs.angularjs.org/#!/api/angular.module.ng.$filter.number number} and {@link
-http://docs.angularjs.org/#!/api/angular.module.ng.$filter.currency currency} filters.
+http://docs.angularjs.org/#!/api/ng.filter:date datetime}, {@link
+http://docs.angularjs.org/#!/api/ng.filter:number number} and {@link
+http://docs.angularjs.org/#!/api/ng.filter:currency currency} filters.
 
 Additionally, Angular supports localizable pluralization support provided by the {@link
-api/angular.module.ng.$compileProvider.directive.ngPluralize ngPluralize directive}.
+api/ng.directive:ngPluralize ngPluralize directive}.
 
 All localizable Angular components depend on locale-specific rule sets managed by the {@link
-api/angular.module.ng.$locale $locale service}.
+api/ng.$locale $locale service}.
 
 For readers who want to jump straight into examples, we have a few web pages that showcase how to
 use Angular filters with various locale rule sets. You can find these examples either on {@link
@@ -90,8 +90,8 @@ because an extra script needs to be loaded.
 
 **Currency symbol "gotcha"**
 
-Angular's {@link http://docs.angularjs.org/#!/api/angular.module.ng.$filter.currency currency filter} allows
-you to use the default currency symbol from the {@link api/angular.module.ng.$locale locale service},
+Angular's {@link http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} allows
+you to use the default currency symbol from the {@link api/ng.$locale locale service},
 or you can provide the filter with a custom currency symbol. If your app will be used only in one
 locale, it is fine to rely on the default currency symbol. However, if you anticipate that viewers
 in other locales might use your app, you should provide your own currency symbol to make sure the
@@ -104,7 +104,7 @@ browser will specify the locale as ja, and the balance of '¥1000.00' will be sh
 will really upset your client.
 
 In this case, you need to override the default currency symbol by providing the {@link
-http://docs.angularjs.org/#!/api/angular.module.ng.$filter.currency currency filter} with a currency symbol as
+http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} with a currency symbol as
 a parameter when you configure the filter, for example, {{ 1000 | currency:"USD$"}}. This way,
 Angular will always show a balance of 'USD$1000' and disregard any locale changes.
 

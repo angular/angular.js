@@ -1,3 +1,161 @@
+<a name="v1.0.0rc12"></a>
+# 1.0.0rc12 regression-extermination (2012-06-12)
+
+## Bug Fixes
+
+- **$location:** correctly parse link urls in hashbang mode
+  ([74fa65ec](https://github.com/angular/angular.js/commit/74fa65ecb7c4e2df966a179952b35700912e065f),
+   [#1037](https://github.com/angular/angular.js/issues/1037))
+
+
+## Cleanup
+
+- **$defer:** remove deprecated `$defer` service
+  ([9af7a919](https://github.com/angular/angular.js/commit/9af7a9198e2d30608ea6c40eedde03e44a6ef569))
+- **docs:** simplify api urls
+  ([f16150d5](https://github.com/angular/angular.js/commit/f16150d5f1b20b3d633b4402095ea89baa4be042))
+
+
+
+<a name="1.0.0rc11"></a>
+# 1.0.0rc11 promise-resolution (2012-06-10)
+
+## Features
+
+- **$route:**
+  - allow defining route async dependencies as promises and defer route change until all promises
+    are resolved
+    ([885fb0dd](https://github.com/angular/angular.js/commit/885fb0dd0743859a8985c23e4d0c1855a2be711e))
+  - rename template -> tempalteUrl and add support for inline templates
+    ([0a6e464a](https://github.com/angular/angular.js/commit/0a6e464a93d9a1e76a624b356054ce9ca4015f55))
+- **$compile:** simplify isolate scope bindings and introduce true two-way data-binding between
+  parent scope and isolate scope
+  ([c3a41ff9](https://github.com/angular/angular.js/commit/c3a41ff9fefe894663c4d4f40a83794521deb14f))
+- **$injector:** provide API for retrieving function annotations
+  ([4361efb0](https://github.com/angular/angular.js/commit/4361efb03b79e71bf0cea92b94ff377ed718bad4))
+- **$location:** add $locatonChange[start|success] event - since events are cancelable, it's now
+  possible to cancel route and location changes.
+  ([92a2e180](https://github.com/angular/angular.js/commit/92a2e1807657c69e1372106b0727675a30f4cbd7))
+- **$rootElement:** expose application root element as $rootElement service
+  ([85632cb4](https://github.com/angular/angular.js/commit/85632cb44c95617d73c369f3a03fb476a4d5c8a2))
+
+
+## Bug Fixes
+
+- **$compile:** correctly merge class attr for replace directives (contributed by Max Martinsson,
+   [fb99b539](https://github.com/angular/angular.js/commit/fb99b539b4d851773b43f1564f7032adb157c0db),
+   [#1006](https://github.com/angular/angular.js/issues/1006))
+- **$http:** add utf-8 to default Content-Type header (post/put)
+  ([10f80d7d](https://github.com/angular/angular.js/commit/10f80d7d2918f98262090b425ecc294d9518aa7e))
+- **$timeout:** allow calling $timeout.cancel() with undefined (contributed by Ali Mills,
+   [1904596e](https://github.com/angular/angular.js/commit/1904596e0c2330299e92f092bd7a6ceca8e97c30))
+- **jqLite:** don't eat event exceptions
+  ([416a7830](https://github.com/angular/angular.js/commit/416a7830403a579cc57cf3a0198193790dcd0bc6))
+
+
+## Breaking Changes
+
+- **$beforeRouteChange and $routeChangeStart events were renamed to $afterRouteChange and
+  $routeChangeSuccess**
+
+  This was done to make the naming consistent with $location events and also get events to
+  categorize and order nicely just by alphabetical sorting.
+
+  ([7c242821](https://github.com/angular/angular.js/commit/7c2428218893f59c6a4499667488009ca67f3385))
+
+
+- **`template` option in $route definition was renamed to `templateUrl`**
+
+  The `template` options in $route definition now represents the actual template string. To provide
+  the template url use `templateUrl` option instead. This was done to unify the directive and $route
+  definitions.
+
+  To migrate just rename `template` to `templateUrl`.
+  ([0a6e464a](https://github.com/angular/angular.js/commit/0a6e464a93d9a1e76a624b356054ce9ca4015f55))
+
+
+- **isolate scope bindings definition has changed**
+
+  To migrate the code follow the example below:
+
+  Before:
+
+        scope: {
+          myAttr: 'attribute',
+          myBind: 'bind',
+          myExpression: 'expression',
+          myEval: 'evaluate',
+          myAccessor: 'accessor'
+        }
+
+  After:
+
+        scope: {
+          myAttr: '@',
+          myBind: '@',
+          myExpression: '&',
+          // myEval - usually not useful, but in cases where the expression is assignable, you can use '='
+          myAccessor: '=' // in directive's template change myAccessor() to myAccessor
+        }
+
+
+- **the inject option for the directive controller injection was removed**
+
+  The removed `inject` wasn't generally useful for directives so there should be no code using it.
+  ([c3a41ff9](https://github.com/angular/angular.js/commit/c3a41ff9fefe894663c4d4f40a83794521deb14f))
+
+
+
+<a name="1.0.0rc10"></a>
+# 1.0.0rc10 tesseract-giftwrapping (2012-05-23)
+
+## Features
+
+- **$timeout:** add `$timeout` service that supersedes `$defer`
+  ([4511d39c](https://github.com/angular/angular.js/commit/4511d39cc748288df70bdc258f98a8f36652e683),
+   [#704](https://github.com/angular/angular.js/issues/704),
+   [#532](https://github.com/angular/angular.js/issues/532))
+- **scope:** add `event.preventDefault()` and `event.defaultPrevented`
+  ([84542d24](https://github.com/angular/angular.js/commit/84542d2431d20de42d6ec27c9d3435dd72dbe2ee))
+
+
+## Bug Fixes
+
+- **ngRepeat:** expose `$first`, `$middle` and `$last` instead of `$position`
+  ([1d388676](https://github.com/angular/angular.js/commit/1d388676e3b97b6171fc498e82545bd437ee6fd1),
+   [#912](https://github.com/angular/angular.js/issues/912))
+- **jqLite:** use the same expando store structure as jQuery
+  ([acf095d1](https://github.com/angular/angular.js/commit/acf095d1783e30e750d046ef24e81b5a0a31fbd4))
+- **$rootScope:** infinite digest exception does not clear $$phase
+  ([5989a1ed](https://github.com/angular/angular.js/commit/5989a1eda2b9e289b467ef9741fb1476549c8fd9),
+   [#979](https://github.com/angular/angular.js/issues/979))
+
+
+## Breaking Changes
+
+- **ngRepeat - `$position` is not exposed in repeater scopes any more**
+
+  To update, search for `/\$position/` and replace it with one of `$first`, `$middle` or `$last`.
+  ([1d388676](https://github.com/angular/angular.js/commit/1d388676e3b97b6171fc498e82545bd437ee6fd1))
+
+- **scope event's `cancel` method was renamed to `stopPropagation`**
+
+  The name was corrected in order to align better with DOM terminology.
+  To update, search for `/\.\s*cancel\s*(/` and replace it with `.stopPropagation(` or
+  `.preventDefault(` (or both) depending on what you actually need.
+  ([91db9920](https://github.com/angular/angular.js/commit/91db99208e197a73584a88a8d835eeb55c466335))
+
+
+## Deprecation Warnings
+
+- **`$defer` service has been deprecated in favor of `$timeout` service**
+
+  The `$defer` service will be removed before 1.0 final, so please migrate your code.
+  ([4511d39c](https://github.com/angular/angular.js/commit/4511d39cc748288df70bdc258f98a8f36652e683))
+
+
+
+
 <a name="1.0.0rc9"></a>
 # 1.0.0rc9 eggplant-teleportation (2012-05-14)
 
@@ -957,7 +1115,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
 - complete rewrite of the Scope implementation with several API and semantic changes. Please see:
   - [angular.scope API docs](http://docs-next.angularjs.org/#!/api/angular.scope)
-  - [scopes dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.scopes)
+  - [scopes dev guide article](http://docs-next.angularjs.org/#!/guide/scopes)
   - [scope.js source file](https://github.com/angular/angular.js/blob/master/src/Scope.js)
   - breaking changes section of this changelog
 - added event system to scopes (see [$on], [$emit] and [$broadcast])
@@ -1708,7 +1866,7 @@ with the `$route` service
 [angular.bootstrap]: http://docs-next.angularjs.org/api/angular.bootstrap
 [$anchorScroll]: http://docs-next.angularjs.org/api/angular.module.ng.$anchorScroll
 [$cacheFactory]: http://docs-next.angularjs.org/api/angular.module.ng.$cacheFactory
-[bootstrapping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
+[bootstrapping]: http://docs-next.angularjs.org/guide/bootstrap
 [angular.copy]: http://docs-next.angularjs.org/api/angular.copy
 [ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng-app
 [$compile]: http://docs-next.angularjs.org/api/angular.module.ng.$compile

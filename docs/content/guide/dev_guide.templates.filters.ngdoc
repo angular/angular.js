@@ -12,7 +12,7 @@ displaying it to the user. You can pass expressions through a chain of filters l
         name | uppercase
 
 The expression evaluator simply passes the value of name to
-{@link api/angular.module.ng.$filter.uppercase uppercase filter}.
+{@link api/ng.filter:uppercase uppercase filter}.
 
 In addition to formatting data, filters can also modify the DOM. This allows filters to handle
 tasks such as conditionally applying CSS styles to filtered output.
@@ -25,4 +25,4 @@ tasks such as conditionally applying CSS styles to filtered output.
 
 ## Related API
 
-* {@link api/angular.module.ng.$filter Angular Filter API}
+* {@link api/ng.$filter Angular Filter API}

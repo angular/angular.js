@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$filter.limitTo
+ * @name ng.filter:limitTo
  * @function
  *
  * @description
@@ -11,7 +11,7 @@
  * value and sign (positive or negative) of `limit`.
  *
  * Note: This function is used to augment the `Array` type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more information about Angular arrays.
+ * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {Array} array Source array to be limited.
  * @param {string|Number} limit The length of the returned array. If the `limit` number is

@@ -2,7 +2,7 @@
 @name Developer Guide
 @description
 
-Welcome to the angular Developer Guide.  If you are here to learn the details of how to use angular
+Welcome to the angular Developer Guide. If you are here to learn the details of how to use angular
 to develop web apps, you've come to the right place.
 
 If you are completely or relatively unfamiliar with angular, you may want to check out one or both
@@ -13,12 +13,9 @@ of the following documents before returning here to the Developer Guide:
 
 <hr>
 
-## {@link dev_guide.overview Overview of Angular}
+## {@link overview Overview of Angular}
 
-## {@link dev_guide.bootstrap Initializing Angular}
-
-* {@link dev_guide.bootstrap.auto_bootstrap Understanding Automatic Initialization}
-* {@link dev_guide.bootstrap.manual_bootstrap Understanding Manual Initialization}
+## {@link bootstrap Initializing Angular}
 
 ## {@link dev_guide.mvc About MVC in Angular}
 
@@ -26,19 +23,14 @@ of the following documents before returning here to the Developer Guide:
 * {@link dev_guide.mvc.understanding_controller Understanding the Controller Component}
 * {@link dev_guide.mvc.understanding_view Understanding the View Component}
 
-## {@link dev_guide.scopes Angular Scope Objects}
+## {@link scope Angular Scope Objects}
 
-* {@link dev_guide.scopes.understanding_scopes Understanding Angular Scope Objects}
-* {@link dev_guide.scopes.internals Angular Scope Internals}
-
-## {@link dev_guide.compiler Angular HTML Compiler}
-
-* {@link guide/directive Understanding Angular Directives}
+## {@link compiler Angular HTML Compiler}
 
 ## {@link dev_guide.templates Angular Templates}
 
 * {@link dev_guide.templates.filters Understanding Angular Filters}
-* {@link dev_guide.forms Understanding Angular Forms}
+* {@link forms Understanding Angular Forms}
 
 ## {@link dev_guide.services Angular Services}
 
@@ -47,7 +39,4 @@ of the following documents before returning here to the Developer Guide:
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
 * {@link dev_guide.services.testing_services Testing Angular Services}
 
-## {@link dev_guide.di About Dependency Injection}
-
-* {@link dev_guide.di.understanding_di Understanding DI in Angular}
-* {@link dev_guide.di.using_di_controllers Using DI in Controllers}
+## {@link di About Dependency Injection}

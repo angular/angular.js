@@ -58,10 +58,10 @@ exports.Example.prototype.addSource = function(name, content) {
 };
 
 exports.Example.prototype.toHtml = function() {
-  return '<h1>Demo Source Code</h1>\n' +
+  return '<h1>Source</h1>\n' +
           this.toHtmlEdit() +
           this.toHtmlTabs() +
-          '<h1>Demo Source Code</h1>\n' +
+          '<h1>Demo</h1>\n' +
           this.toHtmlEmbed();
 };
 

@@ -61,7 +61,6 @@ var Error             = window.Error,
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
-    /** @name angular.module.ng */
     nodeName_,
     uid               = ['0', '0', '0'];
 
@@ -520,7 +519,7 @@ function isLeafNode (node) {
  * * If  `source` is not an object or array, `source` is returned.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more information about Angular arrays.
+ * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
@@ -755,7 +754,9 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {}
-  return jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1];
+  return jqLite('<div>').append(element).html().
+      match(/^(<[^>]+>)/)[1].
+      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
 }
 
 
@@ -828,7 +829,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngApp
+ * @name ng.directive:ngApp
  *
  * @element ANY
  * @param {angular.Module} ngApp on optional application
@@ -904,19 +905,22 @@ function angularInit(element, bootstrap) {
  * @description
  * Use this function to manually start up angular application.
  *
- * See: {@link guide/dev_guide.bootstrap.manual_bootstrap Bootstrap}
+ * See: {@link guide/bootstrap Bootstrap}
  *
  * @param {Element} element DOM element which is the root of angular application.
  * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
- * @returns {angular.module.auto.$injector} Returns the newly created injector for this app.
+ * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   element = jqLite(element);
   modules = modules || [];
+  modules.unshift(['$provide', function($provide) {
+    $provide.value('$rootElement', element);
+  }]);
   modules.unshift('ng');
   var injector = createInjector(modules);
   injector.invoke(
-    ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+    ['$rootScope', '$rootElement', '$compile', '$injector', function(scope, element, compile, injector){
       scope.$apply(function() {
         element.data('$injector', injector);
         compile(element)(scope);
