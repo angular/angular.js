@@ -8,6 +8,7 @@ Checkout my fork of AngularJS from Github:
     git clone git://github.com/btford/angular.js.git
     cd angular.js
     git fetch origin extension
+    git checkout origin/extension
 
 
 Installation
