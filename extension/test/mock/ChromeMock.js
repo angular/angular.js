@@ -7,22 +7,17 @@ function createChromeExtensionMock() {
     return obj;
   };
 
+  // TODO: rename the "jQuery" stuff
   var jQueryResult = [];
-  jQueryResult.each = function (fn) {
-    var i;
-    for (i = 0; i < this.length; i++) {
-      fn(i, this[i]);
-    }
-  }
 
   var defaultMock = {
-    // TODO: use real jQuery, or write better mock ?
-    // jQuery (zepto) mock
-    $: function (arg) {
-      if (arg === '.ng-scope') {
-        return jQueryResult;
+    document: {
+      getElementsByClassName: function (arg) {
+        if (arg === 'ng-scope') {
+          return jQueryResult;
+        }
+        throw new Error('unknown selector');
       }
-      throw new Error('unknown selector');
     }
   };
 

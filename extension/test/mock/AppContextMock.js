@@ -38,6 +38,7 @@ function createAppContextMock () {
       });
     },
     watchRefresh: function (cb) {},
-    debug: jasmine.createSpy('debug')
+    debug: jasmine.createSpy('debug'),
+    inspect: jasmine.createSpy('inspect'),
   }
 }

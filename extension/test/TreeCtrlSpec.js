@@ -1,5 +1,3 @@
-inspect = jasmine.createSpy('inspect');
-
 describe('panelApp:TreeCtrl', function () {
 
   beforeEach(module('panelApp'));
@@ -18,10 +16,8 @@ describe('panelApp:TreeCtrl', function () {
       $scope = _$rootScope_;
 
       // mock accessor
-      $scope.val = function () {
-        return {
-          id: "ZZZ"
-        }
+      $scope.val = {
+        id: "ZZZ"
       };
       inspect.reset();
       appContext = _appContext_;
@@ -31,28 +27,24 @@ describe('panelApp:TreeCtrl', function () {
 
     it('should call inspect when there is an element to inspect', function () {
       $scope.inspect();
-      expect(inspect).toHaveBeenCalledWith('elementMock');
+      expect(appContext.inspect).toHaveBeenCalledWith('elementMock');
     });
 
     it('should not call inspect when there is no element associated with the scope', function () {
 
       // mock accessor
-      $scope.val = function () {
-        return {
-          id: "this-is-not-a-valid-id"
-        }
+      $scope.val = {
+        id: "this-is-not-a-valid-id"
       };
       $scope.inspect();
-      expect(inspect).wasNotCalled();
+      expect(appContext.inspect).wasNotCalled();
     });
 
     it('should change the corresponding value in the scope when edit is called', function () {
 
       // mock accessor
-      $scope.val = function () {
-        return {
-          id: $scope.$id
-        }
+      $scope.val = {
+        id: $scope.$id
       };
 
       // feel like this might be cheating

@@ -20,7 +20,6 @@ describe('panelApp', function () {
     it('should initialize debug state to false and send requst to chrome', function () {
       expect($scope.debugger.scopes).toBe(false);
       expect($scope.debugger.bindings).toBe(false);
-      expect($scope.debugger.extra).toBe(false);
 
       $scope.$digest();
 
