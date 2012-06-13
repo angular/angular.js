@@ -7,6 +7,8 @@
   <script>
     var myApp = angular.module('myApp', []);
 
+    // Controllers
+    // ===========
 
     function TodoCtrl($scope) {
 
@@ -36,6 +38,10 @@
           if (!todo.done) $scope.todos.push(todo);
         });
       };
+    }
+
+    function SuperCtrl($scope) {
+      $scope.listName = 'Super List';
     }
 
     // filters
@@ -97,9 +103,9 @@
     <span>{{remaining()}} of {{todos.length}} remaining</span>
     [ <a href="" ng-click="archive()">archive</a> ]
     <ul class="unstyled">
-      <li ng-repeat="todo in todos|bogosort">
+      <li ng-repeat="todo in todos">
         <input type="checkbox" ng-model="todo.done">
-        <span class="done-{{todo.done}}">{{todo.text|leet}}</span>
+        <span class="done-{{todo.done}}">{{todo.text}}</span>
       </li>
     </ul>
     <form ng-submit="addTodo()">
