@@ -21,7 +21,7 @@ panelApp.directive('mtree', function($compile) {
             '<ul>' +
               '<li ng-repeat="(key, item) in val().locals">' +
                 '{{key}}' +
-                '<input ng-model="item" ng-change="edit()()">' +
+                '<input ng-class="{hidden: !item}" ng-model="item" ng-change="edit()()">' +
               '</li>' +
             '</ul>' +
             '<div ng-repeat="child in val().children">' +
