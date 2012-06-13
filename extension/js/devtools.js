@@ -1,8 +1,3 @@
-/**
- * @license AngularJS v"NG_VERSION_FULL"
- * (c) 2010-2012 Google, Inc. http://angularjs.org
- * License: MIT
- */
 
 // The function below is executed in the context of the inspected page.
 var page_getProperties = function () {
@@ -36,5 +31,5 @@ var angularPanel = chrome.
   panels.
   create(
     "AngularJS",
-    "angular.png",
+    "img/angular.png",
     "panel.html");

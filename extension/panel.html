@@ -4,9 +4,21 @@
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="css/panel.css">
 
-  <script src="js/angular.js"></script>
-  <script src="js/cycle.js"></script>
-  <script src="panelApp.js"></script>
+  <script src="js/lib/angular.js"></script>
+
+  <script src="js/panelApp.js"></script>
+
+  <script src="js/directives/mtree.js"></script>
+  <script src="js/directives/wtree.js"></script>
+
+  <script src="js/services/appContext.js"></script>
+  <script src="js/services/chromeExtension.js"></script>
+
+  <script src="js/controllers/OptionsCtrl.js"></script>
+  <script src="js/controllers/PerfCtrl.js"></script>
+  <script src="js/controllers/TabCtrl.js"></script>
+  <script src="js/controllers/TreeCtrl.js"></script>
+
 </head>
 <body ng-controller="TabCtrl">
 
@@ -41,11 +53,13 @@
         <input type="checkbox" ng-model="log" id="log"> Log to console
       </label>
     </div>
-    <div ng-class="{hidden: !enable || roots.length <= 1}">
-      <label for="select-root">Root <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select></label>
-    </div>
     <div ng-class="{hidden: !enable}">
-      <wtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></wtree>
+
+      <label for="select-root" ng-class="{hidden: roots.length <= 1}">Root 
+        <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
+      </label>
+
+      <wtree val="trees[selectedRoot]" inspect="inspect"></wtree>
 
       <!--
       <h3>Timeline</h3>
@@ -54,8 +68,10 @@
         <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
       </div>
       -->
+
       <h3>Watch Expressions</h3>
-      <div style="height: 400px; overflow-y: auto;">
+
+      <div class="well" style="height: 400px; overflow-y: auto;">
         <div ng-repeat="watch in histogram">
           <span style="font-family: monospace;">{{watch.name | first}} </span><span> | {{watch.calls}}% | {{watch.time}}ms</span>
           <div class="progress">
@@ -64,6 +80,8 @@
           </div>
         </div>
       </div>
+      <button ng-click="clear()">Clear Data</button>
+
     </div>
   </div>
 

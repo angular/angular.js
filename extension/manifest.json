@@ -1,7 +1,7 @@
 {
   "name": "AngularJS Dev Tools",
   "version": "0.1",
-  "description": "Extends the Developer Tools, adding a sidebar that displays the AngularJS data associated with the selected DOM element.",
+  "description": "Extends the Developer Tools, adding a tools for debugging and profiling AngularJS applications.",
   "background_page": "background.html",
   "devtools_page": "devtools.html",
   "manifest_version": 1,
@@ -9,12 +9,5 @@
     "experimental",
     "tabs",
     "<all_urls>"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["js/jquery-1.7.2.min.js"],
-      "run_at": "document_start"
-    }
   ]
 }

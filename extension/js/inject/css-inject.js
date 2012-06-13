@@ -1,9 +1,15 @@
 // CSS injection that doesn't violate CSP
 
-var addCssRule = function (selector, rule) {
+var addCssRule,
+  removeCssRule;
+
+(function () {
+
+  addCssRule = function (selector, rule) {
     var styleSheet = document.styleSheets[document.styleSheets.length - 1];
     styleSheet.insertRule(selector + '{' + rule + '}', styleSheet.cssRules.length);
-  },
+  };
+
   removeCssRule = function (selector, rule) {
     var styleSheet = document.styleSheets[document.styleSheets.length - 1];
 
@@ -14,3 +20,5 @@ var addCssRule = function (selector, rule) {
       }
     }
   };
+
+}());

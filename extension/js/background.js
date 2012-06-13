@@ -13,7 +13,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
           return;
         }
         chrome.tabs.executeScript(tabId, {
-          file: 'inject/debug.js'
+          file: 'js/inject/debug.js'
         });
       };
     }(request));
@@ -25,7 +25,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     
   } else {
     chrome.tabs.executeScript(request.tab, {
-      file: 'js/css-inject.js'
+      file: 'js/inject/css-inject.js'
     }, function () {
       injectPrereqs[request.tab] = true;
       chrome.tabs.executeScript(request.tab, {
