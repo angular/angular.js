@@ -213,7 +213,7 @@ panelApp.factory('appContext', function(chromeExtension) {
     },
 
     inspect: function (scopeId) {
-      appContext.executeOnScope(scopeId, function (scope, elt) {
+      this.executeOnScope(scopeId, function (scope, elt) {
         inspect(elt);
       });
     },
