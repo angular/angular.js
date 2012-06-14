@@ -19,7 +19,7 @@ describe('panelApp:TreeCtrl', function () {
       $scope.val = {
         id: "ZZZ"
       };
-      inspect.reset();
+      //inspect.reset();
       appContext = _appContext_;
       chromeExtension = _chromeExtension_;
       ctrl = $controller('TreeCtrl', {$scope: $scope});
@@ -27,17 +27,7 @@ describe('panelApp:TreeCtrl', function () {
 
     it('should call inspect when there is an element to inspect', function () {
       $scope.inspect();
-      expect(appContext.inspect).toHaveBeenCalledWith('elementMock');
-    });
-
-    it('should not call inspect when there is no element associated with the scope', function () {
-
-      // mock accessor
-      $scope.val = {
-        id: "this-is-not-a-valid-id"
-      };
-      $scope.inspect();
-      expect(appContext.inspect).wasNotCalled();
+      expect(appContext.inspect).toHaveBeenCalledWith('ZZZ');
     });
 
     it('should change the corresponding value in the scope when edit is called', function () {
