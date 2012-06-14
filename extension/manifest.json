@@ -2,9 +2,11 @@
   "name": "AngularJS Dev Tools",
   "version": "0.1",
   "description": "Extends the Developer Tools, adding a tools for debugging and profiling AngularJS applications.",
-  "background_page": "background.html",
+  "background": {
+    "page": "background.html"
+  },
   "devtools_page": "devtools.html",
-  "manifest_version": 1,
+  "manifest_version": 2,
   "permissions": [
     "experimental",
     "tabs",
