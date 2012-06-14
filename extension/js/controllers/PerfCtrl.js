@@ -55,15 +55,15 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     appContext.getHistogramInfo(function (info) {
       $scope.$apply(function () {
         info = info.sort(function (a, b) {
-          return b.calls - a.calls;
+          return b.time - a.time;
         });
         var total = 0;
         info.forEach(function (elt) {
-          total += elt.calls;
+          total += elt.time;
         });
         info.forEach(function (elt) {
-          elt.time = elt.calls.toPrecision(3);
-          elt.calls = (100 * elt.calls / total).toPrecision(3);
+          elt.time = elt.time.toPrecision(3);
+          elt.percent = (100 * elt.time / total).toPrecision(3);
         });
 
         $scope.histogram = info;

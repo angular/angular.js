@@ -53,9 +53,13 @@ var inject = function () {
                           var ret = w.apply(this, arguments);
                           var end = window.performance.webkitNow();
                           if (!debug.watchExp[str]) {
-                            debug.watchExp[str] = 0;
+                            debug.watchExp[str] = {
+                              time: 0,
+                              calls: 0
+                            };
                           }
-                          debug.watchExp[str] += (end - start);
+                          debug.watchExp[str].time += (end - start);
+                          debug.watchExp[str].calls += 1;
                           return ret;
                         };
                       } else {
@@ -64,10 +68,14 @@ var inject = function () {
                           var start = window.performance.webkitNow();
                           var ret = thatScope.$eval(w);
                           var end = window.performance.webkitNow();
-                          if (typeof debug.watchExp[str] !== 'number') {
-                            debug.watchExp[str] = 0;
+                          if (!debug.watchExp[str]) {
+                            debug.watchExp[str] = {
+                              time: 0,
+                              calls: 0
+                            };
                           }
-                          debug.watchExp[str] += (end - start);
+                          debug.watchExp[str].time += (end - start);
+                          debug.watchExp[str].calls += 1;
                           return ret;
                         };
                       }

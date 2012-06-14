@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="panelApp">
+<html ng-csp ng-app="panelApp">
 <head>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="css/panel.css">
@@ -73,9 +73,10 @@
 
       <div class="well" style="height: 400px; overflow-y: auto;">
         <div ng-repeat="watch in histogram">
-          <span style="font-family: monospace;">{{watch.name | first}} </span><span> | {{watch.calls}}% | {{watch.time}}ms</span>
+          <span style="font-family: monospace;">{{watch.name | first}} </span>
+          <span> | called {{watch.calls}} times | {{watch.percent}}% | {{watch.time}}ms</span>
           <div class="progress">
-            <div ng-style="{width: (watch.calls) + '%'}" class= "bar">
+            <div ng-style="{width: (watch.percent) + '%'}" class= "bar">
             </div>
           </div>
         </div>

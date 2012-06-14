@@ -176,7 +176,8 @@ panelApp.factory('appContext', function(chromeExtension) {
           if (info.hasOwnProperty(exp)) {
             out.push({
               name: exp,
-              calls: info[exp]
+              time: info[exp].time,
+              calls: info[exp].calls
             });
           }
         }
