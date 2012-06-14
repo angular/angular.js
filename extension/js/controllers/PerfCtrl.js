@@ -7,8 +7,8 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 
   $scope.histogram = [];
 
-  $scope.clear = function () {
-    appContext.clearTimeline();
+  $scope.clearHistogram = function () {
+    appContext.clearHistogram();
   };
 
   var first = true;
