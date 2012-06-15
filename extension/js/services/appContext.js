@@ -25,7 +25,6 @@ panelApp.factory('appContext', function(chromeExtension) {
     },
     getDebugInfo: function (callback) {
       chromeExtension.eval(function (window) {
-
         // cycle.js
         // 2011-08-24
         // https://github.com/douglascrockford/JSON-js/blob/master/cycle.js

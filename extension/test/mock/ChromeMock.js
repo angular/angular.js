@@ -25,13 +25,15 @@ function createChromeExtensionMock() {
 
   return {
     eval: function (fn, args, cb) {
-
-      // TODO(btford): test eval'd strings
-      if (typeof fn === 'function') {
-        fn(windowMock, args);
+      if (!cb && typeof args === 'function') {
+        cb = args;
+        args = {};
+      } else if (!args) {
+        args = {};
       }
-      if (cb) {
-        cb();
+      var res = fn(windowMock, args);
+      if (typeof cb === 'function') {
+        cb(res);
       }
     },
     __registerWindow: function (win) {

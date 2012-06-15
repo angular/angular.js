@@ -12,12 +12,7 @@ describe('panelApp:appContext', function () {
     beforeEach(inject(function(_appContext_, _chromeExtension_) {
       appContext = _appContext_;
       chromeExtension = _chromeExtension_;
-    }));
 
-    // I'm not sure what it should do if the window is not angular.
-
-    /*
-    it('should give an error when there is no window.angular', function () {
       chromeExtension.__registerWindow({
         angular: {
           element: function () {
@@ -34,26 +29,44 @@ describe('panelApp:appContext', function () {
           }
         }
       });
-      chromeExtension.__registerQueryResult([1,2,3]);
+    }));
 
-      var infoVal;
+    describe('getDebugInfo', function () {
 
-      runs(function () {
-        appContext.getDebugInfo(function (info) {
-          infoVal = info;
+      it('should work in the simple case', function () {
+        chromeExtension.__registerQueryResult([1,2,3]);
+
+        var infoVal;
+
+        runs(function () {
+          appContext.getDebugInfo(function (info) {
+            infoVal = info;
+          });
         });
-      });
 
-      waitsFor(function () {
-        return infoVal;
-      });
+        waitsFor(function () {
+          return infoVal;
+        });
 
-      runs(function() {
-        expect(infoVal.err).ok();
+        runs(function() {
+          expect(infoVal).toEqual({
+            "roots": [
+              "001",
+              "001",
+              "001"
+            ],
+            "trees": {
+              "001": {
+                "locals": {},
+                "id": "001",
+                "children": []
+              }
+            }
+          });
+        });
+
       });
 
     });
-    */
-
   });
 });
