@@ -41,6 +41,7 @@ function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
   writesFuture.push(writer.copyDir('img'));
+  writesFuture.push(writer.copyDir('font'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
@@ -81,6 +82,7 @@ function writeTheRest(writesFuture) {
 
   writesFuture.push(writer.copy('docs/src/templates/css/bootstrap.min.css', 'css/bootstrap.min.css'));
   writesFuture.push(writer.copy('docs/src/templates/css/docs.css', 'css/docs.css'));
+  writesFuture.push(writer.copy('docs/src/templates/css/font-awesome.css', 'css/font-awesome.css'));
 }
 
 
