@@ -54,19 +54,24 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
   var updateHistogram = function () {
     appContext.getHistogramInfo(function (info) {
       $scope.$apply(function () {
-        info = info.sort(function (a, b) {
-          return b.time - a.time;
-        });
         var total = 0;
         info.forEach(function (elt) {
           total += elt.time;
         });
-        info.forEach(function (elt) {
+        var i, elt, his;
+        for (i = 0; (i < $scope.histogram.length && i < info.length); i++) {
+          elt = info[i];
+          his = $scope.histogram[i];
+          his.time = elt.time.toPrecision(3);
+          his.percent = (100 * elt.time / total).toPrecision(3);
+        }
+        for ( ; i < info.length; i++) {
+          elt = info[i];
           elt.time = elt.time.toPrecision(3);
           elt.percent = (100 * elt.time / total).toPrecision(3);
-        });
-
-        $scope.histogram = info;
+          $scope.histogram.push(elt);
+        }
+        $scope.histogram.length = info.length;
       });
       if ($scope.enable) {
         setTimeout(updateHistogram, 1000);

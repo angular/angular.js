@@ -74,7 +74,7 @@
       <h3>Watch Expressions</h3>
 
       <div class="well" style="height: 400px; overflow-y: auto;">
-        <div ng-repeat="watch in histogram">
+        <div ng-repeat="watch in histogram|orderBy:'-time'">
           <span style="font-family: monospace;">{{watch.name | first}} </span>
           <span> | called {{watch.calls}} times | {{watch.percent}}% | {{watch.time}}ms</span>
           <div class="progress">
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <button ng-click="clearHistogram()">Clear Data</button>
+      <button class="btn" ng-click="clearHistogram()">Clear Data</button>
 
     </div>
   </div>
