@@ -124,7 +124,13 @@ var inject = function () {
                       });
                       if (window.__ngDebug.log) {
                         if (fn) {
-                          fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
+                          if (fn.name) {
+                            fn = fn.name;
+                          } else if (fn.toString().split('\n').length > 1) {
+                            fn = 'fn () { ' + fn.toString().split('\n')[1].trim() + ' /* ... */ }';
+                          } else {
+                            fn = fn.toString().trim().substr(0, 30) + '...';
+                          }
                         } else {
                           fn = '$apply';
                         }
