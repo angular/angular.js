@@ -45,7 +45,7 @@ describe('panelApp:appContext', function () {
         });
 
         waitsFor(function () {
-          return infoVal;
+          return typeof infoVal !== 'undefined';
         });
 
         runs(function() {
@@ -67,6 +67,28 @@ describe('panelApp:appContext', function () {
 
       });
 
+      it('should return false when window.angular is undefined', function () {
+        chromeExtension.__registerQueryResult([1,2,3]);
+        chromeExtension.__registerWindow({angular: null});
+
+        var infoVal;
+
+        runs(function () {
+          appContext.getDebugInfo(function (info) {
+            infoVal = info;
+          });
+        });
+
+        waitsFor(function () {
+          return typeof infoVal !== 'undefined';
+        });
+
+        runs(function() {
+          expect(infoVal).toEqual(false);
+        });
+
+      });
+      
     });
   });
 });
