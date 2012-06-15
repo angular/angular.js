@@ -115,13 +115,15 @@ var inject = function () {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
                       var end = window.performance.webkitNow();
-                      if (window.__ngDebug.timeline.length === 0) {
-                        firstLog = start;
+                      if (Math.round(end - start) === 0) {
+                        if (window.__ngDebug.timeline.length === 0) {
+                          firstLog = start;
+                        }
+                        window.__ngDebug.timeline.push({
+                          start: Math.round(start - firstLog),
+                          end: Math.round(end - firstLog)
+                        });
                       }
-                      window.__ngDebug.timeline.push({
-                        start: Math.round(start - firstLog),
-                        end: Math.round(end - firstLog)
-                      });
                       if (window.__ngDebug.log) {
                         if (fn) {
                           if (fn.name) {
