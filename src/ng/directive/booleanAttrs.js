@@ -282,12 +282,12 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   ngAttributeAliasDirectives[normalized] = function() {
     return {
       priority: 100,
-      compile: function() {
-        return function(scope, element, attr) {
-          scope.$watch(attr[normalized], function(value) {
-            attr.$set(attrName, !!value);
-          });
-        };
+      require: 'ngModel',
+      link: function(scope, element, attr, ctrl) {
+        scope.$watch(attr[normalized], function(value) {
+          attr.$set(attrName, !!value);
+          ctrl.$setViewValue(!!value);
+        });
       }
     };
   };
