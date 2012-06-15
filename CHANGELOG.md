@@ -1,4 +1,19 @@
-<a name="v1.0.0rc12"></a>
+<a name="1.0.0"></a>
+# 1.0.0 temporal-domination (2012-06-13)
+
+
+## Bug Fixes
+
+- **$location:**
+  - correctly parse link urls in hashbang mode with a prefix
+   ([0f44964e](https://github.com/angular/angular.js/commit/0f44964e5e0f7e37d7fa3216bb10fd61fbf52ae2),
+    [#1037](https://github.com/angular/angular.js/issues/1037))
+  - fix link click interception in hash-bang mode
+   ([6593a3e0](https://github.com/angular/angular.js/commit/6593a3e0823f3c08079f05010f9628fc4503cd43),
+    [#1051](https://github.com/angular/angular.js/issues/1051))
+
+
+<a name="1.0.0rc12"></a>
 # 1.0.0rc12 regression-extermination (2012-06-12)
 
 ## Bug Fixes

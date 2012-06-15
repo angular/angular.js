@@ -999,6 +999,94 @@ describe('$location', function() {
         $rootElement.remove();
       });
     });
+
+
+    it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
+        function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#!/view1">v1</a><a href="#!/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#!/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#!/view2');
+      });
+    });
+
+
+    it('should not intercept link clicks outside the app base url space', function() {
+      var base, clickHandler;
+      module(function($provide) {
+        $provide.value('$rootElement', {
+          bind: function(event, handler) {
+            expect(event).toEqual('click');
+            clickHandler = handler;
+          }
+        });
+        return function($browser) {
+          $browser.url(base = 'http://server/');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // make IE happy
+        jqLite(window.document.body).html('<a href="http://server/test.html">link</a>');
+
+        var event = {
+          target: jqLite(window.document.body).find('a')[0],
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+
+
+        clickHandler(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+      });
+    });
+
+
+    it('should not intercept hash link clicks outside the app base url space', function() {
+      var base, clickHandler;
+      module(function($provide) {
+        $provide.value('$rootElement', {
+          bind: function(event, handler) {
+            expect(event).toEqual('click');
+            clickHandler = handler;
+          }
+        });
+        return function($browser) {
+          $browser.url(base = 'http://server/');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // make IE happy
+        jqLite(window.document.body).html('<a href="http://server/index.html#test">link</a>');
+
+        var event = {
+          target: jqLite(window.document.body).find('a')[0],
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+
+
+        clickHandler(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+      });
+    });
   });
 
 
@@ -1081,7 +1169,7 @@ describe('$location', function() {
     );
 
 
-    it('should listen on click events on href and prevent browser default in hasbang mode', function() {
+    it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/#/somePath">link</a>');
@@ -1132,7 +1220,7 @@ describe('$location', function() {
           log += '$locationChangeStart';
         });
         $rootScope.$on('$locationChangeSuccess', function() {
-          throw new Error('after cancalation in html5 mode');
+          throw new Error('after cancelation in html5 mode');
         });
 
         browserTrigger(link, 'click');
