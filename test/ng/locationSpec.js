@@ -1087,6 +1087,21 @@ describe('$location', function() {
         expect(event.preventDefault).not.toHaveBeenCalled();
       });
     });
+
+
+    // regression https://github.com/angular/angular.js/issues/1058
+    it('should not throw if element was removed', inject(function($document, $rootElement, $location) {
+      // we need to do this otherwise we can't simulate events
+      $document.find('body').append($rootElement);
+
+      $rootElement.html('<button></button>');
+      var button = $rootElement.find('button');
+
+      button.bind('click', function() {
+        button.remove();
+      });
+      browserTrigger(button, 'click');
+    }));
   });
 
 
