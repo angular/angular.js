@@ -47,7 +47,7 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
       });
     });
   };
-
+  setInterval(updateTree, 500);
   updateTree();
-  appContext.watchRefresh(updateTree);
+  //appContext.watchRefresh(updateTree);
 });
