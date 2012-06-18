@@ -46,7 +46,7 @@
 	<key>Creator</key>
 	<string>Igor Minar</string>
 	<key>DisplayScale</key>
-	<string>1 0/72 in = 1 0/72 in</string>
+	<string>1 0/72 in = 1.0000 in</string>
 	<key>ExportShapes</key>
 	<array>
 		<dict>
@@ -148,41 +148,41 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{284.84766018978735, 248.30385248489227}, {86.61627414036225, 184.76191147289623}}</string>
+			<string>{{285.18700760649972, 248.30348312289235}, {86.616274140362918, 184.7619127031216}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>33</integer>
+			<integer>47</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
 			<dict>
 				<key>UnitPoints</key>
 				<array>
-					<string>{-0.50000199999999995, -0.50000199999999995}</string>
-					<string>{-0.50000199999999995, -0.50000199999999995}</string>
-					<string>{-0.49745, -0.18033299999999999}</string>
-					<string>{-0.49745, -0.18033299999999999}</string>
-					<string>{-0.49745, -0.18033299999999999}</string>
-					<string>{-0.174236, 0.13663500000000001}</string>
-					<string>{-0.174236, 0.13663500000000001}</string>
-					<string>{-0.174236, 0.13663500000000001}</string>
-					<string>{-0.50000199999999995, 0.13663500000000001}</string>
-					<string>{-0.50000199999999995, 0.13663500000000001}</string>
-					<string>{-0.50000199999999995, 0.13663500000000001}</string>
-					<string>{-0.50000199999999995, 0.27161299999999999}</string>
-					<string>{-0.50000199999999995, 0.27161299999999999}</string>
-					<string>{-0.50000199999999995, 0.27161299999999999}</string>
-					<string>{-0.051004399999999998, 0.26914700000000003}</string>
-					<string>{-0.051004399999999998, 0.26914700000000003}</string>
-					<string>{-0.051004399999999998, 0.26914700000000003}</string>
-					<string>{0.15884999999999999, 0.497029}</string>
-					<string>{0.15884999999999999, 0.497029}</string>
-					<string>{0.15884999999999999, 0.497029}</string>
-					<string>{0.499998, 0.499998}</string>
-					<string>{0.499998, 0.499998}</string>
-					<string>{0.499998, 0.499998}</string>
-					<string>{-0.50000199999999995, -0.50000199999999995}</string>
+					<string>{-0.50000000000000044, -0.50000000000000022}</string>
+					<string>{-0.50000000000000044, -0.50000000000000022}</string>
+					<string>{-0.49744799999999412, -0.18033099999999691}</string>
+					<string>{-0.49744799999999412, -0.18033099999999691}</string>
+					<string>{-0.49744799999999412, -0.18033099999999691}</string>
+					<string>{-0.17456470884650166, 0.13634065677823681}</string>
+					<string>{-0.17456470884650166, 0.13634065677823681}</string>
+					<string>{-0.17456470884650166, 0.13634065677823681}</string>
+					<string>{-0.49927274182449377, 0.13634065677823681}</string>
+					<string>{-0.49927274182449644, 0.13634065677823681}</string>
+					<string>{-0.49927274182449244, 0.13634065677824014}</string>
+					<string>{-0.50000000000000044, 0.26894374386235298}</string>
+					<string>{-0.50000000000000044, 0.26894374386235476}</string>
+					<string>{-0.50000000000000044, 0.26894374386235476}</string>
+					<string>{-0.05100239999999534, 0.26914900000000563}</string>
+					<string>{-0.05100239999999534, 0.26914900000000563}</string>
+					<string>{-0.05100239999999534, 0.26914900000000563}</string>
+					<string>{0.15885200000000133, 0.49703099999999867}</string>
+					<string>{0.15885200000000133, 0.49703099999999867}</string>
+					<string>{0.15885200000000133, 0.49703099999999867}</string>
+					<string>{0.49999999999999956, 0.49999999999999978}</string>
+					<string>{0.49999999999999956, 0.49999999999999978}</string>
+					<string>{0.49999999999999956, 0.49999999999999978}</string>
+					<string>{-0.50000000000000044, -0.50000000000000022}</string>
 				</array>
 			</dict>
 			<key>Style</key>
@@ -391,11 +391,11 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{202.044999428295, 248.30385248489222}, {168.49336609890284, 184.20602394696493}}</string>
+			<string>{{202.38452007755603, 248.30385264671821}, {168.49336609890284, 184.20602517348959}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>34</integer>
+			<integer>46</integer>
 			<key>Shape</key>
 			<string>pdfImport-2.1</string>
 			<key>Style</key>
@@ -604,11 +604,11 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{166.26560383964951, 239.04286269955807}, {118.58077106105195, 254.90334964372681}}</string>
+			<string>{{166.60512448891055, 239.04286279972013}, {118.58077106105196, 254.90335134098538}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>35</integer>
+			<integer>45</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
@@ -657,11 +657,11 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{284.8476601897874, 239.04864650040588}, {121.73728039477793, 254.89692319834035}}</string>
+			<string>{{285.18718083904844, 239.0486466006067}, {121.737280394778, 254.89692489555597}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>36</integer>
+			<integer>44</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
@@ -710,35 +710,35 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{153.64711757812501, 224.00000000000006}, {268.70574951171875, 285}}</string>
+			<string>{{151.57672119140636, 224.125}, {268.70574951171875, 284.64686308491594}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>37</integer>
+			<integer>43</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
 			<dict>
 				<key>UnitPoints</key>
 				<array>
-					<string>{1.28746e-05, -0.50000100000000003}</string>
-					<string>{1.28746e-05, -0.50000100000000003}</string>
-					<string>{-0.5, -0.33419199999999999}</string>
-					<string>{-0.5, -0.33419199999999999}</string>
-					<string>{-0.5, -0.33419199999999999}</string>
-					<string>{-0.42124299999999998, 0.28146399999999999}</string>
-					<string>{-0.42124299999999998, 0.28146399999999999}</string>
-					<string>{-0.42124299999999998, 0.28146399999999999}</string>
-					<string>{-0.0117345, 0.49999900000000003}</string>
-					<string>{-0.0117345, 0.49999900000000003}</string>
-					<string>{-0.0117345, 0.49999900000000003}</string>
-					<string>{0.421269, 0.27851300000000001}</string>
-					<string>{0.421269, 0.27851300000000001}</string>
-					<string>{0.421269, 0.27851300000000001}</string>
-					<string>{0.5, -0.33711799999999997}</string>
-					<string>{0.5, -0.33711799999999997}</string>
-					<string>{0.5, -0.33711799999999997}</string>
-					<string>{1.28746e-05, -0.50000100000000003}</string>
+					<string>{-0.0015987597885285254, -0.5}</string>
+					<string>{-0.0015987597885287474, -0.50000000000000011}</string>
+					<string>{-0.5, -0.3344244345296401}</string>
+					<string>{-0.5, -0.3344244345296401}</string>
+					<string>{-0.5, -0.3344244345296401}</string>
+					<string>{-0.42124300000000381, 0.28199536109606704}</string>
+					<string>{-0.42124300000000381, 0.28199536109606704}</string>
+					<string>{-0.42124300000000381, 0.28199536109606704}</string>
+					<string>{-0.0010708520179374403, 0.5}</string>
+					<string>{-0.0010708520179369962, 0.5}</string>
+					<string>{-0.0010708520179369962, 0.49999999999999778}</string>
+					<string>{0.42126899999999967, 0.2790407000241486}</string>
+					<string>{0.42126899999999967, 0.2790407000241486}</string>
+					<string>{0.42126899999999967, 0.2790407000241486}</string>
+					<string>{0.5, -0.33735406458603656}</string>
+					<string>{0.5, -0.33735406458603656}</string>
+					<string>{0.5, -0.33735406458603656}</string>
+					<string>{-0.0015987597885287474, -0.5}</string>
 				</array>
 			</dict>
 			<key>Style</key>
@@ -964,7 +964,7 @@
 			<key>Lock</key>
 			<string>NO</string>
 			<key>Name</key>
-			<string>Layer 1</string>
+			<string>Layer 2</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
@@ -993,7 +993,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2012-06-11 20:32:08 +0000</string>
+	<string>2012-06-15 23:51:34 +0000</string>
 	<key>Modifier</key>
 	<string>Igor Minar</string>
 	<key>NotesVisible</key>
@@ -1074,7 +1074,7 @@
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{947, 686}, {710, 872}}</string>
+		<string>{{258, 0}, {1286, 1028}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -1088,15 +1088,15 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{0, 0}, {575, 733}}</string>
+		<string>{{80, 207.5}, {287.75, 222.25}}</string>
 		<key>Zoom</key>
-		<real>1</real>
+		<real>4</real>
 		<key>ZoomValues</key>
 		<array>
 			<array>
 				<string>Canvas 1</string>
-				<real>1</real>
-				<real>1</real>
+				<real>4</real>
+				<real>2</real>
 			</array>
 		</array>
 	</dict>
