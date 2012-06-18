@@ -1,3 +1,10 @@
+panelApp.filter('sortByTime', function () {
+  return function (input) {
+    return input.slice(0).sort(function (a, b) {
+      return b.time - a.time;
+    });
+  };
+});
 
 panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 

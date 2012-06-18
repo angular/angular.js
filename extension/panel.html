@@ -75,7 +75,7 @@
       <h3>Watch Expressions</h3>
 
       <div class="well" style="height: 400px; overflow-y: auto;">
-        <div ng-repeat="watch in histogram|orderBy:'-time'">
+        <div ng-repeat="watch in histogram|sortByTime">
           <span style="font-family: monospace;">{{watch.name | first}} </span>
           <span> | called {{watch.calls}} times | {{watch.percent}}% | {{watch.time}}ms</span>
           <div class="progress">
