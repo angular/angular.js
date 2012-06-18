@@ -15,7 +15,12 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
     });
   };
 
+  $scope.roots = [];
+
   var updateTree = function () {
+    if ($('input:focus').length > 0) {
+      return;
+    }
     appContext.getDebugInfo(function (info) {
       if (!info || info.roots.length === 0) {
         setTimeout(updateTree, 50);
@@ -23,27 +28,19 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
       }
 
       $scope.$apply(function () {
-        if (info.err) {
-          $scope.err = info.err;
-          $scope.roots = [null];
+        $scope.roots.length = info.roots.length;
+        info.roots.forEach(function (item, i) {
+          $scope.roots[i] = {
+            label: item,
+            value: item
+          };
+        });
+        if (info.roots.length === 0) {
           $scope.selectedRoot = null;
-          $scope.trees = {};
-        } else {
-          var rootIdPairs = [];
-          info.roots.forEach(function (item) {
-            rootIdPairs.push({
-              label: item,
-              value: item
-            });
-          });
-          $scope.roots = rootIdPairs;
-          if (rootIdPairs.length === 0) {
-            $scope.selectedRoot = null;
-          } else {
-            $scope.selectedRoot = rootIdPairs[0].value;
-          }
-          $scope.trees = info.trees;
+        } else if (!$scope.selectedRoot) {
+          $scope.selectedRoot = $scope.roots[0].value;
         }
+        $scope.trees = info.trees;
       });
     });
   };
