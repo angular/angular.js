@@ -15,7 +15,7 @@ phone in the phone list.
 Now when you click on a phone on the list, the phone details page with phone-specific information
 is displayed.
 
-To implement the phone details view we will use {@link api/angular.module.ng.$http $http} to fetch
+To implement the phone details view we will use {@link api/ng.$http $http} to fetch
 our data, and we'll flesh out the `phone-details.html` view template.
 
 The most important changes are listed below. You can see the full diff on {@link

@@ -63,7 +63,7 @@ __`app/partials/phone-detail.html`:__
 
 We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
 
-We also registered an {@link api/angular.module.ng.$compileProvider.directive.ngClick `ngClick`}
+We also registered an {@link api/ng.directive:ngClick `ngClick`}
 handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
 use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
 url of the thumbnail image.

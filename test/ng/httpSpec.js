@@ -384,7 +384,7 @@ describe('$http', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
                  headers['X-Requested-With'] == 'XMLHttpRequest' &&
-                 headers['Content-Type'] == 'application/json';
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'POST', headers: {}, data: 'messageBody'});
@@ -396,7 +396,7 @@ describe('$http', function() {
         $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
                  headers['X-Requested-With'] == 'XMLHttpRequest' &&
-                 headers['Content-Type'] == 'application/json';
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'PUT', headers: {}, data: 'messageBody'});

@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc object
- * @name angular.module.ng.$browser
+ * ! This is a private undocumented service !
+ *
+ * @name ng.$browser
  * @requires $log
  * @description
  * This object has two goals:
@@ -10,7 +11,7 @@
  * - hide all the global state in the browser caused by the window object
  * - abstract away all the browser specific features and inconsistencies
  *
- * For tests we provide {@link angular.module.ngMock.$browser mock implementation} of the `$browser`
+ * For tests we provide {@link ngMock.$browser mock implementation} of the `$browser`
  * service, which can be used for convenient testing of the application without the interaction with
  * the real browser apis.
  */
@@ -86,9 +87,8 @@ function Browser(window, document, $log, $sniffer) {
       pollTimeout;
 
   /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#addPollFn
-   * @methodOf angular.module.ng.$browser
+   * @name ng.$browser#addPollFn
+   * @methodOf ng.$browser
    *
    * @param {function()} fn Poll function to add
    *
@@ -127,9 +127,8 @@ function Browser(window, document, $log, $sniffer) {
       baseElement = document.find('base');
 
   /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#url
-   * @methodOf angular.module.ng.$browser
+   * @name ng.$browser#url
+   * @methodOf ng.$browser
    *
    * @description
    * GETTER:
@@ -142,7 +141,7 @@ function Browser(window, document, $log, $sniffer) {
    * Returns its own instance to allow chaining
    *
    * NOTE: this api is intended for use only by the $location service. Please use the
-   * {@link angular.module.ng.$location $location service} to change url.
+   * {@link ng.$location $location service} to change url.
    *
    * @param {string} url New url (when used as setter)
    * @param {boolean=} replace Should new url replace current history record ?
@@ -183,9 +182,8 @@ function Browser(window, document, $log, $sniffer) {
   }
 
   /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#onUrlChange
-   * @methodOf angular.module.ng.$browser
+   * @name ng.$browser#onUrlChange
+   * @methodOf ng.$browser
    * @TODO(vojta): refactor to use node's syntax for events
    *
    * @description
@@ -201,7 +199,7 @@ function Browser(window, document, $log, $sniffer) {
    * The listener gets called with new url as parameter.
    *
    * NOTE: this api is intended for use only by the $location service. Please use the
-   * {@link angular.module.ng.$location $location service} to monitor url changes in angular apps.
+   * {@link ng.$location $location service} to monitor url changes in angular apps.
    *
    * @param {function(string)} listener Listener function to be called when url changes.
    * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
@@ -249,9 +247,8 @@ function Browser(window, document, $log, $sniffer) {
   var cookiePath = self.baseHref();
 
   /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#cookies
-   * @methodOf angular.module.ng.$browser
+   * @name ng.$browser#cookies
+   * @methodOf ng.$browser
    *
    * @param {string=} name Cookie name
    * @param {string=} value Cokkie value
@@ -308,9 +305,8 @@ function Browser(window, document, $log, $sniffer) {
 
 
   /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#defer
-   * @methodOf angular.module.ng.$browser
+   * @name ng.$browser#defer
+   * @methodOf ng.$browser
    * @param {function()} fn A function, who's execution should be defered.
    * @param {number=} [delay=0] of milliseconds to defer the function execution.
    * @returns {*} DeferId that can be used to cancel the task via `$browser.defer.cancel()`.
@@ -336,10 +332,8 @@ function Browser(window, document, $log, $sniffer) {
 
 
   /**
-   * THIS DOC IS NOT VISIBLE because ngdocs can't process docs for foo#method.method
-   *
-   * @name angular.module.ng.$browser#defer.cancel
-   * @methodOf angular.module.ng.$browser.defer
+   * @name ng.$browser#defer.cancel
+   * @methodOf ng.$browser.defer
    *
    * @description
    * Cancels a defered task identified with `deferId`.

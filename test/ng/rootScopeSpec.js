@@ -210,6 +210,8 @@ describe('Scope', function() {
             '["a; newVal: 98; oldVal: 97","b; newVal: 99; oldVal: 98"],' +
             '["a; newVal: 99; oldVal: 98","b; newVal: 100; oldVal: 99"],' +
             '["a; newVal: 100; oldVal: 99","b; newVal: 101; oldVal: 100"]]');
+
+        expect($rootScope.$$phase).toBeNull();
       });
     });
 
@@ -488,6 +490,27 @@ describe('Scope', function() {
         expect(log).toEqual('1');
         expect($exceptionHandler.errors[0].message).toEqual('MyError');
         $log.error.logs.shift();
+      });
+    });
+
+
+    it('should log exceptions from $digest', function() {
+      module(function($rootScopeProvider, $exceptionHandlerProvider) {
+        $rootScopeProvider.digestTtl(2);
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($rootScope, $exceptionHandler) {
+        $rootScope.$watch('a', function() {$rootScope.b++;});
+        $rootScope.$watch('b', function() {$rootScope.a++;});
+        $rootScope.a = $rootScope.b = 0;
+
+        expect(function() {
+          $rootScope.$apply();
+        }).toThrow();
+
+        expect($exceptionHandler.errors[0]).toBeDefined();
+
+        expect($rootScope.$$phase).toBeNull();
       });
     });
 

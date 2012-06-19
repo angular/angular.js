@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$log
+ * @name ng.$log
  * @requires $window
  *
  * @description
@@ -40,8 +40,8 @@ function $LogProvider(){
     return {
       /**
        * @ngdoc method
-       * @name angular.module.ng.$log#log
-       * @methodOf angular.module.ng.$log
+       * @name ng.$log#log
+       * @methodOf ng.$log
        *
        * @description
        * Write a log message
@@ -50,8 +50,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.module.ng.$log#warn
-       * @methodOf angular.module.ng.$log
+       * @name ng.$log#warn
+       * @methodOf ng.$log
        *
        * @description
        * Write a warning message
@@ -60,8 +60,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.module.ng.$log#info
-       * @methodOf angular.module.ng.$log
+       * @name ng.$log#info
+       * @methodOf ng.$log
        *
        * @description
        * Write an information message
@@ -70,8 +70,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.module.ng.$log#error
-       * @methodOf angular.module.ng.$log
+       * @name ng.$log#error
+       * @methodOf ng.$log
        *
        * @description
        * Write an error message

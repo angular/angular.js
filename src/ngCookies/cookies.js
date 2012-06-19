@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc overview
- * @name angular.module.ngCookies
+ * @name ngCookies
  */
 
 
 angular.module('ngCookies', ['ng']).
   /**
    * @ngdoc object
-   * @name angular.module.ngCookies.$cookies
+   * @name ngCookies.$cookies
    * @requires $browser
    *
    * @description
@@ -103,7 +103,7 @@ angular.module('ngCookies', ['ng']).
 
   /**
    * @ngdoc object
-   * @name angular.module.ngCookies.$cookieStore
+   * @name ngCookies.$cookieStore
    * @requires $cookies
    *
    * @description
@@ -117,8 +117,8 @@ angular.module('ngCookies', ['ng']).
       return {
         /**
          * @ngdoc method
-         * @name angular.module.ngCookies.$cookieStore#get
-         * @methodOf angular.module.ngCookies.$cookieStore
+         * @name ngCookies.$cookieStore#get
+         * @methodOf ngCookies.$cookieStore
          *
          * @description
          * Returns the value of given cookie key
@@ -132,8 +132,8 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name angular.module.ngCookies.$cookieStore#put
-         * @methodOf angular.module.ngCookies.$cookieStore
+         * @name ngCookies.$cookieStore#put
+         * @methodOf ngCookies.$cookieStore
          *
          * @description
          * Sets a value for given cookie key
@@ -147,8 +147,8 @@ angular.module('ngCookies', ['ng']).
 
         /**
          * @ngdoc method
-         * @name angular.module.ngCookies.$cookieStore#remove
-         * @methodOf angular.module.ngCookies.$cookieStore
+         * @name ngCookies.$cookieStore#remove
+         * @methodOf ngCookies.$cookieStore
          *
          * @description
          * Remove given cookie

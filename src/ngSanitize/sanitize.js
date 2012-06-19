@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc overview
- * @name angular.module.ngSanitize
+ * @name ngSanitize
  * @description
  */
 
@@ -25,7 +25,7 @@
 
 /**
  * @ngdoc service
- * @name angular.module.ngSanitize.$sanitize
+ * @name ngSanitize.$sanitize
  * @function
  *
  * @description

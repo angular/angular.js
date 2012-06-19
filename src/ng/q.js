@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc service
- * @name angular.module.ng.$q
+ * @name ng.$q
  * @requires $rootScope
  *
  * @description
@@ -116,7 +116,7 @@
  *
  *  There are three main differences:
  *
- * - $q is integrated with the {@link angular.module.ng.$rootScope.Scope} Scope model observation
+ * - $q is integrated with the {@link ng.$rootScope.Scope} Scope model observation
  *   mechanism in angular, which means faster propagation of resolution or rejection into your
  *   models and avoiding unnecessary browser repaints, which would result in flickering UI.
  * - $q promises are recognized by the templating engine in angular, which means that in templates
@@ -146,8 +146,8 @@ function qFactory(nextTick, exceptionHandler) {
 
   /**
    * @ngdoc
-   * @name angular.module.ng.$q#defer
-   * @methodOf angular.module.ng.$q
+   * @name ng.$q#defer
+   * @methodOf ng.$q
    * @description
    * Creates a `Deferred` object which represents a task which will finish in the future.
    *
@@ -236,8 +236,8 @@ function qFactory(nextTick, exceptionHandler) {
 
   /**
    * @ngdoc
-   * @name angular.module.ng.$q#reject
-   * @methodOf angular.module.ng.$q
+   * @name ng.$q#reject
+   * @methodOf ng.$q
    * @description
    * Creates a promise that is resolved as rejected with the specified `reason`. This api should be
    * used to forward rejection in a chain of promises. If you are dealing with the last promise in
@@ -284,8 +284,8 @@ function qFactory(nextTick, exceptionHandler) {
 
   /**
    * @ngdoc
-   * @name angular.module.ng.$q#when
-   * @methodOf angular.module.ng.$q
+   * @name ng.$q#when
+   * @methodOf ng.$q
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
    * This is useful when you are dealing with on object that might or might not be a promise, or if
@@ -347,8 +347,8 @@ function qFactory(nextTick, exceptionHandler) {
 
   /**
    * @ngdoc
-   * @name angular.module.ng.$q#all
-   * @methodOf angular.module.ng.$q
+   * @name ng.$q#all
+   * @methodOf ng.$q
    * @description
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.

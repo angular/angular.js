@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$routeParams
+ * @name ng.$routeParams
  * @requires $route
  *
  * @description
  * Current set of route parameters. The route parameters are a combination of the
- * {@link angular.module.ng.$location $location} `search()`, and `path()`. The `path` parameters
- * are extracted when the {@link angular.module.ng.$route $route} path is matched.
+ * {@link ng.$location $location} `search()`, and `path()`. The `path` parameters
+ * are extracted when the {@link ng.$route $route} path is matched.
  *
  * In case of parameter name collision, `path` params take precedence over `search` params.
  *

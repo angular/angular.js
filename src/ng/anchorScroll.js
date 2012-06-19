@@ -1,6 +1,6 @@
 /**
  * @ngdoc function
- * @name angular.module.ng.$anchorScroll
+ * @name ng.$anchorScroll
  * @requires $window
  * @requires $location
  * @requires $rootScope

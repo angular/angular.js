@@ -3,23 +3,23 @@
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$routeProvider
+ * @name ng.$routeProvider
  * @function
  *
  * @description
  *
- * Used for configuring routes. See {@link angular.module.ng.$route $route} for an example.
+ * Used for configuring routes. See {@link ng.$route $route} for an example.
  */
 function $RouteProvider(){
   var routes = {};
 
   /**
    * @ngdoc method
-   * @name angular.module.ng.$routeProvider#when
-   * @methodOf angular.module.ng.$routeProvider
+   * @name ng.$routeProvider#when
+   * @methodOf ng.$routeProvider
    *
    * @param {string} path Route path (matched against `$location.path`). If `$location.path`
-   *    contains redudant trailing slash or is missing one, the route will still match and the
+   *    contains redundant trailing slash or is missing one, the route will still match and the
    *    `$location.path` will be updated to add or drop the trailing slash to exacly match the
    *    route definition.
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
@@ -29,16 +29,30 @@ function $RouteProvider(){
    *
    *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
    *      created scope.
-   *    - `template` – `{string=}` – path to an html template that should be used by
-   *      {@link angular.module.ng.$compileProvider.directive.ngView ngView} or
-   *      {@link angular.module.ng.$compileProvider.directive.ngInclude ngInclude} directives.
+   *    - `template` – `{string=}` –  html template as a string that should be used by
+   *      {@link ng.directive:ngView ngView} or
+   *      {@link ng.directive:ngInclude ngInclude} directives.
+   *      this property takes precedence over `templateUrl`.
+   *    - `templateUrl` – `{string=}` – path to an html template that should be used by
+   *      {@link ng.directive:ngView ngView}.
+   *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
+   *      be injected into the controller. If any of these dependencies are promises, they will be
+   *      resolved and converted to a value before the controller is instantiated and the
+   *      `$aftreRouteChange` event is fired. The map object is:
+   *
+   *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
+   *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
+   *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
+   *        and the return value is treated as the dependency. If the result is a promise, it is resolved
+   *        before its value is injected into the controller.
+   *
    *    - `redirectTo` – {(string|function())=} – value to update
-   *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
+   *      {@link ng.$location $location} path with and trigger route redirection.
    *
    *      If `redirectTo` is a function, it will be called with the following parameters:
    *
    *      - `{Object.<string>}` - route parameters extracted from the current
-   *        `$location.path()` by applying the current route template.
+   *        `$location.path()` by applying the current route templateUrl.
    *      - `{string}` - current `$location.path()`
    *      - `{Object}` - current `$location.search()`
    *
@@ -73,8 +87,8 @@ function $RouteProvider(){
 
   /**
    * @ngdoc method
-   * @name angular.module.ng.$routeProvider#otherwise
-   * @methodOf angular.module.ng.$routeProvider
+   * @name ng.$routeProvider#otherwise
+   * @methodOf ng.$routeProvider
    *
    * @description
    * Sets route definition that will be used on route change when no other route definition
@@ -89,32 +103,42 @@ function $RouteProvider(){
   };
 
 
-  this.$get = ['$rootScope', '$location', '$routeParams',
-      function( $rootScope,  $location,  $routeParams) {
+  this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache',
+      function( $rootScope,   $location,   $routeParams,   $q,   $injector,   $http,   $templateCache) {
 
     /**
      * @ngdoc object
-     * @name angular.module.ng.$route
+     * @name ng.$route
      * @requires $location
      * @requires $routeParams
      *
      * @property {Object} current Reference to the current route definition.
+     * The route definition contains:
+     *
+     *   - `controller`: The controller constructor as define in route definition.
+     *   - `locals`: A map of locals which is used by {@link ng.$controller $controller} service for
+     *     controller instantiation. The `locals` contain
+     *     the resolved values of the `resolve` map. Additionally the `locals` also contain:
+     *
+     *     - `$scope` - The current route scope.
+     *     - `$template` - The current route template HTML.
+     *
      * @property {Array.<Object>} routes Array of all configured routes.
      *
      * @description
      * Is used for deep-linking URLs to controllers and views (HTML partials).
      * It watches `$location.url()` and tries to map the path to an existing route definition.
      *
-     * You can define routes through {@link angular.module.ng.$routeProvider $routeProvider}'s API.
+     * You can define routes through {@link ng.$routeProvider $routeProvider}'s API.
      *
-     * The `$route` service is typically used in conjunction with {@link angular.module.ng.$compileProvider.directive.ngView ngView}
-     * directive and the {@link angular.module.ng.$routeParams $routeParams} service.
+     * The `$route` service is typically used in conjunction with {@link ng.directive:ngView ngView}
+     * directive and the {@link ng.$routeParams $routeParams} service.
      *
      * @example
        This example shows how changing the URL hash causes the `$route` to match a route against the
        URL, and the `ngView` pulls in the partial.
 
-       Note that this example is using {@link angular.module.ng.$compileProvider.directive.script inlined templates}
+       Note that this example is using {@link ng.directive:script inlined templates}
        to get it working on jsfiddle as well.
 
      <example module="ngView">
@@ -131,7 +155,7 @@ function $RouteProvider(){
            <hr />
 
            <pre>$location.path() = {{$location.path()}}</pre>
-           <pre>$route.current.template = {{$route.current.template}}</pre>
+           <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>
            <pre>$route.current.params = {{$route.current.params}}</pre>
            <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
            <pre>$routeParams = {{$routeParams}}</pre>
@@ -152,11 +176,19 @@ function $RouteProvider(){
        <file name="script.js">
          angular.module('ngView', [], function($routeProvider, $locationProvider) {
            $routeProvider.when('/Book/:bookId', {
-             template: 'book.html',
-             controller: BookCntl
+             templateUrl: 'book.html',
+             controller: BookCntl,
+             resolve: {
+               // I will cause a 1 second delay
+               delay: function($q, $timeout) {
+                 var delay = $q.defer();
+                 $timeout(delay.resolve, 1000);
+                 return delay.promise;
+               }
+             }
            });
            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-             template: 'chapter.html',
+             templateUrl: 'chapter.html',
              controller: ChapterCntl
            });
 
@@ -190,6 +222,7 @@ function $RouteProvider(){
            expect(content).toMatch(/Chapter Id\: 1/);
 
            element('a:contains("Scarlet")').click();
+           sleep(2); // promises are not part of scenario waiting
            content = element('.doc-example-live [ng-view]').text();
            expect(content).toMatch(/controller\: BookCntl/);
            expect(content).toMatch(/Book Id\: Scarlet/);
@@ -200,11 +233,15 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name angular.module.ng.$route#$beforeRouteChange
-     * @eventOf angular.module.ng.$route
+     * @name ng.$route#$routeChangeStart
+     * @eventOf ng.$route
      * @eventType broadcast on root scope
      * @description
-     * Broadcasted before a route change.
+     * Broadcasted before a route change. At this  point the route services starts
+     * resolving all of the dependencies needed for the route change to occurs.
+     * Typically this involves fetching the view template as well as any dependencies
+     * defined in `resolve` route property. Once  all of the dependencies are resolved
+     * `$routeChangeSuccess` is fired.
      *
      * @param {Route} next Future route information.
      * @param {Route} current Current route information.
@@ -212,11 +249,13 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name angular.module.ng.$route#$afterRouteChange
-     * @eventOf angular.module.ng.$route
+     * @name ng.$route#$routeChangeSuccess
+     * @eventOf ng.$route
      * @eventType broadcast on root scope
      * @description
-     * Broadcasted after a route change.
+     * Broadcasted after a route dependencies are resolved.
+     * {@link ng.directive:ngView ngView} listens for the directive
+     * to instantiate the controller and render the view.
      *
      * @param {Route} current Current route information.
      * @param {Route} previous Previous route information.
@@ -224,8 +263,21 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name angular.module.ng.$route#$routeUpdate
-     * @eventOf angular.module.ng.$route
+     * @name ng.$route#$routeChangeError
+     * @eventOf ng.$route
+     * @eventType broadcast on root scope
+     * @description
+     * Broadcasted if any of the resolve promises are rejected.
+     *
+     * @param {Route} current Current route information.
+     * @param {Route} previous Previous route information.
+     * @param {Route} rejection Rejection of the promise. Usually the error of the failed promise.
+     */
+
+    /**
+     * @ngdoc event
+     * @name ng.$route#$routeUpdate
+     * @eventOf ng.$route
      * @eventType broadcast on root scope
      * @description
      *
@@ -234,30 +286,29 @@ function $RouteProvider(){
      */
 
     var matcher = switchRouteMatcher,
-        dirty = 0,
         forceReload = false,
         $route = {
           routes: routes,
 
           /**
            * @ngdoc method
-           * @name angular.module.ng.$route#reload
-           * @methodOf angular.module.ng.$route
+           * @name ng.$route#reload
+           * @methodOf ng.$route
            *
            * @description
-           * Causes `$route` service to reload theR current route even if
-           * {@link angular.module.ng.$location $location} hasn't changed.
+           * Causes `$route` service to reload the current route even if
+           * {@link ng.$location $location} hasn't changed.
            *
-           * As a result of that, {@link angular.module.ng.$compileProvider.directive.ngView ngView}
+           * As a result of that, {@link ng.directive:ngView ngView}
            * creates new scope, reinstantiates the controller.
            */
           reload: function() {
-            dirty++;
             forceReload = true;
+            $rootScope.$evalAsync(updateRoute);
           }
         };
 
-    $rootScope.$watch(function() { return dirty + $location.url(); }, updateRoute);
+    $rootScope.$on('$locationChangeSuccess', updateRoute);
 
     return $route;
 
@@ -298,7 +349,7 @@ function $RouteProvider(){
         $rootScope.$broadcast('$routeUpdate', last);
       } else if (next || last) {
         forceReload = false;
-        $rootScope.$broadcast('$beforeRouteChange', next, last);
+        $rootScope.$broadcast('$routeChangeStart', next, last);
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
@@ -309,11 +360,52 @@ function $RouteProvider(){
               $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
                        .replace();
             }
-          } else {
-            copy(next.params, $routeParams);
           }
         }
-        $rootScope.$broadcast('$afterRouteChange', next, last);
+
+        $q.when(next).
+          then(function() {
+            if (next) {
+              var keys = [],
+                  values = [],
+                  template;
+
+              forEach(next.resolve || {}, function(value, key) {
+                keys.push(key);
+                values.push(isFunction(value) ? $injector.invoke(value) : $injector.get(value));
+              });
+              if (isDefined(template = next.template)) {
+              } else if (isDefined(template = next.templateUrl)) {
+                template = $http.get(template, {cache: $templateCache}).
+                    then(function(response) { return response.data; });
+              }
+              if (isDefined(template)) {
+                keys.push('$template');
+                values.push(template);
+              }
+              return $q.all(values).then(function(values) {
+                var locals = {};
+                forEach(values, function(value, index) {
+                  locals[keys[index]] = value;
+                });
+                return locals;
+              });
+            }
+          }).
+          // after route change
+          then(function(locals) {
+            if (next == $route.current) {
+              if (next) {
+                next.locals = locals;
+                copy(next.params, $routeParams);
+              }
+              $rootScope.$broadcast('$routeChangeSuccess', next, last);
+            }
+          }, function(error) {
+            if (next == $route.current) {
+              $rootScope.$broadcast('$routeChangeError', next, last, error);
+            }
+          });
       }
     }
 

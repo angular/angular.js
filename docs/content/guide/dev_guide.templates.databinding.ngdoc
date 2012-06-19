@@ -34,5 +34,5 @@ isolation without the view and the related DOM/browser dependency.
 
 ## Related Topics
 
-* {@link dev_guide.scopes Angular Scopes}
+* {@link scope Angular Scopes}
 * {@link dev_guide.templates Angular Templates}

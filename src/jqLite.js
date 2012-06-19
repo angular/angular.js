@@ -65,7 +65,7 @@
  *   camelCase directive name, then the controller for this directive will be retrieved (e.g.
  *   `'ngModel'`).
  * - `injector()` - retrieves the injector of the current element or its parent.
- * - `scope()` - retrieves the {@link api/angular.module.ng.$rootScope.Scope scope} of the current
+ * - `scope()` - retrieves the {@link api/ng.$rootScope.Scope scope} of the current
  *   element or its parent.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
@@ -365,8 +365,12 @@ forEach('input,select,option,textarea,button,form'.split(','), function(value) {
   BOOLEAN_ELEMENTS[uppercase(value)] = true;
 });
 
-function isBooleanAttr(element, name) {
-  return BOOLEAN_ELEMENTS[element.nodeName] && BOOLEAN_ATTR[name.toLowerCase()];
+function getBooleanAttrName(element, name) {
+  // check dom last since we will most likely fail on name
+  var booleanAttr = BOOLEAN_ATTR[name.toLowerCase()];
+
+  // booleanAttr is here twice to minimize DOM access
+  return booleanAttr && BOOLEAN_ELEMENTS[element.nodeName] && booleanAttr;
 }
 
 forEach({
@@ -559,11 +563,7 @@ function createEventHandler(element, events) {
     };
 
     forEach(events[type || event.type], function(fn) {
-      try {
-        fn.call(element, event);
-      } catch (e) {
-        // Not much to do here since jQuery ignores these anyway
-      }
+      fn.call(element, event);
     });
 
     // Remove monkey-patched methods (IE),

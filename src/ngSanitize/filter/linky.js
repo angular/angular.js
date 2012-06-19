@@ -1,6 +1,6 @@
 /**
  * @ngdoc filter
- * @name angular.module.ngSanitize.filter.linky
+ * @name ngSanitize.filter:linky
  * @function
  *
  * @description

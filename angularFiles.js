@@ -13,7 +13,6 @@ angularFiles = {
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
     'src/ng/controller.js',
-    'src/ng/defer.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
     'src/ng/interpolate.js',
@@ -29,6 +28,7 @@ angularFiles = {
     'src/ng/http.js',
     'src/ng/httpBackend.js',
     'src/ng/locale.js',
+    'src/ng/timeout.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',

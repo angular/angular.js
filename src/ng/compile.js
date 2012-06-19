@@ -18,22 +18,25 @@
  */
 
 
+var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
+
+
 /**
  * @ngdoc function
- * @name angular.module.ng.$compile
+ * @name ng.$compile
  * @function
  *
  * @description
  * Compiles a piece of HTML string or DOM into a template and produces a template function, which
- * can then be used to link {@link angular.module.ng.$rootScope.Scope scope} and the template together.
+ * can then be used to link {@link ng.$rootScope.Scope scope} and the template together.
  *
  * The compilation is a process of walking the DOM tree and trying to match DOM elements to
- * {@link angular.module.ng.$compileProvider.directive directives}. For each match it
+ * {@link ng.$compileProvider.directive directives}. For each match it
  * executes corresponding template function and collects the
  * instance functions into a single template function which is then returned.
  *
  * The template function can then be used once to produce the view or as it is the case with
- * {@link angular.module.ng.$compileProvider.directive.ngRepeat repeater} many-times, in which
+ * {@link ng.directive:ngRepeat repeater} many-times, in which
  * case each call results in a view that is a DOM clone of the original template.
  *
  <doc:example module="compile">
@@ -96,7 +99,7 @@
  * @returns {function(scope[, cloneAttachFn])} a link function which is used to bind template
  * (a DOM element/tree) to a scope. Where:
  *
- *  * `scope` - A {@link angular.module.ng.$rootScope.Scope Scope} to bind to.
+ *  * `scope` - A {@link ng.$rootScope.Scope Scope} to bind to.
  *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
  *               cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
@@ -135,17 +138,30 @@
  *
  *
  * For information on how the compiler works, see the
- * {@link guide/dev_guide.compiler Angular HTML Compiler} section of the Developer Guide.
+ * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
  */
 
 
 /**
  * @ngdoc service
- * @name angular.module.ng.$compileProvider
+ * @name ng.$compileProvider
  * @function
  *
  * @description
+ */
+
+/**
+ * @ngdoc function
+ * @name ng.$compileProvider#directive
+ * @methodOf ng.$compileProvider
+ * @function
  *
+ * @description
+ * Register a new directive with compiler
+ *
+ * @param {string} name name of the directive.
+ * @param {function} directiveFactory An injectable directive factory function.
+ * @returns {ng.$compileProvider} Self for chaining.
  */
 $CompileProvider.$inject = ['$provide'];
 function $CompileProvider($provide) {
@@ -158,8 +174,8 @@ function $CompileProvider($provide) {
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive
-   * @methodOf angular.module.ng.$compileProvider
+   * @name ng.$compileProvider.directive
+   * @methodOf ng.$compileProvider
    * @function
    *
    * @description
@@ -208,54 +224,12 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller',
+            '$controller', '$rootScope',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller) {
-
-    var LOCAL_MODE = {
-      attribute: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = attr[localName];
-      },
-
-      evaluate: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = parentScope.$eval(attr[localName]);
-      },
-
-      bind: function(localName, mode, parentScope, scope, attr) {
-        var getter = $interpolate(attr[localName]);
-        scope.$watch(
-          function() { return getter(parentScope); },
-          function(v) { scope[localName] = v; }
-        );
-      },
-
-      accessor: function(localName, mode, parentScope, scope, attr) {
-        var getter = noop,
-            setter = noop,
-            exp = attr[localName];
-
-        if (exp) {
-          getter = $parse(exp);
-          setter = getter.assign || function() {
-            throw Error("Expression '" + exp + "' not assignable.");
-          };
-        }
-
-        scope[localName] = function(value) {
-          return arguments.length ? setter(parentScope, value) : getter(parentScope);
-        };
-      },
-
-      expression: function(localName, mode, parentScope, scope, attr) {
-        scope[localName] = function(locals) {
-          $parse(attr[localName])(parentScope, locals);
-        };
-      }
-    };
+             $controller,   $rootScope) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
-      this.$$observers = {};
       this.$attr = attr || {};
     };
 
@@ -273,7 +247,8 @@ function $CompileProvider($provide) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        var booleanKey = isBooleanAttr(this.$$element[0], key.toLowerCase());
+        var booleanKey = getBooleanAttrName(this.$$element[0], key),
+            $$observers = this.$$observers;
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -301,7 +276,7 @@ function $CompileProvider($provide) {
         }
 
         // fire observers
-        forEach(this.$$observers[key], function(fn) {
+        $$observers && forEach($$observers[key], function(fn) {
           try {
             fn(value);
           } catch (e) {
@@ -320,10 +295,17 @@ function $CompileProvider($provide) {
        * @returns {function(*)} the `fn` Function passed in.
        */
       $observe: function(key, fn) {
-        // keep only observers for interpolated attrs
-        if (this.$$observers[key]) {
-          this.$$observers[key].push(fn);
-        }
+        var attrs = this,
+            $$observers = (attrs.$$observers || (attrs.$$observers = {})),
+            listeners = ($$observers[key] || ($$observers[key] = []));
+
+        listeners.push(fn);
+        $rootScope.$evalAsync(function() {
+          if (!listeners.$$inter) {
+            // no one registered attribute interpolation function, so lets call it manually
+            fn(attrs[key]);
+          }
+        });
         return fn;
       }
     };
@@ -485,7 +467,7 @@ function $CompileProvider($provide) {
               attrs[nName] = value = trim((msie && name == 'href')
                 ? decodeURIComponent(node.getAttribute(name, 2))
                 : attr.value);
-              if (isBooleanAttr(node, nName)) {
+              if (getBooleanAttrName(node, nName)) {
                 attrs[nName] = true; // presence means true
               }
               addAttrInterpolateDirective(node, directives, value, nName);
@@ -726,9 +708,67 @@ function $CompileProvider($provide) {
         $element = attrs.$$element;
 
         if (newScopeDirective && isObject(newScopeDirective.scope)) {
-          forEach(newScopeDirective.scope, function(mode, name) {
-            (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                scope.$parent || scope, scope, attrs);
+          var LOCAL_REGEXP = /^\s*([@=&])\s*(\w*)\s*$/;
+
+          var parentScope = scope.$parent || scope;
+
+          forEach(newScopeDirective.scope, function(definiton, scopeName) {
+            var match = definiton.match(LOCAL_REGEXP) || [],
+                attrName = match[2]|| scopeName,
+                mode = match[1], // @, =, or &
+                lastValue,
+                parentGet, parentSet;
+
+            switch (mode) {
+
+              case '@': {
+                attrs.$observe(attrName, function(value) {
+                  scope[scopeName] = value;
+                });
+                attrs.$$observers[attrName].$$scope = parentScope;
+                break;
+              }
+
+              case '=': {
+                parentGet = $parse(attrs[attrName]);
+                parentSet = parentGet.assign || function() {
+                  // reset the change, or we will throw this exception on every $digest
+                  lastValue = scope[scopeName] = parentGet(parentScope);
+                  throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
+                      ' (directive: ' + newScopeDirective.name + ')');
+                };
+                lastValue = scope[scopeName] = parentGet(parentScope);
+                scope.$watch(function() {
+                  var parentValue = parentGet(parentScope);
+
+                  if (parentValue !== scope[scopeName]) {
+                    // we are out of sync and need to copy
+                    if (parentValue !== lastValue) {
+                      // parent changed and it has precedence
+                      lastValue = scope[scopeName] = parentValue;
+                    } else {
+                      // if the parent can be assigned then do so
+                      parentSet(parentScope, lastValue = scope[scopeName]);
+                    }
+                  }
+                  return parentValue;
+                });
+                break;
+              }
+
+              case '&': {
+                parentGet = $parse(attrs[attrName]);
+                scope[scopeName] = function(locals) {
+                  return parentGet(parentScope, locals);
+                }
+                break;
+              }
+
+              default: {
+                throw Error('Invalid isolate scope definition for directive ' +
+                    newScopeDirective.name + ': ' + definiton);
+              }
+            }
           });
         }
 
@@ -740,12 +780,6 @@ function $CompileProvider($provide) {
               $attrs: attrs,
               $transclude: boundTranscludeFn
             };
-
-
-            forEach(directive.inject || {}, function(mode, name) {
-              (LOCAL_MODE[mode] || wrongMode)(name, mode,
-                  newScopeDirective ? scope.$parent || scope : scope, locals, attrs);
-            });
 
             controller = directive.controller;
             if (controller == '@') {
@@ -831,6 +865,7 @@ function $CompileProvider($provide) {
       var srcAttr = src.$attr,
           dstAttr = dst.$attr,
           $element = dst.$$element;
+
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
@@ -840,10 +875,12 @@ function $CompileProvider($provide) {
           dst.$set(key, value, true, srcAttr[key]);
         }
       });
+
       // copy the new attributes on the old attrs object
       forEach(src, function(value, key) {
         if (key == 'class') {
           safeAddClass($element, value);
+          dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
         } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
@@ -977,19 +1014,20 @@ function $CompileProvider($provide) {
       directives.push({
         priority: 100,
         compile: valueFn(function(scope, element, attr) {
+          var $$observers = (attr.$$observers || (attr.$$observers = {}));
+
           if (name === 'class') {
             // we need to interpolate classes again, in the case the element was replaced
             // and therefore the two class attrs got merged - we want to interpolate the result
             interpolateFn = $interpolate(attr[name], true);
           }
 
-          // we define observers array only for interpolated attrs
-          // and ignore observers for non interpolated attrs to save some memory
-          attr.$$observers[name] = [];
           attr[name] = undefined;
-          scope.$watch(interpolateFn, function(value) {
-            attr.$set(name, value);
-          });
+          ($$observers[name] || ($$observers[name] = [])).$$inter = true;
+          (attr.$$observers && attr.$$observers[name].$$scope || scope).
+            $watch(interpolateFn, function(value) {
+              attr.$set(name, value);
+            });
         })
       });
     }
@@ -1044,6 +1082,43 @@ var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
 function directiveNormalize(name) {
   return camelCase(name.replace(PREFIX_REGEXP, ''));
 }
+
+/**
+ * @ngdoc object
+ * @name ng.$compile.directive.Attributes
+ * @description
+ *
+ * A shared object between directive compile / linking functions which contains normalized DOM element
+ * attributes. The the values reflect current binding state `{{ }}`. The normalization is needed
+ * since all of these are treated as equivalent in Angular:
+ *
+ *          <span ng:bind="a" ng-bind="a" data-ng-bind="a" x-ng-bind="a">
+ */
+
+/**
+ * @ngdoc property
+ * @name ng.$compile.directive.Attributes#$attr
+ * @propertyOf ng.$compile.directive.Attributes
+ * @returns {object} A map of DOM element attribute names to the normalized name. This is
+ *          needed to do reverse lookup from normalized name back to actual name.
+ */
+
+
+/**
+ * @ngdoc function
+ * @name ng.$compile.directive.Attributes#$set
+ * @methodOf ng.$compile.directive.Attributes
+ * @function
+ *
+ * @description
+ * Set DOM element attribute value.
+ *
+ *
+ * @param {string} name Normalized element attribute name of the property to modify. The name is
+ *          revers translated using the {@link ng.$compile.directive.Attributes#$attr $attr}
+ *          property to the original name.
+ * @param {string} value Value to set the attribute to.
+ */
 
 
 

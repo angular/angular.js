@@ -54,7 +54,7 @@ Doc.prototype = {
     function extractWords(text) {
       var tokens = text.toLowerCase().split(/[,\.\`\'\"\#\s]+/mg);
       tokens.forEach(function(key){
-        var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]{2,})/);
+        var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]+)/);
         if (match){
           key = match[1];
           if (!keywords[key]) {
@@ -101,7 +101,7 @@ Doc.prototype = {
 
     var self = this,
       IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
-      IS_ANGULAR = /^(api\/)?angular\./,
+      IS_ANGULAR = /^(api\/)?(angular|ng|AUTO)\./,
       IS_HASH = /^#/,
       parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
       seq = 0,
@@ -201,7 +201,7 @@ Doc.prototype = {
       }
     });
     flush();
-    this.shortName = this.name.split(this.name.match(/#/) ? /#/ : /\./ ).pop();
+    this.shortName = this.name.split(/[\.:#]/).pop();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
       this.name; // default to name
@@ -227,10 +227,10 @@ Doc.prototype = {
             'default':match[6]
           };
           self.param.push(param);
-        } else if (atName == 'returns') {
+        } else if (atName == 'returns' || atName == 'return') {
           match = text.match(/^\{([^}=]+)\}\s+(.*)/);
           if (!match) {
-            throw new Error("Not a valid 'returns' format: " + text);
+            throw new Error("Not a valid 'returns' format: " + text + ' in ' + self.file + ':' + self.line);
           }
           self.returns = {
             type: match[1],
@@ -277,7 +277,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/angular.module.ng.' + require.name}, require.name);
+          dom.tag('a', {href: 'api/ng.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -622,14 +622,15 @@ Doc.prototype = {
 
 
 //////////////////////////////////////////////////////////
-var GLOBALS = /^angular\.([^\.]*)$/,
-  MODULE = /^angular\.module\.([^\.]*)$/,
-  MODULE_MOCK = /^angular\.mock\.([^\.]*)$/,
-  MODULE_DIRECTIVE = /^angular\.module\.([^\.]*)(?:\.\$compileProvider)?\.directive\.([^\.]*)$/,
-  MODULE_DIRECTIVE_INPUT = /^angular\.module\.([^\.]*)\.\$compileProvider\.directive\.input\.([^\.]*)$/,
-  MODULE_FILTER = /^angular\.module\.([^\.]*)\.\$?filter\.([^\.]*)$/,
-  MODULE_SERVICE = /^angular\.module\.([^\.]*)\.([^\.]*?)(Provider)?$/,
-  MODULE_TYPE = /^angular\.module\.([^\.]*)\..*\.([A-Z][^\.]*)$/;
+var GLOBALS = /^angular\.([^\.]+)$/,
+    MODULE = /^((?:(?!^angular\.)[^\.])+)$/,
+    MODULE_MOCK = /^angular\.mock\.([^\.]+)$/,
+    MODULE_DIRECTIVE = /^((?:(?!^angular\.)[^\.])+)\.directive:([^\.]+)$/,
+    MODULE_DIRECTIVE_INPUT = /^((?:(?!^angular\.)[^\.])+)\.directive:input\.([^\.]+)$/,
+    MODULE_FILTER = /^((?:(?!^angular\.)[^\.])+)\.filter:([^\.]+)$/,
+    MODULE_SERVICE = /^((?:(?!^angular\.)[^\.])+)\.([^\.]+?)(Provider)?$/,
+    MODULE_TYPE = /^((?:(?!^angular\.)[^\.])+)\..+\.([A-Z][^\.]+)$/;
+
 
 function title(text) {
   if (!text) return text;
@@ -726,9 +727,9 @@ function scenarios(docs){
 
 //////////////////////////////////////////////////////////
 function metadata(docs){
-  var words = [];
+  var pages = [];
   docs.forEach(function(doc){
-    var path = (doc.name || '').split(/(\.|\:\s+)/);
+    var path = (doc.name || '').split(/(\.|\:)/);
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
@@ -738,7 +739,7 @@ function metadata(docs){
       shortName = 'input [' + shortName + ']';
     }
 
-    words.push({
+    pages.push({
       section: doc.section,
       id: doc.id,
       name: title(doc.name),
@@ -747,18 +748,22 @@ function metadata(docs){
       keywords:doc.keywords()
     });
   });
-  words.sort(keywordSort);
-  return words;
+  pages.sort(keywordSort);
+  return pages;
 }
 
 var KEYWORD_PRIORITY = {
   '.index': 1,
-  '.guide': 2,
-  '.angular': 7,
-  '.angular.Module': 7,
-  '.angular.module': 8,
-  '.angular.module.ng': 2,
-  '.angular.module.AUTO': 1,
+  '.overview': 1,
+  '.bootstrap': 2,
+  '.mvc': 3,
+  '.scopes': 4,
+  '.compiler': 5,
+  '.templates': 6,
+  '.services': 7,
+  '.di': 8,
+  '.unit-testing': 9,
+  '.dev_guide': 9,
   '.dev_guide.overview': 1,
   '.dev_guide.bootstrap': 2,
   '.dev_guide.bootstrap.auto_bootstrap': 1,

@@ -40,7 +40,7 @@ The next line downloads the angular script:
 </pre>
 
 (For details on what happens when angular processes an HTML page,
-see {@link guide/dev_guide.bootstrap Bootstrap}.)
+see {@link guide/bootstrap Bootstrap}.)
 
 Finally, this line in the `<body>` of the page is the template that describes
 how to display our greeting in the UI:
@@ -113,7 +113,7 @@ write, test, maintain, and understand.
 
 ## Data
 
-The Model is referenced from properties on {@link guide/dev_guide.scopes angular scope objects}.
+The Model is referenced from properties on {@link guide/scope angular scope objects}.
 The data in your model could be Javascript objects, arrays, or primitives, it doesn't matter.  What
 matters is that these are all referenced by the scope object.
 

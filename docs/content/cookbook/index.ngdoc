@@ -44,7 +44,7 @@ allowing you to send links to specific screens in your app.
 
 # Services
 
-{@link api/angular.module.ng Services}: Services are long lived objects in your applications that are
+{@link api/ng Services}: Services are long lived objects in your applications that are
 available across controllers. A collection of useful services are pre-bundled with angular but you
 will likely add your own. Services are initialized using dependency injection, which resolves the
 order of initialization. This safeguards you from the perils of global state (a common way to

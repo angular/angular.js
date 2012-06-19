@@ -8,19 +8,19 @@ var XHR = window.XMLHttpRequest || function() {
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$httpBackend
+ * @name ng.$httpBackend
  * @requires $browser
  * @requires $window
  * @requires $document
  *
  * @description
- * HTTP backend used by the {@link angular.module.ng.$http service} that delegates to
+ * HTTP backend used by the {@link ng.$http service} that delegates to
  * XMLHttpRequest object or JSONP and deals with browser incompatibilities.
  *
  * You should never need to use this service directly, instead use the higher-level abstractions:
- * {@link angular.module.ng.$http $http} or {@link angular.module.ngResource.$resource $resource}.
+ * {@link ng.$http $http} or {@link ngResource.$resource $resource}.
  *
- * During testing this implementation is swapped with {@link angular.module.ngMock.$httpBackend mock
+ * During testing this implementation is swapped with {@link ngMock.$httpBackend mock
  * $httpBackend} which can be trained with responses.
  */
 function $HttpBackendProvider() {

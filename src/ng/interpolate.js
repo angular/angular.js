@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.module.ng.$interpolateProvider
+ * @name ng.$interpolateProvider
  * @function
  *
  * @description
@@ -15,8 +15,8 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name angular.module.ng.$interpolateProvider#startSymbol
-   * @methodOf angular.module.ng.$interpolateProvider
+   * @name ng.$interpolateProvider#startSymbol
+   * @methodOf ng.$interpolateProvider
    * @description
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
@@ -33,8 +33,8 @@ function $InterpolateProvider() {
 
   /**
    * @ngdoc method
-   * @name angular.module.ng.$interpolateProvider#endSymbol
-   * @methodOf angular.module.ng.$interpolateProvider
+   * @name ng.$interpolateProvider#endSymbol
+   * @methodOf ng.$interpolateProvider
    * @description
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
@@ -56,7 +56,7 @@ function $InterpolateProvider() {
 
     /**
      * @ngdoc function
-     * @name angular.module.ng.$interpolate
+     * @name ng.$interpolate
      * @function
      *
      * @requires $parse
@@ -64,8 +64,8 @@ function $InterpolateProvider() {
      * @description
      *
      * Compiles a string with markup into an interpolation function. This service is used by the
-     * HTML {@link angular.module.ng.$compile $compile} service for data binding. See
-     * {@link angular.module.ng.$interpolateProvider $interpolateProvider} for configuring the
+     * HTML {@link ng.$compile $compile} service for data binding. See
+     * {@link ng.$interpolateProvider $interpolateProvider} for configuring the
      * interpolation markup.
      *
      *

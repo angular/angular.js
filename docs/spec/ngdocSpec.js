@@ -203,17 +203,17 @@ describe('ngdoc', function() {
 
   describe('merge', function() {
     it('should merge child with parent', function() {
-      var parent = new Doc({id: 'angular.module.ng.abc', name: 'angular.module.ng.abc', section: 'api'});
-      var methodA = new Doc({name: 'methodA', methodOf: 'angular.module.ng.abc'});
-      var methodB = new Doc({name: 'methodB', methodOf: 'angular.module.ng.abc'});
-      var propA = new Doc({name: 'propA', propertyOf: 'angular.module.ng.abc'});
-      var propB = new Doc({name: 'propB', propertyOf: 'angular.module.ng.abc'});
-      var eventA = new Doc({name: 'eventA', eventOf: 'angular.module.ng.abc'});
-      var eventB = new Doc({name: 'eventB', eventOf: 'angular.module.ng.abc'});
+      var parent = new Doc({id: 'ng.abc', name: 'ng.abc', section: 'api'});
+      var methodA = new Doc({name: 'methodA', methodOf: 'ng.abc'});
+      var methodB = new Doc({name: 'methodB', methodOf: 'ng.abc'});
+      var propA = new Doc({name: 'propA', propertyOf: 'ng.abc'});
+      var propB = new Doc({name: 'propB', propertyOf: 'ng.abc'});
+      var eventA = new Doc({name: 'eventA', eventOf: 'ng.abc'});
+      var eventB = new Doc({name: 'eventB', eventOf: 'ng.abc'});
       var docs = [methodB, methodA, eventB, eventA, propA, propB, parent]; // keep wrong order;
       ngdoc.merge(docs);
       expect(docs.length).toEqual(1);
-      expect(docs[0].id).toEqual('angular.module.ng.abc');
+      expect(docs[0].id).toEqual('ng.abc');
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].events).toEqual([eventA, eventB]);
       expect(docs[0].properties).toEqual([propA, propB]);
@@ -283,8 +283,8 @@ describe('ngdoc', function() {
         expect(doc.requires).toEqual([
           {name:'$service', text:'<p>for \n<code>A</code></p>'},
           {name:'$another', text:'<p>for <code>B</code></p>'}]);
-        expect(doc.html()).toContain('<a href="api/angular.module.ng.$service">$service</a>');
-        expect(doc.html()).toContain('<a href="api/angular.module.ng.$another">$another</a>');
+        expect(doc.html()).toContain('<a href="api/ng.$service">$service</a>');
+        expect(doc.html()).toContain('<a href="api/ng.$another">$another</a>');
         expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
         expect(doc.html()).toContain('<p>for <code>B</code></p>');
       });

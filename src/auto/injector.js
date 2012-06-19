@@ -7,12 +7,12 @@
  *
  * @description
  * Creates an injector function that can be used for retrieving services as well as for
- * dependency injection (see {@link guide/dev_guide.di dependency injection}).
+ * dependency injection (see {@link guide/di dependency injection}).
  *
 
  * @param {Array.<string|Function>} modules A list of module functions or their aliases. See
  *        {@link angular.module}. The `ng` module must be explicitly added.
- * @returns {function()} Injector function. See {@link angular.module.AUTO.$injector $injector}.
+ * @returns {function()} Injector function. See {@link AUTO.$injector $injector}.
  *
  * @example
  * Typical usage
@@ -32,42 +32,55 @@
 
 /**
  * @ngdoc overview
- * @name angular.module.AUTO
+ * @name AUTO
  * @description
  *
- * Implicit module which gets automatically added to each {@link angular.module.AUTO.$injector $injector}.
+ * Implicit module which gets automatically added to each {@link AUTO.$injector $injector}.
  */
 
 var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(.+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-function inferInjectionArgs(fn) {
-  assertArgFn(fn);
-  if (!fn.$inject) {
-    var args = fn.$inject = [];
-    var fnText = fn.toString().replace(STRIP_COMMENTS, '');
-    var argDecl = fnText.match(FN_ARGS);
-    forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-      arg.replace(FN_ARG, function(all, underscore, name){
-        args.push(name);
+function annotate(fn) {
+  var $inject,
+      fnText,
+      argDecl,
+      last;
+
+  if (typeof fn == 'function') {
+    if (!($inject = fn.$inject)) {
+      $inject = [];
+      fnText = fn.toString().replace(STRIP_COMMENTS, '');
+      argDecl = fnText.match(FN_ARGS);
+      forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
+        arg.replace(FN_ARG, function(all, underscore, name){
+          $inject.push(name);
+        });
       });
-    });
+      fn.$inject = $inject;
+    }
+  } else if (isArray(fn)) {
+    last = fn.length - 1;
+    assertArgFn(fn[last], 'fn')
+    $inject = fn.slice(0, last);
+  } else {
+    assertArgFn(fn, 'fn', true);
   }
-  return fn.$inject;
+  return $inject;
 }
 
 ///////////////////////////////////////
 
 /**
  * @ngdoc object
- * @name angular.module.AUTO.$injector
+ * @name AUTO.$injector
  * @function
  *
  * @description
  *
  * `$injector` is used to retrieve object instances as defined by
- * {@link angular.module.AUTO.$provide provider}, instantiate types, invoke methods,
+ * {@link AUTO.$provide provider}, instantiate types, invoke methods,
  * and load modules.
  *
  * The following always holds true:
@@ -101,7 +114,7 @@ function inferInjectionArgs(fn) {
  * ## Inference
  *
  * In JavaScript calling `toString()` on a function returns the function definition. The definition can then be
- * parsed and the function arguments can be extracted. *NOTE:* This does not work with minfication, and obfuscation
+ * parsed and the function arguments can be extracted. *NOTE:* This does not work with minification, and obfuscation
  * tools since these tools change the argument names.
  *
  * ## `$inject` Annotation
@@ -113,8 +126,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$injector#get
- * @methodOf angular.module.AUTO.$injector
+ * @name AUTO.$injector#get
+ * @methodOf AUTO.$injector
  *
  * @description
  * Return an instance of the service.
@@ -125,8 +138,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$injector#invoke
- * @methodOf angular.module.AUTO.$injector
+ * @name AUTO.$injector#invoke
+ * @methodOf AUTO.$injector
  *
  * @description
  * Invoke the method and supply the method arguments from the `$injector`.
@@ -135,13 +148,13 @@ function inferInjectionArgs(fn) {
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @return the value returned by the invoked `fn` function.
+ * @returns {*} the value returned by the invoked `fn` function.
  */
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$injector#instantiate
- * @methodOf angular.module.AUTO.$injector
+ * @name AUTO.$injector#instantiate
+ * @methodOf AUTO.$injector
  * @description
  * Create a new instance of JS type. The method takes a constructor function invokes the new operator and supplies
  * all of the arguments to the constructor function as specified by the constructor annotation.
@@ -149,13 +162,94 @@ function inferInjectionArgs(fn) {
  * @param {function} Type Annotated constructor function.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @return new instance of `Type`.
+ * @returns {Object} new instance of `Type`.
  */
+
+/**
+ * @ngdoc method
+ * @name AUTO.$injector#annotate
+ * @methodOf AUTO.$injector
+ *
+ * @description
+ * Returns an array of service names which the function is requesting for injection. This API is used by the injector
+ * to determine which services need to be injected into the function when the function is invoked. There are three
+ * ways in which the function can be annotated with the needed dependencies.
+ *
+ * # Argument names
+ *
+ * The simplest form is to extract the dependencies from the arguments of the function. This is done by converting
+ * the function into a string using `toString()` method and extracting the argument names.
+ * <pre>
+ *   // Given
+ *   function MyController($scope, $route) {
+ *     // ...
+ *   }
+ *
+ *   // Then
+ *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+ * </pre>
+ *
+ * This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
+ * are supported.
+ *
+ * # The `$injector` property
+ *
+ * If a function has an `$inject` property and its value is an array of strings, then the strings represent names of
+ * services to be injected into the function.
+ * <pre>
+ *   // Given
+ *   var MyController = function(obfuscatedScope, obfuscatedRoute) {
+ *     // ...
+ *   }
+ *   // Define function dependencies
+ *   MyController.$inject = ['$scope', '$route'];
+ *
+ *   // Then
+ *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+ * </pre>
+ *
+ * # The array notation
+ *
+ * It is often desirable to inline Injected functions and that's when setting the `$inject` property is very
+ * inconvenient. In these situations using the array notation to specify the dependencies in a way that survives
+ * minification is a better choice:
+ *
+ * <pre>
+ *   // We wish to write this (not minification / obfuscation safe)
+ *   injector.invoke(function($compile, $rootScope) {
+ *     // ...
+ *   });
+ *
+ *   // We are forced to write break inlining
+ *   var tmpFn = function(obfuscatedCompile, obfuscatedRootScope) {
+ *     // ...
+ *   };
+ *   tmpFn.$inject = ['$compile', '$rootScope'];
+ *   injector.invoke(tempFn);
+ *
+ *   // To better support inline function the inline annotation is supported
+ *   injector.invoke(['$compile', '$rootScope', function(obfCompile, obfRootScope) {
+ *     // ...
+ *   }]);
+ *
+ *   // Therefore
+ *   expect(injector.annotate(
+ *      ['$compile', '$rootScope', function(obfus_$compile, obfus_$rootScope) {}])
+ *    ).toEqual(['$compile', '$rootScope']);
+ * </pre>
+ *
+ * @param {function|Array.<string|Function>} fn Function for which dependent service names need to be retrieved as described
+ *   above.
+ *
+ * @returns {Array.<string>} The names of the services which the function requires.
+ */
+
+
 
 
 /**
  * @ngdoc object
- * @name angular.module.AUTO.$provide
+ * @name AUTO.$provide
  *
  * @description
  *
@@ -205,8 +299,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#provider
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#provider
+ * @methodOf AUTO.$provide
  * @description
  *
  * Register a provider for a service. The providers can be retrieved and can have additional configuration methods.
@@ -215,17 +309,17 @@ function inferInjectionArgs(fn) {
  * @param {(Object|function())} provider If the provider is:
  *
  *   - `Object`: then it should have a `$get` method. The `$get` method will be invoked using
- *               {@link angular.module.AUTO.$injector#invoke $injector.invoke()} when an instance needs to be created.
+ *               {@link AUTO.$injector#invoke $injector.invoke()} when an instance needs to be created.
  *   - `Constructor`: a new instance of the provider will be created using
- *               {@link angular.module.AUTO.$injector#instantiate $injector.instantiate()}, then treated as `object`.
+ *               {@link AUTO.$injector#instantiate $injector.instantiate()}, then treated as `object`.
  *
  * @returns {Object} registered provider instance
  */
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#factory
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#factory
+ * @methodOf AUTO.$provide
  * @description
  *
  * A short hand for configuring services if only `$get` method is required.
@@ -239,8 +333,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#service
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#service
+ * @methodOf AUTO.$provide
  * @description
  *
  * A short hand for registering service of given class.
@@ -253,8 +347,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#value
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#value
+ * @methodOf AUTO.$provide
  * @description
  *
  * A short hand for configuring services if the `$get` method is a constant.
@@ -267,13 +361,13 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#constant
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#constant
+ * @methodOf AUTO.$provide
  * @description
  *
- * A constant value, but unlike {@link angular.module.AUTO.$provide#value value} it can be injected
+ * A constant value, but unlike {@link AUTO.$provide#value value} it can be injected
  * into configuration function (other modules) and it is not interceptable by
- * {@link angular.module.AUTO.$provide#decorator decorator}.
+ * {@link AUTO.$provide#decorator decorator}.
  *
  * @param {string} name The name of the constant.
  * @param {*} value The constant value.
@@ -283,8 +377,8 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#decorator
- * @methodOf angular.module.AUTO.$provide
+ * @name AUTO.$provide#decorator
+ * @methodOf AUTO.$provide
  * @description
  *
  * Decoration of service, allows the decorator to intercept the service instance creation. The
@@ -293,7 +387,7 @@ function inferInjectionArgs(fn) {
  *
  * @param {string} name The name of the service to decorate.
  * @param {function()} decorator This function will be invoked when the service needs to be
- *    instanciated. The function is called using the {@link angular.module.AUTO.$injector#invoke
+ *    instanciated. The function is called using the {@link AUTO.$injector#invoke
  *    injector.invoke} method and is therefore fully injectable. Local injection arguments:
  *
  *    * `$delegate` - The original service instance, which can be monkey patched, configured,
@@ -454,23 +548,11 @@ function createInjector(modulesToLoad) {
 
     function invoke(fn, self, locals){
       var args = [],
-          $inject,
-          length,
+          $inject = annotate(fn),
+          length, i,
           key;
 
-      if (typeof fn == 'function') {
-        $inject = inferInjectionArgs(fn);
-        length = $inject.length;
-      } else {
-        if (isArray(fn)) {
-          $inject = fn;
-          length = $inject.length - 1;
-          fn = $inject[length];
-        }
-        assertArgFn(fn, 'fn');
-      }
-
-      for(var i = 0; i < length; i++) {
+      for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
         args.push(
           locals && locals.hasOwnProperty(key)
@@ -478,6 +560,11 @@ function createInjector(modulesToLoad) {
           : getService(key, path)
         );
       }
+      if (!fn.$inject) {
+        // this means that we must be an array.
+        fn = fn[length];
+      }
+
 
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
       switch (self ? -1 : args.length) {
@@ -510,7 +597,8 @@ function createInjector(modulesToLoad) {
     return {
       invoke: invoke,
       instantiate: instantiate,
-      get: getService
+      get: getService,
+      annotate: annotate
     };
   }
 }

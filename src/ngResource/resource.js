@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc overview
- * @name angular.module.ngResource
+ * @name ngResource
  * @description
  */
 
  /**
  * @ngdoc object
- * @name angular.module.ngResource.$resource
+ * @name ngResource.$resource
  * @requires $http
  *
  * @description
@@ -16,7 +16,7 @@
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
  *
  * The returned resource object has action methods which provide high-level behaviors without
- * the need to interact with the low level {@link angular.module.ng.$http $http} service.
+ * the need to interact with the low level {@link ng.$http $http} service.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`.
@@ -59,7 +59,7 @@
  *         'remove': {method:'DELETE'},
  *         'delete': {method:'DELETE'} };
  *
- *   Calling these methods invoke an {@link angular.module.ng.$http} with the specified http method,
+ *   Calling these methods invoke an {@link ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
  *   instance of the resource class `save`, `remove` and `delete` actions are available on it as
  *   methods with the `$` prefix. This allows you to easily perform CRUD operations (create, read,

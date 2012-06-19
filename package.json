@@ -1,0 +1,9 @@
+{
+  "name": "AngularJS",
+  "version": "0.0.0",
+  "dependencies" : {
+    "jasmine-node" :  "*",
+    "q-fs" : "*",
+    "qq" : "*"
+  }
+}

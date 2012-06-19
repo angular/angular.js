@@ -313,6 +313,23 @@ describe('ngMock', function() {
   });
 
 
+  describe('$timeout', function() {
+    it('should expose flush method that will flush the pending queue of tasks', inject(
+        function($timeout) {
+      var logger = [],
+          logFn = function(msg) { return function() { logger.push(msg) }};
+
+      $timeout(logFn('t1'));
+      $timeout(logFn('t2'), 200);
+      $timeout(logFn('t3'));
+      expect(logger).toEqual([]);
+
+      $timeout.flush();
+      expect(logger).toEqual(['t1', 't3', 't2']);
+    }));
+  });
+
+
   describe('angular.mock.dump', function(){
     var d = angular.mock.dump;
 
@@ -933,6 +950,13 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$rootElement', function() {
+    it('should create mock application root', inject(function($rootElement) {
+      expect($rootElement.text()).toEqual('');
+    }));
+  });
 });
 
 
@@ -965,7 +989,7 @@ describe('ngMockE2E', function() {
 
 
     describe('autoflush', function() {
-      it('should flush responses via $defer', inject(function($browser) {
+      it('should flush responses via $browser.defer', inject(function($browser) {
         hb.when('GET', '/foo').respond('bar');
         hb('GET', '/foo', null, callback);
 

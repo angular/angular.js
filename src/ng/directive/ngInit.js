@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ngInit
+ * @name ng.directive:ngInit
  *
  * @description
  * The `ngInit` directive specifies initialization tasks to be executed
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
- * @param {expression} ngInit {@link guide/dev_guide.expressions Expression} to eval.
+ * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>
