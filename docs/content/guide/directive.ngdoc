@@ -174,6 +174,7 @@ In this example we will build a directive which displays the current time.
    <script>
      function Ctrl2($scope) {
        $scope.format = 'M/d/yy h:mm:ss a';
+       $scope.stop = function() { $scope.$broadcast( 'stopTimer' ); };
      }
 
      angular.module('time', [])
@@ -209,6 +210,11 @@ In this example we will build a directive which displays the current time.
            // to prevent updating time ofter the DOM element was removed.
            element.bind('$destroy', function() {
              $timeout.cancel(timeoutId);
+           });
+
+           scope.$on('stopTimer', function() {
+           console.log( "Inside stop timer event" );
+             $timeout.cancel(timeoutId); 
            });
 
            updateLater(); // kick of the UI update process.
