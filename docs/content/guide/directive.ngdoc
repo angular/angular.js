@@ -72,7 +72,7 @@ Compilation of HTML happens in three phases:
 
   1. First the HTML is parsed into DOM using the standard browser API. This is important to
   realize because the templates must be parsable HTML. This is in contrast to most templating
-  systems that operate on strings, rather then on DOM elements.
+  systems that operate on strings, rather than on DOM elements.
 
   2. The compilation of the DOM is performed by the call to {@link api/ng.$compile
   $compile()} method. The method traverses the DOM and matches the directives. If a match is found
@@ -146,7 +146,7 @@ instance of an `li` is performed.
 {@link api/ng.directive:ngRepeat ngRepeat} works by preventing the
 compilation process form descending into `li` element. Instead the {@link
 api/ng.directive:ngRepeat ngRepeat} directive compiles `li`
-seperatly. The result of of the `li` element compilation is a linking function which contains all
+separately. The result of of the `li` element compilation is a linking function which contains all
 of the directives contained in the `li` element ready to be attached to a specific clone of `li`
 element. At runtime the {@link api/ng.directive:ngRepeat ngRepeat}
 watches the expression and as items are added to the array it clones the `li` element, creates a
