@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
 JASMINE_NODE='jasmine-node'
-if ! type -p "$JASMINE_NODE" >/dev/null 2>&1;then
-  # Locally (npm)-installed jasmine-node
-  local_jasmine='./node_modules/.bin/jasmine-node'
+local_jasmine='./node_modules/.bin/jasmine-node'
 
+if ! type -p "$JASMINE_NODE" >/dev/null 2>&1;then
   if [[ -x "$local_jasmine" ]];then
     JASMINE_NODE="$local_jasmine"
   else
