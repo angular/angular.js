@@ -592,7 +592,10 @@ describe('input', function() {
     describe('min', function() {
 
       it('should validate', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
+        scope.$apply(function() {
+          scope.min = 10;
+        });
+        compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
         scope.$digest();
 
         changeInputValueTo('1');
@@ -604,6 +607,15 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(100);
         expect(scope.form.alias.$error.min).toBeFalsy();
+        
+        scope.$apply(function() {
+          scope.min = 200;
+        });
+        expect(inputElm.val()).toBe('100');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+        
       });
     });
 
@@ -611,7 +623,8 @@ describe('input', function() {
     describe('max', function() {
 
       it('should validate', function() {
-        compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
+        scope.max = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
         scope.$digest();
 
         changeInputValueTo('20');

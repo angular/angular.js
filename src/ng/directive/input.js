@@ -82,8 +82,8 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
+   * @param {expression} min Sets the `min` validation error key if the value entered is less then `min`.
+   * @param {expression} max Sets the `max` validation error key if the value entered is greater then `max`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
@@ -498,38 +498,31 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     return isEmpty(value) ? '' : '' + value;
   });
 
-  if (attr.min) {
-    var min = parseFloat(attr.min);
-    var minValidator = function(value) {
-      if (!isEmpty(value) && value < min) {
-        ctrl.$setValidity('min', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('min', true);
-        return value;
-      }
-    };
+  function applyMinMax(minOrMax, notInRange) {
+    if (attr.hasOwnProperty(minOrMax)) {
+      var validator = function(value) {
+        var parsedValue = parseFloat(attr[minOrMax]);
+        if (!isEmpty(value) && notInRange(value, parsedValue)) {
+          ctrl.$setValidity(minOrMax, false);
+          return undefined;
+        } else {
+          ctrl.$setValidity(minOrMax, true);
+          return value;
+        }
+      };
 
-    ctrl.$parsers.push(minValidator);
-    ctrl.$formatters.push(minValidator);
+      ctrl.$parsers.push(validator);
+      ctrl.$formatters.push(validator);
+
+      attr.$observe(minOrMax, function() {
+        // triggering validation
+        ctrl.$setViewValue(ctrl.$viewValue);
+      });
+    }
   }
-
-  if (attr.max) {
-    var max = parseFloat(attr.max);
-    var maxValidator = function(value) {
-      if (!isEmpty(value) && value > max) {
-        ctrl.$setValidity('max', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('max', true);
-        return value;
-      }
-    };
-
-    ctrl.$parsers.push(maxValidator);
-    ctrl.$formatters.push(maxValidator);
-  }
-
+  applyMinMax('min', function notInRange(value, min) {return value < min});
+  applyMinMax('max', function notInRange(value, max) {return value > max});
+  
   ctrl.$formatters.push(function(value) {
 
     if (isEmpty(value) || isNumber(value)) {
