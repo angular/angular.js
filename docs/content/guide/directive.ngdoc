@@ -178,12 +178,12 @@ In this example we will build a directive which displays the current time.
 
      angular.module('time', [])
        // Register the 'myCurrentTime' directive factory method.
-       // We inject $defer and dateFilter service since the factory method is DI.
-       .directive('myCurrentTime', function($defer, dateFilter) {
+       // We inject $timeout and dateFilter service since the factory method is DI.
+       .directive('myCurrentTime', function($timeout, dateFilter) {
          // return the directive link function. (compile function not needed)
          return function(scope, element, attrs) {
            var format,  // date format
-               deferId; // deferId, so that we can cancel the time updates
+               timeoutId; // timeoutId, so that we can cancel the time updates
 
            // used to update the UI
            function updateTime() {
@@ -198,8 +198,8 @@ In this example we will build a directive which displays the current time.
 
            // schedule update in one second
            function updateLater() {
-             // save the deferId for canceling
-             deferId = $defer(function() {
+             // save the timeoutId for canceling
+             timeoutId = $timeout(function() {
                updateTime(); // update DOM
                updateLater(); // schedule another update
              }, 1000);
@@ -208,7 +208,7 @@ In this example we will build a directive which displays the current time.
            // listen on DOM destroy (removal) event, and cancel the next UI update
            // to prevent updating time ofter the DOM element was removed.
            element.bind('$destroy', function() {
-             $defer.cancel(deferId);
+             $timeout.cancel(timeoutId);
            });
 
            updateLater(); // kick of the UI update process.
@@ -217,7 +217,7 @@ In this example we will build a directive which displays the current time.
    </script>
    <div ng-controller="Ctrl2">
      Date format: <input ng-model='format'> <hr/>
-     Current time is: <span my-current-time="format"></span
+     Current time is: <span my-current-time="format"></span>
    </div>
   </doc:source>
   <doc:scenario>
