@@ -10,9 +10,8 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
 
   $scope.enable = false;
 
-  $scope.timeline = [];
-
   $scope.histogram = [];
+  $scope.timeline = [];
 
   $scope.clearHistogram = function () {
     appContext.clearHistogram();
@@ -25,7 +24,7 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
     if (first) {
       first = false;
     } else {
-      appContext.debug(newVal);
+      appContext.setDebug(newVal);
     }
     if (newVal) {
       //updateTimeline();
@@ -48,68 +47,55 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
   };
 
   var updateTimeline = function () {
-    appContext.getTimelineInfo(function (info) {
-      $scope.$apply(function () {
-        $scope.timeline = info;
-      });
-      if ($scope.enable) {
-        setTimeout(updateTimeline, 500);
-      }
-    });
+    var timeline = appContext.getTimeline();
+    if (timeline && timeline.length > $scope.timeline.length) {
+      $scope = $scope.concat(timeline.splice($scope.length - 1));
+    }
   };
 
   var updateHistogram = function () {
-    appContext.getHistogramInfo(function (info) {
-      $scope.$apply(function () {
-        var total = 0;
-        info.forEach(function (elt) {
-          total += elt.time;
-        });
-        var i, elt, his;
-        for (i = 0; (i < $scope.histogram.length && i < info.length); i++) {
-          elt = info[i];
-          his = $scope.histogram[i];
-          his.time = elt.time.toPrecision(3);
-          his.percent = (100 * elt.time / total).toPrecision(3);
-        }
-        for ( ; i < info.length; i++) {
-          elt = info[i];
-          elt.time = elt.time.toPrecision(3);
-          elt.percent = (100 * elt.time / total).toPrecision(3);
-          $scope.histogram.push(elt);
-        }
-        $scope.histogram.length = info.length;
-      });
-      if ($scope.enable) {
-        setTimeout(updateHistogram, 1000);
-      }
-    })
+    var info = appContext.getHistogram();
+    if (!info) {
+      return;
+    }
+    var total = 0;
+    info.forEach(function (elt) {
+      total += elt.time;
+    });
+    var i, elt, his;
+    for (i = 0; (i < $scope.histogram.length && i < info.length); i++) {
+      elt = info[i];
+      his = $scope.histogram[i];
+      his.time = elt.time.toPrecision(3);
+      his.percent = (100 * elt.time / total).toPrecision(3);
+    }
+    for ( ; i < info.length; i++) {
+      elt = info[i];
+      elt.time = elt.time.toPrecision(3);
+      elt.percent = (100 * elt.time / total).toPrecision(3);
+      $scope.histogram.push(elt);
+    }
+    $scope.histogram.length = info.length;
   }
 
   var updateTree = function () {
-    appContext.getDebugInfo(function (info) {
-      if (!info || info.roots.length === 0) {
-        setTimeout(updateTree, 50);
-        return;
-      }
-
-      $scope.$apply(function () {
-        var rootIdPairs = [];
-        info.roots.forEach(function (item) {
-          rootIdPairs.push({
-            label: item,
-            value: item
-          });
+    var roots = [];
+    appContext.getListOfRoots().
+      forEach(function (item) {
+        roots.push({
+          label: item,
+          value: item
         });
-        $scope.roots = rootIdPairs;
-        if (rootIdPairs.length === 0) {
-          $scope.selectedRoot = null;
-        } else {
-          $scope.selectedRoot = rootIdPairs[0].value;
-        }
-        $scope.trees = info.trees;
       });
-    });
+
+    $scope.roots = roots;
+    $scope.trees = appContext.getModelTree();
+
+    if (roots.length === 0) {
+      $scope.selectedRoot = null;
+    } else if (!$scope.selectedRoot) {
+      $scope.selectedRoot = roots[0].value;
+    }
   };
 
   updateTree();

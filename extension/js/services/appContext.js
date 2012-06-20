@@ -1,5 +1,180 @@
 // Service for doing stuff in the context of the application being debugged
 panelApp.factory('appContext', function(chromeExtension) {
+
+  // Private vars
+  // ============
+
+  var _debugCache,
+    _pollInterval = 500;
+
+  // TODO: make this private and have it automatically poll?
+  var getDebugData = function (callback) {
+    chromeExtension.eval(function (window) {
+      // cycle.js
+      // 2011-08-24
+      // https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
+
+      // Make a deep copy of an object or array, assuring that there is at most
+      // one instance of each object or array in the resulting structure. The
+      // duplicate references (which might be forming cycles) are replaced with
+      // an object of the form
+      //      {$ref: PATH}
+      // where the PATH is a JSONPath string that locates the first occurance.
+      var decycle = function decycle(object) {
+        var objects = [],   // Keep a reference to each unique object or array
+            paths = [];     // Keep the path to each unique object or array
+
+        return (function derez(value, path) {
+          var i,          // The loop counter
+              name,       // Property name
+              nu;         // The new object or array
+          switch (typeof value) {
+          case 'object':
+            if (!value) {
+              return null;
+            }
+            for (i = 0; i < objects.length; i += 1) {
+              if (objects[i] === value) {
+                return {$ref: paths[i]};
+              }
+            }
+            objects.push(value);
+            paths.push(path);
+            if (Object.prototype.toString.apply(value) === '[object Array]') {
+              nu = [];
+              for (i = 0; i < value.length; i += 1) {
+                nu[i] = derez(value[i], path + '[' + i + ']');
+              }
+            } else {
+              nu = {};
+              for (name in value) {
+                if (Object.prototype.hasOwnProperty.call(value, name)) {
+                  nu[name] = derez(value[name],
+                    path + '[' + JSON.stringify(name) + ']');
+                }
+              }
+            }
+            return nu;
+          case 'number':
+          case 'string':
+          case 'boolean':
+            return value;
+          }
+        }(object, '$'));
+      };
+
+      var rootIds = [];
+      var rootScopes = [];
+
+      // Detect whether or not this is an AngularJS app
+      if (!window.angular) {
+        return false;
+      }
+
+      var elts = window.document.getElementsByClassName('ng-scope');
+      var i;
+      for (i = 0; i < elts.length; i++) {
+        (function (elt) {
+          var $scope = window.angular.element(elt).scope();
+
+          while ($scope.$parent) {
+            $scope = $scope.$parent;
+          }
+          if ($scope === $scope.$root && rootScopes.indexOf($scope) === -1) {
+            rootScopes.push($scope);
+            rootIds.push($scope.$id);
+          }
+        }(elts[i]));
+      }
+
+      var getScopeTree = function (scope) {
+        var tree = {};
+        var getScopeNode = function (scope, node) {
+
+          // copy scope's locals
+          node.locals = {};
+
+          for (var i in scope) {
+            if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
+              //node.locals[i] = scope[i];
+              if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
+                node.locals[i] = scope[i];
+              } else if (typeof scope[i] === 'string') {
+                node.locals[i] = '"' + scope[i] + '"';
+              } else {
+                //node.locals[i] = ': ' + typeof scope[i];
+                node.locals[i] = JSON.stringify(decycle(scope[i]));
+              }
+            }
+          }
+
+          node.id = scope.$id;
+          
+          if (window.__ngDebug) {
+            node.watchers = __ngDebug.watchers[scope.$id];
+          }
+
+          // recursively get children scopes
+          node.children = [];
+          var child;
+          if (scope.$$childHead) {
+            child = scope.$$childHead;
+
+            do {
+              getScopeNode(child, node.children[node.children.length] = {});
+            } while (child = child.$$nextSibling);
+          }
+        };
+
+        getScopeNode(scope, tree);
+        return tree;
+      };
+
+      var trees = {};
+      rootScopes.forEach(function (root) {
+        trees[root.$id] = getScopeTree(root);
+      });
+
+      // get histogram data
+      var histogram = [],
+        timeline;
+
+      // performance
+      if (window.__ngDebug) {
+        (function (info) {
+          for (exp in info) {
+            if (info.hasOwnProperty(exp)) {
+              histogram.push({
+                name: exp,
+                time: info[exp].time,
+                calls: info[exp].calls
+              });
+            }
+          }
+        }(window.__ngDebug.watchExp));
+
+        timeline = __ngDebug.timeline;
+      }
+
+      return {
+        roots: rootIds,
+        trees: trees,
+        histogram: histogram,
+        timeline: timeline
+      };
+    },
+    function (data) {
+      _debugCache = data;
+
+      // poll every 500 ms
+      setTimeout(getDebugData, _pollInterval);
+    });
+  };
+  getDebugData();
+
+
+  // Public API
+  // ==========
   return {
     executeOnScope: function(scopeId, fn, args, cb) {
       if (typeof args === 'function') {
@@ -23,166 +198,28 @@ panelApp.factory('appContext', function(chromeExtension) {
         "}" +
       "}", args, cb);
     },
-    getDebugInfo: function (callback) {
-      chromeExtension.eval(function (window) {
-        // cycle.js
-        // 2011-08-24
-        // https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
 
-        // Make a deep copy of an object or array, assuring that there is at most
-        // one instance of each object or array in the resulting structure. The
-        // duplicate references (which might be forming cycles) are replaced with
-        // an object of the form
-        //      {$ref: PATH}
-        // where the PATH is a JSONPath string that locates the first occurance.
-        var decycle = function decycle(object) {
-          var objects = [],   // Keep a reference to each unique object or array
-              paths = [];     // Keep the path to each unique object or array
+    // Getters
+    // -------
 
-          return (function derez(value, path) {
-            var i,          // The loop counter
-                name,       // Property name
-                nu;         // The new object or array
-            switch (typeof value) {
-            case 'object':
-              if (!value) {
-                return null;
-              }
-              for (i = 0; i < objects.length; i += 1) {
-                if (objects[i] === value) {
-                  return {$ref: paths[i]};
-                }
-              }
-              objects.push(value);
-              paths.push(path);
-              if (Object.prototype.toString.apply(value) === '[object Array]') {
-                nu = [];
-                for (i = 0; i < value.length; i += 1) {
-                  nu[i] = derez(value[i], path + '[' + i + ']');
-                }
-              } else {
-                nu = {};
-                for (name in value) {
-                  if (Object.prototype.hasOwnProperty.call(value, name)) {
-                    nu[name] = derez(value[name],
-                      path + '[' + JSON.stringify(name) + ']');
-                  }
-                }
-              }
-              return nu;
-            case 'number':
-            case 'string':
-            case 'boolean':
-              return value;
-            }
-          }(object, '$'));
-        };
-
-        var rootIds = [];
-        var rootScopes = [];
-
-        // Detect whether or not this is an AngularJS app
-        if (!window.angular) {
-          return false;
-        }
-
-        var elts = window.document.getElementsByClassName('ng-scope');
-        var i;
-        for (i = 0; i < elts.length; i++) {
-          (function (elt) {
-            var $scope = window.angular.element(elt).scope();
-
-            while ($scope.$parent) {
-              $scope = $scope.$parent;
-            }
-            if ($scope === $scope.$root && rootScopes.indexOf($scope) === -1) {
-              rootScopes.push($scope);
-              rootIds.push($scope.$id);
-            }
-          }(elts[i]));
-        }
-
-        var getScopeTree = function (scope) {
-          var tree = {};
-          var getScopeNode = function (scope, node) {
-
-            // copy scope's locals
-            node.locals = {};
-
-            for (var i in scope) {
-              if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
-                //node.locals[i] = scope[i];
-                if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
-                  node.locals[i] = scope[i];
-                } else if (typeof scope[i] === 'string') {
-                  node.locals[i] = '"' + scope[i] + '"';
-                } else {
-                  //node.locals[i] = ': ' + typeof scope[i];
-                  node.locals[i] = JSON.stringify(decycle(scope[i]));
-                }
-              }
-            }
-
-            node.id = scope.$id;
-
-            //console.log(window.__ngDebug);
-            
-            if (window.__ngDebug) {
-              node.watchers = __ngDebug.watchers[scope.$id];
-            }
-
-            // recursively get children scopes
-            node.children = [];
-            var child;
-            if (scope.$$childHead) {
-              child = scope.$$childHead;
-
-              do {
-                getScopeNode(child, node.children[node.children.length] = {});
-              } while (child = child.$$nextSibling);
-            }
-          };
-
-          getScopeNode(scope, tree);
-          return tree;
-        };
-
-        var trees = {};
-        rootScopes.forEach(function (root) {
-          trees[root.$id] = getScopeTree(root);
-        });
-
-        return {
-          roots: rootIds,
-          trees: trees
-        };
-      },
-      callback);
+    getTimeline: function () {
+      return _debugCache.timeline;
     },
 
-    getTimelineInfo: function (cb) {
-      chromeExtension.eval(function (window) {
-        return window.__ngDebug.timeline;
-      }, cb);
+    getHistogram: function () {
+      return _debugCache.histogram;
     },
 
-    getHistogramInfo: function (cb) {
-      chromeExtension.eval(function (window) {
-        return window.__ngDebug.watchExp;
-      }, function (info) {
-        var out = [];
-        for (exp in info) {
-          if (info.hasOwnProperty(exp)) {
-            out.push({
-              name: exp,
-              time: info[exp].time,
-              calls: info[exp].calls
-            });
-          }
-        }
-        cb(out);
-      });
+    getListOfRoots: function () {
+      return _debugCache.roots;
     },
+
+    getModelTree: function () {
+      return _debugCache.trees;
+    },
+
+    // Actions
+    // -------
 
     clearTimeline: function (cb) {
       chromeExtension.eval(function (window) {
@@ -202,6 +239,15 @@ panelApp.factory('appContext', function(chromeExtension) {
       }, cb);
     },
 
+    inspect: function (scopeId) {
+      this.executeOnScope(scopeId, function (scope, elt) {
+        inspect(elt);
+      });
+    },
+
+    // Settings
+    // --------
+
     // takes a bool
     debug: function (setting) {
       if (setting) {
@@ -217,12 +263,6 @@ panelApp.factory('appContext', function(chromeExtension) {
       }
     },
 
-    inspect: function (scopeId) {
-      this.executeOnScope(scopeId, function (scope, elt) {
-        inspect(elt);
-      });
-    },
-
     // takes a bool
     setLog: function (setting) {
       chromeExtension.eval('function (window) {' +
@@ -230,6 +270,16 @@ panelApp.factory('appContext', function(chromeExtension) {
       '}');
     },
 
+    // takes # of miliseconds
+    setPollInterval: function (setting) {
+      _pollInterval = setting;
+    },
+
+    // Registering events
+    // ------------------
+
+    // TODO: depreciate this; only poll from now on?
+    // TODO: move to chromeExtension?
     watchRefresh: function (cb) {
       var port = chrome.extension.connect();
       port.postMessage({
