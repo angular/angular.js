@@ -40,7 +40,6 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 // notify of page refreshes
 chrome.extension.onConnect.addListener(function(port) {
-  //console.assert(port.name == "knockknock");
   port.onMessage.addListener(function (msg) {
     if (msg.action === 'register') {
       var respond = function (tabId, changeInfo, tab) {
