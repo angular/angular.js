@@ -204,11 +204,17 @@ panelApp.factory('appContext', function(chromeExtension) {
 
     // takes a bool
     debug: function (setting) {
-      chromeExtension.sendRequest('debug-' + setting, function () {
+      if (setting) {
         chromeExtension.eval(function (window) {
+          window.document.cookie = '__ngDebug=true;'
           window.document.location.reload();
         });
-      });
+      } else {
+        chromeExtension.eval(function (window) {
+          window.document.cookie = '__ngDebug=false;'
+          window.document.location.reload();
+        });
+      }
     },
 
     inspect: function (scopeId) {

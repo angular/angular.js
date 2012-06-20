@@ -1,4 +1,7 @@
 var inject = function () {
+  if (document.cookie.indexOf('__ngDebug=true') == -1) {
+    return;
+  }
   if (document.head) {
 
     document.head.insertBefore(
