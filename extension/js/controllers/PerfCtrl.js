@@ -79,25 +79,32 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
   }
 
   var updateTree = function () {
-    var roots = [];
-    appContext.getListOfRoots().
-      forEach(function (item) {
+    $scope.$apply(function () {
+      var rts = appContext.getListOfRoots();
+      if (!rts) {
+        return;
+      }
+      var roots = [];
+      rts.forEach(function (item) {
         roots.push({
           label: item,
           value: item
         });
       });
 
-    $scope.roots = roots;
-    $scope.trees = appContext.getModelTree();
+      $scope.roots = roots;
+      $scope.trees = appContext.getModelTrees();
 
-    if (roots.length === 0) {
-      $scope.selectedRoot = null;
-    } else if (!$scope.selectedRoot) {
-      $scope.selectedRoot = roots[0].value;
-    }
+      if (roots.length === 0) {
+        $scope.selectedRoot = null;
+      } else if (!$scope.selectedRoot) {
+        $scope.selectedRoot = roots[0].value;
+      }
+    });
   };
 
-  updateTree();
-  appContext.watchRefresh(updateTree);
+  //updateTree();
+  //appContext.watchRefresh(updateTree);
+  setInterval(updateTree, 500);
+  setInterval(updateHistogram, 500);
 });

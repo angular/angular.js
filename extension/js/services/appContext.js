@@ -4,7 +4,7 @@ panelApp.factory('appContext', function(chromeExtension) {
   // Private vars
   // ============
 
-  var _debugCache,
+  var _debugCache = {},
     _pollInterval = 500;
 
   // TODO: make this private and have it automatically poll?
@@ -214,7 +214,7 @@ panelApp.factory('appContext', function(chromeExtension) {
       return _debugCache.roots;
     },
 
-    getModelTree: function () {
+    getModelTrees: function () {
       return _debugCache.trees;
     },
 
@@ -249,7 +249,7 @@ panelApp.factory('appContext', function(chromeExtension) {
     // --------
 
     // takes a bool
-    debug: function (setting) {
+    setDebug: function (setting) {
       if (setting) {
         chromeExtension.eval(function (window) {
           window.document.cookie = '__ngDebug=true;'
