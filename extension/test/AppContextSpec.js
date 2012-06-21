@@ -31,64 +31,40 @@ describe('panelApp:appContext', function () {
       });
     }));
 
-    describe('getDebugInfo', function () {
-
+    describe('getModelTrees', function () {
       it('should work in the simple case', function () {
         chromeExtension.__registerQueryResult([1,2,3]);
-
         var infoVal;
-
-        runs(function () {
-          appContext.getDebugInfo(function (info) {
-            infoVal = info;
-          });
-        });
-
+        
         waitsFor(function () {
-          return typeof infoVal !== 'undefined';
+          return infoVal = appContext.getModelTrees();
         });
-
-        runs(function() {
+        runs(function () {
           expect(infoVal).toEqual({
-            "roots": [
-              "001",
-              "001",
-              "001"
-            ],
-            "trees": {
-              "001": {
-                "locals": {},
-                "id": "001",
-                "children": []
-              }
+            "001": {
+              "locals": {},
+              "id": "001",
+              "children": []
             }
           });
-        });
-
+        })
       });
-
-      it('should return false when window.angular is undefined', function () {
+    });
+    describe('getListOfRoots', function () {
+      it('should work in the simple case', function () {
         chromeExtension.__registerQueryResult([1,2,3]);
-        chromeExtension.__registerWindow({angular: null});
-
         var infoVal;
-
-        runs(function () {
-          appContext.getDebugInfo(function (info) {
-            infoVal = info;
-          });
-        });
-
         waitsFor(function () {
-          return typeof infoVal !== 'undefined';
+          return infoVal = appContext.getListOfRoots();
         });
-
         runs(function() {
-          expect(infoVal).toEqual(false);
+          expect(infoVal).toEqual([
+            "001",
+            "001",
+            "001"
+          ]);
         });
-
       });
-      
     });
   });
 });

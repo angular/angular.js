@@ -17,16 +17,14 @@ describe('panelApp', function () {
     }));
 
 
-    it('should initialize debug state to false and send requst to chrome', function () {
+    it('should initialize debug state to false and send request to chrome', function () {
       expect($scope.debugger.scopes).toBe(false);
       expect($scope.debugger.bindings).toBe(false);
 
       $scope.$digest();
-
-      expect(chromeExtension.sendRequest).toHaveBeenCalledWith('hideScopes');
-      expect(chromeExtension.sendRequest).toHaveBeenCalledWith('hideBindings');
     });
-
+    // TODO: test that window is mutated appropriately
+    /*
     it('should notify chrome of state changes to the showScopes option', function () {
       $scope.$digest();
       chromeExtension.sendRequest.reset();
@@ -47,10 +45,11 @@ describe('panelApp', function () {
 
       expect(chromeExtension.sendRequest).toHaveBeenCalledWith('showBindings');
     });
+    */
 
     it('should not refresh upon initial panel load', function () {
       $scope.$digest();
-      expect(appContext.debug).not.toHaveBeenCalled();
+      expect(appContext.setDebug).not.toHaveBeenCalled();
     });
   });
 });
