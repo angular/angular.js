@@ -468,6 +468,14 @@ describe('browser', function() {
       fakeWindow.location.href = "http://ff-bug/?single%27quote";
       expect(browser.url()).toBe("http://ff-bug/?single'quote");
     });
+
+    it('should not set URL when the URL is already set', function() {
+      var current = fakeWindow.location.href;
+      sniffer.history = false;
+      fakeWindow.location.href = 'dontchange';
+      browser.url(current);
+      expect(fakeWindow.location.href).toBe('dontchange');
+    });
   });
 
   describe('urlChange', function() {
