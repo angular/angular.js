@@ -5,11 +5,17 @@ panelApp.factory('appContext', function(chromeExtension) {
   // ============
 
   var _debugCache = {},
+    _pollListeners = [],
     _pollInterval = 500;
 
   // TODO: make this private and have it automatically poll?
   var getDebugData = function (callback) {
     chromeExtension.eval(function (window) {
+      // Detect whether or not this is an AngularJS app
+      if (!window.angular) {
+        return false;
+      }
+
       // cycle.js
       // 2011-08-24
       // https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
@@ -66,11 +72,6 @@ panelApp.factory('appContext', function(chromeExtension) {
       var rootIds = [];
       var rootScopes = [];
 
-      // Detect whether or not this is an AngularJS app
-      if (!window.angular) {
-        return false;
-      }
-
       var elts = window.document.getElementsByClassName('ng-scope');
       var i;
       for (i = 0; i < elts.length; i++) {
@@ -95,14 +96,12 @@ panelApp.factory('appContext', function(chromeExtension) {
           node.locals = {};
 
           for (var i in scope) {
-            if (!(i[0] === '$' /* && i[1] === '$' */) && scope.hasOwnProperty(i) && i !== 'this') {
-              //node.locals[i] = scope[i];
+            if (i[0] !== '$' && scope.hasOwnProperty(i) && i !== 'this') {
               if (typeof scope[i] === 'number' || typeof scope[i] === 'boolean') {
                 node.locals[i] = scope[i];
               } else if (typeof scope[i] === 'string') {
                 node.locals[i] = '"' + scope[i] + '"';
               } else {
-                //node.locals[i] = ': ' + typeof scope[i];
                 node.locals[i] = JSON.stringify(decycle(scope[i]));
               }
             }
@@ -165,6 +164,9 @@ panelApp.factory('appContext', function(chromeExtension) {
     },
     function (data) {
       _debugCache = data;
+      _pollListeners.forEach(function (fn) {
+        fn();
+      });
 
       // poll every 500 ms
       setTimeout(getDebugData, _pollInterval);
@@ -294,6 +296,11 @@ panelApp.factory('appContext', function(chromeExtension) {
       port.onDisconnect.addListener(function (a) {
         console.log(a);
       });
+    },
+
+    watchPoll: function (fn) {
+      _pollListeners.push(fn);
     }
+
   };
 });

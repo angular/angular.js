@@ -18,31 +18,55 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
   $scope.roots = [];
 
   var updateTree = function () {
-    $scope.$apply(function () {
-      if ($('input:focus').length > 0) {
-        return;
-      }
-      var roots = appContext.getListOfRoots();
-      if (!roots) {
-        return;
-      }
-      
-      $scope.trees = appContext.getModelTrees();
+    if ($('input:focus').length > 0) {
+      return;
+    }
+    var roots = appContext.getListOfRoots();
+    if (!roots) {
+      return;
+    }
+    
+    var trees = appContext.getModelTrees();
+    if (!$scope.trees || $scope.trees.length !== trees.length) {
+      $scope.trees = trees;
+    } else {
 
-      $scope.roots.length = roots.length;
-      roots.forEach(function (item, i) {
-        $scope.roots[i] = {
-          label: item,
-          value: item
-        };
-      });
-      if (roots.length === 0) {
-        $scope.selectedRoot = null;
-      } else if (!$scope.selectedRoot) {
-        $scope.selectedRoot = $scope.roots[0].value;
+      var syncBranch = function (oldTree, newTree) {
+        oldTree.locals = newTree.locals;
+        if (oldTree.children.length !== newTree.children.length) {
+          oldTree.children = newTree.children;
+        } else {
+          oldTree.children.forEach(function (oldBranch, i) {
+            var newBranch = newTree.children[i];
+            syncBranch(oldBranch, newBranch);
+          });
+        }
+      };
+
+      var treeId, oldTree, newTree;
+      for (treeId in $scope.trees) {
+        if ($scope.trees.hasOwnProperty(treeId)) {
+          oldTree = $scope.trees[treeId];
+          newTree = trees[treeId];
+          syncBranch(oldTree, newTree);
+        }
       }
+    }
+
+    $scope.roots.length = roots.length;
+    roots.forEach(function (item, i) {
+      $scope.roots[i] = {
+        label: item,
+        value: item
+      };
     });
+    if (roots.length === 0) {
+      $scope.selectedRoot = null;
+    } else if (!$scope.selectedRoot) {
+      $scope.selectedRoot = $scope.roots[0].value;
+    }
+    $scope.$apply();
   };
 
-  setInterval(updateTree, 500);
+  appContext.watchPoll(updateTree);
 });

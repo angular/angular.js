@@ -76,35 +76,56 @@ panelApp.controller('PerfCtrl', function PerfCtrl($scope, appContext) {
       $scope.histogram.push(elt);
     }
     $scope.histogram.length = info.length;
-  }
-
-  var updateTree = function () {
-    $scope.$apply(function () {
-      var rts = appContext.getListOfRoots();
-      if (!rts) {
-        return;
-      }
-      var roots = [];
-      rts.forEach(function (item) {
-        roots.push({
-          label: item,
-          value: item
-        });
-      });
-
-      $scope.roots = roots;
-      $scope.trees = appContext.getModelTrees();
-
-      if (roots.length === 0) {
-        $scope.selectedRoot = null;
-      } else if (!$scope.selectedRoot) {
-        $scope.selectedRoot = roots[0].value;
-      }
-    });
   };
 
-  //updateTree();
-  //appContext.watchRefresh(updateTree);
-  setInterval(updateTree, 500);
-  setInterval(updateHistogram, 500);
+  var updateTree = function () {
+    var rts = appContext.getListOfRoots();
+    if (!rts) {
+      return;
+    }
+    var roots = [];
+    rts.forEach(function (item) {
+      roots.push({
+        label: item,
+        value: item
+      });
+    });
+
+    $scope.roots = roots;
+    var trees = appContext.getModelTrees();
+    if (!$scope.trees || $scope.trees.length !== trees.length) {
+      $scope.trees = trees;
+    } else {
+
+      var syncBranch = function (oldTree, newTree) {
+        oldTree.locals = newTree.locals;
+        if (oldTree.children.length !== newTree.children.length) {
+          oldTree.children = newTree.children;
+        } else {
+          oldTree.children.forEach(function (oldBranch, i) {
+            var newBranch = newTree.children[i];
+            syncBranch(newBranch, oldBranch);
+          });
+        }
+      };
+
+      var treeId, oldTree, newTree;
+      for (treeId in $scope.trees) {
+        if ($scope.trees.hasOwnProperty(treeId)) {
+          oldTree = $scope.trees[treeId];
+          newTree = trees[treeId];
+          syncBranch(oldTree, newTree);
+        }
+      }
+    }
+
+    if (roots.length === 0) {
+      $scope.selectedRoot = null;
+    } else if (!$scope.selectedRoot) {
+      $scope.selectedRoot = roots[0].value;
+    }
+    $scope.$apply();
+  };
+  appContext.watchPoll(updateTree);
+  appContext.watchPoll(updateHistogram);
 });

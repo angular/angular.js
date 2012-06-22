@@ -39,6 +39,7 @@ var inject = function () {
                     };
 
                     // patch registering watchers
+                    // --------------------------
                     var watch = $delegate.__proto__.$watch;
                     $delegate.__proto__.$watch = function() {
                       if (!debug.watchers[this.$id]) {
@@ -95,39 +96,47 @@ var inject = function () {
                         }
                         debug.watchList[str] += (end - start);
                         //debug.watchList[str].total += (end - start);
+                        //debug.dirty = true;
                         return ret;
                       };
 
                       return watch.apply(this, arguments);
                     };
 
-                    // patch $destroy()
+                    // patch destroy
+                    // -------------
+
                     /*
                     var destroy = $delegate.__proto__.$destroy;
                     $delegate.__proto__.$destroy = function () {
                       if (debug.watchers[this.$id]) {
                         delete debug.watchers[this.$id];
                       }
+                      debug.dirty = true;
                       return destroy.apply(this, arguments);
                     };
                     */
-                    var firstLog = 0;
+                    
                     // patch apply
+                    // -----------
+                    var firstLog = 0;
                     var apply = $delegate.__proto__.$apply;
                     $delegate.__proto__.$apply = function (fn) {
                       var start = window.performance.webkitNow();
                       var ret = apply.apply(this, arguments);
                       var end = window.performance.webkitNow();
                       if (Math.round(end - start) === 0) {
-                        if (window.__ngDebug.timeline.length === 0) {
+                        if (debug.timeline.length === 0) {
                           firstLog = start;
                         }
-                        window.__ngDebug.timeline.push({
+                        debug.timeline.push({
                           start: Math.round(start - firstLog),
                           end: Math.round(end - firstLog)
                         });
                       }
-                      if (window.__ngDebug.log) {
+                      //debug.dirty = true;
+
+                      if (debug.log) {
                         if (fn) {
                           if (fn.name) {
                             fn = fn.name;
