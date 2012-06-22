@@ -41,7 +41,7 @@ To make your angular application work on IE please make sure that:
 
 The **important** parts are:
 
-  * `xmlns:ng` - *namespace* - you need one namespace for each custom tay you are planning on
+  * `xmlns:ng` - *namespace* - you need one namespace for each custom tag you are planning on
     using.
 
   * `document.createElement(yourTagName)` - *creation of custom tag names* - Since this is an
