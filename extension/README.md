@@ -43,3 +43,13 @@ Underneath that is a graph showing the relative performance of all of the applic
 ![AngularJS debug extension options tab screenshot](img/options.png)
 
 Last, there is the options tab. The options tab has two checkboxes: one for "show scopes" and one for "show bindings." Each of these options, when enabled, highlights the respective feature of the application being debugged; scopes will have a red outline, and bindings will have a blue outline.
+
+### Elements
+![AngularJS debug extension console screenshot](img/inspect.png)
+
+The debug extension also hooks into some of the existing features of the Chrome developer tools. For AngularJS applications, there is now a properties pane on in the Elements tab. Much like the model tree in the AngularJS tab, you can use this to inspect the models attached to a given element's scope.
+
+### Console
+![AngularJS debug extension console screenshot](img/console.png)
+
+The debug tools also expose some convenient features to the Chrome developer tools console. To access the scope of an element selected in the Elements tab of the developer tools, in console, you can type `$scope`. If you change value of some model on `$scope` and want to have this change reflected in the running application, you need to call `$scope.$apply()` after making the change.
