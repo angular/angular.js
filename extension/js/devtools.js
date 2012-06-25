@@ -1,8 +1,26 @@
 
 // The function below is executed in the context of the inspected page.
+
 var page_getProperties = function () {
   if (window.angular && $0) {
-    return window.$scope = window.angular.element($0).scope();
+    var scope = window.angular.element($0).scope();
+    window.$scope = scope;
+    return (function (scope) {
+      var ret = {
+        __private__: {}
+      };
+
+      for (prop in scope) {
+        if (scope.hasOwnProperty(prop)) {
+          if (prop[0] === '$' && prop[1] === '$') {
+            ret.__private__[prop] = scope[prop];
+          } else {
+            ret[prop] = scope[prop];
+          }
+        }
+      }
+      return ret;
+    }(scope));
   } else {
     return {};
   }
