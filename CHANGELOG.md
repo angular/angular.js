@@ -1,3 +1,20 @@
+<a name="1.0.1"></a>
+# 1.0.1 thorium-shielding (2012-06-25)
+
+
+## Bug Fixes
+
+- **$location:** don't throw exception while url rewriting if element was removed
+  ([3da4194f](https://github.com/angular/angular.js/commit/3da4194f98fa0c1ad1e5ab159719e4b25799e6d4),
+   [#1058](https://github.com/angular/angular.js/issues/1058))
+- **$location:** prevent ie from getting into redirect loop
+  ([ffb27013](https://github.com/angular/angular.js/commit/ffb270130a4aaf3ddc2eb9d6211b46e1da136184),
+   [#1075](https://github.com/angular/angular.js/issues/1075),
+   [#1079](https://github.com/angular/angular.js/issues/1079),
+   [#1085](https://github.com/angular/angular.js/issues/1085))
+
+
+
 <a name="1.0.0"></a>
 # 1.0.0 temporal-domination (2012-06-13)
 
