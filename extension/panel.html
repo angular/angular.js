@@ -26,7 +26,7 @@
 <body ng-controller="TabCtrl">
 
   <ul class="nav nav-tabs">
-    <li ng-repeat="tabId in ['Model', 'Performance', 'Options']"
+    <li ng-repeat="tabId in ['Model', 'Performance', 'Options', 'Help']"
       ng-class="{active: $parent.selectedTab == tabId}"
       ng-click="$parent.selectedTab = tabId">
 
@@ -102,6 +102,50 @@
         <input type="checkbox" ng-model="debugger.bindings" id="bindings"> Show bindings
       </label>
     </div>
+  </div>
+
+  <div ng-class="{hidden: selectedTab != 'Help'}">
+    <h2>Using the Debug Extension</h2>
+
+    <p>First, navigate Chrome Canary to the AngularJS application that you want to debug. <a href="https://developers.google.com/chrome-developer-tools/docs/overview#access">Open the Developer Tools</a>. There should be an AngularJS icon. Click on it to open AngularJS's tools.</p>
+
+    <p>The debugger has three tabs: Model, Performance, and Options.</p>
+
+    <h3>Model</h3>
+
+    <p><img src="img/model-tree.png" alt="AngularJS debug extension screenshot" title="" /></p>
+
+    <p>Starting at the top of this tab, there is the root selection. If the application has only one <code>ng-app</code> declaration (as most applications do) then you will not see the option to change roots.</p>
+
+    <p>Below that is a tree showing how scopes are nested, and which models are attached to them. Clicking on a scope name will take you to the Elements tab, and show you the DOM element associated with that scope. Models and methods attached to each scope are listed with bullet points on the tree. Just the name of methods attached to a scope are shown. Models with a simple value and complex objects are shown as JSON. You can edit either, and the changes will be reflected in the application being debugged.</p>
+
+    <h3>Performance</h3>
+
+    <p><img src="img/performance.png" alt="AngularJS debug extension performance tab screenshot" title="" /></p>
+
+    <p>The performance tab must be enabled separately because it causes code to be injected into AngularJS to track and report performance metrics. There is also an option to output performance metrics to the console.</p>
+
+    <p>Below that is a tree of watched expressions, showing which expressions are attached to which scopes. Much like the model tree, you can collapse sections by clicking on "toggle" and you can inspect the element that a scope is attached to by clicking on the scope name.</p>
+
+    <p>Underneath that is a graph showing the relative performance of all of the application's expressions. This graph will update as you interact with the application.</p>
+
+    <h3>Options</h3>
+
+    <p><img src="img/options.png" alt="AngularJS debug extension options tab screenshot" title="" /></p>
+
+    <p>Last, there is the options tab. The options tab has two checkboxes: one for "show scopes" and one for "show bindings." Each of these options, when enabled, highlights the respective feature of the application being debugged; scopes will have a red outline, and bindings will have a blue outline.</p>
+
+    <h3>Elements</h3>
+
+    <p><img src="img/inspect.png" alt="AngularJS debug extension console screenshot" title="" /></p>
+
+    <p>The debug extension also hooks into some of the existing features of the Chrome developer tools. For AngularJS applications, there is now a properties pane on in the Elements tab. Much like the model tree in the AngularJS tab, you can use this to inspect the models attached to a given element's scope.</p>
+
+    <h3>Console</h3>
+
+    <p><img src="img/console.png" alt="AngularJS debug extension console screenshot" title="" /></p>
+
+    <p>The debug tools also expose some convenient features to the Chrome developer tools console. To access the scope of an element selected in the Elements tab of the developer tools, in console, you can type <code>$scope</code>. If you change value of some model on <code>$scope</code> and want to have this change reflected in the running application, you need to call <code>$scope.$apply()</code> after making the change.</p>
   </div>
 
 </body>
