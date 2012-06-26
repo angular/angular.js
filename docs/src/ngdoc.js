@@ -52,9 +52,9 @@ Doc.prototype = {
     Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
 
     function extractWords(text) {
-      var tokens = text.toLowerCase().split(/[,\.\`\'\"\#\s]+/mg);
+      var tokens = text.toLowerCase().split(/[\.\s,`'"#]+/mg);
       tokens.forEach(function(key){
-        var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]+)/);
+        var match = key.match(/^((ng:|[\$_a-z])[\w\-_]+)/);
         if (match){
           key = match[1];
           if (!keywords[key]) {
@@ -215,7 +215,7 @@ Doc.prototype = {
         var text = trim(atText.join('\n')), match;
         if (atName == 'param') {
           match = text.match(/^\{([^}=]+)(=)?\}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
-          //  1      12 2     34       4   5   5 6      6  3   7  7
+                             //  1      12 2      34       4   5   5 6      6  3   7  7
           if (!match) {
             throw new Error("Not a valid 'param' format: " + text);
           }
@@ -729,7 +729,7 @@ function scenarios(docs){
 function metadata(docs){
   var pages = [];
   docs.forEach(function(doc){
-    var path = (doc.name || '').split(/(\.|\:)/);
+    var path = (doc.name || '').split(/(\.|\:\s*)/);
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
