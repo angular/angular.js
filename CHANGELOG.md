@@ -87,7 +87,7 @@
 
 ## Breaking Changes
 
-- **$beforeRouteChange and $routeChangeStart events were renamed to $afterRouteChange and
+- **$beforeRouteChange and $afterRouteChange events were renamed to $routeChangeStart and
   $routeChangeSuccess**
 
   This was done to make the naming consistent with $location events and also get events to
