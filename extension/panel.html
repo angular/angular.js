@@ -93,8 +93,8 @@
   <div ng-class="{hidden: $parent.selectedTab != 'Options'}" ng-controller="OptionsCtrl">
     <h2>Options</h2>
     <div>
-      <label class="checkbox" for="scopes">
-        <input type="checkbox" ng-model="debugger.scopes" id="scopes"> Show scopes
+      <label class="checkbox" for="app">
+        <input type="checkbox" ng-model="debugger.app" id="app"> Show applications
       </label>
     </div>
     <div>
@@ -103,8 +103,8 @@
       </label>
     </div>
     <div>
-      <label class="checkbox" for="app">
-        <input type="checkbox" ng-model="debugger.app" id="app"> Show applications
+      <label class="checkbox" for="scopes">
+        <input type="checkbox" ng-model="debugger.scopes" id="scopes"> Show scopes
       </label>
     </div>
   </div>
