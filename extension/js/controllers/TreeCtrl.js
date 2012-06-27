@@ -32,6 +32,9 @@ panelApp.controller('TreeCtrl', function TreeCtrl($scope, chromeExtension, appCo
     } else {
 
       var syncBranch = function (oldTree, newTree) {
+        if (!oldTree || !newTree) {
+          return;
+        }
         oldTree.locals = newTree.locals;
         if (oldTree.children.length !== newTree.children.length) {
           oldTree.children = newTree.children;
