@@ -56,7 +56,7 @@ __`app/index.html`:__
 
 We added a standard HTML `<input>` tag and used angular's
 {@link api/ng.filter:filter $filter} function to process the input for the
-`ngRepeate` directive.
+`ngRepeat` directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:
