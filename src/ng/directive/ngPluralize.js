@@ -181,8 +181,16 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
           whensExpFns = {};
 
       forEach(whens, function(expression, key) {
-        whensExpFns[key] =
-          $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+        if (expression && expression.then) {
+            expression.then(function(p) {
+                whensExpFns[key] = 
+                    $interpolate(p.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+                return p;
+            });
+        } else {
+          whensExpFns[key] =
+            $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+        }
       });
 
       scope.$watch(function() {
