@@ -144,7 +144,7 @@ describe('ngMock', function() {
 
     it('should throw error when no third param but toString called', function() {
       expect(function() { new angular.mock.TzDate(0,0).toString(); }).
-                           toThrow('Method \'toString\' is not implemented in the TzDate mock');
+                           toThrow('[NgErr32] Method \'toString\' is not implemented in the TzDate mock');
     });
   });
 
@@ -283,7 +283,7 @@ describe('ngMock', function() {
     });
 
     it('should throw an exception if there is nothing to be flushed', function() {
-      expect(function() {browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
+      expect(function() {browser.defer.flush();}).toThrow('[NgErr29] No deferred tasks to be flushed');
     });
   });
 
@@ -526,7 +526,7 @@ describe('ngMock', function() {
       hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
         hb('GET', '/xxx');
-      }).toThrow('Unexpected request: GET /xxx\nNo more request expected');
+      }).toThrow('[NgErr37] Unexpected request: GET /xxx\nNo more request expected');
     });
 
 
@@ -662,7 +662,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb('GET', '/url2', null, noop, {});
-        }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
+        }).toThrow('[NgErr37] Unexpected request: GET /url2\nExpected GET /url1');
       });
 
 
@@ -687,7 +687,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb('GET', '/match', null, noop, {});
-        }).toThrow('Expected GET /match with different headers\n' +
+        }).toThrow('[NgErr34] Expected GET /match with different headers\n' +
                    'EXPECTED: {"Content-Type":"application/json"}\nGOT:      {}');
       });
 
@@ -698,7 +698,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb('GET', '/match', 'different', noop, {});
-        }).toThrow('Expected GET /match with different data\n' +
+        }).toThrow('[NgErr33] Expected GET /match with different data\n' +
                    'EXPECTED: some-data\nGOT:      different');
       });
 
@@ -748,19 +748,19 @@ describe('ngMock', function() {
         hb.when('GET').respond(200, '');
         hb('GET', '/url', null, callback);
 
-        expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
+        expect(function() {hb.flush(2);}).toThrow('[NgErr39] No more pending request to flush !');
         expect(callback).toHaveBeenCalledOnce();
       });
 
 
       it('should throw exception when no request to flush', function() {
-        expect(function() {hb.flush();}).toThrow('No pending request to flush !');
+        expect(function() {hb.flush();}).toThrow('[NgErr38] No pending request to flush !');
 
         hb.when('GET').respond(200, '');
         hb('GET', '/some', null, callback);
         hb.flush();
 
-        expect(function() {hb.flush();}).toThrow('No pending request to flush !');
+        expect(function() {hb.flush();}).toThrow('[NgErr38] No pending request to flush !');
       });
 
 
@@ -769,7 +769,7 @@ describe('ngMock', function() {
         hb.expect('GET', '/url2').respond();
 
         hb('GET', '/url1', null, angular.noop);
-        expect(function() {hb.flush();}).toThrow('Unsatisfied requests: GET /url2');
+        expect(function() {hb.flush();}).toThrow('[NgErr40] Unsatisfied requests: GET /url2');
       });
     });
 
@@ -778,7 +778,7 @@ describe('ngMock', function() {
       hb.when('GET', '/test');
       expect(function() {
         hb('GET', '/test', null, callback);
-      }).toThrow('No response defined !');
+      }).toThrow('[NgErr35] No response defined !');
     });
 
 
@@ -786,7 +786,7 @@ describe('ngMock', function() {
       hb.expect('GET', '/url');
       expect(function() {
         hb('GET', '/url', null, callback);
-      }).toThrow('No response defined !');
+      }).toThrow('[NgErr36] No response defined !');
     });
 
 
@@ -814,7 +814,7 @@ describe('ngMock', function() {
         hb('POST', '/u1', 'ddd', noop, {});
 
         expect(function() {hb.verifyNoOutstandingExpectation();}).
-          toThrow('Unsatisfied requests: GET /u2, POST /u3');
+          toThrow('[NgErr40] Unsatisfied requests: GET /u2, POST /u3');
       });
 
 
@@ -845,7 +845,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrow('Unflushed requests: 1');
+        }).toThrow('[NgErr41] Unflushed requests: 1');
       });
     });
 

@@ -70,7 +70,7 @@ function setupModuleLoader(window) {
       }
       return ensure(modules, name, function() {
         if (!requires) {
-          throw Error('No module: ' + name);
+          throw NgError(47, 'No module: {0}', name);
         }
 
         /** @type {!Array.<Array.<*>>} */

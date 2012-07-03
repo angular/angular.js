@@ -89,7 +89,7 @@ function convertToHashbangUrl(url, basePath, hashPrefix) {
         path = match.path.substr(pathPrefix.length);
 
     if (match.path.indexOf(pathPrefix) !== 0) {
-      throw Error('Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !');
+      throw NgError(20, 'Invalid url "{0}", missing path prefix "{1}"!', url, pathPrefix);
     }
 
     return composeProtocolHostPort(match.protocol, match.host, match.port) + basePath +
@@ -118,7 +118,7 @@ function LocationUrl(url, pathPrefix, appBaseUrl) {
     var match = matchUrl(newAbsoluteUrl, this);
 
     if (match.path.indexOf(pathPrefix) !== 0) {
-      throw Error('Invalid url "' + newAbsoluteUrl + '", missing path prefix "' + pathPrefix + '" !');
+      throw NgError(21, 'Invalid url "{0}", missing path prefix "{1}" !', newAbsoluteUrl, pathPrefix);
     }
 
     this.$$path = decodeURIComponent(match.path.substr(pathPrefix.length));
@@ -174,7 +174,7 @@ function LocationHashbangUrl(url, hashPrefix, appBaseUrl) {
 
 
     if (match.hash && match.hash.indexOf(hashPrefix) !== 0) {
-      throw Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !');
+      throw NgError(22, 'Invalid url "{0}", missing hash prefix "{1}" !', url, hashPrefix);
     }
 
     basePath = match.path + (match.search ? '?' + match.search : '');

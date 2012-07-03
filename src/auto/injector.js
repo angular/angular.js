@@ -411,7 +411,7 @@ function createInjector(modulesToLoad) {
           }
       },
       providerInjector = createInternalInjector(providerCache, function() {
-        throw Error("Unknown provider: " + path.join(' <- '));
+        throw NgError(1, "Unknown provider: {0}", path.join(' <- '));
       }),
       instanceCache = {},
       instanceInjector = (instanceCache.$injector =
@@ -444,7 +444,7 @@ function createInjector(modulesToLoad) {
       provider_ = providerInjector.instantiate(provider_);
     }
     if (!provider_.$get) {
-      throw Error('Provider ' + name + ' must define $get factory method.');
+      throw NgError(2, 'Provider {0} must define $get factory method.', name);
     }
     return providerCache[name + providerSuffix] = provider_;
   }
@@ -528,11 +528,11 @@ function createInjector(modulesToLoad) {
 
     function getService(serviceName) {
       if (typeof serviceName !== 'string') {
-        throw Error('Service name expected');
+        throw NgError(3, 'Service name expected');
       }
       if (cache.hasOwnProperty(serviceName)) {
         if (cache[serviceName] === INSTANTIATING) {
-          throw Error('Circular dependency: ' + path.join(' <- '));
+          throw NgError(4, 'Circular dependency: {0}', path.join(' <- '));
         }
         return cache[serviceName];
       } else {

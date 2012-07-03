@@ -67,15 +67,15 @@ var ngRepeatDirective = ngDirective({
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
       if (! match) {
-        throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" +
-          expression + "'.");
+        throw NgError(7, "Expected ngRepeat in form of '_item_ in _collection_' but got '{0}'.",
+            expression);
       }
       lhs = match[1];
       rhs = match[2];
       match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
       if (!match) {
-        throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-            lhs + "'.");
+        throw NgError(8, "'item' in 'item in collection' should be identifier or (key, value) but got '{0}'.",
+            lhs);
       }
       valueIdent = match[3] || match[1];
       keyIdent = match[2];

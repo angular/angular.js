@@ -189,7 +189,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing path prefix "/base" !');
+      }).toThrow('[NgErr21] Invalid url "http://server.org/path#/path", missing path prefix "/base" !');
     });
 
 
@@ -297,7 +297,7 @@ describe('$location', function() {
     it('should throw error when invalid url given', function() {
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing hash prefix "!" !');
+      }).toThrow('[NgErr22] Invalid url "http://server.org/path#/path", missing hash prefix "!" !');
     });
 
 

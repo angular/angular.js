@@ -435,7 +435,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         var patternObj = scope.$eval(pattern);
 
         if (!patternObj || !patternObj.test) {
-          throw new Error('Expected ' + pattern + ' to be a RegExp but was ' + patternObj);
+          throw NgError(5, 'Expected {0} to be a RegExp but was {1}', pattern, patternObj);
         }
         return validate(patternObj, value);
       };
@@ -874,8 +874,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ngModelSet = ngModelGet.assign;
 
   if (!ngModelSet) {
-    throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + $attr.ngModel +
-        ' (' + startingTag($element) + ')');
+    throw NgError(6, '{0}{1} ({2})', NON_ASSIGNABLE_MODEL_EXPRESSION, $attr.ngModel,
+        startingTag($element));
   }
 
   /**

@@ -67,7 +67,7 @@ describe('ngRepeat', function() {
   it('should error on wrong parsing of ngRepeat', inject(function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse"></li></ul>')($rootScope);
-    }).toThrow("Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+    }).toThrow("[NgErr7] Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
   }));
 
 
@@ -75,7 +75,7 @@ describe('ngRepeat', function() {
       function($rootScope, $compile) {
     expect(function() {
       element = $compile('<ul><li ng-repeat="i dont parse in foo"></li></ul>')($rootScope);
-    }).toThrow("'item' in 'item in collection' should be identifier or (key, value) but got " +
+    }).toThrow("[NgErr8] 'item' in 'item in collection' should be identifier or (key, value) but got " +
                "'i dont parse'.");
   }));
 

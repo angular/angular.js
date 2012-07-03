@@ -156,7 +156,7 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
-      throw Error('selectors not implemented');
+      throw NgError(46, 'selectors not implemented');
     }
     return new JQLite(element);
   }
