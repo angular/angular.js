@@ -22,7 +22,8 @@
  *   `/user/:username`.
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
- *   `actions` methods.
+ *   `actions` methods. If any of the parameter value is a function, it will be executed every time
+  *  when a param value needs to be obtained for a request (unless the param was overriden).
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -46,10 +47,12 @@
  *     resource object.
  *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
  *     and `JSONP`
- *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
+ *   - `params` – {Object=} – Optional set of pre-bound parameters for this action. If any of the
+  *    parameter value is a function, it will be executed every time when a param value needs to be
+  *    obtained for a request (unless the param was overriden).
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
- *   - `headers` – {object=} – Optional HTTP headers to send
+ *   - `headers` – {Object=} – Optional HTTP headers to send
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -316,6 +319,7 @@ angular.module('ngResource', ['ng']).
         var ids = {};
         actionParams = extend({}, paramDefaults, actionParams);
         forEach(actionParams, function(value, key){
+          if (isFunction(value)) { value = value(); }
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
         return ids;
