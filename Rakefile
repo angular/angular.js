@@ -98,7 +98,10 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
   FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
 
-  closure_compile('angular.js')
+  err_comp_file = error_compress('angular.js')  
+  closure_compile(err_comp_file)
+  FileUtil.rm(err_comp_file)
+
   closure_compile('angular-cookies.js')
   closure_compile('angular-loader.js')
   closure_compile('angular-resource.js')
@@ -269,11 +272,26 @@ def path_to(filename)
   return File.join(BUILD_DIR, *filename)
 end
 
+##
+# Returns the path at which error_compressed file is stored
+#
+def error_compress(filename)
+  puts "Compressing errors for #{filename} ..."
+  
+  # Do a mid step of running the Error compressor against file
+  # and outputting it to .mid.js. Then run closure compile against
+  # *.mid.js and output .min.js
+  mid_path = path_to(filename.gsub(/\.js$/, '.mid.js'))
+  %x(node lib/error-compressor/compressor.js #{path_to(filename)} #{mid_path} 'error.json')
+
+  return mid_path
+   
 
 def closure_compile(filename)
   puts "Compiling #{filename} ..."
 
   min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
+  
 
   %x(java -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
@@ -281,6 +299,7 @@ def closure_compile(filename)
         --js #{path_to(filename)} \
         --js_output_file #{min_path})
 
+  
   rewrite_file(min_path) do |content|
     content.sub!("'use strict';", "").
             sub!(/\(function\([^)]*\)\{/, "\\0'use strict';")
