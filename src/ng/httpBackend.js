@@ -91,6 +91,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
       // fix status code for file protocol (it's always 0)
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
+      status = (protocol == 'app') ? (response ? 200 : 404) : status;
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
       status = status == 1223 ? 204 : status;
