@@ -185,7 +185,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
           $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
       });
 
-      scope.$watch(function() {
+      scope.$watch(function pluralizeWatch() {
         var value = parseFloat(scope.$eval(numberExp));
 
         if (!isNaN(value)) {

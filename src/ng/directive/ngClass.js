@@ -3,7 +3,7 @@
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {
-    scope.$watch(attr[name], function(newVal, oldVal) {
+    scope.$watch(attr[name], function classWatchAction(newVal, oldVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
            if (isObject(oldVal) && !isArray(oldVal))

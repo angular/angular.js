@@ -297,7 +297,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     tutorial: 'Tutorial',
     cookbook: 'Examples'
   };
-  $scope.$watch(function() {return $location.path(); }, function(path) {
+  $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
       var parts = path.split('/'),
