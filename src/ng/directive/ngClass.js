@@ -4,7 +4,7 @@ function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {
     // Reusable function for re-applying the ngClass
-    function reapply(newVal, oldVal) {
+    function ngClassWatchAction(newVal, oldVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
           if (isObject(oldVal) && !isArray(oldVal))
@@ -16,11 +16,11 @@ function classDirective(name, selector) {
         if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
       }
     };
-    scope.$watch(attr[name], reapply, true);
+    scope.$watch(attr[name], ngClassWatchAction, true);
 
     attr.$observe('class', function(value) {
       var ngClass = scope.$eval(attr[name]);
-      reapply(ngClass, ngClass);
+      ngClassWatchAction(ngClass, ngClass);
     });
   });
 }

@@ -17,7 +17,7 @@
 angular.module('ngSanitize').directive('ngBindHtml', ['$sanitize', function($sanitize) {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
-    scope.$watch(attr.ngBindHtml, function(value) {
+    scope.$watch(attr.ngBindHtml, function ngBindHtmlWatchAction(value) {
       value = $sanitize(value);
       element.html(value || '');
     });

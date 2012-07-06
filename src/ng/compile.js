@@ -737,7 +737,7 @@ function $CompileProvider($provide) {
                       ' (directive: ' + newScopeDirective.name + ')');
                 };
                 lastValue = scope[scopeName] = parentGet(parentScope);
-                scope.$watch(function() {
+                scope.$watch(function parentValueWatch() {
                   var parentValue = parentGet(parentScope);
 
                   if (parentValue !== scope[scopeName]) {
@@ -996,7 +996,7 @@ function $CompileProvider($provide) {
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
             safeAddClass(parent.data('$binding', bindings), 'ng-binding');
-            scope.$watch(interpolateFn, function(value) {
+            scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
               node[0].nodeValue = value;
             });
           })
@@ -1026,7 +1026,7 @@ function $CompileProvider($provide) {
           attr[name] = undefined;
           ($$observers[name] || ($$observers[name] = [])).$$inter = true;
           (attr.$$observers && attr.$$observers[name].$$scope || scope).
-            $watch(interpolateFn, function(value) {
+            $watch(interpolateFn, function interpolateFnWatchAction(value) {
               attr.$set(name, value);
             });
         })
