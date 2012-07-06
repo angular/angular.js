@@ -9,7 +9,7 @@ directive.dropdownToggle =
     return {
       restrict: 'C',
       link: function(scope, element, attrs) {
-        scope.$watch(function(){return $location.path();}, function() {
+        scope.$watch(function dropdownTogglePathWatch(){return $location.path();}, function dropdownTogglePathWatchAction() {
           close && close();
         });
 

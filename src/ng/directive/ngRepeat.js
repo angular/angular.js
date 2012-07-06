@@ -89,7 +89,7 @@ var ngRepeatDirective = ngDirective({
       // We expect this to be a rare case.
       var lastOrder = new HashQueueMap();
       var indexValues = [];
-      scope.$watch(function(scope){
+      scope.$watch(function ngRepeatWatch(scope){
         var index, length,
             collection = scope.$eval(rhs),
             collectionLength = size(collection, true),
@@ -131,7 +131,7 @@ var ngRepeatDirective = ngDirective({
           } else {
             last = undefined;
           }
-		  
+
           if (last) {
             // if we have already seen this object, then we need to reuse the
             // associated scope/element
@@ -187,7 +187,7 @@ var ngRepeatDirective = ngDirective({
         for (i = 0, l = indexValues.length - length; i < l; i++) {
           indexValues.pop();
         }
-		
+
         //shrink children
         for (key in lastOrder) {
           if (lastOrder.hasOwnProperty(key)) {
