@@ -34,7 +34,7 @@
  */
 //TODO(misko): refactor to remove element from the DOM
 var ngShowDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngShow, function(value){
+  scope.$watch(attr.ngShow, function ngShowWatchAction(value){
     element.css('display', toBoolean(value) ? '' : 'none');
   });
 });
@@ -74,7 +74,7 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  */
 //TODO(misko): refactor to remove element from the DOM
 var ngHideDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngHide, function(value){
+  scope.$watch(attr.ngHide, function ngHideWatchAction(value){
     element.css('display', toBoolean(value) ? 'none' : '');
   });
 });

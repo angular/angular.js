@@ -101,7 +101,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           element.html('');
         };
 
-        scope.$watch(srcExp, function(src) {
+        scope.$watch(srcExp, function ngIncludeWatchAction(src) {
           var thisChangeId = ++changeCounter;
 
           if (src) {

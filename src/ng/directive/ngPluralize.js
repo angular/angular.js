@@ -188,7 +188,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
             offset + endSymbol));
       });
 
-      scope.$watch(function() {
+      scope.$watch(function ngPluralizeWatch() {
         var value = parseFloat(scope.$eval(numberExp));
 
         if (!isNaN(value)) {
@@ -199,7 +199,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
         } else {
           return '';
         }
-      }, function(newVal) {
+      }, function ngPluralizeWatchAction(newVal) {
         element.text(newVal);
       });
     }

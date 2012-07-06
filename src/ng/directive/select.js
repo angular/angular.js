@@ -269,7 +269,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         // we have to do it on each watch since ngModel watches reference, but
         // we need to work of an array, so we need to see if anything was inserted/removed
-        scope.$watch(function() {
+        scope.$watch(function selectMultipleWatch() {
           if (!equals(lastView, ctrl.$viewValue)) {
             lastView = copy(ctrl.$viewValue);
             ctrl.$render();
@@ -544,7 +544,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
 
         if (interpolateFn) {
-          scope.$watch(interpolateFn, function(newVal, oldVal) {
+          scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
             attr.$set('value', newVal);
             if (newVal !== oldVal) selectCtrl.removeOption(oldVal);
             selectCtrl.addOption(newVal);

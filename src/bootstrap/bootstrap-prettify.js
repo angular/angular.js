@@ -210,7 +210,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           }, $delegate);
         }]);
         $provide.decorator('$rootScope', ['$delegate', function(embedRootScope) {
-          docsRootScope.$watch(function() {
+          docsRootScope.$watch(function embedRootScopeDigestWatch() {
             embedRootScope.$digest();
           });
           return embedRootScope;
