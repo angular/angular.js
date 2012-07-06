@@ -1010,7 +1010,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   var ctrl = this;
-  $scope.$watch(ngModelGet, function(value) {
+  $scope.$watch(ngModelGet, function ngModelWatchAction(value) {
 
     // ignore change from view
     if (ctrl.$modelValue === value) return;
@@ -1257,7 +1257,7 @@ var ngValueDirective = function() {
         };
       } else {
         return function(scope, elm, attr) {
-          scope.$watch(attr.ngValue, function(value) {
+          scope.$watch(attr.ngValue, function valueWatchAction(value) {
             attr.$set('value', value, false);
           });
         };
