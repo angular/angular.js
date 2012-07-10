@@ -341,7 +341,7 @@ describe('form', function() {
 
     it('should set form and controls to the pristine state', function() {
 
-      var form = scope.form, input = doc.find('input').eq(0)
+      var form = scope.form, input = doc.find('input').eq(0);
 
       control.$setViewValue('');
       scope.$apply();

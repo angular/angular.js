@@ -129,8 +129,8 @@ function FormController(element, attrs) {
    * Sets the form to its pristine state.
    *
    * This method can be called to remove the 'ng-dirty' class and set the form to its pristine
-   * state (ng-pristine class). Calling this method will also affect all the controls contained in
-   * this form.
+   * state (ng-pristine class). This method will also propagate to all the controls contained
+   * in this form.
    *
    * Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
    * saving or resetting it.
