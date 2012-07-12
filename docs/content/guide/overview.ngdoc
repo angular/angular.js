@@ -11,22 +11,22 @@ succinctly. Out of the box, it eliminates much of the code you currently write t
 binding and dependency injection. And it all happens in JavaScript within the browser making it an
 ideal partner with any server technology.
 
-Angular is what HTML would have been had it been design for applications. HTML is a great
+Angular is what HTML would have been had it been designed for applications. HTML is a great
 declarative language for static documents. It does not contain much in the way of creating
-application, and as a result building web-applications is an exercise in *what do I have to do, so
+applications, and as a result building web applications is an exercise in *what do I have to do, so
 that I trick the browser in to doing what I want.*
 
-Impedance mismatch between dynamic-applications and static-documents are often solved as:
+Impedance mismatch between dynamic applications and static documents are often solved as:
 
   * **library** - a collection of functions which are useful when writing web apps. Your code is
-    in charge and it calls into the library when it sees fit. i.e.: `jQuery`
-  * **frameworks** - a particular implementation of a web-application, where your code fills in
+    in charge and it calls into the library when it sees fit. E.g., `jQuery`.
+  * **frameworks** - a particular implementation of a web application, where your code fills in
     the details. The framework is in charge and it calls into your code when it needs something
-    app specific. i.e.: `knockout`, `sproutcore`, etc...
+    app specific. E.g., `knockout`, `sproutcore`, etc.
 
 
 Angular takes another approach. It attempts to minimize the impedance mismatch between document
-centric HTML and what application needs by creating new HTML constructs. Angular teaches the
+centric HTML and what an application needs by creating new HTML constructs. Angular teaches the
 browser new syntax through a construct we call directives. Examples include:
 
   * Data binding as in `{{}}`.
@@ -39,13 +39,13 @@ browser new syntax through a construct we call directives. Examples include:
 
 ## End-to-end solution
 
-Angular tries to be an end to end solution, when building a web-application. This means it is
-not a single piece in an overall puzzle of building a web-application, but an end-to-end solution.
+Angular tries to be an end-to-end solution, when building a web application. This means it is
+not a single piece in an overall puzzle of building a web application, but an end-to-end solution.
 This makes Angular opinionated about how a CRUD application should be built. But while it is
 opinionated, it also tries to make sure that its opinion is just a starting point, which you can
 easily change. Angular comes with the following out-of-the-box:
 
-  * Everything you need to build a CRUD app in a cohesive set: Data-binding, basic templating
+  * Everything you need to build a CRUD app in a cohesive set: data-binding, basic templating
     directives, form validation, routing, deep-linking, reusable components, dependency injection.
   * Testability story: unit-testing, end-to-end testing, mocks, test harnesses.
   * Seed application with directory layout and test scripts as a starting point.
@@ -53,9 +53,9 @@ easily change. Angular comes with the following out-of-the-box:
 
 ## Angular Sweet Spot
 
-Angular simplifies the application development by presenting a higher level of abstraction to the
+Angular simplifies application development by presenting a higher level of abstraction to the
 developer. Like any abstraction, it comes at a cost of flexibility. In other words not every app
-is a good fit for Angular. Angular was built for the CRUD application in mind, luckily CRUD
+is a good fit for Angular. Angular was built for the CRUD application in mind. Luckily CRUD
 applications represent at least 90% of the web applications. But to understand what Angular is
 good at one also has to understand when an app is not a good fit for Angular.
 
@@ -67,7 +67,7 @@ using something closer to bare metal such as `jQuery` may be a better fit.
 # An Introductory Angular Example
 
 Below is a typical CRUD application which contains a form. The form values are validated, and
-are used to compute the total, which is formatted to a particular local. These are some common
+are used to compute the total, which is formatted to a particular locale. These are some common
 concepts which the application developer may face:
 
   * attaching data-model to the UI.
@@ -112,12 +112,12 @@ Try out the Live Preview above, and then let's walk through the example and desc
 on.
 
 In the `<html>` tag, we specify that it is an angular
-application with the `ng-app` directive. The `ng-app' will cause the angular to {@link
+application with the `ng-app` directive. The `ng-app` will cause Angular to {@link
 bootstrap auto initialize} your application.
 
     <html ng-app>
 
-We load the angular using the  `<script>` tag:
+We load Angular using the  `<script>` tag:
 
     <script src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
 
@@ -134,25 +134,25 @@ These input widgets look normal enough, but consider these points:
     Model-View-Controller design pattern.
   * Note that the HTML widget {@link api/ng.directive:input input}
     has special powers. The input invalidates itself by turning red when you enter invalid data or
-    leave the the input fields blank. These new widget behavior make it easier to implement field
+    leave the the input fields blank. These new widget behaviors make it easier to implement field
     validation common in CRUD applications.
 
 And finally, the mysterious `{{ double curly braces }}`:
 
          Total: {{qty * cost | currency}}
 
-This notation, `{{ _expression_ }}`, is angular markup for data-binding. The expression itself can
+This notation, `{{ _expression_ }}`, is Angular markup for data-binding. The expression itself can
 be a combination of both an expression and a {@link dev_guide.templates.filters filter}: `{{
 expression | filter }}`. Angular provides filters for formatting display data.
 
-In the example above, the expression in double-curly braces directs angular to "Bind the data we
+In the example above, the expression in double-curly braces directs Angular to "bind the data we
 got from the input widgets to the display, multiply them together, and format the resulting number
 into output that looks like money."
 
-Notice that we achieved this application behavior not by calling angular methods, nor by
-implementing application specific behavior as framework. We achieved the behavior because the
-browser behaved more in line what is needed for dynamic web-application rather then what is needed
-for static-document. Angular has lowered the impedance mismatch to the point where no
+Notice that we achieved this application behavior not by calling Angular methods, nor by
+implementing application specific behavior as a framework. We achieved the behavior because the
+browser behaved more in line with what is needed for a dynamic web application rather then what is
+needed for a static document. Angular has lowered the impedance mismatch to the point where no
 library/framework calls are needed.
 
 
@@ -184,7 +184,7 @@ Angular frees you from the following pain:
   * **Manipulating HTML DOM programmatically:** Manipulating HTML DOM is a cornerstone of AJAX
     applications, but it's cumbersome and error-prone. By declaratively describing how the UI
     should change as your application state changes, you are freed from low level DOM manipulation
-    tasks. Most applications written with angular never have to programmatically manipulate the
+    tasks. Most applications written with Angular never have to programmatically manipulate the
     DOM, although you can if you want to.
   * **Marshaling data to and from the UI:** CRUD operations make up the majority of AJAX
     applications. The flow of marshaling data from the server to an internal object to an HTML
