@@ -87,7 +87,8 @@ views that we will implement in the upcoming steps.
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-6/test/e2e/runner.html
-angular's server}.
+Angular's server}.
+
 
 # Experiments
 
@@ -96,11 +97,15 @@ or Chrome's Web Inspector, or inspecting the webserver access logs, confirm that
 making an extraneous request to `/app/%7B%7Bphone.imageUrl%7D%7D` (or
 `/app/{{phone.imageUrl}}`).
 
+  The issue here is that the browser will fire a request for that invalid image address as soon as
+it hits the `img` tag, which is before Angular has a chance to evaluate the expression and inject
+the valid address.
+
 
 # Summary
 
-Now that you have added phone images and links, go to {@link step_07 step 7} to learn about angular
-layout templates and how angular makes it easy to create applications that have multiple views.
+Now that you have added phone images and links, go to {@link step_07 step 7} to learn about Angular
+layout templates and how Angular makes it easy to create applications that have multiple views.
 
 
 <ul doc-tutorial-nav="6"></ul>

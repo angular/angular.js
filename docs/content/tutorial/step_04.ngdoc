@@ -63,7 +63,7 @@ necessary!
 
 ## Controller
 
-__`app/js/controller.js`:__
+__`app/js/controllers.js`:__
 <pre>
 function PhoneListCtrl($scope) {
   $scope.phones = [
@@ -103,7 +103,7 @@ to the model.
 The changes we made should be verified with both a unit test and an end-to-end test. Let's look at
 the unit test first.
 
-__`test/unit/controllerSpec.js`:__
+__`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
 
