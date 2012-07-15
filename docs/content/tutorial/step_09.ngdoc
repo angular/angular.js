@@ -15,7 +15,7 @@ Navigate to one of the detail pages.
 
 In the previous step, the details page displayed either "true" or "false" to indicate whether
 certain phone features were present or not. We have used a custom filter to convert those text
-strings into glyphs: ✓ for "true", and ✘ for "false". Let's see, what the filter code looks like.
+strings into glyphs: ✓ for "true", and ✘ for "false". Let's see what the filter code looks like.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-8...step-9

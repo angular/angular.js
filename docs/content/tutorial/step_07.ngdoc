@@ -19,7 +19,7 @@ detail page is displayed.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-6...step-7
-GitHub}:
+GitHub}.
 
 
 ## Multiple Views, Routing and Layout Template
@@ -114,14 +114,14 @@ directive:
 __`app/index.html`:__
 <pre>
 <!doctype html>
-<html ng-app="phonecat">
+<html lang="en" ng-app="phonecat">
 ...
 </pre>
 
 
 ## Controllers
 
-__`app/js/controller.js`:__
+__`app/js/controllers.js`:__
 <pre>
 ...
 function PhoneDetailCtrl($scope, $routeParams) {
@@ -140,11 +140,12 @@ route into the layout template, which makes it a perfect fit for our `index.html
 
 __`app/index.html`:__
 <pre>
-<html ng-app="phonecat">
+<html lang="en" ng-app="phonecat">
 <head>
 ...
   <script src="lib/angular/angular.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/controllers.js"></script>
 </head>
 <body>
 
@@ -234,7 +235,7 @@ to various URLs and verify that the correct view was rendered.
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
-angular's server}.
+Angular's server}.
 
 
 # Experiments

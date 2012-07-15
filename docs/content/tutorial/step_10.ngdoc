@@ -13,7 +13,7 @@ In this step, you will add a clickable phone image swapper to the phone details 
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
-clicking on the desired thumbnail image. Let's have a look at how we can do this with angular.
+clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-9...step-10
@@ -105,7 +105,7 @@ __`test/e2e/scenarios.js`:__
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
-angular's server}.
+Angular's server}.
 
 # Experiments
 

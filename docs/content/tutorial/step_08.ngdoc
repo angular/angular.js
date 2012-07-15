@@ -16,7 +16,7 @@ Now when you click on a phone on the list, the phone details page with phone-spe
 is displayed.
 
 To implement the phone details view we will use {@link api/ng.$http $http} to fetch
-our data, and we'll flesh out the `phone-details.html` view template.
+our data, and we'll flesh out the `phone-detail.html` view template.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-7...step-8
@@ -59,7 +59,7 @@ show this data in the phone detail view.
 We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the json files. This works
 the same way as the phone list controller.
 
-__`app/js/controller.js`:__
+__`app/js/controllers.js`:__
 <pre>
 function PhoneDetailCtrl($scope, $routeParams, $http) {
   $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
@@ -81,7 +81,7 @@ Note where we use the angular `{{expression}}` markup and `ngRepeat` to project 
 our model into the view.
 
 
-__`app/partials/phone-details.html`:__
+__`app/partials/phone-detail.html`:__
 <pre>
 <img ng-src="{{phone.images[0]}}" class="phone">
 
@@ -121,7 +121,7 @@ TODO!
 We wrote a new unit test that is similar to the one we wrote for the `PhoneListCtrl` controller in
 step 5.
 
-__`test/unit/controllerSpec.js`:__
+__`test/unit/controllersSpec.js`:__
 <pre>
 ...
   describe('PhoneDetailCtrl', function(){
@@ -180,7 +180,7 @@ __`test/e2e/scenarios.js`:__
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
-angular's server}.
+Angular's server}.
 
 # Experiments
 

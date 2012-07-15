@@ -11,7 +11,7 @@ For more details and examples of the Angular concepts we touched on in this tuto
 For several more examples of code, see the {@link cookbook/ Cookbook}.
 
 When you are ready to start developing a project using Angular, we recommend that you bootstrap
-your development with the {@link https://github.com/angular/angular-seed angular seed} project.
+your development with the {@link https://github.com/angular/angular-seed angular-seed} project.
 
 We hope this tutorial was useful to you and that you learned enough about Angular to make you want
 to learn more. We especially hope you are inspired to go out and develop Angular web apps of your
