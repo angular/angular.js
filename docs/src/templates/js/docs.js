@@ -96,7 +96,7 @@ docsApp.directive.docTutorialReset = function() {
       '    <ol>\n' +
       '      <li><p>Reset the workspace to step ' + step + '.</p>' +
       '        <pre>' + command + '</pre></li>\n' +
-      '      <li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{{docTutorialReset}}/app">angular\'s server</a>.</p></li>\n' +
+      '      <li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Angular\'s server</a>.</p></li>\n' +
       '    </ol>\n' +
       '  </div>\n';
   }

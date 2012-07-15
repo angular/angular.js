@@ -22,7 +22,7 @@ GitHub}:
 
 ## Data
 
-The `app/phones/phone.json` file in your project is a dataset that contains a larger list of phones
+The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
 stored in the JSON format.
 
 Following is a sample of the file:
@@ -104,7 +104,7 @@ to avoid any possible naming collisions.
 Since angular infers the controller's dependencies from the names of arguments to the controller's
 constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minification_(programming)
 minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
-minified as well, and the dependency injector would be able to identify services correctly.
+minified as well, and the dependency injector would not be able to identify services correctly.
 
 To overcome issues caused by minification, just assign an array with service identifier strings
 into the `$inject` property of the controller function, just like the last line in the snippet
@@ -164,8 +164,8 @@ isolated from the work done in other tests.
 
 * We created a new scope for our controller by calling `$rootScope.$new()`
 
-* We called `scope.$new(PhoneListCtrl)` to get Angular to create the child scope associated with
-the `PhoneListCtrl` controller.
+* We called the injected `$controller` function passing the `PhoneListCtrl` function and the created
+scope as parameters.
 
 Because our code now uses the `$http` service to fetch the phone list data in our controller, before
 we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
