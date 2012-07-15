@@ -13,7 +13,7 @@ In this step, you will improve the way our app fetches data.
 
 The last improvement we will make to our app is to define a custom service that represents a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this client we
-can make xhr requests for data in an easier way, without having to deal with the lower-level {@link
+can make XHR requests for data in an easier way, without having to deal with the lower-level {@link
 api/ng.$http $http} API, HTTP methods and URLs.
 
 The most important changes are listed below. You can see the full diff on {@link
@@ -57,13 +57,22 @@ The {@link api/ngResource.$resource `$resource`} service makes it easy to create
 lines of code. This client can then be used in our application, instead of the lower-level {@link
 api/ng.$http $http} service.
 
+__`app/js/app.js`.__
+<pre>
+...
+angular.module('phonecat', ['phonecatFilters', 'phonecatServices']).
+...
+</pre>
+
+We need to add 'phonecatServices' to 'phonecat' application's requires array.
+
 
 ## Controller
 
 We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
 lower-level {@link api/ng.$http $http} service, replacing it with a new service called
 `Phone`. Angular's {@link api/ngResource.$resource `$resource`} service is easier to
-use than `$http for interacting with data sources exposed as RESTful resources. It is also easier
+use than `$http` for interacting with data sources exposed as RESTful resources. It is also easier
 now to understand what the code in our controllers is doing.
 
 __`app/js/controllers.js`.__
@@ -107,8 +116,8 @@ This is a simple statement that we want to query for all phones.
 An important thing to notice in the code above is that we don't pass any callback functions when
 invoking methods of our Phone service. Although it looks as if the result were returned
 synchronously, that is not the case at all. What is returned synchronously is a "future" — an
-object, which will be filled with data when the xhr response returns. Because of the data-binding
-in angular, we can use this future and bind it to our template. Then, when the data arrives, the
+object, which will be filled with data when the XHR response returns. Because of the data-binding
+in Angular, we can use this future and bind it to our template. Then, when the data arrives, the
 view will automatically update.
 
 Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
