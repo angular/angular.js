@@ -104,7 +104,7 @@ to avoid any possible naming collisions.
 Since angular infers the controller's dependencies from the names of arguments to the controller's
 constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minification_(programming)
 minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
-minified as well, and the dependency injector would not being able to identify services correctly.
+minified as well, and the dependency injector would be able to identify services correctly.
 
 To overcome issues caused by minification, just assign an array with service identifier strings
 into the `$inject` property of the controller function, just like the last line in the snippet
