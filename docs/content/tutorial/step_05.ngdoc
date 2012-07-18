@@ -180,7 +180,7 @@ native APIs and the global state associated with them — both of which make tes
 HTTP request and tell it what to respond with. Note that the responses are not returned until we call
 the `$httpBackend.flush` method.
 
-Now, we will make assertions to verify that the `phones` model doesn't exist on the scope, before
+Now, we will make assertions to verify that the `phones` model doesn't exist on `scope` before
 the response is received:
 
 <pre>
