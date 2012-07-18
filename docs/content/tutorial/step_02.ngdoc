@@ -100,7 +100,7 @@ as follows:
 on the `<body>` tag.
 
 * The phone data is then attached to the *scope* (`$scope`) that was injected into our controller
-function. The controller scope is a prototypically descendant of the root scope that was created
+function. The controller scope is a prototypical descendant of the root scope that was created
 when the application bootstrapped. This controller scope is available to all bindings located within
 the `<body ng-controller="PhoneListCtrl">` tag.
 
