@@ -150,7 +150,7 @@ and title elements:
 
   Be sure to *remove* the `ng-controller` declaration from the body element.
 
-  While using double curlies works fine in within the title element, you might have noticed that
+  While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
 solution would be to use the {@link api/ng.directive:ngBind
 ngBind} or {@link api/ng.directive:ngBindTemplate
