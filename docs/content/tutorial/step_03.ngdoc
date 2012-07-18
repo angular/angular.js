@@ -148,7 +148,7 @@ and title elements:
 
           <html ng-app ng-controller="PhoneListCtrl">
 
-  Be sure to *remove* the `ng-controller` declaration from the body element.
+  Be sure to __remove__ the `ng-controller` declaration from the body element.
 
   While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
