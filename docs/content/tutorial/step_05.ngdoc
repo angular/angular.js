@@ -172,7 +172,7 @@ we create the `PhoneListCtrl` child scope, we need to tell the testing harness t
 incoming request from the controller. To do this we:
 
 * Request `$httpBackend` service to be injected into our `beforeEach` function. This is a mock
-mock version of the service that in production environment facilitates all XHR and JSONP requests.
+version of the service that in a production environment facilitates all XHR and JSONP requests.
 The mock version of this service allows you to write tests without having to deal with
 native APIs and the global state associated with them — both of which make testing a nightmare.
 
