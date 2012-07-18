@@ -65,7 +65,7 @@ api/ng.directive:ngSrc ngSrc} directive. That directive prevents the
 browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
 invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
 specified an attribute binding in a regular `src` attribute (`<img  class="diagram" src="{{phone.imageUrl}}">`).
-Using `ngSrc` (`ng-src`) prevents the browser from making an http request to an invalid location.
+Using the `ngSrc` directive prevents the browser from making an http request to an invalid location.
 
 
 ## Test
