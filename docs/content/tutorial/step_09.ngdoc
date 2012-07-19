@@ -64,7 +64,7 @@ __`app/index.html`:__
 ...
 </pre>
 
-The syntax for using filters in angular templates is as follows:
+The syntax for using filters in Angular templates is as follows:
 
     {{ expression | filter }}
 
@@ -121,7 +121,7 @@ output.
 
 # Experiments
 
-* Let's experiment with some of the {@link api/ng.$filter built-in angular filters} and add the
+* Let's experiment with some of the {@link api/ng.$filter built-in Angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`
@@ -137,7 +137,7 @@ the following to index.html:
 # Summary
 
 Now that you have learned how to write and test a custom filter, go to {@link step_10 step 10} to
-learn how we can use angular to enhance the phone details page further.
+learn how we can use Angular to enhance the phone details page further.
 
 
 <ul doc-tutorial-nav="9"></ul>
