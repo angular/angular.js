@@ -98,19 +98,24 @@ function $InterpolateProvider() {
           exp,
           concat = [];
 
-      while(index < length) {
-        if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
-          (index != startIndex) && parts.push(text.substring(index, startIndex));
-          parts.push(fn = $parse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
-          fn.exp = exp;
-          index = endIndex + endSymbolLength;
-          hasInterpolation = true;
-        } else {
-          // we did not find anything, so we have to add the remainder to the parts array
-          (index != length) && parts.push(text.substring(index));
-          index = length;
+      try {
+        while(index < length) {
+          if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
+               ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
+            (index != startIndex) && parts.push(text.substring(index, startIndex));
+            parts.push(fn = $parse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
+            fn.exp = exp;
+            index = endIndex + endSymbolLength;
+            hasInterpolation = true;
+          } else {
+            // we did not find anything, so we have to add the remainder to the parts array
+            (index != length) && parts.push(text.substring(index));
+            index = length;
+          }
         }
+      }
+      catch (err) {
+        throw new Error('Error within interpolation: ' + text + ';' + err.toString());
       }
 
       if (!(length = parts.length)) {
