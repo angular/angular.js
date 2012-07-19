@@ -56,7 +56,7 @@ module definitions. The sole responsibilities of the injector are to load specif
 definition(s), register all service providers defined in these modules and when asked inject
 a specified function with dependencies (services) that it lazily instantiates via their providers.
 
-Providers are objects that provide (create) instances of services and expose configuration apis
+Providers are objects that provide (create) instances of services and expose configuration APIs
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
 service, the `$routeProvider` exposes apis that allow you to define routes for your application.
 
