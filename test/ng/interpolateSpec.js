@@ -25,6 +25,29 @@ describe('$interpolate', function() {
     expect($interpolate('{{ false }}')()).toEqual('false');
   }));
 
+  it('should rethrow exceptions', inject(function($interpolate, $rootScope) {
+    $rootScope.err = function () {
+      throw new Error('oops');
+    };
+    expect(function () {
+      $interpolate('{{err()}}')($rootScope);
+    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+  }));
+
+  it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
+    $rootScope.err = function () {
+      throw new Error('oops');
+    };
+    var dom = jqLite('<div>{{1 + 1}}</div><div>{{err()}}</div><div>{{1 + 2}}</div>');
+    $compile(dom)($rootScope);
+    expect(function () {
+      $rootScope.$apply();
+    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+    expect(dom[0].innerHTML).toEqual('2');
+    expect(dom[1].innerHTML).toEqual('{{err()}}');
+    expect(dom[2].innerHTML).toEqual('{{1 + 2}}');
+  }));
+
 
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
     $rootScope.name = 'Misko';
