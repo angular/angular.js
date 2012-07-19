@@ -10,6 +10,9 @@
  * @param {string} text Input text.
  * @returns {string} Html-linkified text.
  *
+ * @usage
+   <span ng-bind-html="linky_expression | linky"></span>
+ *
  * @example
    <doc:example module="ngSanitize">
      <doc:source>
