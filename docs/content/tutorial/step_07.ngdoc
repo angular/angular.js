@@ -155,7 +155,7 @@ __`app/index.html`:__
 </pre>
 
 Note that we removed most of the code in the `index.html` template and replaced it with a single
-line containing a div with `ng-view` attribute. The code that we removed was placed into the
+line containing a div with the `ng-view` attribute. The code that we removed was placed into the
 `phone-list.html` template:
 
 __`app/partials/phone-list.html`:__
