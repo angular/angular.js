@@ -451,12 +451,16 @@ Doc.prototype = {
     dom.h('Usage', function() {
       dom.h('In HTML Template Binding', function() {
         dom.tag('code', function() {
-          dom.text('{{ ');
-          dom.text(self.shortName);
-          dom.text('_expression | ');
-          dom.text(self.shortName);
-          self.parameters(dom, ':', true);
-          dom.text(' }}');
+          if (self.usage) {
+            dom.text(self.usage);
+          } else {
+            dom.text('{{ ');
+            dom.text(self.shortName);
+            dom.text('_expression | ');
+            dom.text(self.shortName);
+            self.parameters(dom, ':', true);
+            dom.text(' }}');
+          }
         });
       });
 
