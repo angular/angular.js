@@ -178,11 +178,14 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
           whenExp = element.attr(attr.$attr.when), // this is because we have {{}} in attrs
           offset = attr.offset || 0,
           whens = scope.$eval(whenExp),
-          whensExpFns = {};
+          whensExpFns = {},
+          startSymbol = $interpolate.startSymbol(),
+          endSymbol = $interpolate.endSymbol();
 
       forEach(whens, function(expression, key) {
         whensExpFns[key] =
-          $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+          $interpolate(expression.replace(BRACE, startSymbol + numberExp + '-' +
+            offset + endSymbol));
       });
 
       scope.$watch(function() {
