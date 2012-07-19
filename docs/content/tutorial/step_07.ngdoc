@@ -35,7 +35,7 @@ template into what we call a "layout template". This is a template that is commo
 our application. Other "partial templates" are then included into this layout template depending on
 the current "route" — the view that is currently displayed to the user.
 
-Application routes in angular are declared via the
+Application routes in Angular are declared via the
 {@link api/ng.$routeProvider $routeProvider}, which is the provider of the
 {@link api/ng.$route $route service}. This service makes it easy to wire together
 controllers, view templates, and the current
