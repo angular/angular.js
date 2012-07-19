@@ -133,4 +133,41 @@ describe('ngPluralize', function() {
       expect(element.text()).toBe('Igor, Misko and 2 other people are viewing.');
     }));
   });
+
+
+  describe('interpolation', function() {
+
+    it('should support custom interpolation symbols', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[').endSymbol('%%');
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile(
+            "<ng:pluralize count=\"viewCount\" offset=\"1\"" +
+              "when=\"{'0': 'Nobody is viewing.'," +
+                      "'1': '[[p1%% is viewing.'," +
+                      "'one': '[[p1%% and one other person are viewing.'," +
+                      "'other': '[[p1%% and {} other people are viewing.'}\">" +
+            "</ng:pluralize>")($rootScope);
+        $rootScope.p1 = 'Igor';
+
+        $rootScope.viewCount = 0;
+        $rootScope.$digest();
+        expect(element.text()).toBe('Nobody is viewing.');
+
+        $rootScope.viewCount = 1;
+        $rootScope.$digest();
+        expect(element.text()).toBe('Igor is viewing.');
+
+        $rootScope.viewCount = 2;
+        $rootScope.$digest();
+        expect(element.text()).toBe('Igor and one other person are viewing.');
+
+        $rootScope.viewCount = 3;
+        $rootScope.$digest();
+        expect(element.text()).toBe('Igor and 2 other people are viewing.');
+      });
+    })
+  });
 });
