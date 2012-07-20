@@ -60,7 +60,7 @@ api/ng.directive:ngBind `ng-bind`} directive.
 </pre>
 
 Directive is just a function which executes when the compiler encounters it in the DOM. See {@link
-api/ng.$compileProvider.directive directive API} for in depth documentation on how
+api/ng.$compileProvider.directive directive API} for in-depth documentation on how
 to write directives.
 
 Here is a directive which makes any element draggable. Notice the `draggable` attribute on the
