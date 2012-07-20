@@ -174,8 +174,36 @@ function JQLite(element) {
   }
 }
 
+function JQLiteCloneData(src, dst) {
+  if (src.nodeType !== 1 || !jqLite.hasData(src))
+    return;
+
+  var data = jqLite(src).data();
+  
+  forEach(data, function(value, key){
+		jqLite(dst).data(key, value);
+	});
+}
+
 function JQLiteClone(element) {
-  return element.cloneNode(true);
+  var clone = element.cloneNode(true);
+
+	if (element.nodeType !== 1)
+		return clone;
+	
+	JQLiteCloneData(element, clone);
+	
+  var getAll = element.getElementsByTagName || element.querySelectorAll || function(){return []},
+      srcAll = getAll.call(element, '*'),
+      dstAll = getAll.call(clone, '*');
+
+	for(var i = 0 ; i < srcAll.length ; i++) {
+		var src = srcAll[i],
+        dst = dstAll[i];
+		JQLiteCloneData(src, dst);
+	}
+	
+	return clone;
 }
 
 function JQLiteDealoc(element){
