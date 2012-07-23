@@ -224,7 +224,8 @@ describe('$route', function() {
 
     it('should fire $routeChangeStart and resolve promises', function() {
       var deferA,
-          deferB;
+          deferB,
+          deferC;
 
       module(function($provide, $routeProvider) {
         $provide.factory('b', function($q) {
@@ -236,7 +237,11 @@ describe('$route', function() {
             deferA = $q.defer();
             return deferA.promise;
           },
-          b: 'b'
+          b: 'b',
+          c: ['$q', 'b', function($q, b) {
+            deferC = $q.defer();
+            return deferC.promise;
+          }]
         } });
       });
 
@@ -254,6 +259,9 @@ describe('$route', function() {
         $rootScope.$digest();
         expect(log).toEqual('');
         deferB.resolve();
+        $rootScope.$digest();
+        expect(log).toEqual('');
+        deferC.resolve();
         $rootScope.$digest();
         expect($route.current.locals.$template).toEqual('FOO');
       });
