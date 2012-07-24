@@ -65,6 +65,10 @@ function $RouteProvider(){
    *      If the option is set to `false` and url in the browser changes, then
    *      `$routeUpdate` event is broadcasted on the root scope.
    *
+   *    - `view` - `{string}`: a name of the view associated with the route.
+   *    Useful for multiple views. If no view is specified then all of the views
+   *    with no name are affected from the $routeChangeSuccess event.
+   *
    * @returns {Object} self
    *
    * @description
@@ -305,6 +309,41 @@ function $RouteProvider(){
           reload: function() {
             forceReload = true;
             $rootScope.$evalAsync(updateRoute);
+          },
+
+          /**
+           * @ngdoc method
+           * @name ng.$route#interpolate
+           * @methodOf ng.$route
+           *
+           * @description
+           *
+           * Interpolate a path with params.
+           *
+           * Used to interpolate `redirectTo` path.
+           * Exposed to be used for manually getting a path
+           * from a route object.
+           *
+           * Example usage:
+           *   routePath = '/path/:someParam';
+           *   $route.interpolate(routePath, routeObject.params);
+           *
+           * @returns interpolation of a path with the parameters
+           */
+          interpolate: function(string, params) {
+            var result = [];
+            forEach((string||'').split(':'), function(segment, i) {
+              if (i === 0) {
+                result.push(segment);
+              } else {
+                var segmentMatch = segment.match(/(\w+)(.*)/);
+                var key = segmentMatch[1];
+                result.push(params[key]);
+                result.push(segmentMatch[2] || '');
+                delete params[key];
+              }
+            });
+            return result.join('');
           }
         };
 
@@ -354,7 +393,7 @@ function $RouteProvider(){
         if (next) {
           if (next.redirectTo) {
             if (isString(next.redirectTo)) {
-              $location.path(interpolate(next.redirectTo, next.params)).search(next.params)
+              $location.path($route.interpolate(next.redirectTo, next.params)).search(next.params)
                        .replace();
             } else {
               $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
@@ -426,25 +465,6 @@ function $RouteProvider(){
       });
       // No route matched; fallback to "otherwise" route
       return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
-    }
-
-    /**
-     * @returns interpolation of the redirect path with the parametrs
-     */
-    function interpolate(string, params) {
-      var result = [];
-      forEach((string||'').split(':'), function(segment, i) {
-        if (i == 0) {
-          result.push(segment);
-        } else {
-          var segmentMatch = segment.match(/(\w+)(.*)/);
-          var key = segmentMatch[1];
-          result.push(params[key]);
-          result.push(segmentMatch[2] || '');
-          delete params[key];
-        }
-      });
-      return result.join('');
     }
   }];
 }
