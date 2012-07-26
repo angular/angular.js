@@ -521,7 +521,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
   return {
     restrict: 'E',
     priority: 100,
-    require: '^select',
+    require: '?select',
     compile: function(element, attr) {
       if (isUndefined(attr.value)) {
         var interpolateFn = $interpolate(element.text(), true);
@@ -531,12 +531,14 @@ var optionDirective = ['$interpolate', function($interpolate) {
       }
 
       return function (scope, element, attr, selectCtrl) {
+		if(!selectCtrl)
+        {
+            selectCtrl = nullSelectCtrl;
+        }
         if (selectCtrl.databound) {
           // For some reason Opera defaults to true and if not overridden this messes up the repeater.
           // We don't want the view to drive the initialization of the model anyway.
           element.prop('selected', false);
-        } else {
-          selectCtrl = nullSelectCtrl;
         }
 
         if (interpolateFn) {
