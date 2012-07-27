@@ -322,7 +322,7 @@ describe('angular', function() {
 
 
   describe('angularInit', function() {
-    var bootstrap;
+    var bootstrapSpy;
     var element;
 
     beforeEach(function() {
@@ -341,74 +341,83 @@ describe('angular', function() {
           return element[name];
         }
       };
-      bootstrap = jasmine.createSpy('bootstrap');
+      bootstrapSpy = jasmine.createSpy('bootstrapSpy');
     });
 
 
     it('should do nothing when not found', function() {
-      angularInit(element, bootstrap);
-      expect(bootstrap).not.toHaveBeenCalled();
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).not.toHaveBeenCalled();
     });
 
 
     it('should look for ngApp directive as attr', function() {
       var appElement = jqLite('<div ng-app="ABC"></div>')[0];
       element.querySelectorAll['[ng-app]'] = [appElement];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should look for ngApp directive in id', function() {
       var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should look for ngApp directive in className', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
       element.querySelectorAll['.ng\\:app'] = [appElement];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should bootstrap using class name', function() {
       var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should bootstrap anonymously', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
       element.querySelectorAll['[x-ng-app]'] = [ appElement ];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap anonymously using class only', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap if the annotation is on the root element', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
-      angularInit(appElement, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(appElement, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
+    });
+
+
+    it('should complain if app module cannot be found', function() {
+      var appElement = jqLite('<div ng-app="doesntexist"></div>')[0];
+
+      expect(function() {
+        angularInit(appElement, bootstrap);
+      }).toThrow('No module: doesntexist');
     });
   });
 
@@ -544,6 +553,17 @@ describe('angular', function() {
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
       expect(element.data('$injector')).toBe(injector);
+      dealoc(element);
+    });
+
+    it("should complain if app module can't be found", function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+
+      expect(function() {
+        angular.bootstrap(element, ['doesntexist']);
+      }).toThrow('No module: doesntexist');
+
+      expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
     });
   });
