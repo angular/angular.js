@@ -331,6 +331,12 @@ describe('angular', function() {
           return element.getElementById[id] || [];
         },
 
+
+        querySelectorAll: function(arg) {
+          return element.querySelectorAll[arg] || [];
+        },
+
+
         getAttribute: function(name) {
           return element[name];
         }
@@ -345,6 +351,14 @@ describe('angular', function() {
     });
 
 
+    it('should look for ngApp directive as attr', function() {
+      var appElement = jqLite('<div ng-app="ABC"></div>')[0];
+      element.querySelectorAll['[ng-app]'] = [appElement];
+      angularInit(element, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
     it('should look for ngApp directive in id', function() {
       var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
@@ -355,7 +369,6 @@ describe('angular', function() {
 
     it('should look for ngApp directive in className', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['.ng\\:app'] = [appElement];
       angularInit(element, bootstrap);
       expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
@@ -364,7 +377,6 @@ describe('angular', function() {
 
     it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];
       angularInit(element, bootstrap);
       expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
@@ -380,7 +392,6 @@ describe('angular', function() {
 
     it('should bootstrap anonymously', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[x-ng-app]'] = [ appElement ];
       angularInit(element, bootstrap);
       expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
