@@ -981,4 +981,27 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
+
+
+  it('should use withCredentials from default', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+      expect(withCredentials).toBe(true);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http) {
+      $http.defaults.withCredentials = true;
+      $http({
+        method: 'GET', url: 'some.html', timeout: 12345, responseType: 'json'
+      });
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
 });
