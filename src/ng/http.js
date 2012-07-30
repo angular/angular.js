@@ -486,6 +486,10 @@ function $HttpProvider() {
         delete reqHeaders['Content-Type'];
       }
 
+      if (isUndefined(config.withCredentials) && !isUndefined($config.withCredentials)) {
+        config.withCredentials = $config.withCredentials;
+      }
+
       // send request
       promise = sendReq(config, reqData, reqHeaders);
 
