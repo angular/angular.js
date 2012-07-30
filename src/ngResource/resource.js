@@ -279,9 +279,15 @@ angular.module('ngResource', ['ng']).
       url: function(params) {
         var self = this,
             url = this.template,
+            suffix,
             encodedVal;
 
         params = params || {};
+        if(params['_suffix']) {
+          suffix = params['_suffix'];
+          delete params['_suffix'];
+        }
+
         forEach(this.urlParams, function(_, urlParam){
           encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
           url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
@@ -295,6 +301,9 @@ angular.module('ngResource', ['ng']).
         });
         query.sort();
         url = url.replace(/\/*$/, '');
+        if(suffix) {
+          url += suffix;
+        }
         return url + (query.length ? '?' + query.join('&') : '');
       }
     };
