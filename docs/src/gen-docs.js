@@ -83,6 +83,12 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copy('docs/src/templates/css/bootstrap.min.css', 'css/bootstrap.min.css'));
   writesFuture.push(writer.copy('docs/src/templates/css/docs.css', 'css/docs.css'));
   writesFuture.push(writer.copy('docs/src/templates/css/font-awesome.css', 'css/font-awesome.css'));
+
+  writesFuture.push(writer.copyTpl('font/fontawesome-webfont.eot'));
+  writesFuture.push(writer.copyTpl('font/fontawesome-webfont.svg'));
+  writesFuture.push(writer.copyTpl('font/fontawesome-webfont.svgz'));
+  writesFuture.push(writer.copyTpl('font/fontawesome-webfont.ttf'));
+  writesFuture.push(writer.copyTpl('font/fontawesome-webfont.woff'));
 }
 
 
