@@ -216,12 +216,10 @@ In this example we will build a directive which displays the current time.
        });
    </script>
    <div ng-controller="Ctrl2">
-     Date format: <input ng-model='format'> <hr/>
+     Date format: <input ng-model="format"> <hr/>
      Current time is: <span my-current-time="format"></span>
    </div>
   </doc:source>
-  <doc:scenario>
-  </doc:scenario>
 </doc:example>
 
 
