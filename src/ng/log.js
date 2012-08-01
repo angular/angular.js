@@ -15,9 +15,9 @@
     <doc:example>
       <doc:source>
          <script>
-           function LogCtrl($log) {
-             this.$log = $log;
-             this.message = 'Hello World!';
+           function LogCtrl($scope, $log) {
+             $scope.$log = $log;
+             $scope.message = 'Hello World!';
            }
          </script>
          <div ng-controller="LogCtrl">
