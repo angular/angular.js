@@ -27,15 +27,15 @@ Important things to notice:
   * Notice the reference to the `myApp` module in the `<html ng-app="myApp">`, it is what
     bootstraps the app using your module.
 
-<doc:example module='simpleApp'>
+<doc:example module='myApp'>
   <doc:source>
     <script>
       // declare a module
-      var simpleAppModule = angular.module('simpleApp', []);
+      var simpleAppModule = angular.module('myApp', []);
 
       // configure the module.
       // in this example we will create a greeting filter
-      simpleAppModule.filter('greet', function() {
+      myAppModule.filter('greet', function() {
        return function(name) {
           return 'Hello, ' + name + '!';
         };
