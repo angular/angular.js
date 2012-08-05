@@ -271,7 +271,7 @@ simplified as:
   });
 </pre>
 
-Most directives concern themselves only with instances not with template transformations allowing
+Most directives concern themselves only with instances, not with template transformations, allowing
 further simplification:
 
 <pre>
@@ -342,7 +342,7 @@ compiler}. The attributes are:
         `scope: { localFn:'increment()' }`, then isolate scope property `localFn` will point to
         a function wrapper for the `increment()` expression. Often it's desirable to pass data from
         the isolate scope via an expression and to the parent scope, this can be done by passing a
-        map of local variable names and values into the expression wrapper fn. For example if the
+        map of local variable names and values into the expression wrapper fn. For example, if the
         expression is `increment(amount)` then we can specify the amount value by calling the
         `localFn` as `localFn({amount: 22})`.
 

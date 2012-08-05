@@ -231,9 +231,9 @@ directive listens on DOM events, such as {@link
 api/ng.directive:ngClick `ng-click`} it must evaluate the
 expression inside the `$apply` method.
 
-After evaluating the expression `$apply` method performs a {@link
-api/ng.$rootScope.Scope#$digest `$digest`}. In $digest phase the scope examines all
-of the `$watch` expressions and compares them with previous value. This dirty checking, is done
+After evaluating the expression, the `$apply` method performs a {@link
+api/ng.$rootScope.Scope#$digest `$digest`}. In the $digest phase the scope examines all
+of the `$watch` expressions and compares them with the previous value. This dirty checking is done
 asynchronously. This means that assignment such as `$scope.username="angular"` will not
 immediately cause a `$watch` to be notified, instead the `$watch` notification is delayed until
 the `$digest` phase. This delay is desirable, since it coalesces multiple model updates into one
@@ -250,7 +250,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   2. **Watcher registration**
 
      During template linking directives register {@link
-     api/ng.$rootScope.Scope#$watch watches} on the scope. This watches will be
+     api/ng.$rootScope.Scope#$watch watches} on the scope. These watches will be
      used to propagate model values to the DOM.
 
   3. **Model mutation**

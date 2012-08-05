@@ -3,7 +3,7 @@
 @description
 
 Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
-expression }}`. Expressions are process by the {@link api/ng.$parse $parse}
+expression }}`. Expressions are processed by {@link api/ng.$parse $parse}
 service.
 
 For example, these are all valid expressions in angular:
