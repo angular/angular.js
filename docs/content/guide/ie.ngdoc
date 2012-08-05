@@ -56,7 +56,7 @@ The **important** parts are:
 
 # Long Version
 
-IE has an issues with element tag names which are not standard HTML tag names. These fall into two
+IE has issues with element tag names which are not standard HTML tag names. These fall into two
 categories, and each category has its own fix.
 
   * If the tag name starts with `my:` prefix than it is considered an XML namespace and must
@@ -65,7 +65,7 @@ categories, and each category has its own fix.
   * If the tag has no `:` but it is not a standard HTML tag, then it must be pre-created using
     `document.createElement('my-tag')`
 
-  * If you have are planning on styling the custom tag with CSS selectors, then it must be
+  * If you are planning on styling the custom tag with CSS selectors, then it must be
     pre-created using `document.createElement('my-tag')` regardless of XML namespace.
 
 
@@ -88,7 +88,7 @@ result):
   </html>
 </pre>
 
-It should pares into the following DOM:
+It should parse into the following DOM:
 
 <pre>
 #document
@@ -122,12 +122,12 @@ In IE, the behavior is that the `BODY` element has three children:
 
   3. A corrupt self closing `/mytag`. This is corrupt since element names are not allowed to have
   the `/` character. Furthermore this closing element should not be part of the DOM since it is
-  only used to delimitate the structure of the DOM.
+  only used to delineate the structure of the DOM.
 
 
 ## CSS Styling of Custom Tag Names
 
-The to make CSS selector work with custom elements the custom element name must be shived with the
+To make CSS selectors work with custom elements, the custom element name must be pre-created with 
 `document.createElement('my-tag')` regardless of XML namespace.
 
 <pre>
