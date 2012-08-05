@@ -24,7 +24,7 @@ initialization.
 </html>
 </pre>
 
-  * Place the `script` tag at the buttom of the page. Placing script tags at the end of the page
+  * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
     improves app load time because the HTML loading is not blocked by loading of the `angular.js`
     script. You can get the latest bits from {@link http://code.angularjs.org}. Please don't link
     your production code to this URL, as it will expose a security hole on your site. For
@@ -34,12 +34,12 @@ initialization.
     * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
       production.
   * Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
-    anugular to auto-bootstrap your application.
+    angular to auto-bootstrap your application.
 
         <html ng-app>
 
   * If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
-    to make IE happy. (This is here for historical resons, and we no longer recomend use of
+    to make IE happy. (This is here for historical reasons, and we no longer recommend use of
     `ng:`.)
 
         <html xmlns:ng="http://angularjs.org">

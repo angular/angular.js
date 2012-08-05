@@ -331,11 +331,11 @@ to entry point of your application (e.g. index.html)
 
 ### Crawling your app
 
-If you want your AJAX application to be indexed by web crawlers, you rill need to add the following
+If you want your AJAX application to be indexed by web crawlers, you will need to add the following
 meta tag to the HEAD section of your document:
 <pre><meta name="fragment" content="!" /></pre>
 
-This statement causes a crawler to request links with empty `_escaped_fragment_` parameter so that
+This statement causes a crawler to request links with an empty `_escaped_fragment_` parameter so that
 your server can recognize the crawler and serve it HTML snapshots. For more information about this
 technique, see {@link http://code.google.com/web/ajaxcrawling/docs/specification.html Making AJAX
 Applications Crawlable}.
