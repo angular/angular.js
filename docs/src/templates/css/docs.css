@@ -19,6 +19,11 @@ img.AngularJS-small {
   height: 1em;
 }
 
+
+.icon-cog {
+  line-height: 13px;
+}
+
 /* =============================== */
 
 .form-search .dropdown-menu {
