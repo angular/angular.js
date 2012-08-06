@@ -119,7 +119,7 @@ bootstrap auto initialize} your application.
 
 We load Angular using the  `<script>` tag:
 
-    <script src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/?.?.?/angular.min.js"></script>
 
 From the `ng-model` attribute of the `<input>` tags, angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
