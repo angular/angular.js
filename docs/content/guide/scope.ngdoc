@@ -222,7 +222,7 @@ The normal flow of browser receiving an event is that it executes a correspondin
 callback. Once the callback completes the browser re-renders the DOM and returns to waiting for
 more events.
 
-When the browser calls into JavaScript the code executes outside they Angular execution context,
+When the browser calls into JavaScript the code executes outside the Angular execution context,
 which means that Angular is unaware of model modifications. To properly process model
 modifications the execution has to enter the Angular execution context using the {@link
 api/ng.$rootScope.Scope#$apply `$apply`} method. Only model modifications which
@@ -256,7 +256,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     api/ng.$rootScope.Scope#$apply scope.$apply()}. (Angular apis do this
+     api/ng.$rootScope.Scope#$apply scope.$apply()}. (Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link api/ng.$http $http} or {@link
      api/ng.$timeout $timeout} services.

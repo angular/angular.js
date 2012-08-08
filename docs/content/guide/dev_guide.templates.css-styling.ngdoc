@@ -9,7 +9,7 @@ Angular sets these CSS classes. It is up to your application to provide useful s
 
 * `ng-invalid`, `ng-valid`
   - **Usage:** angular applies this class to an input widget element if that element's input does
-    notpass validation. (see {@link api/ng.directive:input input} directive).
+    not pass validation. (see {@link api/ng.directive:input input} directive).
 
 * `ng-pristine`, `ng-dirty`
   - **Usage:** angular {@link api/ng.directive:input input} directive applies `ng-pristine` class
