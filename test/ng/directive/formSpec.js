@@ -64,36 +64,6 @@ describe('form', function() {
   });
 
 
-  it('should prevent form submission', function() {
-    var startingUrl = '' + window.location;
-    doc = jqLite('<form name="myForm"><input type="submit" value="submit" />');
-    $compile(doc)(scope);
-
-    browserTrigger(doc.find('input'));
-    waitsFor(
-        function() { return true; },
-        'let browser breath, so that the form submision can manifest itself', 10);
-
-    runs(function() {
-      expect('' + window.location).toEqual(startingUrl);
-    });
-  });
-
-
-  it('should not prevent form submission if action attribute present', function() {
-    var callback = jasmine.createSpy('submit').andCallFake(function(event) {
-      expect(event.isDefaultPrevented()).toBe(false);
-      event.preventDefault();
-    });
-
-    doc = $compile('<form name="x" action="some.py" />')(scope);
-    doc.bind('submit', callback);
-
-    browserTrigger(doc, 'submit');
-    expect(callback).toHaveBeenCalledOnce();
-  });
-
-
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
     expect(scope.myForm).toBeTruthy();
@@ -152,6 +122,39 @@ describe('form', function() {
     expect(widget.$dirty).toBe(false);
     expect(widget.$valid).toBe(true);
     expect(widget.$invalid).toBe(false);
+  });
+
+
+  describe('preventing default submission', function() {
+
+    it('should prevent form submission', function() {
+      var startingUrl = '' + window.location;
+      doc = jqLite('<form name="myForm"><input type="submit" value="submit" />');
+      $compile(doc)(scope);
+
+      browserTrigger(doc.find('input'));
+      waitsFor(
+          function() { return true; },
+          'let browser breath, so that the form submission can manifest itself', 10);
+
+      runs(function() {
+        expect('' + window.location).toEqual(startingUrl);
+      });
+    });
+
+
+    it('should not prevent form submission if action attribute present', function() {
+      var callback = jasmine.createSpy('submit').andCallFake(function(event) {
+        expect(event.isDefaultPrevented()).toBe(false);
+        event.preventDefault();
+      });
+
+      doc = $compile('<form name="x" action="some.py" />')(scope);
+      doc.bind('submit', callback);
+
+      browserTrigger(doc, 'submit');
+      expect(callback).toHaveBeenCalledOnce();
+    });
   });
 
 
