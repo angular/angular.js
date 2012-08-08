@@ -165,7 +165,7 @@ For example:
   });
 </pre>
 
-Results in code bloat do to the need of temporary variable:
+Results in code bloat due to the need of temporary variable:
 <pre>
   var greeterFactory = function(renamed$window) {
     ...;
