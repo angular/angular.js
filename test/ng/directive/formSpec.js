@@ -128,17 +128,25 @@ describe('form', function() {
   describe('preventing default submission', function() {
 
     it('should prevent form submission', function() {
-      var startingUrl = '' + window.location;
-      doc = jqLite('<form name="myForm"><input type="submit" value="submit" />');
+      var nextTurn = false,
+          reloadPrevented;
+
+      doc = jqLite('<form><input type="submit" value="submit" ></form>');
       $compile(doc)(scope);
 
+      doc.bind('submit', function(e) {
+        reloadPrevented = e.defaultPrevented;
+      });
+
       browserTrigger(doc.find('input'));
-      waitsFor(
-          function() { return true; },
-          'let browser breath, so that the form submission can manifest itself', 10);
+
+      // let the browser process all events (and potentially reload the page)
+      setTimeout(function() { nextTurn = true;});
+
+      waitsFor(function() { return nextTurn; });
 
       runs(function() {
-        expect('' + window.location).toEqual(startingUrl);
+        expect(reloadPrevented).toBe(true);
       });
     });
 
