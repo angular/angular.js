@@ -724,6 +724,10 @@ forEach({
     return element.nextSibling;
   },
 
+  prev: function(element) {
+    return element.previousSibling;
+  },
+
   find: function(element, selector) {
     return element.getElementsByTagName(selector);
   },
