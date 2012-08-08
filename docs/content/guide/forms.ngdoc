@@ -300,7 +300,7 @@ The following example shows how to add two-way data-binding to contentEditable e
         });
 
         // model -> view
-        ctrl.render = function(value) {
+        ctrl.$render = function(value) {
           elm.html(value);
         };
 
