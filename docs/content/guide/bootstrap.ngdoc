@@ -25,7 +25,7 @@ initialization.
 </pre>
 
   * Place the `script` tag at the buttom of the page. Placing script tags at the end of the page
-    improves app load time becouse the HTML loading is not blocked by loading of the `angular.js`
+    improves app load time because the HTML loading is not blocked by loading of the `angular.js`
     script. You can get the latest bits from {@link http://code.angularjs.org}. Please don't link
     your production code to this URL, as it will expose a security hole on your site. For
     experimental development linking to our site is fine.
