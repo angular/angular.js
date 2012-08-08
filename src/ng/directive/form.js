@@ -227,38 +227,62 @@ function FormController(element, attrs) {
       </doc:scenario>
     </doc:example>
  */
-var formDirectiveDir = {
-  name: 'form',
-  restrict: 'E',
-  controller: FormController,
-  compile: function() {
-    return {
-      pre: function(scope, formElement, attr, controller) {
-        if (!attr.action) {
-          formElement.bind('submit', function(event) {
-            event.preventDefault();
-          });
-        }
+var formDirectiveFactory = function(isNgForm) {
+  return ['$timeout', function($timeout) {
+    var formDirective = {
+      name: 'form',
+      restrict: 'E',
+      controller: FormController,
+      compile: function() {
+        return {
+          pre: function(scope, formElement, attr, controller) {
+            if (!attr.action) {
+              // we can't use jq events because if a form is destroyed during submission the default
+              // action is not prevented. see #1238
+              //
+              // IE 9 is not affected because it doesn't fire a submit event and try to do a full
+              // page reload if the form was destroyed by submission of the form via a click handler
+              // on a button in the form. Looks like an IE9 specific bug.
+              var preventDefaultListener = function(event) {
+                event.preventDefault
+                  ? event.preventDefault()
+                  : event.returnValue = false; // IE
+              };
 
-        var parentFormCtrl = formElement.parent().controller('form'),
-            alias = attr.name || attr.ngForm;
+              addEventListenerFn(formElement[0], 'submit', preventDefaultListener);
 
-        if (alias) {
-          scope[alias] = controller;
-        }
-        if (parentFormCtrl) {
-          formElement.bind('$destroy', function() {
-            parentFormCtrl.$removeControl(controller);
-            if (alias) {
-              scope[alias] = undefined;
+              // unregister the preventDefault listener so that we don't not leak memory but in a
+              // way that will achieve the prevention of the default action.
+              formElement.bind('$destroy', function() {
+                $timeout(function() {
+                  removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
+                }, 0, false);
+              });
             }
-            extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
-          });
-        }
+
+            var parentFormCtrl = formElement.parent().controller('form'),
+                alias = attr.name || attr.ngForm;
+
+            if (alias) {
+              scope[alias] = controller;
+            }
+            if (parentFormCtrl) {
+              formElement.bind('$destroy', function() {
+                parentFormCtrl.$removeControl(controller);
+                if (alias) {
+                  scope[alias] = undefined;
+                }
+                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+              });
+            }
+          }
+        };
       }
     };
-  }
+
+    return isNgForm ? extend(copy(formDirective), {restrict: 'EAC'}) : formDirective;
+  }];
 };
 
-var formDirective = valueFn(formDirectiveDir);
-var ngFormDirective = valueFn(extend(copy(formDirectiveDir), {restrict: 'EAC'}));
+var formDirective = formDirectiveFactory();
+var ngFormDirective = formDirectiveFactory(true);
