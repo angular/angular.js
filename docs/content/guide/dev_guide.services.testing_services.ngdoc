@@ -2,7 +2,7 @@
 @name Developer Guide: Angular Services: Testing Angular Services
 @description
 
-Following is a unit test for the service in the example in {@link
+The following is a unit test for the 'notify' service in the 'Dependencies' example in {@link
 dev_guide.services.creating_services Creating Angular Services}. The unit test example uses Jasmine
 spy (mock) instead of a real browser alert.
 

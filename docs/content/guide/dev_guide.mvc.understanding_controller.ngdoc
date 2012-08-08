@@ -253,7 +253,7 @@ describe('state', function() {
         var mainCtrl = $controller(MainCtrl, {$scope: mainScope});
         childScope = mainScope.$new();
         var childCtrl = $controller(ChildCtrl, {$scope: childScope});
-        babyScope = $rootScope.$new();
+        babyScope = childCtrl.$new();
         var babyCtrl = $controller(BabyCtrl, {$scope: babyScope});
     }));
 
