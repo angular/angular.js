@@ -5,6 +5,7 @@
  *
  * @name ng.$sniffer
  * @requires $window
+ * @requires $document
  *
  * @property {boolean} history Does the browser support html5 history api ?
  * @property {boolean} hashchange Does the browser support hashchange event ?
@@ -13,9 +14,10 @@
  * This is very simple implementation of testing browser's features.
  */
 function $SnifferProvider() {
-  this.$get = ['$window', function($window) {
+  this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
-        android = int((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]);
+        android = int((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]),
+        document = $document[0];
 
     return {
       // Android has history.pushState, but it does not update location correctly
@@ -25,7 +27,7 @@ function $SnifferProvider() {
       history: !!($window.history && $window.history.pushState && !(android < 4)),
       hashchange: 'onhashchange' in $window &&
                   // IE8 compatible mode lies
-                  (!$window.document.documentMode || $window.document.documentMode > 7),
+                  (!document.documentMode || document.documentMode > 7),
       hasEvent: function(event) {
         // IE9 implements 'input' event it's so fubared that we rather pretend that it doesn't have
         // it. In particular the event is not fired when backspace or delete key are pressed or
@@ -33,14 +35,13 @@ function $SnifferProvider() {
         if (event == 'input' && msie == 9) return false;
 
         if (isUndefined(eventSupport[event])) {
-          var divElm = $window.document.createElement('div');
+          var divElm = document.createElement('div');
           eventSupport[event] = 'on' + event in divElm;
         }
 
         return eventSupport[event];
       },
-      // TODO(i): currently there is no way to feature detect CSP without triggering alerts
-      csp: false
+      csp: document.SecurityPolicy ? document.SecurityPolicy.isActive() : false
     };
   }];
 }
