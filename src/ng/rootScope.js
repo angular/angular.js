@@ -614,7 +614,7 @@ function $RootScopeProvider(){
        * @param {function(event)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        *
-       * The event listener function format is: `function(event)`. The `event` object passed into the
+       * The event listener function format is: `function(event, args)`. The `event` object passed into the
        * listener has the following attributes
        *
        *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
