@@ -1587,14 +1587,20 @@ window.jstestdriver && (function(window) {
 })(window);
 
 
-window.jasmine && (function(window) {
+(window.jasmine || window.mocha) && (function(window) {
+
+  var currentSpec = null;
+
+  beforeEach(function() {
+    currentSpec = this;
+  });
 
   afterEach(function() {
-    var spec = getCurrentSpec();
-    var injector = spec.$injector;
+    var injector = currentSpec.$injector;
 
-    spec.$injector = null;
-    spec.$modules = null;
+    currentSpec.$injector = null;
+    currentSpec.$modules = null;
+    currentSpec = null;
 
     if (injector) {
       injector.get('$rootElement').unbind();
@@ -1616,13 +1622,8 @@ window.jasmine && (function(window) {
     angular.callbacks.counter = 0;
   });
 
-  function getCurrentSpec() {
-    return jasmine.getEnv().currentSpec;
-  }
-
   function isSpecRunning() {
-    var spec = getCurrentSpec();
-    return spec && spec.queue.running;
+    return currentSpec && currentSpec.queue.running;
   }
 
   /**
@@ -1647,11 +1648,10 @@ window.jasmine && (function(window) {
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
-      var spec = getCurrentSpec();
-      if (spec.$injector) {
+      if (currentSpec.$injector) {
         throw Error('Injector already created, can not register a module!');
       } else {
-        var modules = spec.$modules || (spec.$modules = []);
+        var modules = currentSpec.$modules || (currentSpec.$modules = []);
         angular.forEach(moduleFns, function(module) {
           modules.push(module);
         });
@@ -1718,13 +1718,13 @@ window.jasmine && (function(window) {
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
-      var spec = getCurrentSpec();
-      var modules = spec.$modules || [];
+      var modules = currentSpec.$modules || [];
+
       modules.unshift('ngMock');
       modules.unshift('ng');
-      var injector = spec.$injector;
+      var injector = currentSpec.$injector;
       if (!injector) {
-        injector = spec.$injector = angular.injector(modules);
+        injector = currentSpec.$injector = angular.injector(modules);
       }
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
         try {
