@@ -2,6 +2,9 @@
 describe('jqLite', function() {
   var scope, a, b, c;
 
+
+  beforeEach(module(provideLog));
+
   beforeEach(function() {
     a = jqLite('<div>A</div>')[0];
     b = jqLite('<div>B</div>')[0];
@@ -241,13 +244,25 @@ describe('jqLite', function() {
       expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
-    it('should call $destroy function if element removed', function() {
+    it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
       element.bind('$destroy', function() {log+= 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
     });
+
+
+    it('should emit $destroy event if an element is removed via html()', inject(function(log) {
+      var element = jqLite('<div><span>x</span></div>');
+      element.find('span').bind('$destroy', log.fn('destroyed'));
+
+      element.html('');
+
+      expect(element.html()).toBe('');
+      expect(log).toEqual('destroyed');
+    }));
+
 
     it('should retrieve all data if called without params', function() {
       var element = jqLite(a);
