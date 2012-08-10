@@ -2,9 +2,10 @@
 
 describe('$sniffer', function() {
 
-  function sniffer($window) {
+  function sniffer($window, $document) {
     $window.navigator = {};
-    return new $SnifferProvider().$get[1]($window);
+    $document = jqLite($document || {});
+    return new $SnifferProvider().$get[2]($window, $document);
   }
 
   describe('history', function() {
@@ -20,15 +21,15 @@ describe('$sniffer', function() {
 
   describe('hashchange', function() {
     it('should be true if onhashchange property defined', function() {
-      expect(sniffer({onhashchange: true, document: {}}).hashchange).toBe(true);
+      expect(sniffer({onhashchange: true}, {}).hashchange).toBe(true);
     });
 
     it('should be false if onhashchange property not defined', function() {
-      expect(sniffer({document: {}}).hashchange).toBe(false);
+      expect(sniffer({}, {}).hashchange).toBe(false);
     });
 
     it('should be false if documentMode is 7 (IE8 comp mode)', function() {
-      expect(sniffer({onhashchange: true, document: {documentMode: 7}}).hashchange).toBe(false);
+      expect(sniffer({onhashchange: true}, {documentMode: 7}).hashchange).toBe(false);
     });
   });
 
@@ -42,7 +43,7 @@ describe('$sniffer', function() {
         if (elm === 'div') return mockDivElement;
       });
 
-      $sniffer = sniffer({document: mockDocument});
+      $sniffer = sniffer({}, mockDocument);
     });
 
 
@@ -76,6 +77,23 @@ describe('$sniffer', function() {
       mockDivElement = {oninput: noop};
 
       expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
+    });
+  });
+
+
+  describe('csp', function() {
+    it('should be false if document.SecurityPolicy.isActive not available', function() {
+      expect(sniffer({}, {}).csp).toBe(false);
+    });
+
+
+    it('should use document.SecurityPolicy.isActive() if available', function() {
+      var createDocumentWithCSP = function(csp) {
+        return {SecurityPolicy: {isActive: function() {return csp;}}};
+      };
+
+      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
+      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
     });
   });
 });

@@ -6,7 +6,7 @@ describe('$log', function() {
 
 
   beforeEach(module(function($provide){
-    $window = {navigator: {}};
+    $window = {navigator: {}, document: {}};
     logger = '';
     log = function() { logger+= 'log;'; };
     warn = function() { logger+= 'warn;'; };
