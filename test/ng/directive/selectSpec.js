@@ -1108,7 +1108,7 @@ describe('select', function() {
   });
 
 
-  describe('OPTION value', function() {
+  describe('option', function() {
 
     it('should populate value attribute on OPTION', function() {
       compile('<select ng-model="x"><option selected>abc</option></select>');
@@ -1125,5 +1125,18 @@ describe('select', function() {
       compile('<select ng-model="x"><option>hello</select>');
       expect(element).toEqualSelect(['hello']);
     });
+
+    it('should not blow up when option directive is found inside of a datalist',
+        inject(function($compile, $rootScope) {
+      var element = $compile('<div>' +
+                               '<datalist><option>some val</option></datalist>' +
+                               '<span>{{foo}}</span>' +
+                             '</div>')($rootScope);
+
+      $rootScope.foo = 'success';
+      $rootScope.$digest();
+      expect(element.find('span').text()).toBe('success');
+      dealoc(element);
+    }));
   });
 });
