@@ -297,6 +297,15 @@ function $CompileProvider($provide) {
       }
     };
 
+    var startSymbol = $interpolate.startSymbol(),
+        endSymbol = $interpolate.endSymbol(),
+        denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
+            ? identity
+            : function denormalizeTemplate(template) {
+              return template.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
+            };
+
+
     return compile;
 
     //================================
@@ -579,6 +588,7 @@ function $CompileProvider($provide) {
         if ((directiveValue = directive.template)) {
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
+          directiveValue = denormalizeTemplate(directiveValue);
 
           if (directive.replace) {
             $template = jqLite('<div>' +
@@ -897,6 +907,8 @@ function $CompileProvider($provide) {
       $http.get(origAsyncDirective.templateUrl, {cache: $templateCache}).
         success(function(content) {
           var compileNode, tempTemplateAttrs, $template;
+
+          content = denormalizeTemplate(content);
 
           if (replace) {
             $template = jqLite('<div>' + trim(content) + '</div>').contents();
