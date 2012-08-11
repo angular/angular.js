@@ -7,7 +7,7 @@
  *
  * @description
  *
- * Used for configuring the interpolation markup. Deafults to `{{` and `}}`.
+ * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
