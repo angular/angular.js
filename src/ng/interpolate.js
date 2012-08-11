@@ -89,7 +89,7 @@ function $InterpolateProvider() {
      *      against.
      *
      */
-    return function(text, mustHaveExpression) {
+    function $interpolate(text, mustHaveExpression) {
       var startIndex,
           endIndex,
           index = 0,
@@ -141,7 +141,43 @@ function $InterpolateProvider() {
         fn.parts = parts;
         return fn;
       }
-    };
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name ng.$interpolate#startSymbol
+     * @methodOf ng.$interpolate
+     * @description
+     * Symbol to denote the start of expression in the interpolated string. Defaults to `{{`.
+     *
+     * Use {@link ng.$interpolateProvider#startSymbol $interpolateProvider#startSymbol} to change
+     * the symbol.
+     *
+     * @returns {string} start symbol.
+     */
+    $interpolate.startSymbol = function() {
+      return startSymbol;
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name ng.$interpolate#endSymbol
+     * @methodOf ng.$interpolate
+     * @description
+     * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
+     *
+     * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider#endSymbol} to change
+     * the symbol.
+     *
+     * @returns {string} start symbol.
+     */
+    $interpolate.endSymbol = function() {
+      return endSymbol;
+    }
+
+    return $interpolate;
   }];
 }
 
