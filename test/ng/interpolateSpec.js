@@ -31,18 +31,6 @@ describe('$interpolate', function() {
     expect($interpolate('Hello {{name}}!')($rootScope)).toEqual('Hello Misko!');
   }));
 
-  describe('provider', function() {
-    beforeEach(module(function($interpolateProvider) {
-      $interpolateProvider.startSymbol('--');
-      $interpolateProvider.endSymbol('--');
-    }));
-
-    it('should not get confused with same markers', inject(function($interpolate) {
-      expect($interpolate('---').parts).toEqual(['---']);
-      expect($interpolate('----')()).toEqual('');
-      expect($interpolate('--1--')()).toEqual('1');
-    }));
-  });
 
   describe('parseBindings', function() {
     it('should Parse Text With No Bindings', inject(function($interpolate) {
@@ -108,6 +96,48 @@ describe('$interpolate', function() {
       expect(parts[0]).toEqual('"X\nY');
       expect(parts[1].exp).toEqual('A\n+B');
       expect(parts[2]).toEqual('C\nD"');
+    }));
+  });
+
+
+  describe('startSymbol', function() {
+
+    beforeEach(module(function($interpolateProvider) {
+      expect($interpolateProvider.startSymbol()).toBe('{{');
+      $interpolateProvider.startSymbol('((');
+    }));
+
+
+    it('should expose the startSymbol in config phase', module(function($interpolateProvider) {
+      expect($interpolateProvider.startSymbol()).toBe('((');
+    }));
+
+
+    it('should not get confused by matching start and end symbols', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('--');
+        $interpolateProvider.endSymbol('--');
+      });
+
+      inject(function($interpolate) {
+        expect($interpolate('---').parts).toEqual(['---']);
+        expect($interpolate('----')()).toEqual('');
+        expect($interpolate('--1--')()).toEqual('1');
+      });
+    });
+  });
+
+
+  describe('endSymbol', function() {
+
+    beforeEach(module(function($interpolateProvider) {
+      expect($interpolateProvider.endSymbol()).toBe('}}');
+      $interpolateProvider.endSymbol('))');
+    }));
+
+
+    it('should expose the endSymbol in config phase', module(function($interpolateProvider) {
+      expect($interpolateProvider.endSymbol()).toBe('))');
     }));
   });
 });
