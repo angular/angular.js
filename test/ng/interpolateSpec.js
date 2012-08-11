@@ -113,6 +113,11 @@ describe('$interpolate', function() {
     }));
 
 
+    it('should expose the startSymbol in run phase', inject(function($interpolate) {
+      expect($interpolate.startSymbol()).toBe('((');
+    }));
+
+
     it('should not get confused by matching start and end symbols', function() {
       module(function($interpolateProvider) {
         $interpolateProvider.startSymbol('--');
@@ -138,6 +143,11 @@ describe('$interpolate', function() {
 
     it('should expose the endSymbol in config phase', module(function($interpolateProvider) {
       expect($interpolateProvider.endSymbol()).toBe('))');
+    }));
+
+
+    it('should expose the endSymbol in run phase', inject(function($interpolate) {
+      expect($interpolate.endSymbol()).toBe('))');
     }));
   });
 });
