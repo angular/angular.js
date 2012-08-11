@@ -1372,6 +1372,47 @@ describe('$compile', function() {
                   '<option>Greet Misko!</option>' +
                 '</select>');
     }));
+
+
+    it('should support custom start/end interpolation symbols in template and directive template',
+        function() {
+      module(function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##').endSymbol(']]');
+        $compileProvider.directive('myDirective', function() {
+          return {
+            template: '<span>{{hello}}|{{hello|uppercase}}</span>'
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div>##hello|uppercase]]|<div my-directive></div></div>')($rootScope);
+        $rootScope.hello = 'ahoj';
+        $rootScope.$digest();
+        expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+      });
+    });
+
+
+    it('should support custom start/end interpolation symbols in async directive template',
+        function() {
+      module(function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##').endSymbol(']]');
+        $compileProvider.directive('myDirective', function() {
+          return {
+            templateUrl: 'myDirective.html'
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('myDirective.html', '<span>{{hello}}|{{hello|uppercase}}</span>');
+        element = $compile('<div>##hello|uppercase]]|<div my-directive></div></div>')($rootScope);
+        $rootScope.hello = 'ahoj';
+        $rootScope.$digest();
+        expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+      });
+    });
   });
 
 
