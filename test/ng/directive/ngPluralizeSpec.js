@@ -10,92 +10,92 @@ describe('ngPluralize', function() {
 
 
   describe('deal with pluralized strings without offset', function() {
-     beforeEach(inject(function($rootScope, $compile) {
-        element = $compile(
+    beforeEach(inject(function($rootScope, $compile) {
+      element = $compile(
           '<ng:pluralize count="email"' +
                          "when=\"{'0': 'You have no new email'," +
                                  "'one': 'You have one new email'," +
                                  "'other': 'You have {} new emails'}\">" +
           '</ng:pluralize>')($rootScope);
-      }));
+    }));
 
 
-      it('should show single/plural strings', inject(function($rootScope) {
-        $rootScope.email = 0;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have no new email');
+    it('should show single/plural strings', inject(function($rootScope) {
+      $rootScope.email = 0;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have no new email');
 
-        $rootScope.email = '0';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have no new email');
+      $rootScope.email = '0';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have no new email');
 
-        $rootScope.email = 1;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have one new email');
+      $rootScope.email = 1;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have one new email');
 
-        $rootScope.email = 0.01;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have 0.01 new emails');
+      $rootScope.email = 0.01;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have 0.01 new emails');
 
-        $rootScope.email = '0.1';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have 0.1 new emails');
+      $rootScope.email = '0.1';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have 0.1 new emails');
 
-        $rootScope.email = 2;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have 2 new emails');
+      $rootScope.email = 2;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have 2 new emails');
 
-        $rootScope.email = -0.1;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have -0.1 new emails');
+      $rootScope.email = -0.1;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have -0.1 new emails');
 
-        $rootScope.email = '-0.01';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have -0.01 new emails');
+      $rootScope.email = '-0.01';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have -0.01 new emails');
 
-        $rootScope.email = -2;
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have -2 new emails');
-      }));
+      $rootScope.email = -2;
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have -2 new emails');
+    }));
 
 
-      it('should show single/plural strings with mal-formed inputs', inject(function($rootScope) {
-        $rootScope.email = '';
-        $rootScope.$digest();
-        expect(element.text()).toBe('');
+    it('should show single/plural strings with mal-formed inputs', inject(function($rootScope) {
+      $rootScope.email = '';
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
 
-        $rootScope.email = null;
-        $rootScope.$digest();
-        expect(element.text()).toBe('');
+      $rootScope.email = null;
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
 
-        $rootScope.email = undefined;
-        $rootScope.$digest();
-        expect(element.text()).toBe('');
+      $rootScope.email = undefined;
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
 
-        $rootScope.email = 'a3';
-        $rootScope.$digest();
-        expect(element.text()).toBe('');
+      $rootScope.email = 'a3';
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
 
-        $rootScope.email = '011';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have 11 new emails');
+      $rootScope.email = '011';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have 11 new emails');
 
-        $rootScope.email = '-011';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have -11 new emails');
+      $rootScope.email = '-011';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have -11 new emails');
 
-        $rootScope.email = '1fff';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have one new email');
+      $rootScope.email = '1fff';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have one new email');
 
-        $rootScope.email = '0aa22';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have no new email');
+      $rootScope.email = '0aa22';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have no new email');
 
-        $rootScope.email = '000001';
-        $rootScope.$digest();
-        expect(element.text()).toBe('You have one new email');
-      }));
+      $rootScope.email = '000001';
+      $rootScope.$digest();
+      expect(element.text()).toBe('You have one new email');
+    }));
   });
 
 
