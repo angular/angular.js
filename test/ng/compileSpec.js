@@ -369,7 +369,6 @@ describe('$compile', function() {
 
       describe('template', function() {
 
-
         beforeEach(module(function() {
           directive('replace', valueFn({
             restrict: 'CAM',
@@ -394,7 +393,7 @@ describe('$compile', function() {
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
-	    }
+            }
           }));
         }));
 
