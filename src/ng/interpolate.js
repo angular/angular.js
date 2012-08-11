@@ -45,7 +45,7 @@ function $InterpolateProvider() {
       endSymbol = value;
       return this;
     } else {
-      return startSymbol;
+      return endSymbol;
     }
   };
 
