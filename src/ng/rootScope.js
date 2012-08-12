@@ -326,9 +326,9 @@ function $RootScopeProvider(){
        *
        * Usually you don't call `$digest()` directly in
        * {@link ng.directive:ngController controllers} or in
-       * {@link ng.$compileProvider.directive directives}.
+       * {@link ng.$compileProvider#directive directives}.
        * Instead a call to {@link ng.$rootScope.Scope#$apply $apply()} (typically from within a
-       * {@link ng.$compileProvider.directive directives}) will force a `$digest()`.
+       * {@link ng.$compileProvider#directive directives}) will force a `$digest()`.
        *
        * If you want to be notified whenever `$digest()` is called,
        * you can register a `watchExpression` function  with {@link ng.$rootScope.Scope#$watch $watch()}
