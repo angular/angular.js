@@ -28,7 +28,7 @@ watch {@link guide/expression expressions} and propagate events.
 ## Scope as Data-Model
 
 Scope is the glue between application controller and the view. During the template {@link compiler
-linking} phase the {@link api/ng.$compileProvider.directive directives} set up
+linking} phase the {@link api/ng.$compileProvider#directive directives} set up
 {@link api/ng.$rootScope.Scope#$watch `$watch`} expressions on the scope. The
 `$watch` allows the directives to be notified of property changes, which allows the directive to
 render the updated value to the DOM.
@@ -279,10 +279,10 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
 ### Scopes and Directives
 
 During the compilation phase, the {@link compiler compiler} matches {@link
-api/ng.$compileProvider.directive directives} against the DOM template. The directives
+api/ng.$compileProvider#directive directives} against the DOM template. The directives
 usually fall into one of two categories:
 
-  - Observing {@link api/ng.$compileProvider.directive directives}, such as
+  - Observing {@link api/ng.$compileProvider#directive directives}, such as
     double-curly expressions `{{expression}}`, register listeners using the {@link
     api/ng.$rootScope.Scope#$watch $watch()} method. This type of directive needs
     to be notified whenever the expression changes so that it can update the view.
@@ -299,7 +299,7 @@ correctly.
 
 ### Directives that Create Scopes
 
-In most cases, {@link api/ng.$compileProvider.directive directives} and scopes interact
+In most cases, {@link api/ng.$compileProvider#directive directives} and scopes interact
 but do not create new instances of scope. However, some directives, such as {@link
 api/ng.directive:ngController ng-controller} and {@link
 api/ng.directive:ngRepeat ng-repeat}, create new child scopes
