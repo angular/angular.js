@@ -149,20 +149,6 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
  *
  * @description
  */
-
-/**
- * @ngdoc function
- * @name ng.$compileProvider#directive
- * @methodOf ng.$compileProvider
- * @function
- *
- * @description
- * Register a new directive with compiler
- *
- * @param {string} name name of the directive.
- * @param {function} directiveFactory An injectable directive factory function.
- * @returns {ng.$compileProvider} Self for chaining.
- */
 $CompileProvider.$inject = ['$provide'];
 function $CompileProvider($provide) {
   var hasDirectives = {},
@@ -174,17 +160,18 @@ function $CompileProvider($provide) {
 
   /**
    * @ngdoc function
-   * @name ng.$compileProvider.directive
+   * @name ng.$compileProvider#directive
    * @methodOf ng.$compileProvider
    * @function
    *
    * @description
-   * Register directives with the compiler.
+   * Register a new directives with the compiler.
    *
    * @param {string} name Name of the directive in camel-case. (ie <code>ngBind</code> which will match as
    *                <code>ng-bind</code>).
    * @param {function} directiveFactory An injectable directive factroy function. See {@link guide/directive} for more
    *                info.
+   * @returns {ng.$compileProvider} Self for chaining.
    */
    this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
