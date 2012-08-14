@@ -50,7 +50,7 @@ function $InterpolateProvider() {
   };
 
 
-  this.$get = ['$parse', function($parse) {
+  this.$get = ['$parse', '$exceptionHandler', function($parse, $exceptionHandler) {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length;
 
@@ -98,24 +98,19 @@ function $InterpolateProvider() {
           exp,
           concat = [];
 
-      try {
-        while(index < length) {
-          if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-               ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
-            (index != startIndex) && parts.push(text.substring(index, startIndex));
-            parts.push(fn = $parse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
-            fn.exp = exp;
-            index = endIndex + endSymbolLength;
-            hasInterpolation = true;
-          } else {
-            // we did not find anything, so we have to add the remainder to the parts array
-            (index != length) && parts.push(text.substring(index));
-            index = length;
-          }
+      while(index < length) {
+        if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
+             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1) ) {
+          (index != startIndex) && parts.push(text.substring(index, startIndex));
+          parts.push(fn = $parse(exp = text.substring(startIndex + startSymbolLength, endIndex)));
+          fn.exp = exp;
+          index = endIndex + endSymbolLength;
+          hasInterpolation = true;
+        } else {
+          // we did not find anything, so we have to add the remainder to the parts array
+          (index != length) && parts.push(text.substring(index));
+          index = length;
         }
-      }
-      catch (err) {
-        throw new Error('Error within interpolation: ' + text + ';' + err.toString());
       }
 
       if (!(length = parts.length)) {
@@ -127,18 +122,24 @@ function $InterpolateProvider() {
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
         fn = function(context) {
-          for(var i = 0, ii = length, part; i<ii; i++) {
-            if (typeof (part = parts[i]) == 'function') {
-              part = part(context);
-              if (part == null || part == undefined) {
-                part = '';
-              } else if (typeof part != 'string') {
-                part = toJson(part);
+          try {
+            for(var i = 0, ii = length, part; i<ii; i++) {
+              if (typeof (part = parts[i]) == 'function') {
+                part = part(context);
+                if (part == null || part == undefined) {
+                  part = '';
+                } else if (typeof part != 'string') {
+                  part = toJson(part);
+                }
               }
+              concat[i] = part;
             }
-            concat[i] = part;
+            return concat.join('');
           }
-          return concat.join('');
+          catch(err) {
+            var newErr = new Error('Error while interpolating: ' + text + '\n' + err.toString());
+            $exceptionHandler(newErr);
+          }
         };
         fn.exp = text;
         fn.parts = parts;
