@@ -26,14 +26,14 @@ function classDirective(name, selector) {
 
     function removeClass(classVal) {
       if (isObject(classVal) && !isArray(classVal))
-             classVal = map(classVal, function(v, k) { if (v) return k });
-           element.removeClass(isArray(classVal) ? classVal.join(' ') : classVal);
+        classVal = map(classVal, function(v, k) { if (v) return k });
+      element.removeClass(isArray(classVal) ? classVal.join(' ') : classVal);
     }
 
     function addClass(classVal) {
       if (isObject(classVal) && !isArray(classVal))
-            classVal = map(classVal, function(v, k) { if (v) return k });
-         if (classVal) element.addClass(isArray(classVal) ? classVal.join(' ') : classVal);
+        classVal = map(classVal, function(v, k) { if (v) return k });
+      if (classVal) element.addClass(isArray(classVal) ? classVal.join(' ') : classVal);
     }
   });
 }
