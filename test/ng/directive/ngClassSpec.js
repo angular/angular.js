@@ -234,4 +234,48 @@ describe('ngClass', function() {
     expect(element.hasClass('two')).toBeFalsy();
     expect(element.hasClass('too')).toBeFalsy();
   }));
+
+
+  it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['a','b','a'];
+    $rootScope.$digest();
+
+    $rootScope.items = ['a','a'];
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e2.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeFalsy();
+  }));
+
+
+  it('should update ngClassOdd/Even when model is changed by sorting', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'">i</li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['a','b'];
+    $rootScope.$digest();
+
+    $rootScope.items = ['b','a'];
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e2.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeFalsy();
+  }));
 });
