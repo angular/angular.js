@@ -3,17 +3,38 @@
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {
+    if (selector !== true) {
+      scope.$watch("$index", function(newVal, oldVal) {
+        if (newVal !== oldVal && ((newVal + oldVal) % 2 === 1)) {          
+          if (newVal % 2 !== selector) {
+            removeClass(scope.$eval(attr[name]));
+          } else {
+            addClass(scope.$eval(attr[name]));
+          }
+        }
+      }, true);
+    }
+
     scope.$watch(attr[name], function(newVal, oldVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
-           if (isObject(oldVal) && !isArray(oldVal))
-             oldVal = map(oldVal, function(v, k) { if (v) return k });
-           element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-         }
-         if (isObject(newVal) && !isArray(newVal))
-            newVal = map(newVal, function(v, k) { if (v) return k });
-         if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);      }
+          removeClass(oldVal);                    
+        }
+        addClass(newVal);
+      }
     }, true);
+
+    function removeClass(classVal) {
+      if (isObject(classVal) && !isArray(classVal))
+             classVal = map(classVal, function(v, k) { if (v) return k });
+           element.removeClass(isArray(classVal) ? classVal.join(' ') : classVal);
+    }
+
+    function addClass(classVal) {
+      if (isObject(classVal) && !isArray(classVal))
+            classVal = map(classVal, function(v, k) { if (v) return k });
+         if (classVal) element.addClass(isArray(classVal) ? classVal.join(' ') : classVal);
+    }
   });
 }
 
