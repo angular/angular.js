@@ -218,21 +218,21 @@ describe('ngRepeat', function() {
 
 
   describe('stability', function() {
-    var a, b, c, d, lis;
+    var a, b, c, d, oldElements;
 
     beforeEach(inject(function($rootScope, $compile) {
       element = $compile(
         '<ul>' +
           '<li ng-repeat="item in items">{{key}}:{{val}}|></li>' +
         '</ul>')($rootScope);
-      a = {};
-      b = {};
-      c = {};
-      d = {};
+      a = {name: 'a'};
+      b = {name: 'b'};
+      c = {name: 'c'};
+      d = {name: 'd'};
 
       $rootScope.items = [a, b, c];
       $rootScope.$digest();
-      lis = element.find('li');
+      oldElements = element.find('li');
     }));
 
 
@@ -240,9 +240,9 @@ describe('ngRepeat', function() {
       $rootScope.items = [a, c, d];
       $rootScope.$digest();
       var newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[2]);
-      expect(newElements[2]).not.toEqual(lis[1]);
+      expect(newElements[0]).toEqual(oldElements[0]);
+      expect(newElements[1]).toEqual(oldElements[2]);
+      expect(newElements[2]).not.toEqual(oldElements[1]);
     }));
 
 
@@ -250,25 +250,25 @@ describe('ngRepeat', function() {
       $rootScope.items = [a, a, b, c];
       $rootScope.$digest();
       var newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).not.toEqual(lis[0]);
-      expect(newElements[2]).toEqual(lis[1]);
-      expect(newElements[3]).toEqual(lis[2]);
+      expect(newElements[0]).toEqual(oldElements[0]);
+      expect(newElements[1]).not.toEqual(oldElements[0]);
+      expect(newElements[2]).toEqual(oldElements[1]);
+      expect(newElements[3]).toEqual(oldElements[2]);
 
-      lis = newElements;
+      oldElements = newElements;
       $rootScope.$digest();
       newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
+      expect(newElements[0]).toEqual(oldElements[0]);
+      expect(newElements[1]).toEqual(oldElements[1]);
+      expect(newElements[2]).toEqual(oldElements[2]);
+      expect(newElements[3]).toEqual(oldElements[3]);
 
       $rootScope.$digest();
       newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
+      expect(newElements[0]).toEqual(oldElements[0]);
+      expect(newElements[1]).toEqual(oldElements[1]);
+      expect(newElements[2]).toEqual(oldElements[2]);
+      expect(newElements[3]).toEqual(oldElements[3]);
     }));
 
 
@@ -276,14 +276,14 @@ describe('ngRepeat', function() {
         inject(function($rootScope) {
       $rootScope.items = [a, a, a];
       $rootScope.$digest();
-      lis = element.find('li');
+      oldElements = element.find('li');
 
       $rootScope.items = [a, a];
       $rootScope.$digest();
       var newElements = element.find('li');
       expect(newElements.length).toEqual(2);
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
+      expect(newElements[0]).toEqual(oldElements[0]);
+      expect(newElements[1]).toEqual(oldElements[1]);
     }));
 
 
@@ -291,15 +291,15 @@ describe('ngRepeat', function() {
         inject(function($rootScope) {
       $rootScope.items = [a, b, c];
       $rootScope.$digest();
-      lis = element.find('li');
+      oldElements = element.find('li');
 
       $rootScope.items = [c, b, a];
       $rootScope.$digest();
       var newElements = element.find('li');
       expect(newElements.length).toEqual(3);
-      expect(newElements[0]).toEqual(lis[2]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[0]);
+      expect(newElements[0]).toEqual(oldElements[2]);
+      expect(newElements[1]).toEqual(oldElements[1]);
+      expect(newElements[2]).toEqual(oldElements[0]);
     }));
   });
 });
