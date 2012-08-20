@@ -88,9 +88,8 @@ var ngRepeatDirective = ngDirective({
       // We need an array of these objects since the same object can be returned from the iterator.
       // We expect this to be a rare case.
       var lastOrder = new HashQueueMap();
-      scope.$watch(function(scope){
+      scope.$watch(rhs, function(collection){
         var index, length,
-            collection = scope.$eval(rhs),
             collectionLength = size(collection, true),
             childScope,
             // Same as lastOrder but it has the current state. It will become the
@@ -175,7 +174,7 @@ var ngRepeatDirective = ngDirective({
         }
 
         lastOrder = nextOrder;
-      });
+      }, true);
     };
   }
 });
