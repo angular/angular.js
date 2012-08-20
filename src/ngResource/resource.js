@@ -283,7 +283,14 @@ angular.module('ngResource', ['ng']).
 
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
-          encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
+          var value = params[urlParam];
+          if (typeof value == 'undefined' || value === null) {
+            value = self.defaults[urlParam];
+          }
+          if (typeof value == 'undefined' || value === null) {
+            value = "";
+          }
+          encodedVal = encodeUriSegment(value);
           url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
         });
         url = url.replace(/\/?#$/, '');
