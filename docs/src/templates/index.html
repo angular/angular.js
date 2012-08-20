@@ -22,8 +22,13 @@
           baseUrl = location.href.replace(rUrl, indexFile),
           jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
           debug = /index[^\.]*-debug\.html$/.test(baseUrl),
+          gae = (baseUrl.split('/').length == 4),
           headEl = document.getElementsByTagName('head')[0],
-          sync = true;
+          sync = true,
+          angularVersion = {
+            current: '"NG_VERSION_FULL"', // rewrite during build
+            stable: '"NG_VERSION_STABLE"'
+          };
 
       addTag('base', {href: baseUrl});
       addTag('link', {rel: 'stylesheet', href: 'css/bootstrap.min.css', type: 'text/css'});
@@ -40,6 +45,20 @@
       addTag('script', {src: 'js/docs-keywords.js'}, sync);
 
       function path(name) {
+        if (gae) {
+          if (name.match(/^angular(-\w+)?\.js/) && !name.match(/bootstrap/)) {
+            name =  '//ajax.googleapis.com/ajax/libs/angularjs/' +
+                angularVersion.stable +
+                '/' +
+                name.replace(/\.js$/, '.min.js');
+          } else {
+            name =  'http://code.angularjs.org/' +
+                angularVersion.stable +
+                '/' +
+                name.replace(/\.js$/, '-' + angularVersion.stable +'.min.js');
+          }
+          return name;
+        }
         return '../' + name.replace(/\.js$/, debug ? '.js' : '.min.js');
       }
 
