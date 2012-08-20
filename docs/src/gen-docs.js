@@ -21,7 +21,8 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   var fileFutures = [];
   docs.forEach(function(doc){
     // this hack is here because on OSX angular.module and angular.Module map to the same file.
-    var id = doc.id.replace('angular.Module', 'angular.IModule');
+    var id = doc.id.replace('angular.Module', 'angular.IModule').
+                    replace(':', '_'); // rewrite : to _ to be GAE-friendly
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 
@@ -89,6 +90,10 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyTpl('font/fontawesome-webfont.svgz'));
   writesFuture.push(writer.copyTpl('font/fontawesome-webfont.ttf'));
   writesFuture.push(writer.copyTpl('font/fontawesome-webfont.woff'));
+
+  writesFuture.push(writer.copyTpl('app.yaml'));
+  writesFuture.push(writer.copyTpl('index.yaml'));
+  writesFuture.push(writer.copyTpl('favicon.ico'));
 }
 
 
