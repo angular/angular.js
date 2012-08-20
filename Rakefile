@@ -19,12 +19,13 @@ task :init do
   v = YAML::load( File.open( 'version.yaml' ) )
   match = v['version'].match(/^([^-]*)(-snapshot)?$/)
 
-  NG_VERSION = Struct.new(:full, :major, :minor, :dot, :codename).
+  NG_VERSION = Struct.new(:full, :major, :minor, :dot, :codename, :stable).
                       new(match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : ''),
                           match[1].split('.')[0],
                           match[1].split('.')[1],
                           match[1].split('.')[2].sub(/\D+.*$/, ''),
-                          v['codename'])
+                          v['codename'],
+                          v['stable'])
 end
 
 
@@ -115,6 +116,14 @@ task :docs => [:init] do
   rewrite_file(path_to('docs/.htaccess')) do |content|
     content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
   end
+  rewrite_file(path_to('docs/index.html')) do |content|
+    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full).
+            sub!('"NG_VERSION_STABLE"', NG_VERSION.stable)
+  end
+  rewrite_file(path_to('docs/docs-scenario.html')) do |content|
+      content.sub!('"NG_VERSION_FULL"', NG_VERSION.full).
+              sub!('"NG_VERSION_STABLE"', NG_VERSION.stable)
+    end
 end
 
 
