@@ -318,7 +318,7 @@ function $CompileProvider($provide) {
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
       forEach($compileNode, function(node, index){
-        if (node.nodeType == 3 /* text node */) {
+        if (node.nodeType == 3 /* text node */ && node.childNodes.length /* non-empty */) {
           $compileNode[index] = jqLite(node).wrap('<span>').parent()[0];
         }
       });
