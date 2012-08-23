@@ -195,7 +195,7 @@ being the element on which the `ngApp` directive was defined.
   This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
   by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.
 
-  The binding tells Angular, that it should evaluate an expression and insert the result into the
+  The binding tells Angular that it should evaluate an expression and insert the result into the
   DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
   binding will result in efficient continuous updates whenever the result of the expression
   evaluation changes.
