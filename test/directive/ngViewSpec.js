@@ -411,3 +411,95 @@ describe('ng-view', function() {
     });
   })
 });
+
+describe('ng-view with configurable template', function() {
+  var element;
+
+  beforeEach(module(function() {
+    return function($rootScope, $compile) {
+      element = $compile('<ng:view template="template2"></ng:view>')($rootScope);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+  
+  it('should use the configured template', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/route1234', {template: 'myUrl1', template2: 'myUrl2'});
+    });
+
+    inject(function($rootScope, $compile, $httpBackend, $location, $route) {
+      expect(element.text()).toEqual('');
+
+      $location.path('/route1234');
+      $httpBackend.expect('GET', 'myUrl2').respond('<div>{{1+3}}</div>');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toEqual('4');
+    });
+  });
+});
+
+describe('ng-view twice on the same page', function() {
+  var element;
+
+  beforeEach(module(function() {
+    return function($rootScope, $compile) {
+      element = $compile('<div><div id="view1"><ng:view template="t1"></ng:view></div>_<div id="view2"><ng:view template="t2"></ng:view></div></div>')($rootScope);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+  
+  it('should render both views', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/route1234', {t1: 'page1', t2: 'page2'});
+    });
+
+    inject(function($rootScope, $compile, $httpBackend, $location, $route) {
+      expect(element.text()).toEqual('_');
+
+      $location.path('/route1234');
+      $httpBackend.expect('GET', 'page1').respond('<div>{{10+1}}</div>');
+      $httpBackend.expect('GET', 'page2').respond('<div>{{10+2}}</div>');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toEqual('11_12');
+    });
+  });
+});
+
+describe('ng-view nested', function() {
+  var element;
+
+  beforeEach(module(function() {
+    return function($rootScope, $compile) {
+      element = $compile('<ng:view template="layout"></ng:view>')($rootScope);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+  
+  it('should render nested views', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/route1234', {layout: 'layout1', content: 'content1'});
+    });
+
+    inject(function($rootScope, $compile, $httpBackend, $location, $route) {
+      expect(element.text()).toEqual('');
+
+      $location.path('/route1234');
+      $httpBackend.expect('GET', 'layout1').respond('layout:<ng-view template="content"></ng-view>');
+      $httpBackend.expect('GET', 'content1').respond('content');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toEqual('layout:content');
+    });
+  });
+});

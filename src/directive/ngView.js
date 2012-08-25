@@ -13,6 +13,11 @@
  * configuration of the `$route` service.
  *
  * @scope
+ *
+ * @param {string=} template Specify the name of the property in the route object containing the source of 
+ *                  the template to load. By default, ng-view will look for a property named 'template'
+ *                  in the current route. Use this property to use more than one ng-view on the same page. 
+ *
  * @example
     <doc:example module="ngView">
       <doc:source>
@@ -113,15 +118,16 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
     link: function(scope, element, attr) {
       var changeCounter = 0,
           lastScope,
-          onloadExp = attr.onload || '';
+          onloadExp = attr.onload || '',
+          templateProp = attr.template || 'template';
 
       scope.$on('$afterRouteChange', function(event, next, previous) {
         changeCounter++;
       });
 
       scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
-        var template = $route.current && $route.current.template;
-
+        var template = $route.current && $route.current[templateProp];
+        
         function destroyLastScope() {
           if (lastScope) {
             lastScope.$destroy();
