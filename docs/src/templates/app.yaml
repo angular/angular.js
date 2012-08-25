@@ -7,8 +7,7 @@ default_expiration: "2h"
 
 handlers:
 - url: /
-  static_files: index.html
-  upload: index.html
+  script: main.app
 
 - url: /appcache.manifest
   static_files: appcache.manifest

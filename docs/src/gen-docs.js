@@ -54,7 +54,7 @@ function writeTheRest(writesFuture) {
 
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq.html',
-                                writer.replace, {'doc:manifest': manifest}));
+                                writer.replace, {'doc:manifest': ''}));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq-nocache.html',
                                 writer.replace, {'doc:manifest': ''}));
@@ -94,6 +94,7 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyTpl('app.yaml'));
   writesFuture.push(writer.copyTpl('index.yaml'));
   writesFuture.push(writer.copyTpl('favicon.ico'));
+  writesFuture.push(writer.copyTpl('main.py'));
 }
 
 
