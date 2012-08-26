@@ -10,7 +10,7 @@ can be extended such that HTML can be turned into a declarative domain specific 
 
 # Invoking directives from HTML
 
-Directives have camel cased names such as 'ngBind'. The directive can be invoked by translating
+Directives have camel cased names such as `ngBind`. The directive can be invoked by translating
 the camel case name into snake case with these special characters `:`, `-`, or `_`. Optionally the
 directive can be prefixed with `x-`, or `data-` to make it HTML validator compliant. Here is a
 list of some of the possible directive names: `ng:bind`, `ng-bind`, `ng_bind`, `x-ng-bind` and
@@ -74,7 +74,7 @@ Compilation of HTML happens in three phases:
   realize because the templates must be parsable HTML. This is in contrast to most templating
   systems that operate on strings, rather than on DOM elements.
 
-  2. The compilation of the DOM is performed by the call to {@link api/ng.$compile
+  2. The compilation of the DOM is performed by the call to the {@link api/ng.$compile
   $compile()} method. The method traverses the DOM and matches the directives. If a match is found
   it is added to the list of directives associated with the given DOM element. Once all directives
   for a given DOM element have been identified they are sorted by priority and their `compile()`
@@ -109,8 +109,8 @@ Compilation of HTML happens in three phases:
 
 ## Reasons behind the compile/link separation
 
-At this point you may wonder why is the compile process broken down to a compile and link phase.
-To understand this, lets look at a real world example with repeater:
+At this point you may wonder why the compile process is broken down to a compile and link phase.
+To understand this, let's look at a real world example with repeater:
 
 <pre>
   Hello {{user}}, you have these actions:
@@ -156,18 +156,18 @@ link function on the cloned `li`.
 Summary:
 
   * *compile function* - The compile function is relatively rare in directives, since most
-    directives are concerned with working with a specific DOM element instance rather then
+    directives are concerned with working with a specific DOM element instance rather than
     transforming the template DOM element. Any operation which can be shared among the instance of
     directives should be moved to the compile function for performance reasons.
 
-  * *link function* - It is rare for the directive not to have a link function. Link function
+  * *link function* - It is rare for the directive not to have a link function. A link function
     allows the directive to register listeners to the specific cloned DOM element instance as well
     as to copy content into the DOM from the scope.
 
 
 # Writing directives (short version)
 
-In this example we will build a directive which displays the current time.
+In this example we will build a directive that displays the current time.
 
 <doc:example module="time">
   <doc:source>
@@ -211,7 +211,7 @@ In this example we will build a directive which displays the current time.
              $timeout.cancel(timeoutId);
            });
 
-           updateLater(); // kick of the UI update process.
+           updateLater(); // kick off the UI update process.
          }
        });
    </script>
@@ -255,7 +255,7 @@ In most cases you will not need such fine control and so the above can be simpli
 different parts of this skeleton are explained in following sections. In this section we are
 interested only isomers of this skeleton.
 
-The first step in simplyfing the code is to rely on the deafult values. Therefore the above can be
+The first step in simplyfing the code is to rely on the default values. Therefore the above can be
 simplified as:
 
 <pre>
@@ -314,8 +314,8 @@ compiler}. The attributes are:
       apply for the root of the template since the root of the template always gets a new scope.
 
     * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
-      normal scope that it does not prototypically inherit from the parent scope. This is useful
-      when creating reusable components, which should not accidentally read or modify data in
+      normal scope in that it does not prototypically inherit from the parent scope. This is useful
+      when creating reusable components, which should not accidentally read or modify data in the
       parent scope. <br/>
       The 'isolate' scope takes an object hash which defines a set of local scope properties
       derived from the parent scope. These local properties are useful for aliasing values for
@@ -381,7 +381,7 @@ compiler}. The attributes are:
     the template loading is asynchronous the compilation/linking is suspended until the template
     is loaded.
 
-  * `replace` - if set to `true` then the template will replace the current element, rather then
+  * `replace` - if set to `true` then the template will replace the current element, rather than
     append the template to the element.
 
   * `transclude` - compile the content of the element and make it available to the directive.
@@ -407,12 +407,12 @@ compiler}. The attributes are:
   function compile(tElement, tAttrs, transclude) { ... }
 </pre>
 
-Compile function deals with transforming the template DOM. Since most directives do not do
-template transformation, it is not used often. Examples which require compile functions are
-directives which transform template DOM such as {@link
-api/ng.directive:ngRepeat ngRepeat} or load the contents
-asynchronously such as {@link api/ng.directive:ngView ngView}. The
-compile functions takes the following arguments.
+The compile function deals with transforming the template DOM. Since most directives do not do
+template transformation, it is not used often. Examples that require compile functions are
+directives that transform template DOM, such as {@link
+api/ng.directive:ngRepeat ngRepeat}, or load the contents
+asynchronously, such as {@link api/ng.directive:ngView ngView}. The
+compile function takes the following arguments.
 
   * `tElement` - template element - The element where the directive has been declared. It is
     safe to do template transformation on the element and child elements only.
@@ -424,7 +424,7 @@ compile functions takes the following arguments.
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
 NOTE: The template instance and the link instance may not be the same objects if the template has
-been cloned. For this reason it is not safe in the compile function to do anything other the DOM
+been cloned. For this reason it is not safe in the compile function to do anything other than DOM
 transformation that applies to all DOM clones. Specifically, DOM listener registration should be
 done in a linking function rather than in a compile function.
 
@@ -444,7 +444,7 @@ A compile function can have a return value which can be either a function or an 
   function link(scope, iElement, iAttrs, controller) { ... }
 </pre>
 
-Link function is responsible for registering DOM listeners as well as updating the DOM. It is
+The link function is responsible for registering DOM listeners as well as updating the DOM. It is
 executed after the template has been cloned. This is where most of the directive logic will be
 put.
 
@@ -477,11 +477,11 @@ Executed after the child elements are linked. Safe to do DOM transformation in h
 <a name="Attributes"></a>
 ## Attributes
 
-The attributes object - passed as a parameter in the link() or compile() functions - is a way of
-accessing:
+The {@link api/ng.$compile.directive.Attributes Attributes} object - passed as a parameter in the
+link() or compile() functions - is a way of accessing:
 
   * *normalized attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
-    sucha s as 'ng:bind', or 'x-ng-bind', the attributes object allows for a normalize accessed to
+    such as 'ng:bind', or 'x-ng-bind', the attributes object allows for normalized accessed to
     the attributes.
 
   * *directive inter-communication:* All directives share the same instance of the attributes
@@ -576,7 +576,7 @@ To solve the issue of lack of isolation, the directive declares a new `isolated`
 isolated scope does not prototypically inherit from the child scope, and therefore we don't have
 to worry about accidentally clobbering any properties.
 
-However 'isolated' scope creates a new problem: if a transcluded DOM is a child of the widget
+However `isolated` scope creates a new problem: if a transcluded DOM is a child of the widget
 isolated scope then it will not be able to bind to anything. For this reason the transcluded scope
 is a child of the original scope, before the widget created an isolated scope for its local
 variables. This makes the transcluded and widget isolated scope siblings.
