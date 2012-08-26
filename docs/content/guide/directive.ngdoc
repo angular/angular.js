@@ -288,7 +288,7 @@ further simplification:
 The factory method is responsible for creating the directive. It is invoked only once, when the
 {@link api/ng.$compile compiler} matches the directive for the first time. You can
 perform any initialization work here. The method is invoked using the {@link
-http://localhost:8000/build/docs/api/AUTO.$injector#invoke $injector.invoke} which
+api/AUTO.$injector#invoke $injector.invoke} which
 makes it injectable following all of the rules of injection annotation.
 
 ## Directive Definition Object
@@ -419,7 +419,7 @@ compile functions takes the following arguments.
 
   * `tAttrs` - template attributes - Normalized list of attributes declared on this element shared
     between all directive compile functions. See {@link
-    #Attributes Attributes}
+    guide/directive#Attributes Attributes}.
 
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
@@ -456,7 +456,8 @@ put.
     already been linked.
 
   * `iAttrs` - instance attributes - Normalized list of attributes declared on this element shared
-    between all directive linking functions. See {@link #Attributes Attributes}
+    between all directive linking functions. See {@link
+    guide/directive#Attributes Attributes}.
 
   * `controller` - a controller instance - A controller instance if at least one directive on the
     element defines a controller. The controller is shared among all the directives, which allows
