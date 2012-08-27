@@ -15,5 +15,6 @@ if ! type -p "$JASMINE_NODE" >/dev/null 2>&1;then
 fi
 
 if [[ ! -e gen_docs.disable ]]; then
+  echo 'Testing, then building documentation...'
   "$JASMINE_NODE" docs/spec --noColor && node docs/src/gen-docs.js
 fi
