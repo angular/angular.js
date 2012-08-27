@@ -139,7 +139,7 @@ angular.module('myModule', []).
     // This is an example of a run block.
     // You can have as many of these as you want.
     // You can only inject instances (not Providers)
-    // int the run blocks
+    // into the run blocks
   });
 </pre>
 
