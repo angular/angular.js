@@ -113,17 +113,21 @@ end
 desc 'Generate docs'
 task :docs => [:init] do
   `node docs/src/gen-docs.js`
-  rewrite_file(path_to('docs/.htaccess')) do |content|
-    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
-  end
-  rewrite_file(path_to('docs/index.html')) do |content|
-    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full).
-            sub!('"NG_VERSION_STABLE"', NG_VERSION.stable)
-  end
-  rewrite_file(path_to('docs/docs-scenario.html')) do |content|
+
+  [ path_to('docs/.htaccess'),
+    path_to('docs/index.html'),
+    path_to('docs/index-debug.html'),
+    path_to('docs/index-nocache.html'),
+    path_to('docs/index-jq.html'),
+    path_to('docs/index-jq-debug.html'),
+    path_to('docs/index-jq-nocache.html'),
+    path_to('docs/docs-scenario.html')
+  ].each do |src|
+    rewrite_file(src) do |content|
       content.sub!('"NG_VERSION_FULL"', NG_VERSION.full).
-              sub!('"NG_VERSION_STABLE"', NG_VERSION.stable)
+              sub('"NG_VERSION_STABLE"', NG_VERSION.stable)
     end
+  end
 end
 
 
