@@ -1,6 +1,13 @@
 require 'yaml'
 include FileUtils
 
+
+## High level flow of the build:
+##
+## clean -> init -> concat -> minify -> package
+##
+
+
 content = File.open('angularFiles.js', 'r') {|f| f.read }
 files = eval(content.gsub(/\};(\s|\S)*/, '}').
             gsub(/angularFiles = /, '').
@@ -36,8 +43,8 @@ task :clean do
 end
 
 
-desc 'Compile Scenario'
-task :compile_scenario => :init do
+desc 'Concat Scenario'
+task :concat_scenario => :init do
 
   concat_file('angular-scenario.js', [
       'lib/jquery/jquery.js',
@@ -48,8 +55,9 @@ task :compile_scenario => :init do
   ], gen_css('css/angular.css') + "\n" + gen_css('css/angular-scenario.css'))
 end
 
-desc 'Compile JSTD Scenario Adapter'
-task :compile_jstd_scenario_adapter => :init do
+
+desc 'Concat JSTD Scenario Adapter'
+task :concat_jstd_scenario_adapter => :init do
 
   concat_file('jstd-scenario-adapter.js', [
       'src/ngScenario/jstd-scenario-adapter/angular.prefix',
@@ -67,9 +75,9 @@ task :compile_jstd_scenario_adapter => :init do
 end
 
 
-desc 'Compile JavaScript'
-task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
+desc 'Concat AngularJS files'
+task :concat => :init do
   concat_file('angular.js', [
         'src/angular.prefix',
         files['angularSrc'],
@@ -99,14 +107,24 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
   FileUtils.cp 'src/ngMock/angular-mocks.js', path_to('angular-mocks.js')
 
-  closure_compile('angular.js')
-  closure_compile('angular-cookies.js')
-  closure_compile('angular-loader.js')
-  closure_compile('angular-resource.js')
-  closure_compile('angular-sanitize.js')
-  closure_compile('angular-bootstrap.js')
-  closure_compile('angular-bootstrap-prettify.js')
+  rewrite_file(path_to('angular-mocks.js')) do |content|
+    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
+  end
+end
 
+
+desc 'Minify JavaScript'
+task :minify => [:init, :concat, :concat_scenario, :concat_jstd_scenario_adapter] do
+  [ 'angular.js',
+    'angular-cookies.js',
+    'angular-loader.js',
+    'angular-resource.js',
+    'angular-sanitize.js',
+    'angular-bootstrap.js',
+    'angular-bootstrap-prettify.js'
+  ].each do |file|
+    closure_compile(file)
+  end
 end
 
 
@@ -132,78 +150,18 @@ end
 
 
 desc 'Create angular distribution'
-task :package => [:clean, :compile, :docs] do
-  tarball = "angular-#{NG_VERSION.full}.tgz"
+task :package => [:clean, :minify, :docs] do
+  zip_dir = "angular-#{NG_VERSION.full}"
+  zip_file = "#{zip_dir}.zip"
 
-  pkg_dir = path_to("pkg/angular-#{NG_VERSION.full}")
-  FileUtils.rm_r(path_to('pkg'), :force => true)
-  FileUtils.mkdir_p(pkg_dir)
+  FileUtils.ln_s BUILD_DIR, zip_dir
+  %x(zip -r #{zip_file} .)
+  FileUtils.rm zip_dir
 
-  [ path_to('angular.js'),
-    path_to('angular.min.js'),
-    path_to('angular-loader.js'),
-    path_to('angular-loader.min.js'),
-    path_to('angular-bootstrap.js'),
-    path_to('angular-bootstrap.min.js'),
-    path_to('angular-bootstrap-prettify.js'),
-    path_to('angular-bootstrap-prettify.min.js'),
-    path_to('angular-mocks.js'),
-    path_to('angular-cookies.js'),
-    path_to('angular-cookies.min.js'),
-    path_to('angular-resource.js'),
-    path_to('angular-resource.min.js'),
-    path_to('angular-sanitize.js'),
-    path_to('angular-sanitize.min.js'),
-    path_to('angular-scenario.js'),
-    path_to('jstd-scenario-adapter.js'),
-    path_to('jstd-scenario-adapter-config.js'),
-  ].each do |src|
-    dest = src.gsub(/^.*\//, '').gsub(/((\.min)?\.js)$/, "-#{NG_VERSION.full}\\1")
-    FileUtils.cp(src, pkg_dir + '/' + dest)
-  end
+  FileUtils.mv zip_file, path_to(zip_file)
+  FileUtils.ln_s '../', path_to(NG_VERSION.full)
 
-  FileUtils.cp_r path_to('i18n'), "#{pkg_dir}/i18n-#{NG_VERSION.full}"
-  FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{NG_VERSION.full}"
-
-  rewrite_file("#{pkg_dir}/angular-mocks-#{NG_VERSION.full}.js") do |content|
-    content.sub!('"NG_VERSION_FULL"', NG_VERSION.full)
-  end
-
-
-  [ "#{pkg_dir}/docs-#{NG_VERSION.full}/index.html",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq.html",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-nocache.html",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-nocache.html",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-debug.html",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-debug.html"
-  ].each do |src|
-    rewrite_file(src) do |content|
-      content.gsub!(/'angular(.*)\.js/, '\'angular\1-' + NG_VERSION.full + '.js')
-    end
-  end
-
-
-  rewrite_file("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html") do |content|
-    content.sub!('angular-scenario.js', "angular-scenario-#{NG_VERSION.full}.js")
-  end
-
-
-  [ "#{pkg_dir}/docs-#{NG_VERSION.full}/appcache.manifest",
-    "#{pkg_dir}/docs-#{NG_VERSION.full}/appcache-offline.manifest"
-  ].each do |src|
-    rewrite_file(src) do |content|
-      content.sub!('../angular.min.js', "angular-#{NG_VERSION.full}.min.js").
-              sub!('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
-    end
-  end
-
-
-  %x(tar -czf #{path_to(tarball)} -C #{path_to('pkg')} .)
-
-  FileUtils.cp path_to(tarball), pkg_dir
-  FileUtils.mv pkg_dir, path_to(['pkg', NG_VERSION.full])
-
-  puts "Package created: #{path_to(tarball)}"
+  puts "Package created: #{path_to(zip_file)}"
 end
 
 
@@ -284,7 +242,7 @@ end
 
 
 def closure_compile(filename)
-  puts "Compiling #{filename} ..."
+  puts "Minifying #{filename} ..."
 
   min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
 
@@ -302,7 +260,7 @@ end
 
 
 def concat_file(filename, deps, footer='')
-  puts "Building #{filename} ..."
+  puts "Creating #{filename} ..."
   File.open(path_to(filename), 'w') do |f|
     concat = 'cat ' + deps.flatten.join(' ')
 
