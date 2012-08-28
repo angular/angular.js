@@ -4,7 +4,7 @@
  */
 var qfs = require('q-fs');
 var Q = require('qq');
-var OUTPUT_DIR = "build/docs/";
+var OUTPUT_DIR = 'build/docs/';
 var fs = require('fs');
 
 exports.output = output;
@@ -17,29 +17,27 @@ function output(file, content) {
 };
 
 //recursively create directory
-exports.makeDir = function(path) {
-  var parts = path.split(/\//);
+exports.makeDir = function(p) {
+  var parts = p.split(/\//);
   var path = ".";
-  //Sequentially create directories
-  var done = Q.defer();
-  (function createPart() {
 
-    if(!parts.length) {
-      done.resolve();
-    } else {
-      path += "/" + parts.shift();
-      qfs.isDirectory(path).then(function(isDir) {
-        if(!isDir) {
-          qfs.makeDirectory(path);
+  // Recursively rebuild directory structure
+  return qfs.exists(p).
+      then(function createPart(exists) {
+        if(!exists && parts.length) {
+          path += "/" + parts.shift();
+          return qfs.exists(path).then(function(exists) {
+            if (!exists) {
+              return qfs.makeDirectory(path).then(createPart, createPart);
+            } else {
+              return createPart();
+            }
+          });
         }
-        createPart();
       });
-    }
-  })();
-  return done.promise;
 };
 
-exports.copyTpl = function(filename) {
+exports.copyTemplate = function(filename) {
   return exports.copy('docs/src/templates/' + filename, filename);
 };
 
@@ -59,7 +57,22 @@ exports.copy = function(from, to, transform) {
     }
     return output(to, content);
   });
+};
+
+
+exports.symlinkTemplate= symlinkTemplate;
+function symlinkTemplate(filename) {
+  var dest = OUTPUT_DIR + filename,
+      dirDepth = dest.split('/').length,
+      src = Array(dirDepth).join('../') + 'docs/src/templates/' + filename;
+
+  return qfs.exists(dest).then(function(exists) {
+    if (!exists) {
+      qfs.symbolicLink(dest, src);
+    }
+  });
 }
+
 
 /* Replace placeholders in content accordingly
  * @param content{string} content to be modified
@@ -132,3 +145,4 @@ exports.toString = function toString(obj) {
 
 
 function noop() {};
+
