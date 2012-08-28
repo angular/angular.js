@@ -372,6 +372,14 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var listener = function() {
     var value = trim(element.val());
 
+    // Trim is great but sometimes we need that extra white space.
+    // To prevent using the trim add the attribute ng-trim with the value of "0" or "off"
+    // e.g. <input ng-model="foo" ng-trim="off">
+    if (attr.ngTrim === 'off' || attr.ngTrim == 0) {
+      value = element.val();
+    }
+    
+
     if (ctrl.$viewValue !== value) {
       scope.$apply(function() {
         ctrl.$setViewValue(value);
