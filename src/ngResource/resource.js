@@ -362,7 +362,8 @@ angular.module('ngResource', ['ng']).
           $http({
             method: action.method,
             url: route.url(extend({}, extractParams(data), action.params || {}, params)),
-            data: data
+            data: data,
+            useXDomain: $http.defaults.useXDomain || false
           }).then(function(response) {
               var data = response.data;
 

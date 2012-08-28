@@ -3,7 +3,7 @@ var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
   throw new Error("This browser does not support XMLHttpRequest.");
-}, XDR = window.XDomainRequest || null;
+}, XDR = !window.msPerformance && window.XDomainRequest || null;
 
 
 /**
@@ -44,13 +44,13 @@ function createHttpBackend($browser, XHR, XDR, $browserDefer, callbacks, rawDocu
 
       jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
           function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
-        } else {
-          completeRequest(callback, -2);
-        }
-        delete callbacks[callbackId];
-      });
+            if (callbacks[callbackId].data) {
+              completeRequest(callback, 200, callbacks[callbackId].data);
+            } else {
+              completeRequest(callback, -2);
+            }
+            delete callbacks[callbackId];
+          });
      } else {
       var status;
       if (useXDomain && XDR) {
@@ -60,6 +60,7 @@ function createHttpBackend($browser, XHR, XDR, $browserDefer, callbacks, rawDocu
         // Required to XDomainRequest works
         xdr.timeout = timeout;
         xdr.onprogress = function() {};
+
         xdr.ontimeout = function() {
           completeRequest(callback, 408, 'Timeout', 'Content-Type: text/plain');
           xdr.abort();
@@ -75,7 +76,9 @@ function createHttpBackend($browser, XHR, XDR, $browserDefer, callbacks, rawDocu
         };
 
         
-        setTimeout(xdr.send, 0); //fix IE bug that raises '$apply already in progress' on cached requests
+        $browserDefer(function () {
+          xdr.send();
+        }, 0); //fix IE bug that raises '$apply already in progress' on cached requests
 
         if (timeout > 0) {
           $browserDefer(function() {
