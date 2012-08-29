@@ -45,7 +45,7 @@ function writeTheRest(writesFuture) {
 
   writesFuture.push(writer.symlinkTemplate('css'));
   writesFuture.push(writer.symlinkTemplate('font'));
-  writesFuture.push(writer.symlinkTemplate('img'));
+  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img'));
   writesFuture.push(writer.symlinkTemplate('js'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
