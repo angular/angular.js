@@ -159,7 +159,6 @@ task :package => [:clean, :minify, :docs] do
   FileUtils.rm zip_dir
 
   FileUtils.mv zip_file, path_to(zip_file)
-  FileUtils.ln_s '../', path_to(NG_VERSION.full)
 
   puts "Package created: #{path_to(zip_file)}"
 end
