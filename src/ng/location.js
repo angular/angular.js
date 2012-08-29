@@ -618,6 +618,8 @@ function $LocationProvider(){
             $location.$$replace = false;
             if (!$location.$$preventLocationChangedEvent) {
                 afterLocationChange(oldUrl);
+            } else {
+                $location.$$preventLocationChangedEvent = false;
             }
           }
         });
