@@ -365,6 +365,22 @@ angular.scenario.dsl('element', function() {
     });
   };
 
+  chain.dblclick = function() {
+    return this.addFutureAction("element '" + this.label + "' dblclick", function($window, $document, done) {
+      var elements = $document.elements();
+      var href = elements.attr('href');
+      var eventProcessDefault = elements.trigger('dblclick')[0];
+
+      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+        this.application.navigateTo(href, function() {
+          done();
+        }, done);
+      } else {
+        done();
+      }
+    });
+  };
+
   chain.query = function(fn) {
     return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
       fn.call(this, $document.elements(), done);
