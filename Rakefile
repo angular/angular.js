@@ -16,7 +16,7 @@ files = eval(content.gsub(/\};(\s|\S)*/, '}').
 
 BUILD_DIR = 'build'
 
-task :default => [:compile, :test]
+task :default => [:package]
 
 
 desc 'Init the build workspace'
