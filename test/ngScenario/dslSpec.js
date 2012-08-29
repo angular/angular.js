@@ -280,6 +280,38 @@ describe("angular.scenario.dsl", function() {
         dealoc(elm);
       });
 
+      it('should execute dblclick', function() {
+        var clicked;
+        // Hash is important, otherwise we actually
+        // go to a different page and break the runner
+        doc.append('<a href="#"></a>');
+        doc.find('a').dblclick(function() {
+          clicked = true;
+        });
+        $root.dsl.element('a').dblclick();
+      });
+
+      it('should navigate page if dblclick on anchor', function() {
+        expect($window.location).not.toEqual('#foo');
+        doc.append('<a href="#foo"></a>');
+        $root.dsl.element('a').dblclick();
+        expect($window.location).toMatch(/#foo$/);
+      });
+
+      it('should not navigate if dblclick event was cancelled', function() {
+        var initLocation = $window.location,
+            elm = jqLite('<a href="#foo"></a>');
+
+        doc.append(elm);
+        elm.bind('dblclick', function(event) {
+          event.preventDefault();
+        });
+
+        $root.dsl.element('a').dblclick();
+        expect($window.location).toBe(initLocation);
+        dealoc(elm);
+      });
+
       it('should count matching elements', function() {
         doc.append('<span></span><span></span>');
         $root.dsl.element('span').count();
