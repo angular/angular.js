@@ -319,7 +319,7 @@ function $CompileProvider($provide) {
       // not be able to attach scope data to them, so we will wrap them in <span>
       forEach($compileNode, function(node, index){
         if (node.nodeType == 3 /* text node */) {
-          $compileNode[index] = jqLite(node).wrap('<span>').parent()[0];
+          $compileNode[index] = jqLite(node).wrap('<span></span>').parent()[0];
         }
       });
       var compositeLinkFn = compileNodes($compileNode, transcludeFn, $compileNode, maxPriority);
