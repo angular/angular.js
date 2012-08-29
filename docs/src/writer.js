@@ -60,17 +60,23 @@ exports.copy = function(from, to, transform) {
 };
 
 
-exports.symlinkTemplate= symlinkTemplate;
+exports.symlink = symlink;
+function symlink(from, to) {
+  return qfs.exists(to).then(function(exists) {
+    if (!exists) {
+      return qfs.symbolicLink(to, from);
+    }
+  });
+}
+
+
+exports.symlinkTemplate = symlinkTemplate;
 function symlinkTemplate(filename) {
   var dest = OUTPUT_DIR + filename,
       dirDepth = dest.split('/').length,
       src = Array(dirDepth).join('../') + 'docs/src/templates/' + filename;
 
-  return qfs.exists(dest).then(function(exists) {
-    if (!exists) {
-      qfs.symbolicLink(dest, src);
-    }
-  });
+  return symlink(src, dest);
 }
 
 
