@@ -25,6 +25,10 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /docs-keywords.js
+  static_files: docs-keywords.js
+  upload: docs-keywords\.js
+
 - url: /robots.txt
   static_files: robots.txt
   upload: robots\.txt
