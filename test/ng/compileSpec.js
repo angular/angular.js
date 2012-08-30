@@ -533,6 +533,12 @@ describe('$compile', function() {
                 template: '  <div></div> \n'
               }
             });
+            directive('trRootElem', function() {
+              return {
+                replace: true,
+                template: '<tr><td></td></tr>'
+              }
+            });
           });
 
           inject(function($compile) {
@@ -547,6 +553,10 @@ describe('$compile', function() {
             // ws is ok
             expect(function() {
               $compile('<p single-root-with-white-space></p>');
+            }).not.toThrow();
+            
+            expect(function() {
+              $compile('<table><tr tr-root-elem></tr></table>');
             }).not.toThrow();
           });
         });
