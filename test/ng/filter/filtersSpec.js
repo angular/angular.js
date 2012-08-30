@@ -258,6 +258,9 @@ describe('filters', function() {
 
       expect(date('20030910T033203-0930', format)).toEqual('2003-09 03');
 
+      //no timezone
+      expect(date('2003-09-10T13:02:03.000', format)).toEqual('2003-09 03');
+
       //no millis
       expect(date('2003-09-10T13:02:03Z', format)).toEqual('2003-09 03');
 
