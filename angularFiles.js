@@ -196,36 +196,30 @@ angularFiles = {
   ]
 };
 
-// Execute only in slim-jim
-if (typeof JASMINE_ADAPTER !== 'undefined') {
-  // Testacular config
-  var mergedFiles = [];
-  angularFiles.jstd.forEach(function(file) {
-    // replace @ref
-    var match = file.match(/^\@(.*)/);
-    if (match) {
-      var deps = angularFiles[match[1]];
-      if (!deps) {
-        console.log('No dependency:' + file)
+if (exports) {
+  exports.files = angularFiles
+  exports.mergeFiles = function mergeFiles() {
+    var files = [];
+
+    [].splice.call(arguments, 0).forEach(function(file) {
+      if (file.match(/testacular/)) {
+        files.push(file);
+      } else {
+        angularFiles[file].forEach(function(f) {
+          // replace @ref
+          var match = f.match(/^\@(.*)/);
+          if (match) {
+            var deps = angularFiles[match[1]];
+            files = files.concat(deps);
+          } else {
+            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
+              files.push(f);
+            }
+          }
+        });
       }
-      mergedFiles = mergedFiles.concat(deps);
-    } else {
-      mergedFiles.push(file);
-    }
-  });
+    });
 
-  files = [JASMINE, JASMINE_ADAPTER];
-
-  mergedFiles.forEach(function(file){
-    if (/jstd|jasmine/.test(file)) return;
-    files.push(file);
-  });
-
-
-  exclude = angularFiles.jstdExclude;
-
-  autoWatch = true;
-  autoWatchInterval = 1;
-  logLevel = LOG_INFO;
-  logColors = true;
+    return files;
+  }
 }
