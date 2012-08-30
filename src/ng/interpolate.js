@@ -52,7 +52,7 @@ function $InterpolateProvider() {
   };
 
 
-  this.$get = ['$parse', function($parse) {
+  this.$get = ['$parse', '$exceptionHandler', function($parse, $exceptionHandler) {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length;
 
@@ -124,18 +124,24 @@ function $InterpolateProvider() {
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
         fn = function(context) {
-          for(var i = 0, ii = length, part; i<ii; i++) {
-            if (typeof (part = parts[i]) == 'function') {
-              part = part(context);
-              if (part == null || part == undefined) {
-                part = '';
-              } else if (typeof part != 'string') {
-                part = toJson(part);
+          try {
+            for(var i = 0, ii = length, part; i<ii; i++) {
+              if (typeof (part = parts[i]) == 'function') {
+                part = part(context);
+                if (part == null || part == undefined) {
+                  part = '';
+                } else if (typeof part != 'string') {
+                  part = toJson(part);
+                }
               }
+              concat[i] = part;
             }
-            concat[i] = part;
+            return concat.join('');
           }
-          return concat.join('');
+          catch(err) {
+            var newErr = new Error('Error while interpolating: ' + text + '\n' + err.toString());
+            $exceptionHandler(newErr);
+          }
         };
         fn.exp = text;
         fn.parts = parts;
