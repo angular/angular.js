@@ -382,6 +382,14 @@ describe('input', function() {
   });
 
 
+  it('should update the model and not trim the value', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" ng-trim="false" />');
+
+    changeInputValueTo('  a  ');
+    expect(scope.name).toEqual('  a  ');
+  });
+
+
   it('should allow complex reference binding', function() {
     compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
 
