@@ -23,8 +23,7 @@ writer.makeDir('build/docs/', true).then(function() {
   var fileFutures = [];
   docs.forEach(function(doc){
     // this hack is here because on OSX angular.module and angular.Module map to the same file.
-    var id = doc.id.replace('angular.Module', 'angular.IModule').
-                    replace(':', '_'); // rewrite : to _ to be GAE-friendly
+    var id = doc.id.replace('angular.Module', 'angular.IModule');
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 
