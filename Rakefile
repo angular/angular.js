@@ -155,7 +155,7 @@ task :package => [:clean, :minify, :docs] do
   zip_file = "#{zip_dir}.zip"
 
   FileUtils.ln_s BUILD_DIR, zip_dir
-  %x(zip -r #{zip_file} .)
+  %x(zip -r #{zip_file} #{zip_dir})
   FileUtils.rm zip_dir
 
   FileUtils.mv zip_file, path_to(zip_file)
