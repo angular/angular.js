@@ -995,7 +995,16 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   var ctrl = this;
-  $scope.$watch(ngModelGet, function(value) {
+  var returnValue = ngModelGet(this, $scope);
+  var watcher = isFunction(returnValue)?
+                  (function(self, locals){
+                    return returnValue.call(self);
+                  }):ngModelGet;
+  $scope.$watch(watcher, function(value) {
+
+    if (isFunction(value)) {
+      value = value();
+    }
 
     // ignore change from view
     if (ctrl.$modelValue === value) return;

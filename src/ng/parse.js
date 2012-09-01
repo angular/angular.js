@@ -646,13 +646,22 @@ function setter(obj, path, setValue) {
   for (var i = 0; element.length > 1; i++) {
     var key = element.shift();
     var propertyObj = obj[key];
+    if (isFunction(propertyObj)) {
+      propertyObj = propertyObj();
+    }
     if (!propertyObj) {
       propertyObj = {};
       obj[key] = propertyObj;
     }
     obj = propertyObj;
   }
-  obj[element.shift()] = setValue;
+  var key = element.shift();
+  if (isFunction(obj[key])) {
+    obj[key](setValue);
+  }
+  else {
+    obj[key] = setValue;
+  }
   return setValue;
 }
 
