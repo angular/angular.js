@@ -196,6 +196,14 @@ describe('NgModelController', function() {
       expect(ctrl.$modelValue).toBe(10);
     });
 
+    it('should set the value to $modelValue when value is a function', function() {
+      scope.$apply(function() {
+        scope.value = function() {
+          return 10;
+        };
+      });
+      expect(ctrl.$modelValue).toBe(10);
+    });
 
     it('should pipeline all registered formatters in reversed order and set result to $viewValue',
         function() {
@@ -217,7 +225,6 @@ describe('NgModelController', function() {
       expect(log).toEqual([3, 5]);
       expect(ctrl.$viewValue).toBe('5');
     });
-
 
     it('should $render only if value changed', function() {
       spyOn(ctrl, '$render');
