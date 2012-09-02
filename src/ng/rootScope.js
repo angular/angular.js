@@ -278,7 +278,7 @@ function $RootScopeProvider(){
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
        *
-       * @param {boolean=} objectEquality Compare object for equality rather then for refference.
+       * @param {boolean=} objectEquality Compare object for equality rather than for reference.
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality) {
