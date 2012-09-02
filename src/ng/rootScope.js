@@ -486,7 +486,7 @@ function $RootScopeProvider(){
        *
        * @description
        * Executes the `expression` on the current scope returning the result. Any exceptions in the
-       * expression are propagated (uncaught). This is useful when evaluating engular expressions.
+       * expression are propagated (uncaught). This is useful when evaluating Angular expressions.
        *
        * # Example
        * <pre>
