@@ -42,7 +42,14 @@ function parseHeaders(headers) {
  *   - if called with no arguments returns an object containing all headers.
  */
 function headersGetter(headers) {
-  var headersObj = isObject(headers) ? headers : undefined;
+  var headersObj;
+
+  if (isObject(headers)) {
+    headersObj = {};
+    forEach(headers, function (value, key) {
+      this[lowercase(key)] = value;
+    }, headersObj);
+  }
 
   return function(name) {
     if (!headersObj) headersObj =  parseHeaders(headers);
