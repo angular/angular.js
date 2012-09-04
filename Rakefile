@@ -128,6 +128,12 @@ task :minify => [:init, :concat, :concat_scenario, :concat_jstd_scenario_adapter
 end
 
 
+desc 'Generate version.txt file'
+task :version => [:init] do
+  `echo #{NG_VERSION.full} > #{path_to('version.txt')}`
+end
+
+
 desc 'Generate docs'
 task :docs => [:init] do
   `node docs/src/gen-docs.js`
@@ -150,7 +156,7 @@ end
 
 
 desc 'Create angular distribution'
-task :package => [:clean, :minify, :docs] do
+task :package => [:clean, :minify, :version, :docs] do
   zip_dir = "angular-#{NG_VERSION.full}"
   zip_file = "#{zip_dir}.zip"
 
