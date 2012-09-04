@@ -306,6 +306,32 @@ function $RouteProvider(){
           reload: function() {
             forceReload = true;
             $rootScope.$evalAsync(updateRoute);
+          },
+
+          /**
+           * @ngdoc method
+           * @name ng.$route#match
+           * @methodOf ng.$route
+           *
+           * @description
+           * Tries to match a URL path with a set of routes.
+           *
+           * @param {LocationUrl} location The path info to be parsed
+           * @returns {Object} route Mapping information
+           */
+          match: function(location) {
+            // Match a route
+            var params, match = null;
+            forEach(this.routes, function(route, path) {
+              if (!match && (params = matcher(location.path(), path))) {
+                  match = inherit(route, {
+                      params: extend({}, location.search(), params),
+                      pathParams: params});
+                  match.$route = route;
+              }
+            });
+            // No route matched; fallback to "otherwise" route
+            return match || this.routes[null] && inherit(this.routes[null], {params: {}, pathParams:{}});
           }
         };
 
@@ -340,7 +366,7 @@ function $RouteProvider(){
     }
 
     function updateRoute() {
-      var next = parseRoute(),
+      var next = $route.match($location),
           last = $route.current;
 
       if (next && last && next.$route === last.$route
@@ -408,25 +434,6 @@ function $RouteProvider(){
             }
           });
       }
-    }
-
-
-    /**
-     * @returns the current active route, by matching it against the URL
-     */
-    function parseRoute() {
-      // Match a route
-      var params, match;
-      forEach(routes, function(route, path) {
-        if (!match && (params = matcher($location.path(), path))) {
-          match = inherit(route, {
-            params: extend({}, $location.search(), params),
-            pathParams: params});
-          match.$route = route;
-        }
-      });
-      // No route matched; fallback to "otherwise" route
-      return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
     }
 
     /**
