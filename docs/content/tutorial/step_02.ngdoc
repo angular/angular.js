@@ -61,7 +61,7 @@ repeater tells Angular to create a `<li>` element for each phone in the list usi
 tag as the template.
 
 * As we've learned in step 0, the curly braces around `phone.name` and `phone.snippet` denote
-bindings. As opposed to evaluating constants, these expression are refering to our application
+bindings. As opposed to evaluating constants, these expressions are referring to our application
 model, which was set up in our `PhoneListCtrl` controller.
 
       <img class="diagram" src="img/tutorial/tutorial_02.png">

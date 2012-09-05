@@ -31,7 +31,7 @@ Important things to notice:
   <doc:source>
     <script>
       // declare a module
-      var simpleAppModule = angular.module('myApp', []);
+      var myAppModule = angular.module('myApp', []);
 
       // configure the module.
       // in this example we will create a greeting filter
