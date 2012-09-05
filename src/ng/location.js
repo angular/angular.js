@@ -222,6 +222,12 @@ LocationUrl.prototype = {
    * @private
    */
   $$replace: false,
+  
+  /**
+   * TODO
+   * @private
+   */
+  $$preventLocationChangedEvent: false,
 
   /**
    * @ngdoc method
@@ -393,6 +399,16 @@ LocationUrl.prototype = {
    */
   replace: function() {
     this.$$replace = true;
+    return this;
+  },
+  /**
+   * TODO
+   *
+   * @description
+   * If called, only browser URL will be updated without reinitialize, for example, controllers
+   */
+  preventLocationChangedEvent: function() {
+    this.$$preventLocationChangedEvent = true;
     return this;
   }
 };
@@ -600,7 +616,11 @@ function $LocationProvider(){
           } else {
             $browser.url($location.absUrl(), $location.$$replace);
             $location.$$replace = false;
-            afterLocationChange(oldUrl);
+            if (!$location.$$preventLocationChangedEvent) {
+                afterLocationChange(oldUrl);
+            } else {
+                $location.$$preventLocationChangedEvent = false;
+            }
           }
         });
       }
@@ -611,6 +631,7 @@ function $LocationProvider(){
     return $location;
 
     function afterLocationChange(oldUrl) {
+      if (!$$onlyChangeUrl
       $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
     }
 }];
