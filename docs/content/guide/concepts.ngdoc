@@ -32,14 +32,14 @@ This is how we get the ball rolling (refer to the diagram and example below):
   4. Angular looks for {@link api/ng.directive:ngApp ng-app}
     {@link guide/directive directive}, which designates application boundary
   5. {@link guide/module Module} specified in {@link
-     api/ng.directive:ngApp ng-app} (if any) is used to configure 
+     api/ng.directive:ngApp ng-app} (if any) is used to configure
      the {@link api/AUTO.$injector $injector}
   6. {@link api/AUTO.$injector $injector} is used to create the {@link
      api/ng.$compile $compile} service as well as {@link
      api/ng.$rootScope $rootScope}
-  7. {@link api/ng.$compile $compile} service is used to compile the DOM and link 
+  7. {@link api/ng.$compile $compile} service is used to compile the DOM and link
      it   with {@link api/ng.$rootScope $rootScope}
-  8. {@link api/ng.directive:ngInit ng-init} {@link 
+  8. {@link api/ng.directive:ngInit ng-init} {@link
      guide/directive directive} assigns `World` to the `name` property on the {@link guide/scope
      scope}
   9. The `{{name}}` {@link api/ng.$interpolate interpolates} the expression to
@@ -80,8 +80,8 @@ implementing custom event callbacks, or when working with a third-party library 
      api/ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
      the work you wish to do in Angular execution context.
   2. Angular executes the `stimulusFn()`, which typically modifies application state.
-  3. Angular enters the {@link api/ng.$rootScope.Scope#$digest $digest} loop. The 
-     loop is made up of two smaller loops which process {@link 
+  3. Angular enters the {@link api/ng.$rootScope.Scope#$digest $digest} loop. The
+     loop is made up of two smaller loops which process {@link
      api/ng.$rootScope.Scope#$evalAsync $evalAsync} queue and the {@link
      api/ng.$rootScope.Scope#$watch $watch} list. The {@link
      api/ng.$rootScope.Scope#$digest $digest} loop keeps iterating until the model
@@ -96,7 +96,7 @@ implementing custom event callbacks, or when working with a third-party library 
   5. The {@link api/ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once Angular {@link api/ng.$rootScope.Scope#$digest $digest} loop finishes 
+  6. Once Angular {@link api/ng.$rootScope.Scope#$digest $digest} loop finishes
      the execution leaves the Angular and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 
@@ -122,7 +122,7 @@ user enters text into the text field.
      5. The {@link api/ng.$rootScope.Scope#$watch $watch} list detects a change
         on the `name` property and notifies the {@link api/ng.$interpolate
         &#123;&#123;name&#125;&#125; } interpolation, which in turn updates the DOM.
-     6. Angular exits the execution context, which in turn exits the `keydown` event and with it 
+     6. Angular exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
      7. The browser re-renders the view with update text.
 
@@ -165,7 +165,7 @@ a diagram depicting the scope boundaries.
     function GreetCtrl($scope) {
       $scope.name = 'World';
     }
-    
+
     function ListCtrl($scope) {
       $scope.names = ['Igor', 'Misko', 'Vojta'];
     }
@@ -196,7 +196,7 @@ controller.
 The separation of the controller and the view is important because:
 
   * The controller is written in JavaScript. JavaScript is imperative. Imperative is a good fit
-    for specifying application behavior. The controller should not contain any rendering 
+    for specifying application behavior. The controller should not contain any rendering
     information (DOM references or HTML fragments).
   * The view template is written in HTML. HTML is declarative. Declarative is a good fit for
     specifying UI. The View should not contain any behavior.
@@ -220,7 +220,7 @@ The separation of the controller and the view is important because:
       $scope.action = function() {
         $scope.name = 'OK';
       }
-      
+
       $scope.name = 'World';
     }
   </file>
@@ -249,8 +249,8 @@ primitive, object hash, or a full object Type. In short the model is a plain Jav
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-view.png">
 
 The view is what the users sees. The view begins its life as a template, it is merged with the
-model and finally rendered into the browser DOM. Angular takes a very different approach to 
-rendering the view, to most other templating systems. 
+model and finally rendered into the browser DOM. Angular takes a very different approach to
+rendering the view, to most other templating systems.
 
   * **Others** - Most templating systems begin as an HTML string with special templating markup.
     Often the template markup breaks the HTML syntax which means that the template can not be
@@ -260,13 +260,13 @@ rendering the view, to most other templating systems.
     When the model changes the whole process needs to be repeated. The granularity of the template
     is the granularity of the DOM updates. The key here is that the templating system manipulates
     strings.
-  * **Angular** - Angular is different, since its templating system works on DOM objects not on 
+  * **Angular** - Angular is different, since its templating system works on DOM objects not on
     strings. The template is still written in HTML string, but it is HTML (not HTML with
     template sprinkled in.) The browser parses the HTML into DOM, and the DOM becomes the input to
     the template engine know as the {@link api/ng.$compile compiler}. The compiler
     looks for {@link guide/directive directives} which in turn set up {@link
     api/ng.$rootScope.Scope#$watch watches} on the model. The result is a
-    continuously updating view which does not need template model re-merging. Your model becomes 
+    continuously updating view which does not need template model re-merging. Your model becomes
     the single source-of-truth for your view.
 
 <div class="clear">
@@ -345,7 +345,7 @@ They are follow the spirit of UNIX filters and follow similar syntax `|` (pipe).
   <file name="index.html">
     <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
       Number formatting: {{ 1234567890 | number }} <br>
-      array filtering <input ng-model="predicate"> 
+      array filtering <input ng-model="predicate">
       {{ list | filter:predicate | json }}
     </div>
   </file>
@@ -373,20 +373,20 @@ as a {@link api/AUTO.$provide provider}.
 <pre>
   // Create a module
   var myModule = angular.module('myModule', [])
-  
+
   // Configure the injector
   myModule.factory('serviceA', function() {
     return {
       // instead of {}, put your object creation here
     };
   });
-  
+
   // create an injector and configure it from 'myModule'
-  var $injector = angular.injector('myModule');
-  
+  var $injector = angular.injector(['myModule']);
+
   // retrieve an object from the injector by name
   var serviceA = $injector.get('serviceA');
-  
+
   // always true because of instance cache
   $injector.get('serviceA') === $injector.get('serviceA');
 </pre>
@@ -405,12 +405,12 @@ allows the methods and types to ask for their dependencies rather then to look f
 
   // Angular provides the injector for your application
   var $injector = ...;
-  
+
   ///////////////////////////////////////////////
   // the old-school way of getting dependencies.
   var serviceA = $injector.get('serviceA');
   var serviceB = $injector.get('serviceB');
-  
+
   // now call the function
   doSomething(serviceA, serviceB);
 
@@ -442,15 +442,15 @@ dependencies, look for dependencies, or even get a reference to the injector.
       // which will be available for injection
       factory('time', function($timeout) {
         var time = {};
-        
+
         (function tick() {
           time.now = new Date().toString();
           $timeout(tick, 1000);
         })();
         return time;
       });
-    
-    // Notice that you can simply ask for time 
+
+    // Notice that you can simply ask for time
     // and it will be provided. No need to look for it.
     function ClockCtrl($scope, time) {
       $scope.time = time;
