@@ -122,7 +122,7 @@ Returns the current value of an input field with the given `name`.
 
 ## repeater(selector, label).count()
 Returns the number of rows in the repeater matching the given jQuery `selector`. The `label` is
-used for test ouput.
+used for test output.
 
 ## repeater(selector, label).row(index)
 Returns an array with the bindings in the row at the given `index` in the repeater matching the
