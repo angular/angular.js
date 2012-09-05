@@ -17,6 +17,11 @@
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
+ *  				- Evaluates against the directive's [parent] scope.
+ *
+ * @param {string=} oninclude Expression to evaluate when a new partial is loaded. 
+ *					- Evaluates against the included [child] scope.
+ *					- e.g. <ng-include src="address.html" oninclude="type='billing';"></ng-include>
  *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
  *                  $anchorScroll} to scroll the viewport after the content is loaded.
@@ -85,7 +90,8 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     terminal: true,
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
-          onloadExp = attr.onload || '',
+          onloadExp     = attr.onload || '',
+          onincludeExp  = attr.oninclude || '',
           autoScrollExp = attr.autoscroll;
 
       return function(scope, element) {
@@ -120,6 +126,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
 
               childScope.$emit('$includeContentLoaded');
               scope.$eval(onloadExp);
+              childScope.$eval(onincludeExp);
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
