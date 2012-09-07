@@ -441,7 +441,7 @@ describe('Scope', function() {
       child.$evalAsync(function(scope) { log += 'child.async;'; });
       child.$watch('value', function() { log += 'child.$digest;'; });
       $rootScope.$digest();
-      expect(log).toEqual('parent.async;parent.$digest;child.async;child.$digest;');
+      expect(log).toEqual('parent.async;child.async;parent.$digest;child.$digest;');
     }));
 
     it('should cause a $digest rerun', inject(function($rootScope) {

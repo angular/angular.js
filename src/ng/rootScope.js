@@ -195,7 +195,6 @@ function $RootScopeProvider(){
         child['this'] = child;
         child.$$listeners = {};
         child.$parent = this;
-        child.$$asyncQueue = [];
         child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
         if (this.$$childHead) {
@@ -362,7 +361,7 @@ function $RootScopeProvider(){
       $digest: function() {
         var watch, value, last,
             watchers,
-            asyncQueue,
+            asyncQueue = this.$$asyncQueue,
             length,
             dirty, ttl = TTL,
             next, current, target = this,
@@ -371,18 +370,19 @@ function $RootScopeProvider(){
 
         beginPhase('$digest');
 
-        do {
+        do { // "while dirty" loop
           dirty = false;
           current = target;
-          do {
-            asyncQueue = current.$$asyncQueue;
-            while(asyncQueue.length) {
-              try {
-                current.$eval(asyncQueue.shift());
-              } catch (e) {
-                $exceptionHandler(e);
-              }
+
+          while(asyncQueue.length) {
+            try {
+              current.$eval(asyncQueue.shift());
+            } catch (e) {
+              $exceptionHandler(e);
             }
+          }
+
+          do { // "traverse the scopes" loop
             if ((watchers = current.$$watchers)) {
               // process our watches
               length = watchers.length;
