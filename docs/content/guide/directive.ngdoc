@@ -63,7 +63,7 @@ api/ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is sh
 here:
 
 <pre>
-<img src="img/{{username}}.jpg">Hello {{username}}!</img>
+<a href="img/{{username}}.jpg">Hello {{username}}!</a>
 </pre>
 
 # Compilation process, and directive matching
