@@ -617,13 +617,13 @@ function $RootScopeProvider(){
        * The event listener function format is: `function(event, args...)`. The `event` object
        * passed into the listener has the following attributes:
        *
-       *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
-       *   - `currentScope` - {Scope}: the current scope which is handling the event.
-       *   - `name` - {string}: Name of the event.
-       *   - `stopPropagation` - {function=}: calling `stopPropagation` function will cancel further event propagation
-       *     (available only for events that were `$emit`-ed).
-       *   - `preventDefault` - {function}: calling `preventDefault` sets `defaultPrevented` flag to true.
-       *   - `defaultPrevented` - {boolean}: true if `preventDefault` was called.
+       *   - `targetScope` - `{Scope}`: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
+       *   - `currentScope` - `{Scope}`: the current scope which is handling the event.
+       *   - `name` - `{string}`: Name of the event.
+       *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel further event
+       *     propagation (available only for events that were `$emit`-ed).
+       *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag to true.
+       *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
