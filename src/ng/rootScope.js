@@ -453,7 +453,7 @@ function $RootScopeProvider(){
        * @function
        *
        * @description
-       * Remove the current scope (and all of its children) from the parent scope. Removal implies
+       * Removes the current scope (and all of its children) from the parent scope. Removal implies
        * that calls to {@link ng.$rootScope.Scope#$digest $digest()} will no longer
        * propagate to the current scope and its children. Removal also implies that the current
        * scope is eligible for garbage collection.
@@ -607,7 +607,7 @@ function $RootScopeProvider(){
        * @function
        *
        * @description
-       * Listen on events of a given type. See {@link ng.$rootScope.Scope#$emit $emit} for discussion of
+       * Listens on events of a given type. See {@link ng.$rootScope.Scope#$emit $emit} for discussion of
        * event life cycle.
        *
        * @param {string} name Event name to listen on.
