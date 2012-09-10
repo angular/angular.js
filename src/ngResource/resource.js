@@ -226,7 +226,7 @@ angular.module('ngResource', ['ng']).
         };
 
   /**
-   * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+   * We need our custom mehtod because encodeURIComponent is too aggressive and doesn't follow
    * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
    * segments:
    *    segment       = *pchar
