@@ -221,7 +221,7 @@ function $RootScopeProvider(){
        *   reruns when it detects changes the `watchExpression` can execute multiple times per
        *   {@link ng.$rootScope.Scope#$digest $digest()} and should be idempotent.)
        * - The `listener` is called only when the value from the current `watchExpression` and the
-       *   previous call to `watchExpression' are not equal (with the exception of the initial run
+       *   previous call to `watchExpression` are not equal (with the exception of the initial run
        *   see below). The inequality is determined according to
        *   {@link angular.equals} function. To save the value of the object for later comparison
        *   {@link angular.copy} function is used. It also means that watching complex options will
