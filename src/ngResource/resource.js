@@ -286,7 +286,7 @@ angular.module('ngResource', ['ng']).
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
-          if (isDefined(val) && val !== null) {
+          if (angular.isDefined(val) && val !== null) {
             encodedVal = encodeUriSegment(val);
             url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
           } else {
