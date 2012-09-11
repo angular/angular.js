@@ -297,6 +297,7 @@ function browserTrigger(element, type, keys) {
         finalProcessDefault;
 
     // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
+    appWindow.angular = appWindow.angular || {};
     appWindow.angular['ff-684208-preventDefault'] = false;
     evnt.preventDefault = function() {
       fakeProcessDefault = false;
