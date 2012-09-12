@@ -373,7 +373,7 @@ function $RouteProvider(){
 
               forEach(next.resolve || {}, function(value, key) {
                 keys.push(key);
-                values.push(isFunction(value) ? $injector.invoke(value) : $injector.get(value));
+                values.push(isString(value) ? $injector.get(value) : $injector.invoke(value));
               });
               if (isDefined(template = next.template)) {
               } else if (isDefined(template = next.templateUrl)) {
