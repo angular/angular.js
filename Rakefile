@@ -170,24 +170,60 @@ task :package => [:clean, :minify, :version, :docs] do
 end
 
 
-namespace :server do
+desc 'Run all AngularJS tests'
+task :test, :browsers, :misc_options do |t, args|
 
-  desc 'Run JsTestDriver Server'
-  task :start do
-    sh %x(java -jar lib/jstestdriver/JsTestDriver.jar --browser open --port 9876)
+  puts args
+
+  [ 'test:jqlite',
+    'test:jquery',
+    'test:modules',
+    'test:e2e'
+  ].each do |task|
+    Rake::Task[task].invoke(args[:browsers], args[:misc_options])
   end
-
-  desc 'Run JavaScript tests against the server'
-  task :test do
-    sh %(java -jar lib/jstestdriver/JsTestDriver.jar --tests all)
-  end
-
 end
 
 
-desc 'Run JavaScript tests'
-task :test do
-  sh %(java -jar lib/jstestdriver/JsTestDriver.jar --tests all --browser open --port 9876)
+namespace :test do
+
+  desc 'Run jqLite-based unit test suite (single run)'
+  task :jqlite, :browsers, :misc_options do |t, args|
+    start_testacular('testacular-jqlite.conf.js', true, args[:browsers], args[:misc_options])
+  end
+
+
+  desc 'Run jQuery-based unit test suite (single run)'
+  task :jquery, :browsers do |t, args|
+    start_testacular('testacular-jquery.conf.js', true, args[:browsers], args[:misc_options])
+  end
+
+
+  desc 'Run bundled modules unit test suite (single run)'
+  task :modules, :browsers, :misc_options do |t, args|
+    start_testacular('testacular-modules.conf.js', true, args[:browsers], args[:misc_options])
+  end
+
+
+  desc 'Run e2e test suite (single run)'
+  task :e2e, :browsers, :misc_options do |t, args|
+    start_testacular('testacular-e2e.conf.js', true, args[:browsers], args[:misc_options])
+  end
+end
+
+
+namespace :autotest do
+
+  desc 'Run jqLite-based unit test suite (autowatch)'
+  task :jqlite, :browsers, :misc_options do |t, args|
+    start_testacular('testacular-jqlite.conf.js', false, args[:browsers], args[:misc_options])
+  end
+
+
+  desc 'Run jQuery-based unit test suite (autowatch)'
+  task :jquery, :browsers, :misc_options do |t, args|
+    start_testacular('testacular-jquery.conf.js', false, args[:browsers], args[:misc_options])
+  end
 end
 
 
@@ -301,4 +337,13 @@ def rewrite_file(filename)
     f.rewind
     f.write content
   end
+end
+
+
+def start_testacular(config, singleRun, browsers, misc_options)
+  sh "testacular start " +
+                "#{config} " +
+                "#{'--single-run=true' if singleRun} " +
+                "#{'--browsers=' + browsers.gsub('+', ',') if browsers} " +
+                "#{misc_options}"
 end
