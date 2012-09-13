@@ -535,7 +535,7 @@ into the dialog.
 Here is an example of what the template definition for the `dialog` widget may look like.
 
 <pre>
-  <div ng-show="show()">
+  <div ng-show="show">
     <h3>{{title}}</h3>
     <div class="body" ng-transclude></div>
     <div class="footer">
@@ -555,10 +555,10 @@ expects as follows:
 
 <pre>
   scope: {
-    title: 'bind',          // set up title to accept data-binding
-    onOk: 'expression',     // create a delegate onOk function
-    onCancel: 'expression', // create a delegate onCancel function
-    show: 'accessor'        // create a getter/setter function for visibility.
+    title: '=',             // set up title to accept data-binding
+    onOk: '&',              // create a delegate onOk function
+    onCancel: '&',          // create a delegate onCancel function
+    show: '='
   }
 </pre>
 
