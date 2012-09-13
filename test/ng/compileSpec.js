@@ -1709,6 +1709,7 @@ describe('$compile', function() {
             attrAlias: '@attr',
             ref: '=',
             refAlias: '= ref',
+            reference: '=',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1829,6 +1830,24 @@ describe('$compile', function() {
         $rootScope.name = 'misko';
         $rootScope.$apply();
         expect(componentScope.ref).toBe('hello misko');
+      }));
+
+      // regression
+      it('should stabilize model', inject(function() {
+        compile('<div><span my-component reference="name">');
+
+        var lastRefValueInParent;
+        $rootScope.$watch('name', function(ref) {
+          lastRefValueInParent = ref;
+        });
+
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        componentScope.reference = 'new';
+        $rootScope.$apply();
+
+        expect(lastRefValueInParent).toBe('new');
       }));
     });
 
