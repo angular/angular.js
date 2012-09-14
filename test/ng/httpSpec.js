@@ -147,6 +147,12 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22%3A3%7D').respond('');
         $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
       }));
+
+
+      it('should expand arrays in params map', inject(function($httpBackend, $http) {
+          $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
+          $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
+      }));
     });
 
 
