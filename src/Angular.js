@@ -258,7 +258,7 @@ function valueFn(value) {return function() {return value;};}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){return typeof value == 'undefined';}
+function isUndefined(value){return typeof value === 'undefined';}
 
 
 /**
@@ -272,7 +272,7 @@ function isUndefined(value){return typeof value == 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){return typeof value != 'undefined';}
+function isDefined(value){return typeof value !== 'undefined';}
 
 
 /**
@@ -287,7 +287,7 @@ function isDefined(value){return typeof value != 'undefined';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value != null && typeof value == 'object';}
+function isObject(value){return value !== null && typeof value === 'object';}
 
 
 /**
@@ -301,7 +301,7 @@ function isObject(value){return value != null && typeof value == 'object';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){return typeof value == 'string';}
+function isString(value){return typeof value === 'string';}
 
 
 /**
@@ -315,7 +315,7 @@ function isString(value){return typeof value == 'string';}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){return typeof value == 'number';}
+function isNumber(value){return typeof value === 'number';}
 
 
 /**
@@ -330,7 +330,7 @@ function isNumber(value){return typeof value == 'number';}
  * @returns {boolean} True if `value` is a `Date`.
  */
 function isDate(value){
-  return toString.apply(value) == '[object Date]';
+  return toString.apply(value) === '[object Date]';
 }
 
 
@@ -346,7 +346,7 @@ function isDate(value){
  * @returns {boolean} True if `value` is an `Array`.
  */
 function isArray(value) {
-  return toString.apply(value) == '[object Array]';
+  return toString.apply(value) === '[object Array]';
 }
 
 
@@ -361,7 +361,7 @@ function isArray(value) {
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
  */
-function isFunction(value){return typeof value == 'function';}
+function isFunction(value){return typeof value === 'function';}
 
 
 /**
@@ -386,8 +386,19 @@ function isFile(obj) {
 }
 
 
+/**
+ * @ngdoc function
+ * @name angular.isBoolean
+ * @function
+ *
+ * @description
+ * Determines if a reference is a `Boolean`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Boolean`.
+ */
 function isBoolean(value) {
-  return typeof value == 'boolean';
+  return typeof value === 'boolean';
 }
 
 
