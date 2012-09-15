@@ -13,19 +13,19 @@
 <a name="H1_1"></a>
 # License
 
-`Angular` is an open source project licensed under the {@link
+AngularJS is an open source project licensed under the {@link
 http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. Your contributions are
-always welcome. When working with `angular` source base, please follow the guidelines provided on
+always welcome. When working with AngularJS code base, please follow the guidelines provided on
 this page.
 
 
 <a name="H1_2"></a>
 # Contributing to Source Code
 
-We'd love for you to contribute to our source code and to make `angular` even better than it is
-today! Here are the guidelines we'd like you to use:
+We'd love for you to contribute to our source code and to make AngularJS even better than it is
+today! Here are the guidelines we'd like you to follow:
 
-* Major changes that you intend to contribute to the project must be discussed first on our {@link
+* Major changes that you intend to contribute to the project should be discussed first on our {@link
 https://groups.google.com/forum/?hl=en#!forum/angular mailing list} so that we can better
 coordinate our efforts, prevent  duplication of work, and help you to craft the change so that it
 is successfully accepted upstream.
@@ -64,45 +64,43 @@ inheritance only when absolutely necessary.
 external API. See our existing code to see what we mean.
 
   * We don't go crazy with type annotations for private internal APIs unless it's an internal API
-that is used throughout `angular`. The best guidance is to do what makes the most sense.
+that is used throughout AngularJS. The best guidance is to do what makes the most sense.
 
 
 <a name="H1_4"></a>
 # Checking Out and Building Angular
 
-The `angular` source code is hosted at {@link http://github.com Github}, which we also use to
-accept code contributions. Several steps are needed to check out and build `angular`:
+The AngularJS source code is hosted at {@link http://github.com Github}, which we also use to
+accept code contributions. Several steps are needed to check out and build AngularJS:
 
 
 ## Installation Dependencies
 
-Before you can build `angular`, you must install or configure the following dependencies on your
+Before you can build AngularJS, you must install or configure the following dependencies on your
 machine:
 
 * {@link http://rake.rubyforge.org Rake}: We use Rake as our build system, which is pre-installed
 on most Macintosh and Linux machines. If that is not true in your case, you can grab it from the
 Rake website.
 
+* Git: The {@link http://help.github.com/mac-git-installation Github Guide to Installing Git} is
+quite a good source for information on Git.
+
 * {@link http://nodejs.org Node.js}: We use Node to generate the documentation and to run a
 development web server. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
-  You'll also need npm and the following npm modules:
+  Once installed, you'll also need several npms (node packages), which you can install once you checked out a local copy
+  of the Angular repository (see below) with:
 
-  * install npm: `curl http://npmjs.org/install.sh | sh`
-  * install q: `npm install q`
-  * install qq: `npm install qq`
-  * install q-fs: `npm install q-fs`
-  * install jasmine-node: `npm install jasmine`
+  * `cd angular.js`
+  * `npm install`
 
 
+* Lastly, you'll also need Testacular our spectacular test runner that we use for running unit and end-to-end tests.
 
-* Java: The Java runtime is used to run {@link http://code.google.com/p/js-test-driver
-JsTestDriver} (JSTD), which we use to run our unit test suite. JSTD binaries are part of the
-`angular` source base, which means there is no need to install or configure it separately.
+  * `sudo npm install -g testacular`
 
-* Git: The {@link http://help.github.com/mac-git-installation Github Guide to Installing Git} is
-quite a good source for information on Git.
 
 
 ## Creating a Github Account and Forking Angular
@@ -112,31 +110,31 @@ Afterwards, go ahead and {@link http://help.github.com/forking fork} the {@link
 https://github.com/angular/angular.js main angular repository}.
 
 
-## Building `Angular`
+## Building AngularJS
 
-To build `angular`, you check out the source code and use Rake to generate the non-minified and
-minified `angular` files:
+To build AngularJS, you check out the source code and use Rake to generate the non-minified and
+minified AngularJS files:
 
 1. To clone your Github repository, run:
 
         git clone git@github.com:<github username>/angular.js.git
 
-2. To go to the `angular` directory, run:
+2. To go to the AngularJS directory, run:
 
         cd angular.js
 
-3. To add the main `angular` repository as an upstream remote to your repository, run:
+3. To add the main AngularJS repository as an upstream remote to your repository, run:
 
         git remote add upstream https://github.com/angular/angular.js.git
 
-4. To build `angular`, run:
+4. To build AngularJS, run:
 
         rake package
 
 The build output can be located under the `build` directory. It consists of the following files and
 directories:
 
-* `angular-<version>.tgz` — This is the complete tarball, which  contains all of the release build
+* `angular-<version>.zip` — This is the complete zip file, which  contains all of the release build
 artifacts.
 
 * `angular.js` — The non-minified `angular` script.
@@ -145,8 +143,6 @@ artifacts.
 
 * `angular-scenario.js` — The `angular` End2End test runner.
 
-* `angular-ie-compat.js` —  The Internet Explorer compatibility patch file.
-
 * `docs/` — A directory that contains all of the files needed to run `docs.angularjs.org`.
 
 * `docs/index.html` — The main page for the documentation.
@@ -154,60 +150,70 @@ artifacts.
 * `docs/docs-scenario.html` — The End2End test runner for the documentation application.
 
 
+<a name="webserver"></a>
 ## Running a Local Development Web Server
 
-To debug or test code, it is often useful to have a local HTTP server. For this purpose, we have
+To debug code and run end-to-end tests, it is often useful to have a local HTTP server. For this purpose, we have
 made available a local web server based on Node.js.
 
 1. To start the web server, run:
 
-        ./nodeserver.sh
+        rake webserver
 
 2. To access the local server, go to this website:
 
         http://localhost:8000/
 
-   By default, it serves the contents of the `angular` project directory.
+   By default, it serves the contents of the AngularJS project directory.
 
 
 <a name="unit-tests"></a>
 ## Running the Unit Test Suite
 
-Our unit and integration tests are written with Jasmine and executed with JsTestDriver.  To run the
-tests:
+Our unit and integration tests are written with Jasmine and executed with Testacular.  To run all of the
+tests once on Chrome run:
 
-1. To start the JSTD server, run:
+    rake test:unit
 
-        ./server.sh
+To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
 
-2. To capture one or more browsers, go to this website:
+    rake test:unit[Opera+Firefox]
+
+During development it's however more productive to continuously run unit tests every time the source or test files
+change. To execute tests in this mode run:
+
+1. To start the Testacular server, capture Chrome browser and run unit tests, run:
+
+        rake test:jqlite
+
+2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
+   of Testacular running, read Testacular's console output for the correct url):
 
         http://localhost:9876/
 
-3. To trigger a test execution, run:
-
-        ./test.sh
-
-4. To automatically run the test suite each time one or more of the files in the project directory
-is changed, you can install `watchr` and then run:
-
-        watchr watchr.rb
-
-5. To view the output of each test run, you can tail this log file:
-
-        ./logs/jstd.log
+3. To re-run tests just change any source or test file.
 
 
-## Running the End2End Test Suite
+To learn more about all of the preconfigured Rake tasks run:
 
-To run the End2End test suite:
+    rake -T
 
-1. Start the local web server.
+
+## Running the end-to-end Test Suite
+
+To run the E2E test suite:
+
+1. Start the local web server if it's not running already.
+
+        rake webserver
+
 2. In a browser, go to:
 
         http://localhost:8000/build/docs/docs-scenario.html
 
-   The tests are executed automatically.
+   or in terminal run:
+
+        rake test:e2e
 
 
 
