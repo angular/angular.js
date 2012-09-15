@@ -327,6 +327,21 @@ describe('ngMock', function() {
       $timeout.flush();
       expect(logger).toEqual(['t1', 't3', 't2']);
     }));
+
+
+    it('should throw an exception when not flushed', inject(function($timeout){
+      $timeout(angular.noop);
+
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow('Deferred tasks have not been flushed');
+    }));
+
+
+    it('should do nothing when all tasks have been flushed', inject(function($timeout) {
+      $timeout(angular.noop);     
+
+      $timeout.flush();
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
   });
 
 

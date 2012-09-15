@@ -1329,17 +1329,39 @@ function MockXhr() {
  * @description
  *
  * This service is just a simple decorator for {@link ng.$timeout $timeout} service
- * that adds a "flush" method.
- */
+ * that adds a "flush" and "verifyNoPendingTasks" methods.
+ */ 
 
-/**
- * @ngdoc method
- * @name ngMock.$timeout#flush
- * @methodOf ngMock.$timeout
- * @description
- *
- * Flushes the queue of pending tasks.
- */
+angular.mock.$TimeoutDecorator = function($delegate, $browser) {
+
+  /**
+   * @ngdoc method
+   * @name ngMock.$timeout#flush
+   * @methodOf ngMock.$timeout
+   * @description
+   *
+   * Flushes the queue of pending tasks.
+   */
+  $delegate.flush = function() {
+    $browser.defer.flush();
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngMock.$timeout#verifyNoPendingTasks
+   * @methodOf ngMock.$timeout
+   * @description
+   *
+   * Verifies that there are no pending tasks that need to be flushed.
+   */
+  $delegate.verifyNoPendingTasks = function() {
+    if ($browser.deferredFns.length) {
+      throw Error('Deferred tasks have not been flushed');
+    }
+  };
+
+  return $delegate;
+};
 
 /**
  *
@@ -1365,14 +1387,8 @@ angular.module('ngMock', ['ng']).provider({
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider
 }).config(function($provide) {
-  $provide.decorator('$timeout', function($delegate, $browser) {
-    $delegate.flush = function() {
-      $browser.defer.flush();
-    };
-    return $delegate;
-  });
+  $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
 });
-
 
 /**
  * @ngdoc overview
