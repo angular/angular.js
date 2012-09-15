@@ -170,11 +170,14 @@ task :package => [:clean, :minify, :version, :docs] do
 end
 
 
+desc 'Start development webserver'
+task :webserver, :port do |t, args|
+  system "node lib/nodeserver/server.js #{args[:port]}"
+end
+
+
 desc 'Run all AngularJS tests'
 task :test, :browsers, :misc_options do |t, args|
-
-  puts args
-
   [ 'test:jqlite',
     'test:jquery',
     'test:modules',
@@ -186,6 +189,17 @@ end
 
 
 namespace :test do
+
+  desc 'Run all unit tests (single run)'
+  task :unit, :browsers, :misc_options do |t, args|
+    [ 'test:jqlite',
+      'test:jquery',
+      'test:modules'
+    ].each do |task|
+      Rake::Task[task].invoke(args[:browsers], args[:misc_options])
+    end
+  end
+
 
   desc 'Run jqLite-based unit test suite (single run)'
   task :jqlite, :browsers, :misc_options do |t, args|
