@@ -241,19 +241,6 @@ namespace :autotest do
 end
 
 
-desc 'Lint'
-task :lint do
-  out = %x(lib/jsl/jsl -conf lib/jsl/jsl.default.conf)
-  print out
-end
-
-
-desc 'push_angularjs'
-task :push_angularjs => :compile do
-  sh %(cat angularjs.ftp | ftp -N angularjs.netrc angularjs.org)
-end
-
-
 
 ###################
 # utility methods #
