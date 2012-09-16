@@ -232,21 +232,20 @@ To create and submit a change:
 
 3. Create your patch, make sure to have plenty of tests (that pass).
 
-4. Commit your changes:
+4. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
+   please check out our
+   [commit message conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#)
+   and our commit message presubmit hook `validate-commit-msg.js`):
 
         git commit -a
 
-5. Run JavaScript Lint and be sure to address all new warnings and errors:
-
-        rake lint
-
-6. Push your branch to Github:
+5. Push your branch to Github:
 
         git push origin my-fix-branch
 
-7. In Github, send a pull request to `angular:master`.
+6. In Github, send a pull request to `angular:master`.
 
-8. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
+7. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
 from the main (upstream) repository:
 
   1. To delete the branch in Github, run:
