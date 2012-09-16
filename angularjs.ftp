@@ -1,5 +1,0 @@
-bin
-cd angularjs.org/ng
-put angular-debug.js js/angular-debug.js
-put angular-minified.js js/angular-minified.js
-put angular-scenario.js js/angular-scenario.js
