@@ -208,7 +208,7 @@ namespace :test do
 
 
   desc 'Run jQuery-based unit test suite (single run)'
-  task :jquery, :browsers do |t, args|
+  task :jquery, :browsers, :misc_options do |t, args|
     start_testacular('testacular-jquery.conf.js', true, args[:browsers], args[:misc_options])
   end
 
