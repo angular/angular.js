@@ -22,7 +22,7 @@
           baseUrl = location.href.replace(rUrl, indexFile),
           jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
           debug = /index[^\.]*-debug\.html$/.test(baseUrl),
-          gae = (baseUrl.split('/').length == 4),
+          production = location.hostname === 'docs.angularjs.org',
           headEl = document.getElementsByTagName('head')[0],
           sync = true,
           angularVersion = {
@@ -45,7 +45,7 @@
       addTag('script', {src: 'docs-keywords.js'}, sync);
 
       function path(name) {
-        if (gae) {
+        if (production) {
           if (name.match(/^angular(-\w+)?\.js/) && !name.match(/bootstrap/)) {
             name =  '//ajax.googleapis.com/ajax/libs/angularjs/' +
                 angularVersion.stable +
