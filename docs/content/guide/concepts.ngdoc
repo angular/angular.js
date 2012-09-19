@@ -339,7 +339,7 @@ in HTML.
 
 {@link api/ng.$filter Filters} perform data transformation roles. Typically
 they are used in conjunction with the locale to format the data in locale specific output.
-They are follow the spirit of UNIX filters and follow similar syntax `|` (pipe).
+They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
 
 <example>
   <file name="index.html">
@@ -362,7 +362,7 @@ An {@link api/AUTO.$injector injector} is a service locator. There is a single
 {@link api/AUTO.$injector injector} per Angular {@link
 api/ng.directive:ngApp application}. The {@link
 api/AUTO.$injector injector} provides a way to look up an object instance by its
-name. The injector keeps on internal cache of all objects so that repeated calls to get the same
+name. The injector keeps an internal cache of all objects so that repeated calls to get the same
 object name result in the same instance. If the object does not exist, then the {@link
 api/AUTO.$injector injector} asks the instance factory to create a new instance.
 
@@ -395,7 +395,7 @@ as a {@link api/AUTO.$provide provider}.
 But the real magic of the {@link api/AUTO.$injector injector} is that it can be
 used to {@link api/AUTO.$injector#invoke call} methods and {@link
 api/AUTO.$injector#instantiate instantiate} types. This subtle feature is what
-allows the methods and types to ask for their dependencies rather then to look for them.
+allows the methods and types to ask for their dependencies instead of having to look for them.
 
 <pre>
   // You write functions such as this one.
@@ -425,7 +425,7 @@ function arguments. When angular calls the function, it will use the {@link
 api/AUTO.$injector#invoke call} which will automatically fill the function
 arguments.
 
-Examine the `ClockCtrl` bellow, and notice how it list the dependencies in constructor. When the
+Examine the `ClockCtrl` bellow, and notice how it lists the dependencies in the constructor. When the
 {@link api/ng.directive:ngController ng-controller} instantiates
 the controller it automatically provides the dependencies. There is no need to create
 dependencies, look for dependencies, or even get a reference to the injector.
