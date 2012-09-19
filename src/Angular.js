@@ -2,9 +2,6 @@
 
 ////////////////////////////////////
 
-if (typeof document.getAttribute == $undefined)
-  document.getAttribute = function() {};
-
 /**
  * @ngdoc function
  * @name angular.lowercase
@@ -52,16 +49,9 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) {return String.fromCharCode(code);}
 
 
-var $boolean          = 'boolean',
-    $console          = 'console',
-    $length           = 'length',
-    $name             = 'name',
-    $object           = 'object',
-    $string           = 'string',
-    $undefined        = 'undefined',
-    Error             = window.Error,
+var Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
-    msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
+    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -71,10 +61,8 @@ var $boolean          = 'boolean',
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
-    /** @name angular.module.ng */
     nodeName_,
-    uid               = ['0', '0', '0'],
-    DATE_ISOSTRING_LN = 24;
+    uid               = ['0', '0', '0'];
 
 /**
  * @ngdoc function
@@ -108,7 +96,7 @@ function forEach(obj, iterator, context) {
   if (obj) {
     if (isFunction(obj)){
       for (key in obj) {
-        if (key != 'prototype' && key != $length && key != $name && obj.hasOwnProperty(key)) {
+        if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -118,8 +106,11 @@ function forEach(obj, iterator, context) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
-      for (key in obj)
-        iterator.call(context, obj[key], key);
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          iterator.call(context, obj[key], key);
+        }
+      }
     }
   }
   return obj;
@@ -136,7 +127,7 @@ function sortedKeys(obj) {
 }
 
 function forEachSorted(obj, iterator, context) {
-  var keys = sortedKeys(obj)
+  var keys = sortedKeys(obj);
   for ( var i = 0; i < keys.length; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
@@ -206,6 +197,10 @@ function extend(dst) {
   return dst;
 }
 
+function int(str) {
+  return parseInt(str, 10);
+}
+
 
 function inherit(parent, extra) {
   return extend(new (extend(function() {}, {prototype:parent}))(), extra);
@@ -263,7 +258,7 @@ function valueFn(value) {return function() {return value;};}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){return typeof value == $undefined;}
+function isUndefined(value){return typeof value == 'undefined';}
 
 
 /**
@@ -277,7 +272,7 @@ function isUndefined(value){return typeof value == $undefined;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){return typeof value != $undefined;}
+function isDefined(value){return typeof value != 'undefined';}
 
 
 /**
@@ -292,7 +287,7 @@ function isDefined(value){return typeof value != $undefined;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){return value!=null && typeof value == $object;}
+function isObject(value){return value != null && typeof value == 'object';}
 
 
 /**
@@ -306,7 +301,7 @@ function isObject(value){return value!=null && typeof value == $object;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){return typeof value == $string;}
+function isString(value){return typeof value == 'string';}
 
 
 /**
@@ -391,8 +386,10 @@ function isFile(obj) {
 }
 
 
-function isBoolean(value) {return typeof value == $boolean;}
-function isTextNode(node) {return nodeName_(node) == '#text';}
+function isBoolean(value) {
+  return typeof value == 'boolean';
+}
+
 
 function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
@@ -427,26 +424,6 @@ function makeMap(str){
 }
 
 
-
-/**
- * HTML class which is the only class which can be used in ng-bind to inline HTML for security
- * reasons.
- *
- * @constructor
- * @param html raw (unsafe) html
- * @param {string=} option If set to 'usafe', get method will return raw (unsafe/unsanitized) html
- */
-function HTML(html, option) {
-  this.html = html;
-  this.get = lowercase(option) == 'unsafe'
-    ? valueFn(html)
-    : function htmlSanitize() {
-        var buf = [];
-        htmlParser(html, htmlSanitizeWriter(buf));
-        return buf.join('');
-      };
-}
-
 if (msie < 9) {
   nodeName_ = function(element) {
     element = element.nodeName ? element : element[0];
@@ -459,12 +436,6 @@ if (msie < 9) {
   };
 }
 
-function isVisible(element) {
-  var rect = element[0].getBoundingClientRect(),
-      width = (rect.width || (rect.right||0 - rect.left||0)),
-      height = (rect.height || (rect.bottom||0 - rect.top||0));
-  return width>0 && height>0;
-}
 
 function map(obj, iterator, context) {
   var results = [];
@@ -503,13 +474,12 @@ function size(obj, ownPropsOnly) {
 
 
 function includes(array, obj) {
-  for ( var i = 0; i < array.length; i++) {
-    if (obj === array[i]) return true;
-  }
-  return false;
+  return indexOf(array, obj) != -1;
 }
 
 function indexOf(array, obj) {
+  if (array.indexOf) return array.indexOf(obj);
+
   for ( var i = 0; i < array.length; i++) {
     if (obj === array[i]) return i;
   }
@@ -549,7 +519,7 @@ function isLeafNode (node) {
  * * If  `source` is not an object or array, `source` is returned.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more information about Angular arrays.
+ * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
@@ -593,16 +563,16 @@ function copy(source, destination){
 
 /**
  * Create a shallow copy of an object
- * @param src
  */
-function shallowCopy(src) {
-  var dst = {},
-      key;
-  for(key in src) {
-    if (src.hasOwnProperty(key)) {
+function shallowCopy(src, dst) {
+  dst = dst || {};
+
+  for(var key in src) {
+    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
       dst[key] = src[key];
     }
   }
+
   return dst;
 }
 
@@ -666,17 +636,6 @@ function equals(o1, o2) {
   return false;
 }
 
-function setHtml(node, html) {
-  if (isLeafNode(node)) {
-    if (msie) {
-      node.innerText = html;
-    } else {
-      node.textContent = html;
-    }
-  } else {
-    node.innerHTML = html;
-  }
-}
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
@@ -722,6 +681,59 @@ function bind(self, fn) {
   }
 }
 
+
+function toJsonReplacer(key, value) {
+  var val = value;
+
+  if (/^\$+/.test(key)) {
+    val = undefined;
+  } else if (isWindow(value)) {
+    val = '$WINDOW';
+  } else if (value &&  document === value) {
+    val = '$DOCUMENT';
+  } else if (isScope(value)) {
+    val = '$SCOPE';
+  }
+
+  return val;
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.toJson
+ * @function
+ *
+ * @description
+ * Serializes input into a JSON-formatted string.
+ *
+ * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
+ * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
+ * @returns {string} Jsonified string representing `obj`.
+ */
+function toJson(obj, pretty) {
+  return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.fromJson
+ * @function
+ *
+ * @description
+ * Deserializes a JSON string.
+ *
+ * @param {string} json JSON string to deserialize.
+ * @returns {Object|Array|Date|string|number} Deserialized thingy.
+ */
+function fromJson(json) {
+  return isString(json)
+      ? JSON.parse(json)
+      : json;
+}
+
+
 function toBoolean(value) {
   if (value && value.length !== 0) {
     var v = lowercase("" + value);
@@ -741,8 +753,10 @@ function startingTag(element) {
     // turns out IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
     element.html('');
-  } catch(e) {};
-  return jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1];
+  } catch(e) {}
+  return jqLite('<div>').append(element).html().
+      match(/^(<[^>]+>)/)[1].
+      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
 }
 
 
@@ -815,10 +829,10 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng-app
+ * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} module on optional application
+ * @param {angular.Module} ngApp on optional application
  *   {@link angular.module module} name to load.
  *
  * @description
@@ -828,11 +842,11 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * designates the root of the application and is typically placed
  * ot the root of the page.
  *
- * In the example below if the `ng-app` directive would not be placed
+ * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
- * `ng-app` is the easiest way to bootstrap an application.
+ * `ngApp` is the easiest way to bootstrap an application.
  *
  <doc:example>
    <doc:source>
@@ -860,7 +874,7 @@ function angularInit(element, bootstrap) {
       forEach(element.querySelectorAll('.' + name), append);
       forEach(element.querySelectorAll('.' + name + '\\:'), append);
       forEach(element.querySelectorAll('[' + name + ']'), append);
-    };
+    }
   });
 
   forEach(elements, function(element) {
@@ -891,19 +905,22 @@ function angularInit(element, bootstrap) {
  * @description
  * Use this function to manually start up angular application.
  *
- * See: {@link guide/dev_guide.bootstrap.manual_bootstrap Bootstrap}
+ * See: {@link guide/bootstrap Bootstrap}
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
- * @param {angular.module.auta.$injector} the injector;
+ * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   element = jqLite(element);
   modules = modules || [];
+  modules.unshift(['$provide', function($provide) {
+    $provide.value('$rootElement', element);
+  }]);
   modules.unshift('ng');
   var injector = createInjector(modules);
   injector.invoke(
-    ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+    ['$rootScope', '$rootElement', '$compile', '$injector', function(scope, element, compile, injector){
       scope.$apply(function() {
         element.data('$injector', injector);
         compile(element)(scope);
@@ -929,6 +946,7 @@ function bindJQuery() {
     jqLite = jQuery;
     extend(jQuery.fn, {
       scope: JQLitePrototype.scope,
+      controller: JQLitePrototype.controller,
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
@@ -936,7 +954,7 @@ function bindJQuery() {
     JQLitePatchJQueryRemove('empty');
     JQLitePatchJQueryRemove('html');
   } else {
-    jqLite = jqLiteWrap;
+    jqLite = JQLite;
   }
   angular.element = jqLite;
 }
@@ -946,14 +964,16 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    var error = new Error("Argument '" + (name||'?') + "' is " +
-        (reason || "required"));
-    throw error;
+    throw new Error("Argument '" + (name || '?') + "' is " + (reason || "required"));
   }
   return arg;
 }
 
-function assertArgFn(arg, name) {
+function assertArgFn(arg, name, acceptArrayAnnotation) {
+  if (acceptArrayAnnotation && isArray(arg)) {
+      arg = arg[arg.length - 1];
+  }
+
   assertArg(isFunction(arg), name, 'not a function, got ' +
       (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;

@@ -88,11 +88,20 @@ describe('angular', function() {
       expect(copy).toEqual(original);
       expect(copy.key).toBe(original.key);
     });
+
+    it('should not copy $$ properties nor prototype properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
   });
 
   describe('elementHTML', function() {
     it('should dump element', function() {
-      expect(lowercase(startingTag('<div attr="123">something<span></span></div>'))).
+      expect(startingTag('<div attr="123">something<span></span></div>')).
         toEqual('<div attr="123">');
     });
   });
@@ -234,6 +243,25 @@ describe('angular', function() {
     });
   });
 
+
+  describe('forEach', function() {
+    it('should iterate over *own* object properties', function() {
+      function MyObj() {
+        this.bar = 'barVal';
+        this.baz = 'bazVal';
+      };
+      MyObj.prototype.foo = 'fooVal';
+
+      var obj = new MyObj(),
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+
+      expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+  });
+
+
   describe('sortedKeys', function() {
     it('should collect keys from object', function() {
       expect(sortedKeys({c:0, b:0, a:0})).toEqual(['a', 'b', 'c']);
@@ -294,7 +322,7 @@ describe('angular', function() {
 
 
   describe('angularInit', function() {
-    var bootstrap;
+    var bootstrapSpy;
     var element;
 
     beforeEach(function() {
@@ -303,73 +331,93 @@ describe('angular', function() {
           return element.getElementById[id] || [];
         },
 
+
+        querySelectorAll: function(arg) {
+          return element.querySelectorAll[arg] || [];
+        },
+
+
         getAttribute: function(name) {
           return element[name];
         }
       };
-      bootstrap = jasmine.createSpy('bootstrap');
+      bootstrapSpy = jasmine.createSpy('bootstrapSpy');
     });
 
 
     it('should do nothing when not found', function() {
-      angularInit(element, bootstrap);
-      expect(bootstrap).not.toHaveBeenCalled();
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).not.toHaveBeenCalled();
     });
 
 
-    it('should look for ng-app directive in id', function() {
+    it('should look for ngApp directive as attr', function() {
+      var appElement = jqLite('<div ng-app="ABC"></div>')[0];
+      element.querySelectorAll['[ng-app]'] = [appElement];
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
+    it('should look for ngApp directive in id', function() {
       var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
-    it('should look for ng-app directive in className', function() {
+    it('should look for ngApp directive in className', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['.ng\\:app'] = [appElement];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
-    it('should look for ng-app directive using querySelectorAll', function() {
+    it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should bootstrap using class name', function() {
       var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
     it('should bootstrap anonymously', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
-      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[x-ng-app]'] = [ appElement ];
-      angularInit(element, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(element, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap anonymously using class only', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
     });
 
 
     it('should bootstrap if the annotation is on the root element', function() {
       var appElement = jqLite('<div class="ng-app"></div>')[0];
-      angularInit(appElement, bootstrap);
-      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+      angularInit(appElement, bootstrapSpy);
+      expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, []);
+    });
+
+
+    it('should complain if app module cannot be found', function() {
+      var appElement = jqLite('<div ng-app="doesntexist"></div>')[0];
+
+      expect(function() {
+        angularInit(appElement, bootstrap);
+      }).toThrow('No module: doesntexist');
     });
   });
 
@@ -507,13 +555,24 @@ describe('angular', function() {
       expect(element.data('$injector')).toBe(injector);
       dealoc(element);
     });
+
+    it("should complain if app module can't be found", function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+
+      expect(function() {
+        angular.bootstrap(element, ['doesntexist']);
+      }).toThrow('No module: doesntexist');
+
+      expect(element.html()).toBe('{{1+2}}');
+      dealoc(element);
+    });
   });
 
 
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
       expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
-          toBeOneOf('<ng-abc x="2A">', '<NG-ABC x="2A">');
+          toBe('<ng-abc x="2A">');
     });
   });
 
@@ -522,5 +581,55 @@ describe('angular', function() {
       expect(snake_case('ABC')).toEqual('a_b_c');
       expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
     });
+  });
+
+
+  describe('fromJson', function() {
+
+    it('should delegate to JSON.parse', function() {
+      var spy = spyOn(JSON, 'parse').andCallThrough();
+
+      expect(fromJson('{}')).toEqual({});
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+
+  describe('toJson', function() {
+
+    it('should delegate to JSON.stringify', function() {
+      var spy = spyOn(JSON, 'stringify').andCallThrough();
+
+      expect(toJson({})).toEqual('{}');
+      expect(spy).toHaveBeenCalled();
+    });
+
+
+    it('should format objects pretty', function() {
+      expect(toJson({a: 1, b: 2}, true)).
+          toBeOneOf('{\n  "a": 1,\n  "b": 2\n}', '{\n  "a":1,\n  "b":2\n}');
+      expect(toJson({a: {b: 2}}, true)).
+          toBeOneOf('{\n  "a": {\n    "b": 2\n  }\n}', '{\n  "a":{\n    "b":2\n  }\n}');
+    });
+
+
+    it('should not serialize properties starting with $', function() {
+      expect(toJson({$few: 'v', $$some:'value'}, false)).toEqual('{}');
+    });
+
+
+    it('should not serialize $window object', function() {
+      expect(toJson(window)).toEqual('"$WINDOW"');
+    });
+
+
+    it('should not serialize $document object', function() {
+      expect(toJson(document)).toEqual('"$DOCUMENT"');
+    });
+
+
+    it('should not serialize scope instances', inject(function($rootScope) {
+      expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
+    }));
   });
 });

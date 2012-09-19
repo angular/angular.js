@@ -2,6 +2,9 @@
 describe('jqLite', function() {
   var scope, a, b, c;
 
+
+  beforeEach(module(provideLog));
+
   beforeEach(function() {
     a = jqLite('<div>A</div>')[0];
     b = jqLite('<div>B</div>')[0];
@@ -39,7 +42,7 @@ describe('jqLite', function() {
 
 
   it('should be jqLite when jqLiteMode is on, otherwise jQuery', function() {
-    expect(jqLite).toBe(_jqLiteMode ? jqLiteWrap : _jQuery);
+    expect(jqLite).toBe(_jqLiteMode ? JQLite : _jQuery);
   });
 
 
@@ -107,6 +110,20 @@ describe('jqLite', function() {
       expect(deepChild.inheritedData('myData')).toBeFalsy();
       dealoc(element);
     });
+
+
+    it('should work with the child html element instead if the current element is the document obj',
+      function() {
+        var item = {},
+            doc = jqLite(document),
+            html = doc.find('html');
+
+        html.data('item', item);
+        expect(doc.inheritedData('item')).toBe(item);
+        expect(html.inheritedData('item')).toBe(item);
+        dealoc(doc);
+      }
+    );
   });
 
 
@@ -118,6 +135,18 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
+    it('should retrieve scope attached to the html element if its requested on the document',
+        function() {
+      var doc = jqLite(document),
+          html = doc.find('html'),
+          scope = {};
+
+      html.data('$scope', scope);
+
+      expect(doc.scope()).toBe(scope);
+      expect(html.scope()).toBe(scope);
+      dealoc(doc);
+    });
 
     it('should walk up the dom to find scope', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
@@ -140,12 +169,54 @@ describe('jqLite', function() {
   describe('injector', function() {
     it('should retrieve injector attached to the current element or its parent', function() {
       var template = jqLite('<div><span></span></div>'),
-          span = template.children().eq(0),
-          injector = angular.bootstrap(template);
+        span = template.children().eq(0),
+        injector = angular.bootstrap(template);
 
 
       expect(span.injector()).toBe(injector);
       dealoc(template);
+    });
+
+
+    it('should retrieve injector attached to the html element if its requested on document',
+        function() {
+      var doc = jqLite(document),
+          html = doc.find('html'),
+          injector = {};
+
+      html.data('$injector', injector);
+
+      expect(doc.injector()).toBe(injector);
+      expect(html.injector()).toBe(injector);
+      dealoc(doc);
+    });
+
+
+    it('should do nothing with a noncompiled template', function() {
+      var template = jqLite('<div><span></span></div>');
+      expect(template.injector()).toBeUndefined();
+      dealoc(template);
+    });
+  });
+
+
+  describe('controller', function() {
+    it('should retrieve controller attached to the current element or its parent', function() {
+      var div = jqLite('<div><span></span></div>'),
+          span = div.find('span');
+
+      div.data('$ngControllerController', 'ngController');
+      span.data('$otherController', 'other');
+
+      expect(span.controller()).toBe('ngController');
+      expect(span.controller('ngController')).toBe('ngController');
+      expect(span.controller('other')).toBe('other');
+
+      expect(div.controller()).toBe('ngController');
+      expect(div.controller('ngController')).toBe('ngController');
+      expect(div.controller('other')).toBe(undefined);
+
+      dealoc(div);
     });
   });
 
@@ -154,36 +225,118 @@ describe('jqLite', function() {
     it('should set and get and remove data', function() {
       var selected = jqLite([a, b, c]);
 
-      expect(selected.data('prop', 'value')).toEqual(selected);
-      expect(selected.data('prop')).toEqual('value');
-      expect(jqLite(a).data('prop')).toEqual('value');
-      expect(jqLite(b).data('prop')).toEqual('value');
-      expect(jqLite(c).data('prop')).toEqual('value');
+      expect(selected.data('prop')).toBeUndefined();
+      expect(selected.data('prop', 'value')).toBe(selected);
+      expect(selected.data('prop')).toBe('value');
+      expect(jqLite(a).data('prop')).toBe('value');
+      expect(jqLite(b).data('prop')).toBe('value');
+      expect(jqLite(c).data('prop')).toBe('value');
 
       jqLite(a).data('prop', 'new value');
-      expect(jqLite(a).data('prop')).toEqual('new value');
-      expect(selected.data('prop')).toEqual('new value');
-      expect(jqLite(b).data('prop')).toEqual('value');
-      expect(jqLite(c).data('prop')).toEqual('value');
+      expect(jqLite(a).data('prop')).toBe('new value');
+      expect(selected.data('prop')).toBe('new value');
+      expect(jqLite(b).data('prop')).toBe('value');
+      expect(jqLite(c).data('prop')).toBe('value');
 
-      expect(selected.removeData('prop')).toEqual(selected);
-      expect(jqLite(a).data('prop')).toEqual(undefined);
-      expect(jqLite(b).data('prop')).toEqual(undefined);
-      expect(jqLite(c).data('prop')).toEqual(undefined);
+      expect(selected.removeData('prop')).toBe(selected);
+      expect(jqLite(a).data('prop')).toBeUndefined();
+      expect(jqLite(b).data('prop')).toBeUndefined();
+      expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
-    it('should call $destroy function if element removed', function() {
+    it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
       element.bind('$destroy', function() {log+= 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
     });
+
+
+    it('should emit $destroy event if an element is removed via html()', inject(function(log) {
+      var element = jqLite('<div><span>x</span></div>');
+      element.find('span').bind('$destroy', log.fn('destroyed'));
+
+      element.html('');
+
+      expect(element.html()).toBe('');
+      expect(log).toEqual('destroyed');
+    }));
+
+
+    it('should retrieve all data if called without params', function() {
+      var element = jqLite(a);
+      expect(element.data()).toEqual({});
+
+      element.data('foo', 'bar');
+      expect(element.data()).toEqual({foo: 'bar'});
+
+      element.data().baz = 'xxx';
+      expect(element.data()).toEqual({foo: 'bar', baz: 'xxx'});
+    });
+
+    it('should create a new data object if called without args', function() {
+      var element = jqLite(a),
+          data = element.data();
+
+      expect(data).toEqual({});
+      element.data('foo', 'bar');
+      expect(data).toEqual({foo: 'bar'});
+    });
+
+    it('should create a new data object if called with a single object arg', function() {
+      var element = jqLite(a),
+          newData = {foo: 'bar'};
+
+      element.data(newData);
+      expect(element.data()).toEqual({foo: 'bar'});
+      expect(element.data()).not.toBe(newData); // create a copy
+    });
+
+    it('should merge existing data object with a new one if called with a single object arg',
+        function() {
+      var element = jqLite(a);
+      element.data('existing', 'val');
+      expect(element.data()).toEqual({existing: 'val'});
+
+      var oldData = element.data(),
+          newData = {meLike: 'turtles', 'youLike': 'carrots'};
+
+      expect(element.data(newData)).toBe(element);
+      expect(element.data()).toEqual({meLike: 'turtles', youLike: 'carrots', existing: 'val'});
+      expect(element.data()).toBe(oldData); // merge into the old object
+    });
+
+    describe('data cleanup', function() {
+      it('should remove data on element removal', function() {
+        var div = jqLite('<div><span>text</span></div>'),
+            span = div.find('span');
+
+        span.data('name', 'angular');
+        span.remove();
+        expect(span.data('name')).toBeUndefined();
+      });
+
+      it('should remove event listeners on element removal', function() {
+        var div = jqLite('<div><span>text</span></div>'),
+            span = div.find('span'),
+            log = '';
+
+        span.bind('click', function() { log+= 'click;'});
+        browserTrigger(span);
+        expect(log).toEqual('click;');
+
+        span.remove();
+
+        browserTrigger(span);
+        expect(log).toEqual('click;');
+      });
+    });
   });
 
 
   describe('attr', function() {
-    it('shoul read write and remove attr', function() {
+    it('should read write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -246,6 +399,13 @@ describe('jqLite', function() {
     it('should return undefined for non-existing attributes', function() {
       var elm = jqLite('<div class="any">a</div>');
       expect(elm.attr('non-existing')).toBeUndefined();
+    });
+
+    it('should return undefined for non-existing attributes on input', function() {
+      var elm = jqLite('<input>');
+      expect(elm.attr('readonly')).toBeUndefined();
+      expect(elm.attr('readOnly')).toBeUndefined();
+      expect(elm.attr('disabled')).toBeUndefined();
     });
   });
 
@@ -548,7 +708,7 @@ describe('jqLite', function() {
       var jWindow = jqLite(window).bind('hashchange', function() {
         log = 'works!';
       });
-      eventFn({});
+      eventFn({type: 'hashchange'});
       expect(log).toEqual('works!');
       dealoc(jWindow);
     });
@@ -616,13 +776,13 @@ describe('jqLite', function() {
 
         parent.bind('mouseenter', function() { log += 'parentEnter;'; });
         parent.bind('mouseleave', function() { log += 'parentLeave;'; });
-        parent.mouseover = function(event) { parent.data('bind').mouseover(event || {}); };
-        parent.mouseout = function(event) { parent.data('bind').mouseout(event || {}); };
+        parent.mouseover = function() { browserTrigger(parent, 'mouseover'); };
+        parent.mouseout = function() { browserTrigger(parent, 'mouseout'); };
 
         child.bind('mouseenter', function() { log += 'childEnter;'; });
         child.bind('mouseleave', function() { log += 'childLeave;'; });
-        child.mouseover = function(event) { child.data('bind').mouseover(event || {}); };
-        child.mouseout = function(event) { child.data('bind').mouseout(event || {}); };
+        child.mouseover = function() { browserTrigger(child, 'mouseover'); };
+        child.mouseout = function() { browserTrigger(child, 'mouseout'); };
       });
 
       afterEach(function() {

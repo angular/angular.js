@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>138.17.0.133677</string>
+		<string>138.33.0.157554</string>
 	</array>
 	<key>AutoAdjust</key>
 	<true/>
@@ -46,7 +46,7 @@
 	<key>DisplayScale</key>
 	<string>1 0/72 in = 1.0000 in</string>
 	<key>GraphDocumentVersion</key>
-	<integer>6</integer>
+	<integer>8</integer>
 	<key>GraphicsList</key>
 	<array>
 		<dict>
@@ -95,7 +95,7 @@
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -206,12 +206,12 @@
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
 
-\f0\fs24 \cf0 ng:repeat}</string>
+\f0\fs24 \cf0 ng-repeat}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -335,7 +335,7 @@
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -353,7 +353,7 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{46.269, 187.718}, {120.418, 19.3087}}</string>
+					<string>{{49.3198, 187.718}, {152.037, 19.3087}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -385,12 +385,12 @@
 						<key>Pad</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\b\fs20 \cf0 &lt;input name="query"&gt;}</string>
+\f0\b\fs20 \cf0 &lt;input ng-model="query"&gt;}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -399,7 +399,7 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{34.65, 183.374}, {139.675, 25.6266}}</string>
+					<string>{{34.65, 183.374}, {176.35, 25.6266}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -433,7 +433,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{29, 170.836}, {143.325, 33.164}}</string>
+			<string>{{29, 170.836}, {172, 33.164}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -473,6 +473,11 @@
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -480,7 +485,7 @@
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -522,7 +527,7 @@
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -600,12 +605,12 @@
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs24 \cf0 ng:controller}</string>
+\f0\fs24 \cf0 ng-controller}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -654,6 +659,11 @@
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -661,7 +671,7 @@
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -972,7 +982,7 @@
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1022,7 +1032,7 @@
 							<key>Text</key>
 							<dict>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -1059,6 +1069,11 @@ Scope}</string>
 									<integer>2</integer>
 									<key>GradientAngle</key>
 									<real>90</real>
+									<key>GradientColor</key>
+									<dict>
+										<key>w</key>
+										<string>0.666667</string>
+									</dict>
 									<key>MiddleColor</key>
 									<dict>
 										<key>b</key>
@@ -1127,7 +1142,7 @@ Scope}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1179,7 +1194,7 @@ Scope}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1215,6 +1230,11 @@ Scope}</string>
 									<integer>2</integer>
 									<key>GradientAngle</key>
 									<real>90</real>
+									<key>GradientColor</key>
+									<dict>
+										<key>w</key>
+										<string>0.666667</string>
+									</dict>
 									<key>MiddleColor</key>
 									<dict>
 										<key>b</key>
@@ -1283,7 +1303,7 @@ Scope}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPS-BoldMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1335,7 +1355,7 @@ Scope}</string>
 								<key>Align</key>
 								<integer>0</integer>
 								<key>Text</key>
-								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+								<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1371,6 +1391,11 @@ Scope}</string>
 									<integer>2</integer>
 									<key>GradientAngle</key>
 									<real>90</real>
+									<key>GradientColor</key>
+									<dict>
+										<key>w</key>
+										<string>0.666667</string>
+									</dict>
 									<key>MiddleColor</key>
 									<dict>
 										<key>b</key>
@@ -1422,7 +1447,7 @@ Scope}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1508,6 +1533,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -1515,12 +1545,12 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-\f0\fs20 \cf0 &lt;li ng:repeat="phone in phones"&gt;\
+\f0\fs20 \cf0 &lt;li ng-repeat="phone in phones"&gt;\
   \{\{phone.name\}\}\
   &lt;p&gt;\{\{phone.snippet\}\}&lt;/p&gt;\
 &lt;/li&gt;}</string>
@@ -1568,6 +1598,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -1575,7 +1610,7 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1655,7 +1690,7 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -1748,7 +1783,7 @@ Scope}</string>
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -1784,6 +1819,11 @@ Scope}</string>
 							<integer>2</integer>
 							<key>GradientAngle</key>
 							<real>90</real>
+							<key>GradientColor</key>
+							<dict>
+								<key>w</key>
+								<string>0.666667</string>
+							</dict>
 							<key>MiddleColor</key>
 							<dict>
 								<key>b</key>
@@ -1869,6 +1909,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -1876,13 +1921,13 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
 \f0\fs20 \cf0 &lt;body \
- ng:controller=\
+ ng-controller=\
  "PhoneListCtrl"&gt;}</string>
 			</dict>
 			<key>TextPlacement</key>
@@ -1920,12 +1965,12 @@ Scope}</string>
 			<key>Text</key>
 			<dict>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
 
-\f0\fs24 \cf0 ng:autobind}</string>
+\f0\fs24 \cf0 ng-app}</string>
 				<key>VerticalPad</key>
 				<integer>0</integer>
 			</dict>
@@ -2043,7 +2088,7 @@ Scope}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -2095,6 +2140,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -2102,7 +2152,7 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2152,6 +2202,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -2159,7 +2214,7 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2209,6 +2264,11 @@ Scope}</string>
 					<integer>2</integer>
 					<key>GradientAngle</key>
 					<real>90</real>
+					<key>GradientColor</key>
+					<dict>
+						<key>w</key>
+						<string>0.666667</string>
+					</dict>
 				</dict>
 			</dict>
 			<key>Text</key>
@@ -2216,7 +2276,7 @@ Scope}</string>
 				<key>Align</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2251,7 +2311,7 @@ Scope}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
@@ -2328,7 +2388,7 @@ Scope}</string>
 					<key>Text</key>
 					<dict>
 						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -2364,6 +2424,11 @@ Scope}</string>
 							<integer>2</integer>
 							<key>GradientAngle</key>
 							<real>90</real>
+							<key>GradientColor</key>
+							<dict>
+								<key>w</key>
+								<string>0.666667</string>
+							</dict>
 							<key>MiddleColor</key>
 							<dict>
 								<key>b</key>
@@ -2416,7 +2481,7 @@ Scope}</string>
 				<key>Pad</key>
 				<integer>0</integer>
 				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
@@ -2587,9 +2652,9 @@ Scope}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2011-05-10 11:42:05 -0700</string>
+	<string>2012-04-04 15:30:36 -0700</string>
 	<key>Modifier</key>
-	<string>Kenneth Culp</string>
+	<string>Igor Minar</string>
 	<key>NotesVisible</key>
 	<string>NO</string>
 	<key>Orientation</key>
@@ -2617,8 +2682,8 @@ Scope}</string>
 		</array>
 		<key>NSPaperSize</key>
 		<array>
-			<string>size</string>
-			<string>{792, 612}</string>
+			<string>coded</string>
+			<string>BAtzdHJlYW10eXBlZIHoA4QBQISEhAdOU1ZhbHVlAISECE5TT2JqZWN0AIWEASqEhAx7X05TU2l6ZT1mZn2WgRgDgWQChg==</string>
 		</array>
 		<key>NSRightMargin</key>
 		<array>
@@ -2663,7 +2728,7 @@ Scope}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{1, 56}, {1286, 822}}</string>
+		<string>{{885, 756}, {1286, 822}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>

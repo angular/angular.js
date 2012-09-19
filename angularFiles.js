@@ -3,81 +3,111 @@ angularFiles = {
     'src/Angular.js',
     'src/loader.js',
     'src/AngularPublic.js',
-    'src/JSON.js',
-    'src/Injector.js',
-    'src/Resource.js',
     'src/jqLite.js',
     'src/apis.js',
-    'src/service/anchorScroll.js',
-    'src/service/browser.js',
-    'src/service/cacheFactory.js',
-    'src/service/compiler.js',
-    'src/service/controller.js',
-    'src/service/cookieStore.js',
-    'src/service/cookies.js',
-    'src/service/defer.js',
-    'src/service/document.js',
-    'src/service/exceptionHandler.js',
-    'src/service/filter.js',
-    'src/service/filter/filter.js',
-    'src/service/filter/filters.js',
-    'src/service/filter/limitTo.js',
-    'src/service/filter/orderBy.js',
-    'src/service/interpolate.js',
-    'src/service/location.js',
-    'src/service/log.js',
-    'src/service/resource.js',
-    'src/service/parse.js',
-    'src/service/q.js',
-    'src/service/route.js',
-    'src/service/routeParams.js',
-    'src/service/scope.js',
-    'src/service/sanitize.js',
-    'src/service/sniffer.js',
-    'src/service/window.js',
-    'src/service/http.js',
-    'src/service/httpBackend.js',
-    'src/service/locale.js',
-    'src/directive/directives.js',
-    'src/directive/a.js',
-    'src/directive/booleanAttrDirs.js',
-    'src/directive/form.js',
-    'src/directive/input.js',
-    'src/directive/ngBind.js',
-    'src/directive/ngClass.js',
-    'src/directive/ngCloak.js',
-    'src/directive/ngController.js',
-    'src/directive/ngEventDirs.js',
-    'src/directive/ngInclude.js',
-    'src/directive/ngInit.js',
-    'src/directive/ngNonBindable.js',
-    'src/directive/ngPluralize.js',
-    'src/directive/ngRepeat.js',
-    'src/directive/ngShowHide.js',
-    'src/directive/ngStyle.js',
-    'src/directive/ngSwitch.js',
-    'src/directive/ngTransclude.js',
-    'src/directive/ngView.js',
-    'src/directive/script.js',
-    'src/directive/select.js',
-    'src/directive/style.js'
+
+    'src/auto/injector.js',
+
+    'src/ng/anchorScroll.js',
+    'src/ng/browser.js',
+    'src/ng/cacheFactory.js',
+    'src/ng/compile.js',
+    'src/ng/controller.js',
+    'src/ng/document.js',
+    'src/ng/exceptionHandler.js',
+    'src/ng/interpolate.js',
+    'src/ng/location.js',
+    'src/ng/log.js',
+    'src/ng/parse.js',
+    'src/ng/q.js',
+    'src/ng/route.js',
+    'src/ng/routeParams.js',
+    'src/ng/rootScope.js',
+    'src/ng/sniffer.js',
+    'src/ng/window.js',
+    'src/ng/http.js',
+    'src/ng/httpBackend.js',
+    'src/ng/locale.js',
+    'src/ng/timeout.js',
+
+    'src/ng/filter.js',
+    'src/ng/filter/filter.js',
+    'src/ng/filter/filters.js',
+    'src/ng/filter/limitTo.js',
+    'src/ng/filter/orderBy.js',
+
+    'src/ng/directive/directives.js',
+    'src/ng/directive/a.js',
+    'src/ng/directive/booleanAttrs.js',
+    'src/ng/directive/form.js',
+    'src/ng/directive/input.js',
+    'src/ng/directive/ngBind.js',
+    'src/ng/directive/ngClass.js',
+    'src/ng/directive/ngCloak.js',
+    'src/ng/directive/ngController.js',
+    'src/ng/directive/ngCsp.js',
+    'src/ng/directive/ngEventDirs.js',
+    'src/ng/directive/ngInclude.js',
+    'src/ng/directive/ngInit.js',
+    'src/ng/directive/ngNonBindable.js',
+    'src/ng/directive/ngPluralize.js',
+    'src/ng/directive/ngRepeat.js',
+    'src/ng/directive/ngShowHide.js',
+    'src/ng/directive/ngStyle.js',
+    'src/ng/directive/ngSwitch.js',
+    'src/ng/directive/ngTransclude.js',
+    'src/ng/directive/ngView.js',
+    'src/ng/directive/script.js',
+    'src/ng/directive/select.js',
+    'src/ng/directive/style.js'
+  ],
+
+  'angularSrcModules': [
+    'src/ngCookies/cookies.js',
+    'src/ngResource/resource.js',
+    'src/ngSanitize/sanitize.js',
+    'src/ngSanitize/directive/ngBindHtml.js',
+    'src/ngSanitize/filter/linky.js',
+    'src/ngMock/angular-mocks.js',
+
+    'src/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
-    'src/scenario/Scenario.js',
-    'src/scenario/Application.js',
-    'src/scenario/Describe.js',
-    'src/scenario/Future.js',
-    'src/scenario/ObjectModel.js',
-    'src/scenario/Describe.js',
-    'src/scenario/Runner.js',
-    'src/scenario/SpecRunner.js',
-    'src/scenario/dsl.js',
-    'src/scenario/matchers.js',
-    'src/scenario/output/Html.js',
-    'src/scenario/output/Json.js',
-    'src/scenario/output/Xml.js',
-    'src/scenario/output/Object.js'
+    'src/ngScenario/Scenario.js',
+    'src/ngScenario/Application.js',
+    'src/ngScenario/Describe.js',
+    'src/ngScenario/Future.js',
+    'src/ngScenario/ObjectModel.js',
+    'src/ngScenario/Describe.js',
+    'src/ngScenario/Runner.js',
+    'src/ngScenario/SpecRunner.js',
+    'src/ngScenario/dsl.js',
+    'src/ngScenario/matchers.js',
+    'src/ngScenario/output/Html.js',
+    'src/ngScenario/output/Json.js',
+    'src/ngScenario/output/Xml.js',
+    'src/ngScenario/output/Object.js'
+  ],
+
+  'angularTest': [
+    'test/testabilityPatch.js',
+    'test/matchers.js',
+    'test/ngScenario/*.js',
+    'test/ngScenario/output/*.js',
+    'test/ngScenario/jstd-scenario-adapter/*.js',
+    'test/*.js',
+    'test/auto/*.js',
+    'test/bootstrap/*.js',
+    'test/ng/*.js',
+    'test/ng/directive/*.js',
+    'test/ng/filter/*.js',
+    'test/ngCookies/*.js',
+    'test/ngResource/*.js',
+    'test/ngSanitize/*.js',
+    'test/ngSanitize/directive/*.js',
+    'test/ngSanitize/filter/*.js',
+    'test/ngMock/*.js'
   ],
 
   'jstd': [
@@ -86,28 +116,19 @@ angularFiles = {
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+    '@angularTest',
     'example/personalLog/*.js',
-    'test/testabilityPatch.js',
-    'test/matchers.js',
-    'src/scenario/Scenario.js',
-    'src/scenario/output/*.js',
-    'src/jstd-scenario-adapter/*.js',
-    'src/scenario/*.js',
-    'src/angular-mocks.js',
-    'test/scenario/*.js',
-    'test/scenario/output/*.js',
-    'test/jstd-scenario-adapter/*.js',
-    'test/*.js',
-    'test/service/*.js',
-    'test/service/filter/*.js',
-    'test/directive/*.js',
     'example/personalLog/test/*.js'
   ],
 
   'jstdExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js'
+    'src/ngScenario/angular-bootstrap.js'
   ],
 
   'jstdScenario': [
@@ -117,28 +138,39 @@ angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
-  'jstdMocks': [
+  "jstdModules": [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
-    'src/angular-mocks.js',
+    'src/ngMock/angular-mocks.js',
+    'src/ngCookies/cookies.js',
+    'src/ngResource/resource.js',
+    'src/ngSanitize/sanitize.js',
+    'src/ngSanitize/directive/ngBindHtml.js',
+    'src/ngSanitize/filter/linky.js',
     'test/matchers.js',
-    'test/angular-mocksSpec.js'
+    'test/ngMock/*.js',
+    'test/ngCookies/*.js',
+    'test/ngResource/*.js',
+    'test/ngSanitize/*.js',
+    'test/ngSanitize/directive/*.js',
+    'test/ngSanitize/filter/*.js'
   ],
 
   'jstdPerf': [
    'lib/jasmine/jasmine.js',
    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-   'angularSrc',
-   'src/angular-mocks.js',
+   '@angularSrc',
+   '@angularSrcModules',
+   'src/ngMock/angular-mocks.js',
    'perf/data/*.js',
    'perf/testUtils.js',
    'perf/*.js'
   ],
 
   'jstdPerfExclude': [
-    'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js'
+    'src/ng/angular-bootstrap.js',
+    'src/ngScenario/angular-bootstrap.js'
   ],
 
   'jstdJquery': [
@@ -147,45 +179,47 @@ angularFiles = {
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+    '@angularTest',
     'example/personalLog/*.js',
-    'test/testabilityPatch.js',
-    'test/matchers.js',
-    'src/scenario/Scenario.js',
-    'src/scenario/output/*.js',
-    'src/jstd-scenario-adapter/*.js',
-    'src/scenario/*.js',
-    'src/angular-mocks.js',
-    'test/scenario/*.js',
-    'test/scenario/output/*.js',
-    'test/jstd-scenario-adapter/*.js',
-    'test/*.js',
-    'test/service/*.js',
-    'test/directive/*.js',
+
     'example/personalLog/test/*.js'
   ],
 
   'jstdJqueryExclude': [
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js',
+    'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]
 };
 
-// Execute only in slim-jim
-if (typeof JASMINE_ADAPTER !== 'undefined') {
-  // SlimJim config
-  files = [JASMINE, JASMINE_ADAPTER];
-  angularFiles.jstd.forEach(function(pattern) {
-    // replace angular source
-    if (pattern === '@angularSrc') files = files.concat(angularFiles.angularSrc);
-    // ignore jstd and jasmine files
-    else if (!/jstd|jasmine/.test(pattern)) files.push(pattern);
-  });
+if (exports) {
+  exports.files = angularFiles
+  exports.mergeFiles = function mergeFiles() {
+    var files = [];
 
-  exclude = angularFiles.jstdExclude;
+    [].splice.call(arguments, 0).forEach(function(file) {
+      if (file.match(/testacular/)) {
+        files.push(file);
+      } else {
+        angularFiles[file].forEach(function(f) {
+          // replace @ref
+          var match = f.match(/^\@(.*)/);
+          if (match) {
+            var deps = angularFiles[match[1]];
+            files = files.concat(deps);
+          } else {
+            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
+              files.push(f);
+            }
+          }
+        });
+      }
+    });
 
-  autoWatch = true;
-  autoWatchInterval = 1;
-  logLevel = LOG_INFO;
-  logColors = true;
+    return files;
+  }
 }

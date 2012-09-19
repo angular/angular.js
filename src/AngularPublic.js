@@ -71,16 +71,15 @@ function publishExternalAPI(angular){
             style: styleDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
-            ngBindHtml: ngBindHtmlDirective,
             ngBindHtmlUnsafe: ngBindHtmlUnsafeDirective,
             ngBindTemplate: ngBindTemplateDirective,
-            ngBindAttr: ngBindAttrDirective,
             ngClass: ngClassDirective,
             ngClassEven: ngClassEvenDirective,
             ngClassOdd: ngClassOddDirective,
+            ngCsp: ngCspDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
-            ngForm: formDirective,
+            ngForm: ngFormDirective,
             ngHide: ngHideDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
@@ -99,9 +98,9 @@ function publishExternalAPI(angular){
             ngModel: ngModelDirective,
             ngList: ngListDirective,
             ngChange: ngChangeDirective,
-            ngModelInstant: ngModelInstantDirective,
             required: requiredDirective,
-            ngRequired: requiredDirective
+            ngRequired: requiredDirective,
+            ngValue: ngValueDirective
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);
@@ -110,9 +109,6 @@ function publishExternalAPI(angular){
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,
-        $cookies: $CookiesProvider,
-        $cookieStore: $CookieStoreProvider,
-        $defer: $DeferProvider,
         $document: $DocumentProvider,
         $exceptionHandler: $ExceptionHandlerProvider,
         $filter: $FilterProvider,
@@ -122,16 +118,15 @@ function publishExternalAPI(angular){
         $location: $LocationProvider,
         $log: $LogProvider,
         $parse: $ParseProvider,
-        $resource: $ResourceProvider,
         $route: $RouteProvider,
         $routeParams: $RouteParamsProvider,
         $rootScope: $RootScopeProvider,
         $q: $QProvider,
-        $sanitize: $SanitizeProvider,
         $sniffer: $SnifferProvider,
         $templateCache: $TemplateCacheProvider,
+        $timeout: $TimeoutProvider,
         $window: $WindowProvider
       });
     }
   ]);
-};
+}

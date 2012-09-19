@@ -38,6 +38,7 @@ describe('module loader', function() {
       value('k', 'v').
       filter('f', 'ff').
       directive('d', 'dd').
+      controller('ctrl', 'ccc').
       config('init2').
       constant('abc', 123).
       run('runBlock')).toBe(myModule);
@@ -52,6 +53,7 @@ describe('module loader', function() {
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$compileProvider', 'directive', ['d', 'dd'] ],
+      ['$controllerProvider', 'register', ['ctrl', 'ccc']],
       ['$injector', 'invoke', ['init2'] ]
     ]);
     expect(myModule._runBlocks).toEqual(['runBlock']);

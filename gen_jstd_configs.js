@@ -16,7 +16,7 @@ fs.readFile('angularFiles.js', function(err, data) {
   fs.writeFile('./jsTestDriver.conf', prefix + combine(angularFiles.jstd,
       angularFiles.jstdExclude));
 
-  fs.writeFile('./jsTestDriver-mocks.conf', prefix + combine(angularFiles.jstdMocks));
+  fs.writeFile('./jsTestDriver-modules.conf', prefix + combine(angularFiles.jstdModules));
 
   fs.writeFile('./jsTestDriver-scenario.conf', prefixScenario +
       combine(angularFiles.jstdScenario) +
@@ -40,6 +40,8 @@ function combine(load, exclude) {
   if (exclude) fileList += ('\n\nexclude:\n- ' + exclude.join('\n- '));
 
   //Replace placeholders for src list before returning
-  return fileList.replace(/@angularSrc/g, angularSrc);
+  return fileList.replace(/@(.*)/g, function(all, alias) {
+    return angularFiles[alias].join('\n- ');
+  });
 }
 
