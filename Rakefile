@@ -346,5 +346,5 @@ def start_testacular(config, singleRun, browsers, misc_options)
                 "#{config} " +
                 "#{'--single-run=true' if singleRun} " +
                 "#{'--browsers=' + browsers.gsub('+', ',') if browsers} " +
-                "#{misc_options}"
+                "#{(misc_options || '').gsub('+', ',')}"
 end
