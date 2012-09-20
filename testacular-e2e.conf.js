@@ -11,3 +11,8 @@ browsers = ['Chrome']
 proxies = {
   '/': 'http://localhost:8000/build/docs/'
 };
+
+junitReporter = {
+  outputFile: 'test_out/e2e.xml',
+  suite: 'E2E'
+};
