@@ -6,4 +6,9 @@ exclude = ['**/*jasmine*/**', '**/*jstd*/**'];
 autoWatch = true;
 logLevel = LOG_INFO;
 logColors = true;
-browsers = ['Chrome']
+browsers = ['Chrome'];
+
+junitReporter = {
+  outputFile: 'test_out/modules.xml',
+  suite: 'modules'
+};
