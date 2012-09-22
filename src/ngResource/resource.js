@@ -314,8 +314,8 @@ angular.module('ngResource', ['ng']).
 
       function extractParams(data, actionParams){
         var ids = {};
-        paramDefaults = extend(paramDefaults, actionParams);
-        forEach(paramDefaults || {}, function(value, key){
+        actionParams = extend({}, paramDefaults, actionParams);
+        forEach(actionParams, function(value, key){
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
         return ids;
