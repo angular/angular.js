@@ -590,6 +590,7 @@ function $LocationProvider(){
     var changeCounter = 0;
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = $browser.url();
+      var currentReplace = $location.$$replace;
 
       if (!changeCounter || oldUrl != $location.absUrl()) {
         changeCounter++;
@@ -598,12 +599,12 @@ function $LocationProvider(){
               defaultPrevented) {
             $location.$$parse(oldUrl);
           } else {
-            $browser.url($location.absUrl(), $location.$$replace);
-            $location.$$replace = false;
+            $browser.url($location.absUrl(), currentReplace);
             afterLocationChange(oldUrl);
           }
         });
       }
+      $location.$$replace = false;
 
       return changeCounter;
     });
