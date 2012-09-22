@@ -361,6 +361,7 @@ describe('$location', function() {
     };
   }
 
+
   describe('wiring', function() {
 
     beforeEach(initService(false, '!', true));
@@ -447,6 +448,21 @@ describe('$location', function() {
 
       expect($browserUrl).toHaveBeenCalledOnce();
       expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true]);
+      expect($location.$$replace).toBe(false);
+    }));
+
+    it('should always reset replace flag after running watch',
+        inject(function($rootScope, $location, $browser) {
+
+      // triggers $evalAsync.
+      $location.replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+
+      // doesn't trigger $evalAsync.
+      $location.replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
     }));
 
 
