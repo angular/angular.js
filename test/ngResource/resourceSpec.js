@@ -122,6 +122,17 @@ describe("resource", function() {
   });
 
 
+  it('should not pass default params between actions', function() {
+    var R = $resource('/Path', {}, {get: {method: 'GET', params: {objId: '1'}}, perform: {method: 'GET'}});
+
+    $httpBackend.expect('GET', '/Path?objId=1').respond('{}');
+    $httpBackend.expect('GET', '/Path').respond('{}');
+
+    R.get({});
+    R.perform({});
+  });
+
+
   it("should build resource with action default param overriding default param", function() {
     $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
     var TypeItem = $resource('/:type/:typeId', {type: 'Order'},
