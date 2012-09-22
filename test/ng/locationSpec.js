@@ -447,6 +447,29 @@ describe('$location', function() {
 
       expect($browserUrl).toHaveBeenCalledOnce();
       expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true]);
+      expect($location.$$replace).toBe(false);
+    }));
+
+
+    it('should always reset replace flag after running watch', inject(function($rootScope, $location) {
+      // init watches
+      $location.url('/initUrl');
+      $rootScope.$apply();
+
+      // changes url but resets it before digest
+      $location.url('/newUrl').replace().url('/initUrl');
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+
+      // set the url to the old value
+      $location.url('/newUrl').replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+
+      // doesn't even change url only calls replace()
+      $location.replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
     }));
 
 

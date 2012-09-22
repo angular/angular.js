@@ -560,20 +560,15 @@ describe('$route', function() {
         $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
       });
-      inject(function($route, $location, $rootScope) {
-        var replace;
-
-        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-          if (oldUrl == 'http://server/#/foo/id3/eId') {
-            replace = $location.$$replace;
-          }
-        });
+      inject(function($browser, $route, $location, $rootScope) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
 
         $location.path('/foo/id3/eId');
         $rootScope.$digest();
 
         expect($location.path()).toEqual('/bar/id3');
-        expect(replace).toBe(true);
+        expect($browserUrl.mostRecentCall.args)
+            .toEqual(['http://server/#/bar/id3?extra=eId', true]);
       });
     });
   });
