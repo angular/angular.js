@@ -638,7 +638,7 @@ function $RootScopeProvider(){
         namedListeners.push(listener);
 
         return function() {
-          arrayRemove(namedListeners, listener);
+          namedListeners[indexOf(namedListeners, listener)] = null;
         };
       },
 
@@ -686,6 +686,14 @@ function $RootScopeProvider(){
           namedListeners = scope.$$listeners[name] || empty;
           event.currentScope = scope;
           for (i=0, length=namedListeners.length; i<length; i++) {
+
+            // if listeners were deregistered, defragment the array
+            if (!namedListeners[i]) {
+              namedListeners.splice(i, 1);
+              i--;
+              length--;
+              continue;
+            }
             try {
               namedListeners[i].apply(null, listenerArgs);
               if (stopPropagation) return event;
@@ -735,19 +743,29 @@ function $RootScopeProvider(){
               },
               defaultPrevented: false
             },
-            listenerArgs = concat([event], arguments, 1);
+            listenerArgs = concat([event], arguments, 1),
+            listeners, i, length;
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         do {
           current = next;
           event.currentScope = current;
-          forEach(current.$$listeners[name], function(listener) {
+          listeners = current.$$listeners[name] || [];
+          for (i=0, length = listeners.length; i<length; i++) {
+            // if listeners were deregistered, defragment the array
+            if (!listeners[i]) {
+              listeners.splice(i, 1);
+              i--;
+              length--;
+              continue;
+            }
+
             try {
-              listener.apply(null, listenerArgs);
+              listeners[i].apply(null, listenerArgs);
             } catch(e) {
               $exceptionHandler(e);
             }
-          });
+          }
 
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
