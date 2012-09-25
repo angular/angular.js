@@ -708,6 +708,47 @@ describe('Scope', function() {
       });
 
 
+      // regression
+      it('should survive removing listener inside listener', function() {
+        var spy1 = jasmine.createSpy('1st listener');
+        var spy2 = jasmine.createSpy('2nd listener');
+        var spy3 = jasmine.createSpy('3rd listener');
+
+        var remove1 = child.$on('evt', spy1);
+        var remove2 = child.$on('evt', spy2);
+        var remove3 = child.$on('evt', spy3);
+
+        spy1.andCallFake(remove1);
+
+        // should call all listeners and remove 1st
+        child.$emit('evt');
+        expect(spy1).toHaveBeenCalledOnce();
+        expect(spy2).toHaveBeenCalledOnce();
+        expect(spy3).toHaveBeenCalledOnce();
+
+        spy1.reset();
+        spy2.reset();
+        spy3.reset();
+
+        // should only 2nd, because 2nd remove 3rd
+        spy2.andCallFake(remove3);
+        child.$emit('evt');
+        expect(spy1).not.toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalledOnce();
+        expect(spy3).not.toHaveBeenCalled();
+
+        spy1.reset();
+        spy2.reset();
+        spy3.reset();
+
+        // test $broadcast as well
+        child.$broadcast('evt');
+        expect(spy1).not.toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalledOnce();
+        expect(spy3).not.toHaveBeenCalled();
+      });
+
+
       describe('event object', function() {
         it('should have methods/properties', function() {
           var event;

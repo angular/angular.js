@@ -633,7 +633,7 @@ function $RootScopeProvider(){
         namedListeners.push(listener);
 
         return function() {
-          arrayRemove(namedListeners, listener);
+          namedListeners[indexOf(namedListeners, listener)] = null;
         };
       },
 
@@ -681,6 +681,7 @@ function $RootScopeProvider(){
           namedListeners = scope.$$listeners[name] || empty;
           event.currentScope = scope;
           for (i=0, length=namedListeners.length; i<length; i++) {
+            if (!namedListeners[i]) continue;
             try {
               namedListeners[i].apply(null, listenerArgs);
               if (stopPropagation) return event;
@@ -737,6 +738,7 @@ function $RootScopeProvider(){
           current = next;
           event.currentScope = current;
           forEach(current.$$listeners[name], function(listener) {
+            if (!listener) return;
             try {
               listener.apply(null, listenerArgs);
             } catch(e) {
