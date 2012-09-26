@@ -12,9 +12,9 @@ Server-side validation is still necessary for a secure application.
 
 
 # Simple form
-The key directive in understanding two-way data-binding is  {@link api/ng.directive:ngModel ngModel}.
+The key directive in understanding two-way data-binding is {@link api/ng.directive:ngModel ngModel}.
 The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
-In addition it provides {@link api/ng.directive:ngModel.NgModelController API} for other directives to augment its behavior.
+In addition it provides an {@link api/ng.directive:ngModel.NgModelController API} for other directives to augment its behavior.
 
 <doc:example>
 <doc:source>
@@ -63,7 +63,7 @@ To allow styling of form as well as controls, `ngModel`  add these CSS classes:
 - `ng-pristine`
 - `ng-dirty`
 
-Following example uses the CSS to display validity of each form control.
+The following example uses the CSS to display validity of each form control.
 In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
 This ensures that the user is not distracted with an error until after interacting with the control, and failing to satisfy its validity.
 
@@ -190,18 +190,18 @@ The validation can occur in two places:
 
   * **View to Model update** -
     In a similar way, whenever a user interacts with a control it calls {@link api/ng.directive:ngModel.NgModelController#$setViewValue NgModelController#$setViewValue}.
-This in turn pipelines all functions in {@link api/ng.directive:ngModel.NgModelController#$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link api/ng.directive:ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
+This in turn pipelines all functions in the {@link api/ng.directive:ngModel.NgModelController#$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link api/ng.directive:ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
 
 In the following example we create two directives.
 
   * The first one is `integer` and it validates whether the input is a valid integer.
     For example `1.23` is an invalid value, since it contains a fraction.
-    Note, that we unshift the array instead of pushing.
+    Note that we unshift the array instead of pushing.
     This is because we want to be first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
 
   * The second directive is a `smart-float`.
     It parses both `1.2` and `1,2` into a valid float number `1.2`.
-    Note that, we can't use input type `number` here as HTML5 browsers would not allow the user to type what it would consider an invalid number such as `1,2`.
+    Note that we can't use input type `number` here as HTML5 browsers would not allow the user to type what it would consider an invalid number such as `1,2`.
 
 
 <doc:example module="form-example1">
@@ -272,7 +272,7 @@ In the following example we create two directives.
 </doc:example>
 
 
-# Implementing custom form control (using `ngModel`)
+# Implementing custom form controls (using `ngModel`)
 Angular implements all of the basic HTML form controls ({@link api/ng.directive:input input}, {@link api/ng.directive:select select}, {@link api/ng.directive:textarea textarea}), which should be sufficient for most cases.
 However, if you need more flexibility, you can write your own form control as a directive.
 

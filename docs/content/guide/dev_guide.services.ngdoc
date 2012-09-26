@@ -2,10 +2,9 @@
 @name Developer Guide: Angular Services
 @description
 
-Services are a feature that angular brings to client-side web apps from the server side, where
-services have been commonly used for a long time.  Services in angular apps are substitutable
-objects that are wired together using {@link di dependency injection (DI)}. Services are
-most often used with {@link di dependency injection}, also a key feature of angular apps.
+Services are a feature that Angular brings to client-side web apps from the server side, where
+services have been commonly used for a long time. Services in Angular apps are substitutable
+objects that are wired together using {@link di dependency injection (DI)}.
 
 
 ## Related Topics

@@ -9,7 +9,7 @@ browser new HTML syntax. The compiler allows you to attach behavior to any HTML 
 and even create new HTML element or attributes with custom behavior. Angular calls these behavior
 extensions {@link api/ng.$compileProvider#directive directives}.
 
-HTML has a lot of constructs for formatting the HTML for static documents in declarative fashion.
+HTML has a lot of constructs for formatting the HTML for static documents in a declarative fashion.
 For example if something needs to be centered, there is no need to provide instructions to the
 browser how the window size needs to be divided in half so that center is found, and that this
 center needs to be aligned with the text's center. Simply add `align="center"` attribute to any
@@ -37,7 +37,7 @@ process happens into two phases.
 
   2. **Link:** combine the directives with a scope and produce a live view. Any changes in the
   scope model are reflected in the view, and any user interactions with the view are reflected
-  in the scope model. Making the scope model a single source of truth.
+  in the scope model. This makes the scope model the single source of truth.
 
 Some directives such {@link api/ng.directive:ngRepeat
 `ng-repeat`} clone DOM elements once for each item in collection. Having a compile and link phase
@@ -47,9 +47,9 @@ once for each clone instance.
 
 # Directive
 
-Directive is a behavior which should be triggered when specific HTML constructs are encountered in
-compilation process. The directives can be placed in element names, attributes, class names, as
-well as comments. Here are some equivalent examples of invoking {@link
+A directive is a behavior which should be triggered when specific HTML constructs are encountered in
+the compilation process. The directives can be placed in element names, attributes, class names, as
+well as comments. Here are some equivalent examples of invoking the {@link
 api/ng.directive:ngBind `ng-bind`} directive.
 
 <pre>
@@ -59,7 +59,7 @@ api/ng.directive:ngBind `ng-bind`} directive.
   <!-- directive: ng-bind exp -->
 </pre>
 
-Directive is just a function which executes when the compiler encounters it in the DOM. See {@link
+A directive is just a function which executes when the compiler encounters it in the DOM. See {@link
 api/ng.$compileProvider#directive directive API} for in-depth documentation on how
 to write directives.
 
@@ -107,9 +107,9 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
 </example>
 
 
-The presence of `draggable` attribute on any element gives the element new behavior. The beauty of
+The presence of the `draggable` attribute on any element gives the element new behavior. The beauty of
 this approach is that we have taught the browser a new trick. We have extended the vocabulary of
-what the browser understands in a way, which is natural to anyone who is familiar with HTML
+what the browser understands in a way which is natural to anyone who is familiar with HTML
 principles.
 
 
@@ -122,7 +122,7 @@ an element.
 <img src="img/One_Way_Data_Binding.png">
 
 This means that any changes to the data need to be re-merged with the template and then
-`innerHTML`ed into the DOM. Some of the issues are: reading user input and merging it with data,
+`innerHTML`ed into the DOM. Some of the issues with this approach are: reading user input and merging it with data,
 clobbering user input by overwriting it, managing the whole update process, and lack of behavior
 expressiveness.
 
