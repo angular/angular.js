@@ -47,7 +47,7 @@ is simply handed the `greeter` at runtime.
 This is desirable, but it puts the responsibility of getting hold of the dependency onto the
 code responsible for the construction of `SomeClass`.
 
-To manage the responsibility of dependency creation, each angular application has an {@link
+To manage the responsibility of dependency creation, each Angular application has an {@link
 api/angular.injector injector}. The injector is a service locator that is responsible for
 construction and lookup of dependencies.
 
@@ -109,7 +109,7 @@ deal with the injector. This setup does not break the Law of Demeter.
 
 How does the injector know what service needs to be injected? 
 
-The application developer needs to provide annotation information, that the injector uses in order
+The application developer needs to provide annotation information that the injector uses in order
 to resolve the dependencies. Throughout Angular certain API functions are invoked using the
 injector, as per the API documentation. The injector needs to know what services to inject into
 the function. Below are three equivalent ways of annotating your code with service name
@@ -186,14 +186,13 @@ For this reason the third annotation style is provided as well.
 Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
 where injection is supported.
 
-
 # Where can I use DI?
 
 DI is pervasive throughout Angular. It is typically used in controllers and factory methods. 
 
 ## DI in controllers
 
-Controllers are classes which are responsible for application behavior. Recommended way of 
+Controllers are classes which are responsible for application behavior. The recommended way of 
 declaring controllers is:
 
 <pre>
@@ -211,7 +210,7 @@ declaring controllers is:
 ## Factory methods
 
 Factory methods are responsible for creating most objects in Angular. Examples are directives,
-services, and filters. The factory methods are register with the module, and the recommended way
+services, and filters. The factory methods are registered with the module, and the recommended way
 of declaring factories is:
 
 <pre>
