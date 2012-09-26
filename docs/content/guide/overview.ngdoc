@@ -16,7 +16,7 @@ declarative language for static documents. It does not contain much in the way o
 applications, and as a result building web applications is an exercise in *what do I have to do, so
 that I trick the browser in to doing what I want.*
 
-Impedance mismatch between dynamic applications and static documents are often solved as:
+The impedance mismatch between dynamic applications and static documents is often solved as:
 
   * **library** - a collection of functions which are useful when writing web apps. Your code is
     in charge and it calls into the library when it sees fit. E.g., `jQuery`.
@@ -111,7 +111,7 @@ concepts which the application developer may face:
 Try out the Live Preview above, and then let's walk through the example and describe what's going
 on.
 
-In the `<html>` tag, we specify that it is an angular
+In the `<html>` tag, we specify that it is an Angular
 application with the `ng-app` directive. The `ng-app` will cause Angular to {@link
 bootstrap auto initialize} your application.
 
@@ -121,7 +121,7 @@ We load Angular using the  `<script>` tag:
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/?.?.?/angular.min.js"></script>
 
-From the `ng-model` attribute of the `<input>` tags, angular automatically sets up two-way data
+From the `ng-model` attribute of the `<input>` tags, Angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
     Quantity: <input type="integer" min="0" ng-model="qty" required >
@@ -129,7 +129,7 @@ binding, and we also demonstrate some easy input validation:
 
 These input widgets look normal enough, but consider these points:
 
-  * When this page loaded, angular bound the names of the input widgets (`qty` and `cost`) to
+  * When this page loaded, Angular bound the names of the input widgets (`qty` and `cost`) to
     variables of the same name. Think of those variables as the "Model" component of the
     Model-View-Controller design pattern.
   * Note that the HTML widget {@link api/ng.directive:input input}
@@ -193,7 +193,7 @@ Angular frees you from the following pain:
     code. Angular eliminates almost all of this boilerplate, leaving code that describes the
     overall flow of the application rather than all of the implementation details.
   * **Writing tons of initialization code just to get started:** Typically you need to write a lot
-    of plumbing just to get a basic "Hello World" AJAX app working. With angular you can bootstrap
+    of plumbing just to get a basic "Hello World" AJAX app working. With Angular you can bootstrap
     your app easily using services, which are auto-injected into your application in a {@link
     http://code.google.com/p/google-guice/ Guice}-like dependency-injection style. This allows you
     to get started developing features quickly. As a bonus, you get full control over the

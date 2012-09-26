@@ -81,7 +81,7 @@ Logically the rendering of `{{greeting}}` involves:
 You can think of the scope and its properties as the data which is used to render the view. The
 scope is the single source-of-truth for all things view related.
 
-From testability, the separation of the controller and the view is desirable, because it allows us
+From a testability point of view, the separation of the controller and the view is desirable, because it allows us
 to test the behavior without being distracted by the rendering details.
 
 <pre>
@@ -151,7 +151,7 @@ This example illustrates scopes in application, and prototypical inheritance of 
   </file>
 </example>
 
-Notice that the Angular automatically places `ng-scope` class on elements where scopes are
+Notice that Angular automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
 child scopes are necessary because the repeater evaluates `{{employee.name}}` expression, but
 depending on which scope the expression is evaluated it produces different result. Similarly the
@@ -166,7 +166,7 @@ purposes. (It is unlikely that one would need to retrieve scopes in this way ins
 application.) The location where the root scope is attached to the DOM is defined by the location
 of {@link api/ng.directive:ngApp `ng-app`} directive. Typically
 `ng-app` is placed an the `<html>` element, but it can be placed on other elements as well, if,
-for example, only a portion of the view needs to be controlled by angular.
+for example, only a portion of the view needs to be controlled by Angular.
 
 To examine the scope in the debugger:
 
@@ -218,7 +218,7 @@ api/ng.$rootScope.Scope#$emit emitted} to scope parents.
 
 ## Scope Life Cycle
 
-The normal flow of browser receiving an event is that it executes a corresponding JavaScript
+The normal flow of a browser receiving an event is that it executes a corresponding JavaScript
 callback. Once the callback completes the browser re-renders the DOM and returns to waiting for
 more events.
 

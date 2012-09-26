@@ -110,7 +110,7 @@ Compilation of HTML happens in three phases:
 ## Reasons behind the compile/link separation
 
 At this point you may wonder why the compile process is broken down to a compile and link phase.
-To understand this, let's look at a real world example with repeater:
+To understand this, let's look at a real world example with a repeater:
 
 <pre>
   Hello {{user}}, you have these actions:
@@ -296,7 +296,7 @@ makes it injectable following all of the rules of injection annotation.
 The directive definition object provides instructions to the {@link api/ng.$compile
 compiler}. The attributes are:
 
-  * `name` - Name of the current scope. Optional defaults to the name at registration.
+  * `name` - Name of the current scope. Optional and defaults to the name at registration.
 
   * `priority` - When there are multiple directives defined on a single DOM element, sometimes it
     is necessary to specify the order in which the directives are applied. The `priority` is used
@@ -310,7 +310,7 @@ compiler}. The attributes are:
   * `scope` - If set to:
 
     * `true` - then a new scope will be created for this directive. If multiple directives on the
-      same element request new scope, only one new scope is created. The new scope rule does not
+      same element request a new scope, only one new scope is created. The new scope rule does not
       apply for the root of the template since the root of the template always gets a new scope.
 
     * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
@@ -474,7 +474,7 @@ compiler linking function will fail to locate the correct elements for linking.
 
 ### Post-linking function
 
-Executed after the child elements are linked. Safe to do DOM transformation in here.
+Executed after the child elements are linked. It is safe to do DOM transformation in the post-linking function.
 
 <a name="Attributes"></a>
 ## Attributes
@@ -584,7 +584,7 @@ isolated scope then it will not be able to bind to anything. For this reason the
 is a child of the original scope, before the widget created an isolated scope for its local
 variables. This makes the transcluded and widget isolated scope siblings.
 
-This may seem as unexpected complexity, but it gives the widget user and developer the least
+This may seem to be unexpected complexity, but it gives the widget user and developer the least
 surprise.
 
 Therefore the final directive definition looks something like this:
@@ -608,7 +608,6 @@ allows the directives to become a short hand for reusable components from which 
 can be built.
 
 Following is an example of building a reusable widget.
-
 
 <doc:example module="zippyModule">
   <doc:source>
