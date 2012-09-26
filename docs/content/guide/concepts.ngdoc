@@ -339,7 +339,7 @@ in HTML.
 
 {@link api/ng.$filter Filters} perform data transformation. Typically
 they are used in conjunction with the locale to format the data in locale specific output.
-They are follow the spirit of UNIX filters and have a similar syntax: `|` (pipe).
+They follow the spirit of UNIX filters and have a similar syntax: `|` (pipe).
 
 <example>
   <file name="index.html">
