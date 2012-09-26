@@ -194,7 +194,7 @@ and thus script loaders can take advantage of this property and parallelize the 
 
 # Unit Testing
 
-In its simplest form a unit-test is a way of instantiating a subset of the application in test and
+In its simplest form a unit test is a way of instantiating a subset of the application in test and
 then applying a stimulus to it. It is important to realize that each module can only be loaded
 once per injector. Typically an app has only one injector. But in tests, each test has its own
 injector, which means that the modules are loaded multiple times per VM. Properly structured
@@ -222,8 +222,8 @@ In all of these examples we are going to assume this module definition:
 Let's write some tests:
 <pre>
 describe('myApp', function() {
-  // load the application relevant modules then load a special
-  // test module which overrides the $window with mock version,
+  // load the relevant application modules then load a special
+  // test module which overrides the $window with a mock version,
   // so that calling window.alert() will not block the test
   // runner with a real alert box. This is an example of overriding
   // configuration information in tests.
