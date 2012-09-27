@@ -253,7 +253,7 @@ An example skeleton of the directive is shown here, for the complete list see be
 
 In most cases you will not need such fine control and so the above can be simplified. All of the
 different parts of this skeleton are explained in following sections. In this section we are
-interested only isomers of this skeleton.
+interested only in some of this skeleton.
 
 The first step in simplyfing the code is to rely on the default values. Therefore the above can be
 simplified as:
