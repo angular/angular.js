@@ -29,6 +29,43 @@ function parseHeaders(headers) {
 }
 
 
+var IS_SAME_DOMAIN_URL_MATCH = /^(([^:]+):)?\/\/(\w+:{0,1}\w*@)?([\w\.-]*)?(:([0-9]+))?(.*)$/;
+
+
+/**
+ * Parse a request and location URL and determine whether this is a same-domain request.
+ *
+ * @param {string} requestUrl The url of the request.
+ * @param {string} locationUrl The current browser location url.
+ * @returns {boolean} Whether the request is for the same domain.
+ */
+function isSameDomain(requestUrl, locationUrl) {
+  var match = IS_SAME_DOMAIN_URL_MATCH.exec(requestUrl);
+  // if requestUrl is relative, the regex does not match.
+  if (match == null) return true;
+
+  var domain1 = {
+      protocol: match[2],
+      host: match[4],
+      port: int(match[6]) || DEFAULT_PORTS[match[2]] || null,
+      // IE8 sets unmatched groups to '' instead of undefined.
+      relativeProtocol: match[2] === undefined || match[2] === ''
+    };
+
+  match = URL_MATCH.exec(locationUrl);
+  var domain2 = {
+      protocol: match[1],
+      host: match[3],
+      port: int(match[5]) || DEFAULT_PORTS[match[1]] || null
+    };
+
+  return (domain1.protocol == domain2.protocol || domain1.relativeProtocol) &&
+         domain1.host == domain2.host &&
+         (domain1.port == domain2.port || (domain1.relativeProtocol &&
+             domain2.port == DEFAULT_PORTS[domain2.protocol]));
+}
+
+
 /**
  * Returns a function that provides access to parsed headers.
  *
@@ -345,7 +382,7 @@ function $HttpProvider() {
      * to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie
      * called `XSRF-TOKEN` and sets it as the HTTP header `X-XSRF-TOKEN`. Since only JavaScript that
      * runs on your domain could read the cookie, your server can be assured that the XHR came from
-     * JavaScript running on your domain.
+     * JavaScript running on your domain. The header will not be set for cross-domain requests.
      *
      * To take advantage of this, your server needs to set a token in a JavaScript readable session
      * cookie called `XSRF-TOKEN` on first HTTP GET request. On subsequent non-GET requests the
@@ -476,7 +513,9 @@ function $HttpProvider() {
       var reqTransformFn = config.transformRequest || defaults.transformRequest,
           respTransformFn = config.transformResponse || defaults.transformResponse,
           defHeaders = defaults.headers,
-          reqHeaders = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+          xsrfToken = isSameDomain(config.url, $browser.url()) ?
+                          $browser.cookies()['XSRF-TOKEN'] : undefined,
+          reqHeaders = extend({'X-XSRF-TOKEN': xsrfToken},
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
           reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
           promise;
