@@ -24,4 +24,11 @@ describe('linky', function() {
     expect(linky("send email to me@example.com, but")).
       toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
   });
+
+  it('should handle target:', function() {
+    expect(linky("http://example.com", "_blank")).
+      toEqual('<a target="_blank" href="http://example.com">http://example.com</a>')
+    expect(linky("http://example.com", "someNamedIFrame")).
+      toEqual('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>')
+  });
 });
