@@ -13,7 +13,7 @@ it makes development fun!
 
 * Web site: http://angularjs.org
 * Tutorial: http://docs.angularjs.org/tutorial
-* API Docs: http://docs.angularjs.org
+* API Docs: http://docs.angularjs.org/api
 * Developer Guide: http://docs.angularjs.org/guide
 * Contribution guidelines: http://docs.angularjs.org/misc/contribute
 
