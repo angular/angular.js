@@ -108,8 +108,7 @@ function $HttpProvider() {
     // default headers
     headers: {
       common: {
-        'Accept': 'application/json, text/plain, */*',
-        'X-Requested-With': 'XMLHttpRequest'
+        'Accept': 'application/json, text/plain, */*'
       },
       post: {'Content-Type': 'application/json;charset=utf-8'},
       put:  {'Content-Type': 'application/json;charset=utf-8'}
@@ -212,7 +211,6 @@ function $HttpProvider() {
      *
      * - `$httpProvider.defaults.headers.common` (headers that are common for all requests):
      *   - `Accept: application/json, text/plain, * / *`
-     *   - `X-Requested-With: XMLHttpRequest`
      * - `$httpProvider.defaults.headers.post`: (header defaults for HTTP POST requests)
      *   - `Content-Type: application/json`
      * - `$httpProvider.defaults.headers.put` (header defaults for HTTP PUT requests)

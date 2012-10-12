@@ -377,8 +377,7 @@ describe('$http', function() {
 
       it('should set default headers for GET request', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest';
+          return headers['Accept'] == 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {}});
@@ -389,7 +388,6 @@ describe('$http', function() {
       it('should set default headers for POST request', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
@@ -401,7 +399,6 @@ describe('$http', function() {
       it('should set default headers for PUT request', function() {
         $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
@@ -412,8 +409,7 @@ describe('$http', function() {
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest';
+          return headers['Accept'] == 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'FOO', headers: {}});
@@ -424,7 +420,6 @@ describe('$http', function() {
       it('should override default headers with custom', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'Rewritten' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'Rewritten';
         }).respond('');
 
