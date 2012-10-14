@@ -79,7 +79,7 @@ angular.module('phonecat', []).
 </pre>
 
 In order to configure our application with routes, we need to create a module for our application.
-We call this module `phonecatApp` and using the `config` API we request the `$routeProvider` to be
+We call this module `phonecat` and using the `config` API we request the `$routeProvider` to be
 injected into our config function and use `$routeProvider.when` API to define our routes.
 
 Note that during the injector configuration phase, the providers can be injected as well, but they
