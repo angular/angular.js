@@ -5,9 +5,8 @@
 # What is a Module?
 
 Most applications have a main method which instantiates, wires, and bootstraps the application.
-Angular apps don't have a main method, instead modules serve the purpose of declaratively
-specifying how an application should be bootstrapped. There are several advantages to this
-approach:
+Angular apps don't have a main method. Instead modules declaratively specify how an application
+should be bootstrapped. There are several advantages to this approach:
 
   * The process is more declarative which is easier to understand
   * In unit-testing there is no need to load all modules, which may aid in writing unit-tests.
