@@ -144,7 +144,7 @@ describe('PhoneCat controllers', function() {
           respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
 
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneListCtrl, {$scope: scope});
+      ctrl = $controller(PhoneListCtrl, {$scope: scope, $httpBackend: $httpBackend});
     }));
 </pre>
 
