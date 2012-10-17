@@ -123,8 +123,10 @@ task :minify => [:init, :concat, :concat_scenario, :concat_jstd_scenario_adapter
     'angular-bootstrap.js',
     'angular-bootstrap-prettify.js'
   ].each do |file|
-    closure_compile(file)
+    fork { closure_compile(file) }
   end
+
+  Process.waitall
 end
 
 
