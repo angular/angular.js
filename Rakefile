@@ -40,6 +40,7 @@ desc 'Clean Generated Files'
 task :clean do
   FileUtils.rm_r(BUILD_DIR, :force => true)
   FileUtils.mkdir(BUILD_DIR)
+  FileUtils.rm_r('test_out', :force => true)
 end
 
 
