@@ -172,7 +172,7 @@ end
 
 desc 'Start development webserver'
 task :webserver, :port do |t, args|
-  system "node lib/nodeserver/server.js #{args[:port]}"
+  exec "node lib/nodeserver/server.js #{args[:port]}"
 end
 
 
