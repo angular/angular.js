@@ -111,8 +111,6 @@ docsApp.directive.docTutorialReset = function() {
         '<div class="tabbable" ng-show="show" ng-model="$cookies.platformPreference">\n' +
           tab('Git on Mac/Linux', 'git checkout -f step-' + step, 'gitUnix', step) +
           tab('Git on Windows', 'git checkout -f step-' + step, 'gitWin', step) +
-          tab('Snapshots on Mac/Linux', './goto_step.sh ' + step, 'snapshotUnix', step) +
-          tab('Snapshots on on Windows', './goto_step.bat ' + step, 'snapshotWin', step) +
         '</div>\n');
     }
   };

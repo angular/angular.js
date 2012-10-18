@@ -134,13 +134,9 @@ The unit test now verifies that the default ordering property is set.
 We used Jasmine's API to extract the controller construction into a `beforeEach` block, which is
 shared by all tests in the parent `describe` block.
 
-To run the unit tests, once again execute the `./scripts/test.sh` script and you should see the
-following output.
+You should now see the following output in the Testacular tab:
 
-        Chrome: Runner reset.
-        ..
-        Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-          Chrome 19.0.1084.36 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+        Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)
 
 
 Let's turn our attention to the end-to-end test.
@@ -168,8 +164,8 @@ __`test/e2e/scenarios.js`:__
 
 The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 
-You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
-can see them running on {@link
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+`runner.html` to see the tests run, or you can see them running on {@link
 http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
 Angular's server}.
 
