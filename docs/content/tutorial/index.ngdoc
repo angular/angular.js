@@ -47,20 +47,23 @@ really digging into it. If you're looking for a shorter introduction to AngularJ
 # Working with the code
 
 You can follow this tutorial and hack on the code in either the Mac/Linux or the Windows
-environment. Options for working with the tutorial are to use the Git versioning system for source
-code management or to use scripts that copy snapshots of project files into your workspace
-(`sandbox`) directory. Select one of the tabs below and follow the instructions for setting up your
-computer for your preferred option.
+environment. The tutorial relies on the use of Git versioning system for source code management.
+You don't need to know anything about Git to follow the tutorial. Select one of the tabs below
+and follow the instructions for setting up your computer.
 
 <div class="tabbable" show="true">
   <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux">
     <ol>
-      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed by running the
-following command in a terminal window:</p>
-      <pre>java -version</pre>
-      <p>You will need Java to run unit tests.</p></li>
-      <li><p>Download Git from the <a href="http://git-scm.com/download">Git</a> site.</p>
-      <p>You can build Git from source or use the pre-compiled package.</p></li>
+      <li><p>You will need Node.js and Testacular to run unit tests, so please verify that you have
+      <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+      and that the <code>node</code> executable is on your <code>PATH</code> by running the following
+      command in a terminal window:</p>
+      <pre>node --version</pre>
+      <p>Additionally install <a href="http://vojtajina.github.com/testacular">Testacular</a> if you
+      don't have it already:</p>
+      <pre>npm install -g testacular</pre>
+      <li><p>You'll also need Git, which you can get from
+         <a href="http://git-scm.com/download">the Git site</a>.</p></li>
       <li><p>Clone the angular-phonecat repository located at <a
 href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
       <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
@@ -71,76 +74,40 @@ directory.</p></li>
       <p>The tutorial instructions assume you are running all commands from the angular-phonecat
 directory.</p></li>
       <li><p>You will need an http server running on your system. Mac and Linux machines typically
-have Apache pre-installed, but If you don't already have one installed, you can <a
-href="http://nodejs.org/#download">install node.js</a>. Use <code>node</code> to run
-<code>scripts/web-server.js</code>,  a simple bundled http server.</p></li>
+have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
+to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></li>
     </ol>
   </div>
 
   <div class="tab-pane well" id="git-win" title="Git on Windows">
     <ol>
-      <li><p>You will need Java to run unit tests, so run the following command to verify that you
-have <a href="http://java.com/">Java</a> installed and that the <code>java</code> executable is on
-your <code>PATH</code>.</p>
-      <pre>java -version</pre>
-      <p></p></li>
-      <li><p>Install msysGit from <a href="http://git-scm.com/download">the Git</a> site.</p></li>
-      <li><p>Open msysGit bash and clone the angular-phonecat repository located at <a
-href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
+      <li><p>You will need Node.js and Testacular to run unit tests, so please verify that you have
+        <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+        and that the <code>node</code> executable is on your <code>PATH</code> by running the following
+        command in a terminal window:</p>
+        <pre>node --version</pre>
+        <p>Additionally install <a href="http://vojtajina.github.com/testacular">Testacular</a> if you
+           don't have it already:</p>
+        <pre>npm install -g testacular</pre>
+      </li>
+      <li><p>You'll also need Git, which you can get from
+               <a href="http://git-scm.com/download">the Git site</a>.</p></li>
+      <li><p>Clone the angular-phonecat repository located at <a
+      href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
       <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
       <p>This command creates the angular-phonecat directory in your current directory.</p></li>
       <li><p>Change your current directory to angular-phonecat.</p>
       <pre>cd angular-phonecat</pre>
       <p>The tutorial instructions assume you are running all commands from the angular-phonecat
 directory.</p>
-      <p>You should run all <code>git</code> commands from msysGit bash.</p>
-      <p>Other commands like <code>test-server.bat</code> or <code>test.bat</code> should be
+      <p>You should run all <code>git</code> commands from Git bash.</p>
+      <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be
 executed from the Windows command line.</li>
       <li><p>You need an http server running on your system, but if you don't already have one
-already installed, you can install <a href="http://nodejs.org/#download">node.js</a>. Make sure that
-<code>nodejs\bin</code> was added into your <code>PATH</code>. Use <code>node</code> to run
-<code>scripts\web-server.js</code>, a simple bundled http server.</p></li>
+already installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple
+bundled http server.</p></li>
     </ol>
   </div>
-
-  <div class="tab-pane well" id="ss-mac" title="Snapshots on Mac/Linux">
-    <ol>
-      <li><p>You need Java to run unit tests, so verify that you have <a
-href="http://java.com/">Java</a> installed by running the following command in a terminal
-window:</p>
-      <pre>java -version</pre>
-       <li><p>Download the <a href="http://code.angularjs.org/angular-phonecat/">zip archive</a>
-containing all of the files and unzip them into the [tutorial-dir] directory</p>.</li>
-      <li><p>Change your current directory to [tutorial-dir]/sandbox, as follows:</p>
-      <pre>cd [tutorial-dir]/sandbox</pre>
-      <p>The tutorial instructions assume you are running all commands from your
-<code>sandbox</code> directory.</p></li>
-      <li><p>You need an http server running on your system and Mac and Linux machines typically
-have Apache pre-installed. If you don't have an http server installed, you can <a
-href="http://nodejs.org/#download">install node.js</a> and use it to run
-<code>scripts/web-server.js</code>, a simple bundled http server.</p></li>
-    </ol>
-  </div>
-
-  <div class="tab-pane well" id="ss-win" title="Snapshots on Windows">
-    <ol>
-      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed and that the
-<code>java</code> executable is on your <code>PATH</code> by running the following command in the
-Windows command line:</p>
-      <pre>java -version</pre>
-      <p>You need Java to run unit tests, so download the <a
-href="http://code.angularjs.org/angular-phonecat/">zip archive</a> that contains all of the files
-and unzip the files into the [tutorial-dir] directory</p></li>
-      <li><p>Change your current directory to [tutorial-dir]/sandbox, as follows:</p>
-      <pre>cd [tutorial-dir]/sandbox</pre>
-      <p>The tutorial instructions assume you are running all commands from this directory.</p></li>
-      <li><p>You need an http server running on your system, but if you don't already have one
-already installed, you can install <a href="http://nodejs.org/#download">node.js</a>. Make sure that
-<code>nodejs\bin</code> was added into your <code>PATH</code>. Use <code>node</code> to run
-<code>scripts\web-server.js</code>, a simple bundled http server.</p></li>
-    </ol>
-  </div>
-</divs>
 
 The last thing to do is to make sure your computer has a web browser and a good text editor
 installed. Now, let's get some cool stuff done!

@@ -46,7 +46,7 @@ directory.</li>
 
   <div class="tab-pane well" id="git-win" title="Git on Windows" value="gitWin">
     <ol>
-      <li><p>Open msysGit bash and run this command (in angular-phonecat directory):</p>
+      <li><p>Open Git bash and run this command (in angular-phonecat directory):</p>
       <pre>git checkout -f step-0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
@@ -66,70 +66,6 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
             <ol>
               <li>Configure the server to serve the files in the <code>angular-phonecat</code>
 directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
-
-
-  <div class="tab-pane well" id="ss-mac" title="Snapshots on Mac/Linux" value="snapshotUnix">
-    <ol>
-      <li><p>In the angular-phonecat directory, run this command:</p>
-      <pre>./goto_step.sh 0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run
-<code>./scripts/web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the angular-phonecat
-<code>sandbox</code> directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
-
-
-  <div class="tab-pane well" id="ss-win" title="Snapshots on Windows" value="snapshotWin">
-    <ol>
-      <li><p>Open windows command line and run this command (in the angular-phonecat directory):</p>
-      <pre>goto_step.bat 0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node
-scripts\web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the angular-phonecat
-<code>sandbox</code> directory.</li>
               <li>Navigate in your browser to
 <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
             </ol>
