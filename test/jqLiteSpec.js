@@ -1081,6 +1081,31 @@ describe('jqLite', function() {
   });
 
 
+  describe('clone', function() {
+    function test(outerHTML) {
+      function normalize(str) {
+        return str.toLowerCase().replace(/^\s+|\s+$/g, '');
+      }
+      outerHTML = normalize(outerHTML);
+      var element = jqLite(outerHTML);
+      var clone = element.clone();
+      expect(normalize(clone[0].outerHTML)).toBe(outerHTML);
+      expect(normalize(clone[0].outerHTML)).toBe(normalize(element[0].outerHTML));
+    }
+
+
+    it('should return a clone with the same outerHTML', function() {
+      test('<div><span>text</span></div>');
+    });
+
+
+    it('should support unrecognized HTML elements', function() {
+      document.createElement('article');
+      test('<article><span>text</span></article>');
+    });
+  });
+
+
   describe('eq', function() {
     it('should select the nth element ', function() {
       var element = jqLite('<div><span>aa</span></div><div><span>bb</span></div>');

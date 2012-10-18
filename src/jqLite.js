@@ -82,7 +82,8 @@ var jqCache = JQLite.cache = {},
       : function(element, type, fn) {element.attachEvent('on' + type, fn);}),
     removeEventListenerFn = (window.document.removeEventListener
       ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
-      : function(element, type, fn) {element.detachEvent('on' + type, fn); });
+      : function(element, type, fn) {element.detachEvent('on' + type, fn); }),
+    html5Clone = window.document.createElement('nav').cloneNode(true).outerHTML !== '<:nav></:nav>';
 
 function jqNextId() { return ++jqId; }
 
@@ -175,7 +176,15 @@ function JQLite(element) {
 }
 
 function JQLiteClone(element) {
-  return element.cloneNode(true);
+  var clone;
+  if (html5Clone) {
+    clone = element.cloneNode(true);
+  } else {
+    var div = document.createElement('div');
+    div.innerHTML = element.outerHTML;
+    clone = div.firstChild;
+  }
+  return clone;
 }
 
 function JQLiteDealoc(element){
