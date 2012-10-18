@@ -215,7 +215,7 @@ function setupModuleLoader(window) {
            * @param {Function} initializationFn Execute this function after injector creation.
            *    Useful for application initialization.
            * @description
-           * Use this method to register work which needs to be performed when the injector with
+           * Use this method to register work which needs to be performed when the injector
            * with the current module is finished loading.
            */
           run: function(block) {
