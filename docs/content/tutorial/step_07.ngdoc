@@ -232,8 +232,8 @@ to various URLs and verify that the correct view was rendered.
 </pre>
 
 
-You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
-can see them running on {@link
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
 http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
 Angular's server}.
 

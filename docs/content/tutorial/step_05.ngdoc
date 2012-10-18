@@ -208,13 +208,10 @@ Finally, we verify that the default value of `orderProp` is set correctly:
 });
 </pre>
 
-To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
-output.
+You should now see the following output in the Testacular tab:
 
-       Chrome: Runner reset.
-       ..
-       Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-         Chrome 19.0.1084.36 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+       Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)
+
 
 
 # Experiments
