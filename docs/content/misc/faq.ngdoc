@@ -21,7 +21,7 @@ So it's definitely not a plugin or some other native browser extension.
 ### Is AngularJS a templating system?
 
 At the highest level, Angular does look like a just another templating system. But there is one
-important reason why Angular templating system is different and makes it very good fit for
+important reason why the Angular templating system is different, that makes it very good fit for
 application development: bidirectional data binding. The template is compiled in the browser and
 the compilation step produces a live view. This means you, the developers, don't need to write
 code to constantly sync the view with the model and the model with the view as in other
@@ -30,7 +30,7 @@ templating systems.
 
 ### Do I need to worry about security holes in AngularJS?
 
-Like with any technology, AngularJS is not impervious to attack. angular does, however, provide
+Like with any technology, AngularJS is not impervious to attack. Angular does, however, provide
 built-in protection from basic security holes including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
@@ -46,7 +46,7 @@ Yes. See instructions in {@link downloading}.
 
 
 
-### What browsers does angular work with?
+### What browsers does Angular work with?
 
 Our we run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera,
 IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari).
@@ -67,32 +67,32 @@ illustration we typically build snappy apps with hundreds or thousands of active
 The size of the file is < 29KB compressed and minified.
 
 
-### Can I use the open-source Closure Library with angular?
+### Can I use the open-source Closure Library with Angular?
 
 Yes, you can use widgets from the {@link http://code.google.com/closure/library Closure Library}
-in angular.
+in Angular.
 
-### Does angular use the jQuery library?
+### Does Angular use the jQuery library?
 
 Yes, Angular can use {@link http://jquery.com/ jQuery} if it's present in your app when the
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
 to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
 
 
-### What is testability like in angular?
+### What is testability like in Angular?
 
 Very testable and designed this way from ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
 {@link api/ng service} for details.
 
 
-### How can I learn more about angular?
+### How can I learn more about Angular?
 
 Watch the July 28, 2010 talk
 "{@link http://www.youtube.com/watch?v=elvcgVSynRg| Angular: A Radically Different Way of Building
 AJAX Apps}".
 
 
-### How is angular licensed?
+### How is Angular licensed?
 
 The MIT License.
