@@ -91,6 +91,13 @@ describe('filters', function() {
       expect(currency()).toBe('');
       expect(currency('abc')).toBe('');
     });
+
+    it('should handle zero and nearly-zero values properly', function() {
+      // This expression is known to yield 4.440892098500626e-16 instead of 0.0.
+      expect(currency(1.07 + 1 - 2.07)).toBe('$0.00');
+      expect(currency(0.008)).toBe('$0.01');
+      expect(currency(0.003)).toBe('$0.00');
+    });
   });
 
 
