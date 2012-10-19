@@ -71,7 +71,9 @@ that is used throughout AngularJS. The best guidance is to do what makes the mos
 # Checking Out and Building Angular
 
 The AngularJS source code is hosted at {@link http://github.com Github}, which we also use to
-accept code contributions. Several steps are needed to check out and build AngularJS:
+accept code contributions. The AngularJS repository can be found at **<https://github.com/angular/angular.js>**.
+
+Several steps are needed to check out and build AngularJS:
 
 
 ## Installation Dependencies
