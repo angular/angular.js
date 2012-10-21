@@ -99,12 +99,6 @@ pre-packaged bundle.
   * `npm install`
 
 
-* Lastly, you'll also need Testacular our spectacular test runner that we use for running unit and end-to-end tests.
-
-  * `sudo npm install -g testacular`
-
-
-
 ## Creating a Github Account and Forking Angular
 
 To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
