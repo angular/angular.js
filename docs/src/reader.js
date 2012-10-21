@@ -7,7 +7,8 @@ exports.collect = collect;
 
 var ngdoc = require('./ngdoc.js'),
     Q = require('qq'),
-    qfs = require('q-fs');
+    qfs = require('q-fs'),
+    PATH = require('path');
 
 var NEW_LINE = /\n\r?/;
 
@@ -43,7 +44,7 @@ function collect() {
        var work2;
        if (file.match(/\.ngdoc$/)) {
          work2 = Q.when(qfs.read(file, 'b'), function(content){
-            var section = '@section ' + file.split('/')[2] + '\n';
+            var section = '@section ' + file.split(PATH.sep)[2] + '\n';
             allDocs.push(new ngdoc.Doc(section + content.toString(),file, 1).parse());
           });
        }

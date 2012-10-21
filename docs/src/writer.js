@@ -61,22 +61,21 @@ exports.copy = function(from, to, transform) {
 
 
 exports.symlink = symlink;
-function symlink(from, to) {
+function symlink(from, to, type) {
   return qfs.exists(to).then(function(exists) {
     if (!exists) {
-      return qfs.symbolicLink(to, from);
+      return qfs.symbolicLink(to, from, type);
     }
   });
 }
 
 
 exports.symlinkTemplate = symlinkTemplate;
-function symlinkTemplate(filename) {
+function symlinkTemplate(filename, type) {
   var dest = OUTPUT_DIR + filename,
       dirDepth = dest.split('/').length,
       src = Array(dirDepth).join('../') + 'docs/src/templates/' + filename;
-
-  return symlink(src, dest);
+  return symlink(src, dest, type);
 }
 
 
