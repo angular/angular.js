@@ -6,8 +6,9 @@ before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - npm install -g testacular@canary
-  - rake package
-  - ./nodeserver.sh > /dev/null &
+  - npm install -g grunt-cli  
+  - grunt package
+  - grunt webserver > /dev/null &
 
 script:
-  - rake test[Firefox,"--reporters=dots"]
+  - grunt test --in=[Firefox] --reporters=dots

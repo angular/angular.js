@@ -2,9 +2,15 @@
   "name": "AngularJS",
   "version": "0.0.0",
   "dependencies" : {
-    "testacular" : "canary",
+    "testacular": "canary",
     "jasmine-node" :  "*",
     "q-fs" : "*",
-    "qq" : "*"
+    "qq" : "*",
+    "grunt": "0.4.x",
+    "grunt-contrib-clean": "0.4.x",
+    "grunt-contrib-copy": "0.3.x",
+    "grunt-contrib-connect": "0.1.x",
+    "shelljs": "0.0.x",
+    "yaml-js": "0.0.x"
   }
 }

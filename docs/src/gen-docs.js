@@ -36,7 +36,7 @@ writer.makeDir('build/docs/', true).then(function() {
   });
 }).then(function printStats() {
   console.log('DONE. Generated ' + docs.length + ' pages in ' + (now()-start) + 'ms.' );
-}).end();
+}).done();
 
 
 function writeTheRest(writesFuture) {
