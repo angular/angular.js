@@ -23,13 +23,13 @@ changes to $location are reflected into the browser address bar.
 
 ## Comparing $location to window.location
 
-<table>
+<table class="table">
 <thead>
 
   <tr>
-    <td class="empty-corner-lt"></td>
-    <td>window.location</td>
-    <td>$location service</td>
+    <th class="empty-corner-lt"></th>
+    <th>window.location</th>
+    <th>$location service</th>
   </tr>
 
 </thead>
@@ -165,13 +165,13 @@ facilitate the browser URL change and history management.
 
 <img src="img/guide/hashbang_vs_regular_url.jpg">
 
-<table>
+<table class="table">
 <thead>
 
   <tr>
-    <td class="empty-corner-lt"></td>
-    <td>Hashbang mode</td>
-    <td>HTML5 mode</td>
+    <th class="empty-corner-lt"></th>
+    <th>Hashbang mode</th>
+    <th>HTML5 mode</th>
   </tr>
 
 </thead>
@@ -543,69 +543,73 @@ then uses the information it obtains to compose hashbang URLs (such as
 
 ## Changes to your code
 
-<table>
-  <tr class="head">
-    <td>Navigation inside the app</td>
-    <td>Change to</td>
-  </tr>
+<table class="table">
+  <thead>
+    <tr class="head">
+      <th>Navigation inside the app</th>
+      <th>Change to</th>
+    </tr>
+  </thead>
 
-  <tr>
-    <td>$location.href = value<br />$location.hash = value<br />$location.update(value)<br
+  <tbody>
+    <tr>
+      <td>$location.href = value<br />$location.hash = value<br />$location.update(value)<br
 />$location.updateHash(value)</td>
-    <td>$location.path(path).search(search)</td>
-  </tr>
+      <td>$location.path(path).search(search)</td>
+    </tr>
 
-  <tr>
-    <td>$location.hashPath = path</td>
-    <td>$location.path(path)</td>
-  </tr>
+    <tr>
+      <td>$location.hashPath = path</td>
+      <td>$location.path(path)</td>
+    </tr>
 
-  <tr>
-    <td>$location.hashSearch = search</td>
-    <td>$location.search(search)</td>
-  </tr>
+    <tr>
+      <td>$location.hashSearch = search</td>
+      <td>$location.search(search)</td>
+    </tr>
 
-  <tr class="head">
-    <td>Navigation outside the app</td>
-    <td>Use lower level API</td>
-  </tr>
+    <tr class="head">
+      <td>Navigation outside the app</td>
+      <td>Use lower level API</td>
+    </tr>
 
-  <tr>
-    <td>$location.href = value<br />$location.update(value)</td>
-    <td>$window.location.href = value</td>
-  </tr>
+    <tr>
+      <td>$location.href = value<br />$location.update(value)</td>
+      <td>$window.location.href = value</td>
+    </tr>
 
-  <tr>
-    <td>$location[protocol | host | port | path | search]</td>
-    <td>$window.location[protocol | host | port | path | search]</td>
-  </tr>
+    <tr>
+      <td>$location[protocol | host | port | path | search]</td>
+      <td>$window.location[protocol | host | port | path | search]</td>
+    </tr>
 
-  <tr class="head">
-    <td>Read access</td>
-    <td>Change to</td>
-  </tr>
+    <tr class="head">
+      <td>Read access</td>
+      <td>Change to</td>
+    </tr>
 
-  <tr>
-    <td>$location.hashPath</td>
-    <td>$location.path()</td>
-  </tr>
+    <tr>
+      <td>$location.hashPath</td>
+      <td>$location.path()</td>
+    </tr>
 
-  <tr>
-    <td>$location.hashSearch</td>
-    <td>$location.search()</td>
-  </tr>
+    <tr>
+      <td>$location.hashSearch</td>
+      <td>$location.search()</td>
+    </tr>
 
-  <tr>
-    <td>$location.href<br />$location.protocol<br />$location.host<br />$location.port<br
+    <tr>
+      <td>$location.href<br />$location.protocol<br />$location.host<br />$location.port<br
 />$location.hash</td>
-    <td>$location.absUrl()<br />$location.protocol()<br />$location.host()<br />$location.port()<br
+      <td>$location.absUrl()<br />$location.protocol()<br />$location.host()<br />$location.port()<br
 />$location.path() + $location.search()</td>
-  </tr>
+    </tr>
 
-  <tr>
-    <td>$location.path<br />$location.search</td>
-    <td>$window.location.path<br />$window.location.search</td>
-  </tr>
+    <tr>
+      <td>$location.path<br />$location.search</td>
+      <td>$window.location.path<br />$window.location.search</td>
+    </tr>
+  </tbody>
 </table>
 
 ## Two-way binding to $location
