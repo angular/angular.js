@@ -493,6 +493,21 @@ describe('select', function() {
       expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
     });
 
+    it('should render zero as a valid display value', function() {
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name: 0}, {name: 1}, {name: 2}];
+        scope.selected = scope.values[0];
+      });
+
+      var options = element.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[0])).toEqual('<option value="0">0</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="1">1</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="2">2</option>');
+    });
+
 
     it('should render an object', function() {
       createSelect({
