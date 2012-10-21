@@ -329,7 +329,7 @@ end
 
 
 def start_testacular(config, singleRun, browsers, misc_options)
-  sh "testacular start " +
+  sh "./node_modules/testacular/bin/testacular start " +
                 "#{config} " +
                 "#{'--single-run=true' if singleRun} " +
                 "#{'--browsers=' + browsers.gsub('+', ',') if browsers} " +
