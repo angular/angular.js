@@ -307,7 +307,7 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function ResourceFactory(url, paramDefaults, actions) {
+    function ResourceFactory(url, paramDefaults, actions, ctor) {
       var route = new Route(url);
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
@@ -323,6 +323,12 @@ angular.module('ngResource', ['ng']).
 
       function Resource(value){
         copy(value || {}, this);
+      }
+
+      // Use the given constructor if provided, otherwise just copy values.
+      if (ctor) {
+        console.log("redefining constructor")
+        Resource = ctor;
       }
 
       forEach(actions, function(action, name) {
@@ -382,7 +388,7 @@ angular.module('ngResource', ['ng']).
                     value.push(new Resource(item));
                   });
                 } else {
-                  copy(data, value);
+                  copy(new Resource(data), value);
                 }
               }
               (success||noop)(value, response.headers);
@@ -393,7 +399,7 @@ angular.module('ngResource', ['ng']).
 
 
         Resource.bind = function(additionalParamDefaults){
-          return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+          return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions, ctor);
         };
 
 
