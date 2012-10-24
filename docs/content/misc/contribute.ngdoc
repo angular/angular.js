@@ -186,7 +186,7 @@ change. To execute tests in this mode run:
 
 1. To start the Testacular server, capture Chrome browser and run unit tests, run:
 
-        rake test:jqlite
+        rake autotest:jqlite
 
 2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
    of Testacular running, read Testacular's console output for the correct url):
