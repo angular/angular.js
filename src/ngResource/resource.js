@@ -367,12 +367,18 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
+
+          value.$resolved = false;
+          var resolved = function () {value.$resolved = true;};
+
+          value.$q = $http({
             method: action.method,
             url: route.url(extend({}, extractParams(data, action.params || {}), params)),
             data: data,
             headers: extend({}, action.headers || {})
-          }).then(function(response) {
+          }).success(resolved).error(resolved);
+
+          value.$q.then(function(response) {
               var data = response.data;
 
               if (data) {

@@ -228,7 +228,7 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
 
     var ccs = CreditCard.query({key: 'value'}, callback);
-    expect(ccs).toEqual([]);
+    expect(ccs).toEqualData([]);
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
