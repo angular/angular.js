@@ -735,9 +735,13 @@ function $CompileProvider($provide) {
                   scope[scopeName] = value;
                 });
                 attrs.$$observers[attrName].$$scope = parentScope;
+                if( attrs[attrName] ) {
+                  // If the attribute has been provided then we trigger an interpolation to ensure the value is there for use in the link fn
+                  scope[scopeName] = $interpolate(attrs[attrName])(parentScope);
+                }
                 break;
               }
-
+              
               case '=': {
                 parentGet = $parse(attrs[attrName]);
                 parentSet = parentGet.assign || function() {
