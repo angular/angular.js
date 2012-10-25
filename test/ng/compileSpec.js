@@ -1048,6 +1048,39 @@ describe('$compile', function() {
             expect($exceptionHandler.errors).toEqual([]);
           });
         });
+
+
+        it('should resume delayed compilation without duplicates when in a repeater', function() {
+          // this is a test for a regression
+          // scope creation, isolate watcher setup, controller instantiation, etc should happen
+          // only once even if we are dealing with delayed compilation of a node due to templateUrl
+          // and the template node is in a repeater
+
+          var controllerSpy = jasmine.createSpy('controller');
+
+          module(function($compileProvider) {
+            $compileProvider.directive('delayed', valueFn({
+              controller: controllerSpy,
+              templateUrl: 'delayed.html',
+              scope: {
+                title: '@'
+              }
+            }));
+          });
+
+          inject(function($templateCache, $compile, $rootScope) {
+            $rootScope.coolTitle = 'boom!';
+            $templateCache.put('delayed.html', '<div>{{title}}</div>');
+            element = $compile(
+                '<div><div ng-repeat="i in [1,2]"><div delayed title="{{coolTitle + i}}"></div>|</div></div>'
+            )($rootScope);
+
+            $rootScope.$apply();
+
+            expect(controllerSpy.callCount).toBe(2);
+            expect(element.text()).toBe('boom!1|boom!2|');
+          });
+        });
       });
 
 
