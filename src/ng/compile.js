@@ -373,6 +373,13 @@ function $CompileProvider($provide) {
      for(var i = 0; i < nodeList.length; i++) {
        attrs = new Attributes();
 
+       // IE7/8 inconsistently adds and removes empty text nodes between
+       // block, inline, and comment elements.  Since these nodes will never
+       // have a directive, we skip them here and in compositeLinkFn.
+       if (nodeList[i].nodeType == 3 && nodeList[i].nodeValue == ' ') {
+         continue;
+       }
+
        // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
        directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
 
@@ -396,10 +403,15 @@ function $CompileProvider($provide) {
      function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
        var nodeLinkFn, childLinkFn, node, childScope, childTranscludeFn;
 
-       for(var i = 0, n = 0, ii = linkFns.length; i < ii; n++) {
-         node = nodeList[n];
+       for(var i = 0, n = 0, ii = linkFns.length; i < ii;) {
+         node = nodeList[n++];
          nodeLinkFn = linkFns[i++];
          childLinkFn = linkFns[i++];
+
+         // See comment above about text nodes in IE7/8.
+         while (node && node.nodeType == 3 && node.nodeValue == ' ') {
+           node = nodeList[n++];
+         }
 
          if (nodeLinkFn) {
            if (nodeLinkFn.scope) {
