@@ -351,7 +351,7 @@ compiler}. The attributes are:
   * `controller` - Controller constructor function. The controller is instantiated before the
     pre-linking phase and it is shared with other directives if they request it by name (see
     `require` attribute). This allows the directives to communicate with each other and augment
-    each other behavior. The controller is injectable with the following locals:
+    each other's behavior. The controller is injectable with the following locals:
 
     * `$scope` - Current scope associated with the element
     * `$element` - Current element

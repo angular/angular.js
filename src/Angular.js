@@ -832,7 +832,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp on optional application
+ * @param {angular.Module} ngApp an optional application
  *   {@link angular.module module} name to load.
  *
  * @description
