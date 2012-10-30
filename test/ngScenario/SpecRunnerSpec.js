@@ -173,5 +173,4 @@ describe('angular.scenario.SpecRunner', function() {
       'SpecEnd'
     ]);
   });
-
 });
