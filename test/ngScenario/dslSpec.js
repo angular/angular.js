@@ -217,6 +217,30 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('[ng-model="test"]').val()).toEqual('A');
       });
 
+      it('should select single option using data-ng', function() {
+        doc.append(
+          '<select data-ng-model="test">' +
+          '  <option value=A>one</option>' +
+          '  <option value=B selected>two</option>' +
+          '</select>'
+        );
+        $root.dsl.select('test').option('A');
+        expect(doc.find('[data-ng-model="test"]').val()).toEqual('A');
+      });
+      it('should select single option using x-ng', function() {
+        doc.append(
+          '<select x-ng-model="test">' +
+          '  <option value=A>one</option>' +
+          '  <option value=B selected>two</option>' +
+          '</select>'
+        );
+        $root.dsl.select('test').option('A');
+        expect(doc.find('[x-ng-model="test"]').val()).toEqual('A');
+      });
+
+
+
+
       it('should select option by name', function() {
         doc.append(
             '<select ng-model="test">' +
@@ -574,6 +598,20 @@ describe("angular.scenario.dsl", function() {
         chain.enter('foo');
         expect(_jQuery('input[ng-model="test.input"]').val()).toEqual('foo');
       });
+      it('should change value in text input in data-ng form', function() {
+        doc.append('<input data-ng-model="test.input" value="something">');
+        var chain = $root.dsl.input('test.input');
+        chain.enter('foo');
+        expect(_jQuery('input[data-ng-model="test.input"]').val()).toEqual('foo');
+      });
+      it('should change value in text input in x-ng form', function() {
+        doc.append('<input x-ng-model="test.input" value="something">');
+        var chain = $root.dsl.input('test.input');
+        chain.enter('foo');
+        expect(_jQuery('input[x-ng-model="test.input"]').val()).toEqual('foo');
+      });
+
+
 
       it('should return error if no input exists', function() {
         var chain = $root.dsl.input('test.input');
