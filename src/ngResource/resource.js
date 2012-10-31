@@ -18,6 +18,13 @@
  * The returned resource object has action methods which provide high-level behaviors without
  * the need to interact with the low level {@link ng.$http $http} service.
  *
+ * Usage of $resource() also works well with file:// resources. This is of use if you are 
+ * prototyping your application and have a static resource (e.g. JSON) that you want to use while
+ * you perfect your functionality.  The 
+ * [same origin policy](http://en.wikipedia.org/wiki/Same_origin_policy) still applies of course. 
+ * In practice though, you're going to specify the resource relatively rather than with the file:// 
+ * prefix.
+ *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`.
  *
