@@ -63,7 +63,8 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   function read(text) {
     var files = [];
     angular.forEach(text ? text.split(' ') : [], function(refId) {
-      files.push({name: refId.split('-')[0], content: getEmbeddedTemplate(refId)});
+      // refId is index.html-343, so we need to strip the unique ID when exporting the name
+      files.push({name: refId.replace(/-\d+$/, ''), content: getEmbeddedTemplate(refId)});
     });
     return files;
   }
