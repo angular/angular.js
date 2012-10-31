@@ -119,7 +119,9 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
         });
         var result = $document.find(selector);
         if (selector.match(NG)) {
-          result = result.add(selector.replace(NG, '[ng-'), $document);
+             _jQuery.each(['[ng-','[data-ng-','[x-ng-'], function(index, value){
+		result = result.add(selector.replace(NG, value), $document);
+	     }) 
         }
         if (!result.length) {
           throw {
