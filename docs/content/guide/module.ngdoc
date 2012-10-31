@@ -35,7 +35,7 @@ Important things to notice:
 
       // configure the module.
       // in this example we will create a greeting filter
-      simpleAppModule.filter('greet', function() {
+      myAppModule.filter('greet', function() {
        return function(name) {
           return 'Hello, ' + name + '!';
         };
