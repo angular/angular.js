@@ -129,7 +129,7 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
       for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
         element = jqLite(set[setIndex]);
         if (fireEvent) {
-          element.trigger('$destroy');
+          element.triggerHandler('$destroy');
         } else {
           fireEvent = !fireEvent;
         }
