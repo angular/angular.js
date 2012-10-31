@@ -307,10 +307,24 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function ResourceFactory(url, paramDefaults, actions) {
+    function ResourceFactory(url, paramDefaults, actions, dataParsers) {
       var route = new Route(url);
 
+      dataParsers = dataParsers || {};
       actions = extend({}, DEFAULT_ACTIONS, actions);
+
+      //setup default data parse if none given
+      if(!angular.isFunction(dataParsers.decode)) {
+        dataParsers.decode = function(response) {
+          return response.data;
+        }
+      }
+
+      if(!angular.isFunction(dataParsers.encode)) {
+        dataParsers.encode = function(data) {
+          return data;
+        }
+      }
 
       function extractParams(data, actionParams){
         var ids = {};
@@ -321,8 +335,11 @@ angular.module('ngResource', ['ng']).
         return ids;
       }
 
-      function Resource(value){
+      function Resource(value, constructorDataParsers){
         copy(value || {}, this);
+        constructorDataParsers = constructorDataParsers || {};
+        this._encodeFunction = constructorDataParsers.encode;
+        this._decodeFunction = constructorDataParsers.decode;
       }
 
       forEach(actions, function(action, name) {
@@ -367,13 +384,15 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
+          var dataEncoder = value._encodeFunction || dataParsers.encode;
+          var dataDecoder = value._decodeFunction || dataParsers.decode;
           $http({
             method: action.method,
             url: route.url(extend({}, extractParams(data, action.params || {}), params)),
-            data: data,
+            data: dataEncoder(data, name),
             headers: extend({}, action.headers || {})
           }).then(function(response) {
-              var data = response.data;
+              var data = dataDecoder(response, name);
 
               if (data) {
                 if (action.isArray) {

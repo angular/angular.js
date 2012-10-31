@@ -1,7 +1,7 @@
 'use strict';
 
 describe("resource", function() {
-  var $resource, CreditCard, callback, $httpBackend;
+  var $resource, CreditCard, CreditCardCustomEncoder, callback, $httpBackend;
 
   beforeEach(module('ngResource'));
   beforeEach(inject(function($injector) {
@@ -22,6 +22,25 @@ describe("resource", function() {
         }
       }
 
+    });
+    CreditCardCustomEncoder = $resource('/CreditCard/:id:verb', {id:'@id.key'}, {
+      charge:{
+        method:'POST',
+        params:{verb:'!charge'}
+      },
+      patch: {
+        method: 'PATCH'
+      },
+      conditionalPut: {
+        method: 'PUT',
+        headers: {
+          'If-None-Match': '*'
+        }
+      }
+    }, {
+      encode: function(data) {
+        return {creditCard: data};
+      }
     });
     callback = jasmine.createSpy();
   }));
@@ -121,6 +140,76 @@ describe("resource", function() {
     expect(item).toEqualData({id:'abc'});
   });
 
+  it('should build resource with custom decoding data parser', function() {
+    $httpBackend.expect('GET', '/Order/123/Line/456.visa?minimum=0.05').respond({some:{weird:{struct:{id: 'abc'}}}});
+    var LineItem = $resource('/Order/:orderId/Line/:id:verb',
+                                  {orderId: '123', id: '@id.key', verb:'.visa', minimum: 0.05}, {}, {decode: function(response) {
+                                    return response.data.some.weird.struct;
+                                  }});
+    var item = LineItem.get({id: 456});
+    $httpBackend.flush();
+    expect(item).toEqualData({id:'abc'});
+  });
+
+  it('should build resource with custom decoding data parser based on action name', function() {
+    $httpBackend.expect('GET', '/Order/123/Line/456.visa?minimum=0.05').respond({some:{weird:{struct:{id: 'abc'}}}});
+    var LineItem = $resource('/Order/:orderId/Line/:id:verb',
+                                  {orderId: '123', id: '@id.key', verb:'.visa', minimum: 0.05}, {}, {decode: function(response, name) {
+                                    switch(name) {
+                                      case 'get':
+                                        return response.data.some.weird.struct;
+                                        break;
+
+                                      default:
+                                        return response.data.some1.weird2.struct3;
+                                    }
+                                  }});
+    var item = LineItem.get({id: 456});
+    $httpBackend.flush();
+    expect(item).toEqualData({id:'abc'});
+  });
+
+  it('should build resource with custom decoding data parser in constructor', function() {
+    $httpBackend.expect('GET', '/Order/123/Line/789.visa?minimum=0.05').respond({struct:{some:{weird:{id: 'abc'}}}});
+    var LineItem = $resource('/Order/:orderId/Line/:id:verb',
+                                  {orderId: '123', id: '@id.key', verb:'.visa', minimum: 0.05}, {}, {decode: function(response) {
+                                    return response.data.some.weird.struct;
+                                  }});
+
+    var itemCustomDecoder = new LineItem({}, {
+      decode: function(response) {
+        return response.data.struct.some.weird;
+      }
+    });
+    itemCustomDecoder.$get({id: 789});
+    $httpBackend.flush();
+    expect(itemCustomDecoder).toEqualData({id:'abc'});
+  });
+
+  it('should build resource with custom decoding data parser in constructor based action name', function() {
+    $httpBackend.expect('GET', '/Order/123/Line/789.visa?minimum=0.05').respond({struct:{some:{weird:{id: 'abc'}}}});
+    var LineItem = $resource('/Order/:orderId/Line/:id:verb',
+                                  {orderId: '123', id: '@id.key', verb:'.visa', minimum: 0.05}, {}, {decode: function(response) {
+                                    return response.data.some.weird.struct;
+                                  }});
+
+    var itemCustomDecoder = new LineItem({}, {
+      decode: function(response, name) {
+        switch(name) {
+          case 'get':
+            return response.data.struct.some.weird;
+            break;
+
+          default:
+            return response.data.struct1.some2.weird3;
+        }
+      }
+    });
+    itemCustomDecoder.$get({id: 789});
+    $httpBackend.flush();
+    expect(itemCustomDecoder).toEqualData({id:'abc'});
+  });
+
 
   it("should build resource with action default param overriding default param", function() {
     $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
@@ -158,6 +247,41 @@ describe("resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
 
     var cc = CreditCard.save({name: 'misko'}, callback);
+    expect(cc).toEqualData({name: 'misko'});
+    expect(callback).not.toHaveBeenCalled();
+
+    $httpBackend.flush();
+    expect(cc).toEqualData({id: 123, name: 'misko'});
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
+  });
+
+
+  it("should create resource using a custom encoding data parser", function() {
+    $httpBackend.expect('POST', '/CreditCard', '{"creditCard":{"name":"misko"}}').respond({id: 123, name: 'misko'});
+
+    var cc = CreditCardCustomEncoder.save({name: 'misko'}, callback);
+    expect(cc).toEqualData({name: 'misko'});
+    expect(callback).not.toHaveBeenCalled();
+
+    $httpBackend.flush();
+    expect(cc).toEqualData({id: 123, name: 'misko'});
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
+  });
+
+
+  it("should create resource using a custom encoding data parser from the constructor", function() {
+    $httpBackend.expect('POST', '/CreditCard', '{"weird":{"some":{"creditCard":{"name":"misko"}}}}').respond({id: 123, name: 'misko'});
+
+    var cc = new CreditCardCustomEncoder({name: 'misko'}, {
+      encode: function(data) {
+        return {weird:{some:{creditCard:data}}};
+      }
+    });
+    cc.$save(callback);
     expect(cc).toEqualData({name: 'misko'});
     expect(callback).not.toHaveBeenCalled();
 
