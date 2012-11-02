@@ -332,7 +332,7 @@ compiler}. The attributes are:
       * `=` or `=expression` - set up bi-directional binding between a local scope property and the
         parent scope property. If no `attr` name is specified then the local name and attribute
         name are same. Given `<widget my-attr="parentModel">` and widget definition of
-        `scope: { localModel:'=myAttr' }`, then widget scope property `localName` will reflect the
+        `scope: { localModel:'=myAttr' }`, then widget scope property `localModel` will reflect the
         value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
         in `localModel` and any changes in `localModel` will reflect in `parentModel`.
 
