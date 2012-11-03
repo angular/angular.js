@@ -35,12 +35,24 @@ function $RouteProvider(){
    *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with newly
    *      created scope or the name of a {@link angular.Module#controller registered controller}
    *      if passed as a string.
-   *    - `template` – `{string=}` –  html template as a string that should be used by
-   *      {@link ng.directive:ngView ngView} or
+   *    - `template` – `{string=|function()=}` – html template as a string or function that returns
+   *      an html template as a string which should be used by {@link ng.directive:ngView ngView} or
    *      {@link ng.directive:ngInclude ngInclude} directives.
-   *      this property takes precedence over `templateUrl`.
-   *    - `templateUrl` – `{string=}` – path to an html template that should be used by
-   *      {@link ng.directive:ngView ngView}.
+   *      This property takes precedence over `templateUrl`.
+   *
+   *      If `template` is a function, it will be called with the following parameters:
+   *
+   *      - `{Array.<Object>}` - route parameters extracted from the current
+   *        `$location.path()` by applying the current route
+   *
+   *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
+   *      template that should be used by {@link ng.directive:ngView ngView}.
+   *
+   *      If `templateUrl` is a function, it will be called with the following parameters:
+   *
+   *      - `{Array.<Object>}` - route parameters extracted from the current
+   *        `$location.path()` by applying the current route
+   *
    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
    *      be injected into the controller. If any of these dependencies are promises, they will be
    *      resolved and converted to a value before the controller is instantiated and the
@@ -395,9 +407,18 @@ function $RouteProvider(){
                 values.push(isString(value) ? $injector.get(value) : $injector.invoke(value));
               });
               if (isDefined(template = next.template)) {
+                if (isFunction(template)) {
+                  template = template(next.params);
+                }
               } else if (isDefined(template = next.templateUrl)) {
-                template = $http.get(template, {cache: $templateCache}).
-                    then(function(response) { return response.data; });
+                if (isFunction(template)) {
+                  template = template(next.params);
+                }
+                if (isDefined(template)) {
+                  next.loadedTemplateUrl = template;
+                  template = $http.get(template, {cache: $templateCache}).
+                      then(function(response) { return response.data; });
+                }
               }
               if (isDefined(template)) {
                 keys.push('$template');
