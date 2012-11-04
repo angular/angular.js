@@ -99,6 +99,14 @@ describe('Scope', function() {
       expect(spy).wasCalled();
     }));
 
+    it('should not keep constant expressions on watch queue', inject(function($rootScope) {
+      $rootScope.$watch('1 + 1', function() {});
+      expect($rootScope.$$watchers.length).toEqual(1);
+      $rootScope.$digest();
+
+      expect($rootScope.$$watchers.length).toEqual(0);
+    }));
+
 
     it('should delegate exceptions', function() {
       module(function($exceptionHandlerProvider) {
@@ -119,10 +127,14 @@ describe('Scope', function() {
       var log = '';
       $rootScope.$watch('a', function() { log += 'a'; });
       $rootScope.$watch('b', function() { log += 'b'; });
+      // constant expressions have slightly different handling,
+      // let's ensure they are kept in the same list as others
+      $rootScope.$watch('1', function() { log += '1'; });
       $rootScope.$watch('c', function() { log += 'c'; });
+      $rootScope.$watch('2', function() { log += '2'; });
       $rootScope.a = $rootScope.b = $rootScope.c = 1;
       $rootScope.$digest();
-      expect(log).toEqual('abc');
+      expect(log).toEqual('ab1c2');
     }));
 
 

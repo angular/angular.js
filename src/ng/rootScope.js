@@ -300,6 +300,14 @@ function $RootScopeProvider(){
           watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
         }
 
+        if (typeof watchExp == 'string' && get.constant) {
+          var originalFn = watcher.fn;
+          watcher.fn = function(newVal, oldVal, scope) {
+            originalFn.call(this, newVal, oldVal, scope);
+            arrayRemove(array, watcher);
+          };
+        }
+
         if (!array) {
           array = scope.$$watchers = [];
         }
