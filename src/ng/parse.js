@@ -848,9 +848,10 @@ function getterFn(path, csp) {
  * @param {string} expression String expression to compile.
  * @returns {function(context, locals)} a function which represents the compiled expression:
  *
- *    * `context`: an object against which any expressions embedded in the strings are evaluated
- *      against (Topically a scope object).
- *    * `locals`: local variables context object, useful for overriding values in `context`.
+ *    * `context` – `{object}` – an object against which any expressions embedded in the strings
+ *      are evaluated against (tipically a scope object).
+ *    * `locals` – `{object=}` – local variables context object, useful for overriding values in
+ *      `context`.
  *
  *    The return function also has an `assign` property, if the expression is assignable, which
  *    allows one to set values to expressions.
