@@ -216,7 +216,7 @@ describe('Scope', function() {
     });
 
 
-    it('should prevent infinite recursion and print print watcher function name or body',
+    it('should prevent infinite recursion and print watcher function name or body',
         inject(function($rootScope) {
       $rootScope.$watch(function watcherA() {return $rootScope.a;}, function() {$rootScope.b++;});
       $rootScope.$watch(function() {return $rootScope.b;}, function() {$rootScope.a++;});
@@ -328,7 +328,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should always call the watchr with newVal and oldVal equal on the first run',
+    it('should always call the watcher with newVal and oldVal equal on the first run',
         inject(function($rootScope) {
       var log = [];
       function logger(scope, newVal, oldVal) {
