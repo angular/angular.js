@@ -57,11 +57,31 @@ var /** holds major version number for IE or NaN for real browsers */
     push              = [].push,
     toString          = Object.prototype.toString,
 
+
+    _angular          = window.angular, 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
+
+/**
+ * @ngdoc function
+ * @name angular.noConflict
+ * @function
+ *
+ * @description
+ * Restores the previous global value of angular and returns the current instance. Other libraries may already use the
+ * angular namespace. Or a previous version of angular is already loaded on the page. In these cases you may want to
+ * restore the previous namespace and keep a reference to angular.
+ *
+ * @return {Object} The current angular namespace
+ */
+function noConflict() {
+  var a = window.angular;
+  window.angular = _angular;
+  return a;
+}
 
 /**
  * @ngdoc function

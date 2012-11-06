@@ -737,4 +737,27 @@ describe('angular', function() {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
     }));
   });
+
+  describe('noConflict', function() {
+    var globalAngular;
+    beforeEach(function() {
+      globalAngular = angular;  
+    });
+
+    afterEach(function() {
+      angular = globalAngular;  
+    });
+
+    it('should return angular', function() {
+      var a = angular.noConflict();
+      expect(a).toBe(globalAngular);
+    });
+
+    it('should restore original angular', function() {
+      var a = angular.noConflict();
+      expect(angular).toBeUndefined();
+    });
+      
+  });
+
 });
