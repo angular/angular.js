@@ -339,7 +339,7 @@ compiler}. The attributes are:
       * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
         If no `attr` name is specified then the local name and attribute name are same.
         Given `<widget my-attr="count = count + value">` and widget definition of
-        `scope: { localFn:'increment()' }`, then isolate scope property `localFn` will point to
+        `scope: { localFn:'&myAttr' }`, then isolate scope property `localFn` will point to
         a function wrapper for the `increment()` expression. Often it's desirable to pass data from
         the isolate scope via an expression and to the parent scope, this can be done by passing a
         map of local variable names and values into the expression wrapper fn. For example, if the
