@@ -342,11 +342,11 @@ compiler}. The attributes are:
         If no `attr` name is specified then the attribute name is assumed to be the same as the
         local name. Given `<widget my-attr="count = count + value">` and widget definition of
         `scope: { localFn:'&myAttr' }`, then isolate scope property `localFn` will point to
-        a function wrapper for the `increment()` expression. Often it's desirable to pass data from
-        the isolate scope via an expression and to the parent scope, this can be done by passing a
-        map of local variable names and values into the expression wrapper fn. For example, if the
-        expression is `increment(amount)` then we can specify the amount value by calling the
-        `localFn` as `localFn({amount: 22})`.
+        a function wrapper for the `count = count + value` expression. Often it's desirable to
+        pass data from the isolated scope via an expression and to the parent scope, this can be
+        done by passing a map of local variable names and values into the expression wrapper fn.
+        For example, if the expression is `increment(amount)` then we can specify the amount value
+        by calling the `localFn` as `localFn({amount: 22})`.
 
   * `controller` - Controller constructor function. The controller is instantiated before the
     pre-linking phase and it is shared with other directives if they request it by name (see
