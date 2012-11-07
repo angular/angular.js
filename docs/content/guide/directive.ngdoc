@@ -321,24 +321,26 @@ compiler}. The attributes are:
       derived from the parent scope. These local properties are useful for aliasing values for
       templates. Locals definition is a hash of local scope property to its source:
 
-      * `@` or `@attr` - bind a local scope property to the DOM attribute. The result is always a
-        string since DOM attributes are strings. If no `attr` name is specified then the local name
-        and attribute name are same. Given `<widget my-attr="hello {{name}}">` and widget definition
+      * `@` or `@attr` - bind a local scope property to the value of DOM attribute. The result is
+        always a string since DOM attributes are strings. If no `attr` name is specified  then the
+        attribute name is assumed to be the same as the local name.
+        Given `<widget my-attr="hello {{name}}">` and widget definition
         of `scope: { localName:'@myAttr' }`, then widget scope property `localName` will reflect
         the interpolated value of `hello {{name}}`. As the `name` attribute changes so will the
         `localName` property on the widget scope. The `name` is read from the parent scope (not
         component scope).
 
-      * `=` or `=expression` - set up bi-directional binding between a local scope property and the
-        parent scope property. If no `attr` name is specified then the local name and attribute
-        name are same. Given `<widget my-attr="parentModel">` and widget definition of
-        `scope: { localModel:'=myAttr' }`, then widget scope property `localName` will reflect the
+      * `=` or `=attr` - set up bi-directional binding between a local scope property and the
+        parent scope property of name defined via the value of the `attr` attribute. If no `attr`
+        name is specified then the attribute name is assumed to be the same as the local name.
+        Given `<widget my-attr="parentModel">` and widget definition of
+        `scope: { localModel:'=myAttr' }`, then widget scope property `localModel` will reflect the
         value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
         in `localModel` and any changes in `localModel` will reflect in `parentModel`.
 
       * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
-        If no `attr` name is specified then the local name and attribute name are same.
-        Given `<widget my-attr="count = count + value">` and widget definition of
+        If no `attr` name is specified then the attribute name is assumed to be the same as the
+        local name. Given `<widget my-attr="count = count + value">` and widget definition of
         `scope: { localFn:'&myAttr' }`, then isolate scope property `localFn` will point to
         a function wrapper for the `increment()` expression. Often it's desirable to pass data from
         the isolate scope via an expression and to the parent scope, this can be done by passing a
