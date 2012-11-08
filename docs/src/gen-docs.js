@@ -82,10 +82,7 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.output('appcache.manifest',appCache()));
   writesFuture.push(writer.copyTemplate('.htaccess')); // will be rewritten, don't symlink
 
-  writesFuture.push(writer.symlinkTemplate('app.yaml'));
-  writesFuture.push(writer.symlinkTemplate('index.yaml'));
   writesFuture.push(writer.symlinkTemplate('favicon.ico'));
-  writesFuture.push(writer.symlinkTemplate('main.py'));
 }
 
 
