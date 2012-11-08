@@ -28,6 +28,16 @@ describe('ngShow / ngHide', function() {
       $rootScope.$digest();
       expect(isCssVisible(element)).toBe(true);
     }));
+
+    it('should preserve the display type', inject(function($rootScope, $compile) {
+      element = jqLite('<div style="display: table;" ng-show="exp"></div>');
+      element = $compile(element)($rootScope);
+      $rootScope.$digest();
+      expect(element.css('display')).toEqual('none');
+      $rootScope.exp = true;
+      $rootScope.$digest();
+      expect(element.css('display')).toEqual('table');
+    }));
   });
 
   describe('ngHide', function() {
@@ -38,6 +48,16 @@ describe('ngShow / ngHide', function() {
       $rootScope.exp = true;
       $rootScope.$digest();
       expect(isCssVisible(element)).toBe(false);
+    }));
+
+    it('should preserve the display type', inject(function($rootScope, $compile) {
+      element = jqLite('<div style="display: table;" ng-hide="exp"></div>');
+      element = $compile(element)($rootScope);
+      $rootScope.$digest();
+      expect(element.css('display')).toEqual('table');
+      $rootScope.exp = true;
+      $rootScope.$digest();
+      expect(element.css('display')).toEqual('none');
     }));
   });
 });
