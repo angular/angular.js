@@ -382,7 +382,7 @@ angular.module('ngResource', ['ng']).
 
           value.$q.then(function(response) {
               var data = response.data;
-
+              var q = value.$q, resolved = value.$resolved;
               if (data) {
                 if (action.isArray) {
                   value.length = 0;
@@ -391,6 +391,8 @@ angular.module('ngResource', ['ng']).
                   });
                 } else {
                   copy(data, value);
+                  value.$q = q;
+                  value.$resolved = resolved;
                 }
               }
               (success||noop)(value, response.headers);
