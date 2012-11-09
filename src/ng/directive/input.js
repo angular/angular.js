@@ -16,6 +16,7 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {boolean=} ngRequired Sets `required` attribute if set to true
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -93,6 +94,7 @@ var inputType = {
    * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
    * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {boolean=} ngRequired Sets `required` attribute if set to true
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -159,6 +161,7 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {boolean=} ngRequired Sets `required` attribute if set to true
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -224,6 +227,7 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {boolean=} ngRequired Sets `required` attribute if set to true
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -653,6 +657,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {boolean=} ngRequired Sets `required` attribute if set to true
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -677,6 +682,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {boolean=} ngRequired Sets `required` attribute if set to true
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
