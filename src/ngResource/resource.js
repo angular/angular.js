@@ -88,6 +88,8 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
+ *   The Resource object now contains the promise from the underlying {@link ng.$http} call, which is accessable
+ *   by the `$q` property, as well as a `$resolved` property, which is set to `true` when the promise is resolved (or rejected).
  *
  * @example
  *
