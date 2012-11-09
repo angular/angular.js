@@ -99,12 +99,6 @@ pre-packaged bundle.
   * `npm install`
 
 
-* Lastly, you'll also need Testacular our spectacular test runner that we use for running unit and end-to-end tests.
-
-  * `sudo npm install -g testacular`
-
-
-
 ## Creating a Github Account and Forking Angular
 
 To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
@@ -186,7 +180,7 @@ change. To execute tests in this mode run:
 
 1. To start the Testacular server, capture Chrome browser and run unit tests, run:
 
-        rake test:jqlite
+        rake autotest:jqlite
 
 2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
    of Testacular running, read Testacular's console output for the correct url):

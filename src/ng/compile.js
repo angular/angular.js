@@ -310,26 +310,26 @@ function $CompileProvider($provide) {
 
     //================================
 
-    function compile($compileNode, transcludeFn, maxPriority) {
-      if (!($compileNode instanceof jqLite)) {
+    function compile($compileNodes, transcludeFn, maxPriority) {
+      if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, where as we need to preserve the original selector so that we can modify it.
-        $compileNode = jqLite($compileNode);
+        $compileNodes = jqLite($compileNodes);
       }
       // We can not compile top level text elements since text nodes can be merged and we will
       // not be able to attach scope data to them, so we will wrap them in <span>
-      forEach($compileNode, function(node, index){
+      forEach($compileNodes, function(node, index){
         if (node.nodeType == 3 /* text node */) {
-          $compileNode[index] = jqLite(node).wrap('<span></span>').parent()[0];
+          $compileNodes[index] = jqLite(node).wrap('<span></span>').parent()[0];
         }
       });
-      var compositeLinkFn = compileNodes($compileNode, transcludeFn, $compileNode, maxPriority);
-      return function(scope, cloneConnectFn){
+      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority);
+      return function publicLinkFn(scope, cloneConnectFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
         var $linkNode = cloneConnectFn
-          ? JQLitePrototype.clone.call($compileNode) // IMPORTANT!!!
-          : $compileNode;
+          ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
+          : $compileNodes;
         $linkNode.data('$scope', scope);
         safeAddClass($linkNode, 'ng-scope');
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
@@ -380,7 +380,7 @@ function $CompileProvider($provide) {
            ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
            : null;
 
-       childLinkFn = (nodeLinkFn && nodeLinkFn.terminal)
+       childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes.length)
            ? null
            : compileNodes(nodeList[i].childNodes,
                 nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
@@ -432,13 +432,14 @@ function $CompileProvider($provide) {
 
 
     /**
-     * Looks for directives on the given node ands them to the directive collection which is sorted.
+     * Looks for directives on the given node and adds them to the directive collection which is
+     * sorted.
      *
-     * @param node node to search
-     * @param directives an array to which the directives are added to. This array is sorted before
+     * @param node Node to search.
+     * @param directives An array to which the directives are added to. This array is sorted before
      *        the function returns.
-     * @param attrs the shared attrs object which is used to populate the normalized attributes.
-     * @param {number=} max directive priority
+     * @param attrs The shared attrs object which is used to populate the normalized attributes.
+     * @param {number=} maxPriority Max directive priority.
      */
     function collectDirectives(node, directives, attrs, maxPriority) {
       var nodeType = node.nodeType,
@@ -473,7 +474,7 @@ function $CompileProvider($provide) {
 
           // use class as directive
           className = node.className;
-          if (isString(className)) {
+          if (isString(className) && className !== '') {
             while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
               nName = directiveNormalize(match[2]);
               if (addDirective(directives, nName, 'C', maxPriority)) {
@@ -527,7 +528,7 @@ function $CompileProvider($provide) {
           preLinkFns = [],
           postLinkFns = [],
           newScopeDirective = null,
-          newIsolatedScopeDirective = null,
+          newIsolateScopeDirective = null,
           templateDirective = null,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
@@ -549,10 +550,10 @@ function $CompileProvider($provide) {
         }
 
         if (directiveValue = directive.scope) {
-          assertNoDuplicate('isolated scope', newIsolatedScopeDirective, directive, $compileNode);
+          assertNoDuplicate('isolated scope', newIsolateScopeDirective, directive, $compileNode);
           if (isObject(directiveValue)) {
             safeAddClass($compileNode, 'ng-isolate-scope');
-            newIsolatedScopeDirective = directive;
+            newIsolateScopeDirective = directive;
           }
           safeAddClass($compileNode, 'ng-scope');
           newScopeDirective = newScopeDirective || directive;
@@ -706,12 +707,12 @@ function $CompileProvider($provide) {
         }
         $element = attrs.$$element;
 
-        if (newScopeDirective && isObject(newScopeDirective.scope)) {
+        if (newIsolateScopeDirective) {
           var LOCAL_REGEXP = /^\s*([@=&])\s*(\w*)\s*$/;
 
           var parentScope = scope.$parent || scope;
 
-          forEach(newScopeDirective.scope, function(definiton, scopeName) {
+          forEach(newIsolateScopeDirective.scope, function(definiton, scopeName) {
             var match = definiton.match(LOCAL_REGEXP) || [],
                 attrName = match[2]|| scopeName,
                 mode = match[1], // @, =, or &
@@ -734,7 +735,7 @@ function $CompileProvider($provide) {
                   // reset the change, or we will throw this exception on every $digest
                   lastValue = scope[scopeName] = parentGet(parentScope);
                   throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
-                      ' (directive: ' + newScopeDirective.name + ')');
+                      ' (directive: ' + newIsolateScopeDirective.name + ')');
                 };
                 lastValue = scope[scopeName] = parentGet(parentScope);
                 scope.$watch(function parentValueWatch() {
@@ -765,7 +766,7 @@ function $CompileProvider($provide) {
 
               default: {
                 throw Error('Invalid isolate scope definition for directive ' +
-                    newScopeDirective.name + ': ' + definiton);
+                    newIsolateScopeDirective.name + ': ' + definiton);
               }
             }
           });
@@ -899,7 +900,7 @@ function $CompileProvider($provide) {
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
-            controller: null, templateUrl: null, transclude: null
+            controller: null, templateUrl: null, transclude: null, scope: null
           });
 
       $compileNode.html('');
@@ -991,7 +992,7 @@ function $CompileProvider($provide) {
       if (interpolateFn) {
         directives.push({
           priority: 0,
-          compile: valueFn(function(scope, node) {
+          compile: valueFn(function textInterpolateLinkFn(scope, node) {
             var parent = node.parent(),
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
@@ -1014,7 +1015,7 @@ function $CompileProvider($provide) {
 
       directives.push({
         priority: 100,
-        compile: valueFn(function(scope, element, attr) {
+        compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
           var $$observers = (attr.$$observers || (attr.$$observers = {}));
 
           if (name === 'class') {
