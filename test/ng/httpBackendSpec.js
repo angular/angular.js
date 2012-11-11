@@ -235,6 +235,31 @@ describe('$httpBackend', function() {
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
     });
 
+    it('should always call callback with the same name when use JSON_SINGLE_CALLBACK', function() {
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toBe('some-data');
+      });
+
+      $backend('JSONP', 'http://example.org/path?cb=JSON_SINGLE_CALLBACK', null, callback);
+      expect(fakeDocument.$$scripts.length).toBe(1);
+
+      var script = fakeDocument.$$scripts.shift(),
+          url = script.src.match(/([^\?]*)\?cb=angular\.callbacks\.single/);
+
+      expect(url[1]).toBe('http://example.org/path');
+      callbacks['single']('some-data');
+
+      if (script.onreadystatechange) {
+        script.readyState = 'complete';
+        script.onreadystatechange();
+      } else {
+        script.onload()
+      }
+
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
 
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
