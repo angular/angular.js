@@ -327,6 +327,12 @@ function $RouteProvider(){
           if (regex.match(paramRegExp)) {
             regex = regex.replace(paramRegExp, "([^\\/]*)$1");
             params.push(param);
+          } else {
+            var specialParamRegExp = new RegExp("\\*" + param + "([\\W])");
+            if (regex.match(specialParamRegExp)) {
+              regex = regex.replace(specialParamRegExp, "(.*)$1");
+              params.push(param);         
+            }
           }
         }
       });
