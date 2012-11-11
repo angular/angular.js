@@ -22,7 +22,8 @@ var TYPES = {
   style: true,
   refactor: true,
   test: true,
-  chore: true
+  chore: true,
+  revert: true
 };
 
 

@@ -32,6 +32,7 @@ describe('validate-commit-msg.js', function() {
       expect(m.validateMessage('chore(foo-bar): something')).toBe(VALID);
       expect(m.validateMessage('chore(*): something')).toBe(VALID);
       expect(m.validateMessage('chore(guide/location): something')).toBe(VALID);
+      expect(m.validateMessage('revert(foo): something')).toBe(VALID);
       expect(errors).toEqual([]);
     });
 
