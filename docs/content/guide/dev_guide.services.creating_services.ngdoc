@@ -48,9 +48,9 @@ create this instance when called.
 
 # Dependencies
 
-Services can not only be depended upon, but also have its own dependencies. These can be specified
-as arguments of the factory function. {@link di Read more} about the DI
-in Angular and the use of array notation and $inject property to make DI annotation
+Services can not only be depended upon, but can also have their own dependencies. These can be specified
+as arguments of the factory function. {@link di Read more} about dependency injection (DI)
+in Angular and the use of array notation and the $inject property to make DI annotation
 minification-proof.
 
 Following is an example of a very simple service. This service depends on the `$window` service
@@ -78,7 +78,7 @@ angular.module('myModule', [], function($provide) {
 
 All services in Angular are instantiated lazily. This means that a service will be created
 only when it is needed for instantiation of a service or an application component that depends on it.
-In other words, Angular won't instantiate lazy services unless they are requested directly or
+In other words, Angular won't instantiate services unless they are requested directly or
 indirectly by the application.
 
 
