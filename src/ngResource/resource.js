@@ -36,8 +36,8 @@
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
  *   default set of resource actions. The declaration should be created in the following format:
  *
- *       {action1: {method:?, params:?, isArray:?},
- *        action2: {method:?, params:?, isArray:?},
+ *       {action1: {method:?, params:?, isArray:?, headers:?},
+ *        action2: {method:?, params:?, isArray:?, headers:?},
  *        ...}
  *
  *   Where:
@@ -49,6 +49,7 @@
  *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
+ *   - `headers` – {object=} – Optional HTTP headers to send
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -130,7 +131,7 @@
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
  *
- * Calling these methods invoke `$http` on the `url` template with the given `method` and `params`.
+ * Calling these methods invoke `$http` on the `url` template with the given `method`, `params` and `headers`.
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
@@ -225,7 +226,7 @@ angular.module('ngResource', ['ng']).
         };
 
   /**
-   * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+   * We need our custom mehtod because encodeURIComponent is too aggressive and doesn't follow
    * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
    * segments:
    *    segment       = *pchar
@@ -279,12 +280,18 @@ angular.module('ngResource', ['ng']).
       url: function(params) {
         var self = this,
             url = this.template,
+            val,
             encodedVal;
 
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
-          encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
-          url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
+          val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
+          if (angular.isDefined(val) && val !== null) {
+            encodedVal = encodeUriSegment(val);
+            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+          } else {
+            url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
+          }
         });
         url = url.replace(/\/?#$/, '');
         var query = [];
@@ -305,8 +312,9 @@ angular.module('ngResource', ['ng']).
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
-      function extractParams(data){
+      function extractParams(data, actionParams){
         var ids = {};
+        paramDefaults = extend(paramDefaults, actionParams);
         forEach(paramDefaults || {}, function(value, key){
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
@@ -361,8 +369,9 @@ angular.module('ngResource', ['ng']).
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
           $http({
             method: action.method,
-            url: route.url(extend({}, extractParams(data), action.params || {}, params)),
-            data: data
+            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
+            data: data,
+            headers: extend({}, action.headers || {})
           }).then(function(response) {
               var data = response.data;
 

@@ -959,11 +959,34 @@ describe('$http', function() {
   });
 
 
-  it('should pass timeout and withCredentials', function() {
+  it('should pass timeout, withCredentials and responseType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials) {
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
       expect(timeout).toBe(12345);
+      expect(withCredentials).toBe(true);
+      expect(responseType).toBe('json');
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http) {
+      $http({
+        method: 'GET', url: 'some.html', timeout: 12345, withCredentials: true, responseType: 'json'
+      });
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
+
+  it('should use withCredentials from default', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
       expect(withCredentials).toBe(true);
     });
 
@@ -972,7 +995,10 @@ describe('$http', function() {
     });
 
     inject(function($http) {
-      $http({method: 'GET', url: 'some.html', timeout: 12345, withCredentials: true});
+      $http.defaults.withCredentials = true;
+      $http({
+        method: 'GET', url: 'some.html', timeout: 12345, responseType: 'json'
+      });
       expect($httpBackend).toHaveBeenCalledOnce();
     });
 

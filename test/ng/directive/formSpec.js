@@ -64,36 +64,6 @@ describe('form', function() {
   });
 
 
-  it('should prevent form submission', function() {
-    var startingUrl = '' + window.location;
-    doc = jqLite('<form name="myForm"><input type="submit" value="submit" />');
-    $compile(doc)(scope);
-
-    browserTrigger(doc.find('input'));
-    waitsFor(
-        function() { return true; },
-        'let browser breath, so that the form submision can manifest itself', 10);
-
-    runs(function() {
-      expect('' + window.location).toEqual(startingUrl);
-    });
-  });
-
-
-  it('should not prevent form submission if action attribute present', function() {
-    var callback = jasmine.createSpy('submit').andCallFake(function(event) {
-      expect(event.isDefaultPrevented()).toBe(false);
-      event.preventDefault();
-    });
-
-    doc = $compile('<form name="x" action="some.py" />')(scope);
-    doc.bind('submit', callback);
-
-    browserTrigger(doc, 'submit');
-    expect(callback).toHaveBeenCalledOnce();
-  });
-
-
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
     expect(scope.myForm).toBeTruthy();
@@ -155,6 +125,136 @@ describe('form', function() {
   });
 
 
+  describe('preventing default submission', function() {
+
+    it('should prevent form submission', function() {
+      var nextTurn = false,
+          submitted = false,
+          reloadPrevented;
+
+      doc = jqLite('<form ng-submit="submitMe()">' +
+                     '<input type="submit" value="submit">' +
+                   '</form>');
+
+      var assertPreventDefaultListener = function(e) {
+        reloadPrevented = e.defaultPrevented || (e.returnValue === false);
+      };
+
+      // native dom event listeners in IE8 fire in LIFO order so we have to register them
+      // there in different order than in other browsers
+      if (msie==8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
+
+      $compile(doc)(scope);
+
+      scope.submitMe = function() {
+        submitted = true;
+      }
+
+      if (msie!=8) addEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
+
+      browserTrigger(doc.find('input'));
+
+      // let the browser process all events (and potentially reload the page)
+      setTimeout(function() { nextTurn = true;});
+
+      waitsFor(function() { return nextTurn; });
+
+      runs(function() {
+        expect(reloadPrevented).toBe(true);
+        expect(submitted).toBe(true);
+
+        // prevent mem leak in test
+        removeEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
+      });
+    });
+
+
+    it('should prevent the default when the form is destroyed by a submission via a click event',
+        inject(function($timeout) {
+      doc = jqLite('<div>' +
+                      '<form ng-submit="submitMe()">' +
+                        '<button ng-click="destroy()"></button>' +
+                      '</form>' +
+                    '</div>');
+
+      var form = doc.find('form'),
+          destroyed = false,
+          nextTurn = false,
+          submitted = false,
+          reloadPrevented;
+
+      scope.destroy = function() {
+        // yes, I know, scope methods should not do direct DOM manipulation, but I wanted to keep
+        // this test small. Imagine that the destroy action will cause a model change (e.g.
+        // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
+        doc.html('');
+        destroyed = true;
+      }
+
+      scope.submitMe = function() {
+        submitted = true;
+      }
+
+      var assertPreventDefaultListener = function(e) {
+        reloadPrevented = e.defaultPrevented || (e.returnValue === false);
+      };
+
+      // native dom event listeners in IE8 fire in LIFO order so we have to register them
+      // there in different order than in other browsers
+      if (msie == 8) addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+
+      $compile(doc)(scope);
+
+      if (msie != 8) addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+
+      browserTrigger(doc.find('button'), 'click');
+
+      // let the browser process all events (and potentially reload the page)
+      setTimeout(function() { nextTurn = true;}, 100);
+
+      waitsFor(function() { return nextTurn; });
+
+
+      // I can't get IE8 to automatically trigger submit in this test, in production it does it
+      // properly
+      if (msie == 8) browserTrigger(form, 'submit');
+
+      runs(function() {
+        expect(doc.html()).toBe('');
+        expect(destroyed).toBe(true);
+        expect(submitted).toBe(false); // this is known corner-case that is not currently handled
+                                       // the issue is that the submit listener is destroyed before
+                                       // the event propagates there. we can fix this if we see
+                                       // the issue in the wild, I'm not going to bother to do it
+                                       // now. (i)
+
+        // IE9 is special and it doesn't fire submit event when form was destroyed
+        if (msie != 9) {
+          expect(reloadPrevented).toBe(true);
+          $timeout.flush();
+        }
+
+        // prevent mem leak in test
+        removeEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+      });
+    }));
+
+
+    it('should NOT prevent form submission if action attribute present', function() {
+      var callback = jasmine.createSpy('submit').andCallFake(function(event) {
+        expect(event.isDefaultPrevented()).toBe(false);
+        event.preventDefault();
+      });
+
+      doc = $compile('<form action="some.py"></form>')(scope);
+      doc.bind('submit', callback);
+
+      browserTrigger(doc, 'submit');
+      expect(callback).toHaveBeenCalledOnce();
+    });
+  });
+
+
   describe('nested forms', function() {
 
     it('should chain nested forms', function() {
@@ -184,6 +284,9 @@ describe('form', function() {
       inputB.$setValidity('MyError', true);
       expect(parent.$error.MyError).toBe(false);
       expect(child.$error.MyError).toBe(false);
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeTruthy();
     });
 
 

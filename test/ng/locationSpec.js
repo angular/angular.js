@@ -1038,7 +1038,8 @@ describe('$location', function() {
           bind: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
-          }
+          },
+          unbind: angular.noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
@@ -1067,7 +1068,8 @@ describe('$location', function() {
           bind: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
-          }
+          },
+          unbind: angular.noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');

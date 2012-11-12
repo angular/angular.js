@@ -31,7 +31,11 @@ describe('api', function() {
       map.push('key', 'a');
       map.push('key', 'b');
       expect(map[hashKey('key')]).toEqual(['a', 'b']);
+      expect(map.peek('key')).toEqual('a');
+      expect(map[hashKey('key')]).toEqual(['a', 'b']);
       expect(map.shift('key')).toEqual('a');
+      expect(map.peek('key')).toEqual('b');
+      expect(map[hashKey('key')]).toEqual(['b']);
       expect(map.shift('key')).toEqual('b');
       expect(map.shift('key')).toEqual(undefined);
       expect(map[hashKey('key')]).toEqual(undefined);

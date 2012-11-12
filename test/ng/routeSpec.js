@@ -289,10 +289,10 @@ describe('$route', function() {
           return deferB.promise;
         });
         $routeProvider.when('/path', { templateUrl: 'foo.html', resolve: {
-          a: function($q) {
+          a: ['$q', function($q) {
             deferA = $q.defer();
             return deferA.promise;
-          },
+          }],
           b: 'b'
         } });
       });
@@ -491,8 +491,8 @@ describe('$route', function() {
       });
     });
   });
-  
-  
+
+
   it('should match route with and without trailing slash', function() {
     module(function($routeProvider){
       $routeProvider.when('/foo', {templateUrl: 'foo.html'});

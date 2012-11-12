@@ -16,7 +16,7 @@ this may seem obvious it usually is very difficult to be able to call an individ
 typical project. The reason is that the developers often time mix concerns, and they end up with a
 piece of code which does everything. It reads the data from XHR, it sorts it and then it
 manipulates the DOM. With angular we try to make it easy for you to do the right thing, and so we
-provide dependency injection for your XHR (which you can mock out) and we crated abstraction which
+provide dependency injection for your XHR (which you can mock out) and we created abstraction which
 allow you to sort your model without having to resort to manipulating the DOM. So that in the end,
 it is easy to write a sort function which sorts some data, so that your test can create a data set,
 apply the function, and assert that the resulting model is in the correct order. The test does not

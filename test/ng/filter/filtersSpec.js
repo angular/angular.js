@@ -91,6 +91,13 @@ describe('filters', function() {
       expect(currency()).toBe('');
       expect(currency('abc')).toBe('');
     });
+
+    it('should handle zero and nearly-zero values properly', function() {
+      // This expression is known to yield 4.440892098500626e-16 instead of 0.0.
+      expect(currency(1.07 + 1 - 2.07)).toBe('$0.00');
+      expect(currency(0.008)).toBe('$0.01');
+      expect(currency(0.003)).toBe('$0.00');
+    });
   });
 
 
@@ -258,6 +265,9 @@ describe('filters', function() {
 
       expect(date('20030910T033203-0930', format)).toEqual('2003-09 03');
 
+      //no timezone
+      expect(date('2003-09-10T13:02:03.000', format)).toEqual('2003-09 03');
+
       //no millis
       expect(date('2003-09-10T13:02:03Z', format)).toEqual('2003-09 03');
 
@@ -269,6 +279,19 @@ describe('filters', function() {
 
       //no time
       expect(date('2003-09-10', format)).toEqual('2003-09 00');
+    });
+
+    it('should support different degrees of subsecond precision', function () {
+      var format = 'yyyy-MM-dd';
+
+      expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.123456Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.12345Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1234Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.123Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-10');
+      expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-10');
     });
   });
 });

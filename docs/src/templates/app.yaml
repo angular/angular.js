@@ -1,0 +1,69 @@
+application: docs-angularjs-org
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+default_expiration: "2h"
+
+handlers:
+- url: /
+  script: main.app
+
+- url: /appcache.manifest
+  static_files: appcache.manifest
+  upload: appcache\.manifest
+
+- url: /docs-scenario.html
+  static_files: docs-scenario.html
+  upload: docs-scenario\.html
+
+- url: /docs-scenario.js
+  static_files: docs-scenario.js
+  upload: docs-scenario\.js
+
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /docs-keywords.js
+  static_files: docs-keywords.js
+  upload: docs-keywords\.js
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots\.txt
+
+- url: /sitemap.xml
+  static_files: sitemap.xml
+  upload: sitemap\.xml
+
+- url: /css
+  static_dir: css
+
+- url: /font
+  static_dir: font
+
+- url: /img
+  static_dir: img
+
+- url: /js
+  static_dir: js
+
+- url: /partials/(.+):(.+)
+  static_files: partials/\1_\2
+  upload: partials/.*
+
+- url: /partials
+  static_dir: partials
+
+- url: /syntaxhighlighter
+  static_dir: syntaxhighlighter
+
+- url: /.*
+  static_files: index.html
+  upload: index.html
+
+
+libraries:
+- name: webapp2
+  version: "2.5.1"

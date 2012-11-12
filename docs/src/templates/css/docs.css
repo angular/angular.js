@@ -19,6 +19,11 @@ img.AngularJS-small {
   height: 1em;
 }
 
+
+.icon-cog {
+  line-height: 13px;
+}
+
 /* =============================== */
 
 .form-search .dropdown-menu {
@@ -140,6 +145,11 @@ ul.events > li > h3 {
   font-family: monospace;
 }
 
+.center {
+  display: block;
+  margin: 2em auto;
+}
+
 .diagram {
   display: block;
   margin: 2em auto;
@@ -169,4 +179,8 @@ ul.events > li > h3 {
 .tutorial-nav a:hover {
   color: white;
   text-decoration: none;
+}
+
+.clear {
+  clear: both;
 }

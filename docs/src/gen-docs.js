@@ -12,8 +12,10 @@ process.on('uncaughtException', function(err) {
 var start = now();
 var docs;
 
-writer.makeDir('build/docs/syntaxhighlighter').then(function() {
-  console.log('Generating Angular Reference Documentation...');
+writer.makeDir('build/docs/', true).then(function() {
+  return writer.makeDir('build/docs/partials/');
+}).then(function() {
+  console.log('Generating AngularJS Reference Documentation...');
   return reader.collect();
 }).then(function generateHtmlDocPartials(docs_) {
   docs = docs_;
@@ -40,8 +42,10 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
 function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
-  writesFuture.push(writer.copyDir('img'));
-  writesFuture.push(writer.copyDir('font'));
+  writesFuture.push(writer.symlinkTemplate('css'));
+  writesFuture.push(writer.symlinkTemplate('font'));
+  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img'));
+  writesFuture.push(writer.symlinkTemplate('js'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
@@ -53,7 +57,7 @@ function writeTheRest(writesFuture) {
 
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq.html',
-                                writer.replace, {'doc:manifest': manifest}));
+                                writer.replace, {'doc:manifest': ''}));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq-nocache.html',
                                 writer.replace, {'doc:manifest': ''}));
@@ -65,27 +69,27 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index-jq-debug.html',
                                 writer.replace, {'doc:manifest': ''}));
 
-  writesFuture.push(writer.copyTpl('offline.html'));
-  writesFuture.push(writer.copyTpl('docs-scenario.html'));
-  writesFuture.push(writer.copyTpl('js/jquery.min.js'));
-  writesFuture.push(writer.copyTpl('js/jquery.js'));
+  writesFuture.push(writer.symlinkTemplate('offline.html'));
 
-  writesFuture.push(writer.output('js/docs-keywords.js',
+  writesFuture.push(writer.copyTemplate('docs-scenario.html')); // will be rewritten, don't symlink
+  writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
+
+  writesFuture.push(writer.output('docs-keywords.js',
                                 ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
   writesFuture.push(writer.output('sitemap.xml', new SiteMap(docs).render()));
-  writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
+
   writesFuture.push(writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n'));
   writesFuture.push(writer.output('appcache.manifest',appCache()));
-  writesFuture.push(writer.copyTpl('.htaccess'));
+  writesFuture.push(writer.copyTemplate('.htaccess')); // will be rewritten, don't symlink
 
-  writesFuture.push(writer.copy('docs/src/templates/js/docs.js', 'js/docs.js'));
-
-  writesFuture.push(writer.copy('docs/src/templates/css/bootstrap.min.css', 'css/bootstrap.min.css'));
-  writesFuture.push(writer.copy('docs/src/templates/css/docs.css', 'css/docs.css'));
-  writesFuture.push(writer.copy('docs/src/templates/css/font-awesome.css', 'css/font-awesome.css'));
+  writesFuture.push(writer.symlinkTemplate('app.yaml'));
+  writesFuture.push(writer.symlinkTemplate('index.yaml'));
+  writesFuture.push(writer.symlinkTemplate('favicon.ico'));
+  writesFuture.push(writer.symlinkTemplate('main.py'));
 }
 
 
 function now() { return new Date().getTime(); }
 
 function noop() {};
+

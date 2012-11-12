@@ -72,7 +72,7 @@ var ngSwitchDirective = valueFn({
           selectedElement,
           selectedScope;
 
-      scope.$watch(watchExpr, function(value) {
+      scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
         if (selectedElement) {
           selectedScope.$destroy();
           selectedElement.remove();

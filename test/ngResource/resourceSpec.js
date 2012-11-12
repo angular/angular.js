@@ -14,7 +14,14 @@ describe("resource", function() {
       },
       patch: {
         method: 'PATCH'
+      },
+      conditionalPut: {
+        method: 'PUT',
+        headers: {
+          'If-None-Match': '*'
+        }
       }
+
     });
     callback = jasmine.createSpy();
   }));
@@ -44,16 +51,26 @@ describe("resource", function() {
   it('should ignore slashes of undefinend parameters', function() {
     var R = $resource('/Path/:a/:b/:c');
 
-    $httpBackend.when('GET').respond('{}');
-    $httpBackend.expect('GET', '/Path');
-    $httpBackend.expect('GET', '/Path/1');
-    $httpBackend.expect('GET', '/Path/2/3');
-    $httpBackend.expect('GET', '/Path/4/5/6');
+    $httpBackend.when('GET', '/Path').respond('{}');
+    $httpBackend.when('GET', '/Path/0').respond('{}');
+    $httpBackend.when('GET', '/Path/false').respond('{}');
+    $httpBackend.when('GET', '/Path').respond('{}');
+    $httpBackend.when('GET', '/Path/').respond('{}');
+    $httpBackend.when('GET', '/Path/1').respond('{}');
+    $httpBackend.when('GET', '/Path/2/3').respond('{}');
+    $httpBackend.when('GET', '/Path/4/5').respond('{}');
+    $httpBackend.when('GET', '/Path/6/7/8').respond('{}');
 
     R.get({});
+    R.get({a:0});
+    R.get({a:false});
+    R.get({a:null});
+    R.get({a:undefined});
+    R.get({a:''});
     R.get({a:1});
     R.get({a:2, b:3});
-    R.get({a:4, b:5, c:6});
+    R.get({a:4, c:5});
+    R.get({a:6, b:7, c:8});
   });
 
 
@@ -116,6 +133,27 @@ describe("resource", function() {
   });
 
 
+  it('should build resource with action default param reading the value from instance', function() {
+    $httpBackend.expect('POST', '/Customer/123').respond();
+    var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id'}}});
+
+    var inst = new R({id:123});
+    expect(inst.id).toBe(123);
+
+    inst.$post();
+  });
+
+
+  it('should handle multiple params with same name', function() {
+    var R = $resource('/:id/:id');
+
+    $httpBackend.when('GET').respond('{}');
+    $httpBackend.expect('GET', '/1/1');
+
+    R.get({id:1});
+  });
+
+
   it("should create resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
 
@@ -143,6 +181,15 @@ describe("resource", function() {
     expect(cc).toEqualData({id: 123, number: '9876'});
     expect(callback.mostRecentCall.args[0]).toEqual(cc);
     expect(callback.mostRecentCall.args[1]()).toEqual({});
+  });
+
+
+  it('should send correct headers', function() {
+    $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
+       return headers['If-None-Match'] == "*";
+    }).respond({id:123});
+
+    CreditCard.conditionalPut({id: {key:123}});
   });
 
 
