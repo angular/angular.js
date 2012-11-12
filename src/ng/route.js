@@ -21,7 +21,9 @@ function $RouteProvider(){
    * @param {string} path Route path (matched against `$location.path`). If `$location.path`
    *    contains redundant trailing slash or is missing one, the route will still match and the
    *    `$location.path` will be updated to add or drop the trailing slash to exacly match the
-   *    route definition.
+   *    route definition. A path can contain single parameters prefixed with a colon or catch-all
+   *    partials (multiple levels including slashes) if they are prefixed with an asterisk.
+   *    
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
    *
