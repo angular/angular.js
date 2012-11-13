@@ -70,6 +70,8 @@ function $CacheFactoryProvider() {
         remove: function(key) {
           var lruEntry = lruHash[key];
 
+          if (!lruEntry) return;
+
           if (lruEntry == freshEnd) freshEnd = lruEntry.p;
           if (lruEntry == staleEnd) staleEnd = lruEntry.n;
           link(lruEntry.n,lruEntry.p);
