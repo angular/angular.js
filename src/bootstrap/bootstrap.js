@@ -129,7 +129,7 @@ directive.tabbable = function() {
             tab.paneElement = null;
             for(var i=0; i<ndrops; i++){
               elem = angular.element(element.children()[i]);
-              atr.title = elem.attr('_title');
+              atr.title = elem.attr('title');
               _li = angular.element('<li><a href></a></li>');
               _a = _li.find('a');
               _a.text(atr.title);
