@@ -89,6 +89,11 @@ describe('$cacheFactory', function() {
       }));
 
 
+      it('should return undefined when entry does not exist', inject(function($cacheFactory) {
+        expect(cache.remove('non-existent')).toBeUndefined();
+      }));
+
+
       it('should stringify keys', inject(function($cacheFactory) {
         cache.put('123', 'foo');
         cache.put(123, 'bar');
