@@ -93,7 +93,7 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       sanitize: 'build/angular-sanitize.js',
       bootstrap: 'build/angular-bootstrap.js',
-      bootstrapPrettify: 'build/angular-bootstrap-prettify.js'
+      bootstrapPrettify: 'build/angular-bootstrap-prettify.js',
     },
 
     docs: {
@@ -113,9 +113,9 @@ module.exports = function(grunt) {
   
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
-  grunt.registerTask('minify', ['clean', 'build', 'min']);
+  grunt.registerTask('minify', ['clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:keepalive']);
-  grunt.registerTask('package', ['clean', 'build', 'min', 'docs', 'copy', 'write', 'zip']);
+  grunt.registerTask('package', ['clean', 'build', 'minall', 'docs', 'copy', 'write', 'zip']);
   grunt.registerTask('default', ['package']);
 };
