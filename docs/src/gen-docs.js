@@ -5,10 +5,6 @@ var reader = require('./reader.js'),
     appCache = require('./appCache.js').appCache,
     Q = require('qq');
 
-process.on('uncaughtException', function(err) {
-  console.error(err.stack || err);
-});
-
 var start = now();
 var docs;
 
