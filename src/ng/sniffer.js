@@ -41,7 +41,7 @@ function $SnifferProvider() {
 
         return eventSupport[event];
       },
-      csp: document.SecurityPolicy ? document.SecurityPolicy.isActive() : false
+      csp: document.securityPolicy ? document.securityPolicy.isActive : false
     };
   }];
 }
