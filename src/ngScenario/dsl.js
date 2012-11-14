@@ -298,6 +298,8 @@ angular.scenario.dsl('select', function() {
         option = select.find('option:contains("' + value + '")');
         if (option.length) {
           select.val(option.val());
+        } else {
+            return done("option '" + value + "' not found");
         }
       }
       select.trigger('change');
