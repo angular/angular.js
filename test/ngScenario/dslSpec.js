@@ -269,6 +269,17 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.select('test').options('A', 'B');
         expect($root.futureError).toMatch(/did not match/);
       });
+      
+      it('should fail to select an option that does not exist', function(){
+          doc.append(
+              '<select ng-model="test">' +
+              '  <option value=A>one</option>' +
+              '  <option value=B selected>two</option>' +
+              '</select>'
+            );
+            $root.dsl.select('test').option('three');
+            expect($root.futureError).toMatch(/not found/);
+      });
     });
 
     describe('Element', function() {
