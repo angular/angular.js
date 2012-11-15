@@ -104,6 +104,12 @@ describe('$cacheFactory', function() {
         cache.remove(123);
         expect(cache.info().size).toBe(0);
       }));
+
+
+      it("should return value from put", inject(function($cacheFactory) {
+        var obj = {};
+        expect(cache.put('k1', obj)).toBe(obj);
+      }));
     });
 
 
