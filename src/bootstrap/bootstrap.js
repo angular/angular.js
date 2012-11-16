@@ -135,7 +135,7 @@ directive.tabbable = function() {
               _a.text(atr.title);
               ul.append(_li);
               tab.subTabs.push({paneElement: elem, value: atr.title, tabElement: li});
-              _a.click(fbind);
+              _li.click(fbind);
             }
             return;
           }
@@ -163,7 +163,6 @@ directive.tabbable = function() {
           tab.subTabs.forEach(function(e,i){
             if($(event.target).text()==e.value){
               tabval = e.value;
-              console.log(tabval);
             }
           });
 
@@ -179,26 +178,26 @@ directive.tabbable = function() {
           }
         }
 
-        a.bind('click', function(event) {console.log(tab.value);
+        li.bind('click', function(event) {console.log(tab.value);
           event.preventDefault();
           event.stopPropagation();
 
           if(attr.type){
             var iWasOpen = false, elm = $(this);
 
-            if ($(this).parent().hasClass('open')) {
+            if ($(this).hasClass('open')) {
               iWasOpen = true;
               close();
             }
 
             if (!iWasOpen){
-              $(this).parent().addClass('open');
+              $(this).addClass('open');
 
-              close = function (event) {console.log('closing');
+              close = function (event) {
                 event && event.preventDefault();
                 event && event.stopPropagation();
                 $(document).unbind('click', close);
-                elm.parent().removeClass('open');
+                elm.removeClass('open');
                 close = null;
               }
 
