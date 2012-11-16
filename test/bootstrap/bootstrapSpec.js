@@ -57,8 +57,8 @@ describe('bootstrap', function() {
 
         this.message = function() {
           return 'Expect tab  index ' + index + ' to be selected\n' +
-            '     TAB: ' + angular.mock.dump(tab) + '\n' +
-            'TAB-PANE: ' + angular.mock.dump(tabPane);
+            '     TAB: ' + angular.mock.dump(tab.hasClass('active')) + '\n' +
+            'TAB-PANE: ' + angular.mock.dump(tabPane.hasClass('active'));
         };
 
         return tabPane.hasClass('active') && tab.hasClass('active');
