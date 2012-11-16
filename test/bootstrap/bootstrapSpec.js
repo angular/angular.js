@@ -4,7 +4,7 @@ describe('bootstrap', function() {
   var $compile, $rootScope, element;
 
   function clickTab(element, index) {
-    browserTrigger(element.children().eq(0).children().eq[0].children().eq(index));
+    browserTrigger(element.children().eq(0).children().eq(index));
   }
 
   beforeEach(module('bootstrap'));
