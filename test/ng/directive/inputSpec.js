@@ -505,7 +505,7 @@ describe('input', function() {
 
   describe('minlength', function() {
 
-    it('should invalid shorter than given minlenght', function() {
+    it('should invalid shorter than given minlength', function() {
       compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
@@ -514,12 +514,31 @@ describe('input', function() {
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
     });
+
+
+    it('should invalid shorter than given minlength-expressions', function() {
+      scope.$apply(function(){
+        scope.min = 5
+      });
+      compileInput('<input type="text" ng-model="value" ng-minlength="{{min}}" />');
+      changeInputValueTo('aa');
+      scope.$digest();
+      expect(scope.value).toBeUndefined();
+
+      changeInputValueTo('aaaaa');
+      expect(scope.value).toBe('aaaaa');
+
+      scope.$apply(function(){
+        scope.min = 6;
+      });
+      expect(scope.value).toBeUndefined();
+    });
   });
 
 
   describe('maxlength', function() {
 
-    it('should invalid shorter than given maxlenght', function() {
+    it('should invalid longer than given maxlength', function() {
       compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
@@ -527,6 +546,25 @@ describe('input', function() {
 
       changeInputValueTo('aaa');
       expect(scope.value).toBe('aaa');
+    });
+
+
+    it('should invalid longer than given maxlength-expressions', function() {
+      scope.$apply(function(){
+        scope.max = 5
+      });
+      compileInput('<input type="text" ng-model="value" ng-maxlength="{{max}}" />');
+      changeInputValueTo('aaaaaaaa');
+      scope.$digest();
+      expect(scope.value).toBeUndefined();
+
+      changeInputValueTo('aaa');
+      expect(scope.value).toBe('aaa');
+
+      scope.$apply(function(){
+        scope.max = 2;
+      });
+      expect(scope.value).toBeUndefined();
     });
   });
 

@@ -16,9 +16,9 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
@@ -93,9 +93,9 @@ var inputType = {
    * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
    * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
@@ -159,9 +159,9 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
@@ -224,9 +224,9 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
@@ -460,39 +460,30 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$parsers.push(patternValidator);
   }
 
-  // min length validator
-  if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
-    var minLengthValidator = function(value) {
-      if (!isEmpty(value) && value.length < minlength) {
-        ctrl.$setValidity('minlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('minlength', true);
-        return value;
-      }
-    };
+  function applyMinMaxLength(minOrMax, langthInvalid) {
+    if (attr.hasOwnProperty(minOrMax)) {
+      var validityValue = minOrMax === 'ngMinlength' ? 'minlength' : 'maxlength';
+      var validator = function(value) {
+        var parsedValue = parseFloat(attr[minOrMax], 10);
+        if (!isEmpty(value) && langthInvalid(value, parsedValue)) {
+          ctrl.$setValidity(validityValue, false);
+          return undefined;
+        } else {
+          ctrl.$setValidity(validityValue, true);
+          return value;
+        }
+      };
 
-    ctrl.$parsers.push(minLengthValidator);
-    ctrl.$formatters.push(minLengthValidator);
+      ctrl.$parsers.push(validator);
+      ctrl.$formatters.push(validator);
+
+      attr.$observe(minOrMax, function() {
+        ctrl.$setViewValue(ctrl.$viewValue);
+      });
+    }
   }
-
-  // max length validator
-  if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
-    var maxLengthValidator = function(value) {
-      if (!isEmpty(value) && value.length > maxlength) {
-        ctrl.$setValidity('maxlength', false);
-        return undefined;
-      } else {
-        ctrl.$setValidity('maxlength', true);
-        return value;
-      }
-    };
-
-    ctrl.$parsers.push(maxLengthValidator);
-    ctrl.$formatters.push(maxLengthValidator);
-  }
+  applyMinMaxLength('ngMinlength', function langthInvalid(value, min) {return value.length < min;});
+  applyMinMaxLength('ngMaxlength', function langthInvalid(value, max) {return value.length > max;});
 }
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
@@ -653,9 +644,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
- * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength.
  * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
@@ -677,9 +668,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
- * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ * @param {expression=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ * @param {expression=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength.
  * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
