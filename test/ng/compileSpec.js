@@ -1381,9 +1381,10 @@ describe('$compile', function() {
     }));
 
 
-    it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
+    it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
-      expect(directiveAttrs.someAttr).toBeUndefined();
+      expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
     }));
 
 

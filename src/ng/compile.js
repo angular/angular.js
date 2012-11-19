@@ -1037,7 +1037,7 @@ function $CompileProvider($provide) {
             interpolateFn = $interpolate(attr[name], true);
           }
 
-          attr[name] = undefined;
+          attr[name] = interpolateFn(scope);
           ($$observers[name] || ($$observers[name] = [])).$$inter = true;
           (attr.$$observers && attr.$$observers[name].$$scope || scope).
             $watch(interpolateFn, function interpolateFnWatchAction(value) {
