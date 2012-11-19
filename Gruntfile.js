@@ -6,9 +6,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
+  var dist = {};
+  dist['build/angular-'+ NG_VERSION.full +'.zip'] = 'build/**';
+
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
@@ -106,6 +110,10 @@ module.exports = function(grunt) {
       }
     },
 
+    compress: {
+      zip: { files: dist }
+    },
+
     write: {
       version: {file: 'build/version.txt', val: NG_VERSION.full}
     }
@@ -116,6 +124,6 @@ module.exports = function(grunt) {
   grunt.registerTask('minify', ['clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:keepalive']);
-  grunt.registerTask('package', ['clean', 'build', 'minall', 'docs', 'copy', 'write', 'zip']);
+  grunt.registerTask('package', ['clean', 'build', 'minall', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
