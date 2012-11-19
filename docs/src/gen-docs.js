@@ -38,10 +38,10 @@ writer.makeDir('build/docs/', true).then(function() {
 function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
-  writesFuture.push(writer.symlinkTemplate('css'));
-  writesFuture.push(writer.symlinkTemplate('font'));
-  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img'));
-  writesFuture.push(writer.symlinkTemplate('js'));
+  writesFuture.push(writer.symlinkTemplate('css', 'dir'));
+  writesFuture.push(writer.symlinkTemplate('font', 'dir'));
+  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
+  writesFuture.push(writer.symlinkTemplate('js', 'dir'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
