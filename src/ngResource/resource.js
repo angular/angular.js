@@ -316,6 +316,7 @@ angular.module('ngResource', ['ng']).
         var ids = {};
         paramDefaults = extend(paramDefaults, actionParams);
         forEach(paramDefaults || {}, function(value, key){
+          if (isFunction(value)) { value = value(); }
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
         return ids;

@@ -345,6 +345,17 @@ describe("resource", function() {
   });
 
 
+  it('should bind default dynamic parameters', function() {
+    $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
+    var minimum = 5;
+    var Visa = CreditCard.bind({verb:'.visa', minimum: function() { return minimum; }});
+    minimum = 0.05;
+    var visa = Visa.get({id:123});
+    $httpBackend.flush();
+    expect(visa).toEqualData({id:123});
+  });
+
+
   it('should exercise full stack', function() {
     var Person = $resource('/Person/:id');
 
