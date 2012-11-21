@@ -37,7 +37,8 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         '<ul class="dropdown-menu">' +
         '  <li><a ng-click="plunkr($event)" href="">In Plunkr</a></li>' +
         '  <li><a ng-click="fiddle($event)" href="">In JsFiddle</a></li>' +
-        '</ul>',
+        '</ul>' +
+        '</div>',
     scope: true,
     controller: function($scope, $attrs, openJsFiddle, openPlunkr) {
       var sources = {
