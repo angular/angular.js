@@ -84,6 +84,8 @@ describe('filters', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(currency(-999)).toEqual('($999.00)');
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
+      expect(currency(1234.56, "$",0)).toBe('$1,234');
+      expect(currency(1234.56, "$",2,true)).toBe('$-1,234.56');
     });
 
 
