@@ -119,14 +119,7 @@ var ngRepeatDirective = ngDirective({
           key = (collection === array) ? index : array[index];
           value = collection[key];
 
-          // if value is object, it can be shifted to allow for position change
-          // if is not object, need to first check whether index is same to avoid shifting wrong val
-          last = isObject(value)
-              ? lastOrder.shift(value)
-              : (last = lastOrder.peek(value)) && (index === last.index)
-                  ? lastOrder.shift(value)
-                  : undefined;
-
+          last = lastOrder.shift(value);
 
           if (last) {
             // if we have already seen this object, then we need to reuse the
