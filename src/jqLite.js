@@ -262,9 +262,9 @@ function JQLiteHasClass(element, selector) {
       indexOf( " " + selector + " " ) > -1);
 }
 
-function JQLiteRemoveClass(element, selector) {
-  if (selector) {
-    forEach(selector.split(' '), function(cssClass) {
+function JQLiteRemoveClass(element, cssClasses) {
+  if (cssClasses) {
+    forEach(cssClasses.split(' '), function(cssClass) {
       element.className = trim(
           (" " + element.className + " ")
           .replace(/[\n\t]/g, " ")
@@ -274,9 +274,9 @@ function JQLiteRemoveClass(element, selector) {
   }
 }
 
-function JQLiteAddClass(element, selector) {
-  if (selector) {
-    forEach(selector.split(' '), function(cssClass) {
+function JQLiteAddClass(element, cssClasses) {
+  if (cssClasses) {
+    forEach(cssClasses.split(' '), function(cssClass) {
       if (!JQLiteHasClass(element, cssClass)) {
         element.className = trim(element.className + ' ' + trim(cssClass));
       }
