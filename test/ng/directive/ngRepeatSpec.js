@@ -431,5 +431,23 @@ describe('ngRepeat', function() {
       expect(newElements[1]).toEqual(lis[1]);
       expect(newElements[2]).toEqual(lis[0]);
     });
+
+
+    it('should reuse elements even when model is composed of primitives', function() {
+      // rebuilding repeater from scratch can be expensive, we should try to avoid it even for
+      // model that is composed of primitives.
+
+      scope.items = ['hello', 'cau', 'ahoj'];
+      scope.$digest();
+      lis = element.find('li');
+
+      scope.items = ['ahoj', 'hello', 'cau'];
+      scope.$digest();
+      var newLis = element.find('li');
+      expect(newLis.length).toEqual(3);
+      expect(newLis[0]).toEqual(lis[2]);
+      expect(newLis[1]).toEqual(lis[0]);
+      expect(newLis[2]).toEqual(lis[1]);
+    });
   });
 });
