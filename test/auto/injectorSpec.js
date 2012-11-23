@@ -394,6 +394,17 @@ describe('injector', function() {
         });
 
 
+        it('should configure $provide using an array', function() {
+          function Type() {};
+          Type.prototype.$get = function() {
+            return 'abc';
+          };
+          expect(createInjector([function($provide) {
+            $provide.provider('value', [Type]);
+          }]).get('value')).toEqual('abc');
+        });
+
+
         it('should configure a set of providers', function() {
           expect(createInjector([function($provide) {
             $provide.provider({value: valueFn({$get:Array})});

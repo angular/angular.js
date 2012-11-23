@@ -441,6 +441,9 @@ function createInjector(modulesToLoad) {
   }
 
   function provider(name, provider_) {
+    if (isArray(provider_)) {
+      provider_ = providerInjector.instantiate(provider_);
+    }
     if (isFunction(provider_)) {
       provider_ = providerInjector.instantiate(provider_);
     }
