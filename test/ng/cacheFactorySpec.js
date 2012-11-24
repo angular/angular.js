@@ -88,6 +88,10 @@ describe('$cacheFactory', function() {
         expect(cache.get('k2')).toBeUndefined();
       }));
 
+      it('should return undefined when entry does not exist', inject(function($cacheFactory) {
+        expect(cache.remove('non-existent')).toBeUndefined();
+      }));
+
 
       it('should return undefined when entry does not exist', inject(function($cacheFactory) {
         expect(cache.remove('non-existent')).toBeUndefined();
