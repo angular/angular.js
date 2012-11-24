@@ -1091,6 +1091,33 @@ describe('jqLite', function() {
   });
 
 
+  describe('triggerHandler', function() {
+    it('should trigger all registered handlers for an event', function() {
+      var element = jqLite('<span>poke</span>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          clickSpy1 = jasmine.createSpy('clickSpy1'),
+          clickSpy2 = jasmine.createSpy('clickSpy2');
+
+      element.bind('poke', pokeSpy);
+      element.bind('click', clickSpy1);
+      element.bind('click', clickSpy2);
+
+      expect(pokeSpy).not.toHaveBeenCalled();
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).not.toHaveBeenCalled();
+
+      element.triggerHandler('poke');
+      expect(pokeSpy).toHaveBeenCalledOnce();
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).not.toHaveBeenCalled();
+
+      element.triggerHandler('click');
+      expect(clickSpy1).toHaveBeenCalledOnce();
+      expect(clickSpy2).toHaveBeenCalledOnce();
+    });
+  });
+
+
   describe('camelCase', function() {
 
    it('should leave non-dashed strings alone', function() {
