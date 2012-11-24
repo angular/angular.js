@@ -955,8 +955,13 @@ describe('jqLite', function() {
       expect(root.append('text')).toEqual(root);
       expect(root.html()).toEqual('text');
     });
-    it('should not append anything if parent node is not of type element', function() {
+    it('should append to document fragment', function() {
       var root = jqLite(document.createDocumentFragment());
+      expect(root.append('<p>foo</p>')).toBe(root);
+      expect(root.children().length).toBe(1);
+    });
+    it('should not append anything if parent node is not of type element or docfrag', function() {
+      var root = jqLite('<p>some text node</p>').contents();
       expect(root.append('<p>foo</p>')).toBe(root);
       expect(root.children().length).toBe(0);
     });
