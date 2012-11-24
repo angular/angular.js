@@ -1,6 +1,11 @@
 'use strict';
 
-/*
+/**
+ * @ngdoc directive
+ * @name ng.directive:a
+ * @restrict E
+ *
+ * @description
  * Modifies the default behavior of html A tag, so that the default action is prevented when href
  * attribute is empty.
  *
@@ -22,6 +27,7 @@ var htmlAnchorDirective = valueFn({
         // if we have no href url, then don't navigate anywhere.
         if (!element.attr('href')) {
           event.preventDefault();
+          return false; // Needed for opera
         }
       });
     }

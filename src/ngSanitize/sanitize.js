@@ -123,7 +123,7 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   BEGING_END_TAGE_REGEXP = /^<\s*\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
-  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|#)/,
+  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
 

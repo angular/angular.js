@@ -135,6 +135,24 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should set responseType and return xhr.response', function() {
+    $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
+
+    var xhrInstance = MockXhr.$$lastInstance;
+    expect(xhrInstance.responseType).toBe('blob');
+
+    callback.andCallFake(function(status, response) {
+      expect(response).toBe(xhrInstance.response);
+    });
+
+    xhrInstance.response = {some: 'object'};
+    xhrInstance.readyState = 4;
+    xhrInstance.onreadystatechange();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+
   describe('JSONP', function() {
 
     var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;

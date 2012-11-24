@@ -2,7 +2,7 @@
 @name Developer Guide: Angular Services: Testing Angular Services
 @description
 
-Following is a unit test for the service in the example in {@link
+The following is a unit test for the 'notify' service in the 'Dependencies' example in {@link
 dev_guide.services.creating_services Creating Angular Services}. The unit test example uses Jasmine
 spy (mock) instead of a real browser alert.
 
@@ -55,7 +55,7 @@ it('should clear messages after alert', function() {
 * {@link dev_guide.services.understanding_services Understanding Angular Services}
 * {@link dev_guide.services.creating_services Creating Angular Services}
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
-* {@link dev_guide.services.injecting_controllers Injecting Services Into Conrollers}
+* {@link dev_guide.services.injecting_controllers Injecting Services Into Controllers}
 
 ## Related API
 

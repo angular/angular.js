@@ -1587,22 +1587,43 @@ window.jstestdriver && (function(window) {
 })(window);
 
 
-window.jasmine && (function(window) {
+(window.jasmine || window.mocha) && (function(window) {
 
-  afterEach(function() {
-    var spec = getCurrentSpec();
-    spec.$injector = null;
-    spec.$modules = null;
-    angular.mock.clearDataCache();
+  var currentSpec = null;
+
+  beforeEach(function() {
+    currentSpec = this;
   });
 
-  function getCurrentSpec() {
-    return jasmine.getEnv().currentSpec;
-  }
+  afterEach(function() {
+    var injector = currentSpec.$injector;
+
+    currentSpec.$injector = null;
+    currentSpec.$modules = null;
+    currentSpec = null;
+
+    if (injector) {
+      injector.get('$rootElement').unbind();
+      injector.get('$browser').pollFns.length = 0;
+    }
+
+    angular.mock.clearDataCache();
+
+    // clean up jquery's fragment cache
+    angular.forEach(angular.element.fragments, function(val, key) {
+      delete angular.element.fragments[key];
+    });
+
+    MockXhr.$$lastInstance = null;
+
+    angular.forEach(angular.callbacks, function(val, key) {
+      delete angular.callbacks[key];
+    });
+    angular.callbacks.counter = 0;
+  });
 
   function isSpecRunning() {
-    var spec = getCurrentSpec();
-    return spec && spec.queue.running;
+    return currentSpec && currentSpec.queue.running;
   }
 
   /**
@@ -1627,11 +1648,10 @@ window.jasmine && (function(window) {
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
-      var spec = getCurrentSpec();
-      if (spec.$injector) {
+      if (currentSpec.$injector) {
         throw Error('Injector already created, can not register a module!');
       } else {
-        var modules = spec.$modules || (spec.$modules = []);
+        var modules = currentSpec.$modules || (currentSpec.$modules = []);
         angular.forEach(moduleFns, function(module) {
           modules.push(module);
         });
@@ -1694,26 +1714,28 @@ window.jasmine && (function(window) {
    */
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    var stack = new Error('Declaration Location').stack;
+    var errorForStack = new Error('Declaration Location');
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
-      var spec = getCurrentSpec();
-      var modules = spec.$modules || [];
+      var modules = currentSpec.$modules || [];
+
       modules.unshift('ngMock');
       modules.unshift('ng');
-      var injector = spec.$injector;
+      var injector = currentSpec.$injector;
       if (!injector) {
-        injector = spec.$injector = angular.injector(modules);
+        injector = currentSpec.$injector = angular.injector(modules);
       }
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
         try {
           injector.invoke(blockFns[i] || angular.noop, this);
         } catch (e) {
-          if(e.stack) e.stack +=  '\n' + stack;
+          if(e.stack) e.stack +=  '\n' + errorForStack.stack;
           throw e;
+        } finally {
+          errorForStack = null;
         }
       }
     }
-  }
+  };
 })(window);

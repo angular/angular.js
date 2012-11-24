@@ -788,7 +788,7 @@ function toKeyValue(obj) {
 
 
 /**
- * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+ * We need our custom method because encodeURIComponent is too agressive and doesn't follow
  * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
  * segments:
  *    segment       = *pchar
@@ -832,7 +832,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp on optional application
+ * @param {angular.Module} ngApp an optional application
  *   {@link angular.module module} name to load.
  *
  * @description

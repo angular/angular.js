@@ -27,8 +27,9 @@ function $RouteProvider(){
    *
    *    Object properties:
    *
-   *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
-   *      created scope.
+   *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with newly
+   *      created scope or the name of a {@link angular.Module#controller registered controller}
+   *      if passed as a string.
    *    - `template` – `{string=}` –  html template as a string that should be used by
    *      {@link ng.directive:ngView ngView} or
    *      {@link ng.directive:ngInclude ngInclude} directives.
@@ -38,7 +39,7 @@ function $RouteProvider(){
    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
    *      be injected into the controller. If any of these dependencies are promises, they will be
    *      resolved and converted to a value before the controller is instantiated and the
-   *      `$aftreRouteChange` event is fired. The map object is:
+   *      `$routeChangeSuccess` event is fired. The map object is:
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
@@ -372,7 +373,7 @@ function $RouteProvider(){
 
               forEach(next.resolve || {}, function(value, key) {
                 keys.push(key);
-                values.push(isFunction(value) ? $injector.invoke(value) : $injector.get(value));
+                values.push(isString(value) ? $injector.get(value) : $injector.invoke(value));
               });
               if (isDefined(template = next.template)) {
               } else if (isDefined(template = next.templateUrl)) {

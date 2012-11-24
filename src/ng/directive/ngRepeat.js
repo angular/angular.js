@@ -88,7 +88,8 @@ var ngRepeatDirective = ngDirective({
       // We need an array of these objects since the same object can be returned from the iterator.
       // We expect this to be a rare case.
       var lastOrder = new HashQueueMap();
-      scope.$watch(function(scope){
+      var indexValues = [];
+      scope.$watch(function ngRepeatWatch(scope){
         var index, length,
             collection = scope.$eval(rhs),
             collectionLength = size(collection, true),
@@ -117,7 +118,20 @@ var ngRepeatDirective = ngDirective({
         for (index = 0, length = array.length; index < length; index++) {
           key = (collection === array) ? index : array[index];
           value = collection[key];
-          last = lastOrder.shift(value);
+
+          // if collection is array and value is object, it can be shifted to allow for position change
+          // if collection is array and value is not object, need to first check whether index is same to
+          // avoid shifting wrong value
+          // if collection is not array, need to always check index to avoid shifting wrong value
+          if (lastOrder.peek(value)) {
+            last = collection === array ?
+              ((isObject(value)) ? lastOrder.shift(value) :
+                (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
+              (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined);
+          } else {
+            last = undefined;
+          }
+
           if (last) {
             // if we have already seen this object, then we need to reuse the
             // associated scope/element
@@ -137,6 +151,12 @@ var ngRepeatDirective = ngDirective({
               cursor = last.element;
             }
           } else {
+            if (indexValues.hasOwnProperty(index) && collection !== array) {
+              var preValue = indexValues[index];
+              var v = lastOrder.shift(preValue);
+              v.element.remove();
+              v.scope.$destroy();
+            }
             // new item which we don't know about
             childScope = scope.$new();
           }
@@ -158,8 +178,14 @@ var ngRepeatDirective = ngDirective({
                   index: index
                 };
               nextOrder.push(value, last);
+              indexValues[index] = value;
             });
           }
+        }
+
+        var i, l;
+        for (i = 0, l = indexValues.length - length; i < l; i++) {
+          indexValues.pop();
         }
 
         //shrink children

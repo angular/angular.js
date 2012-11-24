@@ -24,7 +24,7 @@ because first the template (which is the uncompiled HTML along with any addition
 directives) is compiled on the browser, and second, the compilation step produces a live view. We
 say live because any changes to the view are immediately reflected in the model, and any changes in
 the model are propagated to the view. This makes the model always the single-source-of-truth for
-the application state, greatly simplifying the programing model for the developer. You can think of
+the application state, greatly simplifying the programming model for the developer. You can think of
 the view as simply an instant projection of your model.
 
 Because the view is just a projection of the model, the controller is completely separated from the

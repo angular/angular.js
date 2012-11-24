@@ -1,4 +1,5 @@
 # AngularJS build config file
 ---
-version: 1.0.0
-codename: temporal-domination
+version: 1.1.1-snapshot
+codename: pathological-kerning
+stable: 1.0.2
