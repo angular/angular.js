@@ -430,4 +430,30 @@ describe('form', function() {
       expect(doc).toBeDirty();
     });
   });
+
+  describe('set pristine state', function() {
+
+    beforeEach(function() {
+      doc = $compile(
+        '<form name="form">' +
+          '<input ng-model="name" name="name" store-model-ctrl/>' +
+          '</form>')(scope);
+
+      scope.$digest();
+    });
+
+    it('should set form and controls to the pristine state', function() {
+
+      var form = scope.form, input = doc.find('input').eq(0);
+
+      control.$setViewValue('');
+      scope.$apply();
+      expect(doc).toBeDirty();
+
+      form.$setPristine();
+      expect(doc).toBePristine();
+      expect(input).toBePristine();
+      expect(control.$pristine).toBeTruthy();
+    });
+  });
 });

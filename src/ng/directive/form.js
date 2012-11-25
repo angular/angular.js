@@ -5,7 +5,8 @@ var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
   $setValidity: noop,
-  $setDirty: noop
+  $setDirty: noop,
+  $setPristine: noop
 };
 
 /**
@@ -120,6 +121,31 @@ function FormController(element, attrs) {
     parentForm.$setDirty();
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setPristine
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to its pristine state.
+   *
+   * This method can be called to remove the 'ng-dirty' class and set the form to its pristine
+   * state (ng-pristine class). This method will also propagate to all the controls contained
+   * in this form.
+   *
+   * Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
+   * saving or resetting it.
+   */
+  form.$setPristine = function () {
+    element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+    form.$dirty = false;
+    form.$pristine = true;
+    angular.forEach(form, function(value, key) {
+      if (value.$name && value.$setPristine) {
+        value.$setPristine();
+      }
+    });
+  };
 }
 
 
