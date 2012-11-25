@@ -236,12 +236,12 @@ angular.module('ngResource', ['ng']).
    *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
    *                     / "*" / "+" / "," / ";" / "="
    */
-  function encodeUriSegment(val) {
-    return encodeUriQuery(val, true).
-      replace(/%26/gi, '&').
-      replace(/%3D/gi, '=').
-      replace(/%2B/gi, '+');
-  }
+    function encodeUriSegment(val) {
+      return encodeUriQuery(val, true).
+        replace(/%26/gi, '&').
+        replace(/%3D/gi, '=').
+        replace(/%2B/gi, '+');
+    }
 
 
   /**
@@ -255,16 +255,16 @@ angular.module('ngResource', ['ng']).
    *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
    *                     / "*" / "+" / "," / ";" / "="
    */
-  function encodeUriQuery(val, pctEncodeSpaces) {
-    return encodeURIComponent(val).
-      replace(/%40/gi, '@').
-      replace(/%3A/gi, ':').
-      replace(/%24/g, '$').
-      replace(/%2C/gi, ',').
-      replace((pctEncodeSpaces ? null : /%20/g), '+');
-  }
+    function encodeUriQuery(val, pctEncodeSpaces) {
+      return encodeURIComponent(val).
+        replace(/%40/gi, '@').
+        replace(/%3A/gi, ':').
+        replace(/%24/g, '$').
+        replace(/%2C/gi, ',').
+        replace((pctEncodeSpaces ? null : /%20/g), '+');
+    }
 
-  function Route(template, defaults) {
+    function Route(template, defaults) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
       var urlParams = this.urlParams = {};
@@ -392,11 +392,6 @@ angular.module('ngResource', ['ng']).
         };
 
 
-        Resource.bind = function(additionalParamDefaults){
-          return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
-        };
-
-
         Resource.prototype['$' + name] = function(a1, a2, a3) {
           var params = extractParams(this),
               success = noop,
@@ -422,6 +417,11 @@ angular.module('ngResource', ['ng']).
           Resource[name].call(this, params, data, success, error);
         };
       });
+
+      Resource.bind = function(additionalParamDefaults){
+        return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+      };
+
       return Resource;
     }
 
