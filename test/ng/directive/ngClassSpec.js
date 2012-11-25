@@ -278,4 +278,31 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+
+  it('should ngClass odd/even with orderBy direction change', inject(function($rootScope, $compile) {
+    element = $compile('<ul><li ng-repeat="i in values | orderBy:sort.column:sort.desc" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'">{{i.val}}</li><ul>')($rootScope);
+    $rootScope.values = [{val: 0},{val: 1}];
+    $rootScope.sort = {column: 'val', desc: false};
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+    expect(e1.text()).toBe('0');
+    expect(e1.hasClass('existing')).toBeTruthy();
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e2.hasClass('existing')).toBeTruthy();
+    expect(e2.hasClass('even')).toBeTruthy();
+
+    $rootScope.sort.desc = true;
+    $rootScope.$digest();
+
+    e1 = jqLite(element[0].childNodes[1]);
+    e2 = jqLite(element[0].childNodes[2]);
+    expect(e1.text()).toBe('1');
+    expect(e1.hasClass('existing')).toBeTruthy();
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e2.hasClass('existing')).toBeTruthy();
+    expect(e2.hasClass('even')).toBeTruthy();
+  }));
 });
