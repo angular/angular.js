@@ -65,7 +65,7 @@ var ngRepeatDirective = ngDirective({
     return function(scope, iterStartElement, attr){
       var expression = attr.ngRepeat;
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-        lhs, rhs, valueIdent, keyIdent;
+        lhs, rhs, valueIdent, keyIdent, useKey;
       if (! match) {
         throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" +
           expression + "'.");
@@ -79,9 +79,11 @@ var ngRepeatDirective = ngDirective({
       }
       valueIdent = match[3] || match[1];
       keyIdent = match[2];
+      useKey = !isUndefined(attr.ngRepeatUseKey);
 
-      // Store a list of elements from previous run. This is a hash where key is the item from the
-      // iterator, and the value is an array of objects with following properties.
+      // Store a list of elements from previous run. This is a hash where key is the key or index
+      // (if use key option is used) or the item from the iterator, and the value is an array of
+      // objects with following properties.
       //   - scope: bound scope
       //   - element: previous element.
       //   - index: position
@@ -97,6 +99,7 @@ var ngRepeatDirective = ngDirective({
             // Same as lastOrder but it has the current state. It will become the
             // lastOrder on the next iteration.
             nextOrder = new HashQueueMap(),
+            mapKey, // key used to identify this mapping
             key, value, // key/value of iteration
             array, last,       // last object information {scope, element, index}
             cursor = iterStartElement;     // current position of the node
@@ -118,16 +121,17 @@ var ngRepeatDirective = ngDirective({
         for (index = 0, length = array.length; index < length; index++) {
           key = (collection === array) ? index : array[index];
           value = collection[key];
+          mapKey = useKey ? key : value;
 
           // if collection is array and value is object, it can be shifted to allow for position change
           // if collection is array and value is not object, need to first check whether index is same to
           // avoid shifting wrong value
           // if collection is not array, need to always check index to avoid shifting wrong value
-          if (lastOrder.peek(value)) {
+          if (lastOrder.peek(mapKey)) {
             last = collection === array ?
-              ((isObject(value)) ? lastOrder.shift(value) :
-                (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
-              (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined);
+              ((isObject(mapKey)) ? lastOrder.shift(mapKey) :
+                (index === lastOrder.peek(mapKey).index ? lastOrder.shift(mapKey) : undefined)) :
+              (index === lastOrder.peek(mapKey).index ? lastOrder.shift(mapKey) : undefined);
           } else {
             last = undefined;
           }
@@ -136,7 +140,7 @@ var ngRepeatDirective = ngDirective({
             // if we have already seen this object, then we need to reuse the
             // associated scope/element
             childScope = last.scope;
-            nextOrder.push(value, last);
+            nextOrder.push(mapKey, last);
 
             if (index === last.index) {
               // do nothing
@@ -177,8 +181,8 @@ var ngRepeatDirective = ngDirective({
                   element: (cursor = clone),
                   index: index
                 };
-              nextOrder.push(value, last);
-              indexValues[index] = value;
+              nextOrder.push(mapKey, last);
+              indexValues[index] = mapKey;
             });
           }
         }
