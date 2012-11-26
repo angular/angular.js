@@ -443,7 +443,7 @@ function createInjector(modulesToLoad) {
   function provider(name, provider_) {
     if (isArray(provider_) || isFunction(provider_)) {
       provider_ = providerInjector.instantiate(provider_);
-    }    
+    }
     if (!provider_.$get) {
       throw Error('Provider ' + name + ' must define $get factory method.');
     }
