@@ -387,6 +387,20 @@ describe('injector', function() {
         });
 
 
+        it('should configure $provide using an array', function() {
+          function Type(PREFIX) {
+            this.prefix = PREFIX;
+          };
+          Type.prototype.$get = function() {
+            return this.prefix + 'def';
+          };
+          expect(createInjector([function($provide) {
+            $provide.constant('PREFIX', 'abc');
+            $provide.provider('value', ['PREFIX', Type]);
+          }]).get('value')).toEqual('abcdef');
+        });
+
+
         it('should configure a set of providers', function() {
           expect(createInjector([function($provide) {
             $provide.provider({value: valueFn({$get:Array})});
