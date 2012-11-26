@@ -4,7 +4,7 @@
   "dependencies" : {
     "testacular": "canary",
     "jasmine-node" :  "*",
-    "q-fs" : "https://github.com/geddesign/q-fs/archive/master.tar.gz",
+    "q-fs" : "~0.1.35",
     "qq" : "*",
     "grunt": "0.4.x",
     "grunt-contrib-clean": "https://github.com/gruntjs/grunt-contrib-clean/tarball/devel",
