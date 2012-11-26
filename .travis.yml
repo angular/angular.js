@@ -7,7 +7,7 @@ before_script:
   - sh -e /etc/init.d/xvfb start
   - npm install -g testacular@canary
   - npm install -g grunt-cli  
-  - rm node_modules/.bin/grunt
+  - rm -f node_modules/.bin/grunt
   - grunt package
   - grunt webserver > /dev/null &
 
