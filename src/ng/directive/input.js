@@ -1042,22 +1042,25 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   var ctrl = this;
-  $scope.$watch(ngModelGet, function ngModelWatchAction(value) {
 
-    // ignore change from view
-    if (ctrl.$modelValue === value) return;
+  $scope.$watch(function ngModelWatch() {
+    var value = ngModelGet($scope);
 
-    var formatters = ctrl.$formatters,
-        idx = formatters.length;
+    // if scope model value and ngModel value are out of sync
+    if (ctrl.$modelValue !== value) {
 
-    ctrl.$modelValue = value;
-    while(idx--) {
-      value = formatters[idx](value);
-    }
+      var formatters = ctrl.$formatters,
+          idx = formatters.length;
 
-    if (ctrl.$viewValue !== value) {
-      ctrl.$viewValue = value;
-      ctrl.$render();
+      ctrl.$modelValue = value;
+      while(idx--) {
+        value = formatters[idx](value);
+      }
+
+      if (ctrl.$viewValue !== value) {
+        ctrl.$viewValue = value;
+        ctrl.$render();
+      }
     }
   });
 }];
