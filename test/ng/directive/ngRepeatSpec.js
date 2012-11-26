@@ -37,10 +37,10 @@ describe('ngRepeat', function() {
   }));
 
 
-  it('should ngRepeat over array of primitive correctly', inject(function($rootScope, $compile) {
+  it('should ngRepeat over array of primitives', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
+        '<li ng-repeat="item in items">{{item}};</li>' +
       '</ul>')($rootScope);
 
     Array.prototype.extraProperty = "should be ignored";
@@ -91,13 +91,13 @@ describe('ngRepeat', function() {
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(1);
     expect(element.text()).toEqual('test;');
-	
+
     $rootScope.items = ['same', 'value'];
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(2);
     expect(element.text()).toEqual('same;value;');
-	
-	// number
+
+    // number
     $rootScope.items = [12, 12, 12];
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(3);
@@ -130,36 +130,48 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:swe;shyam:set;');
   }));
 
-  
-  it('should ngRepeat over object with primitive value correctly', inject(function($rootScope, $compile) {
+
+  it('should ngRepeat over object with changing primitive value',
+      inject(function($rootScope, $compile) {
+
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li>' +
+        '<li ng-repeat="(key, value) in items">' +
+          '{{key}}:{{value}};' +
+          '<input type="checkbox" ng-model="items[key]">' +
+        '</li>' +
       '</ul>')($rootScope);
-    $rootScope.items = {misko:'true', shyam:'true', zhenbo: 'true'};
+
+    $rootScope.items = {misko: true, shyam: true, zhenbo:true};
     $rootScope.$digest();
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
-	
-    $rootScope.items = {misko:'false', shyam:'true', zhenbo: 'true'};
-    $rootScope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
-	
-    $rootScope.items = {misko:'false', shyam:'false', zhenbo: 'false'};
-    $rootScope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('misko:false;shyam:false;zhenbo:false;');
-	
-    $rootScope.items = {misko:'true'};
-    $rootScope.$digest();
-    expect(element.find('li').length).toEqual(1);
-    expect(element.text()).toEqual('misko:true;');
 
-    $rootScope.items = {shyam:'true', zhenbo: 'false'};
+    browserTrigger(element.find('input').eq(0), 'click');
+
+    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
+    expect(element.find('input')[0].checked).toBe(false);
+    expect(element.find('input')[1].checked).toBe(true);
+    expect(element.find('input')[2].checked).toBe(true);
+
+    browserTrigger(element.find('input').eq(0), 'click');
+    expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
+    expect(element.find('input')[0].checked).toBe(true);
+    expect(element.find('input')[1].checked).toBe(true);
+    expect(element.find('input')[2].checked).toBe(true);
+
+    browserTrigger(element.find('input').eq(1), 'click');
+    expect(element.text()).toEqual('misko:true;shyam:false;zhenbo:true;');
+    expect(element.find('input')[0].checked).toBe(true);
+    expect(element.find('input')[1].checked).toBe(false);
+    expect(element.find('input')[2].checked).toBe(true);
+
+    $rootScope.items = {misko: false, shyam: true, zhenbo: true};
     $rootScope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('shyam:true;zhenbo:false;');
+    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
+    expect(element.find('input')[0].checked).toBe(false);
+    expect(element.find('input')[1].checked).toBe(true);
+    expect(element.find('input')[2].checked).toBe(true);
   }));
 
 
