@@ -91,8 +91,8 @@ describe('parser', function() {
       expect(tokens[1].text).toEqual('b');
     });
 
-    it('should tokenize relation', function() {
-      var tokens = lex("! == != < > <= >=");
+    it('should tokenize relation and equality', function() {
+      var tokens = lex("! == != < > <= >= === !==");
       expect(tokens[0].text).toEqual('!');
       expect(tokens[1].text).toEqual('==');
       expect(tokens[2].text).toEqual('!=');
@@ -100,6 +100,8 @@ describe('parser', function() {
       expect(tokens[4].text).toEqual('>');
       expect(tokens[5].text).toEqual('<=');
       expect(tokens[6].text).toEqual('>=');
+      expect(tokens[7].text).toEqual('===');
+      expect(tokens[8].text).toEqual('!==');
     });
 
     it('should tokenize statements', function() {
@@ -197,12 +199,20 @@ describe('parser', function() {
         expect(scope.$eval("false")).toBeFalsy();
         expect(scope.$eval("!true")).toBeFalsy();
         expect(scope.$eval("1==1")).toBeTruthy();
+        expect(scope.$eval("1==true")).toBeTruthy();
+        expect(scope.$eval("1===1")).toBeTruthy();
+        expect(scope.$eval("1==='1'")).toBeFalsy();
+        expect(scope.$eval("1===true")).toBeFalsy();
+        expect(scope.$eval("'true'===true")).toBeFalsy();
+        expect(scope.$eval("1!==2")).toBeTruthy();
+        expect(scope.$eval("1!=='1'")).toBeTruthy();
         expect(scope.$eval("1!=2")).toBeTruthy();
         expect(scope.$eval("1<2")).toBeTruthy();
         expect(scope.$eval("1<=1")).toBeTruthy();
         expect(scope.$eval("1>2")).toEqual(1>2);
         expect(scope.$eval("2>=1")).toEqual(2>=1);
-        expect(scope.$eval("true==2<3")).toEqual(true === 2<3);
+        expect(scope.$eval("true==2<3")).toEqual(true == 2<3);
+        expect(scope.$eval("true===2<3")).toEqual(true === 2<3);
       });
 
       it('should parse logical', function() {
