@@ -330,6 +330,7 @@ angular.module('ngResource', ['ng']).
       }
 
       forEach(actions, function(action, name) {
+        action.method = angular.uppercase(action.method);
         var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
         Resource[name] = function(a1, a2, a3, a4) {
           var params = {};

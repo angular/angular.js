@@ -9,7 +9,7 @@ describe("resource", function() {
     $resource = $injector.get('$resource');
     CreditCard = $resource('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
-        method:'POST',
+        method:'post',
         params:{verb:'!charge'}
       },
       patch: {
