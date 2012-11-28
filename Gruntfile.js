@@ -17,6 +17,15 @@ module.exports = function(grunt) {
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
 
+    connect: {
+      devserver: {
+        options: {
+          keepalive: true
+        }
+      },
+      testserver: {}
+    },
+
     test: {
       jqlite: 'testacular-jqlite.conf.js',
       jquery: 'testacular-jquery.conf.js',
@@ -104,9 +113,10 @@ module.exports = function(grunt) {
       process: ['build/docs/*.html', 'build/docs/.htaccess']
     },
     
-    copy: {
+    copy: { 
       i18n: {
-        files: {'build/i18n/': 'src/ngLocale/**'}
+        files: {'build/i18n/': 'src/ngLocale/**'},
+        options: {flatten: true}
       }
     },
 
@@ -122,8 +132,8 @@ module.exports = function(grunt) {
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
   grunt.registerTask('minify', ['clean', 'build', 'minall']);
-  grunt.registerTask('test:e2e', ['connect', 'test:end2end']);
-  grunt.registerTask('webserver', ['connect:keepalive']);
+  grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
+  grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['clean', 'build', 'minall', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
