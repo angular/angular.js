@@ -57,11 +57,54 @@
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ngDirective({
+var ngRepeatDirective = ['$compile', function($compile) {
+  return {
+
+  restrict: 'AM',
   transclude: 'element',
   priority: 1000,
   terminal: true,
-  compile: function(element, attr, linker) {
+  compile: function($element, attr, linker) {
+    var NG_REPEAT_END_TAG_REGEXP = /^(?:<!--)?\s*\/(\S+)\s* (?:-->)?$/,
+        element = $element[0],
+        sibling = element.nextSibling,
+        template = jqLite(document.createDocumentFragment()),
+        match;
+
+    // comment-based repeater
+    if (linker.$$originalNodeType === 8) {
+
+      // correction for tbody silently injected by browser
+      if (sibling && nodeName_(sibling) === 'TBODY' &&
+          sibling.lastChild && sibling.lastChild.nodeType === 8) {
+        jqLite(sibling).prepend('<!-- directive: ngRepeat ' + attr.ngRepeat + ' -->');
+        $element.text('');
+        return noop;
+      }
+
+      while (sibling) {
+        if (sibling.nodeType == 8 &&
+            (match = (sibling.textContent || sibling.text).match(NG_REPEAT_END_TAG_REGEXP)) &&
+            directiveNormalize(match[1]) === 'ngRepeat')  {
+
+          jqLite(sibling).remove();
+          break;
+        }
+
+        element = sibling;
+        sibling = sibling.nextSibling;
+
+        template.append(element);
+      }
+
+      if (!sibling) {
+        throw new Error("Can't find closing tag for ngRepeat: " + attr.ngRepeat);
+      }
+
+      linker = $compile(template.contents());
+    }
+
+
     return function(scope, iterStartElement, attr){
       var expression = attr.ngRepeat;
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
@@ -181,4 +224,4 @@ var ngRepeatDirective = ngDirective({
       });
     };
   }
-});
+  }}];

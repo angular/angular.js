@@ -544,7 +544,8 @@ function $CompileProvider($provide) {
           childTranscludeFn = transcludeFn,
           controllerDirectives,
           linkFn,
-          directiveValue;
+          directiveValue,
+          originalNodeType;
 
       // executes all directives on the current element
       for(var i = 0, ii = directives.length; i < ii; i++) {
@@ -580,11 +581,13 @@ function $CompileProvider($provide) {
           terminalPriority = directive.priority;
           if (directiveValue == 'element') {
             $template = jqLite(compileNode);
+            originalNodeType = $compileNode[0].nodeType;
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
             replaceWith(jqCollection, jqLite($template[0]), compileNode);
             childTranscludeFn = compile($template, transcludeFn, terminalPriority);
+            childTranscludeFn.$$originalNodeType = originalNodeType;
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
