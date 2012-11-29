@@ -841,8 +841,7 @@ angular.mock.$HttpBackendProvider = function() {
 function createHttpBackendMock($delegate, $browser) {
   var definitions = [],
       expectations = [],
-      responses = [],
-      responsesPush = angular.bind(responses, responses.push);
+      responses = [];
 
   function createResponse(status, data, headers) {
     if (angular.isFunction(status)) return status;
@@ -858,12 +857,38 @@ function createHttpBackendMock($delegate, $browser) {
   function $httpBackend(method, url, data, callback, headers) {
     var xhr = new MockXhr(),
         expectation = expectations[0],
-        wasExpected = false;
+        wasExpected = false,
+        aborted = false,
+        jsonp = (method.toLowerCase() == 'jsonp');
 
     function prettyPrint(data) {
       return (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
           ? data
           : angular.toJson(data);
+    }
+
+    function createResponse(request) {
+      return function() {
+        var response = request.response(method, url, data, headers);
+        xhr.$$respHeaders = response[2];
+        callback(response[0], response[1], xhr.getAllResponseHeaders());
+      }
+    }
+
+    function createAbort(response) {
+      return function() {
+        var index = indexOf(responses, response);
+        if (index >=0) {
+          responses.splice(index, 1);
+          abortFn();
+          return aborted = true;
+        }
+        return aborted;
+      };
+    }
+
+    function abortFn() {
+      callback(-1, null, null);
     }
 
     if (expectation && expectation.match(method, url)) {
@@ -879,12 +904,9 @@ function createHttpBackendMock($delegate, $browser) {
       expectations.shift();
 
       if (expectation.response) {
-        responses.push(function() {
-          var response = expectation.response(method, url, data, headers);
-          xhr.$$respHeaders = response[2];
-          callback(response[0], response[1], xhr.getAllResponseHeaders());
-        });
-        return;
+        var expectationResponse = createResponse(expectation);
+        responses.push(expectationResponse);
+        return jsonp ? undefined : createAbort(expectationResponse);
       }
       wasExpected = true;
     }
@@ -894,15 +916,23 @@ function createHttpBackendMock($delegate, $browser) {
       if (definition.match(method, url, data, headers || {})) {
         if (definition.response) {
           // if $browser specified, we do auto flush all requests
-          ($browser ? $browser.defer : responsesPush)(function() {
-            var response = definition.response(method, url, data, headers);
-            xhr.$$respHeaders = response[2];
-            callback(response[0], response[1], xhr.getAllResponseHeaders());
-          });
+          var definitionResponse = createResponse(definition);
+          if ($browser) {
+            var deferId = $browser.defer(definitionResponse);
+            return jsonp ? undefined : function() {
+              if($browser.defer.cancel(deferId)) {
+                abortFn();
+                return aborted = true;
+              }
+              return aborted;
+            };
+          } else {
+            responses.push(definitionResponse);
+            return jsonp ? undefined : createAbort(definitionResponse);
+          }
         } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers);
+          return $delegate(method, url, data, callback, headers);
         } else throw Error('No response defined !');
-        return;
       }
     }
     throw wasExpected ?
@@ -1257,6 +1287,15 @@ function createHttpBackendMock($delegate, $browser) {
       }
     });
   }
+}
+
+function indexOf(array, obj) {
+  if (array.indexOf) return array.indexOf(obj);
+
+  for ( var i = 0; i < array.length; i++) {
+    if (obj === array[i]) return i;
+  }
+  return -1;
 }
 
 function MockHttpExpectation(method, url, data, headers) {

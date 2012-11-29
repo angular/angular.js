@@ -52,13 +52,16 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         delete callbacks[callbackId];
       });
     } else {
-      var xhr = new XHR();
+      var status, xhr = new XHR(),
+          abortRequest = function() {
+            status = -1;
+            xhr.abort();
+          };
+
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
         if (value) xhr.setRequestHeader(key, value);
       });
-
-      var status;
 
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
       // response is in the cache. the promise api will ensure that to the app code the api is
@@ -99,11 +102,10 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr.send(post || '');
 
       if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
+        $browserDefer(abortRequest, timeout);
       }
+
+      return abortRequest;
     }
 
 
