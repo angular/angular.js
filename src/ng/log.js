@@ -33,7 +33,33 @@
    </example>
  */
 
+/**
+ * @ngdoc object
+ * @name ng.$logProvider
+ * @description
+ * Use the `$logProvider` to configure how the application logs messages
+ */
 function $LogProvider(){
+  var debug = true,
+      self = this;
+  
+  /**
+   * @ngdoc property
+   * @name ng.$logProvider#debugEnabled
+   * @methodOf ng.$logProvider
+   * @description
+   * @param {string=} flag enable or disable debug level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.debugEnabled = function(flag) {
+	  if (isDefined(flag)) {
+		  debug = flag;
+		  return this;
+	  } else {
+		  return debug;
+	  }
+  };
+  
   this.$get = ['$window', function($window){
     return {
       /**
@@ -74,7 +100,25 @@ function $LogProvider(){
        * @description
        * Write an error message
        */
-      error: consoleLog('error')
+      error: consoleLog('error'),
+      
+      /**
+       * @ngdoc method
+       * @name ng.$log#debug
+       * @methodOf ng.$log
+       * 
+       * @description
+       * Write a debug message
+       */
+      debug: (function () {
+    	var fn = consoleLog('debug');
+    	
+    	return function() {
+    		if (debug) {
+    			fn.apply(self, arguments);
+    		}
+    	}
+      }())
     };
 
     function formatError(arg) {
