@@ -265,7 +265,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
-          forEach(selectElement.children(), function(option) {
+          forEach(selectElement.find('option'), function(option) {
             option.selected = isDefined(items.get(option.value));
           });
         };
@@ -282,7 +282,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         selectElement.bind('change', function() {
           scope.$apply(function() {
             var array = [];
-            forEach(selectElement.children(), function(option) {
+            forEach(selectElement.find('option'), function(option) {
               if (option.selected) {
                 array.push(option.value);
               }
