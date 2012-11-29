@@ -162,7 +162,7 @@ function $HttpProvider() {
      * # General usage
      * The `$http` service is a function which takes a single argument — a configuration object —
      * that is used to generate an http request and returns  a {@link ng.$q promise}
-     * with two $http specific methods: `success` and `error`.
+     * with three $http specific methods: `success`, `error`, and `abort`.
      *
      * <pre>
      *   $http({method: 'GET', url: '/someUrl'}).
@@ -383,12 +383,13 @@ function $HttpProvider() {
      *      requests with credentials} for more information.
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
-     *   standard `then` method and two http specific methods: `success` and `error`. The `then`
-     *   method takes two arguments a success and an error callback which will be called with a
-     *   response object. The `success` and `error` methods take a single argument - a function that
-     *   will be called when the request succeeds or fails respectively. The arguments passed into
-     *   these functions are destructured representation of the response object passed into the
-     *   `then` method. The response object has these properties:
+     *   standard `then` method and three http specific methods: `success`, `error`, and `abort`.
+     *   The `then` method takes two arguments a success and an error callback which will be called
+     *   with a response object. The `abort` method will cancel a pending request, causing it to
+     *   fail. The `success` and `error` methods take a single argument - a function that will be
+     *   called when the request succeeds or fails respectively. The arguments passed into these
+     *   functions are destructured representation of the response object passed into the `then`
+     *   method. The response object has these properties:
      *
      *   - **data** – `{string|Object}` – The response body transformed with the transform functions.
      *   - **status** – `{number}` – HTTP status code of the response.
