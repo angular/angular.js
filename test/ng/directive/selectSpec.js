@@ -405,6 +405,27 @@ describe('select', function() {
       expect(element).toEqualSelect(['A'], ['B']);
     });
 
+    it('should work with optgroups', function() {
+      compile('<select ng-model="selection" multiple>' +
+                '<optgroup label="group1">' +
+                  '<option>A</option>' +
+                  '<option>B</option>' +
+                '</optgroup>' +
+              '</select>');
+
+      expect(element).toEqualSelect('A', 'B');
+      expect(scope.selection).toBeUndefined();
+
+      scope.$apply(function() {
+        scope.selection = ['A'];
+      });
+      expect(element).toEqualSelect(['A'], 'B');
+
+      scope.$apply(function() {
+        scope.selection.push('B');
+      });
+      expect(element).toEqualSelect(['A'], ['B']);
+    });
 
     it('should require', function() {
       compile(
