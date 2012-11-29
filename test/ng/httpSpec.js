@@ -978,4 +978,36 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
+
+
+  it('should abort pending requests', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+    var abortFn = jasmine.createSpy('abortFn');
+
+    $httpBackend.andCallFake(function(m, u, d, callback) {
+      abortFn.andCallFake(function() {
+        callback(-1, 'bad error', '');
+      });
+      return abortFn;
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend, '');
+    });
+
+    inject(function($http) {
+      $http({method: 'GET', url: 'some.html'}).error(function(data, status, headers, config) {
+        expect(data).toBe('bad error');
+        expect(status).toBe(0);
+        expect(headers()).toEqual({});
+        expect(config.url).toBe('some.html');
+        callback();
+      }).abort();
+      expect($httpBackend).toHaveBeenCalledOnce();
+      expect(abortFn).toHaveBeenCalledOnce();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
 });

@@ -479,7 +479,7 @@ function $HttpProvider() {
           reqHeaders = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
           reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
-          promise;
+          promise, abortFn;
 
       // strip content-type if data is undefined
       if (isUndefined(config.data)) {
@@ -489,13 +489,17 @@ function $HttpProvider() {
       // send request
       promise = sendReq(config, reqData, reqHeaders);
 
+      // save a reference to the abort function
+      abortFn = promise.abort;
 
       // transform future response
       promise = promise.then(transformResponse, transformResponse);
+      promise.abort = abortFn;
 
       // apply interceptors
       forEach(responseInterceptors, function(interceptor) {
         promise = interceptor(promise);
+        promise.abort = abortFn;
       });
 
       promise.success = function(fn) {
@@ -661,12 +665,19 @@ function $HttpProvider() {
     function sendReq(config, reqData, reqHeaders) {
       var deferred = $q.defer(),
           promise = deferred.promise,
+          abortFn,
           cache,
           cachedResp,
           url = buildUrl(config.url, config.params);
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
+
+      promise.abort = function() {
+        if (isFunction(abortFn)) {
+          abortFn();
+        }
+      }
 
 
       if (config.cache && config.method == 'GET') {
@@ -696,7 +707,7 @@ function $HttpProvider() {
 
       // if we won't have the response in cache, send the request to the backend
       if (!cachedResp) {
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+        abortFn = $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
             config.withCredentials);
       }
 

@@ -77,11 +77,15 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr.send(post || '');
 
       if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
+        $browserDefer(abortRequest, timeout);
       }
+
+      return abortRequest;
+
+      function abortRequest() {
+        status = -1;
+        xhr.abort();
+      };
     }
 
 
