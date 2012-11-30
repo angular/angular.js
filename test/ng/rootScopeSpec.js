@@ -407,6 +407,22 @@ describe('Scope', function() {
       first.$destroy();
       expect(log).toEqual('first; first-child');
     }));
+
+
+    it('should $destroy a scope only once and ignore any further destroy calls',
+        inject(function($rootScope) {
+      $rootScope.$digest();
+      expect(log).toBe('123');
+
+      first.$destroy();
+      first.$apply();
+      expect(log).toBe('12323');
+
+      first.$destroy();
+      first.$destroy();
+      first.$apply();
+      expect(log).toBe('1232323');
+    }));
   });
 
 
