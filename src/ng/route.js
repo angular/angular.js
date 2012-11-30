@@ -31,10 +31,10 @@ function $RouteProvider(){
         var match = part.match(routeNewRe);
         reParts.push('(' + pathTypes[match[1]] + ')');
         reNames.push(match[2]);
-      } else if (part[0] == ':') {
+      } else if (part[0] === ':') {
         // Assume old style route part
-        reParts.push('(' + pathTypes['string'] + ')');
-        reNames.push(part.slice(1))
+        reParts.push('(' + pathTypes.string + ')');
+        reNames.push(part.slice(1));
       } else {
         // Plain string match, not captured.
         reParts.push(part.replace(/([\.\\\(\)\^\$])/g, "\\$1"));
@@ -46,7 +46,7 @@ function $RouteProvider(){
       re: new RegExp('^' + reParts.join('\\/') + '$'),
       matches: reNames,
       route: route
-    }
+    };
   }
 
   /**
@@ -110,7 +110,7 @@ function $RouteProvider(){
   this.when = function(path, route) {
     routes.push(compileRoute(path, extend({reloadOnSearch: true}, route)));
     // create redirection for trailing slashes
-    var redirectPath = (path[path.length-1] == '/')
+    var redirectPath = (path[path.length-1] === '/')
         ? path.substr(0, path.length-1)
         : path +'/';
     routes.push(compileRoute(redirectPath, {redirectTo: path}));
@@ -459,8 +459,9 @@ function $RouteProvider(){
       var result = [], inx, param;
       forEach((string || '').split('/'), function(part) {
         if ((inx = part.indexOf(':')) >= 0) {
-          param = part.slice(inx+1, part[part.length-1] == '>' ? -1 : undefined);
+          param = part.slice(inx+1, part[part.length-1] === '>' ? -1 : undefined);
           result.push(params[param]);
+          delete params[param];
         } else {
           result.push(part);
         }

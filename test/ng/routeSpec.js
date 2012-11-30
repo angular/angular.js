@@ -733,5 +733,68 @@ describe('$route', function() {
         });
       });
     });
+
+    describe('advancedMatching', function() {
+
+      it('should properly match path parts', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/<path:subid>/<string:subsubid>', {templateUrl: 'foo.html'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/foo/id3/eId/rest/of/url/');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/foo/id3/eId/rest/of/url');
+          expect($route.current.params).toEqual({subid: 'id3/eId/rest/of', subsubid: 'url'});
+          expect($route.current.templateUrl).toEqual('foo.html');
+        });
+      });
+
+      it('should properly match trailing paths', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/bar/:id/<string:subid>/<path:subsubid>', {templateUrl: 'bar.html'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/bar/id3/eId/rest/of/url/');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/id3/eId/rest/of/url/');
+          expect($route.current.params).toEqual({ id : 'id3', subid : 'eId', subsubid : 'rest/of/url/' });
+          expect($route.current.templateUrl).toEqual('bar.html');
+        });
+      });
+
+      it('should properly filter based on match type', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/bar/<int:subid>/:astring', {templateUrl: 'bar.html'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/bar/word/trailing');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/word/trailing');
+          expect($route.current).not.toBeDefined();
+        });
+      });
+
+      it('should properly resolve ambiguous urls in order', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/bar/<int:subid>/const', {templateUrl: 'bar.html'});
+          $routeProvider.when('/bar/<int:subid>/:astring', {templateUrl: 'foo.html'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/bar/500/const');
+          $rootScope.$digest();
+
+          expect($route.current.templateUrl).toEqual('bar.html');
+        });
+      });
+
+    });
+
   });
 });
