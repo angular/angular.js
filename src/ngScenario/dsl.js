@@ -385,8 +385,8 @@ angular.scenario.dsl('element', function() {
   chain.mouseover = function() {
     return this.addFutureAction("element '" + this.label + "' mouseover", function($window, $document, done) {
       var elements = $document.elements();
-      elements.trigger('mouseover')
-      done()
+      elements.trigger('mouseover');
+      done();
     });
   };
 
