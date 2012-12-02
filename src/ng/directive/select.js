@@ -121,7 +121,7 @@
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
-var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
+var selectDirective = ['$compile', '$parse', '$timeout', function($compile, $parse, $timeout) {
                          //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
   var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/,
       nullModelCtrl = {$setViewValue: noop};
@@ -265,9 +265,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
-          forEach(selectElement.children(), function(option) {
-            option.selected = isDefined(items.get(option.value));
-          });
+          $timeout(function() {
+            forEach(selectElement.children(), function(option) {
+              option.selected = isDefined(items.get(option.value));
+            });
+          }, 0, false);
         };
 
         // we have to do it on each watch since ngModel watches reference, but
