@@ -1363,7 +1363,7 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
 
   function formatPendingTasksAsString(tasks) {
     var result = [];
-    forEach(tasks, function(task) {
+    angular.forEach(tasks, function(task) {
       result.push('{id: ' + task.id + ', ' + 'time: ' + task.time + '}');
     });
 
