@@ -1,4 +1,3 @@
-
 /**
  * @license AngularJS v"NG_VERSION_FULL"
  * (c) 2010-2012 Google, Inc. http://angularjs.org
@@ -651,7 +650,7 @@ angular.mock.dump = function(object) {
  * easy to inject $httpBackend mock (which has the same API as $httpBackend) and use it to verify
  * the requests and respond with some testing data without sending a request to real server.
  *
- * There are two ways to specify what test data should be returned as http responses by the mock
+ * There are two parts to specifying what test data should be returned as http responses by the mock
  * backend when the code under test makes http requests:
  *
  * - `$httpBackend.expect` - specifies a request expectation
