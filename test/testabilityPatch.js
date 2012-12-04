@@ -133,13 +133,19 @@ function sortedHtml(element, showNgClass) {
             attr.name !='style' &&
             attr.name.substr(0, 6) != 'jQuery') {
           // in IE we need to check for all of these.
-          if (!/ng-\d+/.exec(attr.name) &&
-              attr.name != 'getElementById' &&
+          if (/ng-\d+/.exec(attr.name) ||
+              attr.name == 'getElementById' ||
               // IE7 has `selected` in attributes
-              attr.name !='selected' &&
+              attr.name == 'selected' ||
               // IE7 adds `value` attribute to all LI tags
-              (node.nodeName != 'LI' || attr.name != 'value'))
-            attrs.push(' ' + attr.name + '="' + attr.value + '"');
+              (node.nodeName == 'LI' && attr.name == 'value') ||
+              // IE8 adds bogus rowspan=1 and colspan=1 to TD elements
+              (node.nodeName == 'TD' && attr.name == 'rowSpan' && attr.value == '1') ||
+              (node.nodeName == 'TD' && attr.name == 'colSpan' && attr.value == '1')) {
+            continue;
+          }
+
+          attrs.push(' ' + attr.name + '="' + attr.value + '"');
         }
       }
       attrs.sort();
