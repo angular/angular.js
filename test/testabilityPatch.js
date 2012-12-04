@@ -91,11 +91,14 @@ function dealoc(obj) {
 function sortedHtml(element, showNgClass) {
   var html = "";
   forEach(jqLite(element), function toString(node) {
+
     if (node.nodeName == "#text") {
       html += node.nodeValue.
         replace(/&(\w+[&;\W])?/g, function(match, entity){return entity?match:'&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
+    } else if (node.nodeName == "#comment") {
+      html += '<!--' + node.nodeValue + '-->';
     } else {
       html += '<' + (node.nodeName || '?NOT_A_NODE?').toLowerCase();
       var attributes = node.attributes || [];
