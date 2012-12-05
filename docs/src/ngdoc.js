@@ -203,7 +203,7 @@ Doc.prototype = {
     flush();
     this.shortName = this.name.split(/[\.:#]/).pop().trim();
     this.id = this.id || // if we have an id just use it
-      (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
+      (((this.file||'').match(/.*(\/|\\)([^(\/|\\)]*)\.ngdoc/)||{})[2]) || // try to extract it from file name
       this.name; // default to name
     this.description = this.markdown(this.description);
     this.example = this.markdown(this.example);
