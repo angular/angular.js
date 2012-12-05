@@ -562,7 +562,7 @@ angular.mock.$LogProvider = function() {
 
 /**
  * @ngdoc function
- * @name angular.mock.debug
+ * @name angular.mock.dump
  * @description
  *
  * *NOTE*: this is not an injectable instance, just a globally available function.
