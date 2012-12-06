@@ -67,11 +67,11 @@ Here is an example of using  the injector service.
           $window.alert(text);
         }
       };
-    }).
-    
+    });
+
   // New injector is created from the module. 
   // (This is usually done automatically by angular bootstrap)
-  var injector = angular.injector('myModule');
+  var injector = angular.injector(['myModule', 'ng']);
   
   // Request any dependency from the injector
   var greeter = injector.get('greeter');
