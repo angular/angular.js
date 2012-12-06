@@ -120,7 +120,7 @@ describe('select', function() {
       expect(element).toBePristine();
     });
 
-
+	
     it('should work with repeated value options', function() {
       scope.robots = ['c3p0', 'r2d2'];
       scope.robot = 'r2d2';
@@ -514,6 +514,7 @@ describe('select', function() {
       expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
     });
 
+	
     it('should render zero as a valid display value', function() {
       createSingleSelect();
 
@@ -556,7 +557,45 @@ describe('select', function() {
       expect(options[3].selected).toEqual(true);
     });
 
+	
+    it('should support a hasher', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'obj as obj.label for obj in objects',
+        'ng-hasher': 'hash_func'
+      }, true);
 
+      scope.$apply(function() {
+        scope.objects = [{label: 'first item', id: 1}, {label: 'second item', id: 2}];
+        scope.selected = {id:2};
+        scope.hash_func = function(o) { return o ? o.id : undefined; }
+      });
+
+      var options = element.find('option');
+      expect(options[0].selected).toEqual(false);
+      expect(options[1].selected).toEqual(false);
+      expect(options[2].selected).toEqual(true);
+
+      scope.$apply(function() {
+        scope.selected = {id:1};
+      });
+
+      options = element.find('option');
+      expect(options[0].selected).toEqual(false);
+      expect(options[1].selected).toEqual(true);
+      expect(options[2].selected).toEqual(false);
+
+      scope.$apply(function() {
+        scope.selected = {id:12};
+      });
+
+      options = element.find('option');
+      expect(options[0].selected).toEqual(true);
+      expect(options[1].selected).toEqual(false);
+	  expect(options[2].selected).toEqual(false);
+	});
+
+	
     it('should grow list', function() {
       createSingleSelect();
 

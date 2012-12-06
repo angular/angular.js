@@ -93,6 +93,7 @@ function publishExternalAPI(angular){
             ngSwitchWhen: ngSwitchWhenDirective,
             ngSwitchDefault: ngSwitchDefaultDirective,
             ngOptions: ngOptionsDirective,
+            ngHasher: ngHasherDirective,
             ngView: ngViewDirective,
             ngTransclude: ngTranscludeDirective,
             ngModel: ngModelDirective,
