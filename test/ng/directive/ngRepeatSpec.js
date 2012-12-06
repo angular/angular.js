@@ -448,7 +448,7 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should reuse elements even when model is composed of primitives', function() {
+    xit('should reuse elements even when model is composed of primitives', function() {
       // rebuilding repeater from scratch can be expensive, we should try to avoid it even for
       // model that is composed of primitives.
 
@@ -464,5 +464,18 @@ describe('ngRepeat', function() {
       expect(newLis[1]).toEqual(lis[0]);
       expect(newLis[2]).toEqual(lis[1]);
     });
+
+    it('should not reorder elements that have primitive model changes, since this causes loss of focus on input elements', function() {
+      scope.items = ['hello', 'cau', 'ahoj'];
+      scope.$digest();
+      lis = element.find('li');
+
+      scope.items = ['hello', 'ahoj', 'ahoj'];
+      scope.$digest();
+      var newLis = element.find('li');
+      expect(newLis.length).toEqual(3);
+      expect(newLis[2]).toEqual(lis[2]);
+    });
+
   });
 });
