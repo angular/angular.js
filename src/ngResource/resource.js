@@ -19,11 +19,13 @@
  * the need to interact with the low level {@link ng.$http $http} service.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
- *   `/user/:username`.
+ *   `/user/:username`. If you are using a URL with a port number (e.g. 
+ *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
+ *   number, like this: `$resource('http://example.com\\:8080/api')`.
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If any of the parameter value is a function, it will be executed every time
-  *  when a param value needs to be obtained for a request (unless the param was overriden).
+ *   when a param value needs to be obtained for a request (unless the param was overriden).
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -229,7 +231,7 @@ angular.module('ngResource', ['ng']).
         };
 
     /**
-     * We need our custom mehtod because encodeURIComponent is too aggressive and doesn't follow
+     * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
      * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
      * segments:
      *    segment       = *pchar
