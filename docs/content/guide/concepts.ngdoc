@@ -310,7 +310,7 @@ in HTML.
           });
 
           // model -> view
-          ctrl.render = function(value) {
+          ctrl.$render = function(value) {
             elm.html(value);
           };
 
