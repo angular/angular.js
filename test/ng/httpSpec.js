@@ -586,6 +586,74 @@ describe('$http', function() {
       }));
     });
 
+    describe('promised data', function(){
+      var q, defer, deferred, promise, log;
+
+      var mockNextTick = {
+        nextTick: function(task) {
+          mockNextTick.queue.push(task);
+        },
+        queue: [],
+        flush: function() {
+          if (!mockNextTick.queue.length) throw new Error('Nothing to be flushed!');
+          while (mockNextTick.queue.length) {
+            var queue = mockNextTick.queue;
+            mockNextTick.queue = [];
+            forEach(queue, function(task) {
+              try {
+                task();
+              } catch(e) {
+                dump('exception in mockNextTick:', e, e.name, e.message, task);
+              }
+            });
+          }
+        }
+      };
+
+      function syncResolve(deferred, result) {
+        deferred.resolve(result);
+        mockNextTick.flush();
+      }
+
+      beforeEach(function() {
+        q = qFactory(mockNextTick.nextTick, noop),
+        defer = q.defer;
+        deferred =  defer()
+        promise = deferred.promise;
+        log = [];
+        mockNextTick.queue = [];
+      });
+
+      it('should wait for promised data before sending request', function() {
+          $httpBackend.expect('POST', '/url', '{"one":"two"}').respond('');
+          $http({method: 'POST', url: '/url', data: promise}).success(callback);
+          $httpBackend.verifyNoOutstandingRequest();
+          
+          syncResolve(deferred, {one: 'two'});
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();     
+       
+      });
+
+      describe('error', function() {
+        it('should maintain http specific callbacks to be registered via "error"', function() {
+          $httpBackend.expect('POST', '/url', '{"one":"two"}').respond(543, 'bad error', {'request-id': '123'});
+          $http({method: 'POST', url: '/url', data: promise}).error(function(data, status, headers, config) {
+            expect(data).toBe('bad error');
+            expect(status).toBe(543);
+            expect(headers()).toEqual({'request-id': '123'});
+            expect(config.url).toBe('/url');
+            callback();
+          });
+
+          syncResolve(deferred, {one: 'two'});
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnce();
+        });
+      });
+
+    });
 
     describe('transformData', function() {
 
