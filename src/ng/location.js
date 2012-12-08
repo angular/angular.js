@@ -265,6 +265,40 @@ LocationUrl.prototype = {
     return this;
   },
 
+  /*
+   * @ngdoc method
+   * @name ng.$location#pushState
+   * @methodOf ng.$location
+   *
+   * @description
+   * @param {object=} state object for pushState
+   * @param {string=} title for pushState
+   * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
+   * @return {object} $location
+   */
+  pushState: function(state, title, url, replace) {
+    this.$$state = state;
+    this.$$title = title;
+    this.url(url, replace)
+    return this;
+  },
+
+  /*
+   * @ngdoc method
+   * @name ng.$location#replaceState
+   * @methodOf ng.$location
+   *
+   * @description
+   * @param {object=} state object for replaceState
+   * @param {string=} title for pushState
+   * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
+   * @return {object} $location
+   */
+  replaceState: function(state, title, url) {
+    this.pushState(state, title, url, true)
+    return this;
+  },
+
   /**
    * @ngdoc method
    * @name ng.$location#protocol
@@ -574,13 +608,13 @@ function $LocationProvider(){
     }
 
     // update $location when $browser url changes
-    $browser.onUrlChange(function(newUrl) {
+    $browser.onUrlChange(function(newUrl, ev) {
       if ($location.absUrl() != newUrl) {
         $rootScope.$evalAsync(function() {
           var oldUrl = $location.absUrl();
 
           $location.$$parse(newUrl);
-          afterLocationChange(oldUrl);
+          afterLocationChange(oldUrl, ev);
         });
         if (!$rootScope.$$phase) $rootScope.$digest();
       }
@@ -599,20 +633,22 @@ function $LocationProvider(){
               defaultPrevented) {
             $location.$$parse(oldUrl);
           } else {
-            $browser.url($location.absUrl(), currentReplace);
+            $browser.url($location.absUrl(), $location.$$replace, $location.$$state, $location.$$title);
             afterLocationChange(oldUrl);
           }
         });
       }
       $location.$$replace = false;
+      $location.$$state = null;
+      $location.$$title = null;
 
       return changeCounter;
     });
 
     return $location;
 
-    function afterLocationChange(oldUrl) {
-      $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
+    function afterLocationChange(oldUrl, ev) {
+      $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl, ev);
     }
 }];
 }
