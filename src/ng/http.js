@@ -400,7 +400,8 @@ function $HttpProvider() {
      *    - **url** – `{string}` – Absolute or relative URL of the resource that is being requested.
      *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned to
      *      `?key1=value1&key2=value2` after the url. If the value is not a string, it will be JSONified.
-     *    - **data** – `{string|Object}` – Data to be sent as the request message data.
+     *    - **data** – `{string|Object|Promise}` – Data to be sent as the request message data. If data is
+     *      a promise then the request won't be sent until the promise is resolved.
      *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
      *    - **transformRequest** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
@@ -508,6 +509,43 @@ function $HttpProvider() {
       </example>
      */
     function $http(config) {
+        /** 
+        * If config.data is a promise then wait its resolution to send real request
+        * and return a wrapping promise
+        */
+        if(config.data && config.data.then && typeof config.data.then === 'function'){
+            var deferred = $q.defer(),
+                promise = deferred.promise,
+                resolvedConfig = extend({},config);
+
+            config.data.then(function(val){
+                resolvedConfig.data = val;
+                return $do_http(resolvedConfig).then(deferred.resolve, deferred.reject);
+            });
+            
+            promise.success = function(fn) {
+              promise.then(function(response) {
+                fn(response.data, response.status, response.headers, config);
+              });
+              return promise;
+            };
+
+            promise.error = function(fn) {
+              promise.then(null, function(response) {
+                fn(response.data, response.status, response.headers, config);
+              });
+              return promise;
+            };
+
+            return promise;
+
+        } else { 
+            return $do_http(config);
+        }
+    }
+
+    //Do the real http job.
+    function $do_http(config){
       config.method = uppercase(config.method);
 
       var reqTransformFn = config.transformRequest || defaults.transformRequest,
