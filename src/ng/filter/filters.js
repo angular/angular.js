@@ -48,7 +48,7 @@
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
          expect(binding('amount | currency:"$":0')).toBe('($1,234)');
-         expect(binding('-amount | currency:"$":2:true')).toBe('$-1,234.00');
+         expect(binding('amount | currency:"$":2:true')).toBe('$-1,234.00');
        });
      </doc:scenario>
    </doc:example>
