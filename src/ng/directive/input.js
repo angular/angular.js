@@ -26,6 +26,12 @@ var inputType = {
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
+   * 
+   *   * You can also use predefined patterns provided by AngularJS:
+   *     * EMAIL_REGEXP
+   *     * NUMBER_REGEXP
+   *     * URL_REGEXP
+   * 
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trimming the
