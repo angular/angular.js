@@ -39,6 +39,16 @@ function $LocaleProvider(){
             negSuf: ')',
             gSize: 3,
             lgSize: 3
+          },{ //Minus Currency Pattern
+            minInt: 1,
+            minFrac: 0,
+            maxFrac: 2,
+            posPre: '\u00A4',
+            posSuf: '',
+            negPre:'\u00A4-',
+            negSuf:'',
+            gSize: 3,
+            lgSize: 3
           }
         ],
         CURRENCY_SYM: '$'
