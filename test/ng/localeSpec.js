@@ -12,7 +12,7 @@ describe('$locale', function() {
   it('should have NUMBER_FORMATS', function() {
     var numberFormats = $locale.NUMBER_FORMATS;
     expect(numberFormats).toBeDefined();
-    expect(numberFormats.PATTERNS.length).toBe(2);
+    expect(numberFormats.PATTERNS.length).toBe(3);
     angular.forEach(numberFormats.PATTERNS, function(pattern) {
       expect(pattern.minInt).toBeDefined();
       expect(pattern.minFrac).toBeDefined();
