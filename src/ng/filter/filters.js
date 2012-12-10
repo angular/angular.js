@@ -40,14 +40,14 @@
        it('should init with 1234.56', function() {
          expect(binding('amount | currency')).toBe('$1,234.56');
          expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
-         expect(binding('amount | currency:"$":0')).toBe('$1,234');
+         expect(binding('amount | currency:"$":0')).toBe('$1,235');
          expect(binding('-amount | currency:"$":2:true')).toBe('$-1,234.56');
        });
        it('should update', function() {
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
-         expect(binding('amount | currency:"$":0')).toBe('$1,234');
+         expect(binding('amount | currency:"$":0')).toBe('($1,234)');
          expect(binding('-amount | currency:"$":2:true')).toBe('$-1,234.56');
        });
      </doc:scenario>
