@@ -375,7 +375,7 @@ angular.module('ngResource', ['ng']).
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data)),
             url = route.url(extend({}, extractParams(data, action.params || {}), params)),
-            headers = angular.isFunction(action.headers) ? action.headers(action.method, url) : action.headers;
+            headers = isFunction(action.headers) ? action.headers(action.method, url) : action.headers;
           $http({
             method: action.method,
             url: url,
