@@ -39,7 +39,7 @@
  * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
  *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
  *    `required` when you want to data-bind to the `required` attribute.
- * @param {function} ngHasher Adds a hashing function for options equality test
+ * @param {function} ngHasher Adds a hashing function for options equality test.
  * @param {comprehension_expression=} ngOptions in one of the following forms:
  *
  *   * for array data sources:
@@ -430,17 +430,17 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-			  if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
-				selected = selectedSet.remove(selectCtrl.hasher(valueFn(scope, locals))) != undefined;
-			  } else {
+              if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
+                selected = selectedSet.remove(selectCtrl.hasher(valueFn(scope, locals))) != undefined;
+              } else {
                 selected = selectedSet.remove(valueFn(scope, locals)) != undefined;
-			  }
+              }
             } else {
-			  if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
-			    selected = selectCtrl.hasher(modelValue) === selectCtrl.hasher(valueFn(scope, locals));
-			  } else {
+              if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
+                selected = selectCtrl.hasher(modelValue) === selectCtrl.hasher(valueFn(scope, locals));
+              } else {
                 selected = modelValue === valueFn(scope, locals);
-			  }
+              }
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             label = displayFn(scope, locals); // what will be seen by the user
