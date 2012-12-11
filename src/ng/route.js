@@ -321,12 +321,12 @@ function $RouteProvider(){
       var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
           params = [],
           dst = {};
-      forEach(when.split(/\W/), function(param) {
-        if (param) {
-          var paramRegExp = new RegExp(":" + param + "([\\W])");
+      forEach(when.split(/[^\w:]/), function(param) {
+        if (param && param.charAt(0) === ':') {
+          var paramRegExp = new RegExp(param + "([\\W])");
           if (regex.match(paramRegExp)) {
             regex = regex.replace(paramRegExp, "([^\\/]*)$1");
-            params.push(param);
+            params.push(param.substr(1));
           }
         }
       });
