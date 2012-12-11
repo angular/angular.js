@@ -126,6 +126,11 @@ describe('angular', function() {
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
     });
 
+    it('should ignore undefined member variables', function() {
+      expect(equals({name:'misko'}, {name:'misko', undefinedvar:undefined})).toEqual(true);
+      expect(equals({name:'misko', undefinedvar:undefined}, {name:'misko'})).toEqual(true);
+    });
+
     it('should ignore $ member variables', function() {
       expect(equals({name:'misko', $id:1}, {name:'misko', $id:2})).toEqual(true);
       expect(equals({name:'misko'}, {name:'misko', $id:2})).toEqual(true);
