@@ -155,21 +155,15 @@ function $HttpProvider() {
     xsrfHeaderName: 'X-XSRF-TOKEN'
   };
 
-  var providerResponseInterceptors = this.responseInterceptors = [];
+  var providerResponseInterceptors = this.responseInterceptors = [],
+      providerRequestInterceptors = this.requestInterceptors = [];
 
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http'),
-        responseInterceptors = [];
-
-    forEach(providerResponseInterceptors, function(interceptor) {
-      responseInterceptors.push(
-          isString(interceptor)
-              ? $injector.get(interceptor)
-              : $injector.invoke(interceptor)
-      );
-    });
+        requestInterceptors = resolveInterceptors(providerRequestInterceptors),
+        responseInterceptors = resolveInterceptors(providerResponseInterceptors);
 
 
     /**
@@ -347,6 +341,30 @@ function $HttpProvider() {
      * </pre>
      *
      *
+     * # Request interceptors
+     *
+     * For purposes of global request preprocessing Angular provides request
+     * interceptors. Request interceptors can be registered analogously to
+     * response interceptors by adding a service factory to the
+     * `$httpProvider.requestInterceptors` array. The factory is called and
+     * injected with dependencies (if specified) and returns the interceptor
+     * function: this function will be called for every HTTP request and
+     * passed a promise which will be resolved with the request's `config`
+     * object.
+     *
+     * <pre>
+     *   // register the interceptor via an anonymous factory
+     *   $httpProvider.requestInterceptors.push(function(dependency1, dependency2) {
+     *     return function(promise) {
+     *       return function(config) {
+     *         // do something
+     *         return config;
+     *       };
+     *     };
+     *   });
+     * </pre>
+     *
+     *
      * # Security Considerations
      *
      * When designing web applications, consider security threats from:
@@ -520,6 +538,9 @@ function $HttpProvider() {
       </example>
      */
     function $http(config) {
+      // make a defensive copy of the config object
+      config = extend({}, config);
+
       config.method = uppercase(config.method);
 
       var xsrfHeader = {},
@@ -532,28 +553,49 @@ function $HttpProvider() {
       var reqTransformFn = config.transformRequest || defaults.transformRequest,
           respTransformFn = config.transformResponse || defaults.transformResponse,
           defHeaders = defaults.headers,
-          reqHeaders = extend(xsrfHeader,
-              defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
-          reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
-          promise;
+          deferred, promise;
+
+      config.headers = extend(xsrfHeader, defHeaders.common,
+                           defHeaders[lowercase(config.method)], config.headers);
+
+      config.data = transformData(config.data, headersGetter(config.headers), reqTransformFn);
 
       // strip content-type if data is undefined
       if (isUndefined(config.data)) {
-        delete reqHeaders['Content-Type'];
+        delete config.headers['Content-Type'];
       }
 
       if (isUndefined(config.withCredentials) && !isUndefined(defaults.withCredentials)) {
         config.withCredentials = defaults.withCredentials;
       }
 
-      // send request
-      promise = sendReq(config, reqData, reqHeaders);
+
+      // apply request interceptors
+      if (requestInterceptors.length) {
+        deferred = $q.defer();
+        promise = deferred.promise;
+
+        forEach(requestInterceptors, function(interceptor) {
+          promise = interceptor(promise);
+        });
+
+        // send request after interceptors have finished
+        promise = promise.then(function(config) {
+          return sendReq(config);
+        });
+
+        deferred.resolve(config);
+
+      } else {
+        // if there are no request interceptors just send request
+        promise = sendReq(config);
+      }
 
 
       // transform future response
       promise = promise.then(transformResponse, transformResponse);
 
-      // apply interceptors
+      // apply response interceptors
       forEach(responseInterceptors, function(interceptor) {
         promise = interceptor(promise);
       });
@@ -718,12 +760,20 @@ function $HttpProvider() {
      * !!! ACCESSES CLOSURE VARS:
      * $httpBackend, defaults, $log, $rootScope, defaultCache, $http.pendingRequests
      */
-    function sendReq(config, reqData, reqHeaders) {
+    function sendReq(config) {
       var deferred = $q.defer(),
           promise = deferred.promise,
           cache,
           cachedResp,
-          url = buildUrl(config.url, config.params);
+          url = buildUrl(config.url, config.params),
+          reqHeaders = config.headers,
+          reqData = config.data;
+
+      // remove data/headers from config object, because ngResource
+      // tests which do not expect these in the config object after
+      // the request
+      delete config.data;
+      delete config.headers;
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
@@ -756,8 +806,8 @@ function $HttpProvider() {
 
       // if we won't have the response in cache, send the request to the backend
       if (!cachedResp) {
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials, config.responseType);
+        $httpBackend(config.method, url, reqData, done, reqHeaders,
+            config.timeout, config.withCredentials, config.responseType);
       }
 
       return promise;
@@ -806,6 +856,16 @@ function $HttpProvider() {
       }
     }
 
+
+    function resolveInterceptors(interceptors) {
+      var list = [];
+      forEach(interceptors, function(interceptor) {
+        list.push(
+          $injector[isString(interceptor) ? 'get' : 'invoke'](interceptor)
+        );
+      });
+      return list;
+    };
 
     function buildUrl(url, params) {
           if (!params) return url;
