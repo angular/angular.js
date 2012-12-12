@@ -11,7 +11,43 @@
  * Used for configuring routes. See {@link ng.$route $route} for an example.
  */
 function $RouteProvider(){
-  var routes = {};
+  var routes = [];
+  var nullRoute;
+
+  var routeNewRe = new RegExp('\\<(\\w+)\\:(\\w+)\\>');
+  var pathTypes = {
+    'string': '\\w+',
+    'int': '\\d+',
+    'path': '[\\w\\/]+'
+  };
+
+  function compileRoute(path, route) {
+    var reNames = [];
+    var reParts = [];
+    var routeParts = path.split('/');
+    forEach(routeParts, function(part) {
+      if (part[0] === '<') {
+        // This is a new-style route part.
+        var match = part.match(routeNewRe);
+        reParts.push('(' + pathTypes[match[1]] + ')');
+        reNames.push(match[2]);
+      } else if (part[0] === ':') {
+        // Assume old style route part
+        reParts.push('(' + pathTypes.string + ')');
+        reNames.push(part.slice(1));
+      } else {
+        // Plain string match, not captured.
+        reParts.push(part.replace(/([\.\\\(\)\^\$])/g, "\\$1"));
+        //reNames.push(null);
+      }
+    });
+    // Join things together into a spec that we can reuse.
+    return {
+      re: new RegExp('^' + reParts.join('\\/') + '$'),
+      matches: reNames,
+      route: route
+    };
+  }
 
   /**
    * @ngdoc method
@@ -72,17 +108,12 @@ function $RouteProvider(){
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true}, route);
-
+    routes.push(compileRoute(path, extend({reloadOnSearch: true}, route)));
     // create redirection for trailing slashes
-    if (path) {
-      var redirectPath = (path[path.length-1] == '/')
-          ? path.substr(0, path.length-1)
-          : path +'/';
-
-      routes[redirectPath] = {redirectTo: path};
-    }
-
+    var redirectPath = (path[path.length-1] === '/')
+        ? path.substr(0, path.length-1)
+        : path +'/';
+    routes.push(compileRoute(redirectPath, {redirectTo: path}));
     return this;
   };
 
@@ -99,7 +130,8 @@ function $RouteProvider(){
    * @returns {Object} self
    */
   this.otherwise = function(params) {
-    this.when(null, params);
+    //this.when(null, params);
+    nullRoute = params;
     return this;
   };
 
@@ -316,24 +348,16 @@ function $RouteProvider(){
     /////////////////////////////////////////////////////
 
     function switchRouteMatcher(on, when) {
-      // TODO(i): this code is convoluted and inefficient, we should construct the route matching
-      //   regex only once and then reuse it
-      var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
-          params = [],
-          dst = {};
-      forEach(when.split(/\W/), function(param) {
-        if (param) {
-          var paramRegExp = new RegExp(":" + param + "([\\W])");
-          if (regex.match(paramRegExp)) {
-            regex = regex.replace(paramRegExp, "([^\\/]*)$1");
-            params.push(param);
-          }
-        }
-      });
-      var match = on.match(new RegExp(regex));
+      var params = when.matches,
+        dst = {},
+        match;
+      match = on.match(when.re);
+
       if (match) {
         forEach(params, function(name, index) {
-          dst[name] = match[index + 1];
+          if (name) {
+            dst[name] = match[index + 1];
+          }
         });
       }
       return match ? dst : null;
@@ -410,42 +434,39 @@ function $RouteProvider(){
       }
     }
 
-
     /**
      * @returns the current active route, by matching it against the URL
      */
     function parseRoute() {
       // Match a route
       var params, match;
-      forEach(routes, function(route, path) {
-        if (!match && (params = matcher($location.path(), path))) {
-          match = inherit(route, {
+      forEach(routes, function(pathMatch) {
+        if (!match && (params = matcher($location.path(), pathMatch))) {
+          match = inherit(pathMatch.route, {
             params: extend({}, $location.search(), params),
             pathParams: params});
-          match.$route = route;
+          match.$route = pathMatch.route;
         }
       });
       // No route matched; fallback to "otherwise" route
-      return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
+      return match || nullRoute && inherit(nullRoute, {params: {}, pathParams:{}});
     }
 
     /**
      * @returns interpolation of the redirect path with the parametrs
      */
     function interpolate(string, params) {
-      var result = [];
-      forEach((string||'').split(':'), function(segment, i) {
-        if (i == 0) {
-          result.push(segment);
+      var result = [], inx, param;
+      forEach((string || '').split('/'), function(part) {
+        if ((inx = part.indexOf(':')) >= 0) {
+          param = part.slice(inx+1, part[part.length-1] === '>' ? -1 : undefined);
+          result.push(params[param]);
+          delete params[param];
         } else {
-          var segmentMatch = segment.match(/(\w+)(.*)/);
-          var key = segmentMatch[1];
-          result.push(params[key]);
-          result.push(segmentMatch[2] || '');
-          delete params[key];
+          result.push(part);
         }
       });
-      return result.join('');
+      return result.join('/');
     }
   }];
 }
