@@ -74,14 +74,7 @@ var ngRepeatDirective = ['$compile', function($compile) {
     // comment-based repeater
     if (linker.$$originalNodeType === 8) {
 
-      // correction for tbody silently injected by browser
-      if (sibling && nodeName_(sibling) === 'TBODY' &&
-          sibling.lastChild && sibling.lastChild.nodeType === 8) {
-        jqLite(sibling).prepend('<!-- directive: ngRepeat ' + attr.ngRepeat + ' -->');
-        $element.text('');
-        return noop;
-      }
-
+      // search for closing comment tag and create the template
       while (sibling) {
         if (sibling.nodeType == 8 &&
             (match = (sibling.textContent || sibling.text).match(NG_REPEAT_END_TAG_REGEXP)) &&

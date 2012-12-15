@@ -477,7 +477,6 @@ describe('ngRepeat', function() {
             '<!-- /ng-repeat -->' +
           '</div>')(scope);
 
-
       scope.$digest();
 
       expect(sortedHtml(element.html())).toBe(
@@ -705,39 +704,6 @@ describe('ngRepeat', function() {
       });
 
 
-      it('should support repeaters for table rows in tables without tbody', function() {
-        scope.items = ['a', 'b', 'c'];
-
-        element = $compile(
-            '<div>' +
-              '<table>' +
-                '<!-- directive: ng-repeat item in items -->' +
-                  '<tr><td>{{item}}</td></tr>' +
-                  '<tr><td>{{$index}}</td></tr>' +
-                '<!-- /ng-repeat -->' +
-              '</table>' +
-            '</div>'
-        )(scope);
-
-        scope.$digest();
-
-        expect(sortedHtml(element.html())).toBe(
-            '<table>' +
-              '<!---->' +
-              '<tbody>' +
-                '<!-- ngRepeat: item in items -->' +
-                '<tr><td>a</td></tr>' +
-                '<tr><td>0</td></tr>' +
-                '<tr><td>b</td></tr>' +
-                '<tr><td>1</td></tr>' +
-                '<tr><td>c</td></tr>' +
-                '<tr><td>2</td></tr>' +
-              '</tbody>' +
-            '</table>'
-        );
-      });
-
-
       it('should support repeaters for table cells', function() {
         scope.items = ['a', 'b', 'c'];
 
@@ -833,7 +799,7 @@ describe('ngRepeat', function() {
 
     describe('error handling', function() {
 
-      it("should complain when end tag can't be found as one of the following siblings",
+      it("should complain when end tag can't be found among one of the following siblings",
           function() {
 
         forEach([
@@ -884,6 +850,26 @@ describe('ngRepeat', function() {
             $compile(template);
           }).toThrow("Can't find closing tag for ngRepeat: item in items");
         });
+      });
+
+
+      it('should NOT support repeaters for table rows in tables without tbody', function() {
+        // we can try to work around this in the future, but there are many corner-cases
+        // for now we require developers to use explicitly use tbody in cases when skipping it
+        // would cause failure to detect the repeater boundaries
+
+        expect(function() {
+          $compile(
+              '<div>' +
+                '<table>' +
+                  '<!-- directive: ng-repeat item in items -->' +
+                  '<tr><td>{{item}}</td></tr>' +
+                  '<tr><td>{{$index}}</td></tr>' +
+                  '<!-- /ng-repeat -->' +
+                '</table>' +
+              '</div>'
+          );
+        }).toThrow("Can't find closing tag for ngRepeat: item in items");
       });
 
 
