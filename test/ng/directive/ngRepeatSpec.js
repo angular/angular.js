@@ -531,6 +531,16 @@ describe('ngRepeat', function() {
           '<span>eat</span><span>true</span>' +
           '<span>run</span><span>false</span>');
 
+
+      scope.items.shift();
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+
+
       scope.items = [];
       scope.$digest();
 
@@ -547,6 +557,42 @@ describe('ngRepeat', function() {
           '<span>fly</span><span>true</span>' +
           '<span>cook</span><span>false</span>');
 
+    });
+
+
+    it('should reorder groups of nodes', function() {
+      scope.items = [
+        {text: 'sleep', done: true},
+        {text: 'eat',   done: true},
+        {text: 'run',   done: false}
+      ];
+
+      element = $compile(
+          '<div>' +
+            '<!-- directive: ng-repeat item in items-->' +
+              '<span>{{item.text}}</span>' +
+              '<span>{{item.done}}</span>' +
+            '<!-- /ng-repeat -->' +
+          '</div>')(scope);
+
+
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>sleep</span><span>true</span>' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+
+
+      scope.items.push(scope.items.shift());
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>' +
+          '<span>sleep</span><span>true</span>');
     });
 
 
