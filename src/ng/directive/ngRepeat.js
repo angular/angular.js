@@ -1,5 +1,7 @@
 'use strict';
 
+/*global angular, ngDirective, WrappedArray, WrappedObject, isArray, whatChanged, FlattenedChanges */
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngRepeat
@@ -65,14 +67,14 @@ var ngRepeatDirective = ngDirective({
     var expression = attr.ngRepeat;
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/);
     if (!match) {
-      throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" + expression + "'.");
+      throw new Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" + expression + "'.");
     }
     var identifiers = match[1];
     var sourceExpression = match[2];
 
     match = identifiers.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
     if (!match) {
-      throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+      throw new Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
           identifiers + "'.");
     }
     var valueIdentifier = match[3] || match[1];
@@ -146,6 +148,10 @@ var ngRepeatDirective = ngDirective({
           if ( item.moved ) {
             // An object has moved here from somewhere else - move the element accordingly
             newChildItem = originalChildItems[item.oldIndex];
+            if (keyIdentifier && isArray(source)) {
+              // We are iterating keys, but over an array rather than an object so we need to fix up the scope
+              updateScope(newChildItem.scope, item.value, newCollection.key(item.index));
+            }
             newChildItems.push(newChildItem);
             currentElement.after(newChildItem.element);
             currentElement = newChildItem.element;
@@ -153,7 +159,7 @@ var ngRepeatDirective = ngDirective({
           }
           changeIndex++;
         }
-        while( itemIndex < originalChildItems.length ) {
+        while( itemIndex < newCollection.length() ) {
           // No change for this item just copy it over
           newChildItem = originalChildItems[itemIndex];
           newChildItems.push(newChildItem);

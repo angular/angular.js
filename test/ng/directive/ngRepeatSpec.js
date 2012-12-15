@@ -226,6 +226,50 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:0|shyam:1|frodo:2|');
   });
 
+  it('should expose correct $index and key when array shrinks', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, item) in items">{{item.name}}:{{key}}:{{$index}}|</li>' +
+      '</ul>')(scope);
+    
+    // INIT
+    scope.items = [{name: 'misko'}, {name:'shyam'}, {name:'frodo'}, {name: 'yukko'}];
+    scope.$digest();
+    expect(element.text()).toEqual('misko:0:0|shyam:1:1|frodo:2:2|yukko:3:3|');
+    
+    // SHRINK
+    scope.items.pop();
+    scope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('misko:0:0|shyam:1:1|frodo:2:2|');
+    
+    scope.items.shift();
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('shyam:0:0|frodo:1:1|');
+  });
+
+  it('should expose correct $index and key when object shrinks', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items">{{val.name}}:{{key}}:{{$index}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'m': {name: 'misko'}, 's': {name:'shyam'},
+                   'f': {name:'frodo'}, 'y': {name: 'yukko'}};
+    scope.$digest();
+    expect(element.text()).toEqual('frodo:f:0|misko:m:1|shyam:s:2|yukko:y:3|');
+  
+    // SHRINK
+    delete scope.items['y'];
+    scope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('frodo:f:0|misko:m:1|shyam:s:2|');
+  
+    delete scope.items['f'];
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('misko:m:0|shyam:s:1|');
+  });
 
   it('should expose iterator offset as $index when iterating over objects', function() {
     element = $compile(
