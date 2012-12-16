@@ -272,7 +272,7 @@ function Browser(window, document, $log, $sniffer) {
     var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
-      if (value === undefined) {
+      if (!value) {
         rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
