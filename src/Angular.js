@@ -329,7 +329,7 @@ function isNumber(value){return typeof value == 'number';}
  * @returns {boolean} True if `value` is a `Date`.
  */
 function isDate(value){
-  return toString.apply(value) == '[object Date]';
+  return toString.apply(/** @type {Object} */ (value)) == '[object Date]';
 }
 
 
@@ -345,7 +345,7 @@ function isDate(value){
  * @returns {boolean} True if `value` is an `Array`.
  */
 function isArray(value) {
-  return toString.apply(value) == '[object Array]';
+  return toString.apply(/** @type {Object} */ (value)) == '[object Array]';
 }
 
 
