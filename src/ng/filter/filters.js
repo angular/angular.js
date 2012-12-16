@@ -177,21 +177,33 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   return parts.join('');
 }
 
+/**
+ * @param {number} num
+ * @param {number} digits
+ * @param {boolean=} trim
+ * @returns {string}
+ */
 function padNumber(num, digits, trim) {
   var neg = '';
   if (num < 0) {
     neg =  '-';
     num = -num;
   }
-  num = '' + num;
-  while(num.length < digits) num = '0' + num;
+  var str = '' + num;
+  while(str.length < digits) str = '0' + str;
   if (trim)
-    num = num.substr(num.length - digits);
-  return neg + num;
+    str = str.substr(num.length - digits);
+  return neg + str;
 }
 
 
-function dateGetter(name, size, offset, trim) {
+/**
+ * @param {string} name
+ * @param {number} size
+ * @param {number=} offset
+ * @param {boolean=} trim
+ */
+ function dateGetter(name, size, offset, trim) {
   return function(date) {
     var value = date['get' + name]();
     if (offset > 0 || value > -offset)
@@ -201,6 +213,10 @@ function dateGetter(name, size, offset, trim) {
   };
 }
 
+/**
+ * @param {string} name
+ * @param {boolean=} shortForm
+ */
 function dateStrGetter(name, shortForm) {
   return function(date, formats) {
     var value = date['get' + name]();
@@ -210,6 +226,9 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+/**
+ * @param {Date} date
+ */
 function timeZoneGetter(date) {
   var offset = date.getTimezoneOffset();
   return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
