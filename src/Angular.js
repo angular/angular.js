@@ -371,7 +371,7 @@ function isFunction(value){return typeof value == 'function';}
  * @returns {boolean} True if `obj` is a window obj.
  */
 function isWindow(obj) {
-  return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+  return Boolean(obj && obj.document && obj.location && obj.alert && obj.setInterval);
 }
 
 
@@ -406,9 +406,9 @@ function trim(value) {
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
-  return node &&
+  return Boolean(node &&
     (node.nodeName  // we are a direct element
-    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
+    || (node.bind && node.find)));  // we have a bind and find method part of jQuery API
 }
 
 /**
