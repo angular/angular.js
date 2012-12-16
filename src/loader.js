@@ -212,7 +212,7 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#run
            * @methodOf angular.Module
-           * @param {Function} initializationFn Execute this function after injector creation.
+           * @param {Function} block Execute this function after injector creation.
            *    Useful for application initialization.
            * @description
            * Use this method to register work which should be performed when the injector is done

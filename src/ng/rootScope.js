@@ -120,13 +120,7 @@ function $RootScopeProvider(){
      * </pre>
      *
      *
-     * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
-     *     for the current scope. Defaults to {@link ng}.
-     * @param {Object.<string, *>=} instanceCache Provides pre-instantiated services which should
-     *     append/override services provided by `providers`. This is handy when unit-testing and having
-     *     the need to override a default service.
      * @returns {Object} Newly created scope.
-     *
      */
     function Scope() {
       this.$id = nextUid();
@@ -266,14 +260,14 @@ function $RootScopeProvider(){
        *
        *
        *
-       * @param {(function()|string)} watchExpression Expression that is evaluated on each
+       * @param {(function()|string)} watchExp Expression that is evaluated on each
        *    {@link ng.$rootScope.Scope#$digest $digest} cycle. A change in the return value triggers a
        *    call to the `listener`.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(scope)`: called with current `scope` as a parameter.
        * @param {(function()|string)=} listener Callback called whenever the return value of
-       *   the `watchExpression` changes.
+       *   the `watchExp` changes.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
@@ -506,7 +500,7 @@ function $RootScopeProvider(){
            expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
        * </pre>
        *
-       * @param {(string|function())=} expression An angular expression to be executed.
+       * @param {(string|function())=} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
@@ -535,7 +529,7 @@ function $RootScopeProvider(){
        * Any exceptions from the execution of the expression are forwarded to the
        * {@link ng.$exceptionHandler $exceptionHandler} service.
        *
-       * @param {(string|function())=} expression An angular expression to be executed.
+       * @param {(string|function())=} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
@@ -584,7 +578,7 @@ function $RootScopeProvider(){
        *    was executed using the {@link ng.$rootScope.Scope#$digest $digest()} method.
        *
        *
-       * @param {(string|function())=} exp An angular expression to be executed.
+       * @param {(string|function())=} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with current `scope` parameter.

@@ -18,7 +18,6 @@
 /**
  * @param {object} window The global window object.
  * @param {object} document jQuery wrapped document.
- * @param {function()} XHR XMLHttpRequest constructor.
  * @param {object} $log console.log or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
@@ -205,7 +204,7 @@ function Browser(window, document, $log, $sniffer) {
    * @param {function(string)} listener Listener function to be called when url changes.
    * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
    */
-  self.onUrlChange = function(callback) {
+  self.onUrlChange = function(listener) {
     if (!urlChangeInit) {
       // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
       // don't fire popstate when user change the address bar and don't fire hashchange when url
@@ -221,8 +220,8 @@ function Browser(window, document, $log, $sniffer) {
       urlChangeInit = true;
     }
 
-    urlChangeListeners.push(callback);
-    return callback;
+    urlChangeListeners.push(listener);
+    return listener;
   };
 
   //////////////////////////////////////////////////////////////

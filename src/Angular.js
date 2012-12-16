@@ -184,7 +184,6 @@ function nextUid() {
  * to `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst Destination object.
- * @param {...Object} src Source object(s).
  */
 function extend(dst) {
   forEach(arguments, function(obj){
@@ -403,7 +402,7 @@ function trim(value) {
  * @description
  * Determines if a reference is a DOM element (or wrapped jQuery element).
  *
- * @param {*} value Reference to check.
+ * @param {*} node Reference to check.
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
@@ -647,32 +646,32 @@ function sliceArgs(args, startIndex) {
 
 
 /**
- * @ngdoc function
+ *
  * @name angular.bind
  * @function
  *
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
- * `fn`). You can supply optional `args` that are are prebound to the function. This feature is also
+ * `fn`). You can supply optional `var_args` that are are prebound to the function. This feature is also
  * known as [function currying](http://en.wikipedia.org/wiki/Currying).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
- * @param {...*} args Optional arguments to be prebound to the `fn` function call.
+ * @param {...*} var_args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
-function bind(self, fn) {
-  var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
+function bind(self, fn, var_args) {
+  var curryArgs = var_args.length > 2 ? sliceArgs(var_args, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
     return curryArgs.length
       ? function() {
-          return arguments.length
-            ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0)))
+          return var_args.length
+            ? fn.apply(self, curryArgs.concat(slice.call(var_args, 0)))
             : fn.apply(self, curryArgs);
         }
       : function() {
-          return arguments.length
-            ? fn.apply(self, arguments)
+          return var_args.length
+            ? fn.apply(self, var_args)
             : fn.call(self);
         };
   } else {
@@ -832,7 +831,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp an optional application
+ * @param {angular.Module} bootstrap an optional application
  *   {@link angular.module module} name to load.
  *
  * @description

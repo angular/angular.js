@@ -363,7 +363,7 @@ function $CompileProvider($provide) {
      * @param {DOMElement=} $rootElement If the nodeList is the root of the compilation tree then the
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
-     * @param {number=} max directive priority
+     * @param {number=} maxPriority directive priority
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
