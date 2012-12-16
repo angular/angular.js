@@ -119,8 +119,6 @@ function $RootScopeProvider(){
          expect(parent.salutation).toEqual('Hello');
      * </pre>
      *
-     *
-     * @returns {Object} Newly created scope.
      * @constructor
      */
     function Scope() {
