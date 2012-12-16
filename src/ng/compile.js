@@ -92,7 +92,7 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
  *
  *
- * @param {string|DOMElement} element Element or HTML string to compile into a template function.
+ * @param {string|Element} element Element or HTML string to compile into a template function.
  * @param {function(angular.Scope[, cloneAttachFn]} transclude function available to directives.
  * @param {number} maxPriority only apply directives lower then given priority (Only effects the
  *                 root element(s), not their children)
@@ -363,7 +363,7 @@ function $CompileProvider($provide) {
      * @param {NodeList} nodeList an array of nodes to compile
      * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement=} $rootElement If the nodeList is the root of the compilation tree then the
+     * @param {Element=} $rootElement If the nodeList is the root of the compilation tree then the
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
      * @param {number=} maxPriority directive priority
@@ -522,7 +522,7 @@ function $CompileProvider($provide) {
      * @param {Object} templateAttrs The shared attribute function
      * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement} $rootElement If we are working on the root of the compile tree then this
+     * @param {Element} $rootElement If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace widgets on it.
      * @returns linkFn
      */

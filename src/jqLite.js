@@ -71,7 +71,7 @@
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
- * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
+ * @param {string|Element} element HTML string or Element to be wrapped into jQuery.
  * @returns {Object} jQuery object.
  */
 
