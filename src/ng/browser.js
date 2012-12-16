@@ -106,7 +106,8 @@ function Browser(window, document, $log, $sniffer) {
 
   /**
    * @param {number} interval How often should browser call poll functions (ms)
-   * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
+   * @param {function(function(),number)} setTimeout Reference to a real or
+   *     fake `setTimeout` function.
    *
    * @description
    * Configures the poller to run in the specified intervals, using the specified
