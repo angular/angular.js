@@ -20,6 +20,7 @@
  * @param {Object} document jQuery wrapped document.
  * @param {Object} $log console.log or an object with the same interface.
  * @param {Object} $sniffer $sniffer service
+ * @constructor
  */
 function Browser(window, document, $log, $sniffer) {
   var self = this,

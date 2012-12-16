@@ -121,6 +121,7 @@ function $RootScopeProvider(){
      *
      *
      * @returns {Object} Newly created scope.
+     * @constructor
      */
     function Scope() {
       this.$id = nextUid();
@@ -180,6 +181,9 @@ function $RootScopeProvider(){
           child = new Scope();
           child.$root = this.$root;
         } else {
+          /**
+           * @constructor
+           */
           Child = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. These will then show up as class
             // name in the debugger.

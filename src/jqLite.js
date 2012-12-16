@@ -146,6 +146,9 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
 }
 
 /////////////////////////////////////////////
+/**
+ * @constructor
+ */
 function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
@@ -329,7 +332,7 @@ var JQLitePrototype = JQLite.prototype = {
 
     this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
     // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-    JQLite(window).bind('load', trigger); // fallback to window.onload for others
+    new JQLite(window).bind('load', trigger); // fallback to window.onload for others
   },
   toString: function() {
     var value = [];

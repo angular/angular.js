@@ -215,6 +215,9 @@ function $CompileProvider($provide) {
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
              $controller,   $rootScope) {
 
+    /**
+     * @constructor
+     */
     var Attributes = function(element, attr) {
       this.$$element = element;
       this.$attr = attr || {};

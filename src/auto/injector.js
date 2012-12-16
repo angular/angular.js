@@ -159,7 +159,7 @@ function annotate(fn) {
  * Create a new instance of JS type. The method takes a constructor function invokes the new operator and supplies
  * all of the arguments to the constructor function as specified by the constructor annotation.
  *
- * @param {function} Type Annotated constructor function.
+ * @param {function()} Type Annotated constructor function.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
  * @returns {Object} new instance of `Type`.
@@ -583,12 +583,14 @@ function createInjector(modulesToLoad) {
     }
 
     function instantiate(Type, locals) {
-      var Constructor = function() {},
-          instance, returnedValue;
+      /**
+       * @constructor
+       */
+      var Constructor = function() {};
 
       Constructor.prototype = (isArray(Type) ? Type[Type.length - 1] : Type).prototype;
-      instance = new Constructor();
-      returnedValue = invoke(Type, instance, locals);
+      var instance = new Constructor();
+      var returnedValue = invoke(Type, instance, locals);
 
       return isObject(returnedValue) ? returnedValue : instance;
     }
