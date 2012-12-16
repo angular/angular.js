@@ -93,7 +93,7 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
  *
  *
  * @param {string|Element} element Element or HTML string to compile into a template function.
- * @param {function(angular.Scope[, cloneAttachFn])} transclude function available to directives.
+ * @param {function(angular.Scope[, cloneAttachFn]} transclude function available to directives.
  * @param {number} maxPriority only apply directives lower then given priority (Only effects the
  *                 root element(s), not their children)
  * @returns {function(scope[, cloneAttachFn])} a link function which is used to bind template
@@ -361,7 +361,7 @@ function $CompileProvider($provide) {
      * function, which is the a linking function for the node.
      *
      * @param {NodeList} nodeList an array of nodes to compile
-     * @param {function(angular.Scope[, cloneAttachFn])} transcludeFn A linking function, where the
+     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
      * @param {Element=} $rootElement If the nodeList is the root of the compilation tree then the
      *        rootElement must be set the jqLite collection of the compile root. This is
@@ -520,7 +520,7 @@ function $CompileProvider($provide) {
      *        this needs to be pre-sorted by priority order.
      * @param {Node} compileNode The raw DOM node to apply the compile functions to
      * @param {Object} templateAttrs The shared attribute function
-     * @param {function(angular.Scope[, cloneAttachFn])} transcludeFn A linking function, where the
+     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
      * @param {Element} $rootElement If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace widgets on it.
