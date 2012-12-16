@@ -646,6 +646,7 @@ function sliceArgs(args, startIndex) {
 
 
 /**
+ * @ngdoc function
  *
  * @name angular.bind
  * @function
