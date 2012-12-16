@@ -184,7 +184,7 @@ function nextUid() {
  * to `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst Destination object.
- * @param {...*} var_args
+ * @param {...Object} var_args Source object(s).
  */
 function extend(dst, var_args) {
   forEach(arguments, function(obj){
