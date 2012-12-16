@@ -232,7 +232,7 @@ function Browser(window, document, $log, $sniffer) {
    * Returns current <base href>
    * (always relative - without domain)
    *
-   * @returns {string=}
+   * @returns {string|null}
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
