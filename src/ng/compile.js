@@ -1042,10 +1042,10 @@ function $CompileProvider($provide) {
      * This is a special jqLite.replaceWith, which can replace items which
      * have no parents, provided that the containing jqLite collection is provided.
      *
-     * @param {JqLite} $rootElement The root of the compile tree. Used so that we can replace nodes
-     *    in the root of the tree.
-     * @param {JqLite} $element The jqLite element which we are going to replace. We keep the shell,
-     *    but replace its DOM node reference.
+     * @param {Element} $rootElement The root of the compile tree. Used so that
+     *     we can replace nodes in the root of the tree.
+     * @param {Element} $element The jqLite element which we are going to
+     *     replace. We keep the shell, but replace its DOM node reference.
      * @param {Node} newNode The new DOM node.
      */
     function replaceWith($rootElement, $element, newNode) {
