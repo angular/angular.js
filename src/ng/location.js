@@ -34,7 +34,7 @@ function matchUrl(url, obj) {
   match = {
       protocol: match[1],
       host: match[3],
-      port: int(match[5]) || DEFAULT_PORTS[match[1]] || null,
+      port: atoi(match[5]) || DEFAULT_PORTS[match[1]] || null,
       path: match[6] || '/',
       search: match[8],
       hash: match[10]

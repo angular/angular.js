@@ -337,11 +337,11 @@ function dateFilter($locale) {
           tzHour = 0,
           tzMin  = 0;
       if (match[9]) {
-        tzHour = int(match[9] + match[10]);
-        tzMin = int(match[9] + match[11]);
+        tzHour = atoi(match[9] + match[10]);
+        tzMin = atoi(match[9] + match[11]);
       }
-      date.setUTCFullYear(int(match[1]), int(match[2]) - 1, int(match[3]));
-      date.setUTCHours(int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
+      date.setUTCFullYear(atoi(match[1]), atoi(match[2]) - 1, atoi(match[3]));
+      date.setUTCHours(atoi(match[4]||0) - tzHour, atoi(match[5]||0) - tzMin, atoi(match[6]||0), atoi(match[7]||0));
       return date;
     }
     return string;
@@ -357,7 +357,7 @@ function dateFilter($locale) {
     format = $locale.DATETIME_FORMATS[format] || format;
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
-        date = int(date);
+        date = atoi(date);
       } else {
         date = jsonStringToDate(date);
       }
