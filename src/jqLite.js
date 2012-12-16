@@ -112,6 +112,10 @@ function camelCase(name) {
 //
 /////////////////////////////////////////////
 
+/**
+ * @param {string} name
+ * @param {Object=} dispatchThis
+ */
 function JQLitePatchJQueryRemove(name, dispatchThis) {
   var originalJqFn = jQuery.fn[name];
   originalJqFn = originalJqFn.$original || originalJqFn;
@@ -146,6 +150,7 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
 }
 
 /////////////////////////////////////////////
+
 /**
  * @constructor
  */
@@ -184,6 +189,11 @@ function JQLiteDealoc(element){
   }
 }
 
+/**
+ * @param {Object} element
+ * @param {string=} type
+ * @param {function()=} fn
+ */
 function JQLiteUnbind(element, type, fn) {
   var events = JQLiteExpandoStore(element, 'events'),
       handle = JQLiteExpandoStore(element, 'handle');
@@ -219,6 +229,11 @@ function JQLiteRemoveData(element) {
   }
 }
 
+/**
+ * @param {Object} element
+ * @param {string} key
+ * @param {*=} value
+ */
 function JQLiteExpandoStore(element, key, value) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId || -1];
@@ -302,6 +317,11 @@ function JQLiteController(element, name) {
   return JQLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
 }
 
+/**
+ * @param {Object} element
+ * @param {string} name
+ * @param {*=} value
+ */
 function JQLiteInheritedData(element, name, value) {
   element = jqLite(element);
 
