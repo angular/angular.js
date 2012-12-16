@@ -233,7 +233,7 @@ function setupModuleLoader(window) {
         /**
          * @param {string} provider
          * @param {string} method
-         * @param {String=} insertMethod
+         * @param {string=} insertMethod
          * @returns {angular.Module}
          */
         function invokeLater(provider, method, insertMethod) {

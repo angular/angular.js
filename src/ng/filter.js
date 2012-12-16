@@ -55,7 +55,7 @@
  * @description
  * Register filter factory function.
  *
- * @param {String} name Name of the filter.
+ * @param {string} name Name of the filter.
  * @param {function} fn The filter factory function which is injectable.
  */
 
@@ -71,7 +71,7 @@
  *
  *         {{ expression | [ filter_name ] }}
  *
- * @param {String} name Name of the filter function to retrieve
+ * @param {string} name Name of the filter function to retrieve
  * @return {Function} the filter function
  */
 $FilterProvider.$inject = ['$provide'];
