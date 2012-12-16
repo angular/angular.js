@@ -72,7 +72,7 @@ function isSameDomain(requestUrl, locationUrl) {
  * Headers are lazy parsed when first requested.
  * @see parseHeaders
  *
- * @param {(string|Object)} headers Headers to provide access to.
+ * @param {string} headers Headers to provide access to.
  * @returns {function(string=)} Returns a getter function which if called with:
  *
  *   - if called with single an argument returns a single header value or null
@@ -81,6 +81,9 @@ function isSameDomain(requestUrl, locationUrl) {
 function headersGetter(headers) {
   var headersObj = isObject(headers) ? headers : undefined;
 
+  /**
+   * @param {string=} name The header name.
+   */
   return function(name) {
     if (!headersObj) headersObj =  parseHeaders(headers);
 
