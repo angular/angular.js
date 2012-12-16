@@ -155,7 +155,7 @@ angular.scenario.ObjectModel.prototype.emit = function(eventName) {
  * this spec.
  *
  * @param spec Spec to compute the path for.
- * @return {Array<Describe>} The describe block path
+ * @return {Array.<Describe>} The describe block path
  */
 angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
   var path = [];
@@ -182,7 +182,7 @@ angular.scenario.ObjectModel.prototype.getSpec = function(id) {
  *
  * @param {string} id Id of the spec
  * @param {string} name Name of the spec
- * @param {Array<string>=} definitionNames List of all describe block names that wrap this spec
+ * @param {Array.<string>=} definitionNames List of all describe block names that wrap this spec
  */
 angular.scenario.ObjectModel.Spec = function(id, name, definitionNames) {
   this.id = id;
