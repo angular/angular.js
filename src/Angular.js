@@ -711,7 +711,7 @@ function toJsonReplacer(key, value) {
  * @returns {string} Jsonified string representing `obj`.
  */
 function toJson(obj, pretty) {
-  return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
+  return window.JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
 }
 
 
@@ -728,7 +728,7 @@ function toJson(obj, pretty) {
  */
 function fromJson(json) {
   return isString(json)
-      ? JSON.parse(json)
+      ? window.JSON.parse(json)
       : json;
 }
 
