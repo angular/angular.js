@@ -186,7 +186,7 @@ function nextUid() {
  * @param {Object} dst Destination object.
  */
 function extend(dst, var_args) {
-  forEach(var_args, function(obj){
+  forEach(arguments, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
         dst[key] = value;
@@ -661,17 +661,17 @@ function sliceArgs(args, startIndex) {
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
 function bind(self, fn, var_args) {
-  var curryArgs = var_args.length > 2 ? sliceArgs(var_args, 2) : [];
+  var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
     return curryArgs.length
       ? function() {
-          return var_args.length
-            ? fn.apply(self, curryArgs.concat(slice.call(var_args, 0)))
+          return arguments.length
+            ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0)))
             : fn.apply(self, curryArgs);
         }
       : function() {
-          return var_args.length
-            ? fn.apply(self, var_args)
+          return arguments.length
+            ? fn.apply(self, arguments)
             : fn.call(self);
         };
   } else {
