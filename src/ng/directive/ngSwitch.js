@@ -1,5 +1,7 @@
 'use strict';
 
+var NG_SWITCH = 'ng-switch';
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngSwitch
@@ -59,7 +61,6 @@
       </doc:scenario>
     </doc:example>
  */
-var NG_SWITCH = 'ng-switch';
 var ngSwitchDirective = valueFn({
   restrict: 'EA',
   compile: function(element, attr) {
