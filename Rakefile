@@ -267,6 +267,16 @@ def path_to(filename)
 end
 
 
+##
+# returns the 32-bit mode force flag for java compiler if supported
+#
+def java32flag
+  void = Rake::Win32.windows? ? 'NUL' : '/dev/null'
+  testcmd = "java -d32 -version >>#{void} 2>&1"
+  return system(testcmd) ? '-d32' : ''
+end
+
+
 def closure_compile(filename)
   puts "Minifying #{filename} ..."
 
@@ -274,7 +284,7 @@ def closure_compile(filename)
 
   %x(java \
         -client \
-        -d32 \
+        #{java32flag()} \
         -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
