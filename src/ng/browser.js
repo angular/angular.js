@@ -143,7 +143,7 @@ function Browser(window, document, $log, $sniffer) {
    * NOTE: this api is intended for use only by the $location service. Please use the
    * {@link ng.$location $location service} to change url.
    *
-   * @param {string} url New url (when used as setter)
+   * @param {string=} url New url (when used as setter)
    * @param {boolean=} replace Should new url replace current history record ?
    */
   self.url = function(url, replace) {

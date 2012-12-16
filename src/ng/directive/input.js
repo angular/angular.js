@@ -929,7 +929,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   $element.addClass(PRISTINE_CLASS);
   toggleValidCss(true);
 
-  // convenience method for easy toggling of classes
+  /**
+   * Convenience method for easy toggling of classes
+   * @param {boolean} isValid
+   * @param {string=} validationErrorKey
+   */
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
     $element.

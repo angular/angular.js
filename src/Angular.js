@@ -184,6 +184,7 @@ function nextUid() {
  * to `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst Destination object.
+ * @param {...*} var_args
  */
 function extend(dst, var_args) {
   forEach(arguments, function(obj){
@@ -961,6 +962,9 @@ function bindJQuery() {
 
 /**
  * throw error of the argument is falsy.
+ * @param {*} arg
+ * @param {string=} name
+ * @param {string=} reason
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
@@ -969,7 +973,12 @@ function assertArg(arg, name, reason) {
   return arg;
 }
 
-function assertArgFn(arg, name, acceptArrayAnnotation) {
+/**
+ * @param {*} arg
+ * @param {string} name
+ * @param {boolean=} acceptArrayAnnotation
+ */
+ function assertArgFn(arg, name, acceptArrayAnnotation) {
   if (acceptArrayAnnotation && isArray(arg)) {
       arg = arg[arg.length - 1];
   }

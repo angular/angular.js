@@ -113,6 +113,11 @@ function lex(text, csp){
     return ch == '-' || ch == '+' || isNumber(ch);
   }
 
+  /**
+   * @param {string} error
+   * @param {number=} start
+   * @param {number=} end
+   */
   function throwError(error, start, end) {
     end = end || index;
     throw Error("Lexer Error: " + error + " at column" +
@@ -323,6 +328,12 @@ function parser(text, json, $filter, csp){
     return false;
   }
 
+  /**
+   * @param {string=} e1
+   * @param {string=} e2
+   * @param {string=} e3
+   * @param {string=} e4
+   */
   function expect(e1, e2, e3, e4){
     var token = peek(e1, e2, e3, e4);
     if (token) {

@@ -28,6 +28,10 @@ function stripHash(url) {
 }
 
 
+/**
+ * @param {string} url
+ * @param {Object=} obj
+ */
 function matchUrl(url, obj) {
   var match = URL_MATCH.exec(url);
 
