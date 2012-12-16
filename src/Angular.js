@@ -766,7 +766,8 @@ function startingTag(element) {
  * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
-  var obj = {}, key_value, key;
+  var obj = {};
+  var key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
