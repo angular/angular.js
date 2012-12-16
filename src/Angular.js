@@ -185,8 +185,8 @@ function nextUid() {
  *
  * @param {Object} dst Destination object.
  */
-function extend(dst) {
-  forEach(arguments, function(obj){
+function extend(dst, var_args) {
+  forEach(var_args, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
         dst[key] = value;
@@ -413,7 +413,7 @@ function isElement(node) {
 
 /**
  * @param str 'key1,key2,...'
- * @returns {object} in the form of {key1:true, key2:true, ...}
+ * @returns {Object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str){
   var obj = {}, items = str.split(","), i;

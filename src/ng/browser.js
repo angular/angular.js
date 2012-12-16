@@ -16,10 +16,10 @@
  * the real browser apis.
  */
 /**
- * @param {object} window The global window object.
- * @param {object} document jQuery wrapped document.
- * @param {object} $log console.log or an object with the same interface.
- * @param {object} $sniffer $sniffer service
+ * @param {Object} window The global window object.
+ * @param {Object} document jQuery wrapped document.
+ * @param {Object} $log console.log or an object with the same interface.
+ * @param {Object} $sniffer $sniffer service
  */
 function Browser(window, document, $log, $sniffer) {
   var self = this,

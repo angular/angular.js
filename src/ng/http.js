@@ -393,7 +393,7 @@ function $HttpProvider() {
      * cookie with {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
      *
      *
-     * @param {object} config Object describing the request to be made and how it should be
+     * @param {Object} config Object describing the request to be made and how it should be
      *    processed. The object has following properties:
      *
      *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)

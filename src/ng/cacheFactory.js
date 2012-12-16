@@ -11,9 +11,9 @@
  *
  *   - `{number=}` `capacity` — turns the cache into LRU cache.
  *
- * @returns {object} Newly created cache object with the following set of methods:
+ * @returns {Object} Newly created cache object with the following set of methods:
  *
- * - `{object}` `info()` — Returns id, size, and options of cache.
+ * - `{Object}` `info()` — Returns id, size, and options of cache.
  * - `{{*}}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache and returns it.
  * - `{{*}}` `get({string} key)` — Returns cached value for `key` or undefined for cache miss.
  * - `{void}` `remove({string} key)` — Removes a key-value pair from the cache.
