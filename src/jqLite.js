@@ -114,7 +114,7 @@ function camelCase(name) {
 
 /**
  * @param {string} name
- * @param {Object=} dispatchThis
+ * @param {boolean=} dispatchThis
  */
 function JQLitePatchJQueryRemove(name, dispatchThis) {
   var originalJqFn = jQuery.fn[name];
