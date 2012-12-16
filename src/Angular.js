@@ -86,7 +86,7 @@ var Error             = window.Error,
      expect(log).toEqual(['name: misko', 'gender:male']);
    </pre>
  *
- * @param {Object|Array} obj Object to iterate over.
+ * @param {Object|Array|undefined} obj Object to iterate over.
  * @param {Function} iterator Iterator function.
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.

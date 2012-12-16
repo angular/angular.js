@@ -33,6 +33,7 @@ function hashKey(obj) {
 
 /**
  * HashMap which can use objects as keys
+ * @param {(Object|Array)=} array
  * @constructor
  */
 function HashMap(array){
