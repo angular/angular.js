@@ -529,16 +529,16 @@ function isLeafNode (node) {
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) throw Error("Can't copy Window or Scope");
   if (!destination) {
-    destination = source;
     if (source) {
       if (isArray(source)) {
-        destination = copy(source, []);
+        return copy(source, []);
       } else if (isDate(source)) {
-        destination = new Date(source.getTime());
+        return new Date(source.getTime());
       } else if (isObject(source)) {
-        destination = copy(source, {});
+        return copy(source, {});
       }
     }
+    return source;
   } else {
     if (source === destination) throw Error("Can't copy equivalent objects or arrays");
     if (isArray(source)) {
