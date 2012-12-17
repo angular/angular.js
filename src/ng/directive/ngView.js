@@ -28,7 +28,7 @@
           <hr />
 
           <pre>$location.path() = {{$location.path()}}</pre>
-          <pre>$route.current.template = {{$route.current.template}}</pre>
+          <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>
           <pre>$route.current.params = {{$route.current.params}}</pre>
           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
           <pre>$routeParams = {{$routeParams}}</pre>
