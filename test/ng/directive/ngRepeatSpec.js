@@ -882,7 +882,7 @@ describe('ngRepeat', function() {
           '<!-- directive: ng-repeat item in items -->' +
             '<span>{{item.text}}></span>' +
             '<span>{{item.done}}</span>' +
-          '<!-- /ng-repeat -->',
+          '<!-- /ng-repeat',
 
 
           // garbage in the end tag
@@ -893,7 +893,7 @@ describe('ngRepeat', function() {
 
         ], function(template) {
           expect(function() {
-            $compile(template);
+            $compile('<div>' + template + '</div>');
           }).toThrow("Can't find closing tag for ngRepeat: item in items");
         });
       });

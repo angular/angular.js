@@ -68,11 +68,12 @@ var ngRepeatDirective = ['$compile', function($compile) {
     var NG_REPEAT_END_TAG_REGEXP = /^(?:<!--)?\s*\/(\S+)\s* (?:-->)?$/,
         element = $element[0],
         sibling = element.nextSibling,
-        template = jqLite(document.createDocumentFragment()),
-        match;
+        template, match;
 
     // comment-based repeater
     if (linker.$$originalNodeType === 8) {
+
+      template = jqLite(document.createDocumentFragment());
 
       // search for closing comment tag and create the template
       while (sibling) {
@@ -172,7 +173,9 @@ var ngRepeatDirective = ['$compile', function($compile) {
               // This may be a noop, if the element is next, but I don't know of a good way to
               // figure this out,  since it would require extra DOM access, so let's just hope that
               // the browsers realizes that it is noop, and treats it as such.
-              cursor.after(last.element);
+              // Also we can't use jQuery#after because it doesn't work well with collections, which
+              // breaks comment-based repeater. This is likely a jQuery bug.
+              JQLiteAfter(cursor[cursor.length - 1], last.element);
               cursor = last.element;
             }
           } else {
@@ -190,7 +193,10 @@ var ngRepeatDirective = ['$compile', function($compile) {
 
           if (!last) {
             linker(childScope, function(clone){
-              cursor.after(clone);
+              // can't use jQuery#after because it doesn't work well with collections, which breaks
+              // comment-based repeater. This is likely a jQuery bug.
+              JQLiteAfter(cursor[cursor.length - 1], clone);
+
               last = {
                   scope: childScope,
                   element: (cursor = clone),

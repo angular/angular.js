@@ -314,6 +314,15 @@ function JQLiteInheritedData(element, name, value) {
   }
 }
 
+function JQLiteAfter(element, newElement) {
+  var index = element, parent = element.parentNode;
+  forEach(new JQLite(newElement), function(node){
+    parent.insertBefore(node, index.nextSibling);
+    index = node;
+  });
+}
+
+
 //////////////////////////////////////////
 // Functions which are declared directly.
 //////////////////////////////////////////
@@ -694,13 +703,7 @@ forEach({
     if (parent) parent.removeChild(element);
   },
 
-  after: function(element, newElement) {
-    var index = element, parent = element.parentNode;
-    forEach(new JQLite(newElement), function(node){
-      parent.insertBefore(node, index.nextSibling);
-      index = node;
-    });
-  },
+  after: JQLiteAfter,
 
   addClass: JQLiteAddClass,
   removeClass: JQLiteRemoveClass,
