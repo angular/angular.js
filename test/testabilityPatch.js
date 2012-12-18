@@ -85,7 +85,7 @@ function dealoc(obj) {
 }
 
 /**
- * @param {DOMElement} element
+ * @param {Element} element
  * @param {boolean=} showNgClass
  */
 function sortedHtml(element, showNgClass) {

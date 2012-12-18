@@ -58,7 +58,7 @@ function setupModuleLoader(window) {
      * {@link angular.bootstrap} to simplify this process for you.
      *
      * @param {!string} name The name of the module to create or retrieve.
-     * @param {Array.<string>=} requires If specified then new module is being created. If unspecified then the
+     * @param {Array.<string>} requires If specified then new module is being created. If unspecified then the
      *        the module is being retrieved for further configuration.
      * @param {Function} configFn Optional configuration function for the module. Same as
      *        {@link angular.Module#config Module#config()}.
@@ -212,7 +212,7 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#run
            * @methodOf angular.Module
-           * @param {Function} initializationFn Execute this function after injector creation.
+           * @param {Function} block Execute this function after injector creation.
            *    Useful for application initialization.
            * @description
            * Use this method to register work which should be performed when the injector is done
@@ -233,7 +233,7 @@ function setupModuleLoader(window) {
         /**
          * @param {string} provider
          * @param {string} method
-         * @param {String=} insertMethod
+         * @param {string=} insertMethod
          * @returns {angular.Module}
          */
         function invokeLater(provider, method, insertMethod) {

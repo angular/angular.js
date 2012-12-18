@@ -16,11 +16,11 @@
  * the real browser apis.
  */
 /**
- * @param {object} window The global window object.
- * @param {object} document jQuery wrapped document.
- * @param {function()} XHR XMLHttpRequest constructor.
- * @param {object} $log console.log or an object with the same interface.
- * @param {object} $sniffer $sniffer service
+ * @param {Object} window The global window object.
+ * @param {Object} document jQuery wrapped document.
+ * @param {Object} $log console.log or an object with the same interface.
+ * @param {Object} $sniffer $sniffer service
+ * @constructor
  */
 function Browser(window, document, $log, $sniffer) {
   var self = this,
@@ -106,7 +106,8 @@ function Browser(window, document, $log, $sniffer) {
 
   /**
    * @param {number} interval How often should browser call poll functions (ms)
-   * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
+   * @param {function(function(),number)} setTimeout Reference to a real or
+   *     fake `setTimeout` function.
    *
    * @description
    * Configures the poller to run in the specified intervals, using the specified
@@ -143,7 +144,7 @@ function Browser(window, document, $log, $sniffer) {
    * NOTE: this api is intended for use only by the $location service. Please use the
    * {@link ng.$location $location service} to change url.
    *
-   * @param {string} url New url (when used as setter)
+   * @param {string=} url New url (when used as setter)
    * @param {boolean=} replace Should new url replace current history record ?
    */
   self.url = function(url, replace) {
@@ -205,7 +206,7 @@ function Browser(window, document, $log, $sniffer) {
    * @param {function(string)} listener Listener function to be called when url changes.
    * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
    */
-  self.onUrlChange = function(callback) {
+  self.onUrlChange = function(listener) {
     if (!urlChangeInit) {
       // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
       // don't fire popstate when user change the address bar and don't fire hashchange when url
@@ -221,8 +222,8 @@ function Browser(window, document, $log, $sniffer) {
       urlChangeInit = true;
     }
 
-    urlChangeListeners.push(callback);
-    return callback;
+    urlChangeListeners.push(listener);
+    return listener;
   };
 
   //////////////////////////////////////////////////////////////
@@ -233,7 +234,7 @@ function Browser(window, document, $log, $sniffer) {
    * Returns current <base href>
    * (always relative - without domain)
    *
-   * @returns {string=}
+   * @returns {string|null}
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
@@ -271,7 +272,7 @@ function Browser(window, document, $log, $sniffer) {
     var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
-      if (value === undefined) {
+      if (!value) {
         rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {

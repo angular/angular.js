@@ -33,6 +33,8 @@ function hashKey(obj) {
 
 /**
  * HashMap which can use objects as keys
+ * @param {(Object|Array)=} array
+ * @constructor
  */
 function HashMap(array){
   forEach(array, this.put, this);
@@ -69,6 +71,7 @@ HashMap.prototype = {
 /**
  * A map where multiple values can be added to the same key such that they form a queue.
  * @returns {HashQueueMap}
+ * @constructor
  */
 function HashQueueMap() {}
 HashQueueMap.prototype = {

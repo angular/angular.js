@@ -56,7 +56,7 @@
 function limitToFilter(){
   return function(array, limit) {
     if (!(array instanceof Array)) return array;
-    limit = int(limit);
+    limit = atoi(limit);
     var out = [],
       i, n;
 

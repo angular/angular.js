@@ -92,8 +92,8 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
  *
  *
- * @param {string|DOMElement} element Element or HTML string to compile into a template function.
- * @param {function(angular.Scope[, cloneAttachFn]} transclude function available to directives.
+ * @param {string|Element} element Element or HTML string to compile into a template function.
+ * @param {function(angular.Scope[, cloneAttachFn])} transclude function available to directives.
  * @param {number} maxPriority only apply directives lower then given priority (Only effects the
  *                 root element(s), not their children)
  * @returns {function(scope[, cloneAttachFn])} a link function which is used to bind template
@@ -215,6 +215,9 @@ function $CompileProvider($provide) {
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
              $controller,   $rootScope) {
 
+    /**
+     * @constructor
+     */
     var Attributes = function(element, attr) {
       this.$$element = element;
       this.$attr = attr || {};
@@ -358,12 +361,12 @@ function $CompileProvider($provide) {
      * function, which is the a linking function for the node.
      *
      * @param {NodeList} nodeList an array of nodes to compile
-     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
+     * @param {function(angular.Scope[, cloneAttachFn])} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement=} $rootElement If the nodeList is the root of the compilation tree then the
+     * @param {Element=} $rootElement If the nodeList is the root of the compilation tree then the
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
-     * @param {number=} max directive priority
+     * @param {number=} maxPriority directive priority
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
@@ -517,9 +520,9 @@ function $CompileProvider($provide) {
      *        this needs to be pre-sorted by priority order.
      * @param {Node} compileNode The raw DOM node to apply the compile functions to
      * @param {Object} templateAttrs The shared attribute function
-     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
+     * @param {function(angular.Scope[, cloneAttachFn])} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement} $rootElement If we are working on the root of the compile tree then this
+     * @param {Element} $rootElement If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace widgets on it.
      * @returns linkFn
      */
@@ -858,8 +861,8 @@ function $CompileProvider($provide) {
      * on the template need to be merged with the existing attributes in the DOM.
      * The desired effect is to have both of the attributes present.
      *
-     * @param {object} dst destination attributes (original DOM)
-     * @param {object} src source attributes (from the directive template)
+     * @param {Object} dst destination attributes (original DOM)
+     * @param {Object} src source attributes (from the directive template)
      */
     function mergeTemplateAttributes(dst, src) {
       var srcAttr = src.$attr,
@@ -1039,10 +1042,10 @@ function $CompileProvider($provide) {
      * This is a special jqLite.replaceWith, which can replace items which
      * have no parents, provided that the containing jqLite collection is provided.
      *
-     * @param {JqLite=} $rootElement The root of the compile tree. Used so that we can replace nodes
-     *    in the root of the tree.
-     * @param {JqLite} $element The jqLite element which we are going to replace. We keep the shell,
-     *    but replace its DOM node reference.
+     * @param {Element} $rootElement The root of the compile tree. Used so that
+     *     we can replace nodes in the root of the tree.
+     * @param {Element} $element The jqLite element which we are going to
+     *     replace. We keep the shell, but replace its DOM node reference.
      * @param {Node} newNode The new DOM node.
      */
     function replaceWith($rootElement, $element, newNode) {
@@ -1101,7 +1104,7 @@ function directiveNormalize(name) {
  * @ngdoc property
  * @name ng.$compile.directive.Attributes#$attr
  * @propertyOf ng.$compile.directive.Attributes
- * @returns {object} A map of DOM element attribute names to the normalized name. This is
+ * @returns {Object} A map of DOM element attribute names to the normalized name. This is
  *          needed to do reverse lookup from normalized name back to actual name.
  */
 

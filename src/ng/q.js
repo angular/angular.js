@@ -164,7 +164,7 @@ function $QProvider() {
  * @param {function(function)} nextTick Function for executing functions in the next turn.
  * @param {function(...*)} exceptionHandler Function into which unexpected exceptions are passed for
  *     debugging purposes.
- * @returns {object} Promise manager.
+ * @returns {Object} Promise manager.
  */
 function qFactory(nextTick, exceptionHandler) {
 

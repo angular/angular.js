@@ -183,7 +183,7 @@ function makeMap(str) {
  * });
  *
  * @param {string} html string
- * @param {object} handler
+ * @param {Object} handler
  */
 function htmlParser( html, handler ) {
   var index, chars, match, stack = [], last = html;
@@ -339,7 +339,7 @@ function encodeEntities(value) {
 /**
  * create an HTML/XML writer which writes to buffer
  * @param {Array} buf use buf.jain('') to get out sanitized html string
- * @returns {object} in the form of {
+ * @returns {Object} in the form of {
  *     start: function(tag, attrs, unary) {},
  *     end: function(tag) {},
  *     chars: function(text) {},

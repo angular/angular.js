@@ -128,7 +128,7 @@ angular.scenario.Describe.prototype.xit = angular.noop;
  * Gets an array of functions representing all the tests (recursively).
  * that can be executed with SpecRunner's.
  *
- * @return {Array<Object>} Array of it blocks {
+ * @return {Array.<Object>} Array of it blocks {
  *   definition : Object // parent Describe
  *   only: boolean
  *   name: string

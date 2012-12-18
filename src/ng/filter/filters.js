@@ -177,21 +177,33 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   return parts.join('');
 }
 
+/**
+ * @param {number} num
+ * @param {number} digits
+ * @param {boolean=} trim
+ * @returns {string}
+ */
 function padNumber(num, digits, trim) {
   var neg = '';
   if (num < 0) {
     neg =  '-';
     num = -num;
   }
-  num = '' + num;
-  while(num.length < digits) num = '0' + num;
+  var str = '' + num;
+  while(str.length < digits) str = '0' + str;
   if (trim)
-    num = num.substr(num.length - digits);
-  return neg + num;
+    str = str.substr(str.length - digits);
+  return neg + str;
 }
 
 
-function dateGetter(name, size, offset, trim) {
+/**
+ * @param {string} name
+ * @param {number} size
+ * @param {number=} offset
+ * @param {boolean=} trim
+ */
+ function dateGetter(name, size, offset, trim) {
   return function(date) {
     var value = date['get' + name]();
     if (offset > 0 || value > -offset)
@@ -201,6 +213,10 @@ function dateGetter(name, size, offset, trim) {
   };
 }
 
+/**
+ * @param {string} name
+ * @param {boolean=} shortForm
+ */
 function dateStrGetter(name, shortForm) {
   return function(date, formats) {
     var value = date['get' + name]();
@@ -210,6 +226,9 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+/**
+ * @param {Date} date
+ */
 function timeZoneGetter(date) {
   var offset = date.getTimezoneOffset();
   return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
@@ -337,11 +356,11 @@ function dateFilter($locale) {
           tzHour = 0,
           tzMin  = 0;
       if (match[9]) {
-        tzHour = int(match[9] + match[10]);
-        tzMin = int(match[9] + match[11]);
+        tzHour = atoi(match[9] + match[10]);
+        tzMin = atoi(match[9] + match[11]);
       }
-      date.setUTCFullYear(int(match[1]), int(match[2]) - 1, int(match[3]));
-      date.setUTCHours(int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
+      date.setUTCFullYear(atoi(match[1]), atoi(match[2]) - 1, atoi(match[3]));
+      date.setUTCHours(atoi(match[4]||0) - tzHour, atoi(match[5]||0) - tzMin, atoi(match[6]||0), atoi(match[7]||0));
       return date;
     }
     return string;
@@ -357,7 +376,7 @@ function dateFilter($locale) {
     format = $locale.DATETIME_FORMATS[format] || format;
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
-        date = int(date);
+        date = atoi(date);
       } else {
         date = jsonStringToDate(date);
       }

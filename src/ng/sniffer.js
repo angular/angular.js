@@ -16,7 +16,7 @@
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
-        android = int((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]),
+        android = atoi((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]),
         document = $document[0];
 
     return {

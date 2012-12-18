@@ -46,7 +46,7 @@ app.controller('LogCtrl', ['$cookieStore', '$scope', function LogCtrl($cookieSto
 
   /**
    * Persistently removes a log from logs.
-   * @param {object} log The log to remove.
+   * @param {Object} log The log to remove.
    */
   $scope.rmLog = function(log) {
     for ( var i = 0; i < logs.length; i++) {

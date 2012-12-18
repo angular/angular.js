@@ -28,13 +28,17 @@ function stripHash(url) {
 }
 
 
+/**
+ * @param {string} url
+ * @param {Object=} obj
+ */
 function matchUrl(url, obj) {
   var match = URL_MATCH.exec(url);
 
   match = {
       protocol: match[1],
       host: match[3],
-      port: int(match[5]) || DEFAULT_PORTS[match[1]] || null,
+      port: atoi(match[5]) || DEFAULT_PORTS[match[1]] || null,
       path: match[6] || '/',
       search: match[8],
       hash: match[10]
@@ -341,7 +345,7 @@ LocationUrl.prototype = {
    *
    * Change search part when called with parameter and return `$location`.
    *
-   * @param {string|object<string,string>=} search New search params - string or hash object
+   * @param {string|Object<string,string>=} search New search params - string or hash object
    * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
    *    single search parameter. If the value is `null`, the parameter will be deleted.
    *
@@ -399,6 +403,9 @@ LocationUrl.prototype = {
 
 LocationHashbangUrl.prototype = inherit(LocationUrl.prototype);
 
+/**
+ * @constructor
+ */
 function LocationHashbangInHtml5Url(url, hashPrefix, appBaseUrl, baseExtra) {
   LocationHashbangUrl.apply(this, arguments);
 

@@ -51,7 +51,7 @@ function fromCharCode(code) {return String.fromCharCode(code);}
 
 var Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
-    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
+    msie              = atoi((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -86,10 +86,10 @@ var Error             = window.Error,
      expect(log).toEqual(['name: misko', 'gender:male']);
    </pre>
  *
- * @param {Object|Array} obj Object to iterate over.
+ * @param {Object|Array|undefined} obj Object to iterate over.
  * @param {Function} iterator Iterator function.
  * @param {Object=} context Object to become context (`this`) for the iterator function.
- * @returns {Object|Array} Reference to `obj`.
+ * @returns {Object|Array|undefined} Reference to `obj`.
  */
 function forEach(obj, iterator, context) {
   var key;
@@ -184,9 +184,9 @@ function nextUid() {
  * to `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst Destination object.
- * @param {...Object} src Source object(s).
+ * @param {...Object} var_args Source object(s).
  */
-function extend(dst) {
+function extend(dst, var_args) {
   forEach(arguments, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
@@ -197,7 +197,7 @@ function extend(dst) {
   return dst;
 }
 
-function int(str) {
+function atoi(str) {
   return parseInt(str, 10);
 }
 
@@ -330,7 +330,7 @@ function isNumber(value){return typeof value == 'number';}
  * @returns {boolean} True if `value` is a `Date`.
  */
 function isDate(value){
-  return toString.apply(value) == '[object Date]';
+  return toString.apply(/** @type {Object} */ (value)) == '[object Date]';
 }
 
 
@@ -346,7 +346,7 @@ function isDate(value){
  * @returns {boolean} True if `value` is an `Array`.
  */
 function isArray(value) {
-  return toString.apply(value) == '[object Array]';
+  return toString.apply(/** @type {Object} */ (value)) == '[object Array]';
 }
 
 
@@ -372,7 +372,7 @@ function isFunction(value){return typeof value == 'function';}
  * @returns {boolean} True if `obj` is a window obj.
  */
 function isWindow(obj) {
-  return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+  return Boolean(obj && obj.document && obj.location && obj.alert && obj.setInterval);
 }
 
 
@@ -403,18 +403,18 @@ function trim(value) {
  * @description
  * Determines if a reference is a DOM element (or wrapped jQuery element).
  *
- * @param {*} value Reference to check.
+ * @param {*} node Reference to check.
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
-  return node &&
+  return Boolean(node &&
     (node.nodeName  // we are a direct element
-    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
+    || (node.bind && node.find)));  // we have a bind and find method part of jQuery API
 }
 
 /**
  * @param str 'key1,key2,...'
- * @returns {object} in the form of {key1:true, key2:true, ...}
+ * @returns {Object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str){
   var obj = {}, items = str.split(","), i;
@@ -530,16 +530,16 @@ function isLeafNode (node) {
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) throw Error("Can't copy Window or Scope");
   if (!destination) {
-    destination = source;
     if (source) {
       if (isArray(source)) {
-        destination = copy(source, []);
+        return copy(source, []);
       } else if (isDate(source)) {
-        destination = new Date(source.getTime());
+        return new Date(source.getTime());
       } else if (isObject(source)) {
-        destination = copy(source, {});
+        return copy(source, {});
       }
     }
+    return source;
   } else {
     if (source === destination) throw Error("Can't copy equivalent objects or arrays");
     if (isArray(source)) {
@@ -653,15 +653,15 @@ function sliceArgs(args, startIndex) {
  *
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
- * `fn`). You can supply optional `args` that are are prebound to the function. This feature is also
+ * `fn`). You can supply optional `var_args` that are are prebound to the function. This feature is also
  * known as [function currying](http://en.wikipedia.org/wiki/Currying).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
- * @param {...*} args Optional arguments to be prebound to the `fn` function call.
+ * @param {...*} var_args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
-function bind(self, fn) {
+function bind(self, fn, var_args) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
     return curryArgs.length
@@ -712,7 +712,7 @@ function toJsonReplacer(key, value) {
  * @returns {string} Jsonified string representing `obj`.
  */
 function toJson(obj, pretty) {
-  return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
+  return window.JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
 }
 
 
@@ -729,7 +729,7 @@ function toJson(obj, pretty) {
  */
 function fromJson(json) {
   return isString(json)
-      ? JSON.parse(json)
+      ? window.JSON.parse(json)
       : json;
 }
 
@@ -767,7 +767,8 @@ function startingTag(element) {
  * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
-  var obj = {}, key_value, key;
+  var obj = {};
+  var key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
@@ -832,7 +833,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp an optional application
+ * @param {angular.Module} bootstrap an optional application
  *   {@link angular.module module} name to load.
  *
  * @description
@@ -908,7 +909,7 @@ function angularInit(element, bootstrap) {
  * See: {@link guide/bootstrap Bootstrap}
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @param {Array.<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
@@ -961,6 +962,9 @@ function bindJQuery() {
 
 /**
  * throw error of the argument is falsy.
+ * @param {*} arg
+ * @param {string=} name
+ * @param {string=} reason
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
@@ -969,7 +973,12 @@ function assertArg(arg, name, reason) {
   return arg;
 }
 
-function assertArgFn(arg, name, acceptArrayAnnotation) {
+/**
+ * @param {*} arg
+ * @param {string} name
+ * @param {boolean=} acceptArrayAnnotation
+ */
+ function assertArgFn(arg, name, acceptArrayAnnotation) {
   if (acceptArrayAnnotation && isArray(arg)) {
       arg = arg[arg.length - 1];
   }

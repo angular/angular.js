@@ -71,14 +71,14 @@
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
- * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
+ * @param {string|Element} element HTML string or Element to be wrapped into jQuery.
  * @returns {Object} jQuery object.
  */
 
-var jqCache = JQLite.cache = {},
-    jqName = JQLite.expando = 'ng-' + new Date().getTime(),
-    jqId = 1,
-    addEventListenerFn = (window.document.addEventListener
+var jqCache = JQLite.cache = {};
+var jqName = JQLite.expando = 'ng-' + new Date().getTime();
+var jqId = 1;
+var addEventListenerFn = (window.document.addEventListener
       ? function(element, type, fn) {element.addEventListener(type, fn, false);}
       : function(element, type, fn) {element.attachEvent('on' + type, fn);}),
     removeEventListenerFn = (window.document.removeEventListener
@@ -112,6 +112,10 @@ function camelCase(name) {
 //
 /////////////////////////////////////////////
 
+/**
+ * @param {string} name
+ * @param {boolean=} dispatchThis
+ */
 function JQLitePatchJQueryRemove(name, dispatchThis) {
   var originalJqFn = jQuery.fn[name];
   originalJqFn = originalJqFn.$original || originalJqFn;
@@ -146,6 +150,10 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
 }
 
 /////////////////////////////////////////////
+
+/**
+ * @constructor
+ */
 function JQLite(element) {
   if (element instanceof JQLite) {
     return element;
@@ -181,6 +189,11 @@ function JQLiteDealoc(element){
   }
 }
 
+/**
+ * @param {Object} element
+ * @param {string=} type
+ * @param {function()=} fn
+ */
 function JQLiteUnbind(element, type, fn) {
   var events = JQLiteExpandoStore(element, 'events'),
       handle = JQLiteExpandoStore(element, 'handle');
@@ -216,6 +229,11 @@ function JQLiteRemoveData(element) {
   }
 }
 
+/**
+ * @param {Object} element
+ * @param {string} key
+ * @param {*=} value
+ */
 function JQLiteExpandoStore(element, key, value) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId || -1];
@@ -299,6 +317,11 @@ function JQLiteController(element, name) {
   return JQLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
 }
 
+/**
+ * @param {Object} element
+ * @param {string} name
+ * @param {*=} value
+ */
 function JQLiteInheritedData(element, name, value) {
   element = jqLite(element);
 
@@ -329,7 +352,7 @@ var JQLitePrototype = JQLite.prototype = {
 
     this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
     // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-    JQLite(window).bind('load', trigger); // fallback to window.onload for others
+    new JQLite(window).bind('load', trigger); // fallback to window.onload for others
   },
   toString: function() {
     var value = [];
