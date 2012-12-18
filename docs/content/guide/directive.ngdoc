@@ -144,9 +144,9 @@ links a specific instance of the {@link api/ng.$rootScope.Scope scope} and the s
 instance of an `li` is performed.
 
 {@link api/ng.directive:ngRepeat ngRepeat} works by preventing the
-compilation process form descending into the `li` element. Instead the {@link
+compilation process from descending into the `li` element. Instead the {@link
 api/ng.directive:ngRepeat ngRepeat} directive compiles `li`
-separately. The result of of the `li` element compilation is a linking function which contains all
+separately. The result of the `li` element compilation is a linking function which contains all
 of the directives contained in the `li` element, ready to be attached to a specific clone of the `li`
 element. At runtime the {@link api/ng.directive:ngRepeat ngRepeat}
 watches the expression and as items are added to the array it clones the `li` element, creates a
@@ -549,9 +549,9 @@ Here is an example of what the template definition for the `dialog` widget may l
 
 This will not render properly, unless we do some scope magic.
 
-The first issue we have to solve is that the dialog box template expect `title` to be defined, but
-the place of instantiation would like to bind to `username`. Furthermore the buttons expect `onOk`
-as well as `onCancel` functions to be present in the scope. This limits the usefulness of the
+The first issue we have to solve is that the dialog box template expects `title` to be defined, but
+the place of instantiation would like to bind to `username`. Furthermore the buttons expect the
+`onOk` and `onCancel` functions to be present in the scope. This limits the usefulness of the
 widget. To solve the mapping issue we use the `locals` to create local variables which the template
 expects as follows:
 
