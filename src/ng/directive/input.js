@@ -643,7 +643,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
   };
 
   ctrl.$formatters.push(function(value) {
-    return value === trueValue;
+    return value === trueValue || String(value) === trueValue;
   });
 
   ctrl.$parsers.push(function(value) {
