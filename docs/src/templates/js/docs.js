@@ -428,18 +428,40 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
   }
-  // bind escape to hash reset callback
   angular.element(window).bind('keydown', function(e) {
     if (e.keyCode === 27) {
+      // bind escape to hash reset callback
       $scope.$apply(function() {
         $scope.subpage = false;
       });
+    } else if (e.keyCode == 40) {
+      changeHighlight(1);
+    } else if (e.keyCode == 38) {
+      changeHighlight(-1);
     }
   });
 
   /**********************************
    Private methods
    ***********************************/
+  function changeHighlight(direction) {
+    if (direction === 1) { 
+      if ($scope.bestMatchIndex < $scope.results.length - 1) {
+        $scope.bestMatchIndex += 1
+        updateHighlight();
+      }
+    } else if (direction === -1) {
+      if ($scope.bestMatchIndex > 0) {
+        $scope.bestMatchIndex -= 1;
+        updateHighlight();
+      }
+    }
+    function updateHighlight() {
+      $scope.$apply(function() {
+        $scope.currentPage = $scope.results[$scope.bestMatchIndex];
+      });
+    }
+  }
 
   function updateSearch() {
     var cache = {},
@@ -455,10 +477,14 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
       if (!(match = rank(page, search))) return;
 
+      $scope.results = [];
+      
       if (match.rank > bestMatch.rank) {
         bestMatch = match;
       }
 
+      var page = match.page;
+      var id = page.id;
       if (page.id == 'index') {
         //skip
       } else if (page.section != 'api') {
@@ -482,9 +508,32 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       } else if (match = id.match(MODULE_MOCK)) {
         module('ngMock').globals.push(page);
       }
-
     });
 
+    for (var i=0; i < modules.length; i++) {
+      var services = [];
+      for (var x=0; x < modules[i].services.length; x++) {
+        var service = modules[i].services[x];
+        if (service.hasOwnProperty('instance')) {
+          services.push(service.instance);
+        } else if (service.hasOwnProperty('provider')) {
+          services.push(service.provider);
+        }
+      }
+      $scope.results = $scope.results.concat(
+          modules[i].directives,
+          modules[i].filters,
+          services,
+          modules[i].types,
+          modules[i].globals)
+    }
+    for (var i=0; i < $scope.results.length; i++) {
+      if (bestMatch.page != null && $scope.results[i] != null) {
+        if ($scope.results[i].id === bestMatch.page.id) {
+          $scope.bestMatchIndex = i;
+        }
+      }
+    }
     $scope.bestMatch = bestMatch;
 
     /*************/
