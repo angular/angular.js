@@ -422,7 +422,7 @@ function createInjector(modulesToLoad) {
           }));
 
 
-  forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
+  loadModules(modulesToLoad);
 
   return instanceInjector;
 
@@ -478,14 +478,14 @@ function createInjector(modulesToLoad) {
   ////////////////////////////////////
   // Module Loading
   ////////////////////////////////////
-  function loadModules(modulesToLoad){
+  function getModuleBlocks(modulesToLoad){
     var runBlocks = [];
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
       if (isString(module)) {
         var moduleFn = angularModule(module);
-        runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
+        runBlocks = runBlocks.concat(getModuleBlocks(moduleFn.requires)).concat(moduleFn._runBlocks);
 
         try {
           for(var invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
@@ -517,6 +517,10 @@ function createInjector(modulesToLoad) {
       }
     });
     return runBlocks;
+  }
+
+  function loadModules(modulesToLoad) {
+    forEach(getModuleBlocks(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
   }
 
   ////////////////////////////////////
@@ -597,7 +601,8 @@ function createInjector(modulesToLoad) {
       invoke: invoke,
       instantiate: instantiate,
       get: getService,
-      annotate: annotate
+      annotate: annotate,
+      load: loadModules
     };
   }
 }
