@@ -8,9 +8,15 @@
  * @description
  * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
  * symbol for current locale is used.
+ * When no fraction size provided, default size is 2.
+ * (When providing custom fraction size, you must provide currency symbol)
+ * Can change the default negative format parentheses '(currency)' to minus sign '-currency'.
+ * (When changing default sign, you must provide currency symbol and fraction size)
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
+ * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the currency to.
+ * @param {(bool)=} [isMinus=false] Format negative numbers with the '-' instead of the default '(currency)'.
  * @returns {string} Formatted number.
  *
  *
@@ -25,30 +31,42 @@
        <div ng-controller="Ctrl">
          <input type="number" ng-model="amount"> <br>
          default currency symbol ($): {{amount | currency}}<br>
-         custom currency identifier (USD$): {{amount | currency:"USD$"}}
+         custom currency identifier (USD$): {{amount | currency:"USD$"}}<br>
+         custom fraction size (0): {{amount | currency:"$":0}}<br>
+         Negative sign (true): {{-amount | currency:"$":2:true}}
        </div>
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function() {
          expect(binding('amount | currency')).toBe('$1,234.56');
          expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
+         expect(binding('amount | currency:"$":0')).toBe('$1,235');
+         expect(binding('-amount | currency:"$":2:true')).toBe('$-1,234.56');
        });
        it('should update', function() {
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+         expect(binding('amount | currency:"$":0')).toBe('($1,234)');
+         expect(binding('amount | currency:"$":2:true')).toBe('$-1,234.00');
        });
      </doc:scenario>
    </doc:example>
  */
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
-    if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
-                replace(/\u00A4/g, currencySymbol);
-  };
+    var formats = $locale.NUMBER_FORMATS;
+    return function(amount, currencySymbol, fractionSize, isMinus){
+        var usePattern = 1;
+        if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
+        if (isUndefined(fractionSize)) fractionSize = 2;
+        if (!isUndefined(isMinus))
+            if (isMinus)
+                usePattern = 2;
+
+        return formatNumber(amount, formats.PATTERNS[usePattern], formats.GROUP_SEP, formats.DECIMAL_SEP, fractionSize).
+            replace(/\u00A4/g, currencySymbol);
+    };
 }
 
 /**
