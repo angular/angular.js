@@ -591,10 +591,10 @@ Therefore the final directive definition looks something like this:
 <pre>
 transclude: true,
 scope: {
-  title: 'bind',          // set up title to accept data-binding
-  onOk: 'expression',     // create a delegate onOk function
-  onCancel: 'expression', // create a delegate onCancel function
-  show: 'accessor'        // create a getter/setter function for visibility.
+    title: '=',             // set up title to accept data-binding
+    onOk: '&',              // create a delegate onOk function
+    onCancel: '&',          // create a delegate onCancel function
+    show: '='
 }
 </pre>
 
