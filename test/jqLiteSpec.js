@@ -1,4 +1,3 @@
-
 describe('jqLite', function() {
   var scope, a, b, c;
 
@@ -1069,6 +1068,14 @@ describe('jqLite', function() {
   describe('next', function() {
     it('should return next sibling', function() {
       var element = jqLite('<div><b>b</b><i>i</i></div>');
+      var b = element.find('b');
+      var i = element.find('i');
+      expect(b.next()).toJqEqual([i]);
+    });
+
+
+    it('should ignore non-element siblings', function() {
+      var element = jqLite('<div><b>b</b>TextNode<!-- comment node --><i>i</i></div>');
       var b = element.find('b');
       var i = element.find('i');
       expect(b.next()).toJqEqual([i]);
