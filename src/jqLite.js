@@ -718,7 +718,7 @@ forEach({
   },
 
   next: function(element) {
-    return element.nextSibling;
+    return element.nextElementSibling;
   },
 
   find: function(element, selector) {
