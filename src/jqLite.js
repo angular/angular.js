@@ -718,7 +718,14 @@ forEach({
   },
 
   next: function(element) {
-    return element.nextElementSibling;
+    if (element.nextElementSibling) {
+      return element.nextElementSibling;
+    }
+    var elm = element.nextSibling;
+    while (elm != null && elm.nodeType !== 1) {
+      elm = elm.nextSibling;
+    }
+    return elm;
   },
 
   find: function(element, selector) {
