@@ -392,7 +392,7 @@ function isBoolean(value) {
 
 
 function trim(value) {
-  return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+  return isString(value) ? value.replace(/^\s+|\s+$/g, '') : value;
 }
 
 /**
