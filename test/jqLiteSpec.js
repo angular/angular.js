@@ -925,8 +925,8 @@ describe('jqLite', function() {
 
 
   describe('children', function() {
-    it('should select non-text children', function() {
-      var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
+    it('should only select element nodes', function() {
+      var root = jqLite('<div><!-- some comment -->before-<div></div>after-<span></span>');
       var div = root.find('div');
       var span = root.find('span');
       expect(root.children()).toJqEqual([div, span]);
@@ -936,10 +936,11 @@ describe('jqLite', function() {
 
   describe('contents', function() {
     it('should select all children nodes', function() {
-      var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
+      var root = jqLite('<div>').html('<!-- some comment -->before-<div></div>after-<span></span>');
       var contents = root.contents();
-      expect(contents.length).toEqual(4);
-      expect(jqLite(contents[0]).text()).toEqual('before-');
+      expect(contents.length).toEqual(5);
+      expect(contents[0].textContent).toEqual(' some comment ');
+      expect(contents[1].textContent).toEqual('before-');
     });
   });
 
