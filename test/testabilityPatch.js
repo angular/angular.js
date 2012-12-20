@@ -78,7 +78,7 @@ function dealoc(obj) {
 
   function cleanup(element) {
     element.unbind().removeData();
-    for ( var i = 0, children = element.children() || []; i < children.length; i++) {
+    for ( var i = 0, children = element.contents() || []; i < children.length; i++) {
       cleanup(jqLite(children[i]));
     }
   }
