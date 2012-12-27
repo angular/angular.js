@@ -744,7 +744,7 @@ angular.mock.dump = function(object) {
    }
 
    // testing controller
-   var $http;
+   var $httpBackend;
 
    beforeEach(inject(function($injector) {
      $httpBackend = $injector.get('$httpBackend');
