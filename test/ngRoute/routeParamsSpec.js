@@ -45,4 +45,37 @@ describe('$routeParams', function() {
       expect($routeParams).toEqual({barId: 'barvalue', fooId: 'foovalue'});
     });
   });
+
+  it('should correctly extract the params when an optional param name is part of the route',  function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/bar/:foo?', {});
+      $routeProvider.when('/baz/:foo?/edit', {});
+      $routeProvider.when('/qux/:bar?/:baz?', {});
+    });
+
+    inject(function($rootScope, $route, $location, $routeParams) {
+      $location.path('/bar');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({});
+
+      $location.path('/bar/fooValue');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({foo: 'fooValue'});
+
+      $location.path('/baz/fooValue/edit');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({foo: 'fooValue'});
+
+      $location.path('/baz/edit');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({});
+
+      $location.path('/qux//bazValue');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({baz: 'bazValue', bar: undefined});
+
+    });
+  });
+
+
 });
