@@ -68,9 +68,9 @@ describe('$route', function() {
         nextRoute;
 
     module(function($routeProvider) {
-      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
           {controller: noop, templateUrl: 'Chapter.html'});
-      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+      $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
@@ -127,9 +127,9 @@ describe('$route', function() {
         nextRoute;
 
     module(function($routeProvider) {
-      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
           {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
-      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+      $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
@@ -241,6 +241,31 @@ describe('$route', function() {
       $location.path('/$test.23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeDefined();
+    }));
+  });
+
+
+  describe('should match a route that contains optional params in the path', function() {
+    beforeEach(module(function($routeProvider) {
+      $routeProvider.when('/test/:opt?/:baz/edit', {templateUrl: 'test.html'});
+    }));
+
+    it('matches a URL with optional params', inject(function($route, $location, $rootScope) {
+      $location.path('/test/optValue/bazValue/edit');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+    }));
+
+    it('matches a URL without optional param', inject(function($route, $location, $rootScope) {
+      $location.path('/test//bazValue/edit');
+      $rootScope.$digest();
+      expect($route.current).toBeDefined();
+    }));
+
+    it('not match a URL with a required param', inject(function($route, $location, $rootScope) {
+      $location.path('///edit');
+      $rootScope.$digest();
+      expect($route.current).not.toBeDefined();
     }));
   });
 
@@ -723,6 +748,8 @@ describe('$route', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+        $routeProvider.when('/baz/:id/:path*', {redirectTo: '/path/:path/:id'});
+        $routeProvider.when('/path/:path*/:id', {templateUrl: 'foo.html'});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -732,6 +759,11 @@ describe('$route', function() {
         expect($location.path()).toEqual('/bar/id1/subid3/23');
         expect($location.search()).toEqual({extraId: 'gah'});
         expect($route.current.templateUrl).toEqual('bar.html');
+
+        $location.path('/baz/1/foovalue/barvalue');
+        $rootScope.$digest();
+        expect($location.path()).toEqual('/path/foovalue/barvalue/1');
+        expect($route.current.templateUrl).toEqual('foo.html');
       });
     });
 
