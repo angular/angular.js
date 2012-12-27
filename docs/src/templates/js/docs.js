@@ -190,7 +190,9 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
     });
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
-
+    postData['tags[]'] = "angularjs";
+    
+    postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
     formPostData('http://plnkr.co/edit/?p=preview', postData);
