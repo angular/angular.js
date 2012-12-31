@@ -208,8 +208,7 @@ function $HttpProvider() {
      *     }).
      *     error(function(data, status, headers, config) {
      *       // called asynchronously if an error occurs
-     *       // or server returns response with status
-     *       // code outside of the <200, 400) range
+     *       // or server returns response with an error status.
      *     });
      * </pre>
      *
@@ -218,6 +217,10 @@ function $HttpProvider() {
      * an object representing the response. See the api signature and type info below for more
      * details.
      *
+     * A response status code that falls in the [200, 300) range is considered a success status and
+     * will result in the success callback being called. Note that if the response is a redirect,
+     * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
+     * called for such responses.
      *
      * # Shortcut methods
      *
