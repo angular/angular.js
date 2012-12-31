@@ -92,7 +92,7 @@ dependency lookup responsibility to the injector by declaring the dependencies a
   // And this controller definition
   function MyController($scope, greeter) {
     $scope.sayHello = function() {
-      greeter('Hello World');
+      greeter.greet('Hello World');
     };
   }
   
