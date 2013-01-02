@@ -13,7 +13,7 @@ in the right order. In order to answer such question it is very important that w
 That is because when we are testing the sort function we don't want to be forced into crating
 related pieces such as the DOM elements, or making any XHR calls in getting the data to sort. While
 this may seem obvious it usually is very difficult to be able to call an individual function on a
-typical project. The reason is that the developers often time mix concerns, and they end up with a
+typical project. The reason is that the developers often mix concerns, and they end up with a
 piece of code which does everything. It reads the data from XHR, it sorts it and then it
 manipulates the DOM. With angular we try to make it easy for you to do the right thing, and so we
 provide dependency injection for your XHR (which you can mock out) and we created abstraction which
@@ -173,7 +173,7 @@ for your application is mixed in with DOM manipulation, it will be hard to test 
 below:
 
 <pre>
-function PasswordController() {
+function PasswordCtrl() {
   // get references to DOM elements
   var msg = $('.ex1 span');
   var input = $('.ex1 input');
@@ -207,7 +207,7 @@ $('body').html('<div class="ex1">')
   .find('div')
     .append(input)
     .append(span);
-var pc = new PasswordController();
+var pc = new PasswordCtrl();
 input.val('abc');
 pc.grade();
 expect(span.text()).toEqual('weak');
@@ -218,7 +218,7 @@ In angular the controllers are strictly separated from the DOM manipulation logi
 a much easier testability story as can be seen in this example:
 
 <pre>
-function PasswordCntrl($scope) {
+function PasswordCtrl($scope) {
   $scope.password = '';
   $scope.grade = function() {
     var size = $scope.password.length;
@@ -236,7 +236,7 @@ function PasswordCntrl($scope) {
 and the tests is straight forward
 
 <pre>
-var pc = new PasswordController();
+var pc = new PasswordCtrl();
 pc.password('abc');
 pc.grade();
 expect(span.strength).toEqual('weak');
