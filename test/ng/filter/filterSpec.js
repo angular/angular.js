@@ -66,4 +66,42 @@ describe('Filter: filter', function() {
     expect(filter(items, '!isk').length).toBe(1);
     expect(filter(items, '!isk')[0]).toEqual(items[1]);
   });
+
+  it('should support strict parameter', function() {
+    var items = ['misko', 'adam', 'adamson'];
+    var expr = 'adam';
+    expect(filter(items, expr, true)).toEqual([items[1]]);
+    expect(filter(items, expr, false)).toEqual([items[1], items[2]]);
+
+    var items = [
+      {key: 'value1', nonkey: 1},
+      {key: 'value2', nonkey: 2},
+      {key: 'value12', nonkey: 3},
+      {key: 'value1', nonkey:4},
+      {key: 'Value1', nonkey:5}
+    ];
+    var expr = {key: 'value1'};
+    expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
+    expect(filter(items, expr, false)).toEqual([items[0], items[2], items[3], items[4]]);
+
+    var items = [
+      {key: 1, nonkey: 1},
+      {key: 2, nonkey: 2},
+      {key: 12, nonkey: 3},
+      {key: 1, nonkey:4}
+    ];
+    var expr = { key: 1 };
+    expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
+    expect(filter(items, expr, false)).toEqual([items[0], items[2], items[3]]);
+
+    var items = [
+      {key: {subkey: 1}, nonkey: 1},
+      {key: {subkey: 2}, nonkey: 2},
+      {key: {subkey: 12}, nonkey: 3},
+      {key: {subkey: 1}, nonkey:4}
+    ];
+    var expr = {key: {subkey: 1}};
+    expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
+    expect(filter(items, expr, false)).toEqual([]);
+  });
 });
