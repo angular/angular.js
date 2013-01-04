@@ -99,6 +99,30 @@ AJAX Apps}".
 
 The MIT License.
 
+### Can I download and use the Angular logo artwork?
+
+Yes! You can find design files in our github repository, under "{@link https://github.com/angular/angular.js/tree/master/images/logo 
+angular.js/images/logo}"
+The logo design is licensed under a "{@link http://creativecommons.org/licenses/by-sa/3.0/ 
+Creative Commons Attribution-ShareAlike 3.0 Unported License}". If you have some other use in mind, contact us.
+
+### How can I get some AngularJS schwag?
+
+We often bring a few t-shirts and stickers to events where we're presenting. If you want to order your own, the folks who
+make our schwag will be happy to do a custom run for you, based on our existing template. By using the design they have on file, you
+they'll waive the setup costs, and you can order any quantity you need.
+
+**Stickers**
+Contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping. 
+
+As long as the design stays exactly the same, {@link http://www.stickergiant.com StickerGiant} will give you a reorder discount.
+
+**T-shirts**
+Contact sales at {@link http://www.customink.com www.customink.com} and tell them you want some shirts with design name "angularjs",
+just like past order #2106371. You'll have to give them your own info for billing and shipping.
+
+As long as the design stays exactly the same, CustomInk won't charge for any set up fees, and they'll give you a reorder discount.
 
 ## Common Pitfalls
 
