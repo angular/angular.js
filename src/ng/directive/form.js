@@ -119,6 +119,19 @@ function FormController(element, attrs) {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setDirty
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form as dirty. This will remove the 'ng-pristine' class and add 'ng-dirty' to
+   * the form element. This  change will be propagated to all parent forms.
+   *
+   * Changes to an ng-model control within a form (e.g. {@link ng.directive:input input})
+   * automatically invoke this as part of
+   * {@link ng.directive:ngModel.NgModelController#$setViewValue $setViewValue()}.
+   */
   form.$setDirty = function() {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
