@@ -32,7 +32,8 @@
  *     called for each element of `array`. The final result is an array of those elements that
  *     the predicate returned true for.
  *
- * @param {boolean} strict Use strict comparison
+ * @param {boolean} strict When the expression is a string or object, use strict
+ *   comparison if true. Strict is ignored if expression is a function.
  *
  * @example
    <doc:example>
