@@ -20,7 +20,20 @@ module.exports = function(grunt) {
     connect: {
       devserver: {
         options: {
-          keepalive: true
+          port: 8000,
+          hostname: 'localhost',
+          base: '.',
+          keepalive: true,
+          middleware: function(connect, options){
+            return [
+              //uncomment to enable CSP
+              // util.csp(),
+              util.rewrite(),
+              connect.favicon('images/favicon.ico'),
+              connect.static(options.base),
+              connect.directory(options.base)
+            ];
+          }
         }
       },
       testserver: {}
