@@ -204,8 +204,18 @@ namespace :test do
 
 
   desc 'Run e2e test suite (single run)'
-  task :e2e, :browsers, :misc_options do |t, args|
+  task :e2e, [:browsers, :misc_options] => 'e2e:server' do |t, args|
     start_testacular('testacular-e2e.conf.js', true, args[:browsers], args[:misc_options])
+  end
+
+  namespace :e2e do
+    desc 'Check for & launch a webserver'
+    task 'server' do
+      testacular_proxy_port_number = 8000
+      unless server?(testacular_proxy_port_number)
+        system "node lib/nodeserver/server.js #{testacular_proxy_port_number} &"
+      end
+    end
   end
 end
 
@@ -334,4 +344,13 @@ def start_testacular(config, singleRun, browsers, misc_options)
                 "#{'--single-run=true' if singleRun} " +
                 "#{'--browsers=' + browsers.gsub('+', ',') if browsers} " +
                 "#{(misc_options || '').gsub('+', ',')}"
+end
+
+def server?(port)
+  require 'socket'
+  s = TCPSocket.open('localhost', port)
+  rescue => e
+    return nil
+  ensure
+    s && s.close
 end
