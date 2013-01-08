@@ -211,7 +211,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 <pre>
 it('should show example', inject(
   function($locationProvider) {
-    $locationProvider.html5mode = false;
+    $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix = '!';
   },
   function($location) {
@@ -260,7 +260,7 @@ having to worry about whether the browser displaying your app supports the histo
 <pre>
 it('should show example', inject(
   function($locationProvider) {
-    $locationProvider.html5mode = true;
+    $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix = '!';
   },
   function($location) {
