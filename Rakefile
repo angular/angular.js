@@ -204,7 +204,7 @@ namespace :test do
 
 
   desc 'Run e2e test suite (single run)'
-  task :e2e, [:browsers, :misc_options] => 'e2e:server' do |t, args|
+  task :e2e, [:browsers, :misc_options] => ['docs', 'e2e:server'] do |t, args|
     start_testacular('testacular-e2e.conf.js', true, args[:browsers], args[:misc_options])
   end
 
