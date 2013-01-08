@@ -99,6 +99,19 @@ describe('Scope', function() {
       expect(spy).wasCalled();
     }));
 
+    it('should watch and evaluate a listener expression', inject(function($rootScope) {
+      var spy = $rootScope.spy = jasmine.createSpy();
+      $rootScope.$watch('name', 'spy($newVal, $oldVal)');
+      $rootScope.$digest();
+      spy.reset();
+
+      expect(spy).not.wasCalled();
+      $rootScope.$digest();
+      expect(spy).not.wasCalled();
+      $rootScope.name = 'misko';
+      $rootScope.$digest();
+      expect(spy).wasCalledWith('misko', undefined);
+    }));
 
     it('should delegate exceptions', function() {
       module(function($exceptionHandlerProvider) {
