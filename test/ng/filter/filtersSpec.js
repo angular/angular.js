@@ -253,32 +253,37 @@ describe('filters', function() {
     });
 
 
-    it('should support various iso8061 date strings as input', function() {
-      var format = 'yyyy-MM ss';
+    it('should support various iso8061 date strings with timezone as input', function() {
+      var format = 'yyyy-MM-dd ss';
 
       //full ISO8061
-      expect(date('2003-09-10T13:02:03.000Z', format)).toEqual('2003-09 03');
+      expect(date('2003-09-10T13:02:03.000Z', format)).toEqual('2003-09-10 03');
 
-      expect(date('2003-09-10T13:02:03.000+00:00', format)).toEqual('2003-09 03');
+      expect(date('2003-09-10T13:02:03.000+00:00', format)).toEqual('2003-09-10 03');
 
-      expect(date('2003-09-10T13:02:03-08:00', format)).toEqual('2003-09 03');
-
-      expect(date('20030910T033203-0930', format)).toEqual('2003-09 03');
-
-      //no timezone
-      expect(date('2003-09-10T13:02:03.000', format)).toEqual('2003-09 03');
+      expect(date('20030910T033203-0930', format)).toEqual('2003-09-10 03');
 
       //no millis
-      expect(date('2003-09-10T13:02:03Z', format)).toEqual('2003-09 03');
+      expect(date('2003-09-10T13:02:03Z', format)).toEqual('2003-09-10 03');
 
       //no seconds
-      expect(date('2003-09-10T13:02Z', format)).toEqual('2003-09 00');
+      expect(date('2003-09-10T13:02Z', format)).toEqual('2003-09-10 00');
 
       //no minutes
-      expect(date('2003-09-10T13Z', format)).toEqual('2003-09 00');
+      expect(date('2003-09-10T13Z', format)).toEqual('2003-09-10 00');
+    });
+
+
+    it('should parse iso8061 date strings without timezone as local time', function() {
+      var format = 'yyyy-MM-dd HH-mm-ss';
+
+      //full ISO8061 without timezone
+      expect(date('2003-09-10T03:02:04.000', format)).toEqual('2003-09-10 03-02-04');
+
+      expect(date('20030910T030204', format)).toEqual('2003-09-10 03-02-04');
 
       //no time
-      expect(date('2003-09-10', format)).toEqual('2003-09 00');
+      expect(date('2003-09-10', format)).toEqual('2003-09-10 00-00-00');
     });
 
     it('should support different degrees of subsecond precision', function () {
