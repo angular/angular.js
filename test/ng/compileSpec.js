@@ -295,7 +295,7 @@ describe('$compile', function() {
           }));
         });
         inject(function($compile, $rootScope) {
-          element = jqLite('<div><div remove-node></div><div>{{test}}</div>');
+          element = jqLite('<div><div remove-node></div><div>{{test}}</div></div>');
           $rootScope.test = 'Hello';
           $compile(element)($rootScope);
           $rootScope.$digest();
