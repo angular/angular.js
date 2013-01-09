@@ -32,7 +32,7 @@ templating systems.
 
 ### Do I need to worry about security holes in AngularJS?
 
-Like with any technology, AngularJS is not impervious to attack. Angular does, however, provide
+Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
 built-in protection from basic security holes including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
@@ -90,9 +90,8 @@ framework, provides mocks for many heavy dependencies (server-side communication
 
 ### How can I learn more about Angular?
 
-Watch the July 28, 2010 talk
-"{@link http://www.youtube.com/watch?v=elvcgVSynRg| Angular: A Radically Different Way of Building
-AJAX Apps}".
+Watch the July 17, 2012 talk
+"{@link http://www.youtube.com/watch?v=1CpiB3Wk25U AngularJS Intro + Dependency Injection}".
 
 
 ### How is Angular licensed?
@@ -109,7 +108,7 @@ Creative Commons Attribution-ShareAlike 3.0 Unported License}". If you have some
 ### How can I get some AngularJS schwag?
 
 We often bring a few t-shirts and stickers to events where we're presenting. If you want to order your own, the folks who
-make our schwag will be happy to do a custom run for you, based on our existing template. By using the design they have on file, you
+make our schwag will be happy to do a custom run for you, based on our existing template. By using the design they have on file,
 they'll waive the setup costs, and you can order any quantity you need.
 
 **Stickers**
