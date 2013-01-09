@@ -630,6 +630,9 @@ function $RootScopeProvider(){
        *   - `name` - `{string}`: Name of the event.
        *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel further event
        *     propagation (available only for events that were `$emit`-ed).
+       *   - `stopDescent` - `{function=}`: calling `stopDescent` function will cancel further event
+       *     propagation to listeners on scope and children scope. events will continue to propogate to
+       *     sibling scopes and their children (available only for events that were `$broadcast`-ed). 
        *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag to true.
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
        */
@@ -738,9 +741,11 @@ function $RootScopeProvider(){
         var target = this,
             current = target,
             next = target,
+            stopDescent = false,
             event = {
               name: name,
               targetScope: target,
+              stopDescent: function() {stopDescent = true;},
               preventDefault: function() {
                 event.defaultPrevented = true;
               },
@@ -751,6 +756,7 @@ function $RootScopeProvider(){
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         do {
+          stopDescent = false;
           current = next;
           event.currentScope = current;
           listeners = current.$$listeners[name] || [];
@@ -765,6 +771,7 @@ function $RootScopeProvider(){
 
             try {
               listeners[i].apply(null, listenerArgs);
+              if (stopDescent) break;
             } catch(e) {
               $exceptionHandler(e);
             }
@@ -773,7 +780,7 @@ function $RootScopeProvider(){
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
           // this piece should be kept in sync with the traversal in $digest
-          if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+          if (!(next = ( ( !stopDescent && current.$$childHead) || (current !== target && current.$$nextSibling)))) {
             while(current !== target && !(next = current.$$nextSibling)) {
               current = current.$parent;
             }

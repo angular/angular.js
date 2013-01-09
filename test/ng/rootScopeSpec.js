@@ -907,6 +907,24 @@ describe('Scope', function() {
           expect(result.name).toBe('some');
           expect(result.targetScope).toBe(child1);
         });
+
+        it('should allow stopping event descent from root scope', inject(function($rootScope) {
+          child2.$on('myEvent', function(event) { event.stopDescent(); });
+          $rootScope.$broadcast('myEvent');
+          expect(log).toEqual('0>1>11>2>3>');
+        }));
+
+        it('should allow stopping event descent from child scope', function() {
+          grandChild21.$on('myEvent', function(event) { event.stopDescent(); });
+          child2.$broadcast('myEvent');
+          expect(log).toEqual('2>21>22>23>');
+        });
+
+        it('should not stop descent on sibling scopes', inject(function($rootScope) {
+          child1.$on('myEvent', function(event) { event.stopDescent(); });
+          $rootScope.$broadcast('myEvent');
+          expect(log).toEqual('0>1>2>21>211>22>23>3>');
+        }));
       });
 
 
