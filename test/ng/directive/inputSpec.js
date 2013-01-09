@@ -378,11 +378,21 @@ describe('input', function() {
   });
 
 
-  it('should update the model on "blur" event', function() {
+  it('should update the model on input event', function() {
     compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
     changeInputValueTo('adam');
     expect(scope.name).toEqual('adam');
+  });
+
+
+  it('should not update the model until blur event when ng-update-on="blur" set on input element', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" ng-update-on="blur" />');
+
+    changeInputValueTo('pat');
+    expect(scope.name).toEqual(undefined);
+    browserTrigger(inputElm, 'blur');
+    expect(scope.name).toEqual('pat');
   });
 
 
