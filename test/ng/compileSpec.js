@@ -2241,5 +2241,15 @@ describe('$compile', function() {
         expect(nodeName_(comment)).toBe('#comment');
       });
     });
+
+
+    it('should safely create transclude comment node and not break with "-->"',
+        inject(function($rootScope) {
+      // see: https://github.com/angular/angular.js/issues/1740
+      element = $compile('<ul><li ng-repeat="item in [\'-->\', \'x\']">{{item}}|</li></ul>')($rootScope);
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('-->|x|');
+    }));
   });
 });
