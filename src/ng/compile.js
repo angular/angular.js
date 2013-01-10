@@ -367,68 +367,68 @@ function $CompileProvider($provide) {
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
-     var linkFns = [],
-         nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
+      var linkFns = [],
+          nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
 
-     for(var i = 0; i < nodeList.length; i++) {
-       attrs = new Attributes();
+      for(var i = 0; i < nodeList.length; i++) {
+        attrs = new Attributes();
 
-       // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
-       directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
+        // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
+        directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
 
-       nodeLinkFn = (directives.length)
-           ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
-           : null;
+        nodeLinkFn = (directives.length)
+            ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
+            : null;
 
-       childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes.length)
-           ? null
-           : compileNodes(nodeList[i].childNodes,
-                nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
+        childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes.length)
+            ? null
+            : compileNodes(nodeList[i].childNodes,
+                 nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
 
-       linkFns.push(nodeLinkFn);
-       linkFns.push(childLinkFn);
-       linkFnFound = (linkFnFound || nodeLinkFn || childLinkFn);
-     }
+        linkFns.push(nodeLinkFn);
+        linkFns.push(childLinkFn);
+        linkFnFound = (linkFnFound || nodeLinkFn || childLinkFn);
+      }
 
-     // return a linking function if we have found anything, null otherwise
-     return linkFnFound ? compositeLinkFn : null;
+      // return a linking function if we have found anything, null otherwise
+      return linkFnFound ? compositeLinkFn : null;
 
-     function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
-       var nodeLinkFn, childLinkFn, node, childScope, childTranscludeFn;
+      function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
+        var nodeLinkFn, childLinkFn, node, childScope, childTranscludeFn;
 
-       for(var i = 0, n = 0, ii = linkFns.length; i < ii; n++) {
-         node = nodeList[n];
-         nodeLinkFn = linkFns[i++];
-         childLinkFn = linkFns[i++];
+        for(var i = 0, n = 0, ii = linkFns.length; i < ii; n++) {
+          node = nodeList[n];
+          nodeLinkFn = linkFns[i++];
+          childLinkFn = linkFns[i++];
 
-         if (nodeLinkFn) {
-           if (nodeLinkFn.scope) {
-             childScope = scope.$new(isObject(nodeLinkFn.scope));
-             jqLite(node).data('$scope', childScope);
-           } else {
-             childScope = scope;
-           }
-           childTranscludeFn = nodeLinkFn.transclude;
-           if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
-             nodeLinkFn(childLinkFn, childScope, node, $rootElement,
-                 (function(transcludeFn) {
-                   return function(cloneFn) {
-                     var transcludeScope = scope.$new();
+          if (nodeLinkFn) {
+            if (nodeLinkFn.scope) {
+              childScope = scope.$new(isObject(nodeLinkFn.scope));
+              jqLite(node).data('$scope', childScope);
+            } else {
+              childScope = scope;
+            }
+            childTranscludeFn = nodeLinkFn.transclude;
+            if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
+              nodeLinkFn(childLinkFn, childScope, node, $rootElement,
+                  (function(transcludeFn) {
+                    return function(cloneFn) {
+                      var transcludeScope = scope.$new();
 
-                     return transcludeFn(transcludeScope, cloneFn).
-                         bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
+                      return transcludeFn(transcludeScope, cloneFn).
+                          bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
                     };
                   })(childTranscludeFn || transcludeFn)
-             );
-           } else {
-             nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
-           }
-         } else if (childLinkFn) {
-           childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
-         }
-       }
-     }
-   }
+              );
+            } else {
+              nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
+            }
+          } else if (childLinkFn) {
+            childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
+          }
+        }
+      }
+    }
 
 
     /**
