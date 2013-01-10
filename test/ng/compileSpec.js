@@ -285,6 +285,24 @@ describe('$compile', function() {
           expect(log).toEqual('LOG; LOG');
         });
       });
+
+      it('should allow modifying the DOM structure in post link', function() {
+        module(function() {
+          directive('removeNode', valueFn({
+            link: function($scope, $element, $attrs) {
+              $element.remove();
+            }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = jqLite('<div><div remove-node></div><div>{{test}}</div></div>');
+          $rootScope.test = 'Hello';
+          $compile(element)($rootScope);
+          $rootScope.$digest();
+          expect(element.children().length).toBe(1);
+          expect(element.text()).toBe('Hello');
+        });
+      })
     });
 
     describe('compiler control', function() {
