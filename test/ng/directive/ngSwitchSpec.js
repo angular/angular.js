@@ -90,4 +90,19 @@ describe('ngSwitch', function() {
     expect(child2).toBeDefined();
     expect(child2).not.toBe(child1);
   }));
+
+
+  it('should not leak jq data when compiled but not attached to parent when parent is destroyed',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-repeat="i in []">' +
+        '<ng-switch on="url">' +
+          '<div ng-switch-when="a">{{name}}</div>' +
+        '</ng-switch>' +
+      '</div>')($rootScope);
+    $rootScope.$apply();
+
+    // element now contains only empty repeater. this element is dealocated by local afterEach.
+    // afterwards a global afterEach will check for leaks in jq data cache object
+  }));
 });
