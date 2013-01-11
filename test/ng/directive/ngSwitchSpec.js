@@ -90,4 +90,16 @@ describe('ngSwitch', function() {
     expect(child2).toBeDefined();
     expect(child2).not.toBe(child1);
   }));
+
+
+  it('should not leak when comiled node is not attached to DOM but cloned',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-repeat="i in []">' +
+        '<ng-switch on="url">' +
+          '<div ng-switch-when="a">{{name}}</div>' +
+        '</ng-switch>' +
+      '</div>')($rootScope);
+    $rootScope.$apply();
+  }));
 });
