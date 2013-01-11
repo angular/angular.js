@@ -293,6 +293,21 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should calculate $first, $middle and $last when we filter out properties from an obj', function() {
+    element = $compile(
+        '<ul>' +
+            '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
+            '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
+    scope.$digest();
+    expect(element.text()).
+        toEqual('doug:d:true-false-false|' +
+        'frodo:f:false-true-false|' +
+        'misko:m:false-true-false|' +
+        'shyam:s:false-false-true|');
+  });
+
+
   it('should ignore $ and $$ properties', function() {
     element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')(scope);
     scope.items = ['a', 'b', 'c'];
