@@ -528,6 +528,7 @@ dialog component may work.
             on-ok="show = false; doSomething()">
        Body goes here: {{username}} is {{title}}.
     </dialog>
+  </div>
 </pre>
 
 Clicking on the "show" button will open the dialog. The dialog will have a title, which is
@@ -537,7 +538,7 @@ into the dialog.
 Here is an example of what the template definition for the `dialog` widget may look like.
 
 <pre>
-  <div ng-show="show">
+  <div ng-show="visible">
     <h3>{{title}}</h3>
     <div class="body" ng-transclude></div>
     <div class="footer">
@@ -557,10 +558,10 @@ expects as follows:
 
 <pre>
   scope: {
-    title: '=',             // set up title to accept data-binding
+    title: '@',             // the title uses the data-binding from the parent scope
     onOk: '&',              // create a delegate onOk function
     onCancel: '&',          // create a delegate onCancel function
-    show: '='
+    visible: '='            // set up visible to accept data-binding
   }
 </pre>
 
@@ -591,11 +592,13 @@ Therefore the final directive definition looks something like this:
 <pre>
 transclude: true,
 scope: {
-    title: '=',             // set up title to accept data-binding
+    title: '@',             // the title uses the data-binding from the parent scope
     onOk: '&',              // create a delegate onOk function
     onCancel: '&',          // create a delegate onCancel function
-    show: '='
-}
+    visible: '='            // set up visible to accept data-binding
+},
+restrict: 'E',
+replace: true
 </pre>
 
 # Creating Components
