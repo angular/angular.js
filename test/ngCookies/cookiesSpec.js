@@ -126,3 +126,36 @@ describe('$cookieStore', function() {
     expect($browser.cookies()).toEqual({});
   }));
 });
+
+
+describe('ngCookie', function() {
+  var element;
+
+
+  beforeEach(module('ngCookies'));
+
+
+  it('should set initial model from cookie', inject(function($rootScope, $compile, $browser) {
+    $browser.cookieHash['name'] = '"foo"';
+    $browser.poll();
+    element = $compile('<input ng-model="name" ng-cookie="name">')($rootScope);
+    $rootScope.$digest();
+    expect($rootScope.name).toEqual('foo');
+  }));
+
+
+  it('should set cookie when model is set', inject(function($rootScope, $compile, $browser) {
+    element = $compile('<input ng-model="name" ng-cookie="name">')($rootScope);
+    $rootScope.name = 'foo';
+    $rootScope.$digest();
+    expect($browser.cookies()).toEqual({'name': '"foo"'});
+  }));
+
+
+  it('should remove cookie when model is empty', inject(function($rootScope, $compile, $browser) {
+    element = $compile('<input ng-model="name" ng-cookie="name">')($rootScope);
+    delete $rootScope.name;
+    $rootScope.$digest();
+    expect($browser.cookies()).toEqual({});
+  }));
+});

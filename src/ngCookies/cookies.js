@@ -160,4 +160,28 @@ angular.module('ngCookies', ['ng']).
         }
       };
 
+    }]).
+
+
+  /**
+   * @ngdoc directive
+   * @name ngCookies.directive:ngCookie
+   *
+   * @description
+   * Syncs a model to a cookie.
+   *
+   * @element ANY
+   *
+   * @example
+   */
+   directive('ngCookie', ['$cookieStore', function($cookieStore) {
+
+      return function(scope, element, attr) {
+        scope[attr.ngModel] = $cookieStore.get(attr.ngCookie);
+
+        scope.$watch(attr.ngModel, function(value) {
+          $cookieStore.put(attr.ngCookie, value);
+        });
+      };
+
     }]);
