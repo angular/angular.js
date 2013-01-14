@@ -10,7 +10,7 @@ angular which makes testing your angular applications easy. So there is no excus
 Unit testing as the name implies is about testing individual units of code. Unit tests try to
 answer the question: Did I think about the logic correctly. Does the sort function order the list
 in the right order. In order to answer such question it is very important that we can isolate it.
-That is because when we are testing the sort function we don't want to be forced into crating
+That is because when we are testing the sort function we don't want to be forced into creating
 related pieces such as the DOM elements, or making any XHR calls in getting the data to sort. While
 this may seem obvious it usually is very difficult to be able to call an individual function on a
 typical project. The reason is that the developers often mix concerns, and they end up with a
@@ -23,17 +23,17 @@ apply the function, and assert that the resulting model is in the correct order.
 have to wait for XHR, or create the right kind of DOM, or assert that your function has mutated the
 DOM in the right way. Angular is written with testability in mind, but it still requires that you
 do the right thing. We tried to make the right thing easy, but angular is not magic, which means if
-you don't follow these, you may very well end up with an untestable application.
+you don't follow these rules, you may very well end up with an untestable application.
 
 ## Dependency Inject
 There are several ways in which you can get a hold of a dependency:
 1. You could create it using the `new` operator.
-2. You could look for it in a well know place, also known as global singleton.
+2. You could look for it in a well known place, also known as global singleton.
 3. You could ask a registry (also known as service registry) for it. (But how do you get a hold of
-the registry? Must likely by looking it up in a well know place. See #2)
+the registry? Most likely by looking it up in a well know place. See #2)
 4. You could expect that the it be handed to you.
 
-Out of the list above only the last of is testable. Lets look at why:
+Out of the list above only the last one is testable. Lets look at why:
 
 ### Using the `new` operator
 
@@ -119,7 +119,7 @@ function MyClass() {
 }
 </pre>
 
-However, where dose the serviceRegistry come from? if it is:
+However, where does the serviceRegistry come from? if it is:
 * `new`-ed up, the the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
@@ -239,7 +239,7 @@ and the tests is straight forward
 var pc = new PasswordCtrl();
 pc.password('abc');
 pc.grade();
-expect(span.strength).toEqual('weak');
+expect(pc.strength).toEqual('weak');
 </pre>
 
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
