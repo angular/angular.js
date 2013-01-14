@@ -145,6 +145,7 @@ var ngRepeatDirective = ngDirective({
           }
 
           childScope[valueIdent] = value;
+          childScope.$currentItem = value;
           if (keyIdent) childScope[keyIdent] = key;
           childScope.$index = index;
 
