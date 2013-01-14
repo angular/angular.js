@@ -21,12 +21,12 @@ to retrieve Buzz activity and comments.
       { get:     {method: 'JSONP', params: {visibility: '@self'}},
         replies: {method: 'JSONP', params: {visibility: '@self', comments: '@comments'}}
       });
-    }
-    BuzzController.prototype = {
-     fetch: function() {
+
+     $scope.fetch = function() {
       $scope.activities = $scope.Activity.get({userId:this.userId});
-     },
-     expandReplies: function(activity) {
+     }
+
+     $scope.expandReplies = function(activity) {
       activity.replies = $scope.Activity.replies({userId: this.userId, activityId: activity.id});
      }
     };
