@@ -196,14 +196,13 @@ Controllers are classes which are responsible for application behavior. The reco
 declaring controllers is:
 
 <pre>
-  var MyController = function(dep1, dep2) {
+  var MyController = function($scope, dep1, dep2) {
     ...
+    $scope.aMethod = function() {
+      ...
+    }
   }
-  MyController.$inject = ['dep1', 'dep2'];
-  
-  MyController.prototype.aMethod = function() {
-    ...
-  }
+  MyController.$inject = ['$scope', 'dep1', 'dep2'];
 </pre>
 
 
