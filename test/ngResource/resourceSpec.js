@@ -393,6 +393,45 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(person.name).toEqual('misko');
   });
+  
+  
+  describe('cache', function() {
+      var cache, callback;
+
+      beforeEach(function() {
+        callback = jasmine.createSpy('done');
+      });
+
+      beforeEach(inject(function($cacheFactory) {
+        cache = $cacheFactory('testCache');
+      }));
+      
+      function doFirstCacheRequest() {
+        var Person = $resource('/Person/:id', {}, {
+          get: {method: 'GET', cache: cache}
+        });
+        
+        $httpBackend.expect('GET', '/Person/123').respond('\n{\n"name":\n"misko"\n}\n');
+        var person = Person.get({id:123}, callback);
+        $httpBackend.flush();
+        expect(person.name).toEqual('misko');
+      }
+      
+      it('should cache GET request when cache is provided', inject(function($rootScope) {
+        doFirstCacheRequest();
+        
+        $httpBackend.expect('GET', '/Person/123').respond('\n{\n"name":\n"misko"\n}\n');
+        
+        var Person = $resource('/Person/:id', {}, {
+          query: {method: 'GET', cache: cache}
+        });
+        var person = Person.get({id:123}, callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0].name).toBe('misko');
+      }));      
+  });
 
 
   describe('failure mode', function() {
