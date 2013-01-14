@@ -42,10 +42,10 @@ There are several ways in which you can get a hold of a dependency:
 1. You could create it using the `new` operator.
 2. You could look for it in a well known place, also known as global singleton.
 3. You could ask a registry (also known as service registry) for it. (But how do you get a hold of
-the registry? Must likely by looking it up in a well known place. See #2)
+the registry? Most likely by looking it up in a well known place. See #2)
 4. You could expect that it be handed to you.
 
-Out of the list above only the last option is testable. Let's look at why:
+Out of the four options in the list above, only the last one is testable. Let's look at why:
 
 ### Using the `new` operator
 
@@ -131,7 +131,7 @@ function MyClass() {
 }
 </pre>
 
-However, where dose the serviceRegistry come from? if it is:
+However, where does the serviceRegistry come from? if it is:
 * `new`-ed up, the the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
@@ -251,7 +251,7 @@ and the test is straight forward
 var pc = new PasswordCtrl();
 pc.password('abc');
 pc.grade();
-expect(span.strength).toEqual('weak');
+expect(pc.strength).toEqual('weak');
 </pre>
 
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
