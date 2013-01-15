@@ -274,7 +274,6 @@ def closure_compile(filename)
 
   %x(java \
         -client \
-        -d32 \
         -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
