@@ -115,6 +115,12 @@ end
 desc 'Generate version.txt file'
 task :version => [:init] do
   `echo #{NG_VERSION.full} > #{path_to('version.txt')}`
+  `echo '{
+  "full": "#{NG_VERSION.full}",
+  "major": "#{NG_VERSION.major}",
+  "minor": "#{NG_VERSION.minor}",
+  "dot": "#{NG_VERSION.dot}",
+  "codename": "#{NG_VERSION.codename}" }' > #{path_to('version.json')}`
 end
 
 
