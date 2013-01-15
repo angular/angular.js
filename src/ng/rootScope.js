@@ -91,7 +91,7 @@ function $RootScopeProvider(){
            expect(scope.greeting).toEqual(undefined);
 
            scope.$watch('name', function() {
-             this.greeting = this.salutation + ' ' + this.name + '!';
+             scope.greeting = scope.salutation + ' ' + scope.name + '!';
            }); // initialize the watch
 
            expect(scope.greeting).toEqual(undefined);
@@ -252,7 +252,7 @@ function $RootScopeProvider(){
            scope.counter = 0;
 
            expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(newValue, oldValue) { counter = counter + 1; });
+           scope.$watch('name', function(newValue, oldValue) { scope.counter = scope.counter + 1; });
            expect(scope.counter).toEqual(0);
 
            scope.$digest();
@@ -345,7 +345,7 @@ function $RootScopeProvider(){
 
            expect(scope.counter).toEqual(0);
            scope.$watch('name', function(newValue, oldValue) {
-             counter = counter + 1;
+             scope.counter = scope.counter + 1;
            });
            expect(scope.counter).toEqual(0);
 
