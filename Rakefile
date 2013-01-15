@@ -16,7 +16,11 @@ files = eval(content.gsub(/\};(\s|\S)*/, '}').
 
 BUILD_DIR = 'build'
 
-task :default => [:package]
+task :default => [:testJava]
+
+task :testJava do
+  %x(java -version)
+end
 
 
 desc 'Init the build workspace'
@@ -273,6 +277,8 @@ def closure_compile(filename)
   min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
 
   %x(java \
+        -client \
+        -d32 \
         -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
