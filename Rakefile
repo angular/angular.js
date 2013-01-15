@@ -16,7 +16,7 @@ files = eval(content.gsub(/\};(\s|\S)*/, '}').
 
 BUILD_DIR = 'build'
 
-task :default => [:testJava]
+task :default => [:package]
 
 task :testJava do
   %x(java -version)
