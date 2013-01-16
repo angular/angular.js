@@ -69,14 +69,13 @@ directive.tabbable = function() {
         var $viewValue = this.$viewValue;
 
         if (selectedTab ? (selectedTab.value != $viewValue) : $viewValue) {
-          if(selectedTab) {
-            selectedTab.paneElement.removeClass('active');
-            selectedTab.tabElement.removeClass('active');
-            selectedTab = null;
-          }
           if($viewValue) {
             for(var i = 0, ii = tabs.length; i < ii; i++) {
               if ($viewValue == tabs[i].value) {
+                if(selectedTab) {
+                  selectedTab.paneElement.removeClass('active');
+                  selectedTab.tabElement.removeClass('active');
+                }
                 selectedTab = tabs[i];
                 break;
               }
