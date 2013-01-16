@@ -18,11 +18,6 @@ BUILD_DIR = 'build'
 
 task :default => [:package]
 
-task :testJava do
-  %x(java -version)
-end
-
-
 desc 'Init the build workspace'
 task :init do
   FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
