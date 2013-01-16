@@ -204,7 +204,7 @@ angular.scenario.dsl('input', function() {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger(event || supportInputEvent && 'input' || 'change');
+      input.trigger(event || (supportInputEvent && !msie) && 'input' || 'change');
       done();
     });
   };
