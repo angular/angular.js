@@ -18,7 +18,6 @@ BUILD_DIR = 'build'
 
 task :default => [:package]
 
-
 desc 'Init the build workspace'
 task :init do
   FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
