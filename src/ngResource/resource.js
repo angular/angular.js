@@ -269,9 +269,10 @@ angular.module('ngResource', ['ng']).
         replace((pctEncodeSpaces ? null : /%20/g), '+');
     }
 
-    function Route(template, defaults) {
+    function Route(template, defaults, options) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
+      this.options = angular.extend({ encodeUri : true }, options);
       var urlParams = this.urlParams = {};
       forEach(template.split(/\W/), function(param){
         if (param && template.match(new RegExp("[^\\\\]:" + param + "\\W"))) {
@@ -285,15 +286,14 @@ angular.module('ngResource', ['ng']).
       url: function(params) {
         var self = this,
             url = this.template,
-            val,
-            encodedVal;
+            val;
 
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
           if (angular.isDefined(val) && val !== null) {
-            encodedVal = encodeUriSegment(val);
-            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+            val = self.options.encodeUri ? encodeUriSegment(val) : val;
+            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), val + "$1");
           } else {
             url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
           }
@@ -313,7 +313,11 @@ angular.module('ngResource', ['ng']).
 
 
     function ResourceFactory(url, paramDefaults, actions) {
-      var route = new Route(url);
+      var route = new Route(url, {}, actions.options);
+
+      if (actions.options) {
+        delete actions.options;
+      }
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
