@@ -102,7 +102,7 @@ directive.tabbable = function() {
         tabs.push(tab);
 
         attr.$observe('value', update)();
-        attr.$observe('title', function(){ update(); a.text(tab.title); })();
+        attr.$observe('title', function(){ update(); a.html(tab.title); })();
 
         function update() {
           tab.title = attr.title;
