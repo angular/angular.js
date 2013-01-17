@@ -91,10 +91,11 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
-      var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];
+      var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1],
+          valid_protocols = /^(app|file)$/;
 
       // fix status code for file protocol (it's always 0)
-      status = (protocol == 'file') ? (response ? 200 : 404) : status;
+      status = valid_protocols.test(protocol) ? (response ? 200 : 404) : status;
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
       status = status == 1223 ? 204 : status;
