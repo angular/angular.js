@@ -47,7 +47,9 @@ function $ControllerProvider() {
      *    * check `window[constructor]` on the global `window` object
      *
      * @param {Object} locals Injection locals for Controller.
-     * @return {Object} Instance of given controller.
+     * @return {Object} If the return value of the constructor function is an object according to
+     *  {@link angular.isObject isObject}, that object is returned. Otherwise, an instance of the
+     *  given controller is returned.
      *
      * @description
      * `$controller` service is responsible for instantiating controllers.
@@ -55,6 +57,12 @@ function $ControllerProvider() {
      * It's just simple call to {@link AUTO.$injector $injector}, but extracted into
      * a service, so that one can override this service with {@link https://gist.github.com/1649788
      * BC version}.
+     *
+     * # Notes
+     *
+     * If the controller constructor function is written in {@link http://coffeescript.org CoffeeScript},
+     * beware that it will return its final value unless otherwise specified. This means that the return
+     * value of `$controller` will be that value rather than the controller instance.
      */
     return function(constructor, locals) {
       if(isString(constructor)) {
