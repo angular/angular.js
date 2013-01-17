@@ -378,12 +378,14 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
-            method: action.method,
-            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
-            data: data,
-            headers: extend({}, action.headers || {})
-          }).then(function(response) {
+          value.httpRequest = $http({
+              method: action.method,
+              url: route.url(extend({}, extractParams(data, action.params || {}), params)),
+              data: data,
+              headers: extend({}, action.headers || {})
+            });
+          
+          value.httpRequest.then(function(response) {
               var data = response.data;
 
               if (data) {
@@ -398,6 +400,7 @@ angular.module('ngResource', ['ng']).
               }
               (success||noop)(value, response.headers);
             }, error);
+
 
           return value;
         };
