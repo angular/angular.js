@@ -27,11 +27,19 @@
  * `select` model to be bound to a non-string value. This is because an option element can currently
  * be bound to string values only.
  *
+ * # `ngHasher`
+ *
+ * Optionally, `ngHasher` attribute can be used to specify a hashing function.
+ * This function takes one argument and returns a hash for that argument. This is useful when you are
+ * binding to objects. Objects are normally checked for reference equality but if you specify an
+ * hasing function it will compare hashes instead.
+ *
  * @param {string} name assignable expression to data-bind to.
  * @param {string=} required The control is considered valid only if value is entered.
  * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
  *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
  *    `required` when you want to data-bind to the `required` attribute.
+ * @param {function} ngHasher Adds a hashing function for options equality test.
  * @param {comprehension_expression=} ngOptions in one of the following forms:
  *
  *   * for array data sources:
@@ -121,6 +129,7 @@
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
+var ngHasherDirective = valueFn({ terminal: true });
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                          //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
   var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/,
@@ -136,7 +145,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           nullOption,
           unknownOption;
 
-
+	  
+	  self.hasher = null;
       self.databound = $attrs.ngModel;
 
 
@@ -180,6 +190,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         return optionsMap.hasOwnProperty(value);
       }
 
+
+      self.setHasher = function(value) {
+        self.hasher = value;
+      }
+	  
+	  
       $scope.$on('$destroy', function() {
         // disable unknown option so that we don't do work when the whole select is being destroyed
         self.renderUnknownOption = noop;
@@ -201,6 +217,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           optionTemplate = jqLite(document.createElement('option')),
           optGroupTemplate =jqLite(document.createElement('optgroup')),
           unknownOption = optionTemplate.clone();
+
+      // bind hasher function
+      scope.$watch(attr.ngHasher, function(newHasher) {
+        selectCtrl.setHasher(newHasher);
+      });
 
       // find "null" option
       for(var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
@@ -227,7 +248,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      if (optionsExp) Options(scope, element, ngModelCtrl);
+      if (optionsExp) Options(scope, element, ngModelCtrl, selectCtrl);
       else if (multiple) Multiple(scope, element, ngModelCtrl);
       else Single(scope, element, ngModelCtrl, selectCtrl);
 
@@ -292,7 +313,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      function Options(scope, selectElement, ctrl) {
+      function Options(scope, selectElement, ctrl, selectCtrl) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
@@ -409,9 +430,17 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(valueFn(scope, locals)) != undefined;
+              if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
+                selected = selectedSet.remove(selectCtrl.hasher(valueFn(scope, locals))) != undefined;
+              } else {
+                selected = selectedSet.remove(valueFn(scope, locals)) != undefined;
+              }
             } else {
-              selected = modelValue === valueFn(scope, locals);
+              if (selectCtrl.hasher && angular.isFunction(selectCtrl.hasher)) {
+                selected = selectCtrl.hasher(modelValue) === selectCtrl.hasher(valueFn(scope, locals));
+              } else {
+                selected = modelValue === valueFn(scope, locals);
+              }
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             label = displayFn(scope, locals); // what will be seen by the user
