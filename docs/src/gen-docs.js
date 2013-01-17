@@ -5,10 +5,6 @@ var reader = require('./reader.js'),
     appCache = require('./appCache.js').appCache,
     Q = require('qq');
 
-process.on('uncaughtException', function(err) {
-  console.error(err.stack || err);
-});
-
 var start = now();
 var docs;
 
@@ -36,16 +32,16 @@ writer.makeDir('build/docs/', true).then(function() {
   });
 }).then(function printStats() {
   console.log('DONE. Generated ' + docs.length + ' pages in ' + (now()-start) + 'ms.' );
-}).end();
+}).done();
 
 
 function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
-  writesFuture.push(writer.symlinkTemplate('css'));
-  writesFuture.push(writer.symlinkTemplate('font'));
-  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img'));
-  writesFuture.push(writer.symlinkTemplate('js'));
+  writesFuture.push(writer.symlinkTemplate('css', 'dir'));
+  writesFuture.push(writer.symlinkTemplate('font', 'dir'));
+  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
+  writesFuture.push(writer.symlinkTemplate('js', 'dir'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
