@@ -109,6 +109,11 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
+ *   The Resource also has these properties:
+ *
+ *   - '$q': the  promise from the underlying {@link ng.$http} call.
+ *   - '$resolved': true if the promise has been resolved (either with success or rejection);
+ *     Knowing if the Resource has been resolved is useful in data-binding.
  *
  * @example
  *
@@ -362,6 +367,8 @@ angular.module('ngResource', ['ng']).
           var data;
           var success = noop;
           var error = null;
+          var promise;
+
           switch(arguments.length) {
           case 4:
             error = a4;
@@ -397,7 +404,8 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          var httpConfig = {};
+          var httpConfig = {},
+              promise;
 
           forEach(action, function(value, key) {
             if (key != 'params' && key != 'isArray' ) {
@@ -407,9 +415,15 @@ angular.module('ngResource', ['ng']).
           httpConfig.data = data;
           httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
 
-          $http(httpConfig).then(function(response) {
-              var data = response.data;
+          function markResolved() { value.$resolved = true; };
 
+          promise = $http(httpConfig);
+          value.$q = promise;
+          value.$resolved = false;
+          promise.then(markResolved, markResolved)
+          promise.then(function(response) {
+              var data = response.data;
+              var q = value.$q, resolved = value.$resolved;
               if (data) {
                 if (action.isArray) {
                   value.length = 0;
@@ -418,12 +432,15 @@ angular.module('ngResource', ['ng']).
                   });
                 } else {
                   copy(data, value);
+                  value.$q = q;
+                  value.$resolved = resolved;
                 }
               }
               (success||noop)(value, response.headers);
             }, error);
 
           return value;
+
         };
 
 

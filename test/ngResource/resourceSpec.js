@@ -264,7 +264,7 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
 
     var ccs = CreditCard.query({key: 'value'}, callback);
-    expect(ccs).toEqual([]);
+    expect(ccs).toEqualData([]);
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
@@ -417,6 +417,53 @@ describe("resource", function() {
     var person = Person.get({id:123});
     $httpBackend.flush();
     expect(person.name).toEqual('misko');
+  });
+
+  it("should have $q and $resolved properties for get", function () {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.get({id: 123}, callback);
+    expect(cc.$q).toBeDefined();
+    expect(typeof cc.$q).toBe('object');
+    expect(cc.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(cc.$q).toBeDefined();
+    expect(cc.$resolved).toBeTruthy();
+  });
+
+  it("should have $q and $resolved properties for query", function() {
+    $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+
+    var ccs = CreditCard.query({key: 'value'}, callback);
+    expect(ccs.$q).toBeDefined();
+    expect(typeof ccs.$q).toBe('object');
+    expect(ccs.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(ccs.$q).toBeDefined();
+    expect(ccs.$resolved).toBeTruthy();
+  });
+
+  it("should have $q and $resolved properties for save", function() {
+    $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
+                 respond({id: {key: 123}, name: 'rama'});
+
+    var cc = CreditCard.save({id: {key: 123}, name: 'misko'}, callback);
+    expect(cc.$q).toBeDefined();
+    expect(typeof cc.$q).toBe('object');
+    expect(cc.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(cc.$q).toBeDefined();
+    expect(cc.$resolved).toBeTruthy();
+  });
+
+  it('should should have $q and $resolved properties for delete', function() {
+    $httpBackend.expect('DELETE', '/CreditCard/123').respond({});
+    var removed = CreditCard.remove({id:123}, callback);
+    expect(removed.$q).toBeDefined();
+    expect(typeof removed.$q).toBe('object');
+    expect(removed.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(removed.$q).toBeDefined();
+    expect(removed.$resolved).toBeTruthy();
   });
 
 
