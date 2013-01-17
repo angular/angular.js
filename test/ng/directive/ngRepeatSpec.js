@@ -274,7 +274,7 @@ describe('ngRepeat', function() {
       '<ul>' +
         '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
       '</ul>')(scope);
-    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$internal': 'xxxx'};
     scope.$digest();
     expect(element.text()).
         toEqual('doug:d:true-false-false|' +

@@ -149,7 +149,7 @@ var ngRepeatDirective = ngDirective({
           childScope.$index = index;
 
           childScope.$first = (index === 0);
-          childScope.$last = (index === (collectionLength - 1));
+          childScope.$last = (index === (array.length - 1));
           childScope.$middle = !(childScope.$first || childScope.$last);
 
           if (!last) {
