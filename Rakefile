@@ -279,8 +279,6 @@ def closure_compile(filename)
   min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
 
   %x(java \
-        -client \
-        -d32 \
         -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
