@@ -272,7 +272,7 @@ angular.module('ngResource', ['ng']).
     function Route(template, defaults, options) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
-      this.options = angular.extend({ encodeUri : true }, options);
+      this.options = extend({ encodeUri : true }, (options || {}));
       var urlParams = this.urlParams = {};
       forEach(template.split(/\W/), function(param){
         if (param && template.match(new RegExp("[^\\\\]:" + param + "\\W"))) {
@@ -313,9 +313,9 @@ angular.module('ngResource', ['ng']).
 
 
     function ResourceFactory(url, paramDefaults, actions) {
-      var route = new Route(url, {}, actions.options);
+      var route = new Route(url, {}, (actions ? actions.options : undefined));
 
-      if (actions.options) {
+      if (actions && actions.options) {
         delete actions.options;
       }
 
@@ -378,16 +378,18 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          value.httpRequest = $http({
+          var request = $http({
               method: action.method,
               url: route.url(extend({}, extractParams(data, action.params || {}), params)),
               data: data,
               headers: extend({}, action.headers || {})
             });
           
-          value.httpRequest.then(function(response) {
+          request.then(function(response) {
               var data = response.data;
-
+              // Clean up, httpRequest is done and no longer needed;
+              delete value.httpRequest;
+              
               if (data) {
                 if (action.isArray) {
                   value.length = 0;
@@ -401,6 +403,10 @@ angular.module('ngResource', ['ng']).
               (success||noop)(value, response.headers);
             }, error);
 
+          
+          value.httpRequest = function () {
+            return request;
+          };    
 
           return value;
         };
