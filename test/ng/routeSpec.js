@@ -82,28 +82,40 @@ describe('$route', function() {
   });
 
 
-  it('should match a route that contains special chars in the path', function() {
-    module(function($routeProvider) {
-      $routeProvider.when('/$test.23/foo(bar)/:baz', {templateUrl: 'test.html'});
-    });
-    inject(function($route, $location, $rootScope) {
+  describe('should match a route that contains special chars in the path', function() {
+    beforeEach(module(function($routeProvider) {
+      $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});
+    }));
 
+    it('matches the full path', inject(function($route, $location, $rootScope) {
       $location.path('/test');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$testX23/foo(bar)/222');
+    it('matches literal .', inject(function($route, $location, $rootScope) {
+      $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$test.23/foo(bar)/222');
+    it('matches literal *', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foooo(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('treats backslashes normally', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*\\(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('matches a URL with special chars', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeDefined();
-
-      $location.path('/$test.23/foo\\(bar)/222');
-      $rootScope.$digest();
-      expect($route.current).toBeUndefined();
-    });
+    }));
   });
 
 

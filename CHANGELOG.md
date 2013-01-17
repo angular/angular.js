@@ -2,7 +2,7 @@
 # 1.1.1 pathological-kerning (2012-11-26)
 
 _Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
-They pass all tests but we reseve the right to change new features/apis in between minor releases. Check them
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
 out and please give us feedback._
 
 _Note: This release also contains all bug fixes available in [1.0.3](#1.0.3)._
