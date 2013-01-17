@@ -79,7 +79,6 @@ angularFiles = {
     'src/ngScenario/Describe.js',
     'src/ngScenario/Future.js',
     'src/ngScenario/ObjectModel.js',
-    'src/ngScenario/Describe.js',
     'src/ngScenario/Runner.js',
     'src/ngScenario/SpecRunner.js',
     'src/ngScenario/dsl.js',
