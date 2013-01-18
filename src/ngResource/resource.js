@@ -37,24 +37,40 @@
  *   the data object (useful for non-GET operations).
  *
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
- *   default set of resource actions. The declaration should be created in the following format:
+ *   default set of resource actions. The declaration should be created in the format of {@link
+ *   ng.$http#Parameters $http.config}:
  *
- *       {action1: {method:?, params:?, isArray:?, headers:?},
- *        action2: {method:?, params:?, isArray:?, headers:?},
+ *       {action1: {method:?, params:?, isArray:?, headers:?, ...},
+ *        action2: {method:?, params:?, isArray:?, headers:?, ...},
  *        ...}
  *
  *   Where:
  *
- *   - `action` – {string} – The name of action. This name becomes the name of the method on your
+ *   - **`action`** – {string} – The name of action. This name becomes the name of the method on your
  *     resource object.
- *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *     and `JSONP`
- *   - `params` – {Object=} – Optional set of pre-bound parameters for this action. If any of the
-  *    parameter value is a function, it will be executed every time when a param value needs to be
-  *    obtained for a request (unless the param was overriden).
- *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
+ *   - **`method`** – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
+ *     and `JSONP`.
+ *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of the
+ *     parameter value is a function, it will be executed every time when a param value needs to be
+ *     obtained for a request (unless the param was overriden).
+ *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
- *   - `headers` – {Object=} – Optional HTTP headers to send
+ *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *     transform function or an array of such functions. The transform function takes the http
+ *     request body and headers and returns its transformed (typically serialized) version.
+ *   - **`transformResponse`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *     transform function or an array of such functions. The transform function takes the http
+ *     response body and headers and returns its transformed (typically deserialized) version.
+ *   - **`cache`** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
+ *     GET request, otherwise if a cache instance built with
+ *     {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
+ *     caching.
+ *   - **`timeout`** – `{number}` – timeout in milliseconds.
+ *   - **`withCredentials`** - `{boolean}` - whether to to set the `withCredentials` flag on the
+ *     XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
+ *     requests with credentials} for more information.
+ *   - **`responseType`** - `{string}` - see {@link
+ *     https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -374,12 +390,17 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
-            method: action.method,
-            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
-            data: data,
-            headers: extend({}, action.headers || {})
-          }).then(function(response) {
+          var httpConfig = {};
+
+          forEach(action, function(value, key) {
+            if (key != 'params' && key != 'isArray' ) {
+              httpConfig[key] = copy(value);
+            }
+          });
+          httpConfig.data = data;
+          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+
+          $http(httpConfig).then(function(response) {
               var data = response.data;
 
               if (data) {
