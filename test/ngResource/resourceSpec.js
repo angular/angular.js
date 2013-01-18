@@ -20,7 +20,17 @@ describe("resource", function() {
         headers: {
           'If-None-Match': '*'
         }
+      },
+      conditionalPutWithHeaderAsFunction: {
+        method: 'PUT',
+        headers: function (a, b) {
+          return {
+            'X-Method': a,
+            'X-Url': b
+          }
+        }
       }
+
 
     });
     callback = jasmine.createSpy();
@@ -201,6 +211,15 @@ describe("resource", function() {
     }).respond({id:123});
 
     CreditCard.conditionalPut({id: {key:123}});
+  });
+
+
+  it('should send headers as a function', function() {
+    $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
+       return headers['X-Method'] == "PUT" && headers['X-Url'] == "/CreditCard/123";
+    }).respond({id:123});
+
+    CreditCard.conditionalPutWithHeaderAsFunction({id: {key:123}});
   });
 
 
