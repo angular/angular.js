@@ -93,6 +93,8 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
+ *   The Resource object now contains the promise from the underlying {@link ng.$http} call, which is accessable
+ *   by the `$q` property, as well as a `$resolved` property, which is set to `true` when the promise is resolved (or rejected).
  *
  * @example
  *
@@ -374,14 +376,20 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
+
+          value.$resolved = false;
+          var resolved = function () {value.$resolved = true;};
+
+          value.$q = $http({
             method: action.method,
             url: route.url(extend({}, extractParams(data, action.params || {}), params)),
             data: data,
             headers: extend({}, action.headers || {})
-          }).then(function(response) {
-              var data = response.data;
+          }).success(resolved).error(resolved);
 
+          value.$q.then(function(response) {
+              var data = response.data;
+              var q = value.$q, resolved = value.$resolved;
               if (data) {
                 if (action.isArray) {
                   value.length = 0;
@@ -390,6 +398,8 @@ angular.module('ngResource', ['ng']).
                   });
                 } else {
                   copy(data, value);
+                  value.$q = q;
+                  value.$resolved = resolved;
                 }
               }
               (success||noop)(value, response.headers);
