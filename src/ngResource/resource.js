@@ -39,8 +39,8 @@
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
  *   default set of resource actions. The declaration should be created in the following format:
  *
- *       {action1: {method:?, params:?, isArray:?, headers:?},
- *        action2: {method:?, params:?, isArray:?, headers:?},
+ *       {action1: {method:?, params:?, isArray:?, headers:?, cache:?},
+ *        action2: {method:?, params:?, isArray:?, headers:?, cache:?},
  *        ...}
  *
  *   Where:
@@ -55,6 +55,7 @@
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
  *   - `headers` – {Object=} – Optional HTTP headers to send
+ *   - `cache` – {Object=} - Optional HTTP cache (see cache option for $http)
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -136,7 +137,7 @@
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
  *
- * Calling these methods invoke `$http` on the `url` template with the given `method`, `params` and `headers`.
+ * Calling these methods invoke `$http` on the `url` template with the given `method`, `params`, `headers` and `cache`.
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
@@ -378,7 +379,8 @@ angular.module('ngResource', ['ng']).
             method: action.method,
             url: route.url(extend({}, extractParams(data, action.params || {}), params)),
             data: data,
-            headers: extend({}, action.headers || {})
+            headers: extend({}, action.headers || {}),
+            cache: (action.cache) ? action.cache : false
           }).then(function(response) {
               var data = response.data;
 
