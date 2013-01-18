@@ -131,16 +131,40 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
         destroyLastScope();
       }
 
-      function update() {
-        var locals = $route.current && $route.current.locals,
+      function update(event, next, last) {
+        var currentRoute = $route.current,
+            locals = currentRoute && currentRoute.locals,
             template = locals && locals.$template;
+
+        if ( ! currentRoute && attr.ngView) {
+          return;
+        }
+
+        if (currentRoute && currentRoute.$route.view && ! attr.ngView) {
+          return;
+        }
+
+        if (attr.ngView && currentRoute && ! currentRoute.$route.view) {
+          scope.$broadcast('$viewContentCleared');
+          clearContent();
+        }
+
+        if (currentRoute && attr.ngView && ( ! currentRoute.$route.view || attr.ngView !== currentRoute.$route.view)) {
+          return;
+        }
+
+        if (last && attr.ngView && (last.$route.templateUrl != next.$route.templateUrl || last.$route.view != next.$route.view)) {
+          $route.last = last;
+        } else {
+          $route.last = null;
+        }
 
         if (template) {
           element.html(template);
           destroyLastScope();
 
           var link = $compile(element.contents()),
-              current = $route.current,
+              current = currentRoute,
               controller;
 
           lastScope = current.scope = scope.$new();
