@@ -427,4 +427,26 @@ describe("resource", function() {
       expect(callback).not.toHaveBeenCalled();
     });
   });
+
+
+  it('should transform request/response', function() {
+    var Person = $resource('/Person/:id', {}, {
+      save: {
+          method: 'POST',
+          params: {id: '@id'},
+          transformRequest: function(data) {
+            return angular.toJson({ __id: data.id });
+          },
+          transformResponse: function(data) {
+            return { id: data.__id };
+          }
+      }
+    });
+
+    $httpBackend.expect('POST', '/Person/123', { __id: 123 }).respond({ __id: 456 });
+    var person = new Person({id:123});
+    person.$save();
+    $httpBackend.flush();
+    expect(person.id).toEqual(456);
+  });
 });
