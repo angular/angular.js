@@ -353,11 +353,11 @@ var JQLitePrototype = JQLite.prototype = {
 // value on get.
 //////////////////////////////////////////
 var BOOLEAN_ATTR = {};
-forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value) {
+forEach('multiple,selected,checked,disabled,readOnly,required,open'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
 var BOOLEAN_ELEMENTS = {};
-forEach('input,select,option,textarea,button,form'.split(','), function(value) {
+forEach('input,select,option,textarea,button,form,details'.split(','), function(value) {
   BOOLEAN_ELEMENTS[uppercase(value)] = true;
 });
 
