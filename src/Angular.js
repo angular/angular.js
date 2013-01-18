@@ -620,16 +620,23 @@ function equals(o1, o2) {
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
         keySet = {};
+        length = 0;
         for(key in o1) {
-          if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) {
-            return false;
-          }
+          if (key.charAt(0) === '$') continue;
+
+          if (!isFunction(o1[key]) && !equals(o1[key], o2[key])) return false;
+
+          length++;
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] && key.charAt(0) !== '$' && !isFunction(o2[key])) return false;
+          if (key.charAt(0) === '$') {
+            continue;
+          }
+          if (!keySet[key] && !isFunction(o2[key])) return false;
+          length--;
         }
-        return true;
+        return length === 0;
       }
     }
   }
