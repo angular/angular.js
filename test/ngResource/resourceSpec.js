@@ -73,6 +73,31 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should not ignore leading slashes of undefinend parameters that have non-slash trailing sequence', function() {
+    var R = $resource('/Path/:a.foo/:b.bar/:c.baz');
+
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/0.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/false.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/1.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/2.foo/3.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/4.foo/.bar/5.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/6.foo/7.bar/8.baz').respond('{}');
+
+    R.get({});
+    R.get({a:0});
+    R.get({a:false});
+    R.get({a:null});
+    R.get({a:undefined});
+    R.get({a:''});
+    R.get({a:1});
+    R.get({a:2, b:3});
+    R.get({a:4, c:5});
+    R.get({a:6, b:7, c:8});
+  });
+
 
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');

@@ -311,7 +311,14 @@ angular.module('ngResource', ['ng']).
             encodedVal = encodeUriSegment(val);
             url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
           } else {
-            url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
+            url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W)", "g"), function(match,
+                leadingSlashes, tail) {
+              if (tail.charAt(0) == '/') {
+                return tail;
+              } else {
+                return leadingSlashes + tail;
+              }
+            });
           }
         });
         url = url.replace(/\/?#$/, '');
