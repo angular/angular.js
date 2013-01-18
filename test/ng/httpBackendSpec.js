@@ -116,6 +116,8 @@ describe('$httpBackend', function() {
       };
 
       this.getAllResponseHeaders = valueFn('');
+      // for temporary FF CORS workaround
+      this.getResponseHeader = valueFn('');
     }
 
     callback.andCallFake(function(status, response) {
