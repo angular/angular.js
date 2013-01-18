@@ -32,12 +32,12 @@ The third option is the most viable, since it removes the responsibility of loca
 dependency from the component. The dependency is simply handed to the component.
 
 <pre>
-  function SomeClass(greeter) {
-    this.greeter = greeter
-  }
-  
-  SomeClass.prototype.doSomething = function(name) {
-    this.greeter.greet(name);
+  function SomeClass($scope, greeter) {
+    $scope.greeter = greeter
+
+    $scope.doSomething = function(name) {
+      $scope.greeter.greet(name);
+    }
   }
 </pre>
 
