@@ -627,7 +627,13 @@ function equals(o1, o2) {
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] && key.charAt(0) !== '$' && !isFunction(o2[key])) return false;
+          if (!keySet[key] && 
+              key.charAt(0) !== '$' && 
+              !isFunction(o2[key]) && 
+              !isUndefined(o2[key])
+          ) {
+            return false;
+          }
         }
         return true;
       }
