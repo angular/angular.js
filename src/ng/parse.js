@@ -5,13 +5,23 @@ var OPERATORS = {
     'true':function(){return true;},
     'false':function(){return false;},
     undefined:noop,
-    '+':function(self, locals, a,b){a=a(self, locals); b=b(self, locals); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
+    '+':function(self, locals, a,b){
+      a=a(self, locals); b=b(self, locals);
+      if (isDefined(a)) {
+        if (isDefined(b)) {
+          return a + b;
+        }
+        return a;
+      }
+      return isDefined(b)?b:undefined;},
     '-':function(self, locals, a,b){a=a(self, locals); b=b(self, locals); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
     '*':function(self, locals, a,b){return a(self, locals)*b(self, locals);},
     '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
     '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
     '^':function(self, locals, a,b){return a(self, locals)^b(self, locals);},
     '=':noop,
+    '===':function(self, locals, a, b){return a(self, locals)===b(self, locals);},
+    '!==':function(self, locals, a, b){return a(self, locals)!==b(self, locals);},
     '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
     '!=':function(self, locals, a,b){return a(self, locals)!=b(self, locals);},
     '<':function(self, locals, a,b){return a(self, locals)<b(self, locals);},
@@ -62,9 +72,14 @@ function lex(text, csp){
       continue;
     } else {
       var ch2 = ch + peek(),
+          ch3 = ch2 + peek(2),
           fn = OPERATORS[ch],
-          fn2 = OPERATORS[ch2];
-      if (fn2) {
+          fn2 = OPERATORS[ch2],
+          fn3 = OPERATORS[ch3];
+      if (fn3) {
+        tokens.push({index:index, text:ch3, fn:fn3});
+        index += 3;
+      } else if (fn2) {
         tokens.push({index:index, text:ch2, fn:fn2});
         index += 2;
       } else if (fn) {
@@ -86,8 +101,9 @@ function lex(text, csp){
     return chars.indexOf(lastCh) != -1;
   }
 
-  function peek() {
-    return index + 1 < text.length ? text.charAt(index + 1) : false;
+  function peek(i) {
+    var num = i || 1;
+    return index + num < text.length ? text.charAt(index + num) : false;
   }
   function isNumber(ch) {
     return '0' <= ch && ch <= '9';
@@ -448,7 +464,7 @@ function parser(text, json, $filter, csp){
   function equality() {
     var left = relational();
     var token;
-    if ((token = expect('==','!='))) {
+    if ((token = expect('==','!=','===','!=='))) {
       left = binaryFn(left, token.fn, equality());
     }
     return left;

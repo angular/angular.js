@@ -15,7 +15,10 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} required Adds `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -25,6 +28,8 @@ var inputType = {
    *    patterns defined as scope expressions.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trimming the
+   *    input.
    *
    * @example
       <doc:example>
@@ -32,12 +37,12 @@ var inputType = {
          <script>
            function Ctrl($scope) {
              $scope.text = 'guest';
-             $scope.word = /^\w*$/;
+             $scope.word = /^\s*\w*\s*$/;
            }
          </script>
          <form name="myForm" ng-controller="Ctrl">
            Single word: <input type="text" name="input" ng-model="text"
-                               ng-pattern="word" required>
+                               ng-pattern="word" required ng-trim="false">
            <span class="error" ng-show="myForm.input.$error.required">
              Required!</span>
            <span class="error" ng-show="myForm.input.$error.pattern">
@@ -66,6 +71,12 @@ var inputType = {
             input('text').enter('hello world');
             expect(binding('myForm.input.$valid')).toEqual('false');
           });
+
+          it('should not be trimmed', function() {
+            input('text').enter('untrimmed ');
+            expect(binding('text')).toEqual('untrimmed ');
+            expect(binding('myForm.input.$valid')).toEqual('true');
+          });
         </doc:scenario>
       </doc:example>
    */
@@ -85,6 +96,9 @@ var inputType = {
    * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
    * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -151,6 +165,9 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -216,6 +233,9 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -370,7 +390,14 @@ function isEmpty(value) {
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   var listener = function() {
-    var value = trim(element.val());
+    var value = element.val();
+
+    // By default we will trim the value
+    // If the attribute ng-trim exists we will avoid trimming
+    // e.g. <input ng-model="foo" ng-trim="false">
+    if (toBoolean(attr.ngTrim || 'T')) {
+      value = trim(value);
+    }
 
     if (ctrl.$viewValue !== value) {
       scope.$apply(function() {
@@ -638,6 +665,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -662,6 +692,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {boolean=} ngRequired Sets `required` attribute if set to true
  * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -947,6 +978,22 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:ngModel.NgModelController#$setPristine
+   * @methodOf ng.directive:ngModel.NgModelController
+   *
+   * @description
+   * Sets the control to its pristine state.
+   *
+   * This method can be called to remove the 'ng-dirty' class and set the control to its pristine
+   * state (ng-pristine class).
+   */
+  this.$setPristine = function () {
+    this.$dirty = false;
+    this.$pristine = true;
+    $element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+  };
 
   /**
    * @ngdoc function
@@ -995,22 +1042,25 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   // model -> value
   var ctrl = this;
-  $scope.$watch(ngModelGet, function(value) {
 
-    // ignore change from view
-    if (ctrl.$modelValue === value) return;
+  $scope.$watch(function ngModelWatch() {
+    var value = ngModelGet($scope);
 
-    var formatters = ctrl.$formatters,
-        idx = formatters.length;
+    // if scope model value and ngModel value are out of sync
+    if (ctrl.$modelValue !== value) {
 
-    ctrl.$modelValue = value;
-    while(idx--) {
-      value = formatters[idx](value);
-    }
+      var formatters = ctrl.$formatters,
+          idx = formatters.length;
 
-    if (ctrl.$viewValue !== value) {
-      ctrl.$viewValue = value;
-      ctrl.$render();
+      ctrl.$modelValue = value;
+      while(idx--) {
+        value = formatters[idx](value);
+      }
+
+      if (ctrl.$viewValue !== value) {
+        ctrl.$viewValue = value;
+        ctrl.$render();
+      }
     }
   });
 }];
@@ -1159,7 +1209,7 @@ var requiredDirective = function() {
  * @name ng.directive:ngList
  *
  * @description
- * Text input that converts between comma-seperated string into an array of strings.
+ * Text input that converts between comma-separated string into an array of strings.
  *
  * @element input
  * @param {string=} ngList optional delimiter that should be used to split the value. If
@@ -1219,7 +1269,7 @@ var ngListDirective = function() {
 
       ctrl.$parsers.push(parse);
       ctrl.$formatters.push(function(value) {
-        if (isArray(value) && !equals(parse(ctrl.$viewValue), value)) {
+        if (isArray(value)) {
           return value.join(', ');
         }
 
@@ -1242,7 +1292,7 @@ var ngValueDirective = function() {
         };
       } else {
         return function(scope, elm, attr) {
-          scope.$watch(attr.ngValue, function(value) {
+          scope.$watch(attr.ngValue, function valueWatchAction(value) {
             attr.$set('value', value, false);
           });
         };

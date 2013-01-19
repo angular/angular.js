@@ -34,7 +34,7 @@
  */
 //TODO(misko): refactor to remove element from the DOM
 var ngShowDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngShow, function(value){
+  scope.$watch(attr.ngShow, function ngShowWatchAction(value){
     element.css('display', toBoolean(value) ? '' : 'none');
   });
 });
@@ -45,11 +45,11 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  * @name ng.directive:ngHide
  *
  * @description
- * The `ngHide` and `ngShow` directives hide or show a portion
- * of the HTML conditionally.
+ * The `ngHide` and `ngShow` directives hide or show a portion of the DOM tree (HTML)
+ * conditionally.
  *
  * @element ANY
- * @param {expression} ngHide If the {@link guide/expression expression} truthy then
+ * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
  *     the element is shown or hidden respectively.
  *
  * @example
@@ -74,7 +74,7 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  */
 //TODO(misko): refactor to remove element from the DOM
 var ngHideDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngHide, function(value){
+  scope.$watch(attr.ngHide, function ngHideWatchAction(value){
     element.css('display', toBoolean(value) ? 'none' : '');
   });
 });

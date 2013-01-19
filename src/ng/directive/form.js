@@ -5,7 +5,8 @@ var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
   $setValidity: noop,
-  $setDirty: noop
+  $setDirty: noop,
+  $setPristine: noop
 };
 
 /**
@@ -14,13 +15,13 @@ var nullFormCtrl = {
  *
  * @property {boolean} $pristine True if user has not interacted with the form yet.
  * @property {boolean} $dirty True if user has already interacted with the form.
- * @property {boolean} $valid True if all of the containg forms and controls are valid.
+ * @property {boolean} $valid True if all of the containing forms and controls are valid.
  * @property {boolean} $invalid True if at least one containing control or form is invalid.
  *
  * @property {Object} $error Is an object hash, containing references to all invalid controls or
  *  forms, where:
  *
- *  - keys are validation tokens (error names) — such as `REQUIRED`, `URL` or `EMAIL`),
+ *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
  *  - values are arrays of controls or forms that are invalid with given error.
  *
  * @description
@@ -37,7 +38,8 @@ function FormController(element, attrs) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
-      errors = form.$error = {};
+      errors = form.$error = {},
+      controls = [];
 
   // init state
   form.$name = attrs.name;
@@ -61,6 +63,8 @@ function FormController(element, attrs) {
   }
 
   form.$addControl = function(control) {
+    controls.push(control);
+
     if (control.$name && !form.hasOwnProperty(control.$name)) {
       form[control.$name] = control;
     }
@@ -73,6 +77,8 @@ function FormController(element, attrs) {
     forEach(errors, function(queue, validationToken) {
       form.$setValidity(validationToken, true, control);
     });
+
+    arrayRemove(controls, control);
   };
 
   form.$setValidity = function(validationToken, isValid, control) {
@@ -117,8 +123,32 @@ function FormController(element, attrs) {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
+    parentForm.$setDirty();
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setPristine
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to its pristine state.
+   *
+   * This method can be called to remove the 'ng-dirty' class and set the form to its pristine
+   * state (ng-pristine class). This method will also propagate to all the controls contained
+   * in this form.
+   *
+   * Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
+   * saving or resetting it.
+   */
+  form.$setPristine = function () {
+    element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+    form.$dirty = false;
+    form.$pristine = true;
+    forEach(controls, function(control) {
+      control.$setPristine();
+    });
+  };
 }
 
 
@@ -132,7 +162,7 @@ function FormController(element, attrs) {
  * does not allow nesting of form elements. It is useful to nest forms, for example if the validity of a
  * sub-group of controls needs to be determined.
  *
- * @param {string=} ngForm|name Name of the form. If specified, the form controller will be published into
+ * @param {string=} name|ngForm Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
  *
  */
@@ -205,12 +235,12 @@ function FormController(element, attrs) {
        </script>
        <form name="myForm" ng-controller="Ctrl">
          userType: <input name="input" ng-model="userType" required>
-         <span class="error" ng-show="myForm.input.$error.REQUIRED">Required!</span><br>
+         <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
          <tt>userType = {{userType}}</tt><br>
          <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br>
          <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br>
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
-         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
         </form>
       </doc:source>
       <doc:scenario>
@@ -227,38 +257,62 @@ function FormController(element, attrs) {
       </doc:scenario>
     </doc:example>
  */
-var formDirectiveDir = {
-  name: 'form',
-  restrict: 'E',
-  controller: FormController,
-  compile: function() {
-    return {
-      pre: function(scope, formElement, attr, controller) {
-        if (!attr.action) {
-          formElement.bind('submit', function(event) {
-            event.preventDefault();
-          });
-        }
+var formDirectiveFactory = function(isNgForm) {
+  return ['$timeout', function($timeout) {
+    var formDirective = {
+      name: 'form',
+      restrict: 'E',
+      controller: FormController,
+      compile: function() {
+        return {
+          pre: function(scope, formElement, attr, controller) {
+            if (!attr.action) {
+              // we can't use jq events because if a form is destroyed during submission the default
+              // action is not prevented. see #1238
+              //
+              // IE 9 is not affected because it doesn't fire a submit event and try to do a full
+              // page reload if the form was destroyed by submission of the form via a click handler
+              // on a button in the form. Looks like an IE9 specific bug.
+              var preventDefaultListener = function(event) {
+                event.preventDefault
+                  ? event.preventDefault()
+                  : event.returnValue = false; // IE
+              };
 
-        var parentFormCtrl = formElement.parent().controller('form'),
-            alias = attr.name || attr.ngForm;
+              addEventListenerFn(formElement[0], 'submit', preventDefaultListener);
 
-        if (alias) {
-          scope[alias] = controller;
-        }
-        if (parentFormCtrl) {
-          formElement.bind('$destroy', function() {
-            parentFormCtrl.$removeControl(controller);
-            if (alias) {
-              scope[alias] = undefined;
+              // unregister the preventDefault listener so that we don't not leak memory but in a
+              // way that will achieve the prevention of the default action.
+              formElement.bind('$destroy', function() {
+                $timeout(function() {
+                  removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
+                }, 0, false);
+              });
             }
-            extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
-          });
-        }
+
+            var parentFormCtrl = formElement.parent().controller('form'),
+                alias = attr.name || attr.ngForm;
+
+            if (alias) {
+              scope[alias] = controller;
+            }
+            if (parentFormCtrl) {
+              formElement.bind('$destroy', function() {
+                parentFormCtrl.$removeControl(controller);
+                if (alias) {
+                  scope[alias] = undefined;
+                }
+                extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+              });
+            }
+          }
+        };
       }
     };
-  }
+
+    return isNgForm ? extend(copy(formDirective), {restrict: 'EAC'}) : formDirective;
+  }];
 };
 
-var formDirective = valueFn(formDirectiveDir);
-var ngFormDirective = valueFn(extend(copy(formDirectiveDir), {restrict: 'EAC'}));
+var formDirective = formDirectiveFactory();
+var ngFormDirective = formDirectiveFactory(true);

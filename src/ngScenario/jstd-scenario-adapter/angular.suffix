@@ -1,2 +1,0 @@
-initScenarioAdapter(window.jstestdriver, angular.scenario.setUpAndRun, window.jstdScenarioAdapter);
-})(window);

@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - 0.8
+
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - npm install -g testacular@canary
+  - rake package
+  - ./nodeserver.sh > /dev/null &
+
+script:
+  - rake test[Firefox,"--reporters=dots"]

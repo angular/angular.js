@@ -22,7 +22,7 @@ GitHub}:
 
 ## Data
 
-The `app/phones/phone.json` file in your project is a dataset that contains a larger list of phones
+The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
 stored in the JSON format.
 
 Following is a sample of the file:
@@ -104,7 +104,7 @@ to avoid any possible naming collisions.
 Since angular infers the controller's dependencies from the names of arguments to the controller's
 constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minification_(programming)
 minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
-minified as well, and the dependency injector would not being able to identify services correctly.
+minified as well, and the dependency injector would not be able to identify services correctly.
 
 To overcome issues caused by minification, just assign an array with service identifier strings
 into the `$inject` property of the controller function, just like the last line in the snippet
@@ -164,15 +164,15 @@ isolated from the work done in other tests.
 
 * We created a new scope for our controller by calling `$rootScope.$new()`
 
-* We called `scope.$new(PhoneListCtrl)` to get Angular to create the child scope associated with
-the `PhoneListCtrl` controller.
+* We called the injected `$controller` function passing the `PhoneListCtrl` function and the created
+scope as parameters.
 
 Because our code now uses the `$http` service to fetch the phone list data in our controller, before
 we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
 incoming request from the controller. To do this we:
 
 * Request `$httpBackend` service to be injected into our `beforeEach` function. This is a mock
-mock version of the service that in production environment facilitates all XHR and JSONP requests.
+version of the service that in a production environment facilitates all XHR and JSONP requests.
 The mock version of this service allows you to write tests without having to deal with
 native APIs and the global state associated with them — both of which make testing a nightmare.
 
@@ -180,7 +180,7 @@ native APIs and the global state associated with them — both of which make tes
 HTTP request and tell it what to respond with. Note that the responses are not returned until we call
 the `$httpBackend.flush` method.
 
-Now, we will make assertions to verify that the `phones` model doesn't exist on the scope, before
+Now, we will make assertions to verify that the `phones` model doesn't exist on `scope` before
 the response is received:
 
 <pre>
@@ -208,13 +208,10 @@ Finally, we verify that the default value of `orderProp` is set correctly:
 });
 </pre>
 
-To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
-output.
+You should now see the following output in the Testacular tab:
 
-       Chrome: Runner reset.
-       ..
-       Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-         Chrome 19.0.1084.36 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+       Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)
+
 
 
 # Experiments

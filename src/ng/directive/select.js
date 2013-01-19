@@ -29,6 +29,9 @@
  *
  * @param {string} name assignable expression to data-bind to.
  * @param {string=} required The control is considered valid only if value is entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
  * @param {comprehension_expression=} ngOptions in one of the following forms:
  *
  *   * for array data sources:
@@ -262,14 +265,14 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
-          forEach(selectElement.children(), function(option) {
+          forEach(selectElement.find('option'), function(option) {
             option.selected = isDefined(items.get(option.value));
           });
         };
 
         // we have to do it on each watch since ngModel watches reference, but
         // we need to work of an array, so we need to see if anything was inserted/removed
-        scope.$watch(function() {
+        scope.$watch(function selectMultipleWatch() {
           if (!equals(lastView, ctrl.$viewValue)) {
             lastView = copy(ctrl.$viewValue);
             ctrl.$render();
@@ -279,7 +282,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         selectElement.bind('change', function() {
           scope.$apply(function() {
             var array = [];
-            forEach(selectElement.children(), function(option) {
+            forEach(selectElement.find('option'), function(option) {
               if (option.selected) {
                 array.push(option.value);
               }
@@ -386,7 +389,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selected,
               selectedSet = false, // nothing is selected yet
               lastElement,
-              element;
+              element,
+              label;
 
           if (multiple) {
             selectedSet = new HashMap(modelValue);
@@ -410,9 +414,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selected = modelValue === valueFn(scope, locals);
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
+            label = displayFn(scope, locals); // what will be seen by the user
+            label = label === undefined ? '' : label; // doing displayFn(scope, locals) || '' overwrites zero values
             optionGroup.push({
               id: keyName ? keys[index] : index,   // either the index into array or key from object
-              label: displayFn(scope, locals) || '', // what will be seen by the user
+              label: label,
               selected: selected                   // determine if we should be selected
             });
           }
@@ -521,7 +527,6 @@ var optionDirective = ['$interpolate', function($interpolate) {
   return {
     restrict: 'E',
     priority: 100,
-    require: '^select',
     compile: function(element, attr) {
       if (isUndefined(attr.value)) {
         var interpolateFn = $interpolate(element.text(), true);
@@ -530,8 +535,13 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
       }
 
-      return function (scope, element, attr, selectCtrl) {
-        if (selectCtrl.databound) {
+      return function (scope, element, attr) {
+        var selectCtrlName = '$selectController',
+            parent = element.parent(),
+            selectCtrl = parent.data(selectCtrlName) ||
+              parent.parent().data(selectCtrlName); // in case we are in optgroup
+
+        if (selectCtrl && selectCtrl.databound) {
           // For some reason Opera defaults to true and if not overridden this messes up the repeater.
           // We don't want the view to drive the initialization of the model anyway.
           element.prop('selected', false);
@@ -540,7 +550,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
         }
 
         if (interpolateFn) {
-          scope.$watch(interpolateFn, function(newVal, oldVal) {
+          scope.$watch(interpolateFn, function interpolateWatchAction(newVal, oldVal) {
             attr.$set('value', newVal);
             if (newVal !== oldVal) selectCtrl.removeOption(oldVal);
             selectCtrl.addOption(newVal);

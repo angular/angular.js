@@ -198,13 +198,13 @@ angular.scenario.dsl('binding', function() {
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
-  var supportInputEvent = 'oninput' in document.createElement('div');
+  var supportInputEvent =  'oninput' in document.createElement('div') && msie != 9;
 
   chain.enter = function(value, event) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger(event || supportInputEvent && 'input' || 'change');
+      input.trigger(event || (supportInputEvent ? 'input' : 'change'));
       done();
     });
   };
@@ -298,6 +298,8 @@ angular.scenario.dsl('select', function() {
         option = select.find('option:contains("' + value + '")');
         if (option.length) {
           select.val(option.val());
+        } else {
+            return done("option '" + value + "' not found");
         }
       }
       select.trigger('change');
@@ -354,6 +356,22 @@ angular.scenario.dsl('element', function() {
       var elements = $document.elements();
       var href = elements.attr('href');
       var eventProcessDefault = elements.trigger('click')[0];
+
+      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+        this.application.navigateTo(href, function() {
+          done();
+        }, done);
+      } else {
+        done();
+      }
+    });
+  };
+
+  chain.dblclick = function() {
+    return this.addFutureAction("element '" + this.label + "' dblclick", function($window, $document, done) {
+      var elements = $document.elements();
+      var href = elements.attr('href');
+      var eventProcessDefault = elements.trigger('dblclick')[0];
 
       if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
         this.application.navigateTo(href, function() {

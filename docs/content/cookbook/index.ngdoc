@@ -2,7 +2,7 @@
 @name Cookbook
 @description
 
-Welcome to the angular cookbook. Here we will show you typical uses of angular by example.
+Welcome to the Angular cookbook. Here we will show you typical uses of Angular by example.
 
 
 # Hello World
@@ -45,7 +45,7 @@ allowing you to send links to specific screens in your app.
 # Services
 
 {@link api/ng Services}: Services are long lived objects in your applications that are
-available across controllers. A collection of useful services are pre-bundled with angular but you
+available across controllers. A collection of useful services are pre-bundled with Angular but you
 will likely add your own. Services are initialized using dependency injection, which resolves the
 order of initialization. This safeguards you from the perils of global state (a common way to
 implement long lived objects).
@@ -55,4 +55,4 @@ implement long lived objects).
 
 {@link buzz Resources}: Web applications must be able to communicate with the external
 services to get and update data. Resources are the abstractions of external URLs which are
-specially tailored to angular data binding.
+specially tailored to Angular data binding.

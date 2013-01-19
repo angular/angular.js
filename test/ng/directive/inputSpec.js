@@ -117,6 +117,18 @@ describe('NgModelController', function() {
     });
   });
 
+  describe('setPristine', function() {
+
+    it('should set control to its pristine state', function() {
+      ctrl.$setViewValue('edit');
+      expect(ctrl.$dirty).toBe(true);
+      expect(ctrl.$pristine).toBe(false);
+
+      ctrl.$setPristine();
+      expect(ctrl.$dirty).toBe(false);
+      expect(ctrl.$pristine).toBe(true);
+    });
+  });
 
   describe('view -> model', function() {
 
@@ -379,6 +391,14 @@ describe('input', function() {
 
     changeInputValueTo('  a  ');
     expect(scope.name).toEqual('a');
+  });
+
+
+  it('should update the model and not trim the value', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" ng-trim="false" />');
+
+    changeInputValueTo('  a  ');
+    expect(scope.name).toEqual('  a  ');
   });
 
 

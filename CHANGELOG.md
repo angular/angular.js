@@ -1,3 +1,296 @@
+<a name="1.1.1"></a>
+# 1.1.1 pathological-kerning (2012-11-26)
+
+_Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
+out and please give us feedback._
+
+_Note: This release also contains all bug fixes available in [1.0.3](#1.0.3)._
+
+
+## Features
+
+- **$cacheFactory:** cache.put now returns the added value
+  ([168db339](https://github.com/angular/angular.js/commit/168db33985aa025eb48bc21087717ab70da0bd72))
+- **$http:** Allow setting withCredentials on defaults
+  ([209b67df](https://github.com/angular/angular.js/commit/209b67df6a49fe1646ce63c5e7d11ed26e8abbc1),
+   [#1095](https://github.com/angular/angular.js/issues/1095))
+- **$resource:** support custom headers per action
+  ([fbdab513](https://github.com/angular/angular.js/commit/fbdab513dd48f667ad857030cf4b3481ecdd9097),
+   [#736](https://github.com/angular/angular.js/issues/736))
+- **$sanitize:** support telephone links
+  ([04450c48](https://github.com/angular/angular.js/commit/04450c48dfea065e1c9e4ab8adad94993ed1b037))
+- **FormController:** add ability to reset a form to pristine state
+  ([733a97ad](https://github.com/angular/angular.js/commit/733a97adf87bf8f7ec6be22b37c4676cf7b5fc2b),
+   [#856](https://github.com/angular/angular.js/issues/856))
+- **jqLite:** add triggerHandler()
+  ([650fd933](https://github.com/angular/angular.js/commit/650fd933df614ac733cd43fe31d81d622a2ce2bc))
+- **linky filter:** allow optional 'target' argument
+  ([610927d7](https://github.com/angular/angular.js/commit/610927d77b77700c5c61accd503a2af0fa51cfe6),
+   [#1443](https://github.com/angular/angular.js/issues/1443))
+- **angular-mocks:** support mocha in angular mocks
+  ([92558fe4](https://github.com/angular/angular.js/commit/92558fe4119fb1ee793d781de1888abef181c7f6))
+- **ngModel:** support ngTrim attribute on input
+  ([d519953a](https://github.com/angular/angular.js/commit/d519953a4b219035587e3fcb2e9cc52e02b408ca))
+- **scenario:** add dblclick method to the ngScenario dsl
+  ([8cb9c99e](https://github.com/angular/angular.js/commit/8cb9c99ec064fd95567118d29bfa4a19b8613ab3))
+- **CSP:** update to the latest CSP api
+  ([af7e0bd0](https://github.com/angular/angular.js/commit/af7e0bd0a7c286667c526cb7e0c733d3ee5f17fd),
+   [#1577](https://github.com/angular/angular.js/issues/1577))
+
+
+## Bug Fixes
+
+- **$http:**
+  - config.param should expand array values properly (see breaking change notes below)
+    ([79af2bad](https://github.com/angular/angular.js/commit/79af2badcb087881e3fd600f6ae5bf3f86a2daf8),
+     [#1363](https://github.com/angular/angular.js/issues/1363))
+  - prevent CORS preflight checks by removing `X-Requested-With` from header defaults (see breaking
+    change notes below)
+    ([3a75b112](https://github.com/angular/angular.js/commit/3a75b1124d062f64093a90b26630938558909e8d),
+     [#1004](https://github.com/angular/angular.js/issues/1004))
+  - prevent CORS preflight checks by not setting `X-XSFR-TOKEN` header for cross domain requests (see
+    breaking change notes below)
+    ([fce100a4](https://github.com/angular/angular.js/commit/fce100a46c5681562253c3a856d67bbd35fbc2f2),
+     [#1096](https://github.com/angular/angular.js/issues/1096))
+
+
+## Refactorings
+
+- **$evalAsync:** have only one global async queue
+  ([331cd5a8](https://github.com/angular/angular.js/commit/331cd5a8cb5efdafe8ad7eb386aed4033cfc1bb3))
+
+
+## Breaking Changes
+
+- Due to fix for [#1363](https://github.com/angular/angular.js/issues/1363) it's possible but unlikely
+  that $http will start generating different URLs for requests. This affects only cases when a request
+  is made with a parameter, value of which is an array. If the server relied on the buggy behavior then
+  either the backend should be fixed or a simple serialization of the array should be done on the client
+  before calling the $http service.
+
+- Due to fix for [#1004](https://github.com/angular/angular.js/issues/1004) the `X-Requested-With` header
+  is not set by $http service any more. If anyone actually uses this header it's quite easy to add
+  it back via:
+
+  ```
+    myAppModule.config(['$httpProvider', function($httpProvider) {
+        $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    }]);
+  ```
+
+- Due to fix for [#1096](https://github.com/angular/angular.js/issues/1096) `X-XSFR-TOKEN` header is
+  no longer send for cross domain requests. This shouldn't affect any known production service. If we are
+  wrong, please let us know ;-)
+
+
+
+<a name="1.0.3"></a>
+# 1.0.3 bouncy-thunder (2012-11-26)
+
+
+## Bug Fixes
+
+- **$cacheFactory:** return undefined when removing non-existent entry
+  ([55d15806](https://github.com/angular/angular.js/commit/55d15806fb14b1d98b5ca2770bbbb59e11548c62),
+   [#1497](https://github.com/angular/angular.js/issues/1497))
+- **$compile:**
+  - prevent double attr interpolation w/ templateUrl
+    ([fc115bfd](https://github.com/angular/angular.js/commit/fc115bfd0d18017f4bcef1e39fb22d97a98f8ab1),
+     [#1166](https://github.com/angular/angular.js/issues/1166))
+  - reference local in isolate scope
+    ([8db47ca7](https://github.com/angular/angular.js/commit/8db47ca7d4303e3e45a838219a1f6e9be8770ed4),
+     [#1272](https://github.com/angular/angular.js/issues/1272))
+  - don't look for class directives in empty string
+    ([54b3875b](https://github.com/angular/angular.js/commit/54b3875ba5cb6ce8ddac61ace33c1b2f600875ff))
+  - compilation should not recurse into empty nodes
+    ([008a782b](https://github.com/angular/angular.js/commit/008a782bc8ed8a7ebcb63d563d1420fd1b312452))
+- **$injector:** more conservative annotation parsing
+- **$location:** reset $location.$$replace with every watch call
+    ([a32bc40f](https://github.com/angular/angular.js/commit/a32bc40fd75ca46e3581ad7a6e3a24a31df6e266),
+     [#1111](https://github.com/angular/angular.js/issues/1111))
+  ([d9eff86e](https://github.com/angular/angular.js/commit/d9eff86ef77dd76208cef21e882239d4db0eac1e))
+- **$parser:** string concatination with undefined model
+  ([42c38b29](https://github.com/angular/angular.js/commit/42c38b29f7dcb3327fe58e630b8e2973676989e0),
+   [#988](https://github.com/angular/angular.js/issues/988))
+- **$resource:**
+  - prevent default params to be shared between actions
+    ([94e1c039](https://github.com/angular/angular.js/commit/94e1c0391c351b6f691fad8abed2828fa20548b2))
+  - allow falsy values in URL parameters
+    ([4909d1d3](https://github.com/angular/angular.js/commit/4909d1d39d61d6945a0820a5a7276c1e657ba262))
+  - ignore undefined parameters
+    ([10e1c759](https://github.com/angular/angular.js/commit/10e1c759f4602d993a76b0eacf6a2d04c8880017),
+     [#875](https://github.com/angular/angular.js/issues/875),
+     [#782](https://github.com/angular/angular.js/issues/782))
+- **Scope:**
+  - workaround for Chrome's memleak
+    ([bd524fc4](https://github.com/angular/angular.js/commit/bd524fc4e5fc0feffe85632a7a6560da6bd9b762),
+     [#1313](https://github.com/angular/angular.js/issues/1313))
+  - allow removing a listener during event
+    ([e6966e05](https://github.com/angular/angular.js/commit/e6966e05f508d1d2633b9ff327fea912b12555ac))
+- **$route:** support inline annotation on .resolve
+  ([b0a05a75](https://github.com/angular/angular.js/commit/b0a05a7531ed7235aa6d2c4e3ea11373e1fc73f1))
+- **FormController:** propagate dirty state to parent forms
+  ([04329151](https://github.com/angular/angular.js/commit/04329151d2df833f803629cefa781aa6409fe6a5))
+- **a:** prevent Opera from incorrectly navigating on link click
+  ([c81d8176](https://github.com/angular/angular.js/commit/c81d8176cc55cd15acae05259ead73f90a01f0b7))
+- **jqLite:**
+  - support append on document fragment
+    ([96ed9ff5](https://github.com/angular/angular.js/commit/96ed9ff59a454486c88bdf92ad9d28ab8864b85e))
+  - fire $destroy event via triggerHandler (this makes AngularJS compatible with **jQuery 1.8.x**)
+    ([b9a9f91f](https://github.com/angular/angular.js/commit/b9a9f91fbf99b71cfde434b6277f4c7d2533556f),
+     [#1512](https://github.com/angular/angular.js/issues/1512))
+- **Filters**
+  - **currency:** Handle not-quite-zero values
+    ([bca1604c](https://github.com/angular/angular.js/commit/bca1604c12262b66ce3b8004994fb4841fb8b87d),
+     [#1469](https://github.com/angular/angular.js/issues/1469))
+  - **date:**
+     - make timezone optional
+       ([9473780e](https://github.com/angular/angular.js/commit/9473780e77a960ba27644ca76c2413924cc8972e))
+     - support sub-second precision on dateFilter
+       ([f299fd51](https://github.com/angular/angular.js/commit/f299fd512248321b426a5ab924a329aa1b691280))
+- **Directives**
+  - **ngClass:** works with class interpolation
+    ([cebd015f](https://github.com/angular/angular.js/commit/cebd015f78c5e21bd37d4bc055dbcdc21dac2ef2),
+     [#1016](https://github.com/angular/angular.js/issues/1016))
+  - **ngClassOdd/ngClassEven:** support shrinking/reordering in repeaters
+    ([d859dcec](https://github.com/angular/angular.js/commit/d859dcecea654d1d858cd756c6efb8435a453197),
+     [6c67719d](https://github.com/angular/angular.js/commit/6c67719dfa6ff3f2a15a8e1e7660cf2e6e9155b0),
+     [#1076](https://github.com/angular/angular.js/issues/1076))
+  - **ngModel:** sync ngModel state with scope state
+    ([e6d9bea4](https://github.com/angular/angular.js/commit/e6d9bea4f3b2eb28851298d3dc3a30d46062d58a),
+     [#933](https://github.com/angular/angular.js/issues/933))
+  - **ngRepeat:** now works better with primitive types
+    ([e6d9bea4](https://github.com/angular/angular.js/commit/e6d9bea4f3b2eb28851298d3dc3a30d46062d58a),
+     [#933](https://github.com/angular/angular.js/issues/933))
+  - **ngSrc:** don't set src if value is empty string
+    ([b6e4a711](https://github.com/angular/angular.js/commit/b6e4a71166c7f00f4140fd7ea8f0cd81b4487a3f))
+  - **select:** select option with a label of 0 is not shown
+    ([b3cae4f4](https://github.com/angular/angular.js/commit/b3cae4f457f1688346bbd0b08cccc9c504f83406),
+     [#1401](https://github.com/angular/angular.js/issues/1401))
+- **scenario:**
+  - emit RunnerBegin event
+    ([95276a7e](https://github.com/angular/angular.js/commit/95276a7e1047c7a3ac6613d8612c62f544388fc9))
+  - NPE when no angular loaded in test page
+    ([84c13d96](https://github.com/angular/angular.js/commit/84c13d96ff6e993b2ee9ff6bf49614fc1d514b04))
+  - support data-ng and x-ng based attributes
+  ([249a1d84](https://github.com/angular/angular.js/commit/249a1d84e7ac3b8528d317b8b0a80acb5dd9a271),
+   [#1020](https://github.com/angular/angular.js/issues/1020))
+
+
+## Docs
+
+- add plunkr support
+  ([7c67b2fb](https://github.com/angular/angular.js/commit/7c67b2fb6afbc18f3593c64a5f339f04f9003f3c))
+- various small documentation fixes and improvements
+
+
+## Refactorings
+
+- name all anonymous watch functions in Angular
+  ([ca30fce2](https://github.com/angular/angular.js/commit/ca30fce28ca13284bfa1c926e810ed75cdcde499),
+   [#1119](https://github.com/angular/angular.js/issues/1119))
+
+
+
+
+<a name="1.1.0"></a>
+# 1.1.0 increase-gravatas (2012-08-31)
+
+_Note: 1.1.x releases unlike 1.0.x are considered unstable.
+[More info](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html)_
+
+This release also contains all bug fixes available in [1.0.2](#1.0.2).
+
+## Features
+
+- **$http:** support custom reponseType
+  ([e0a54f6b](https://github.com/angular/angular.js/commit/e0a54f6b206dc2b6595f2bc3a17c5932e7477545),
+  [#1013](https://github.com/angular/angular.js/issues/1013))
+- **$interpolate:**
+  - provide contextual error messages
+    ([d804bbcd](https://github.com/angular/angular.js/commit/d804bbcd51ec83bee1f4a3ccd42c3bd7eb38a988))
+  - expose start/end symbols in run phase
+    ([58f121a5](https://github.com/angular/angular.js/commit/58f121a5c293ed57043e22ed526fdf99642fca81))
+- **$sniffer:** auto detect CSP mode (currently requires Chrome on dev channel)
+  ([167aa0c2](https://github.com/angular/angular.js/commit/167aa0c29c998be33c49d33302e099b36d1ce0be))
+
+
+
+<a name="1.0.2"></a>
+# 1.0.2 debilitating-awesomeness (2012-08-31)
+
+
+## Bug Fixes
+
+- **$compile:** denormalize directive templates
+  ([dfe99836](https://github.com/angular/angular.js/commit/dfe99836cd98c2a1b0f9bde6216bd44088de275a))
+- **$interpolate:** $interpolateProvider.endSymbol() returns startSymbol
+  ([20348717](https://github.com/angular/angular.js/commit/20348717640c0ef405c9fdcc8fec5b566efc48b3))
+- **jqLite:** better support for xhtml
+  ([d3fa7a2e](https://github.com/angular/angular.js/commit/d3fa7a2e9e93c9dae13d852b28c878f7d6b7c420),
+   [#1301](https://github.com/angular/angular.js/issues/1301))
+- **mocks:** free up memory after every spec
+  ([1a8642aa](https://github.com/angular/angular.js/commit/1a8642aac2de40dccdab464e58dc164006c300bb))
+- **e2e test runner:** Adding meta tag to avoid cache issues
+  ([5318588d](https://github.com/angular/angular.js/commit/5318588d6e8ee9a31f4002affd6858d25305aabf))
+- Directives:
+  - **form:** prevent page reload when form destroyed
+    ([054d40f3](https://github.com/angular/angular.js/commit/054d40f338f9000cddcf7f0513af37328b88ef41),
+     [#1238](https://github.com/angular/angular.js/issues/1238))
+  - **ngList:** remove data bound flicker
+    ([fa62ea81](https://github.com/angular/angular.js/commit/fa62ea810f6c701e898dd07c6c9228f13d5b5e02))
+  - **ngPluralize:** fixes ng-pluralize when using non-standard start/end symbols
+    ([e85774f7](https://github.com/angular/angular.js/commit/e85774f709b9f681b0ff8d829b07568b0f844a62),
+     [#1134](https://github.com/angular/angular.js/issues/1134))
+  - **option:** support option elements in datalist
+    ([9767f7bd](https://github.com/angular/angular.js/commit/9767f7bdd3e1ce6f65bdea992d67369ead13d813),
+     [#1165](https://github.com/angular/angular.js/issues/1165))
+
+
+## Docs
+
+- Conceptual Overview of AngularJS (high level overview of how things work):
+  <http://docs.angularjs.org/guide/concepts>
+  ([7a5f25f6](https://github.com/angular/angular.js/commit/7a5f25f6671eb5f51b06615d74a05855ab79f31e))
+- Lots of spelling, grammar and other fixes:
+  [9a710c78](https://github.com/angular/angular.js/commit/9a710c788d880785d2b02a9c5411eb15e9c278bf),
+  [847d2da0](https://github.com/angular/angular.js/commit/847d2da0f8d1e265eda7b4dd3e7eb52ac86d784e),
+  [dbefd671](https://github.com/angular/angular.js/commit/dbefd671e41c3bda481850bb7e566349e275d759),
+  [cab5e1d9](https://github.com/angular/angular.js/commit/cab5e1d9b363eac6fd31b15c5b86f30993e2f147),
+  [f00b6cca](https://github.com/angular/angular.js/commit/f00b6cca024a9418f353651f29c984f934575bd9),
+  [2e365168](https://github.com/angular/angular.js/commit/2e3651686c2bd84cf464ecc236c8ad77e61179df),
+  [536de148](https://github.com/angular/angular.js/commit/536de148214290f0b4a0595fa16c00da5e527e79),
+  [a1107e81](https://github.com/angular/angular.js/commit/a1107e81ebf2254caf75718de2e3ec773cce0c56),
+  [5ef9ed87](https://github.com/angular/angular.js/commit/5ef9ed87d82b109715a87e9aa1b1d5b63f515d3a),
+  [8c81a0f3](https://github.com/angular/angular.js/commit/8c81a0f3728b9308854ceb9bf392ec467b95d8eb),
+  [bde931af](https://github.com/angular/angular.js/commit/bde931afd5cf2483df236e06992666a0a4182794),
+  [6553fe68](https://github.com/angular/angular.js/commit/6553fe68d17d42ec25e0c592ceaa1077cc0ec4f6),
+  [13b5fd1b](https://github.com/angular/angular.js/commit/13b5fd1b9d60f1a9187da8a89db9272284ccdac4),
+  [17209d5b](https://github.com/angular/angular.js/commit/17209d5b4a579edf8425715b5cdf25bc5cd96711),
+  [31c82560](https://github.com/angular/angular.js/commit/31c825607dd524241c811ca3e401b119c810e977),
+  [ab6937e2](https://github.com/angular/angular.js/commit/ab6937e2518bfd77d9fe42e3d2e11fe4a7a16814),
+  [fbfda241](https://github.com/angular/angular.js/commit/fbfda241f616bcfe8273f501dd49120a3cb35fab),
+  [206371b7](https://github.com/angular/angular.js/commit/206371b7372c242db234ca8da12d1c7a8a322d54),
+  [b6b92bd8](https://github.com/angular/angular.js/commit/b6b92bd866e1d6d066f1c9bf1937496cd3e28664),
+  [79f2d843](https://github.com/angular/angular.js/commit/79f2d843a8458bfdc23fe9f179a1416fe21f7533),
+  [64a9cd8f](https://github.com/angular/angular.js/commit/64a9cd8f4fac1c518869a1c955fe60bd6ef76439),
+  [7f6e1326](https://github.com/angular/angular.js/commit/7f6e1326f3a7a6a2ba2dbd48dd6571ebe929a7c1),
+  [1fd2b3d4](https://github.com/angular/angular.js/commit/1fd2b3d402f36e395a1fe9ea7e3f91a1b2833426),
+  [d56d69cc](https://github.com/angular/angular.js/commit/d56d69cc8319f69135a17a9bb5ae394123b33c51),
+  [01e726b2](https://github.com/angular/angular.js/commit/01e726b2fa3fb0d2584c9bb8df116ff3a9f05879),
+  [16136216](https://github.com/angular/angular.js/commit/161362164532af3578c9e3e8b52cd80b15345add),
+  [92a3d282](https://github.com/angular/angular.js/commit/92a3d2821856c75eb95f8ec6ccf26d6a9b37fdd9),
+  [4c585019](https://github.com/angular/angular.js/commit/4c5850195699b1d982963f25399d24bf8b815f81),
+  [c076fe08](https://github.com/angular/angular.js/commit/c076fe08cf47e8af4b5e8845aed917ebb7dbd593),
+  [2473412b](https://github.com/angular/angular.js/commit/2473412ba55f7c47f2ca24311312ce95ee11949e),
+  [1f2d5000](https://github.com/angular/angular.js/commit/1f2d50000e82630bfce6eb9cf0a8da752fd1e826),
+  [5026315d](https://github.com/angular/angular.js/commit/5026315d6f4495d636d86ae2a022fb55cc0ca211),
+  [f0a090dd](https://github.com/angular/angular.js/commit/f0a090ddf256d0c144e705c0cdf4216d824140f9),
+  [6d9313a6](https://github.com/angular/angular.js/commit/6d9313a68d82654d389c0b2c3e4af148382f14be)) and more!
+
+
+
 <a name="1.0.1"></a>
 # 1.0.1 thorium-shielding (2012-06-25)
 

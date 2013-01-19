@@ -3,11 +3,11 @@
 @description
 
 While Model-View-Controller (MVC) has acquired different shades of meaning over the years since it
-first appeared, angular incorporates the basic principles behind the original {@link
+first appeared, Angular incorporates the basic principles behind the original {@link
 http://en.wikipedia.org/wiki/Model–view–controller MVC} software design pattern into its way of
 building client-side web applications.
 
-The MVC pattern greatly summarized:
+The MVC pattern summarized:
 
 * Separate applications into distinct presentation, data, and logic components
 * Encourage loose coupling between these components

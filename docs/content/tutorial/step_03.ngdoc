@@ -54,14 +54,14 @@ __`app/index.html`:__
   </div>
 </pre>
 
-We added a standard HTML `<input>` tag and used angular's
+We added a standard HTML `<input>` tag and used Angular's
 {@link api/ng.filter:filter $filter} function to process the input for the
-`ngRepeate` directive.
+{@link api/ng.directive:ngRepeat ngRepeat} directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:
 
-* Data-binding. This is one of the core features in Angular. When the page loads, Angular binds the
+* Data-binding: This is one of the core features in Angular. When the page loads, Angular binds the
 name of the input box to a variable of the same name in the data model and keeps the two in sync.
 
   In this code, the data that a user types into the input box (named __`query`__) is immediately
@@ -71,7 +71,7 @@ the DOM to reflect the current state of the model.
 
       <img  class="diagram" src="img/tutorial/tutorial_03.png">
 
-* Use of `filter` filter. The {@link api/ng.filter:filter filter} function uses the
+* Use of the `filter` filter: The {@link api/ng.filter:filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
 
   `ngRepeat` automatically updates the view in response to the changing number of phones returned
@@ -122,6 +122,11 @@ To run the end-to-end test, open one of the following in a new browser tab:
 `http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
 * casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
 
+Previously we've seen how Testacular can be used to execute unit tests. Well, it can also run the
+end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
+with unit tests, Testacular will exit after the test run and will not automatically rerun the test
+suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
+
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.
@@ -148,9 +153,9 @@ and title elements:
 
           <html ng-app ng-controller="PhoneListCtrl">
 
-  Be sure to *remove* the `ng-controller` declaration from the body element.
+  Be sure to __remove__ the `ng-controller` declaration from the body element.
 
-  While using double curlies works fine in within the title element, you might have noticed that
+  While using double curlies works fine within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
 solution would be to use the {@link api/ng.directive:ngBind
 ngBind} or {@link api/ng.directive:ngBindTemplate
@@ -176,12 +181,14 @@ ngBindTemplate} directives, which are invisible to the user while the page is lo
 
   Refresh the browser tab with the end-to-end test runner to see the test fail. To make the test
 pass, edit the `index.html` template to add a `div` or `p` element with `id` `"status"` and content
-with the `query` binding.
+with the `query` binding, prefixed by "Current filter:". For instance:
 
-* Add a `pause()` statement into an end-to-end test and rerun it. You'll see the runner pause; this
-gives you the opportunity to explore the state of your application while it is displayed in the
-browser. The app is live! You can change the search query to prove it. Notice how useful this is
-for troubleshooting end-to-end tests.
+          <div id="status">Current filter: {{query}}</div>
+
+* Add a `pause()` statement inside of an end-to-end test and rerun it. You'll see the runner pause;
+this gives you the opportunity to explore the state of your application while it is displayed in
+the browser. The app is live! You can change the search query to prove it. Notice how useful this
+is for troubleshooting end-to-end tests.
 
 
 # Summary

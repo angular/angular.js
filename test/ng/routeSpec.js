@@ -82,28 +82,40 @@ describe('$route', function() {
   });
 
 
-  it('should match a route that contains special chars in the path', function() {
-    module(function($routeProvider) {
-      $routeProvider.when('/$test.23/foo(bar)/:baz', {templateUrl: 'test.html'});
-    });
-    inject(function($route, $location, $rootScope) {
+  describe('should match a route that contains special chars in the path', function() {
+    beforeEach(module(function($routeProvider) {
+      $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});
+    }));
 
+    it('matches the full path', inject(function($route, $location, $rootScope) {
       $location.path('/test');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$testX23/foo(bar)/222');
+    it('matches literal .', inject(function($route, $location, $rootScope) {
+      $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$test.23/foo(bar)/222');
+    it('matches literal *', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foooo(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('treats backslashes normally', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*\\(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('matches a URL with special chars', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeDefined();
-
-      $location.path('/$test.23/foo\\(bar)/222');
-      $rootScope.$digest();
-      expect($route.current).toBeUndefined();
-    });
+    }));
   });
 
 
@@ -232,10 +244,10 @@ describe('$route', function() {
           return deferB.promise;
         });
         $routeProvider.when('/path', { templateUrl: 'foo.html', resolve: {
-          a: function($q) {
+          a: ['$q', function($q) {
             deferA = $q.defer();
             return deferA.promise;
-          },
+          }],
           b: 'b'
         } });
       });
@@ -434,8 +446,8 @@ describe('$route', function() {
       });
     });
   });
-  
-  
+
+
   it('should match route with and without trailing slash', function() {
     module(function($routeProvider){
       $routeProvider.when('/foo', {templateUrl: 'foo.html'});
@@ -560,20 +572,15 @@ describe('$route', function() {
         $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
       });
-      inject(function($route, $location, $rootScope) {
-        var replace;
-
-        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-          if (oldUrl == 'http://server/#/foo/id3/eId') {
-            replace = $location.$$replace;
-          }
-        });
+      inject(function($browser, $route, $location, $rootScope) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
 
         $location.path('/foo/id3/eId');
         $rootScope.$digest();
 
         expect($location.path()).toEqual('/bar/id3');
-        expect(replace).toBe(true);
+        expect($browserUrl.mostRecentCall.args)
+            .toEqual(['http://server/#/bar/id3?extra=eId', true]);
       });
     });
   });

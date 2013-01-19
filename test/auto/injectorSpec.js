@@ -3,11 +3,13 @@
 describe('injector', function() {
   var providers;
   var injector;
+  var providerInjector;
 
-  beforeEach(module(function($provide) {
+  beforeEach(module(function($provide, $injector) {
     providers = function(name, factory, annotations) {
       $provide.factory(name, extend(factory, annotations||{}));
     };
+    providerInjector = $injector;
   }));
   beforeEach(inject(function($injector){
     injector = $injector;
@@ -70,6 +72,11 @@ describe('injector', function() {
       injector.get('b');
     }).toThrow("Unknown provider: idontexistProvider <- idontexist <- a <- b");
   });
+
+
+  it('should create a new $injector for the run phase', inject(function($injector) {
+    expect($injector).not.toBe(providerInjector);
+  }));
 
 
   describe('invoke', function() {
@@ -136,7 +143,7 @@ describe('injector', function() {
       function $f_n0 /*
           */(
           $a, // x, <-- looks like an arg but it is a comment
-          b_, /* z, <-- looks like an arg but it is a
+          b_ , /* z, <-- looks like an arg but it is a
                  multi-line comment
                  function (a, b) {}
                  */
@@ -387,6 +394,20 @@ describe('injector', function() {
         });
 
 
+        it('should configure $provide using an array', function() {
+          function Type(PREFIX) {
+            this.prefix = PREFIX;
+          };
+          Type.prototype.$get = function() {
+            return this.prefix + 'def';
+          };
+          expect(createInjector([function($provide) {
+            $provide.constant('PREFIX', 'abc');
+            $provide.provider('value', ['PREFIX', Type]);
+          }]).get('value')).toEqual('abcdef');
+        });
+
+
         it('should configure a set of providers', function() {
           expect(createInjector([function($provide) {
             $provide.provider({value: valueFn({$get:Array})});
@@ -535,26 +556,26 @@ describe('injector', function() {
 
 
       it('should decorate the missing service error with module name', function() {
-        angular.module('TestModule', [], function($injector) {});
+        angular.module('TestModule', [], function(xyzzy) {});
         expect(function() {
           createInjector(['TestModule']);
-        }).toThrow('Unknown provider: $injector from TestModule');
+        }).toThrow('Unknown provider: xyzzy from TestModule');
       });
 
 
       it('should decorate the missing service error with module function', function() {
-        function myModule($injector){}
+        function myModule(xyzzy){}
         expect(function() {
           createInjector([myModule]);
-        }).toThrow('Unknown provider: $injector from ' + myModule);
+        }).toThrow('Unknown provider: xyzzy from ' + myModule);
       });
 
 
       it('should decorate the missing service error with module array function', function() {
-        function myModule($injector){}
+        function myModule(xyzzy){}
         expect(function() {
-          createInjector([['$injector', myModule]]);
-        }).toThrow('Unknown provider: $injector from ' + myModule);
+          createInjector([['xyzzy', myModule]]);
+        }).toThrow('Unknown provider: xyzzy from ' + myModule);
       });
 
 
