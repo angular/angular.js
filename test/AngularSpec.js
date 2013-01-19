@@ -587,7 +587,7 @@ describe('angular', function() {
   describe('startingTag', function() {
     it('should allow passing in Nodes instead of Elements', function() {
       var txtNode = document.createTextNode('some text');
-      expect(startingTag(txtNode)).toBe('');
+      expect(startingTag(txtNode)).toBe('some text');
     });
   });
 
