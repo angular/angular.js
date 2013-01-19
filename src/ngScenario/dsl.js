@@ -327,6 +327,7 @@ angular.scenario.dsl('select', function() {
  * Usage:
  *    element(selector, label).count() get the number of elements that match selector
  *    element(selector, label).click() clicks an element
+ *    element(selector, label).mouseover() mouseover an element
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
  *    element(selector, label).{method}() gets the value (as defined by jQuery, ex. val)
  *    element(selector, label).{method}(value) sets the value (as defined by jQuery, ex. val)
@@ -380,6 +381,14 @@ angular.scenario.dsl('element', function() {
       } else {
         done();
       }
+    });
+  };
+
+  chain.mouseover = function() {
+    return this.addFutureAction("element '" + this.label + "' mouseover", function($window, $document, done) {
+      var elements = $document.elements();
+      elements.trigger('mouseover');
+      done();
     });
   };
 
