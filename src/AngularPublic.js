@@ -48,6 +48,7 @@ function publishExternalAPI(angular){
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
+    'trim': trim,
     'callbacks': {counter: 0}
   });
 

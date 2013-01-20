@@ -390,7 +390,17 @@ function isBoolean(value) {
   return typeof value == 'boolean';
 }
 
-
+/**
+ * @ngdoc function
+ * @name angular.trim
+ * @function
+ *
+ * @description
+ * Trims whitespace from `value`
+ *
+ * @param {String} value String to remove whitespace from.
+ * @returns {String} Trimmed string.
+ */
 function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
 }
