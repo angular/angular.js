@@ -314,12 +314,13 @@ function $HttpProvider() {
      * The interceptors are service factories that are registered with the $httpProvider by
      * adding them to the `$httpProvider.responseInterceptors` array. The factory is called and
      * injected with dependencies (if specified) and returns the interceptor  — a function that
-     * takes a {@link ng.$q promise} and returns the original or a new promise.
+     * takes a {@link ng.$q promise} and a config object, which is the same object that was 
+     * passed to $http and returns the original or a new promise.
      *
      * <pre>
      *   // register the interceptor as a service
      *   $provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
-     *     return function(promise) {
+     *     return function(promise, config) {
      *       return promise.then(function(response) {
      *         // do something on success
      *       }, function(response) {
