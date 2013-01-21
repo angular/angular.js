@@ -99,6 +99,34 @@ describe('$http', function() {
           expect(response).toBe('HELLO!');
         });
       });
+
+
+      it('should pass the http config through to the interceptors', function(){
+        var interceptedConfig;
+        var httpConfig = {
+          method: 'GET',
+          url: '/test'
+        }
+        module(function($httpProvider){
+          $httpProvider.responseInterceptors.push(function(){
+            return function(httpPromise, config){
+              return httpPromise.then(function(response){
+                interceptedConfig = config;
+                return httpPromise;
+              });
+            };
+          });
+        });
+        inject(function($http, $httpBackend){
+          $httpBackend.expect('GET', '/test').respond('hello!');
+          debugger;
+          $http(httpConfig);
+          expect(interceptedConfig).toBeUndefined();
+
+          $httpBackend.flush();
+          expect(interceptedConfig).toBe(httpConfig);
+        });
+      });
     });
   });
 

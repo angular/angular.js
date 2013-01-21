@@ -541,7 +541,7 @@ function $HttpProvider() {
 
       // apply interceptors
       forEach(responseInterceptors, function(interceptor) {
-        promise = interceptor(promise);
+        promise = interceptor(promise, config);
       });
 
       promise.success = function(fn) {
