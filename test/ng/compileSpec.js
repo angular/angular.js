@@ -702,6 +702,10 @@ describe('$compile', function() {
               }
             }));
 
+            directive('replace', valueFn({
+              replace: true,
+              template: '<span>Hello, {{name}}!</span>'
+            }));
           }
         ));
 
@@ -815,6 +819,31 @@ describe('$compile', function() {
               );
             }
         ));
+
+
+        it('should compile template when replacing element in another template',
+            inject(function($compile, $templateCache, $rootScope) {
+          $templateCache.put('hello.html', '<div replace></div>');
+          $rootScope.name = 'Elvis';
+          element = $compile('<div><b class="hello"></b></div>')($rootScope);
+
+          $rootScope.$digest();
+
+          expect(sortedHtml(element)).
+            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
+        }));
+
+
+        it('should compile template when replacing root element',
+            inject(function($compile, $templateCache, $rootScope) {
+              $rootScope.name = 'Elvis';
+              element = $compile('<div replace></div>')($rootScope);
+
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<span replace="">Hello, Elvis!</span>');
+            }));
 
 
         it('should resolve widgets after cloning in append mode', function() {
