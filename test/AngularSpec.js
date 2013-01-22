@@ -126,12 +126,12 @@ describe('angular', function() {
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
     });
 
-    it('should ignore undefined member variables', function() {
+    it('should ignore undefined member variables during comparison', function() {
       var obj1 = {name: 'misko'},
           obj2 = {name: 'misko', undefinedvar: undefined};
 
-      expect(equals(obj1, obj2)).toBe(false);
-      expect(equals(obj2, obj1)).toBe(false);
+      expect(equals(obj1, obj2)).toBe(true);
+      expect(equals(obj2, obj1)).toBe(true);
     });
 
     it('should ignore $ member variables', function() {
