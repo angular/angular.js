@@ -1,3 +1,122 @@
+<a name="1.1.2"></a>
+# 1.1.2 tofu-animation (2013-01-22)
+
+_Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
+out and please give us feedback._
+
+_Note: This release also contains all bug fixes available in [1.0.4](#1.0.4)._
+
+## Features
+
+- **$compile:** support modifying the DOM structure in postlink fn
+  ([cdf6fb19](https://github.com/angular/angular.js/commit/cdf6fb19c85560b30607e71dc2b19fde54760faa))
+- **$log:** add $log.debug()
+  ([9e991ddb](https://github.com/angular/angular.js/commit/9e991ddb1de13adf520eda459950be5b90b5b6d9),
+   [#1592](https://github.com/angular/angular.js/issues/1592))
+- **$parse:** allow strict equality in angular expressions
+  ([a179a9a9](https://github.com/angular/angular.js/commit/a179a9a96eda5c566bda8a70ac8a75822c936a68),
+   [#908](https://github.com/angular/angular.js/issues/908))
+- **$resource:**
+  - allow dynamic default parameters
+  ([cc42c99b](https://github.com/angular/angular.js/commit/cc42c99bec6a03d6c41b8e1d29ba2b1f5c16b87d))
+  - support all $http.config actions
+  ([af89daf4](https://github.com/angular/angular.js/commit/af89daf4641f57b92be6c1f3635f5a3237f20c71))
+- **$route:** allow using functions as template params in 'when'
+  ([faf02f0c](https://github.com/angular/angular.js/commit/faf02f0c4db7962f863b0da2a82c8cafab2c706f))
+- **$timeout-mock:** add verifyNoPendingTasks method
+  ([f0c6ebc0](https://github.com/angular/angular.js/commit/f0c6ebc07653f6267acec898ccef5677884e3081),
+   [#1245](https://github.com/angular/angular.js/issues/1245))
+- **directive:**
+  - added ngOpen boolean directive
+  ([b8bd4d54](https://github.com/angular/angular.js/commit/b8bd4d5460d9952e9a3bb14992636b17859bd457))
+  - ngKeydown, ngKeyup
+  ([e03182f0](https://github.com/angular/angular.js/commit/e03182f018f5069acd5e883ce2e9349b83f2d03f),
+   [#1035](https://github.com/angular/angular.js/issues/1035))
+- **limitTo filter:** limitTo filter accepts strings
+  ([9e96d983](https://github.com/angular/angular.js/commit/9e96d983451899ef0cef3e68395c8f6c1ef83bbe),
+   [#653](https://github.com/angular/angular.js/issues/653))
+- **scenario:**
+  - add mouseover method to the ngScenario dsl
+  ([2f437e89](https://github.com/angular/angular.js/commit/2f437e89781cb2b449abb685e36b26ca1cf0fff5))
+  - fail when an option to select does not exist
+  ([15183f3e](https://github.com/angular/angular.js/commit/15183f3e1fbee031c9595206163962788f98b298))
+
+
+## Breaking Changes
+
+- **date:** due to [cc821502](https://github.com/angular/angular.js/commit/cc821502bca64d15e1c576bf20a62b28b3d9a88a),
+  string input without timezone info is now parsed as local time/date
+
+
+
+<a name="1.0.4"></a>
+# 1.0.4 bewildering-hair (2013-01-22)
+
+## Bug Fixes
+
+- **$compile:**
+  - do not wrap empty root text nodes in spans
+  ([49f9e4ce](https://github.com/angular/angular.js/commit/49f9e4cef13e68ff85b3c160cf8fac6e7cd042a3),
+   [#1059](https://github.com/angular/angular.js/issues/1059))
+  - safely create transclude comment nodes
+  ([74dd2f79](https://github.com/angular/angular.js/commit/74dd2f7980ea8ec434a6e0565d857c910653ed9b),
+   [#1740](https://github.com/angular/angular.js/issues/1740))
+- **$injector:**
+  - remove bogus fn arg
+  ([b6b7c5a1](https://github.com/angular/angular.js/commit/b6b7c5a1d66073937709158da8c2d688cb45c9f6),
+   [#1711](https://github.com/angular/angular.js/issues/1711))
+  - provider can now be defined in the array format
+  ([2c405f41](https://github.com/angular/angular.js/commit/2c405f417125c80c387a51baece8bf6e1e0c0a81),
+   [#1452](https://github.com/angular/angular.js/issues/1452))
+- **$resource:**
+  - HTTP method should be case-insensitive
+  ([8991680d](https://github.com/angular/angular.js/commit/8991680d8ab632dda60cd70c780868c803c74509),
+   [#1403](https://github.com/angular/angular.js/issues/1403))
+- **$route:**
+  - support route params not separated with slashes.
+  ([c6392616](https://github.com/angular/angular.js/commit/c6392616ea5245bd0d2f77dded0b948d9e2637c8))
+  - correctly extract $routeParams from urls
+  ([30a9da5d](https://github.com/angular/angular.js/commit/30a9da5dc159dd1e19b677914356925c7ebdf632))
+- **Scope:** ensure that a scope is destroyed only once
+  ([d6da505f](https://github.com/angular/angular.js/commit/d6da505f4e044f8a487ac27a3ec707c11853ee0a),
+   [#1627](https://github.com/angular/angular.js/issues/1627))
+- **angular.equals:**
+  - consistently compare undefined object props
+  ([5ae63fd3](https://github.com/angular/angular.js/commit/5ae63fd385295d5a7bbdc79466f59727dcab1c85),
+   [3c2e1c5e](https://github.com/angular/angular.js/commit/3c2e1c5e4d12529b1d69a6173c38097527dccc4f),
+   [#1648](https://github.com/angular/angular.js/issues/1648))
+- **date filter:** parse string input as local time unless TZ is specified
+  ([cc821502](https://github.com/angular/angular.js/commit/cc821502bca64d15e1c576bf20a62b28b3d9a88a),
+   [#847](https://github.com/angular/angular.js/issues/847))
+- **jqLite:**
+  - children() should only return elements
+  ([febb4c1c](https://github.com/angular/angular.js/commit/febb4c1c35cf767ae31fc9fef1f4b4f026ac9de0))
+  - make next() ignore non-element nodes
+  ([76a6047a](https://github.com/angular/angular.js/commit/76a6047af690781b8238ba7924279470ba76d081))
+- **scenario:** don't trigger input events on IE9
+  ([8b9e6c35](https://github.com/angular/angular.js/commit/8b9e6c3501746edb2c9e2d585e8e0eaeb8ba8327))
+- **Directives:**
+  - **ngRepeat:** correctly apply $last if repeating over object
+  ([7e746015](https://github.com/angular/angular.js/commit/7e746015ea7dec3e9eb81bc4678fa9b6a83bc47c),
+   [#1789](https://github.com/angular/angular.js/issues/1789))
+  - **ngResource:** correct leading slash removal.
+  ([b2f46251](https://github.com/angular/angular.js/commit/b2f46251aca76c8568ee7d4bab54edbc9d7a186a))
+  - **ngSwitch:** don't leak when destroyed while not attached
+  ([a26234f7](https://github.com/angular/angular.js/commit/a26234f7183013e2fcc9b35377e181ad96dc9917),
+   [#1621](https://github.com/angular/angular.js/issues/1621))
+  - **select:** support optgroup + select[multiple] combo
+  ([26adeb11](https://github.com/angular/angular.js/commit/26adeb119bc4fafa6286de484626b8de4170abc9),
+   [#1553](https://github.com/angular/angular.js/issues/1553))
+
+
+## Features
+
+- **$compile:** support modifying the DOM structure in postlink fn
+  ([cdf6fb19](https://github.com/angular/angular.js/commit/cdf6fb19c85560b30607e71dc2b19fde54760faa))
+
+
+
 <a name="1.1.1"></a>
 # 1.1.1 pathological-kerning (2012-11-26)
 
