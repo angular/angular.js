@@ -420,6 +420,7 @@ function $CompileProvider($provide) {
                   (function(transcludeFn) {
                     return function(cloneFn) {
                       var transcludeScope = scope.$new();
+                      transcludeScope.$$transcluded = true;
 
                       return transcludeFn(transcludeScope, cloneFn).
                           bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
@@ -724,6 +725,8 @@ function $CompileProvider($provide) {
                 mode = match[1], // @, =, or &
                 lastValue,
                 parentGet, parentSet;
+
+            scope.$$isolateBindings[scopeName] = mode + attrName;
 
             switch (mode) {
 
