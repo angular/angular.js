@@ -281,7 +281,7 @@
  * The HTML specs do not require browsers to preserve the special attributes such as open.
  * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce the `ngMultiple` directive.
+ * To solve this problem, we introduce the `ngOpen` directive.
  *
  * @example
      <doc:example>
