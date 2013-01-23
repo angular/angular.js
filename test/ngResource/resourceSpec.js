@@ -129,6 +129,18 @@ describe("resource", function() {
     R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
 
+  it('should allow relative paths in resource url', function () {
+    var R = $resource(':relativePath');
+    $httpBackend.expect('GET', 'data.json').respond('{}');
+    R.get({ relativePath: 'data.json' });
+  });
+
+  it('should handle + in url params', function () {
+    var R = $resource('/api/myapp/:myresource?from=:from&to=:to&histlen=:histlen');
+    $httpBackend.expect('GET', '/api/myapp/pear+apple?from=2012-04-01&to=2012-04-29&histlen=3').respond('{}');
+    R.get({ myresource: 'pear+apple', from : '2012-04-01', to : '2012-04-29', histlen : 3  });
+  });
+
 
   it('should encode & in url params', function() {
     var R = $resource('/Path/:a');
