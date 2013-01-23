@@ -353,6 +353,24 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.';
+    });
+
+    expect(element).toBeInvalid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.it';
+    });
+
+    expect(element).toBeValid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
     dealoc(element);
   }));
 
