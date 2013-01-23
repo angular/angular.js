@@ -33,6 +33,8 @@
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
+ *@param {boolean} keepCache(optional) When true keep every DOM element created from an object in the collection in a cache. Usefull when the collection is filtered many times and DOM creation of an element is slow. DOM elements corresponding to filtered out objects are simply hidden, not deleted. 
+ *
  * @example
  * This example initializes the scope to a list of names and
  * then uses `ngRepeat` to display every person:
@@ -64,6 +66,7 @@ var ngRepeatDirective = ngDirective({
   compile: function(element, attr, linker) {
     return function(scope, iterStartElement, attr){
       var expression = attr.ngRepeat;
+      var keepCache = !!attr.keepCache;
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
       if (! match) {
@@ -176,8 +179,13 @@ var ngRepeatDirective = ngDirective({
             array = lastOrder[key];
             while(array.length) {
               value = array.pop();
-              value.element.remove();
-              value.scope.$destroy();
+              if (keepCache) {
+                nextOrder.push(value.scope[valueIdent], value);
+                value.element.css("display", "none");
+              } else {
+                value.element.remove();
+                value.scope.$destroy();
+              }
             }
           }
         }
