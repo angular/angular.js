@@ -2,6 +2,7 @@
 
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+var EMAIL_MULTIPLE_REGEXP = /^((([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})[,;]){1,})?(\s{0,1}[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4})$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 
 var inputType = {
@@ -228,7 +229,8 @@ var inputType = {
    *
    * @description
    * Text input with email validation. Sets the `email` validation error key if not a valid email
-   * address.
+   * address. Supports `multiple` attribute to input comma or semicolon seperated list of email
+   * addresses.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -590,7 +592,9 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    if (isEmpty(value) || EMAIL_REGEXP.test(value)) {
+    var regexp = attr.multiple ? EMAIL_MULTIPLE_REGEXP : EMAIL_REGEXP;
+    if (isEmpty(value) || regexp.test(value)) {
+
       ctrl.$setValidity('email', true);
       return value;
     } else {
