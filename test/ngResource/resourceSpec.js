@@ -129,12 +129,6 @@ describe("resource", function() {
     R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
 
-  it('should allow relative paths in resource url', function () {
-    var R = $resource(':a');
-    $httpBackend.expect('GET', 'data.json').respond('{}');
-    R.get({ a: 'data.json' });
-  });
-
 
   it('should encode & in url params', function() {
     var R = $resource('/Path/:a');
