@@ -137,6 +137,7 @@ function $RootScopeProvider(){
       this.$$destroyed = false;
       this.$$asyncQueue = [];
       this.$$listeners = {};
+      this.$$isolateBindings = {};
     }
 
     /**
