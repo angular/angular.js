@@ -430,4 +430,110 @@ describe('form', function() {
       expect(doc).toBeDirty();
     });
   });
+
+
+  describe('$setPristine', function() {
+
+    it('should reset pristine state of form and controls', function() {
+
+      doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named1" name="foo">' +
+            '<input ng-model="named2" name="bar">' +
+          '</form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm,
+          input1 = form.find('input').eq(0),
+          input1Ctrl = input1.controller('ngModel'),
+          input2 = form.find('input').eq(1),
+          input2Ctrl = input2.controller('ngModel');
+
+      input1Ctrl.$setViewValue('xx');
+      input2Ctrl.$setViewValue('yy');
+      scope.$apply();
+      expect(form).toBeDirty();
+      expect(input1).toBeDirty();
+      expect(input2).toBeDirty();
+
+      formCtrl.$setPristine();
+      expect(form).toBePristine();
+      expect(formCtrl.$pristine).toBe(true);
+      expect(formCtrl.$dirty).toBe(false);
+      expect(input1).toBePristine();
+      expect(input1Ctrl.$pristine).toBe(true);
+      expect(input1Ctrl.$dirty).toBe(false);
+      expect(input2).toBePristine();
+      expect(input2Ctrl.$pristine).toBe(true);
+      expect(input2Ctrl.$dirty).toBe(false);
+    });
+
+
+    it('should reset pristine state of anonymous form controls', function() {
+
+      doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="anonymous">' +
+          '</form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm,
+          input = form.find('input').eq(0),
+          inputCtrl = input.controller('ngModel');
+
+      inputCtrl.$setViewValue('xx');
+      scope.$apply();
+      expect(form).toBeDirty();
+      expect(input).toBeDirty();
+
+      formCtrl.$setPristine();
+      expect(form).toBePristine();
+      expect(formCtrl.$pristine).toBe(true);
+      expect(formCtrl.$dirty).toBe(false);
+      expect(input).toBePristine();
+      expect(inputCtrl.$pristine).toBe(true);
+      expect(inputCtrl.$dirty).toBe(false);
+    });
+
+
+    it('should reset pristine state of nested forms', function() {
+
+      doc = $compile(
+          '<form name="testForm">' +
+            '<div ng-form>' +
+              '<input ng-model="named" name="foo">' +
+            '</div>' +
+          '</form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm,
+          nestedForm = form.find('div'),
+          nestedFormCtrl = nestedForm.controller('form'),
+          nestedInput = form.find('input').eq(0),
+          nestedInputCtrl = nestedInput.controller('ngModel');
+
+      nestedInputCtrl.$setViewValue('xx');
+      scope.$apply();
+      expect(form).toBeDirty();
+      expect(nestedForm).toBeDirty();
+      expect(nestedInput).toBeDirty();
+
+      formCtrl.$setPristine();
+      expect(form).toBePristine();
+      expect(formCtrl.$pristine).toBe(true);
+      expect(formCtrl.$dirty).toBe(false);
+      expect(nestedForm).toBePristine();
+      expect(nestedFormCtrl.$pristine).toBe(true);
+      expect(nestedFormCtrl.$dirty).toBe(false);
+      expect(nestedInput).toBePristine();
+      expect(nestedInputCtrl.$pristine).toBe(true);
+      expect(nestedInputCtrl.$dirty).toBe(false);
+    });
+  });
 });

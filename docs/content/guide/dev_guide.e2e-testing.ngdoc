@@ -11,7 +11,7 @@ that will help you verify the health of your Angular application.
 
 # Overview
 You will write scenario tests in JavaScript, which describe how your application should behave,
-given a certain interaction in a specific state. A scenario is comprised of one or more it  blocks
+given a certain interaction in a specific state. A scenario is comprised of one or more `it` blocks
 (you can think of these as the requirements of your application), which in turn are made of
 **commands** and **expectations**. Commands tell the Runner to do something with the application
 (such as navigate to a page or click on a button), and expectations tell the Runner to assert
@@ -175,4 +175,4 @@ Executes the `method` passing in `key` and `value` on the element matching the g
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
 come with almost no-help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
-angular which makes testing your angular applications easy. So there is no excuse for not do it.
+angular which makes testing your angular applications easy. So there is no excuse for not testing.

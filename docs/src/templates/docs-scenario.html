@@ -3,7 +3,7 @@
 <head>
   <title>AngularJS Docs E2E Test Runner</title>
   <script>
-    var gae = (location.pathname.split('/').length == 2),
+    var production = location.hostname === 'docs.angularjs.org',
         headEl = document.head,
         angularVersion = {
           current: '"NG_VERSION_FULL"', // rewrite during build
@@ -33,9 +33,8 @@
 
 
     function path(name) {
-      return gae
-          ? 'http://code.angularjs.org/' + angularVersion.stable + '/' +
-              name.replace(/\.js$/, '-' + angularVersion.stable + '.js')
+      return production
+          ? 'http://code.angularjs.org/' + angularVersion.stable + '/' + name
           : '../' + name;
     }
   </script>

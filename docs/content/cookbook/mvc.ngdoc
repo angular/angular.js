@@ -2,7 +2,7 @@
 @name Cookbook: MVC
 @description
 
-MVC allows for a clean an testable separation between the behavior (controller) and the view
+MVC allows for a clean and testable separation between the behavior (controller) and the view
 (HTML template). A Controller is just a JavaScript class which is grafted onto the scope of the
 view. This makes it very easy for the controller and the view to share the model.
 
@@ -115,7 +115,7 @@ view.
 # Things to notice
 
 * The controller is defined in JavaScript and has no reference to the rendering logic.
-* The controller is instantiated by <angular/> and injected into the view.
+* The controller is instantiated by Angular and injected into the view.
 * The controller can be instantiated in isolation (without a view) and the code will still execute.
 This makes it very testable.
 * The HTML view is a projection of the model. In the above example, the model is stored in the

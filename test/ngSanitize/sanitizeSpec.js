@@ -188,7 +188,7 @@ describe('HTML', function() {
       expect(html).toEqual('<div>');
     });
 
-    describe('explicitly dissallow', function() {
+    describe('explicitly disallow', function() {
       it('should not allow attributes', function() {
         writer.start('div', {id:'a', name:'a', style:'a'});
         expect(html).toEqual('<div>');
@@ -230,10 +230,11 @@ describe('HTML', function() {
         expect(isUri('https://abc')).toBeTruthy();
         expect(isUri('ftp://abc')).toBeTruthy();
         expect(isUri('mailto:me@example.com')).toBeTruthy();
+        expect(isUri('tel:123-123-1234')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
       });
 
-      it('should not be UIR', function() {
+      it('should not be URI', function() {
         expect(isUri('')).toBeFalsy();
         expect(isUri('javascript:alert')).toBeFalsy();
       });

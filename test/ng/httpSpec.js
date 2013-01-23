@@ -147,6 +147,12 @@ describe('$http', function() {
         $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22%3A3%7D').respond('');
         $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
       }));
+
+
+      it('should expand arrays in params map', inject(function($httpBackend, $http) {
+          $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
+          $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
+      }));
     });
 
 
@@ -371,8 +377,7 @@ describe('$http', function() {
 
       it('should set default headers for GET request', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest';
+          return headers['Accept'] == 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {}});
@@ -383,7 +388,6 @@ describe('$http', function() {
       it('should set default headers for POST request', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
@@ -395,7 +399,6 @@ describe('$http', function() {
       it('should set default headers for PUT request', function() {
         $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json;charset=utf-8';
         }).respond('');
 
@@ -406,8 +409,7 @@ describe('$http', function() {
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest';
+          return headers['Accept'] == 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'FOO', headers: {}});
@@ -418,7 +420,6 @@ describe('$http', function() {
       it('should override default headers with custom', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'Rewritten' &&
-                 headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'Rewritten';
         }).respond('');
 
@@ -428,6 +429,17 @@ describe('$http', function() {
         }});
         $httpBackend.flush();
       });
+
+      it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
+        $browser.cookies('XSRF-TOKEN', 'secret');
+        $browser.url('http://host.com/base');
+        $httpBackend.expect('GET', 'http://www.test.com/url', undefined, function(headers) {
+          return headers['X-XSRF-TOKEN'] === undefined;
+        }).respond('');
+
+        $http({url: 'http://www.test.com/url', method: 'GET', headers: {}});
+        $httpBackend.flush();
+      }));
 
 
       it('should not send Content-Type header if request data/body is undefined', function() {
@@ -1003,5 +1015,26 @@ describe('$http', function() {
     });
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
+  describe('isSameDomain', function() {
+    it('should support various combinations of urls', function() {
+      expect(isSameDomain('path/morepath',
+                          'http://www.adomain.com')).toBe(true);
+      expect(isSameDomain('http://www.adomain.com/path',
+                          'http://www.adomain.com')).toBe(true);
+      expect(isSameDomain('//www.adomain.com/path',
+                          'http://www.adomain.com')).toBe(true);
+      expect(isSameDomain('//www.adomain.com/path',
+                          'https://www.adomain.com')).toBe(true);
+      expect(isSameDomain('//www.adomain.com/path',
+                          'http://www.adomain.com:1234')).toBe(false);
+      expect(isSameDomain('https://www.adomain.com/path',
+                          'http://www.adomain.com')).toBe(false);
+      expect(isSameDomain('http://www.adomain.com:1234/path',
+                          'http://www.adomain.com')).toBe(false);
+      expect(isSameDomain('http://www.anotherdomain.com/path',
+                          'http://www.adomain.com')).toBe(false);
+    });
   });
 });

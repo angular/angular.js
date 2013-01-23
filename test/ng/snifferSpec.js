@@ -82,14 +82,14 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false if document.SecurityPolicy.isActive not available', function() {
+    it('should be false if document.securityPolicy.isActive not available', function() {
       expect(sniffer({}, {}).csp).toBe(false);
     });
 
 
-    it('should use document.SecurityPolicy.isActive() if available', function() {
+    it('should use document.securityPolicy.isActive if available', function() {
       var createDocumentWithCSP = function(csp) {
-        return {SecurityPolicy: {isActive: function() {return csp;}}};
+        return {securityPolicy: {isActive: csp}};
       };
 
       expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);

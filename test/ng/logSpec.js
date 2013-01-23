@@ -1,7 +1,13 @@
 'use strict';
 
+function initService(debugEnabled) {
+    return module(function($logProvider){
+      $logProvider.debugEnabled(debugEnabled);
+    });
+  }
+
 describe('$log', function() {
-  var $window, logger, log, warn, info, error;
+  var $window, logger, log, warn, info, error, debug;
 
 
 
@@ -12,6 +18,7 @@ describe('$log', function() {
     warn = function() { logger+= 'warn;'; };
     info = function() { logger+= 'info;'; };
     error = function() { logger+= 'error;'; };
+    debug = function() { logger+= 'debug;'; };
 
     $provide.provider('$log', $LogProvider);
     $provide.value('$exceptionHandler', angular.mock.rethrow);
@@ -23,14 +30,16 @@ describe('$log', function() {
       $window.console = {log: log,
                          warn: warn,
                          info: info,
-                         error: error};
+                         error: error,
+                         debug: debug};
     },
     function($log) {
       $log.log();
       $log.warn();
       $log.info();
       $log.error();
-      expect(logger).toEqual('log;warn;info;error;');
+      $log.debug();
+      expect(logger).toEqual('log;warn;info;error;debug;');
     }
   ));
 
@@ -44,7 +53,8 @@ describe('$log', function() {
       $log.warn();
       $log.info();
       $log.error();
-      expect(logger).toEqual('log;log;log;log;');
+      $log.debug();
+      expect(logger).toEqual('log;log;log;log;log;');
     }
   ));
 
@@ -55,6 +65,7 @@ describe('$log', function() {
       $log.warn();
       $log.info();
       $log.error();
+      $log.debug();
     }
   ));
 
@@ -64,22 +75,48 @@ describe('$log', function() {
         log.apply = log.call =
             warn.apply = warn.call =
             info.apply = info.call =
-            error.apply = error.call = null;
+            error.apply = error.call =
+            debug.apply = debug.call = null;
 
         $window.console = {log: log,
                            warn: warn,
                            info: info,
-                           error: error};
+                           error: error,
+                           debug: debug};
       },
       function($log) {
         $log.log.apply($log);
         $log.warn.apply($log);
         $log.info.apply($log);
         $log.error.apply($log);
-        expect(logger).toEqual('log;warn;info;error;');
+        $log.debug.apply($log);
+        expect(logger).toEqual('log;warn;info;error;debug;');
       })
   );
 
+  describe("$log.debug", function () {
+	 
+	  beforeEach(initService(false));
+	  
+	  it("should skip debugging output if disabled", inject(
+	    function(){
+	      $window.console = {log: log,
+	                         warn: warn,
+	                         info: info,
+	                         error: error,
+	                         debug: debug};
+	    }, 
+	    function($log) {
+	      $log.log();
+	      $log.warn();
+	      $log.info();
+	      $log.error();
+	      $log.debug();
+	      expect(logger).toEqual('log;warn;info;error;');
+	    }
+  ));
+	  
+  });
 
   describe('$log.error', function() {
     var e, $log, errorArgs;

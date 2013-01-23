@@ -146,31 +146,25 @@ http://pivotal.github.com/jasmine/ Jasmine home page} and on the {@link
 https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
 
 The angular-seed project is pre-configured to run all unit tests using {@link
-http://code.google.com/p/js-test-driver/ JsTestDriver}. To run the test, do the following:
+http://vojtajina.github.com/testacular/ Testacular}. To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
-`./scripts/test-server.sh` to start the test web server.
+`./scripts/test.sh` to start the Testacular server.
 
-2. Open a new browser window and navigate to {@link http://localhost:9876}.
+2. Testacular will start a new instance of Chrome browser automatically. Just ignore it and let it run in
+   the background. Testacular will use this browser for test execution.
 
-3. Choose "Capture this browser in strict mode".
+3. You should see the following or similar output in the terminal:
 
-   At this point, you can leave this window open and forget about it. JsTestDriver will use it to
-execute the tests and report the results in the terminal.
-
-4. Execute the test by running `./scripts/test.sh`
-
-   You should see the following or similar output:
-
-             Chrome: Runner reset.
-             .
-             Total 1 tests (Passed: 1; Fails: 0; Errors: 0) (2.00 ms)
-               Chrome 19.0.1084.36 Mac OS: Run 1 tests (Passed: 1; Fails: 0; Errors 0) (2.00 ms)
+             info: Testacular server started at http://localhost:9876/
+             info (launcher): Starting  browser "Chrome"
+             info (Chrome 22.0): Connected on socket id tPUm9DXcLHtZTKbAEO-n
+             Chrome 22.0: Executed 1 of 1 SUCCESS (0.093 secs / 0.004 secs)
 
   Yay! The test passed! Or not...
 
-  Note: If you see errors after you run the test, close the browser window and go back to the
-  terminal and kill the script, then repeat the procedure above.
+4. To rerun the tests, just change any of the source or test files. Testacular will notice the change
+  and will rerun the tests for you. Now isn't that sweet?
 
 # Experiments
 
@@ -198,8 +192,7 @@ execute the tests and report the results in the terminal.
             <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
           </table>
 
-* Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`, and rerun the
-`./scripts/test.sh` script.
+* Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`.
 
 
 # Summary

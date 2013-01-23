@@ -88,18 +88,21 @@ var ngRepeatDirective = ngDirective({
       // We need an array of these objects since the same object can be returned from the iterator.
       // We expect this to be a rare case.
       var lastOrder = new HashQueueMap();
-      var indexValues = [];
+
       scope.$watch(function ngRepeatWatch(scope){
         var index, length,
             collection = scope.$eval(rhs),
-            collectionLength = size(collection, true),
-            childScope,
+            cursor = iterStartElement,     // current position of the node
             // Same as lastOrder but it has the current state. It will become the
             // lastOrder on the next iteration.
             nextOrder = new HashQueueMap(),
+            arrayLength,
+            childScope,
             key, value, // key/value of iteration
-            array, last,       // last object information {scope, element, index}
-            cursor = iterStartElement;     // current position of the node
+            array,
+            last;       // last object information {scope, element, index}
+
+
 
         if (!isArray(collection)) {
           // if object, extract keys, sort them and use to determine order of iteration over obj props
@@ -114,23 +117,14 @@ var ngRepeatDirective = ngDirective({
           array = collection || [];
         }
 
+        arrayLength = array.length;
+
         // we are not using forEach for perf reasons (trying to avoid #call)
         for (index = 0, length = array.length; index < length; index++) {
           key = (collection === array) ? index : array[index];
           value = collection[key];
 
-          // if collection is array and value is object, it can be shifted to allow for position change
-          // if collection is array and value is not object, need to first check whether index is same to
-          // avoid shifting wrong value
-          // if collection is not array, need to always check index to avoid shifting wrong value
-          if (lastOrder.peek(value)) {
-            last = collection === array ?
-              ((isObject(value)) ? lastOrder.shift(value) :
-                (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined)) :
-              (index === lastOrder.peek(value).index ? lastOrder.shift(value) : undefined);
-          } else {
-            last = undefined;
-          }
+          last = lastOrder.shift(value);
 
           if (last) {
             // if we have already seen this object, then we need to reuse the
@@ -151,12 +145,6 @@ var ngRepeatDirective = ngDirective({
               cursor = last.element;
             }
           } else {
-            if (indexValues.hasOwnProperty(index) && collection !== array) {
-              var preValue = indexValues[index];
-              var v = lastOrder.shift(preValue);
-              v.element.remove();
-              v.scope.$destroy();
-            }
             // new item which we don't know about
             childScope = scope.$new();
           }
@@ -166,7 +154,7 @@ var ngRepeatDirective = ngDirective({
           childScope.$index = index;
 
           childScope.$first = (index === 0);
-          childScope.$last = (index === (collectionLength - 1));
+          childScope.$last = (index === (arrayLength - 1));
           childScope.$middle = !(childScope.$first || childScope.$last);
 
           if (!last) {
@@ -178,14 +166,8 @@ var ngRepeatDirective = ngDirective({
                   index: index
                 };
               nextOrder.push(value, last);
-              indexValues[index] = value;
             });
           }
-        }
-
-        var i, l;
-        for (i = 0, l = indexValues.length - length; i < l; i++) {
-          indexValues.pop();
         }
 
         //shrink children

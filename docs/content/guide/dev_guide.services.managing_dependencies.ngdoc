@@ -39,8 +39,8 @@ function myModuleCfgFn($provide) {
 </pre>
 
 
-Here is an example of two services that depend on each other, as well as on other services that are
-provided by Angular's web framework:
+Here is an example of two services, one of which depends on the other and both
+of which depend on other services that are provided by the Angular framework:
 
 <pre>
 /**

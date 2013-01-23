@@ -125,6 +125,19 @@ describe('$compile', function() {
       expect(element.find('span').text()).toEqual('A<a>B</a>C');
     }));
 
+
+    it('should not wrap root whitespace text nodes in spans', function() {
+      element = jqLite(
+        '<div>   <div>A</div>\n  '+ // The spaces and newlines here should not get wrapped
+        '<div>B</div>C\t\n  '+  // The "C", tabs and spaces here will be wrapped
+        '</div>');
+      $compile(element.contents())($rootScope);
+      var spans = element.find('span');
+      expect(spans.length).toEqual(1);
+      expect(spans.text().indexOf('C')).toEqual(0);
+    });
+
+
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
         element = $compile(
@@ -285,6 +298,25 @@ describe('$compile', function() {
           expect(log).toEqual('LOG; LOG');
         });
       });
+
+
+      it('should allow modifying the DOM structure in post link fn', function() {
+        module(function() {
+          directive('removeNode', valueFn({
+            link: function($scope, $element) {
+              $element.remove();
+            }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = jqLite('<div><div remove-node></div><div>{{test}}</div></div>');
+          $rootScope.test = 'Hello';
+          $compile(element)($rootScope);
+          $rootScope.$digest();
+          expect(element.children().length).toBe(1);
+          expect(element.text()).toBe('Hello');
+        });
+      })
     });
 
     describe('compiler control', function() {
@@ -1048,6 +1080,39 @@ describe('$compile', function() {
             expect($exceptionHandler.errors).toEqual([]);
           });
         });
+
+
+        it('should resume delayed compilation without duplicates when in a repeater', function() {
+          // this is a test for a regression
+          // scope creation, isolate watcher setup, controller instantiation, etc should happen
+          // only once even if we are dealing with delayed compilation of a node due to templateUrl
+          // and the template node is in a repeater
+
+          var controllerSpy = jasmine.createSpy('controller');
+
+          module(function($compileProvider) {
+            $compileProvider.directive('delayed', valueFn({
+              controller: controllerSpy,
+              templateUrl: 'delayed.html',
+              scope: {
+                title: '@'
+              }
+            }));
+          });
+
+          inject(function($templateCache, $compile, $rootScope) {
+            $rootScope.coolTitle = 'boom!';
+            $templateCache.put('delayed.html', '<div>{{title}}</div>');
+            element = $compile(
+                '<div><div ng-repeat="i in [1,2]"><div delayed title="{{coolTitle + i}}"></div>|</div></div>'
+            )($rootScope);
+
+            $rootScope.$apply();
+
+            expect(controllerSpy.callCount).toBe(2);
+            expect(element.text()).toBe('boom!1|boom!2|');
+          });
+        });
       });
 
 
@@ -1709,6 +1774,7 @@ describe('$compile', function() {
             attrAlias: '@attr',
             ref: '=',
             refAlias: '= ref',
+            reference: '=',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1829,6 +1895,24 @@ describe('$compile', function() {
         $rootScope.name = 'misko';
         $rootScope.$apply();
         expect(componentScope.ref).toBe('hello misko');
+      }));
+
+      // regression
+      it('should stabilize model', inject(function() {
+        compile('<div><span my-component reference="name">');
+
+        var lastRefValueInParent;
+        $rootScope.$watch('name', function(ref) {
+          lastRefValueInParent = ref;
+        });
+
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        componentScope.reference = 'new';
+        $rootScope.$apply();
+
+        expect(lastRefValueInParent).toBe('new');
       }));
     });
 
@@ -2170,5 +2254,15 @@ describe('$compile', function() {
         expect(nodeName_(comment)).toBe('#comment');
       });
     });
+
+
+    it('should safely create transclude comment node and not break with "-->"',
+        inject(function($rootScope) {
+      // see: https://github.com/angular/angular.js/issues/1740
+      element = $compile('<ul><li ng-repeat="item in [\'-->\', \'x\']">{{item}}|</li></ul>')($rootScope);
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('-->|x|');
+    }));
   });
 });

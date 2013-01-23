@@ -1,5 +1,5 @@
 # AngularJS build config file
 ---
-version: 1.1.1-snapshot
-codename: pathological-kerning
-stable: 1.0.2
+version: 1.1.2-snapshot
+codename: tofu-animation
+stable: 1.0.3

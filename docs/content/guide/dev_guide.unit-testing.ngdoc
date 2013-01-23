@@ -5,35 +5,47 @@
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
 come with almost no-help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
-angular which makes testing your angular applications easy. So there is no excuse for not do it.
+Angular which makes testing your Angular applications easy. So there is no excuse for not testing.
+
 # It is all about NOT mixing concerns
+
 Unit testing as the name implies is about testing individual units of code. Unit tests try to
-answer the question: Did I think about the logic correctly. Does the sort function order the list
-in the right order. In order to answer such question it is very important that we can isolate it.
-That is because when we are testing the sort function we don't want to be forced into crating
-related pieces such as the DOM elements, or making any XHR calls in getting the data to sort. While
+answer questions such as "Did I think about the logic correctly?" or "Does the sort function order the list
+in the right order?"
+
+In order to answer such question it is very important that we can isolate the unit of code under test.
+That is because when we are testing the sort function we don't want to be forced into creating
+related pieces such as the DOM elements, or making any XHR calls in getting the data to sort.
+
+While
 this may seem obvious it usually is very difficult to be able to call an individual function on a
-typical project. The reason is that the developers often time mix concerns, and they end up with a
+typical project. The reason is that the developers often mix concerns, and they end up with a
 piece of code which does everything. It reads the data from XHR, it sorts it and then it
-manipulates the DOM. With angular we try to make it easy for you to do the right thing, and so we
+manipulates the DOM.
+
+With Angular we try to make it easy for you to do the right thing, and so we
 provide dependency injection for your XHR (which you can mock out) and we created abstraction which
 allow you to sort your model without having to resort to manipulating the DOM. So that in the end,
 it is easy to write a sort function which sorts some data, so that your test can create a data set,
 apply the function, and assert that the resulting model is in the correct order. The test does not
 have to wait for XHR, or create the right kind of DOM, or assert that your function has mutated the
-DOM in the right way. Angular is written with testability in mind, but it still requires that you
-do the right thing. We tried to make the right thing easy, but angular is not magic, which means if
-you don't follow these, you may very well end up with an untestable application.
+DOM in the right way.
 
-## Dependency Inject
+## With great power comes great responsibility
+
+Angular is written with testability in mind, but it still requires that you
+do the right thing. We tried to make the right thing easy, but Angular is not magic, which means if
+you don't follow these guidelines you may very well end up with an untestable application.
+
+## Dependency Injection
 There are several ways in which you can get a hold of a dependency:
 1. You could create it using the `new` operator.
-2. You could look for it in a well know place, also known as global singleton.
+2. You could look for it in a well known place, also known as global singleton.
 3. You could ask a registry (also known as service registry) for it. (But how do you get a hold of
-the registry? Must likely by looking it up in a well know place. See #2)
-4. You could expect that the it be handed to you.
+the registry? Most likely by looking it up in a well known place. See #2)
+4. You could expect that it be handed to you.
 
-Out of the list above only the last of is testable. Lets look at why:
+Out of the four options in the list above, only the last one is testable. Let's look at why:
 
 ### Using the `new` operator
 
@@ -52,10 +64,10 @@ function MyClass() {
 }
 </pre>
 
-The issue becomes, that in tests, we would very much like to instantiate a `MockXHR` which would
+The issue becomes that in tests, we would very much like to instantiate a `MockXHR` which would
 allow us to return fake data and simulate network failures. By calling `new XHR()` we are
-permanently bound to the actual one, and there is no good way to replace it. Yes there is monkey
-patching, that is a bad idea for many reasons, which is outside the scope of this document.
+permanently bound to the actual XHR, and there is no good way to replace it. Yes there is monkey
+patching. That is a bad idea for many reasons which are outside the scope of this document.
 
 The class above is hard to test since we have to resort to monkey patching:
 <pre>
@@ -69,7 +81,7 @@ XHR = oldXHR; // if you forget this bad things will happen
 
 
 ### Global look-up:
-Another way to approach the problem is look for the service in a well known location.
+Another way to approach the problem is to look for the service in a well known location.
 
 <pre>
 function MyClass() {
@@ -83,7 +95,7 @@ function MyClass() {
 }
 </pre>
 
-While no new instance of dependency is being created, it is fundamentally the same as `new`, in
+While no new instance of the dependency is being created, it is fundamentally the same as `new`, in
 that there is no good way to intercept the call to `global.xhr` for testing purposes, other then
 through monkey patching. The basic issue for testing is that global variable needs to be mutated in
 order to replace it with call to a mock method. For further explanation why this is bad see: {@link
@@ -119,7 +131,7 @@ function MyClass() {
 }
 </pre>
 
-However, where dose the serviceRegistry come from? if it is:
+However, where does the serviceRegistry come from? if it is:
 * `new`-ed up, the the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
@@ -164,7 +176,7 @@ myClass.doWork();
 
 Notice that no global variables were harmed in the writing of this test.
 
-Angular comes with {@link di dependency-injection} built in which makes the right thing
+Angular comes with {@link di dependency injection} built in which makes the right thing
 easy to do, but you still need to do it if you wish to take advantage of the testability story.
 
 ## Controllers
@@ -173,7 +185,7 @@ for your application is mixed in with DOM manipulation, it will be hard to test 
 below:
 
 <pre>
-function PasswordController() {
+function PasswordCtrl() {
   // get references to DOM elements
   var msg = $('.ex1 span');
   var input = $('.ex1 input');
@@ -197,7 +209,7 @@ function PasswordController() {
 }
 </pre>
 
-The code above is problematic from testability, since it requires your test to have the right kind
+The code above is problematic from a testability point of view, since it requires your test to have the right kind
 of DOM present when the code executes. The test would look like this:
 
 <pre>
@@ -207,7 +219,7 @@ $('body').html('<div class="ex1">')
   .find('div')
     .append(input)
     .append(span);
-var pc = new PasswordController();
+var pc = new PasswordCtrl();
 input.val('abc');
 pc.grade();
 expect(span.text()).toEqual('weak');
@@ -218,7 +230,7 @@ In angular the controllers are strictly separated from the DOM manipulation logi
 a much easier testability story as can be seen in this example:
 
 <pre>
-function PasswordCntrl($scope) {
+function PasswordCtrl($scope) {
   $scope.password = '';
   $scope.grade = function() {
     var size = $scope.password.length;
@@ -233,18 +245,17 @@ function PasswordCntrl($scope) {
 }
 </pre>
 
-and the tests is straight forward
+and the test is straight forward
 
 <pre>
-var pc = new PasswordController();
+var pc = new PasswordCtrl();
 pc.password('abc');
 pc.grade();
-expect(span.strength).toEqual('weak');
+expect(pc.strength).toEqual('weak');
 </pre>
 
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
-
 
 ## Filters
 {@link api/ng.$filter Filters} are functions which transform the data into user readable
@@ -266,16 +277,20 @@ expect(length('abc')).toEqual(3);
 ## Directives
 Directives in angular are responsible for updating the DOM when the state of the model changes.
 
-
 ## Mocks
 oue
+
 ## Global State Isolation
 oue
+
 # Preferred way of Testing
 uo
+
 ## JavaScriptTestDriver
 ou
+
 ## Jasmine
 ou
+
 ## Sample project
 uoe
