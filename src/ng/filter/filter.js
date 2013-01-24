@@ -32,8 +32,18 @@
  *     called for each element of `array`. The final result is an array of those elements that
  *     the predicate returned true for.
  *
- * @param {boolean} strict When the expression is a string or object, use strict
- *   comparison if true. Strict is ignored if expression is a function.
+ * @param {function|true} comparator Comparison to use when comparing the value to the predicate.
+ *
+ *   Can be one of:
+ *
+ *     - `function`:  A comparator function can be given to change the comparison of predicate to value.
+ *       The function will be given the object value and the predicate value to compare and
+ *       should return true or false.
+ *
+ *     - true: If true, angular.equals is used to compare the object value and the predicate value.
+ *
+ *     - none: Use the default behaviour - convert the predicate and object values to lowercase
+ *       strings and return true if the object value contains the predicate value.
  *
  * @example
    <doc:example>
@@ -57,7 +67,7 @@
        Any: <input ng-model="search.$"> <br>
        Name only <input ng-model="search.name"><br>
        Phone only <input ng-model="search.phone"å><br>
-       Strict <input type="checkbox" ng-model="strict"><br>
+       Equality <input type="checkbox" ng-model="strict"><br>
        <table id="searchObjResults">
          <tr><th>Name</th><th>Phone</th><tr>
          <tr ng-repeat="friend in friends | filter:search:strict">
@@ -82,7 +92,7 @@
          expect(repeater('#searchObjResults tr', 'friend in friends').column('friend.name')).
            toEqual(['Mary', 'Mike', 'Julie', 'Juliette']);
        });
-       it('should use a strict comparison when strict is true', function() {
+       it('should use a equal comparison when comparator is true', function() {
          input('search.name').enter('Julie');
          input('strict').check();
          expect(repeater('#searchObjResults tr', 'friend in friends').column('friend.name')).
@@ -92,7 +102,7 @@
    </doc:example>
  */
 function filterFilter() {
-  return function(array, expression, strict) {
+  return function(array, expression, comparator) {
     if (!(array instanceof Array)) return array;
     var predicates = [];
     predicates.check = function(value) {
@@ -103,20 +113,43 @@ function filterFilter() {
       }
       return true;
     };
+    switch(typeof comparator) {
+      case "function":
+        break;
+      case "boolean":
+        if(comparator == true) {
+          comparator = function(obj,text) {
+            return angular.equals(obj, text);
+          }
+          break;
+        }
+      default:
+        comparator = function(obj,text) {
+          text = (''+text).toLowerCase();
+          return (''+obj).toLowerCase().indexOf(text) > -1
+        };
+    }
     var search = function(obj, text){
-      if (text.charAt(0) === '!') {
+      if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }
       switch (typeof obj) {
         case "boolean":
         case "number":
         case "string":
-          return ('' + obj).toLowerCase().indexOf(text) > -1;
+          return comparator(obj,text);
         case "object":
-          for ( var objKey in obj) {
-            if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
-              return true;
-            }
+          switch (typeof text) {
+            case "object":
+              return comparator(obj,text);
+              break;
+            default:
+              for ( var objKey in obj) {
+                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
+                  return true;
+                }
+              }
+              break;
           }
           return false;
         case "array":
@@ -129,7 +162,7 @@ function filterFilter() {
         default:
           return false;
       }
-    };
+    }; 
     switch (typeof expression) {
       case "boolean":
       case "number":
@@ -139,27 +172,18 @@ function filterFilter() {
         for (var key in expression) {
           if (key == '$') {
             (function() {
-              var text = strict ? expression[key] : (''+expression[key]).toLowerCase();
-              if (!text) return;
+              if (!expression[key]) return;
+              var path = key
               predicates.push(function(value) {
-                if (strict) {
-                  return angular.equals(value, text);
-                } else {
-                  return search(value, text);
-                }
+                return search(value, expression[path]);
               });
             })();
           } else {
             (function() {
+              if (!expression[key]) return;
               var path = key;
-              var text =  strict ? expression[key] : (''+expression[key]).toLowerCase();
-              if (!text) return;
               predicates.push(function(value) {
-                if (strict) {
-                  return angular.equals(getter(value, path), text);
-                } else {
-                  return search(getter(value, path), text);
-                }
+                return search(getter(value,path), expression[path]);
               });
             })();
           }
