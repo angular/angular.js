@@ -73,6 +73,8 @@ _Note: This release also contains all bug fixes available in [1.0.4](#1.0.4)._
   - HTTP method should be case-insensitive
   ([8991680d](https://github.com/angular/angular.js/commit/8991680d8ab632dda60cd70c780868c803c74509),
    [#1403](https://github.com/angular/angular.js/issues/1403))
+  - correct leading slash removal in resource URLs
+  ([b2f46251](https://github.com/angular/angular.js/commit/b2f46251aca76c8568ee7d4bab54edbc9d7a186a))
 - **$route:**
   - support route params not separated with slashes.
   ([c6392616](https://github.com/angular/angular.js/commit/c6392616ea5245bd0d2f77dded0b948d9e2637c8))
@@ -100,8 +102,6 @@ _Note: This release also contains all bug fixes available in [1.0.4](#1.0.4)._
   - **ngRepeat:** correctly apply $last if repeating over object
   ([7e746015](https://github.com/angular/angular.js/commit/7e746015ea7dec3e9eb81bc4678fa9b6a83bc47c),
    [#1789](https://github.com/angular/angular.js/issues/1789))
-  - **ngResource:** correct leading slash removal.
-  ([b2f46251](https://github.com/angular/angular.js/commit/b2f46251aca76c8568ee7d4bab54edbc9d7a186a))
   - **ngSwitch:** don't leak when destroyed while not attached
   ([a26234f7](https://github.com/angular/angular.js/commit/a26234f7183013e2fcc9b35377e181ad96dc9917),
    [#1621](https://github.com/angular/angular.js/issues/1621))
