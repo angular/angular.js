@@ -192,7 +192,7 @@ function annotate(fn) {
  * This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
  * are supported.
  *
- * # The `$injector` property
+ * # The `$inject` property
  *
  * If a function has an `$inject` property and its value is an array of strings, then the strings represent names of
  * services to be injected into the function.
