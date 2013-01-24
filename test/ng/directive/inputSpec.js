@@ -332,22 +332,25 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(false);
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
-    element.val('vojta@google.com');
-    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com';
+    });    
     expect(element).toBeValid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
-    element.val('vojta@google.com, sebastian@janzen');
-    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen';
+    });
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(false);
     expect(element.hasClass('ng-invalid-email')).toBe(true);
 
-    element.val('vojta@google.com, sebastian@janzen.it');
-    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it';
+    });
     expect(element).toBeValid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(true);
@@ -356,7 +359,6 @@ describe('ngModel', function() {
     $rootScope.$apply(function() {
       $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.';
     });
-
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(false);
@@ -365,7 +367,6 @@ describe('ngModel', function() {
     $rootScope.$apply(function() {
       $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.it';
     });
-
     expect(element).toBeValid();
     expect(element).toBeDirty();
     expect(element.hasClass('ng-valid-email')).toBe(true);
