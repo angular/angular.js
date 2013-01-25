@@ -19,6 +19,18 @@ angular.module('ngCookies', ['ng']).
    * this object, new cookies are created/deleted at the end of current $eval.
    *
    * @example
+   <doc:example>
+     <doc:source>
+       <script>
+         function ExampleController($cookies) {
+           // Retrieving a cookie
+           var favoriteCookie = $cookies.myFavorite;
+           // Setting a cookie
+           $cookies.myFavorite = 'oatmeal';
+         }
+       </script>
+     </doc:source>
+   </doc:example>
    */
    factory('$cookies', ['$rootScope', '$browser', function ($rootScope, $browser) {
       var cookies = {},
