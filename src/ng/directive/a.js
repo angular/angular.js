@@ -26,6 +26,7 @@ var htmlAnchorDirective = valueFn({
       element.bind('click', function(event){
         // if we have no href url, then don't navigate anywhere.
         if (!element.attr('href')) {
+          event.stopPropagation();
           event.preventDefault();
         }
       });
