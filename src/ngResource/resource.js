@@ -413,7 +413,8 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+          var ep = extractParams(data, action.params || {});
+          httpConfig.url = route.url(extend({}, ep, params));
 
           function markResolved() { value.$resolved = true; };
 
