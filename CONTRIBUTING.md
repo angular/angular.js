@@ -26,7 +26,7 @@ We'd love for you to contribute to our source code and to make AngularJS even
 better than it is today!
 
  Please read the [contribution guidelines][contribute] to learn about how to submit code as well as
- other useful info like how to build and test AngularJS code. Thanks! :)
+ other useful info like how to build and test AngularJS code. Thanks! :smile:
 
 [list]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [contribute]: http://docs.angularjs.org/misc/contribute
