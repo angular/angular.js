@@ -1857,6 +1857,9 @@ describe('$compile', function() {
             ref: '=',
             refAlias: '= ref',
             reference: '=',
+            optref: '=?',
+            optrefAlias: '=? optref',
+            optreference: '=?',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1989,6 +1992,33 @@ describe('$compile', function() {
         $rootScope.$apply();
 
         expect(lastRefValueInParent).toBe('new');
+      }));
+    });
+
+
+    describe('optional object reference', function() {
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component optref="name">');
+        expect(componentScope.optRef).toBe(undefined);
+        expect(componentScope.optRefAlias).toBe(componentScope.optRef);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+
+        $rootScope.name = {};
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+      }));
+
+      it('should not throw exception when reference does not exist', inject(function() {
+        compile('<div><span my-component>');
+
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(undefined);
+        expect(componentScope.optreference).toBe(undefined);
       }));
     });
 
