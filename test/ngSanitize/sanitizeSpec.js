@@ -231,6 +231,7 @@ describe('HTML', function() {
         expect(isUri('ftp://abc')).toBeTruthy();
         expect(isUri('mailto:me@example.com')).toBeTruthy();
         expect(isUri('tel:123-123-1234')).toBeTruthy();
+        expect(isUri('skype:username?call')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
       });
 
