@@ -123,7 +123,8 @@
      // Define CreditCard class
      var CreditCard = $resource('/user/:userId/card/:cardId',
       {userId:123, cardId:'@id'}, {
-       charge: {method:'POST', params:{charge:true}}
+       charge: {method:'POST', params:{charge:true}},
+       block: {method:'POST', url:'/user/:userId/card/:cardId/block'}
       });
 
      // We can retrieve a collection from the server
@@ -143,6 +144,10 @@
        // our custom method is mapped as well.
        card.$charge({amount:9.99});
        // POST: /user/123/card/456?amount=9.99&charge=true {id:456, number:'1234', name:'J. Smith'}
+
+       // you can also override url in custom methods.
+       card.$block();
+       // POST: /user/123/card/456/block
      });
 
      // we can create an instance as well
@@ -303,13 +308,13 @@ angular.module('ngResource', ['ng']).
     }
 
     Route.prototype = {
-      url: function(params) {
+      url: function(params, url) {
         var self = this,
-            url = this.template,
             val,
             encodedVal;
 
         params = params || {};
+        url = url || this.template;
         forEach(this.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
           if (angular.isDefined(val) && val !== null) {
@@ -413,7 +418,7 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params), action.url)
 
           function markResolved() { value.$resolved = true; };
 
