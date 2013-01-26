@@ -303,12 +303,12 @@ angular.module('ngResource', ['ng']).
     }
 
     Route.prototype = {
-      url: function(params) {
+      url: function(params, url) {
         var self = this,
-            url = this.template,
             val,
             encodedVal;
 
+        url = url || this.template;
         params = params || {};
         forEach(this.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
@@ -413,7 +413,7 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params), action.url)
 
           function markResolved() { value.$resolved = true; };
 
