@@ -1775,6 +1775,9 @@ describe('$compile', function() {
             ref: '=',
             refAlias: '= ref',
             reference: '=',
+            optref: '=?',
+            optrefAlias: '=? optref',
+            optreference: '=?',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1913,6 +1916,107 @@ describe('$compile', function() {
         $rootScope.$apply();
 
         expect(lastRefValueInParent).toBe('new');
+      }));
+    });
+
+
+    describe('optional object reference', function() {
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component optref="name">');
+        expect(componentScope.optRef).toBe(undefined);
+        expect(componentScope.optRefAlias).toBe(componentScope.optRef);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+
+        $rootScope.name = {};
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+      }));
+
+
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component optRef="name">');
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(componentScope.optref);
+
+        componentScope.optref = 'misko';
+        $rootScope.$apply();
+        expect($rootScope.name).toBe('misko');
+        expect(componentScope.optref).toBe('misko');
+        expect($rootScope.name).toBe(componentScope.optref);
+        expect(componentScope.optrefAlias).toBe(componentScope.optref);
+
+        componentScope.name = {};
+        $rootScope.$apply();
+        expect($rootScope.name).toBe(componentScope.optref);
+        expect(componentScope.optrefAlias).toBe(componentScope.optref);
+      }));
+
+
+      it('should update local when both change', inject(function() {
+        compile('<div><span my-component optref="name">');
+        $rootScope.name = {mark:123};
+        componentScope.optref = 'misko';
+
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual({mark:123})
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+
+        $rootScope.name = 'igor';
+        componentScope.optref = {};
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual('igor')
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+      }));
+
+      it('should complain on non assignable changes', inject(function() {
+        compile('<div><span my-component optref="\'hello \' + name">');
+        $rootScope.name = 'world';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe('hello world');
+
+        componentScope.optref = 'ignore me';
+        expect($rootScope.$apply).
+            toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
+        expect(componentScope.optref).toBe('hello world');
+        // reset since the exception was rethrown which prevented phase clearing
+        $rootScope.$$phase = null;
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe('hello misko');
+      }));
+
+      // regression
+      it('should stabilize model', inject(function() {
+        compile('<div><span my-component optreference="name">');
+
+        var lastRefValueInParent;
+        $rootScope.$watch('name', function(ref) {
+          lastRefValueInParent = ref;
+        });
+
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        componentScope.optreference = 'new';
+        $rootScope.$apply();
+
+        expect(lastRefValueInParent).toBe('new');
+      }));
+
+      it('should not throw exception when reference does not exist', inject(function() {
+        compile('<div><span my-component>');
+
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(undefined);
+        expect(componentScope.optreference).toBe(undefined);
       }));
     });
 

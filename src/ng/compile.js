@@ -714,13 +714,14 @@ function $CompileProvider($provide) {
         $element = attrs.$$element;
 
         if (newIsolateScopeDirective) {
-          var LOCAL_REGEXP = /^\s*([@=&])\s*(\w*)\s*$/;
+          var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
 
           var parentScope = scope.$parent || scope;
 
           forEach(newIsolateScopeDirective.scope, function(definiton, scopeName) {
             var match = definiton.match(LOCAL_REGEXP) || [],
-                attrName = match[2]|| scopeName,
+                attrName = match[3] || scopeName,
+                optional = (match[2] == '?'),
                 mode = match[1], // @, =, or &
                 lastValue,
                 parentGet, parentSet;
@@ -736,6 +737,9 @@ function $CompileProvider($provide) {
               }
 
               case '=': {
+                if (optional && (attrs[attrName] == null)) {
+                  return;
+                }
                 parentGet = $parse(attrs[attrName]);
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
