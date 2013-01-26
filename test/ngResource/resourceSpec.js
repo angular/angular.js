@@ -521,4 +521,17 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(person.id).toEqual(456);
   });
+
+  it('should support override url template (action specific)', function() {
+    var Person = $resource('/Person/:id', {}, {
+      best: {method: 'GET', url: '/Person/best'}
+    });
+
+    $httpBackend.expect('GET', '/Person/best').respond({id: 'guillaume', email: 'g@g.com'});
+
+    var bestPerson = Person.best();
+    $httpBackend.flush();
+
+    expect(bestPerson).toEqualData({id: 'guillaume', email: 'g@g.com'});
+  });
 });
