@@ -619,7 +619,7 @@ function $RootScopeProvider(){
        * event life cycle.
        *
        * @param {string} name Event name to listen on.
-       * @param {function(event)} listener Function to call when the event is emitted.
+       * @param {function(event, args...)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        *
        * The event listener function format is: `function(event, args...)`. The `event` object
