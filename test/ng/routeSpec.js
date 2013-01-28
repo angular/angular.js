@@ -793,4 +793,27 @@ describe('$route', function() {
       });
     });
   });
+
+
+  describe('route functions', function() {
+    var routeFunctionSpy = jasmine.createSpy('route function spy');
+
+    function routeFunction(routePathParams) {
+      routeFunctionSpy(routePathParams);
+    }
+
+    beforeEach(module(function($routeProvider) {
+      $routeProvider.when('/foo/:id', {templateUrl: 'foo.html'});
+      $routeProvider.when('/bar/:id/:subId', {fn: routeFunction});
+    }));
+
+    it ('should allow using a function as a route', function() {
+      inject(function($route, $location, $rootScope) {
+        $location.path('/bar/id3/id4');
+        $rootScope.$digest();
+
+        expect(routeFunctionSpy).toHaveBeenCalledWith({id: 'id3', subId: 'id4'});
+      });
+    });
+  });
 });

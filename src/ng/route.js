@@ -32,6 +32,8 @@ function $RouteProvider(){
    *
    *    Object properties:
    *
+   *    - `fn` - `{function()=}` - A function to be called when the route is matched. This cannot be used
+   *      in combination with other properties.
    *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with newly
    *      created scope or the name of a {@link angular.Module#controller registered controller}
    *      if passed as a string.
@@ -398,39 +400,44 @@ function $RouteProvider(){
         $q.when(next).
           then(function() {
             if (next) {
-              var keys = [],
-                  values = [],
-                  template;
+              if (next.$route && next.$route.fn && isFunction(next.$route.fn)) {
+                next.$route.functionRoute = true;
+                next.$route.fn(next.params);
+              } else {
+                var keys = [],
+                    values = [],
+                    template;
 
-              forEach(next.resolve || {}, function(value, key) {
-                keys.push(key);
-                values.push(isString(value) ? $injector.get(value) : $injector.invoke(value));
-              });
-              if (isDefined(template = next.template)) {
-                if (isFunction(template)) {
-                  template = template(next.params);
-                }
-              } else if (isDefined(template = next.templateUrl)) {
-                if (isFunction(template)) {
-                  template = template(next.params);
+                forEach(next.resolve || {}, function(value, key) {
+                  keys.push(key);
+                  values.push(isString(value) ? $injector.get(value) : $injector.invoke(value));
+                });
+                if (isDefined(template = next.template)) {
+                  if (isFunction(template)) {
+                    template = template(next.params);
+                  }
+                } else if (isDefined(template = next.templateUrl)) {
+                  if (isFunction(template)) {
+                    template = template(next.params);
+                  }
+                  if (isDefined(template)) {
+                    next.loadedTemplateUrl = template;
+                    template = $http.get(template, {cache: $templateCache}).
+                        then(function(response) { return response.data; });
+                  }
                 }
                 if (isDefined(template)) {
-                  next.loadedTemplateUrl = template;
-                  template = $http.get(template, {cache: $templateCache}).
-                      then(function(response) { return response.data; });
+                  keys.push('$template');
+                  values.push(template);
                 }
-              }
-              if (isDefined(template)) {
-                keys.push('$template');
-                values.push(template);
-              }
-              return $q.all(values).then(function(values) {
-                var locals = {};
-                forEach(values, function(value, index) {
-                  locals[keys[index]] = value;
+                return $q.all(values).then(function(values) {
+                  var locals = {};
+                  forEach(values, function(value, index) {
+                    locals[keys[index]] = value;
+                  });
+                  return locals;
                 });
-                return locals;
-              });
+              }
             }
           }).
           // after route change
