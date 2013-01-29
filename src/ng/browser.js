@@ -245,7 +245,7 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   var lastCookies = {};
   var lastCookieString = '';
-  var cookiePath = self.baseHref();
+  var cookiePath = self.baseHref() || '';
 
   /**
    * @name ng.$browser#cookies
