@@ -232,7 +232,7 @@ function $RootScopeProvider(){
        *
        *
        * If you want to be notified whenever {@link ng.$rootScope.Scope#$digest $digest} is called,
-       * you can register a `watchExpression` function with no `listener`. (Since `watchExpression`
+       * you can register a `listener` function with no `watchExpression`. (Since `watchExpression`
        * can execute multiple times per {@link ng.$rootScope.Scope#$digest $digest} cycle when a change is
        * detected, be prepared for multiple calls to your listener.)
        *
