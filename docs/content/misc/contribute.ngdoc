@@ -123,7 +123,11 @@ minified AngularJS files:
 
         git remote add upstream https://github.com/angular/angular.js.git
 
-4. To build AngularJS, run:
+4. To add node.js dependencies
+
+        npm install
+
+5. To build AngularJS, run:
 
         rake package
 

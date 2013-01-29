@@ -2,10 +2,10 @@
 @name Developer Guide: About MVC in Angular: Understanding the Controller Component
 @description
 
-In angular, a controller is a JavaScript function(type/class) that is used to augment instances of
-angular {@link scope Scope}, excluding the root scope. When you or angular create a new
+In Angular, a controller is a JavaScript function(type/class) that is used to augment instances of
+angular {@link scope Scope}, excluding the root scope. When you or Angular create a new
 child scope object via the {@link api/ng.$rootScope.Scope#$new scope.$new} API        , there is an
-option to pass in a controller as a method argument. This will tell angular to associate the
+option to pass in a controller as a method argument. This will tell Angular to associate the
 controller with the new scope and to augment its behavior.
 
 Use controllers to:
@@ -15,10 +15,10 @@ Use controllers to:
 
 # Setting up the initial state of a scope object
 
-Typically, when you create an application you need to set up an initial state for an angular scope.
+Typically, when you create an application you need to set up an initial state for an Angular scope.
 
 Angular applies (in the sense of JavaScript's `Function#apply`) the controller constructor function
-to a new angular scope object, which sets up an initial scope state. This means that angular never
+to a new Angular scope object, which sets up an initial scope state. This means that Angular never
 creates instances of the controller type (by invoking the `new` operator on the controller
 constructor). Constructors are always applied to an existing scope object.
 
@@ -30,9 +30,23 @@ function GreetingCtrl($scope) {
 
 The `GreetingCtrl` controller creates a `greeting` model which can be referred to in a template.
 
+**NOTE**: Many of the examples in the documentation show the creation of functions
+in the global scope. This is only for demonstration purposes - in a real
+application you should use the `.controller` method of your Angular module for
+your application as follows:
+
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('GreetingCtrl', ['$scope', function(scope) {
+  scope.greeting = 'Hola!';
+}]);
+
+Note also that we use the array notation to explicitly specify the dependency
+of the controller on the `$scope` service provided by Angular.
+
 # Adding Behavior to a Scope Object
 
-Behavior on an angular scope object is in the form of scope method properties available to the
+Behavior on an Angular scope object is in the form of scope method properties available to the
 template/view. This behavior interacts with and modifies the application model.
 
 As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
@@ -55,14 +69,14 @@ Do not use controllers for:
 - Any kind of DOM manipulation — Controllers should contain only business logic. DOM
 manipulation—the presentation logic of an application—is well known for being hard to test.
 Putting any presentation logic into controllers significantly affects testability of the business
-logic. Angular offers {@link dev_guide.templates.databinding} for automatic DOM manipulation. If
+logic. Angular offers {@link dev_guide.templates.databinding databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
 - Input formatting — Use {@link forms angular form controls} instead.
 - Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
-- Run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
+- To run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
 services} instead.
-- Instantiate or manage the life-cycle of other components (for example, to create service
+- To instantiate or manage the life-cycle of other components (for example, to create service
 instances).
 
 
@@ -157,7 +171,7 @@ input box) in the second button.
 
 ## Controller Inheritance Example
 
-Controller inheritance in angular is based on {@link api/ng.$rootScope.Scope Scope} inheritance. Let's
+Controller inheritance in Angular is based on {@link api/ng.$rootScope.Scope Scope} inheritance. Let's
 have a look at an example:
 
 <pre>
@@ -197,7 +211,7 @@ Inheritance works between controllers in the same way as it does with models. So
 examples, all of the models could be replaced with controller methods that return string values.
 
 Note: Standard prototypical inheritance between two controllers doesn't work as one might expect,
-because as we mentioned earlier, controllers are not instantiated directly by angular, but rather
+because as we mentioned earlier, controllers are not instantiated directly by Angular, but rather
 are applied to the scope object.
 
 
@@ -241,8 +255,8 @@ describe('myController function', function() {
 </pre>
 
 
-If you need to test a nested controller one needs to create the same scope hierarchy
-in your test as exist in the DOM.
+If you need to test a nested controller you need to create the same scope hierarchy
+in your test that exists in the DOM.
 
 <pre>
 describe('state', function() {

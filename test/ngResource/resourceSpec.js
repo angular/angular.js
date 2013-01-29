@@ -73,6 +73,31 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should not ignore leading slashes of undefinend parameters that have non-slash trailing sequence', function() {
+    var R = $resource('/Path/:a.foo/:b.bar/:c.baz');
+
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/0.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/false.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/1.foo/.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/2.foo/3.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/4.foo/.bar/5.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/6.foo/7.bar/8.baz').respond('{}');
+
+    R.get({});
+    R.get({a:0});
+    R.get({a:false});
+    R.get({a:null});
+    R.get({a:undefined});
+    R.get({a:''});
+    R.get({a:1});
+    R.get({a:2, b:3});
+    R.get({a:4, c:5});
+    R.get({a:6, b:7, c:8});
+  });
+
 
   it('should support escaping colons in url template', function() {
     var R = $resource('http://localhost\\:8080/Path/:a/\\:stillPath/:b');
@@ -416,6 +441,53 @@ describe("resource", function() {
     expect(cc.httpRequest).toBe(undefined);
   });
 
+  it("should have $q and $resolved properties for get", function () {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.get({id: 123}, callback);
+    expect(cc.$q).toBeDefined();
+    expect(typeof cc.$q).toBe('object');
+    expect(cc.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(cc.$q).toBeDefined();
+    expect(cc.$resolved).toBeTruthy();
+  });
+
+  it("should have $q and $resolved properties for query", function() {
+    $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+
+    var ccs = CreditCard.query({key: 'value'}, callback);
+    expect(ccs.$q).toBeDefined();
+    expect(typeof ccs.$q).toBe('object');
+    expect(ccs.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(ccs.$q).toBeDefined();
+    expect(ccs.$resolved).toBeTruthy();
+  });
+
+  it("should have $q and $resolved properties for save", function() {
+    $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
+                 respond({id: {key: 123}, name: 'rama'});
+
+    var cc = CreditCard.save({id: {key: 123}, name: 'misko'}, callback);
+    expect(cc.$q).toBeDefined();
+    expect(typeof cc.$q).toBe('object');
+    expect(cc.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(cc.$q).toBeDefined();
+    expect(cc.$resolved).toBeTruthy();
+  });
+
+  it('should should have $q and $resolved properties for delete', function() {
+    $httpBackend.expect('DELETE', '/CreditCard/123').respond({});
+    var removed = CreditCard.remove({id:123}, callback);
+    expect(removed.$q).toBeDefined();
+    expect(typeof removed.$q).toBe('object');
+    expect(removed.$resolved).toBeFalsy();
+    $httpBackend.flush();
+    expect(removed.$q).toBeDefined();
+    expect(removed.$resolved).toBeTruthy();
+  });
+
 
   describe('failure mode', function() {
     var ERROR_CODE = 500,
@@ -448,5 +520,27 @@ describe("resource", function() {
       expect(errorCB).toHaveBeenCalledOnce();
       expect(callback).not.toHaveBeenCalled();
     });
+  });
+
+
+  it('should transform request/response', function() {
+    var Person = $resource('/Person/:id', {}, {
+      save: {
+          method: 'POST',
+          params: {id: '@id'},
+          transformRequest: function(data) {
+            return angular.toJson({ __id: data.id });
+          },
+          transformResponse: function(data) {
+            return { id: data.__id };
+          }
+      }
+    });
+
+    $httpBackend.expect('POST', '/Person/123', { __id: 123 }).respond({ __id: 456 });
+    var person = new Person({id:123});
+    person.$save();
+    $httpBackend.flush();
+    expect(person.id).toEqual(456);
   });
 });

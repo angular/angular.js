@@ -26,20 +26,20 @@ This is how we get the ball rolling (refer to the diagram and example below):
 
 <img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
 
-  1. Browser loads the HTML and parses it into a DOM
-  2. Browser loads `angular.js` script
+  1. The browser loads the HTML and parses it into a DOM
+  2. The browser loads `angular.js` script
   3. Angular waits for `DOMContentLoaded` event
   4. Angular looks for {@link api/ng.directive:ngApp ng-app}
-    {@link guide/directive directive}, which designates application boundary
-  5. {@link guide/module Module} specified in {@link
+    {@link guide/directive directive}, which designates the application boundary
+  5. The {@link guide/module Module} specified in {@link
      api/ng.directive:ngApp ng-app} (if any) is used to configure
      the {@link api/AUTO.$injector $injector}
-  6. {@link api/AUTO.$injector $injector} is used to create the {@link
+  6. The {@link api/AUTO.$injector $injector} is used to create the {@link
      api/ng.$compile $compile} service as well as {@link
      api/ng.$rootScope $rootScope}
-  7. {@link api/ng.$compile $compile} service is used to compile the DOM and link
+  7. The {@link api/ng.$compile $compile} service is used to compile the DOM and link
      it   with {@link api/ng.$rootScope $rootScope}
-  8. {@link api/ng.directive:ngInit ng-init} {@link
+  8. The {@link api/ng.directive:ngInit ng-init} {@link
      guide/directive directive} assigns `World` to the `name` property on the {@link guide/scope
      scope}
   9. The `{{name}}` {@link api/ng.$interpolate interpolates} the expression to
@@ -59,21 +59,21 @@ This is how we get the ball rolling (refer to the diagram and example below):
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-runtime.png">
 
-The diagram and the example below describe how Angular interacts with browser's event loop.
+The diagram and the example below describe how Angular interacts with the browser's event loop.
 
-  1. Browsers event-loop waits for an event to arrive. Event is a user interactions, timer event,
+  1. The browser's event-loop waits for an event to arrive. An event is a user interactions, timer event,
      or network event (response from a server).
-  2. The events callback gets executed. This enters the JavaScript context. The callback can
+  2. The event's callback gets executed. This enters the JavaScript context. The callback can
       modify the DOM structure.
-  3. Once the callback finishes execution, the browser leaves the JavaScript context and
+  3. Once the callback executes, the browser leaves the JavaScript context and
      re-renders the view based on DOM changes.
 
-Angular modifies the normal JavaScript flow by providing it's own event processing loop. This
+Angular modifies the normal JavaScript flow by providing its own event processing loop. This
 splits the JavaScript into classical and Angular execution context. Only operations which are
-applied in Angular execution context will benefit from angular data-binding, exception handling,
-property watching, etc... Use $apply() to enter Angular execution context from JavaScript. Keep in
-mind that in most places (controllers, services) the $apply has already been called for you by the
-directive which is handling the event. The need to call $apply is reserved only when
+applied in Angular execution context will benefit from Angular data-binding, exception handling,
+property watching, etc... You can also use $apply() to enter Angular execution context from JavaScript. Keep in
+mind that in most places (controllers, services) $apply has already been called for you by the
+directive which is handling the event. An explicit call to $apply is needed only when
 implementing custom event callbacks, or when working with a third-party library callbacks.
 
   1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
@@ -89,14 +89,14 @@ implementing custom event callbacks, or when working with a third-party library 
      $evalAsync} queue is empty and the {@link api/ng.$rootScope.Scope#$watch
      $watch} list does not detect any changes.
   4. The {@link api/ng.$rootScope.Scope#$evalAsync $evalAsync} queue is used to
-     schedule work which needs to occur outside of current stack frame, but before the browser
+     schedule work which needs to occur outside of current stack frame, but before the browser's
      view render. This is usually done with `setTimeout(0)`, but the `setTimeout(0)` approach
      suffers from slowness and may cause view flickering since the browser renders the view after
      each event.
   5. The {@link api/ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once Angular {@link api/ng.$rootScope.Scope#$digest $digest} loop finishes
+  6. Once the Angular {@link api/ng.$rootScope.Scope#$digest $digest} loop finishes
      the execution leaves the Angular and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 
@@ -188,7 +188,7 @@ a diagram depicting the scope boundaries.
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-controller.png">
 
-Controller is the code behind the view. Its job is to construct the model and publish it to the
+A controller is the code behind the view. Its job is to construct the model and publish it to the
 view along with callback methods. The view is a projection of the scope onto the template (the
 HTML). The scope is the glue which marshals the model to the view and forwards the events to the
 controller.
@@ -233,7 +233,7 @@ The separation of the controller and the view is important because:
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-model.png">
 
 The model is the data which is used merged with the template to produce the view. To be able to
-render the model into the view, the model has to be referenceable from the scope. Unlike many
+render the model into the view, the model has to be able to be referenced from the scope. Unlike many
 other frameworks Angular makes no restrictions or requirements an the model. There are no classes
 to inherit from or special accessor methods for accessing or changing the model. The model can be
 primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
@@ -250,7 +250,7 @@ primitive, object hash, or a full object Type. In short the model is a plain Jav
 
 The view is what the users sees. The view begins its life as a template, it is merged with the
 model and finally rendered into the browser DOM. Angular takes a very different approach to
-rendering the view, to most other templating systems.
+rendering the view, compared to most other templating systems.
 
   * **Others** - Most templating systems begin as an HTML string with special templating markup.
     Often the template markup breaks the HTML syntax which means that the template can not be
@@ -261,9 +261,9 @@ rendering the view, to most other templating systems.
     is the granularity of the DOM updates. The key here is that the templating system manipulates
     strings.
   * **Angular** - Angular is different, since its templating system works on DOM objects not on
-    strings. The template is still written in HTML string, but it is HTML (not HTML with
-    template sprinkled in.) The browser parses the HTML into DOM, and the DOM becomes the input to
-    the template engine know as the {@link api/ng.$compile compiler}. The compiler
+    strings. The template is still written in an HTML string, but it is HTML (not HTML with
+    template sprinkled in.) The browser parses the HTML into the DOM, and the DOM becomes the input to
+    the template engine known as the {@link api/ng.$compile compiler}. The compiler
     looks for {@link guide/directive directives} which in turn set up {@link
     api/ng.$rootScope.Scope#$watch watches} on the model. The result is a
     continuously updating view which does not need template model re-merging. Your model becomes
@@ -291,7 +291,7 @@ rendering the view, to most other templating systems.
 <a name="directives"></a>
 # Directives
 
-A directive is a behavior or DOM transformation which is triggered by a presence of an attribute,
+A directive is a behavior or DOM transformation which is triggered by the presence of a custom attribute,
 element name, or a class name. A directive allows you to extend the HTML vocabulary in a
 declarative fashion. Following is an example which enables data-binding for the `contenteditable`
 in HTML.
@@ -337,7 +337,7 @@ in HTML.
 <a name="filters"></a>
 # Filters
 
-{@link api/ng.$filter Filters} perform data transformation roles. Typically
+{@link api/ng.$filter Filters} perform data transformation. Typically
 they are used in conjunction with the locale to format the data in locale specific output.
 They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
 
@@ -358,7 +358,7 @@ They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png">
 
-An {@link api/AUTO.$injector injector} is a service locator. There is a single
+The {@link api/AUTO.$injector injector} is a service locator. There is a single
 {@link api/AUTO.$injector injector} per Angular {@link
 api/ng.directive:ngApp application}. The {@link
 api/AUTO.$injector injector} provides a way to look up an object instance by its
@@ -438,7 +438,7 @@ dependencies, look for dependencies, or even get a reference to the injector.
   </file>
   <file name="script.js">
     angular.module('timeExampleModule', []).
-      // Declare new object call time,
+      // Declare new object called time,
       // which will be available for injection
       factory('time', function($timeout) {
         var time = {};

@@ -46,7 +46,7 @@ history (back and forward navigation) and bookmarks.
 
 ### A Note About DI, Injector and Providers
 
-As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} is the core feature of
+As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is the core feature of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
 When the application bootstraps, Angular creates an injector that will be used for all DI stuff in

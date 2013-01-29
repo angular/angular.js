@@ -6,9 +6,9 @@ Angular services are singletons that carry out specific tasks common to web apps
 {@link api/ng.$http $http service} that provides low level access to the browser's
 `XMLHttpRequest` object.
 
-To use an angular service, you identify it as a dependency for the dependent (a controller, or
+To use an Angular service, you identify it as a dependency for the dependent (a controller, or
 another service) that depends on the service.  Angular's dependency injection subsystem takes care
-of the rest. The angular injector subsystem is in charge of service instantiation, resolution of
+of the rest. The Angular injector subsystem is in charge of service instantiation, resolution of
 dependencies, and provision of dependencies to factory functions as requested.
 
 Angular injects dependencies using "constructor" injection (the service is passed in via a factory
@@ -18,7 +18,7 @@ must explicitly define its dependencies by using the `$inject` property.  For ex
 
         myController.$inject = ['$location'];
 
-The angular web framework provides a set of services for common operations. Like other core angular
+The Angular web framework provides a set of services for common operations. Like other core Angular
 variables and identifiers, the built-in services always start with `$` (such as `$http` mentioned
 above). You can also create your own custom services.
 

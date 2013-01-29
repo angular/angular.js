@@ -73,9 +73,8 @@ Any time your application needs to react to a change in the current URL or if yo
 the current URL in the browser.
 
 ## What does it not do?
-Does not cause a full page reload when the browser URL is changed. To reload the page after
+It does not cause a full page reload when the browser URL is changed. To reload the page after
 changing the URL, use the lower-level API, `$window.location.href`.
-
 
 # General overview of the API
 
@@ -133,12 +132,12 @@ current URL without creating a new browser history record you can call:
   // or you can chain these as: $location.path('/someNewPath').replace();
 </pre>
 
-Note that the setters don't update `window.location` immediately. Instead, `$location` service is
+Note that the setters don't update `window.location` immediately. Instead, the `$location` service is
 aware of the {@link api/ng.$rootScope.Scope scope} life-cycle and coalesces multiple `$location`
 mutations into one "commit" to the `window.location` object during the scope `$digest` phase. Since
 multiple changes to the $location's state will be pushed to the browser as a single change, it's
 enough to call the `replace()` method just once to make the entire "commit" a replace operation
-rather than addition to the browser history. Once the browser is updated, the $location service
+rather than an addition to the browser history. Once the browser is updated, the $location service
 resets the flag set by `replace()` method and future mutations will create new history records,
 unless `replace()` is called again.
 
@@ -212,7 +211,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 <pre>
 it('should show example', inject(
   function($locationProvider) {
-    $locationProvider.html5mode = false;
+    $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix = '!';
   },
   function($location) {
@@ -261,7 +260,7 @@ having to worry about whether the browser displaying your app supports the histo
 <pre>
 it('should show example', inject(
   function($locationProvider) {
-    $locationProvider.html5mode = true;
+    $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix = '!';
   },
   function($location) {
@@ -304,7 +303,7 @@ history API  or not; the `$location` service makes this transparent to you.
 
 ### Html link rewriting
 
-When you use the history API mode, you will need different links in different browser, but all you
+When you use HTML5 history API mode, you will need different links in different browsers, but all you
 have to do is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
 
 When a user clicks on this link,

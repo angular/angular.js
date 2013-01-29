@@ -59,7 +59,7 @@
  * - [val()](http://api.jquery.com/val/)
  * - [wrap()](http://api.jquery.com/wrap/)
  *
- * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
+ * ## In addtion to the above, Angular provides additional methods to both jQuery and jQuery lite:
  *
  * - `controller(name)` - retrieves the controller of the current element or its parent. By default
  *   retrieves controller associated with the `ngController` directive. If `name` is provided as
@@ -353,11 +353,11 @@ var JQLitePrototype = JQLite.prototype = {
 // value on get.
 //////////////////////////////////////////
 var BOOLEAN_ATTR = {};
-forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value) {
+forEach('multiple,selected,checked,disabled,readOnly,required,open'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
 var BOOLEAN_ELEMENTS = {};
-forEach('input,select,option,textarea,button,form'.split(','), function(value) {
+forEach('input,select,option,textarea,button,form,details'.split(','), function(value) {
   BOOLEAN_ELEMENTS[uppercase(value)] = true;
 });
 

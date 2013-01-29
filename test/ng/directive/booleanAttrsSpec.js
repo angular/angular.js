@@ -74,6 +74,16 @@ describe('boolean attr directives', function() {
     $rootScope.$digest();
     expect(element.attr('multiple')).toBeTruthy();
   }));
+
+  it('should bind open', inject(function($rootScope, $compile) {
+    element = $compile('<details ng-open="isOpen"></details>')($rootScope)
+    $rootScope.isOpen=false;
+    $rootScope.$digest();
+    expect(element.attr('open')).toBeFalsy();
+    $rootScope.isOpen=true;
+    $rootScope.$digest();
+    expect(element.attr('open')).toBeTruthy();
+  }));
 });
 
 
