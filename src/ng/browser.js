@@ -245,7 +245,7 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   var lastCookies = {};
   var lastCookieString = '';
-  var cookiePath = self.baseHref();
+  var cookiePath = self.baseHref() || '';
 
   /**
    * @name ng.$browser#cookies
@@ -273,10 +273,10 @@ function Browser(window, document, $log, $sniffer) {
     if (name) {
       if (value === undefined) {
         rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        console.log(escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
       } else {
         if (isString(value)) {
           cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath).length + 1;
-
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
           // - 20 cookies per unique domain
