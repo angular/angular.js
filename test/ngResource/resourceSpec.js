@@ -192,8 +192,8 @@ describe("resource", function() {
 
   it("should create resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
-
     var cc = CreditCard.save({name: 'misko'}, callback);
+    
     expect(cc).toEqualData({name: 'misko'});
     expect(callback).not.toHaveBeenCalled();
 
@@ -264,10 +264,12 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
 
     var ccs = CreditCard.query({key: 'value'}, callback);
+
     expect(ccs).toEqualData([]);
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
+    
     expect(ccs).toEqualData([{id:1}, {id:2}]);
     expect(callback.mostRecentCall.args[0]).toEqual(ccs);
     expect(callback.mostRecentCall.args[1]()).toEqual({});
@@ -417,6 +419,26 @@ describe("resource", function() {
     var person = Person.get({id:123});
     $httpBackend.flush();
     expect(person.name).toEqual('misko');
+  });
+
+  it("should cleanup and remove httpRequest when done", function() {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.get({id: 123}, callback);
+
+    expect(cc.httpRequest()).toBeTruthy();
+    
+    $httpBackend.flush();
+    expect(cc.httpRequest).toBe(undefined);
+  });
+
+  it("should cleanup and remove httpRequest when done (with query)", function() {
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+    var cc = CreditCard.query({id: 123}, callback);
+
+    expect(cc.httpRequest()).toBeTruthy();
+    
+    $httpBackend.flush();
+    expect(cc.httpRequest).toBe(undefined);
   });
 
   it("should have $q and $resolved properties for get", function () {

@@ -52,7 +52,12 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         delete callbacks[callbackId];
       });
     } else {
-      var xhr = new XHR();
+      var xhr = new XHR(),
+        abortRequest = function () {
+          status = -1;
+          xhr.abort();
+        };
+        
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
         if (value) xhr.setRequestHeader(key, value);
@@ -81,11 +86,10 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr.send(post || '');
 
       if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
+        $browserDefer(abortRequest, timeout);
       }
+
+      return abortRequest;
     }
 
 
