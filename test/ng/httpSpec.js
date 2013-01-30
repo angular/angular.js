@@ -406,6 +406,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should set default headers for PATCH request', function() {
+        $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
+          return headers['Accept'] == 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
+        $httpBackend.flush();
+      });
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
@@ -464,11 +473,13 @@ describe('$http', function() {
         $httpBackend.expect('POST', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('PUT', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('DELETE', '/url', undefined, checkXSRF('secret')).respond('');
+        $httpBackend.expect('PATCH', '/url', undefined, checkXSRF('secret')).respond('');
 
         $http({url: '/url', method: 'GET'});
         $http({url: '/url', method: 'POST', headers: {'S-ome': 'Header'}});
         $http({url: '/url', method: 'PUT', headers: {'Another': 'Header'}});
         $http({url: '/url', method: 'DELETE', headers: {}});
+        $http({url: '/url', method: 'PATCH'});
 
         $httpBackend.flush();
       }));
@@ -552,6 +563,17 @@ describe('$http', function() {
       it('jsonp() should allow config param', function() {
         $httpBackend.expect('JSONP', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
         $http.jsonp('/url', {headers: {'Custom': 'Header'}});
+      });
+
+      it('should have patch()', function() {
+        $httpBackend.expect('PATCH', '/url').respond('');
+        $http.patch('/url');
+      });
+
+
+      it('patch() should allow config param', function() {
+        $httpBackend.expect('PATCH', '/url', 'some-data', checkHeader('Custom', 'Header')).respond('');
+        $http.patch('/url', 'some-data', {headers: {'Custom': 'Header'}});
       });
     });
 
