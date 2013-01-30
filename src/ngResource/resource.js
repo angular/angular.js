@@ -316,7 +316,7 @@ angular.module('ngResource', ['ng']).
     }
 
     Route.prototype = {
-      url: function(params) {
+      setUrlParams: function(config, params) {
         var self = this,
             url = this.template,
             val,
@@ -339,16 +339,17 @@ angular.module('ngResource', ['ng']).
             });
           }
         });
-        url = url.replace(/\/?#$/, '');
-        var query = [];
+
+        // set the url
+        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '');
+
+        // set params - delegate param encoding to $http
         forEach(params, function(value, key){
           if (!self.urlParams[key]) {
-            query.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
+            config.params = config.params || {};
+            config.params[key] = value;
           }
         });
-        query.sort();
-        url = url.replace(/\/*$/, '');
-        return url + (query.length ? '?' + query.join('&') : '');
       }
     };
 
@@ -426,7 +427,7 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params));
 
           function markResolved() { value.$resolved = true; }
 
