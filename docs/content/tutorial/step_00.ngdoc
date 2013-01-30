@@ -127,7 +127,7 @@ being the element on which the `ngApp` directive was defined.
 
 * Double-curly binding with an expression:
 
-          Nothing here {{'yet' + '!'}}`
+          Nothing here {{'yet' + '!'}}
 
   This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
   by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.
