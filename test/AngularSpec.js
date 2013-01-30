@@ -640,4 +640,14 @@ describe('angular', function() {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
     }));
   });
+
+  describe('toUrlEncodedString', function() {
+
+    it('should encode objects properly', function() {
+      expect(toUrlEncodedString({ })).toEqual('');
+      expect(toUrlEncodedString({ one: "one", two: 2 })).toEqual('one=one&two=2');
+      expect(toUrlEncodedString({ a:1, b:{ c:3, d:2 } })).toEqual('a=1&b%5Bc%5D=3&b%5Bd%5D=2');
+      expect(toUrlEncodedString({ a:1, b:{ c:3, d:[1,2,3] } })).toEqual('a=1&b%5Bc%5D=3&b%5Bd%5D%5B0%5D=1&b%5Bd%5D%5B1%5D=2&b%5Bd%5D%5B2%5D=3');
+    });
+  });
 });

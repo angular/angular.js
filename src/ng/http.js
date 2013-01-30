@@ -142,6 +142,11 @@ function $HttpProvider() {
       return isObject(d) && !isFile(d) ? toJson(d) : d;
     }],
 
+    // transform outgoing request data by Url Encoding
+    transformRequestByUrlEncode: [function(d) {
+      return isObject(d) && !isFile(d) ? toUrlEncodedString(d) : d;
+    }],
+
     // default headers
     headers: {
       common: {
@@ -417,11 +422,13 @@ function $HttpProvider() {
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
      *      caching.
      *    - **timeout** – `{number}` – timeout in milliseconds.
-     *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
+     *    - **withCredentials** - `{boolean}` - whether or not to set the `withCredentials` flag on the
      *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
      *      requests with credentials} for more information.
      *    - **responseType** - `{string}` - see {@link
      *      https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
+     *    - **urlEncodeRequestData** - `{boolean}` - whether or not to URL encode request data. Default
+     *      behavior is to JSON stringify the request data
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -514,7 +521,7 @@ function $HttpProvider() {
     function $http(config) {
       config.method = uppercase(config.method);
 
-      var reqTransformFn = config.transformRequest || defaults.transformRequest,
+      var reqTransformFn = config.transformRequest || ((config.urlEncodeRequestData || defaults.urlEncodeRequestData) && defaults.transformRequestByUrlEncode) || defaults.transformRequest,
           respTransformFn = config.transformResponse || defaults.transformResponse,
           defHeaders = defaults.headers,
           xsrfToken = isSameDomain(config.url, $browser.url()) ?
@@ -523,6 +530,10 @@ function $HttpProvider() {
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
           reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
           promise;
+
+      if(config.urlEncodeRequestData || defaults.urlEncodeRequestData) {
+        reqHeaders['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+      }
 
       // strip content-type if data is undefined
       if (isUndefined(config.data)) {

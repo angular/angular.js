@@ -439,6 +439,33 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should change content-type header to urlencoded if specified in config', function() {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return headers['Content-Type'] == 'application/x-www-form-urlencoded;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', urlEncodeRequestData: true });
+        $httpBackend.flush();
+      });
+
+      it('should automatically JSON encode request data if not specified in config', function() {
+        $httpBackend.expect('POST', '/url', '{"one":"one","two":2}', function(headers) {
+          return headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: { one: 'one', two: 2 } });
+        $httpBackend.flush();
+      });
+
+      it('should URL encode request data if specified in config', function() {
+        $httpBackend.expect('POST', '/url', 'one=one&two=2', function(headers) {
+          return headers['Content-Type'] == 'application/x-www-form-urlencoded;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: { one: 'one', two: 2 }, urlEncodeRequestData: true });
+        $httpBackend.flush();
+      });
+
       it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
         $browser.cookies('XSRF-TOKEN', 'secret');
         $browser.url('http://host.com/base');
