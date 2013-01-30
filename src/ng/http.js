@@ -148,7 +148,8 @@ function $HttpProvider() {
         'Accept': 'application/json, text/plain, */*'
       },
       post: {'Content-Type': 'application/json;charset=utf-8'},
-      put:  {'Content-Type': 'application/json;charset=utf-8'}
+      put:  {'Content-Type': 'application/json;charset=utf-8'},
+      patch:  {'Content-Type': 'application/json;charset=utf-8'}
     }
   };
 
@@ -654,7 +655,7 @@ function $HttpProvider() {
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
-    createShortMethodsWithData('post', 'put');
+    createShortMethodsWithData('post', 'put', 'patch');
 
         /**
          * @ngdoc property
