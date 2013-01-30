@@ -465,4 +465,503 @@ describe('ngRepeat', function() {
       expect(newLis[2]).toEqual(lis[1]);
     });
   });
+
+
+  describe('comment-based repeater', function() {
+
+    var $compile, scope;
+
+    beforeEach(inject(function(_$compile_, $rootScope) {
+      $compile = _$compile_;
+      scope = $rootScope;
+    }));
+
+
+    it('should work as a simple comment directive', function() {
+      scope.items = [
+        {text: 'sleep', done: true},
+        {text: 'eat',   done: true},
+        {text: 'run',   done: false}
+      ];
+
+      element = $compile(
+          '<div>' +
+            '<!-- directive: ng-repeat item in items-->' +
+              '<span>{{item.text}}</span>' +
+              '<span>{{item.done}}</span>' +
+            '<!-- /ng-repeat -->' +
+          '</div>')(scope);
+
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>sleep</span><span>true</span>' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+    });
+
+
+    it('should normalize directive name in start and end tag', function() {
+      scope.items = ['a', 'b', 'c'];
+
+      element = $compile(
+          '<div>' +
+              '<!-- directive: data-ng-repeat item in items-->' +
+              '<span>{{item}}</span>' +
+              '<!-- /ng:repeat -->' +
+              '</div>')(scope);
+
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>a</span>' +
+          '<span>b</span>' +
+          '<span>c</span>');
+    });
+
+
+    it('should shrink and grow', function() {
+      scope.items = [
+        {text: 'sleep', done: true},
+        {text: 'eat',   done: true},
+        {text: 'run',   done: false}
+      ];
+
+      element = $compile(
+          '<div>' +
+            '<!-- directive: ng-repeat item in items-->' +
+              '<span>{{item.text}}</span>' +
+              '<span>{{item.done}}</span>' +
+            '<!-- /ng-repeat -->' +
+          '</div>')(scope);
+
+
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>sleep</span><span>true</span>' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+
+
+      scope.items.shift();
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+
+
+      scope.items = [];
+      scope.$digest();
+
+      expect(element.html()).toBe(
+          '<!-- ngRepeat: item in items -->');
+
+      scope.items.push({text: 'fly', done: true});
+      scope.items.push({text: 'cook', done: false});
+      scope.$digest();
+
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>fly</span><span>true</span>' +
+          '<span>cook</span><span>false</span>');
+
+    });
+
+
+    it('should reorder groups of nodes', function() {
+      scope.items = [
+        {text: 'sleep', done: true},
+        {text: 'eat',   done: true},
+        {text: 'run',   done: false}
+      ];
+
+      element = $compile(
+          '<div>' +
+            '<!-- directive: ng-repeat item in items-->' +
+              '<span>{{item.text}}</span>' +
+              '<span>{{item.done}}</span>' +
+            '<!-- /ng-repeat -->' +
+          '</div>')(scope);
+
+
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>sleep</span><span>true</span>' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>');
+
+
+      scope.items.push(scope.items.shift());
+      scope.$digest();
+
+      expect(sortedHtml(element.html())).toBe(
+          '<!-- ngRepeat: item in items -->' +
+          '<span>eat</span><span>true</span>' +
+          '<span>run</span><span>false</span>' +
+          '<span>sleep</span><span>true</span>');
+    });
+
+
+    it('should support nesting of repeaters', function() {
+      scope.items = [
+        {
+          text: 'sleep',
+          tags: [{name: 'recharge', size: 3}, {name: 'relax', size: 2}]
+        },
+        {
+          text: 'eat',
+          tags: [{name: 'refuel', size: 1}, {name: 'enjoy', size: 5}]
+        },
+        {
+          text: 'run',
+          tags: [{name: 'workout', size: 2}, {name: 'recharge', size: 4}]
+        }
+      ];
+
+      element = $compile(
+          '<div>' +
+            '<table>' +
+                '<tbody>' +
+                '<!-- directive: ng-repeat item in items -->' +
+                  '<tr>' +
+                    '<td>{{item.text}}</td>' +
+                    '<td>' +
+                      '<!-- directive: ng-repeat tag in item.tags -->' +
+                        '<span>{{tag.name}}</span><span>{{tag.size}}</span>' +
+                      '<!-- /ng-repeat -->' +
+                    '</td>' +
+                  '</tr>'+
+                  '<tr>' +
+                    '<td>{{$index}}</td>' +
+                  '</tr>' +
+                '<!-- /ng-repeat -->' +
+                '</tbody>' +
+            '</table>' +
+          '</div>')(scope);
+
+      scope.$digest();
+
+
+      expect(sortedHtml(element.html())).toBe(
+          '<table>' +
+            '<tbody>' +
+              '<!-- ngRepeat: item in items -->' +
+              '<tr>' +
+                '<td>sleep</td>' +
+                '<td>' +
+                  '<!-- ngRepeat: tag in item.tags -->' +
+                  '<span>recharge</span>' +
+                  '<span>3</span>' +
+                  '<span>relax</span>' +
+                  '<span>2</span>' +
+                '</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td>0</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td>eat</td>' +
+                '<td>' +
+                  '<!-- ngRepeat: tag in item.tags -->' +
+                  '<span>refuel</span>' +
+                  '<span>1</span>' +
+                  '<span>enjoy</span>' +
+                  '<span>5</span>' +
+                '</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td>1</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td>run</td>' +
+                '<td>' +
+                  '<!-- ngRepeat: tag in item.tags -->' +
+                  '<span>workout</span>' +
+                  '<span>2</span>' +
+                  '<span>recharge</span>' +
+                  '<span>4</span>' +
+                '</td>' +
+              '</tr>' +
+              '<tr>' +
+                '<td>2</td>' +
+              '</tr>' +
+            '</tbody>' +
+          '</table>');
+    });
+
+
+    describe('DOM corner-cases', function() {
+
+      it('should support repeaters for table bodies (tbody)', function() {
+        scope.items = ['a', 'b', 'c'];
+
+        element = $compile(
+            '<div>' +
+              '<table>' +
+                '<!-- directive: ng-repeat item in items -->' +
+                '<tbody><tr><td>{{item}}</td></tr></tbody>' +
+                '<tbody><tr><td>{{$index}}</td></tr></tbody>' +
+                '<!-- /ng-repeat -->' +
+              '</table>' +
+            '</div>'
+        )(scope);
+
+        scope.$digest();
+
+        expect(sortedHtml(element.html())).toBe(
+            '<table>' +
+              '<!-- ngRepeat: item in items -->' +
+              '<tbody><tr><td>a</td></tr></tbody>' +
+              '<tbody><tr><td>0</td></tr></tbody>' +
+              '<tbody><tr><td>b</td></tr></tbody>' +
+              '<tbody><tr><td>1</td></tr></tbody>' +
+              '<tbody><tr><td>c</td></tr></tbody>' +
+              '<tbody><tr><td>2</td></tr></tbody>' +
+            '</table>'
+        );
+      });
+
+
+      it('should support repeaters for table rows in tables with tbody', function() {
+        scope.items = ['a', 'b', 'c'];
+
+        element = $compile(
+            '<div>' +
+              '<table>' +
+                '<tbody>' +
+                  '<!-- directive: ng-repeat item in items -->' +
+                    '<tr><td>{{item}}</td></tr>' +
+                    '<tr><td>{{$index}}</td></tr>' +
+                  '<!-- /ng-repeat -->' +
+                '</tbody>' +
+              '</table>' +
+            '</div>'
+        )(scope);
+
+        scope.$digest();
+
+        expect(sortedHtml(element.html())).toBe(
+            '<table>' +
+              '<tbody>' +
+                '<!-- ngRepeat: item in items -->' +
+                '<tr><td>a</td></tr>' +
+                '<tr><td>0</td></tr>' +
+                '<tr><td>b</td></tr>' +
+                '<tr><td>1</td></tr>' +
+                '<tr><td>c</td></tr>' +
+                '<tr><td>2</td></tr>' +
+              '</tbody>' +
+            '</table>'
+        );
+      });
+
+
+      it('should support repeaters for table cells', function() {
+        scope.items = ['a', 'b', 'c'];
+
+        element = $compile(
+            '<div>' +
+              '<table>' +
+                '<tr>' +
+                  '<!-- directive: ng-repeat item in items -->' +
+                    '<td>{{item}}</td>' +
+                    '<td>{{$index}}</td>' +
+                  '<!-- /ng-repeat -->' +
+                '</tr>' +
+              '</table>' +
+            '</div>'
+        )(scope);
+
+        scope.$digest();
+
+        expect(sortedHtml(element.html())).toBe(
+            '<table>' +
+              '<tbody>' +
+                '<tr>' +
+                  '<!-- ngRepeat: item in items -->' +
+                  '<td>a</td>' +
+                  '<td>0</td>' +
+                  '<td>b</td>' +
+                  '<td>1</td>' +
+                  '<td>c</td>' +
+                  '<td>2</td>' +
+                '</tr>' +
+              '</tbody>' +
+            '</table>'
+        );
+      });
+
+
+      it('should support repeaters for list items', function() {
+        scope.items = ['a', 'b', 'c'];
+
+        element = $compile(
+            '<ul>' +
+              '<!-- directive: ng-repeat item in items -->' +
+                '<li>{{item}}</li>' +
+                '<li>{{$index}}</li>' +
+              '<!-- /ng-repeat -->' +
+            '</ul>'
+        )(scope);
+
+        scope.$digest();
+
+        expect(sortedHtml(element.html())).toBe(
+            '<!-- ngRepeat: item in items -->' +
+            '<li>a</li>' +
+            '<li>0</li>' +
+            '<li>b</li>' +
+            '<li>1</li>' +
+            '<li>c</li>' +
+            '<li>2</li>'
+        );
+      });
+
+
+      if (!msie || msie > 9) {
+        // IE doesn't preserve any comments within select element
+
+        it('should support repeaters for options', function() {
+          scope.items = ['a', 'b', 'c'];
+
+          element = $compile(
+              '<select>' +
+                '<!-- directive: ng-repeat item in items -->' +
+                  '<option>{{item}}</option>' +
+                  '<option>{{$index}}</option>' +
+                '<!-- /ng-repeat -->' +
+              '</select>'
+          )(scope);
+
+          scope.$digest();
+
+          expect(sortedHtml(element.html())).toBe(
+              '<!-- ngRepeat: item in items -->' +
+              '<option value="a">a</option>' +
+              '<option value="0">0</option>' +
+              '<option value="b">b</option>' +
+              '<option value="1">1</option>' +
+              '<option value="c">c</option>' +
+              '<option value="2">2</option>'
+          );
+        });
+      }
+    });
+
+
+    describe('error handling', function() {
+
+      it("should complain when end tag can't be found among one of the following siblings",
+          function() {
+
+        forEach([
+
+          // no content, no end tag
+          '<!-- directive: ng-repeat item in items -->',
+
+
+          // content, no end tag
+          '<!-- directive: ng-repeat item in items -->' +
+            '<span>{{item.text}}></span>' +
+            '<span>{{item.done}}</span>',
+
+
+          // content, end tag too deep
+          '<!-- directive: ng-repeat item in items -->' +
+            '<div>' +
+              '<span>{{item.text}}></span>' +
+              '<span>{{item.done}}</span>' +
+              '<!-- /ng-repeat -->' +
+            '</div>',
+
+
+          // content, end tag too high
+          '<div>' +
+            '<!-- directive: ng-repeat item in items -->' +
+              '<span>{{item.text}}></span>' +
+              '<span>{{item.done}}</span>' +
+          '</div>' +
+          '<!-- /ng-repeat -->',
+
+
+          // end tag missing final "-->"
+          '<!-- directive: ng-repeat item in items -->' +
+            '<span>{{item.text}}></span>' +
+            '<span>{{item.done}}</span>' +
+          '<!-- /ng-repeat',
+
+
+          // garbage in the end tag
+          '<!-- directive: ng-repeat item in items -->' +
+            '<span>{{item.text}}></span>' +
+            '<span>{{item.done}}</span>' +
+          '<!-- /ng-repeat foo bar baz -->'
+
+        ], function(template) {
+          expect(function() {
+            $compile('<div>' + template + '</div>');
+          }).toThrow("Can't find closing tag for ngRepeat: item in items");
+        });
+      });
+
+
+      it('should NOT support repeaters for table rows in tables without tbody', function() {
+        // we can try to work around this in the future, but there are many corner-cases
+        // for now we require developers to use explicitly use tbody in cases when skipping it
+        // would cause failure to detect the repeater boundaries
+
+        expect(function() {
+          $compile(
+              '<div>' +
+                '<table>' +
+                  '<!-- directive: ng-repeat item in items -->' +
+                  '<tr><td>{{item}}</td></tr>' +
+                  '<tr><td>{{$index}}</td></tr>' +
+                  '<!-- /ng-repeat -->' +
+                '</table>' +
+              '</div>'
+          );
+        }).toThrow("Can't find closing tag for ngRepeat: item in items");
+      });
+
+
+      it('should ignore any extra whitespace', function() {
+        scope.items = [
+          {text: 'sleep', done: true},
+          {text: 'eat',   done: true},
+          {text: 'run',   done: false}
+        ];
+
+        element = $compile(
+            '<div>' +
+                '<!-- directive:   ng-repeat    item in items -->' +
+                  '<span>{{item.text}}</span>' +
+                  '<span>{{item.done}}</span>' +
+                '<!--        /ng-repeat          -->' +
+              '</div>')(scope);
+
+
+        scope.$digest();
+
+        expect(sortedHtml(element.html())).toBe(
+            '<!-- ngRepeat: item in items -->' +
+              '<span>sleep</span>' +
+              '<span>true</span>' +
+              '<span>eat</span>' +
+              '<span>true</span>' +
+              '<span>run</span>' +
+              '<span>false</span>'
+        );
+      });
+    });
+  });
 });
