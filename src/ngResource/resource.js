@@ -362,14 +362,17 @@ angular.module('ngResource', ['ng']).
       forEach(actions, function(action, name) {
         action.method = angular.uppercase(action.method);
         var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
-        Resource[name] = function(a1, a2, a3, a4) {
+        Resource[name] = function(a1, a2, a3, a4, a5) {
           var params = {};
           var data;
           var success = noop;
           var error = null;
           var promise;
-
+		  var customHeaders;
+          
           switch(arguments.length) {
+          case 5:
+            customHeaders = a5;
           case 4:
             error = a4;
             success = a3;
@@ -413,7 +416,8 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params));
+          httpConfig.headers = extend({}, httpConfig.headers || {}, customHeaders || {});
 
           function markResolved() { value.$resolved = true; };
 
