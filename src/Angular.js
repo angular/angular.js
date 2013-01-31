@@ -734,6 +734,33 @@ function fromJson(json) {
       : json;
 }
 
+function serialize(obj, prefix) {
+  var str = [];
+  for(var p in obj) {
+    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+    str.push(typeof v == "object" ? 
+      serialize(v, k) :
+      encodeURIComponent(k) + "=" + encodeURIComponent(v));
+  }
+  return str.join("&");
+}
+
+/**
+ * @ngdoc function
+ * @name angular.toUrlEncodedString
+ * @function
+ *
+ * @description
+ * URL encodes a string, following jQuery's param function,
+ * but using a pure JavaScript solution from
+ * http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
+ *
+ * @param {Object} object Object to serialize into a url encoded string
+ * @returns {string} A url encoded string
+ */
+function toUrlEncodedString(object) {
+  return (isString(object) && object) || serialize(object);
+}
 
 function toBoolean(value) {
   if (value && value.length !== 0) {
