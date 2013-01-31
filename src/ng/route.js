@@ -466,7 +466,11 @@ function $RouteProvider(){
         }
       });
       // No route matched; fallback to "otherwise" route
-      return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
+      if (!match && routes[null]) {
+        match = inherit(routes[null], {params: {}, pathParams:{}});
+        match.$route = routes[null];
+      }
+      return match;
     }
 
     /**
