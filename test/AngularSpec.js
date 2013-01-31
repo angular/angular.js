@@ -74,7 +74,7 @@ describe('angular', function() {
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
-	    src = dst = {key: 'value'};
+        src = dst = {key: 'value'};
       expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
       src = dst = [2, 4];
       expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
@@ -126,12 +126,12 @@ describe('angular', function() {
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
     });
 
-    it('should ignore undefined member variables during comparison', function() {
+    it('should ignore undefined member variables', function() {
       var obj1 = {name: 'misko'},
           obj2 = {name: 'misko', undefinedvar: undefined};
 
-      expect(equals(obj1, obj2)).toBe(true);
-      expect(equals(obj2, obj1)).toBe(true);
+      expect(equals(obj1, obj2)).toBe(false);
+      expect(equals(obj2, obj1)).toBe(false);
     });
 
     it('should ignore $ member variables', function() {
@@ -639,5 +639,15 @@ describe('angular', function() {
     it('should not serialize scope instances', inject(function($rootScope) {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
     }));
+  });
+
+  describe('toUrlEncodedString', function() {
+
+    it('should encode objects properly', function() {
+      expect(toUrlEncodedString({ })).toEqual('');
+      expect(toUrlEncodedString({ one: "one", two: 2 })).toEqual('one=one&two=2');
+      expect(toUrlEncodedString({ a:1, b:{ c:3, d:2 } })).toEqual('a=1&b%5Bc%5D=3&b%5Bd%5D=2');
+      expect(toUrlEncodedString({ a:1, b:{ c:3, d:[1,2,3] } })).toEqual('a=1&b%5Bc%5D=3&b%5Bd%5D%5B0%5D=1&b%5Bd%5D%5B1%5D=2&b%5Bd%5D%5B2%5D=3');
+    });
   });
 });

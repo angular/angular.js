@@ -142,13 +142,19 @@ function $HttpProvider() {
       return isObject(d) && !isFile(d) ? toJson(d) : d;
     }],
 
+    // transform outgoing request data by Url Encoding
+    transformRequestByUrlEncode: [function(d) {
+      return isObject(d) && !isFile(d) ? toUrlEncodedString(d) : d;
+    }],
+
     // default headers
     headers: {
       common: {
         'Accept': 'application/json, text/plain, */*'
       },
       post: {'Content-Type': 'application/json;charset=utf-8'},
-      put:  {'Content-Type': 'application/json;charset=utf-8'}
+      put:  {'Content-Type': 'application/json;charset=utf-8'},
+      patch:  {'Content-Type': 'application/json;charset=utf-8'}
     }
   };
 
@@ -239,6 +245,7 @@ function $HttpProvider() {
      * - {@link ng.$http#head $http.head}
      * - {@link ng.$http#post $http.post}
      * - {@link ng.$http#put $http.put}
+     * - {@link ng.$http#patch $http.patch}
      * - {@link ng.$http#delete $http.delete}
      * - {@link ng.$http#jsonp $http.jsonp}
      *
@@ -255,9 +262,11 @@ function $HttpProvider() {
      *   - `Content-Type: application/json`
      * - `$httpProvider.defaults.headers.put` (header defaults for HTTP PUT requests)
      *   - `Content-Type: application/json`
+     * - `$httpProvider.defaults.headers.patch` (header defaults for HTTP PATCH requests)
+     *   - `Content-Type: application/json`
      *
      * To add or overwrite these defaults, simply add or remove a property from this configuration
-     * objects. To add headers for an HTTP method other than POST or PUT, simply add a new object
+     * objects. To add headers for an HTTP method other than POST, PUT, or PATCH, simply add a new object
      * with name equal to the lower-cased http method name, e.g.
      * `$httpProvider.defaults.headers.get['My-Header']='value'`.
      *
@@ -416,11 +425,13 @@ function $HttpProvider() {
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
      *      caching.
      *    - **timeout** – `{number}` – timeout in milliseconds.
-     *    - **withCredentials** - `{boolean}` - whether to to set the `withCredentials` flag on the
+     *    - **withCredentials** - `{boolean}` - whether or not to set the `withCredentials` flag on the
      *      XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
      *      requests with credentials} for more information.
      *    - **responseType** - `{string}` - see {@link
      *      https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
+     *    - **urlEncodeRequestData** - `{boolean}` - whether or not to URL encode request data. Default
+     *      behavior is to JSON stringify the request data
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -513,7 +524,7 @@ function $HttpProvider() {
     function $http(config) {
       config.method = uppercase(config.method);
 
-      var reqTransformFn = config.transformRequest || defaults.transformRequest,
+      var reqTransformFn = config.transformRequest || ((config.urlEncodeRequestData || defaults.urlEncodeRequestData) && defaults.transformRequestByUrlEncode) || defaults.transformRequest,
           respTransformFn = config.transformResponse || defaults.transformResponse,
           defHeaders = defaults.headers,
           xsrfToken = isSameDomain(config.url, $browser.url()) ?
@@ -522,6 +533,10 @@ function $HttpProvider() {
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
           reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
           promise;
+
+      if(config.urlEncodeRequestData || defaults.urlEncodeRequestData) {
+        reqHeaders['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+      }
 
       // strip content-type if data is undefined
       if (isUndefined(config.data)) {
@@ -654,7 +669,21 @@ function $HttpProvider() {
      * @param {Object=} config Optional configuration object
      * @returns {HttpPromise} Future object
      */
-    createShortMethodsWithData('post', 'put');
+
+    /**
+     * @ngdoc method
+     * @name ng.$http#patch
+     * @methodOf ng.$http
+     *
+     * @description
+     * Shortcut method to perform `PATCH` request
+     *
+     * @param {string} url Relative or absolute URL specifying the destination of the request
+     * @param {*} data Request content
+     * @param {Object=} config Optional configuration object
+     * @returns {HttpPromise} Future object
+     */
+    createShortMethodsWithData('post', 'put', 'patch');
 
         /**
          * @ngdoc property

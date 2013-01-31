@@ -49,7 +49,8 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) {return String.fromCharCode(code);}
 
 
-var /** holds major version number for IE or NaN for real browsers */
+var Error             = window.Error,
+    /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
@@ -146,7 +147,7 @@ function reverseParams(iteratorFn) {
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
  * characters such as '012ABC'. The reason why we are not using simply a number counter is that
- * the number string gets longer over time, and it can also overflow, where as the nextId
+ * the number string gets longer over time, and it can also overflow, where as the the nextId
  * will grow much slower, it is a string, and it will never overflow.
  *
  * @returns an unique alpha-numeric string
@@ -619,18 +620,23 @@ function equals(o1, o2) {
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
         keySet = {};
+        length = 0;
         for(key in o1) {
-          if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key])) return false;
+          if (key.charAt(0) === '$') continue;
+
+          if (!isFunction(o1[key]) && !equals(o1[key], o2[key])) return false;
+
+          length++;
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] &&
-              key.charAt(0) !== '$' &&
-              o2[key] !== undefined &&
-              !isFunction(o2[key])) return false;
+          if (key.charAt(0) === '$') {
+            continue;
+          }
+          if (!keySet[key] && !isFunction(o2[key])) return false;
+          length--;
         }
-        return true;
+        return length === 0;
       }
     }
   }
@@ -734,6 +740,33 @@ function fromJson(json) {
       : json;
 }
 
+function serialize(obj, prefix) {
+  var str = [];
+  for(var p in obj) {
+    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+    str.push(typeof v == "object" ? 
+      serialize(v, k) :
+      encodeURIComponent(k) + "=" + encodeURIComponent(v));
+  }
+  return str.join("&");
+}
+
+/**
+ * @ngdoc function
+ * @name angular.toUrlEncodedString
+ * @function
+ *
+ * @description
+ * URL encodes a string, following jQuery's param function,
+ * but using a pure JavaScript solution from
+ * http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
+ *
+ * @param {Object} object Object to serialize into a url encoded string
+ * @returns {string} A url encoded string
+ */
+function toUrlEncodedString(object) {
+  return (isString(object) && object) || serialize(object);
+}
 
 function toBoolean(value) {
   if (value && value.length !== 0) {
