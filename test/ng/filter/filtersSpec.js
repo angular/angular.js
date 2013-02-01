@@ -162,9 +162,9 @@ describe('filters', function() {
 
   describe('date', function() {
 
-    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
-    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
-    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
+    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
+    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
+    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
 
     var date;
@@ -191,6 +191,15 @@ describe('filters', function() {
     it('should accept various format strings', function() {
       expect(date(morning, "yy-MM-dd HH:mm:ss")).
                       toEqual('10-09-03 07:05:08');
+      
+      expect(date(morning, "yy-MM-dd HH:mm:ss.fff")).
+                      toEqual('10-09-03 07:05:08.001');
+      
+      expect(date(morning, "yy-MM-dd HH:mm:ss.ff")).
+                      toEqual('10-09-03 07:05:08.01');
+      
+      expect(date(morning, "yy-MM-dd HH:mm:ss.f")).
+                      toEqual('10-09-03 07:05:08.1');
 
       expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
                       toEqual('2010-9-3 12=0:5:8AM0500');
