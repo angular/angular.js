@@ -267,6 +267,64 @@ describe('angular', function() {
 
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
     });
+
+    it('should iterate identify and iterate array like objects', function() {
+      var log;
+
+      log = [];
+      forEach(
+          [1,2,3], 
+          function(value, key) { log.push(key + ':' + value) }
+      );
+      expect(log).toEqual(['0:1', '1:2', '2:3']);
+
+      log = [];
+      forEach(
+          {
+            'bar' : 'bar',
+            'length': 2
+          }, 
+          function(value, key) { log.push(key + ':' + value) }
+      );
+      expect(log).toEqual(['bar:bar', 'length:2']);
+      
+      log = [];
+      forEach(
+          jqLite("<p><span>s1</span><span>s2</span></p>").find("span"), 
+          function(value, key) { log.push(key + ':' + value.innerHTML) }
+      );
+      expect(log).toEqual(['0:s1', '1:s2']);
+
+      log = [];
+      forEach(
+          jqLite("<p><span>s1</span><span>s2</span></p>").find("b"), 
+          function(value, key) { log.push(key + ':' + value.innerHTML); }
+      );
+      expect(log.length).toBe(0);
+      
+      log = [];
+      forEach(
+          document.getElementsByTagName("x"), 
+          function(value, key) { log.push(true) }
+      );
+      expect(log.length).toBe(0);
+      
+      log = [];
+      forEach(
+          window, 
+          function(value, key) { log.push(true) }
+      );
+      expect(log.length).toBeGreaterThan(0);
+
+      //a plain old object with length property with 0 value is treated like an array
+      log = [];
+      forEach(
+          {"prop1":"value1","length":0}, 
+          function(value, key) { log.push(true) }
+      );
+      expect(log.length).toBe(0);
+
+    });
   });
 
 

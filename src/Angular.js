@@ -101,13 +101,15 @@ function forEach(obj, iterator, context) {
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
-    } else if (isObject(obj) && isNumber(obj.length)) {
+    } else if (isArrayLike(obj)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
-      for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          iterator.call(context, obj[key], key);
+      if(obj.hasOwnProperty) {
+        for (key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            iterator.call(context, obj[key], key);
+          }
         }
       }
     }
@@ -348,6 +350,18 @@ function isArray(value) {
   return toString.apply(value) == '[object Array]';
 }
 
+function isArrayLike(obj) {
+  var length = obj.length;
+  if (isWindow(obj)) {
+    return false;
+  }
+  return isArray(obj) ||
+    (
+      isObject(obj) && 
+      isNumber(length) && 
+      (length === 0 || length > 0 && (length - 1) in obj)
+    );
+}
 
 /**
  * @ngdoc function
