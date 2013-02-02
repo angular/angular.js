@@ -841,7 +841,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * Use this directive to auto-bootstrap on application. Only
  * one directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
- * ot the root of the page.
+ * at the root of the page.
  *
  * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
