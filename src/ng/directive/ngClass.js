@@ -65,7 +65,7 @@ function classDirective(name, selector) {
  *
  * The directive won't add duplicate classes if a particular class was already set.
  *
- * When the expression changes, the previously added classes are removed and only then the classes
+ * When the expression changes, the previously added classes are removed and only then the
  * new classes are added.
  *
  * @element ANY
