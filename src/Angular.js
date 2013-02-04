@@ -53,6 +53,7 @@ var /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
+    undefined         = void 0,
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,

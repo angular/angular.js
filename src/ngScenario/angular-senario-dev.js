@@ -35,7 +35,7 @@
     'var _jQuery = jQuery.noConflict(true);' +
     '</script>'
   );
-  addScript("../angular-bootstrap.js");
+  addScript("../angular-dev.js");
 
   addScript("Scenario.js");
   addScript("Application.js");
