@@ -1538,6 +1538,25 @@ describe('$compile', function() {
         expect(element.text()).toEqual('WORKS');
       });
     });
+
+    it('should support $observe inside link function on directive object', function() {
+      module(function() {
+        directive('testLink', valueFn({
+          templateUrl: 'test-link.html',
+          link: function(scope, element, attrs) {
+            attrs.$observe( 'testLink', function ( val ) {
+              scope.testAttr = val;
+            });
+          }
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test-link.html', '{{testAttr}}' );
+        element = $compile('<div test-link="{{1+2}}"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('3');
+      });
+    });
   });
 
 
