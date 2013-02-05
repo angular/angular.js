@@ -453,22 +453,27 @@ describe('$http', function() {
 
 
       it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
-        function checkXSRF(secret) {
+        function checkXSRF(secret, header) {
           return function(headers) {
-            return headers['X-XSRF-TOKEN'] == secret;
+            return headers[header || 'X-XSRF-TOKEN'] == secret;
           };
         }
 
         $browser.cookies('XSRF-TOKEN', 'secret');
+        $browser.cookies('aCookie', 'secret2');
         $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('POST', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('PUT', '/url', undefined, checkXSRF('secret')).respond('');
         $httpBackend.expect('DELETE', '/url', undefined, checkXSRF('secret')).respond('');
+        $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret', 'aHeader')).respond('');
+        $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret2')).respond('');
 
         $http({url: '/url', method: 'GET'});
         $http({url: '/url', method: 'POST', headers: {'S-ome': 'Header'}});
         $http({url: '/url', method: 'PUT', headers: {'Another': 'Header'}});
         $http({url: '/url', method: 'DELETE', headers: {}});
+        $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'})
+        $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'})
 
         $httpBackend.flush();
       }));
