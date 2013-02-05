@@ -157,7 +157,11 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           // $anchorScroll might listen on event...
           $anchorScroll();
         } else {
-          clearContent();
+          if ($route.current && $route.current['$route'] && $route.current['$route'].functionRoute) {
+            // don't clear content when the route is just a function
+          } else {
+            clearContent();
+          }
         }
       }
     }

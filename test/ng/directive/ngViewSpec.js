@@ -459,4 +459,23 @@ describe('ngView', function() {
       expect(div.controller()).toBe($route.current.scope.ctrl);
     });
   });
+
+  it('should not remove the previous routes content if the current route is a function', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {template: 'angular is da best'});
+      $routeProvider.when('/bar', {fn: function() {}});
+    });
+
+    inject(function($rootScope, $compile, $location, $route) {
+      expect(element.text()).toEqual('');
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('angular is da best');
+
+      $location.path('/bar');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('angular is da best');
+    });
+  });
 });
