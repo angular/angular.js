@@ -158,9 +158,9 @@ angular.module('myModule', []).
 
 angular.module('myModule', []).
   config(function($provide, $compileProvider, $filterProvider) {
-    $provide.value('a', 123)
-    $provide.factory('a', function() { return 123; })
-    $compileProvider.directive('directiveName', ...).
+    $provide.value('a', 123);
+    $provide.factory('a', function() { return 123; });
+    $compileProvider.directive('directiveName', ...);
     $filterProvider.register('filterName', ...);
   });
 </pre>
