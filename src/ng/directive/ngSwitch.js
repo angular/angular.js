@@ -20,8 +20,11 @@
  * On child elments add:
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
- *   case will be displayed.
- * * `ngSwitchDefault`: the default case when no other casses match.
+ *   case will be displayed. If the same match appears multiple times, all the
+ *   elements will be displayed.
+ * * `ngSwitchDefault`: the default case when no other case match. If there
+ *   are multiple default cases, all of them will be displayed when no other
+ *   case match.
  *
  * @example
     <doc:example>
@@ -69,22 +72,28 @@ var ngSwitchDirective = valueFn({
   }],
   link: function(scope, element, attr, ctrl) {
     var watchExpr = attr.ngSwitch || attr.on,
-        selectedTransclude,
-        selectedElement,
-        selectedScope;
+        selectedTranscludes,
+        selectedElements,
+        selectedScopes = [];
 
     scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
-      if (selectedElement) {
-        selectedScope.$destroy();
-        selectedElement.remove();
-        selectedElement = selectedScope = null;
+      for (var i= 0, ii=selectedScopes.length; i<ii; i++) {
+        selectedScopes[i].$destroy();
+        selectedElements[i].remove();
       }
-      if ((selectedTransclude = ctrl.cases['!' + value] || ctrl.cases['?'])) {
+
+      selectedElements = [];
+      selectedScopes = [];
+
+      if ((selectedTranscludes = ctrl.cases['!' + value] || ctrl.cases['?'])) {
         scope.$eval(attr.change);
-        selectedScope = scope.$new();
-        selectedTransclude(selectedScope, function(caseElement) {
-          selectedElement = caseElement;
-          element.append(caseElement);
+        forEach(selectedTranscludes, function(selectedTransclude) {
+          var selectedScope = scope.$new();
+          selectedScopes.push(selectedScope);
+          selectedTransclude(selectedScope, function(caseElement) {
+            selectedElements.push(caseElement);
+            element.append(caseElement);
+          });
         });
       }
     });
@@ -97,7 +106,8 @@ var ngSwitchWhenDirective = ngDirective({
   require: '^ngSwitch',
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
-      ctrl.cases['!' + attrs.ngSwitchWhen] = transclude;
+      ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
+      ctrl.cases['!' + attrs.ngSwitchWhen].push(transclude);
     };
   }
 });
@@ -108,7 +118,8 @@ var ngSwitchDefaultDirective = ngDirective({
   require: '^ngSwitch',
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
-      ctrl.cases['?'] = transclude;
+      ctrl.cases['?'] = (ctrl.cases['?'] || []);
+      ctrl.cases['?'].push(transclude);
     };
   }
 });
