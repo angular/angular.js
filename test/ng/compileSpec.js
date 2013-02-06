@@ -1938,6 +1938,21 @@ describe('$compile', function() {
         compile('<div><span bad-declaration>');
       }).toThrow('Invalid isolate scope definition for directive badDeclaration: xxx');
     }));
+
+    it('should expose a $$isolateBindings property onto the scope', inject(function() {
+      compile('<div><span my-component>');
+
+      expect(typeof componentScope.$$isolateBindings).toBe('object');
+
+      expect(componentScope.$$isolateBindings.attr).toBe('@attr');
+      expect(componentScope.$$isolateBindings.attrAlias).toBe('@attr');
+      expect(componentScope.$$isolateBindings.ref).toBe('=ref');
+      expect(componentScope.$$isolateBindings.refAlias).toBe('=ref');
+      expect(componentScope.$$isolateBindings.reference).toBe('=reference');
+      expect(componentScope.$$isolateBindings.expr).toBe('&expr');
+      expect(componentScope.$$isolateBindings.exprAlias).toBe('&expr');
+
+    }));
   });
 
 
@@ -2264,5 +2279,28 @@ describe('$compile', function() {
 
       expect(element.text()).toBe('-->|x|');
     }));
+
+
+    it('should add a $$transcluded property onto the transcluded scope', function() {
+      module(function() {
+        directive('trans', function() {
+          return {
+            transclude: true,
+            replace: true,
+            scope: true,
+            template: '<div><span>I:{{$$transcluded}}</span><div ng-transclude></div></div>'
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile) {
+        element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')
+            ($rootScope);
+        $rootScope.$apply();
+        expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
+        expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
+      });
+    });
+
+
   });
 });
