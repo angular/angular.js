@@ -68,22 +68,28 @@ var ngSwitchDirective = valueFn({
   },
   link: function(scope, element, attr, ctrl) {
     var watchExpr = attr.ngSwitch || attr.on,
-        selectedTransclude,
-        selectedElement,
-        selectedScope;
+        selectedTranscludes,
+        selectedElements,
+        selectedScopes;
 
     scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
-      if (selectedElement) {
+      angular.forEach(selectedScopes, function(selectedScope) {
         selectedScope.$destroy();
+      });
+      angular.forEach(selectedElements, function(selectedElement) {
         selectedElement.remove();
-        selectedElement = selectedScope = null;
-      }
-      if ((selectedTransclude = ctrl.cases['!' + value] || ctrl.cases['?'])) {
+      });
+      selectedElements = [];
+      selectedScopes = [];
+      if ((selectedTranscludes = ctrl.cases['!' + value] || ctrl.cases['?'])) {
         scope.$eval(attr.change);
-        selectedScope = scope.$new();
-        selectedTransclude(selectedScope, function(caseElement) {
-          selectedElement = caseElement;
-          element.append(caseElement);
+        angular.forEach(selectedTranscludes, function(selectedTransclude) {
+          var selectedScope = scope.$new();
+          selectedScopes.push(selectedScope);
+          selectedTransclude(selectedScope, function(caseElement) {
+            selectedElements.push(caseElement);
+            element.append(caseElement);
+          });
         });
       }
     });
@@ -96,7 +102,8 @@ var ngSwitchWhenDirective = ngDirective({
   require: '^ngSwitch',
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
-      ctrl.cases['!' + attrs.ngSwitchWhen] = transclude;
+      ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
+      ctrl.cases['!' + attrs.ngSwitchWhen].push(transclude);
     };
   }
 });
@@ -107,7 +114,8 @@ var ngSwitchDefaultDirective = ngDirective({
   require: '^ngSwitch',
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
-      ctrl.cases['?'] = transclude;
+      ctrl.cases['?'] = (ctrl.cases['?'] || []);
+      ctrl.cases['?'].push(transclude);
     };
   }
 });

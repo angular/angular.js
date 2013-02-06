@@ -35,6 +35,32 @@ describe('ngSwitch', function() {
     expect(element.text()).toEqual('true:misko');
   }));
 
+  it('should switch show all the options that match the switch-when', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<div ng-switch="select">' +
+        '<div ng-switch-when="1">first:{{name}}</div>' +
+        '<div ng-switch-when="1">, first too:{{name}}</div>' +
+        '<div ng-switch-when="2">second:{{name}}</div>' +
+        '<div ng-switch-when="true">true:{{name}}</div>' +
+      '</div>')($rootScope);
+    expect(element.html()).toEqual(
+        '<!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 2 --><!-- ngSwitchWhen: true -->');
+    $rootScope.select = 1;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('first:, first too:');
+    $rootScope.name="shyam";
+    $rootScope.$apply();
+    expect(element.text()).toEqual('first:shyam, first too:shyam');
+    $rootScope.select = 2;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('second:shyam');
+    $rootScope.name = 'misko';
+    $rootScope.$apply();
+    expect(element.text()).toEqual('second:misko');
+    $rootScope.select = true;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('true:misko');
+  }));
 
   it('should switch on switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
@@ -44,6 +70,20 @@ describe('ngSwitch', function() {
       '</ng:switch>')($rootScope);
     $rootScope.$apply();
     expect(element.text()).toEqual('other');
+    $rootScope.select = 1;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('one');
+  }));
+
+  it('should show all switch-when-default', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ng:switch on="select">' +
+        '<div ng:switch-when="1">one</div>' +
+        '<div ng:switch-default>other</div>' +
+        '<div ng:switch-default>, other too</div>' +
+      '</ng:switch>')($rootScope);
+    $rootScope.$apply();
+    expect(element.text()).toEqual('other, other too');
     $rootScope.select = 1;
     $rootScope.$apply();
     expect(element.text()).toEqual('one');
