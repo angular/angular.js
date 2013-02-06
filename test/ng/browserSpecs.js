@@ -279,6 +279,18 @@ describe('browser', function() {
       });
     });
 
+    describe('put via cookies(cookieName, string), if no <base href> ', function () {
+      beforeEach(function () {
+        fakeDocument.basePath = undefined;
+      });
+
+      it('should default path in cookie to "" (empty string)', function () {
+        browser.cookies('cookie', 'bender');
+        // This only fails in Safari and IE when cookiePath returns undefined
+        // Where it now succeeds since baseHref return '' instead of undefined         
+        expect(document.cookie).toEqual('cookie=bender');
+      });
+    });
 
     describe('get via cookies()[cookieName]', function() {
 
@@ -555,9 +567,9 @@ describe('browser', function() {
       expect(browser.baseHref()).toEqual('/base/path/');
     });
 
-    it('should return undefined if no <base href>', function() {
+    it('should return \'\' (empty string) if no <base href>', function() {
       fakeDocument.basePath = undefined;
-      expect(browser.baseHref()).toBeUndefined();
+      expect(browser.baseHref()).toEqual('');
     });
 
     it('should remove domain from <base href>', function() {
