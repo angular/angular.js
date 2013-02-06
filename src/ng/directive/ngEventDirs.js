@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngEventDirs');
+
+goog.require('angular.core.directive.ngCsp');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngClick

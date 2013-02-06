@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngNonBindable');
+
+goog.require('angular.core.directive.ngInit');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngNonBindable

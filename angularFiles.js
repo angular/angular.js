@@ -8,6 +8,8 @@ angularFiles = {
 
     'src/auto/injector.js',
 
+    'src/_all.js',
+    'src/ng/_all.js',
     'src/ng/anchorScroll.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
@@ -31,11 +33,13 @@ angularFiles = {
     'src/ng/timeout.js',
 
     'src/ng/filter.js',
+    'src/ng/filter/_all.js',
     'src/ng/filter/filter.js',
     'src/ng/filter/filters.js',
     'src/ng/filter/limitTo.js',
     'src/ng/filter/orderBy.js',
 
+    'src/ng/directive/_all.js',
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',
     'src/ng/directive/booleanAttrs.js',
@@ -63,8 +67,11 @@ angularFiles = {
   ],
 
   'angularSrcModules': [
+    'src/ngCookies/_all.js',
     'src/ngCookies/cookies.js',
+    'src/ngResource/_all.js',
     'src/ngResource/resource.js',
+    'src/ngSanitize/_all.js',
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
@@ -74,6 +81,7 @@ angularFiles = {
   ],
 
   'angularScenario': [
+    'src/ngScenario/_all.js',
     'src/ngScenario/Scenario.js',
     'src/ngScenario/Application.js',
     'src/ngScenario/Describe.js',
@@ -114,6 +122,7 @@ angularFiles = {
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
+    'lib/closure-library/closure/goog/base.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',

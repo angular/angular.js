@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.output.Html');
+
+goog.require('angular.scenario.matchers');
+
 /**
  * User Interface for the Scenario Runner.
  *

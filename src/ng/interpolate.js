@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$interpolate');
+
+goog.require('angular.core.$exceptionHandler');
+
 /**
  * @ngdoc object
  * @name ng.$interpolateProvider

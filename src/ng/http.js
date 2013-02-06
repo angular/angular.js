@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$http');
+
+goog.require('angular.core.$window');
+
 /**
  * Parse headers into key value object
  *

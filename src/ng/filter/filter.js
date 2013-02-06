@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.filter.filter');
+
+goog.require('angular.core.$filter');
+
 /**
  * @ngdoc filter
  * @name ng.filter:filter

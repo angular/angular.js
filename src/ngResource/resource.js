@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.resource.resource');
+
+goog.require('angular.cookies.cookies');
+
 /**
  * @ngdoc overview
  * @name ngResource

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngView');
+
+goog.require('angular.core.directive.ngTransclude');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngView

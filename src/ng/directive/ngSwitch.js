@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngSwitch');
+
+goog.require('angular.core.directive.ngStyle');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngSwitch

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$rootScope');
+
+goog.require('angular.core.$routeParams');
+
 /**
  * DESIGN NOTES
  *

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$controller');
+
+goog.require('angular.core.$compile');
+
 /**
  * @ngdoc object
  * @name ng.$controllerProvider

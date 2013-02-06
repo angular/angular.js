@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$filter');
+
+goog.require('angular.core.$timeout');
+
 /**
  * @ngdoc object
  * @name ng.$filterProvider

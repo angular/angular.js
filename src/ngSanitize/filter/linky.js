@@ -1,3 +1,7 @@
+goog.provide('angular.sanitize.filter.linky');
+
+goog.require('angular.sanitize.directive.ngBindHtml');
+
 /**
  * @ngdoc filter
  * @name ngSanitize.filter:linky

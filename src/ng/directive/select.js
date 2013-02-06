@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.select');
+
+goog.require('angular.core.directive.script');
+
 /**
  * @ngdoc directive
  * @name ng.directive:select

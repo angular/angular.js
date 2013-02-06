@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.filter.orderBy');
+
+goog.require('angular.core.filter.limitTo');
+
 /**
  * @ngdoc function
  * @name ng.filter:orderBy

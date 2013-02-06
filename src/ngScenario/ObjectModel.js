@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.ObjectModel');
+
+goog.require('angular.scenario.Future');
+
 /**
  * Maintains an object tree from the runner events.
  *

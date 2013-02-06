@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$exceptionHandler');
+
+goog.require('angular.core.$document');
+
 /**
  * @ngdoc function
  * @name ng.$exceptionHandler

@@ -1,3 +1,7 @@
+goog.provide('angular.core.$cacheFactory');
+
+goog.require('angular.core.$browser');
+
 /**
  * @ngdoc object
  * @name ng.$cacheFactory

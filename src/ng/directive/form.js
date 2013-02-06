@@ -1,5 +1,8 @@
 'use strict';
 
+goog.provide('angular.core.directive.form');
+
+goog.require('angular.core.directive.booleanAttrs');
 
 var nullFormCtrl = {
   $addControl: noop,

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngCloak');
+
+goog.require('angular.core.directive.ngClass');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngCloak

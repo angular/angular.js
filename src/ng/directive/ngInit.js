@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngInit');
+
+goog.require('angular.core.directive.ngInclude');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngInit

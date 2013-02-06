@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'yaml'
 include FileUtils
 
@@ -60,9 +61,10 @@ end
 
 desc 'Concat AngularJS files'
 task :concat => :init do
+  angularjs_temp = closure_builder(files['angularSrc'])
   concat_file('angular.js', [
         'src/angular.prefix',
-        files['angularSrc'],
+        angularjs_temp,
         'src/angular.suffix',
       ], gen_css('css/angular.css', true))
 
@@ -306,6 +308,21 @@ def closure_compile(filename)
 end
 
 
+def closure_builder(deps)
+  tempfile = Tempfile.new('angular-').path
+  puts "Invoking closure_builder.py --output_file=#{tempfile} ..."
+  sh "./lib/closure-library/closure/bin/build/closurebuilder.py" +
+                  " --root=./lib/closure-library/closure" +
+                  " --namespace=angular" +
+                  " --output_mode=script" +
+                  " --output_file=#{tempfile}" +
+                  " " + deps.flatten.join(" ")
+  rewrite_file(tempfile) do |content| fixup_concat_contents(content)
+  return tempfile
+  end
+end
+
+
 def concat_file(filename, deps, footer='')
   puts "Creating #{filename} ..."
   File.open(path_to(filename), 'w') do |f|
@@ -316,9 +333,8 @@ def concat_file(filename, deps, footer='')
               gsub('"NG_VERSION_MAJOR"', NG_VERSION.major).
               gsub('"NG_VERSION_MINOR"', NG_VERSION.minor).
               gsub('"NG_VERSION_DOT"', NG_VERSION.dot).
-              gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename).
-              gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
-              sub(/\(function\([^)]*\)\s*\{/, "\\0\n'use strict';") # add single strict mode flag
+              gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename)
+    content = fixup_concat_contents(content)
 
     f.write(content)
     f.write(footer)
@@ -331,13 +347,22 @@ def concat_module(name, files, footer='')
 end
 
 
+def fixup_concat_contents(content)
+  return content.
+      gsub(/^\s*goog\.(require|provide)\(.*$/, ''). # remove all goog.require / goog.provide directives
+      gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
+      sub(/\n\/\/ BEGIN_FILE: goog\/base.js\n.*\n\/\/ END_FILE: goog\/base.js/m, "") # remove goog\/base.js
+      sub(/\(function\([^)]*\)\s*\{/, "\\0\n'use strict';") # add single strict mode flag
+end
+
+
 def rewrite_file(filename)
   File.open(filename, File::RDWR) do |f|
     content = f.read
 
     content = yield content
 
-    raise "File rewrite failed - No content!" unless content
+    raise "File rewrite failed - No content! (file: #{filename}" unless content
 
     f.truncate 0
     f.rewind

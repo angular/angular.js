@@ -1,3 +1,7 @@
+goog.provide('angular.core.$anchorScroll');
+
+goog.require('angular.auto.injector');
+
 /**
  * @ngdoc function
  * @name ng.$anchorScroll

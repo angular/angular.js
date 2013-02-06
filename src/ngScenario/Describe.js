@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.Describe');
+
+goog.require('angular.scenario.Application');
+
 /**
  * The representation of define blocks. Don't used directly, instead use
  * define() in your tests.

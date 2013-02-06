@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.loader');
+
+goog.require('angular.Angular');
+
 /**
  * @ngdoc interface
  * @name angular.Module

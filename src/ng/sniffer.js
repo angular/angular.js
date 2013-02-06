@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$sniffer');
+
+goog.require('angular.core.$rootScope');
+
 /**
  * !!! This is an undocumented "private" service !!!
  *

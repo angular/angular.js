@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngCsp');
+
+goog.require('angular.core.directive.ngController');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngCsp

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$window');
+
+goog.require('angular.core.$sniffer');
+
 /**
  * @ngdoc object
  * @name ng.$window

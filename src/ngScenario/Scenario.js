@@ -1,5 +1,6 @@
 'use strict';
 
+goog.provide('angular.scenario.Scenario');
 
 /**
  * Setup file for the Scenario.

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.jqLite');
+
+goog.require('angular.AngularPublic');
+
 //////////////////////////////////
 //JQLite
 //////////////////////////////////

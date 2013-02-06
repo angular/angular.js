@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.AngularPublic');
+
+goog.require('angular.loader');
+
 /**
  * @ngdoc property
  * @name angular.version

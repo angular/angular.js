@@ -1,3 +1,7 @@
+goog.provide('angular.mock.angular-mocks');
+
+goog.require('angular.sanitize.filter.linky');
+
 /**
  * @license AngularJS v"NG_VERSION_FULL"
  * (c) 2010-2012 Google, Inc. http://angularjs.org

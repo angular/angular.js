@@ -1,5 +1,8 @@
 'use strict';
 
+goog.provide('angular.apis');
+
+goog.require('angular.jqLite');
 
 /**
  * Computes a hash of an 'obj'.

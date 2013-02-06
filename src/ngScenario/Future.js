@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.Future');
+
+goog.require('angular.scenario.Describe');
+
 /**
  * A future action in a spec.
  *

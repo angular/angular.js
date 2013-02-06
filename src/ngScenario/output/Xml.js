@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.output.Xml');
+
+goog.require('angular.scenario.output.Json');
+
 /**
  * Generates XML output into a context.
  */

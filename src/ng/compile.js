@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$compile');
+
+goog.require('angular.core.$cacheFactory');
+
 /* ! VARIABLE/FUNCTION NAMING CONVENTIONS THAT APPLY TO THIS FILE!
  *
  * DOM-related variables:

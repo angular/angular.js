@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.Runner');
+
+goog.require('angular.scenario.Describe');
+
 /**
  * Runner for scenarios
  *
