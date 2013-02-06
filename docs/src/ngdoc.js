@@ -214,23 +214,25 @@ Doc.prototype = {
       if (atName) {
         var text = trim(atText.join('\n')), match;
         if (atName == 'param') {
-          match = text.match(/^\{([^}=]+)(=)?\}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
-                             //  1      12 2      34       4   5   5 6      6  3   7  7
+          match = text.match(/^\{([^}]+)\}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
+                             //  1      1    23       3   4   4 5      5  2   6  6
           if (!match) {
-            throw new Error("Not a valid 'param' format: " + text);
+            throw new Error("Not a valid 'param' format: " + text + ' (found in: ' + self.file + ':' + self.line + ')');
           }
+
+          var optional = (match[1].slice(-1) === '=');
           var param = {
-            name: match[5] || match[4],
-            description:self.markdown(text.replace(match[0], match[7])),
-            type: match[1],
-            optional: !!match[2],
-            'default':match[6]
+            name: match[4] || match[3],
+            description:self.markdown(text.replace(match[0], match[6])),
+            type: optional ? match[1].substring(0, match[1].length-1) : match[1],
+            optional: optional,
+            'default':match[5]
           };
           self.param.push(param);
         } else if (atName == 'returns' || atName == 'return') {
-          match = text.match(/^\{([^}=]+)\}\s+(.*)/);
+          match = text.match(/^\{([^}]+)\}\s+(.*)/);
           if (!match) {
-            throw new Error("Not a valid 'returns' format: " + text + ' in ' + self.file + ':' + self.line);
+            throw new Error("Not a valid 'returns' format: " + text + ' (found in: ' + self.file + ':' + self.line + ')');
           }
           self.returns = {
             type: match[1],
@@ -245,7 +247,7 @@ Doc.prototype = {
         } else if(atName == 'property') {
           match = text.match(/^\{(\S+)\}\s+(\S+)(\s+(.*))?/);
           if (!match) {
-            throw new Error("Not a valid 'property' format: " + text);
+            throw new Error("Not a valid 'property' format: " + text + ' (found in: ' + self.file + ':' + self.line + ')');
           }
           var property = new Doc({
             type: match[1],
@@ -383,40 +385,53 @@ Doc.prototype = {
     var self = this;
     dom.h('Usage', function() {
       var restrict = self.restrict || 'AC';
+
       if (restrict.match(/E/)) {
-        dom.text('as element (see ');
+        dom.text('This directive can be used as custom element, but we aware of ');
         dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
-        dom.text(')');
-        dom.code(function() {
-          dom.text('<');
-          dom.text(dashCase(self.shortName));
-          renderParams('\n       ', '="', '"');
-          dom.text('>\n</');
-          dom.text(dashCase(self.shortName));
-          dom.text('>');
-        });
+        dom.text('.');
       }
-      if (restrict.match(/A/)) {
-        var element = self.element || 'ANY';
-        dom.text('as attribute');
-        dom.code(function() {
-          dom.text('<' + element + ' ');
-          dom.text(dashCase(self.shortName));
-          renderParams('\n     ', '="', '"', true);
-          dom.text('>\n   ...\n');
-          dom.text('</' + element + '>');
+
+      if (self.usage) {
+        dom.tag('pre', function() {
+          dom.tag('code', function() {
+            dom.text(self.usage);
+          });
         });
-      }
-      if (restrict.match(/C/)) {
-        dom.text('as class');
-        var element = self.element || 'ANY';
-        dom.code(function() {
-          dom.text('<' + element + ' class="');
-          dom.text(dashCase(self.shortName));
-          renderParams(' ', ': ', ';', true);
-          dom.text('">\n   ...\n');
-          dom.text('</' + element + '>');
-        });
+      } else {
+        if (restrict.match(/E/)) {
+          dom.text('as element:');
+          dom.code(function() {
+            dom.text('<');
+            dom.text(dashCase(self.shortName));
+            renderParams('\n       ', '="', '"');
+            dom.text('>\n</');
+            dom.text(dashCase(self.shortName));
+            dom.text('>');
+          });
+        }
+        if (restrict.match(/A/)) {
+          var element = self.element || 'ANY';
+          dom.text('as attribute');
+          dom.code(function() {
+            dom.text('<' + element + ' ');
+            dom.text(dashCase(self.shortName));
+            renderParams('\n     ', '="', '"', true);
+            dom.text('>\n   ...\n');
+            dom.text('</' + element + '>');
+          });
+        }
+        if (restrict.match(/C/)) {
+          dom.text('as class');
+          var element = self.element || 'ANY';
+          dom.code(function() {
+            dom.text('<' + element + ' class="');
+            dom.text(dashCase(self.shortName));
+            renderParams(' ', ': ', ';', true);
+            dom.text('">\n   ...\n');
+            dom.text('</' + element + '>');
+          });
+        }
       }
       self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
