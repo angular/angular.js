@@ -73,17 +73,17 @@ var ngSwitchDirective = valueFn({
         selectedScopes;
 
     scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
-      angular.forEach(selectedScopes, function(selectedScope) {
+      forEach(selectedScopes, function(selectedScope) {
         selectedScope.$destroy();
       });
-      angular.forEach(selectedElements, function(selectedElement) {
+      forEach(selectedElements, function(selectedElement) {
         selectedElement.remove();
       });
       selectedElements = [];
       selectedScopes = [];
       if ((selectedTranscludes = ctrl.cases['!' + value] || ctrl.cases['?'])) {
         scope.$eval(attr.change);
-        angular.forEach(selectedTranscludes, function(selectedTransclude) {
+        forEach(selectedTranscludes, function(selectedTransclude) {
           var selectedScope = scope.$new();
           selectedScopes.push(selectedScope);
           selectedTransclude(selectedScope, function(caseElement) {
