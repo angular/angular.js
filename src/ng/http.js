@@ -149,7 +149,10 @@ function $HttpProvider() {
       },
       post: {'Content-Type': 'application/json;charset=utf-8'},
       put:  {'Content-Type': 'application/json;charset=utf-8'}
-    }
+    },
+
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN'
   };
 
   var providerResponseInterceptors = this.responseInterceptors = [];
@@ -383,9 +386,10 @@ function $HttpProvider() {
      * {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF} is a technique by which
      * an unauthorized site can gain your user's private data. Angular provides following mechanism
      * to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie
-     * called `XSRF-TOKEN` and sets it as the HTTP header `X-XSRF-TOKEN`. Since only JavaScript that
-     * runs on your domain could read the cookie, your server can be assured that the XHR came from
-     * JavaScript running on your domain. The header will not be set for cross-domain requests.
+     * (by default, `XSRF-TOKEN`) and sets it as an HTTP header (`X-XSRF-TOKEN`). Since only
+     * JavaScript that runs on your domain could read the cookie, your server can be assured that
+     * the XHR came from JavaScript running on your domain. The header will not be set for
+     * cross-domain requests.
      *
      * To take advantage of this, your server needs to set a token in a JavaScript readable session
      * cookie called `XSRF-TOKEN` on first HTTP GET request. On subsequent non-GET requests the
@@ -394,6 +398,9 @@ function $HttpProvider() {
      * unique for each user and must be verifiable by the server (to prevent the JavaScript making
      * up its own tokens). We recommend that the token is a digest of your site's authentication
      * cookie with {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
+     *
+     * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
+     * properties of either $httpProvider.defaults, or the per-request config object.
      *
      *
      * @param {object} config Object describing the request to be made and how it should be
@@ -405,6 +412,8 @@ function $HttpProvider() {
      *      `?key1=value1&key2=value2` after the url. If the value is not a string, it will be JSONified.
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
+     *    - **xsrfHeaderName** – `{string}` – Name of HTTP header to populate with the XSRF token.
+     *    - **xsrfCookieName** – `{string}` – Name of cookie containing the XSRF token.
      *    - **transformRequest** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
      *      request body and headers and returns its transformed (typically serialized) version.
@@ -513,12 +522,17 @@ function $HttpProvider() {
     function $http(config) {
       config.method = uppercase(config.method);
 
+      var xsrfHeader = {},
+          xsrfCookieName = config.xsrfCookieName || defaults.xsrfCookieName,
+          xsrfHeaderName = config.xsrfHeaderName || defaults.xsrfHeaderName,
+          xsrfToken = isSameDomain(config.url, $browser.url()) ?
+                          $browser.cookies()[xsrfCookieName] : undefined;
+      xsrfHeader[xsrfHeaderName] = xsrfToken;
+
       var reqTransformFn = config.transformRequest || defaults.transformRequest,
           respTransformFn = config.transformResponse || defaults.transformResponse,
           defHeaders = defaults.headers,
-          xsrfToken = isSameDomain(config.url, $browser.url()) ?
-                          $browser.cookies()['XSRF-TOKEN'] : undefined,
-          reqHeaders = extend({'X-XSRF-TOKEN': xsrfToken},
+          reqHeaders = extend(xsrfHeader,
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
           reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
           promise;
