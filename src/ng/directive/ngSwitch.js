@@ -20,8 +20,11 @@
  * On child elments add:
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
- *   case will be displayed.
- * * `ngSwitchDefault`: the default case when no other casses match.
+ *   case will be displayed. If the same match appears multiple times, all the
+ *   elements will be displayed.
+ * * `ngSwitchDefault`: the default case when no other case match. If there
+ *   are multiple default cases, all of them will be displayed when no other
+ *   case match.
  *
  * @example
     <doc:example>
