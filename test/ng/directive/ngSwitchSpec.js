@@ -37,12 +37,12 @@ describe('ngSwitch', function() {
 
   it('should switch show all the options that match the switch-when', inject(function($rootScope, $compile) {
     element = $compile(
-      '<div ng-switch="select">' +
-        '<div ng-switch-when="1">first:{{name}}</div>' +
-        '<div ng-switch-when="1">, first too:{{name}}</div>' +
-        '<div ng-switch-when="2">second:{{name}}</div>' +
-        '<div ng-switch-when="true">true:{{name}}</div>' +
-      '</div>')($rootScope);
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when="1">first:{{name}}</li>' +
+        '<li ng-switch-when="1">, first too:{{name}}</li>' +
+        '<li ng-switch-when="2">second:{{name}}</li>' +
+        '<li ng-switch-when="true">true:{{name}}</li>' +
+      '</ul>')($rootScope);
     expect(element.html()).toEqual(
         '<!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 2 --><!-- ngSwitchWhen: true -->');
     $rootScope.select = 1;
@@ -77,11 +77,11 @@ describe('ngSwitch', function() {
 
   it('should show all switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
-      '<ng:switch on="select">' +
-        '<div ng:switch-when="1">one</div>' +
-        '<div ng:switch-default>other</div>' +
-        '<div ng:switch-default>, other too</div>' +
-      '</ng:switch>')($rootScope);
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when="1">one</li>' +
+        '<li ng-switch-default>other</li>' +
+        '<li ng-switch-default>, other too</li>' +
+      '</ul>')($rootScope);
     $rootScope.$apply();
     expect(element.text()).toEqual('other, other too');
     $rootScope.select = 1;
