@@ -27,7 +27,7 @@ describe('angular.scenario.output.xml', function() {
   it('should create XML nodes for object model', function() {
     runner.emit('SpecBegin', spec);
     runner.emit('StepBegin', spec, step);
-    runner.emit('StepEnd', spec,  step);
+    runner.emit('StepEnd', spec, step);
     runner.emit('SpecEnd', spec);
     runner.emit('RunnerEnd');
     expect(context.find('it').attr('status')).toEqual('success');
