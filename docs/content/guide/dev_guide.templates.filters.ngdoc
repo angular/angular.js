@@ -2,9 +2,7 @@
 @name Developer Guide: Templates: Understanding Angular Filters
 @description
 
-Angular filters format data for display to the user. In addition to formatting data, filters can
-also modify the DOM. This allows filters to handle tasks such as conditionally applying CSS styles
-to filtered output.
+Angular filters format data for display to the user.
 
 For example, you might have a data object that needs to be formatted according to the locale before
 displaying it to the user. You can pass expressions through a chain of filters like this:

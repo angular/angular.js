@@ -214,13 +214,9 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
-To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
-output.
+You should now see the following output in the Testacular tab:
 
-    Chrome: Runner reset.
-    ....
-    Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
-      Chrome 19.0.1084.36 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
+    Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)
 
 
 # Summary

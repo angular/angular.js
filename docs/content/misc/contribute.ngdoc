@@ -71,7 +71,9 @@ that is used throughout AngularJS. The best guidance is to do what makes the mos
 # Checking Out and Building Angular
 
 The AngularJS source code is hosted at {@link http://github.com Github}, which we also use to
-accept code contributions. Several steps are needed to check out and build AngularJS:
+accept code contributions. The AngularJS repository can be found at **<https://github.com/angular/angular.js>**.
+
+Several steps are needed to check out and build AngularJS:
 
 
 ## Installation Dependencies
@@ -95,12 +97,6 @@ pre-packaged bundle.
 
   * `cd angular.js`
   * `npm install`
-
-
-* Lastly, you'll also need Testacular our spectacular test runner that we use for running unit and end-to-end tests.
-
-  * `sudo npm install -g testacular`
-
 
 
 ## Creating a Github Account and Forking Angular
@@ -127,7 +123,11 @@ minified AngularJS files:
 
         git remote add upstream https://github.com/angular/angular.js.git
 
-4. To build AngularJS, run:
+4. To add node.js dependencies
+
+        npm install
+
+5. To build AngularJS, run:
 
         rake package
 
@@ -184,7 +184,7 @@ change. To execute tests in this mode run:
 
 1. To start the Testacular server, capture Chrome browser and run unit tests, run:
 
-        rake test:jqlite
+        rake autotest:jqlite
 
 2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
    of Testacular running, read Testacular's console output for the correct url):
@@ -222,30 +222,40 @@ To run the E2E test suite:
 
 To create and submit a change:
 
-1. Create a new branch off the master for your changes:
+1. <a name="CLA"></a>
+   Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code changes to be
+   accepted, the CLA must be signed. It's a quick process, we promise!
+
+   For individuals we have a [simple click-through form](http://code.google.com/legal/individual-cla-v1.0.html). For
+   corporations we'll need you to
+   [print, sign and one of scan+email, fax or mail the form](http://code.google.com/legal/corporate-cla-v1.0.html).
+
+
+2. Create a new branch off the master for your changes:
 
         git branch my-fix-branch
 
-2. Check out the branch:
+3. Check out the branch:
 
         git checkout my-fix-branch
 
-3. Create your patch, make sure to have plenty of tests (that pass).
+4. Create your patch, make sure to have plenty of tests (that pass).
 
-4. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
+5. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
    please check out our
    [commit message conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#)
    and our commit message presubmit hook `validate-commit-msg.js`):
 
         git commit -a
 
-5. Push your branch to Github:
+6. Push your branch to Github:
 
         git push origin my-fix-branch
 
-6. In Github, send a pull request to `angular:master`.
+7. In Github, send a pull request to `angular:master`.
 
-7. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
+
+8. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
 from the main (upstream) repository:
 
   1. To delete the branch in Github, run:

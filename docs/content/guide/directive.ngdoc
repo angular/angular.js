@@ -110,7 +110,7 @@ Compilation of HTML happens in three phases:
 ## Reasons behind the compile/link separation
 
 At this point you may wonder why the compile process is broken down to a compile and link phase.
-To understand this, let's look at a real world example with repeater:
+To understand this, let's look at a real world example with a repeater:
 
 <pre>
   Hello {{user}}, you have these actions:
@@ -144,9 +144,9 @@ links a specific instance of the {@link api/ng.$rootScope.Scope scope} and the s
 instance of an `li` is performed.
 
 {@link api/ng.directive:ngRepeat ngRepeat} works by preventing the
-compilation process form descending into the `li` element. Instead the {@link
+compilation process from descending into the `li` element. Instead the {@link
 api/ng.directive:ngRepeat ngRepeat} directive compiles `li`
-separately. The result of of the `li` element compilation is a linking function which contains all
+separately. The result of the `li` element compilation is a linking function which contains all
 of the directives contained in the `li` element, ready to be attached to a specific clone of the `li`
 element. At runtime the {@link api/ng.directive:ngRepeat ngRepeat}
 watches the expression and as items are added to the array it clones the `li` element, creates a
@@ -253,7 +253,7 @@ An example skeleton of the directive is shown here, for the complete list see be
 
 In most cases you will not need such fine control and so the above can be simplified. All of the
 different parts of this skeleton are explained in following sections. In this section we are
-interested only isomers of this skeleton.
+interested only in some of this skeleton.
 
 The first step in simplyfing the code is to rely on the default values. Therefore the above can be
 simplified as:
@@ -296,7 +296,7 @@ makes it injectable following all of the rules of injection annotation.
 The directive definition object provides instructions to the {@link api/ng.$compile
 compiler}. The attributes are:
 
-  * `name` - Name of the current scope. Optional defaults to the name at registration.
+  * `name` - Name of the current scope. Optional and defaults to the name at registration.
 
   * `priority` - When there are multiple directives defined on a single DOM element, sometimes it
     is necessary to specify the order in which the directives are applied. The `priority` is used
@@ -310,7 +310,7 @@ compiler}. The attributes are:
   * `scope` - If set to:
 
     * `true` - then a new scope will be created for this directive. If multiple directives on the
-      same element request new scope, only one new scope is created. The new scope rule does not
+      same element request a new scope, only one new scope is created. The new scope rule does not
       apply for the root of the template since the root of the template always gets a new scope.
 
     * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
@@ -321,35 +321,37 @@ compiler}. The attributes are:
       derived from the parent scope. These local properties are useful for aliasing values for
       templates. Locals definition is a hash of local scope property to its source:
 
-      * `@` or `@attr` - bind a local scope property to the DOM attribute. The result is always a
-        string since DOM attributes are strings. If no `attr` name is specified then the local name
-        and attribute name are same. Given `<widget my-attr="hello {{name}}">` and widget definition
+      * `@` or `@attr` - bind a local scope property to the value of DOM attribute. The result is
+        always a string since DOM attributes are strings. If no `attr` name is specified  then the
+        attribute name is assumed to be the same as the local name.
+        Given `<widget my-attr="hello {{name}}">` and widget definition
         of `scope: { localName:'@myAttr' }`, then widget scope property `localName` will reflect
         the interpolated value of `hello {{name}}`. As the `name` attribute changes so will the
         `localName` property on the widget scope. The `name` is read from the parent scope (not
         component scope).
 
-      * `=` or `=expression` - set up bi-directional binding between a local scope property and the
-        parent scope property. If no `attr` name is specified then the local name and attribute
-        name are same. Given `<widget my-attr="parentModel">` and widget definition of
-        `scope: { localModel:'=myAttr' }`, then widget scope property `localName` will reflect the
+      * `=` or `=attr` - set up bi-directional binding between a local scope property and the
+        parent scope property of name defined via the value of the `attr` attribute. If no `attr`
+        name is specified then the attribute name is assumed to be the same as the local name.
+        Given `<widget my-attr="parentModel">` and widget definition of
+        `scope: { localModel:'=myAttr' }`, then widget scope property `localModel` will reflect the
         value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
         in `localModel` and any changes in `localModel` will reflect in `parentModel`.
 
       * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
-        If no `attr` name is specified then the local name and attribute name are same.
-        Given `<widget my-attr="count = count + value">` and widget definition of
-        `scope: { localFn:'increment()' }`, then isolate scope property `localFn` will point to
-        a function wrapper for the `increment()` expression. Often it's desirable to pass data from
-        the isolate scope via an expression and to the parent scope, this can be done by passing a
-        map of local variable names and values into the expression wrapper fn. For example, if the
-        expression is `increment(amount)` then we can specify the amount value by calling the
-        `localFn` as `localFn({amount: 22})`.
+        If no `attr` name is specified then the attribute name is assumed to be the same as the
+        local name. Given `<widget my-attr="count = count + value">` and widget definition of
+        `scope: { localFn:'&myAttr' }`, then isolate scope property `localFn` will point to
+        a function wrapper for the `count = count + value` expression. Often it's desirable to
+        pass data from the isolated scope via an expression and to the parent scope, this can be
+        done by passing a map of local variable names and values into the expression wrapper fn.
+        For example, if the expression is `increment(amount)` then we can specify the amount value
+        by calling the `localFn` as `localFn({amount: 22})`.
 
   * `controller` - Controller constructor function. The controller is instantiated before the
     pre-linking phase and it is shared with other directives if they request it by name (see
     `require` attribute). This allows the directives to communicate with each other and augment
-    each other behavior. The controller is injectable with the following locals:
+    each other's behavior. The controller is injectable with the following locals:
 
     * `$scope` - Current scope associated with the element
     * `$element` - Current element
@@ -472,7 +474,7 @@ compiler linking function will fail to locate the correct elements for linking.
 
 ### Post-linking function
 
-Executed after the child elements are linked. Safe to do DOM transformation in here.
+Executed after the child elements are linked. It is safe to do DOM transformation in the post-linking function.
 
 <a name="Attributes"></a>
 ## Attributes
@@ -526,6 +528,7 @@ dialog component may work.
             on-ok="show = false; doSomething()">
        Body goes here: {{username}} is {{title}}.
     </dialog>
+  </div>
 </pre>
 
 Clicking on the "show" button will open the dialog. The dialog will have a title, which is
@@ -535,7 +538,7 @@ into the dialog.
 Here is an example of what the template definition for the `dialog` widget may look like.
 
 <pre>
-  <div ng-show="show">
+  <div ng-show="visible">
     <h3>{{title}}</h3>
     <div class="body" ng-transclude></div>
     <div class="footer">
@@ -547,18 +550,18 @@ Here is an example of what the template definition for the `dialog` widget may l
 
 This will not render properly, unless we do some scope magic.
 
-The first issue we have to solve is that the dialog box template expect `title` to be defined, but
-the place of instantiation would like to bind to `username`. Furthermore the buttons expect `onOk`
-as well as `onCancel` functions to be present in the scope. This limits the usefulness of the
+The first issue we have to solve is that the dialog box template expects `title` to be defined, but
+the place of instantiation would like to bind to `username`. Furthermore the buttons expect the
+`onOk` and `onCancel` functions to be present in the scope. This limits the usefulness of the
 widget. To solve the mapping issue we use the `locals` to create local variables which the template
 expects as follows:
 
 <pre>
   scope: {
-    title: '=',             // set up title to accept data-binding
+    title: '@',             // the title uses the data-binding from the parent scope
     onOk: '&',              // create a delegate onOk function
     onCancel: '&',          // create a delegate onCancel function
-    show: '='
+    visible: '='            // set up visible to accept data-binding
   }
 </pre>
 
@@ -581,7 +584,7 @@ isolated scope then it will not be able to bind to anything. For this reason the
 is a child of the original scope, before the widget created an isolated scope for its local
 variables. This makes the transcluded and widget isolated scope siblings.
 
-This may seem as unexpected complexity, but it gives the widget user and developer the least
+This may seem to be unexpected complexity, but it gives the widget user and developer the least
 surprise.
 
 Therefore the final directive definition looks something like this:
@@ -589,11 +592,13 @@ Therefore the final directive definition looks something like this:
 <pre>
 transclude: true,
 scope: {
-  title: 'bind',          // set up title to accept data-binding
-  onOk: 'expression',     // create a delegate onOk function
-  onCancel: 'expression', // create a delegate onCancel function
-  show: 'accessor'        // create a getter/setter function for visibility.
-}
+    title: '@',             // the title uses the data-binding from the parent scope
+    onOk: '&',              // create a delegate onOk function
+    onCancel: '&',          // create a delegate onCancel function
+    visible: '='            // set up visible to accept data-binding
+},
+restrict: 'E',
+replace: true
 </pre>
 
 # Creating Components
@@ -603,7 +608,6 @@ allows the directives to become a short hand for reusable components from which 
 can be built.
 
 Following is an example of building a reusable widget.
-
 
 <doc:example module="zippyModule">
   <doc:source>

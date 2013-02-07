@@ -198,13 +198,13 @@ angular.scenario.dsl('binding', function() {
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
-  var supportInputEvent = 'oninput' in document.createElement('div');
+  var supportInputEvent =  'oninput' in document.createElement('div') && msie != 9;
 
   chain.enter = function(value, event) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger(event || supportInputEvent && 'input' || 'change');
+      input.trigger(event || (supportInputEvent ? 'input' : 'change'));
       done();
     });
   };
@@ -298,6 +298,8 @@ angular.scenario.dsl('select', function() {
         option = select.find('option:contains("' + value + '")');
         if (option.length) {
           select.val(option.val());
+        } else {
+            return done("option '" + value + "' not found");
         }
       }
       select.trigger('change');
@@ -325,6 +327,7 @@ angular.scenario.dsl('select', function() {
  * Usage:
  *    element(selector, label).count() get the number of elements that match selector
  *    element(selector, label).click() clicks an element
+ *    element(selector, label).mouseover() mouseover an element
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
  *    element(selector, label).{method}() gets the value (as defined by jQuery, ex. val)
  *    element(selector, label).{method}(value) sets the value (as defined by jQuery, ex. val)
@@ -378,6 +381,14 @@ angular.scenario.dsl('element', function() {
       } else {
         done();
       }
+    });
+  };
+
+  chain.mouseover = function() {
+    return this.addFutureAction("element '" + this.label + "' mouseover", function($window, $document, done) {
+      var elements = $document.elements();
+      elements.trigger('mouseover');
+      done();
     });
   };
 

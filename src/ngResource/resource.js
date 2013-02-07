@@ -6,7 +6,7 @@
  * @description
  */
 
- /**
+/**
  * @ngdoc object
  * @name ngResource.$resource
  * @requires $http
@@ -19,10 +19,13 @@
  * the need to interact with the low level {@link ng.$http $http} service.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
- *   `/user/:username`.
+ *   `/user/:username`. If you are using a URL with a port number (e.g. 
+ *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
+ *   number, like this: `$resource('http://example.com\\:8080/api')`.
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
- *   `actions` methods.
+ *   `actions` methods. If any of the parameter value is a function, it will be executed every time
+ *   when a param value needs to be obtained for a request (unless the param was overriden).
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -34,22 +37,40 @@
  *   the data object (useful for non-GET operations).
  *
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
- *   default set of resource actions. The declaration should be created in the following format:
+ *   default set of resource actions. The declaration should be created in the format of {@link
+ *   ng.$http#Parameters $http.config}:
  *
- *       {action1: {method:?, params:?, isArray:?, headers:?},
- *        action2: {method:?, params:?, isArray:?, headers:?},
+ *       {action1: {method:?, params:?, isArray:?, headers:?, ...},
+ *        action2: {method:?, params:?, isArray:?, headers:?, ...},
  *        ...}
  *
  *   Where:
  *
- *   - `action` – {string} – The name of action. This name becomes the name of the method on your
+ *   - **`action`** – {string} – The name of action. This name becomes the name of the method on your
  *     resource object.
- *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *     and `JSONP`
- *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
- *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
+ *   - **`method`** – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
+ *     and `JSONP`.
+ *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of the
+ *     parameter value is a function, it will be executed every time when a param value needs to be
+ *     obtained for a request (unless the param was overriden).
+ *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
- *   - `headers` – {object=} – Optional HTTP headers to send
+ *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *     transform function or an array of such functions. The transform function takes the http
+ *     request body and headers and returns its transformed (typically serialized) version.
+ *   - **`transformResponse`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *     transform function or an array of such functions. The transform function takes the http
+ *     response body and headers and returns its transformed (typically deserialized) version.
+ *   - **`cache`** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
+ *     GET request, otherwise if a cache instance built with
+ *     {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
+ *     caching.
+ *   - **`timeout`** – `{number}` – timeout in milliseconds.
+ *   - **`withCredentials`** - `{boolean}` - whether to to set the `withCredentials` flag on the
+ *     XHR object. See {@link https://developer.mozilla.org/en/http_access_control#section_5
+ *     requests with credentials} for more information.
+ *   - **`responseType`** - `{string}` - see {@link
+ *     https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -88,6 +109,11 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
+ *   The Resource also has these properties:
+ *
+ *   - '$q': the  promise from the underlying {@link ng.$http} call.
+ *   - '$resolved': true if the promise has been resolved (either with success or rejection);
+ *     Knowing if the Resource has been resolved is useful in data-binding.
  *
  * @example
  *
@@ -225,46 +251,46 @@ angular.module('ngResource', ['ng']).
           return $parse(path)(obj);
         };
 
-  /**
-   * We need our custom mehtod because encodeURIComponent is too aggressive and doesn't follow
-   * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
-   * segments:
-   *    segment       = *pchar
-   *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-   *    pct-encoded   = "%" HEXDIG HEXDIG
-   *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-   *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
-   *                     / "*" / "+" / "," / ";" / "="
-   */
-  function encodeUriSegment(val) {
-    return encodeUriQuery(val, true).
-      replace(/%26/gi, '&').
-      replace(/%3D/gi, '=').
-      replace(/%2B/gi, '+');
-  }
+    /**
+     * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
+     * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
+     * segments:
+     *    segment       = *pchar
+     *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+     *    pct-encoded   = "%" HEXDIG HEXDIG
+     *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+     *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+     *                     / "*" / "+" / "," / ";" / "="
+     */
+    function encodeUriSegment(val) {
+      return encodeUriQuery(val, true).
+        replace(/%26/gi, '&').
+        replace(/%3D/gi, '=').
+        replace(/%2B/gi, '+');
+    }
 
 
-  /**
-   * This method is intended for encoding *key* or *value* parts of query component. We need a custom
-   * method becuase encodeURIComponent is too agressive and encodes stuff that doesn't have to be
-   * encoded per http://tools.ietf.org/html/rfc3986:
-   *    query       = *( pchar / "/" / "?" )
-   *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-   *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-   *    pct-encoded   = "%" HEXDIG HEXDIG
-   *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
-   *                     / "*" / "+" / "," / ";" / "="
-   */
-  function encodeUriQuery(val, pctEncodeSpaces) {
-    return encodeURIComponent(val).
-      replace(/%40/gi, '@').
-      replace(/%3A/gi, ':').
-      replace(/%24/g, '$').
-      replace(/%2C/gi, ',').
-      replace((pctEncodeSpaces ? null : /%20/g), '+');
-  }
+    /**
+     * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+     * method becuase encodeURIComponent is too agressive and encodes stuff that doesn't have to be
+     * encoded per http://tools.ietf.org/html/rfc3986:
+     *    query       = *( pchar / "/" / "?" )
+     *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+     *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+     *    pct-encoded   = "%" HEXDIG HEXDIG
+     *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+     *                     / "*" / "+" / "," / ";" / "="
+     */
+    function encodeUriQuery(val, pctEncodeSpaces) {
+      return encodeURIComponent(val).
+        replace(/%40/gi, '@').
+        replace(/%3A/gi, ':').
+        replace(/%24/g, '$').
+        replace(/%2C/gi, ',').
+        replace((pctEncodeSpaces ? null : /%20/g), '+');
+    }
 
-  function Route(template, defaults) {
+    function Route(template, defaults) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
       var urlParams = this.urlParams = {};
@@ -290,7 +316,14 @@ angular.module('ngResource', ['ng']).
             encodedVal = encodeUriSegment(val);
             url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
           } else {
-            url = url.replace(new RegExp("/?:" + urlParam + "(\\W)", "g"), '$1');
+            url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W)", "g"), function(match,
+                leadingSlashes, tail) {
+              if (tail.charAt(0) == '/') {
+                return tail;
+              } else {
+                return leadingSlashes + tail;
+              }
+            });
           }
         });
         url = url.replace(/\/?#$/, '');
@@ -314,8 +347,9 @@ angular.module('ngResource', ['ng']).
 
       function extractParams(data, actionParams){
         var ids = {};
-        paramDefaults = extend(paramDefaults, actionParams);
-        forEach(paramDefaults || {}, function(value, key){
+        actionParams = extend({}, paramDefaults, actionParams);
+        forEach(actionParams, function(value, key){
+          if (isFunction(value)) { value = value(); }
           ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
         });
         return ids;
@@ -326,12 +360,15 @@ angular.module('ngResource', ['ng']).
       }
 
       forEach(actions, function(action, name) {
+        action.method = angular.uppercase(action.method);
         var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
         Resource[name] = function(a1, a2, a3, a4) {
           var params = {};
           var data;
           var success = noop;
           var error = null;
+          var promise;
+
           switch(arguments.length) {
           case 4:
             error = a4;
@@ -367,14 +404,26 @@ angular.module('ngResource', ['ng']).
           }
 
           var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          $http({
-            method: action.method,
-            url: route.url(extend({}, extractParams(data, action.params || {}), params)),
-            data: data,
-            headers: extend({}, action.headers || {})
-          }).then(function(response) {
-              var data = response.data;
+          var httpConfig = {},
+              promise;
 
+          forEach(action, function(value, key) {
+            if (key != 'params' && key != 'isArray' ) {
+              httpConfig[key] = copy(value);
+            }
+          });
+          httpConfig.data = data;
+          httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
+
+          function markResolved() { value.$resolved = true; };
+
+          promise = $http(httpConfig);
+          value.$q = promise;
+          value.$resolved = false;
+          promise.then(markResolved, markResolved)
+          promise.then(function(response) {
+              var data = response.data;
+              var q = value.$q, resolved = value.$resolved;
               if (data) {
                 if (action.isArray) {
                   value.length = 0;
@@ -383,17 +432,15 @@ angular.module('ngResource', ['ng']).
                   });
                 } else {
                   copy(data, value);
+                  value.$q = q;
+                  value.$resolved = resolved;
                 }
               }
               (success||noop)(value, response.headers);
             }, error);
 
           return value;
-        };
 
-
-        Resource.bind = function(additionalParamDefaults){
-          return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
         };
 
 
@@ -422,6 +469,11 @@ angular.module('ngResource', ['ng']).
           Resource[name].call(this, params, data, success, error);
         };
       });
+
+      Resource.bind = function(additionalParamDefaults){
+        return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+      };
+
       return Resource;
     }
 

@@ -49,8 +49,7 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) {return String.fromCharCode(code);}
 
 
-var Error             = window.Error,
-    /** holds major version number for IE or NaN for real browsers */
+var /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
@@ -147,7 +146,7 @@ function reverseParams(iteratorFn) {
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
  * characters such as '012ABC'. The reason why we are not using simply a number counter is that
- * the number string gets longer over time, and it can also overflow, where as the the nextId
+ * the number string gets longer over time, and it can also overflow, where as the nextId
  * will grow much slower, it is a string, and it will never overflow.
  *
  * @returns an unique alpha-numeric string
@@ -621,13 +620,15 @@ function equals(o1, o2) {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
         keySet = {};
         for(key in o1) {
-          if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) {
-            return false;
-          }
+          if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
+          if (!equals(o1[key], o2[key])) return false;
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] && key.charAt(0) !== '$' && !isFunction(o2[key])) return false;
+          if (!keySet[key] &&
+              key.charAt(0) !== '$' &&
+              o2[key] !== undefined &&
+              !isFunction(o2[key])) return false;
         }
         return true;
       }
@@ -788,7 +789,7 @@ function toKeyValue(obj) {
 
 
 /**
- * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+ * We need our custom method because encodeURIComponent is too agressive and doesn't follow
  * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
  * segments:
  *    segment       = *pchar
@@ -832,7 +833,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp on optional application
+ * @param {angular.Module} ngApp an optional application
  *   {@link angular.module module} name to load.
  *
  * @description
@@ -840,7 +841,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * Use this directive to auto-bootstrap on application. Only
  * one directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
- * ot the root of the page.
+ * at the root of the page.
  *
  * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled

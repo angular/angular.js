@@ -40,6 +40,7 @@ desc 'Clean Generated Files'
 task :clean do
   FileUtils.rm_r(BUILD_DIR, :force => true)
   FileUtils.mkdir(BUILD_DIR)
+  FileUtils.rm_r('test_out', :force => true)
 end
 
 
@@ -53,25 +54,6 @@ task :concat_scenario => :init do
       files['angularScenario'],
       'src/ngScenario/angular.suffix',
   ], gen_css('css/angular.css') + "\n" + gen_css('css/angular-scenario.css'))
-end
-
-
-desc 'Concat JSTD Scenario Adapter'
-task :concat_jstd_scenario_adapter => :init do
-
-  concat_file('jstd-scenario-adapter.js', [
-      'src/ngScenario/jstd-scenario-adapter/angular.prefix',
-      'src/ngScenario/jstd-scenario-adapter/Adapter.js',
-      'src/ngScenario/jstd-scenario-adapter/angular.suffix',
-  ])
-
-  # TODO(vojta) use jstd configuration when implemented
-  # (instead of including jstd-adapter-config.js)
-  File.open(path_to('jstd-scenario-adapter-config.js'), 'w') do |f|
-    f.write("/**\r\n" +
-            " * Configuration for jstd scenario adapter \n */\n" +
-            "var jstdScenarioAdapter = {\n  relativeUrlPrefix: '/build/docs/'\n};\n")
-  end
 end
 
 
@@ -114,7 +96,7 @@ end
 
 
 desc 'Minify JavaScript'
-task :minify => [:init, :concat, :concat_scenario, :concat_jstd_scenario_adapter] do
+task :minify => [:init, :concat, :concat_scenario] do
   [ 'angular.js',
     'angular-cookies.js',
     'angular-loader.js',
@@ -123,14 +105,26 @@ task :minify => [:init, :concat, :concat_scenario, :concat_jstd_scenario_adapter
     'angular-bootstrap.js',
     'angular-bootstrap-prettify.js'
   ].each do |file|
-    closure_compile(file)
+    unless ENV['TRAVIS']
+      fork { closure_compile(file) }
+    else
+      closure_compile(file)
+    end
   end
+
+  Process.waitall
 end
 
 
-desc 'Generate version.txt file'
+desc 'Generate version.txt and version.json files'
 task :version => [:init] do
   `echo #{NG_VERSION.full} > #{path_to('version.txt')}`
+  `echo '{
+  "full": "#{NG_VERSION.full}",
+  "major": "#{NG_VERSION.major}",
+  "minor": "#{NG_VERSION.minor}",
+  "dot": "#{NG_VERSION.dot}",
+  "codename": "#{NG_VERSION.codename}"\n}' > #{path_to('version.json')}`
 end
 
 
@@ -172,7 +166,7 @@ end
 
 desc 'Start development webserver'
 task :webserver, :port do |t, args|
-  system "node lib/nodeserver/server.js #{args[:port]}"
+  exec "node lib/nodeserver/server.js #{args[:port]}"
 end
 
 
@@ -283,12 +277,23 @@ def path_to(filename)
 end
 
 
+##
+# returns the 32-bit mode force flags for java compiler if supported, this makes the build much
+# faster
+#
+def java32flags
+  return '-d32 -client' unless Rake::Win32.windows? || `java -version -d32 2>&1`.match(/Error/i)
+end
+
+
 def closure_compile(filename)
   puts "Minifying #{filename} ..."
 
   min_path = path_to(filename.gsub(/\.js$/, '.min.js'))
 
-  %x(java -jar lib/closure-compiler/compiler.jar \
+  %x(java \
+        #{java32flags()} \
+        -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --language_in ECMASCRIPT5_STRICT \
         --js #{path_to(filename)} \
@@ -342,9 +347,9 @@ end
 
 
 def start_testacular(config, singleRun, browsers, misc_options)
-  sh "testacular start " +
+  sh "./node_modules/testacular/bin/testacular start " +
                 "#{config} " +
                 "#{'--single-run=true' if singleRun} " +
                 "#{'--browsers=' + browsers.gsub('+', ',') if browsers} " +
-                "#{misc_options}"
+                "#{(misc_options || '').gsub('+', ',')}"
 end

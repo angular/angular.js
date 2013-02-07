@@ -122,6 +122,11 @@ To run the end-to-end test, open one of the following in a new browser tab:
 `http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
 * casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
 
+Previously we've seen how Testacular can be used to execute unit tests. Well, it can also run the
+end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
+with unit tests, Testacular will exit after the test run and will not automatically rerun the test
+suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
+
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.

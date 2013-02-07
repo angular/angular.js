@@ -117,9 +117,18 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       formatedText = '',
       parts = [];
 
+  var hasExponent = false;
   if (numStr.indexOf('e') !== -1) {
-    formatedText = numStr;
-  } else {
+    var match = numStr.match(/([\d\.]+)e(-?)(\d+)/);
+    if (match && match[2] == '-' && match[3] > fractionSize + 1) {
+      numStr = '0';
+    } else {
+      formatedText = numStr;
+      hasExponent = true;
+    }
+  }
+
+  if (!hasExponent) {
     var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
 
     // determine fractionSize if it is not specified
@@ -289,7 +298,8 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and it's
- *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ).
+ *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is
+ *    specified in the string input, the time is considered to be in the local timezone.
  * @param {string=} format Formatting rules (see Description). If not specified,
  *    `mediumDate` is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
@@ -321,18 +331,22 @@ function dateFilter($locale) {
 
 
   var R_ISO8601_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
-  function jsonStringToDate(string){
+                     // 1        2       3         4          5          6          7          8  9     10      11
+  function jsonStringToDate(string) {
     var match;
     if (match = string.match(R_ISO8601_STR)) {
       var date = new Date(0),
           tzHour = 0,
-          tzMin  = 0;
+          tzMin  = 0,
+          dateSetter = match[8] ? date.setUTCFullYear : date.setFullYear,
+          timeSetter = match[8] ? date.setUTCHours : date.setHours;
+
       if (match[9]) {
         tzHour = int(match[9] + match[10]);
         tzMin = int(match[9] + match[11]);
       }
-      date.setUTCFullYear(int(match[1]), int(match[2]) - 1, int(match[3]));
-      date.setUTCHours(int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
+      dateSetter.call(date, int(match[1]), int(match[2]) - 1, int(match[3]));
+      timeSetter.call(date, int(match[4]||0) - tzHour, int(match[5]||0) - tzMin, int(match[6]||0), int(match[7]||0));
       return date;
     }
     return string;

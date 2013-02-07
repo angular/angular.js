@@ -277,33 +277,6 @@ describe('browser', function() {
 
         expect(browser.cookies().x).toEqual('shortVal');
       });
-
-      it('should log warnings when 20 cookies per domain storage limit is reached', function() {
-        var i, str, cookieStr;
-
-        for (i=0; i<20; i++) {
-          str = '' + i;
-          browser.cookies(str, str);
-        }
-
-        i=0;
-        for (str in browser.cookies()) {
-          i++;
-        }
-        expect(i).toEqual(20);
-        expect(logs.warn).toEqual([]);
-        cookieStr = document.cookie;
-
-        browser.cookies('one', 'more');
-        expect(logs.warn).toEqual([]);
-
-        //if browser dropped a cookie (very likely), make sure that the cache is not out of sync
-        if (document.cookie === cookieStr) {
-          expect(size(browser.cookies())).toEqual(20);
-        } else {
-          expect(size(browser.cookies())).toEqual(21);
-        }
-      });
     });
 
 

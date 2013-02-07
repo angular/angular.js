@@ -46,7 +46,7 @@ history (back and forward navigation) and bookmarks.
 
 ### A Note About DI, Injector and Providers
 
-As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} is the core feature of
+As you {@link tutorial/step_05 noticed}, {@link guide/di dependency injection} (DI) is the core feature of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
 When the application bootstraps, Angular creates an injector that will be used for all DI stuff in
@@ -79,7 +79,7 @@ angular.module('phonecat', []).
 </pre>
 
 In order to configure our application with routes, we need to create a module for our application.
-We call this module `phonecatApp` and using the `config` API we request the `$routeProvider` to be
+We call this module `phonecat` and using the `config` API we request the `$routeProvider` to be
 injected into our config function and use `$routeProvider.when` API to define our routes.
 
 Note that during the injector configuration phase, the providers can be injected as well, but they
@@ -232,8 +232,8 @@ to various URLs and verify that the correct view was rendered.
 </pre>
 
 
-You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
-can see them running on {@link
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
 http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
 Angular's server}.
 

@@ -405,6 +405,27 @@ describe('select', function() {
       expect(element).toEqualSelect(['A'], ['B']);
     });
 
+    it('should work with optgroups', function() {
+      compile('<select ng-model="selection" multiple>' +
+                '<optgroup label="group1">' +
+                  '<option>A</option>' +
+                  '<option>B</option>' +
+                '</optgroup>' +
+              '</select>');
+
+      expect(element).toEqualSelect('A', 'B');
+      expect(scope.selection).toBeUndefined();
+
+      scope.$apply(function() {
+        scope.selection = ['A'];
+      });
+      expect(element).toEqualSelect(['A'], 'B');
+
+      scope.$apply(function() {
+        scope.selection.push('B');
+      });
+      expect(element).toEqualSelect(['A'], ['B']);
+    });
 
     it('should require', function() {
       compile(
@@ -491,6 +512,21 @@ describe('select', function() {
       expect(sortedHtml(options[0])).toEqual('<option value="0">A</option>');
       expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
       expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
+    });
+
+    it('should render zero as a valid display value', function() {
+      createSingleSelect();
+
+      scope.$apply(function() {
+        scope.values = [{name: 0}, {name: 1}, {name: 2}];
+        scope.selected = scope.values[0];
+      });
+
+      var options = element.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[0])).toEqual('<option value="0">0</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="1">1</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="2">2</option>');
     });
 
 

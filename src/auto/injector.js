@@ -20,7 +20,7 @@
  *   // create an injector
  *   var $injector = angular.injector(['ng']);
  *
- *   // use the injector to kick of your application
+ *   // use the injector to kick off your application
  *   // use the type inference to auto inject arguments, or use implicit injection
  *   $injector.invoke(function($rootScope, $compile, $document){
  *     $compile($document)($rootScope);
@@ -192,7 +192,7 @@ function annotate(fn) {
  * This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
  * are supported.
  *
- * # The `$injector` property
+ * # The `$inject` property
  *
  * If a function has an `$inject` property and its value is an array of strings, then the strings represent names of
  * services to be injected into the function.
@@ -441,7 +441,7 @@ function createInjector(modulesToLoad) {
   }
 
   function provider(name, provider_) {
-    if (isFunction(provider_)) {
+    if (isFunction(provider_) || isArray(provider_)) {
       provider_ = providerInjector.instantiate(provider_);
     }
     if (!provider_.$get) {
@@ -556,7 +556,7 @@ function createInjector(modulesToLoad) {
         args.push(
           locals && locals.hasOwnProperty(key)
           ? locals[key]
-          : getService(key, path)
+          : getService(key)
         );
       }
       if (!fn.$inject) {

@@ -91,7 +91,7 @@ function $RootScopeProvider(){
            expect(scope.greeting).toEqual(undefined);
 
            scope.$watch('name', function() {
-             this.greeting = this.salutation + ' ' + this.name + '!';
+             scope.greeting = scope.salutation + ' ' + scope.name + '!';
            }); // initialize the watch
 
            expect(scope.greeting).toEqual(undefined);
@@ -134,8 +134,10 @@ function $RootScopeProvider(){
                      this.$$nextSibling = this.$$prevSibling =
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
+      this.$$destroyed = false;
       this.$$asyncQueue = [];
       this.$$listeners = {};
+      this.$$isolateBindings = {};
     }
 
     /**
@@ -251,7 +253,7 @@ function $RootScopeProvider(){
            scope.counter = 0;
 
            expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(newValue, oldValue) { counter = counter + 1; });
+           scope.$watch('name', function(newValue, oldValue) { scope.counter = scope.counter + 1; });
            expect(scope.counter).toEqual(0);
 
            scope.$digest();
@@ -344,7 +346,7 @@ function $RootScopeProvider(){
 
            expect(scope.counter).toEqual(0);
            scope.$watch('name', function(newValue, oldValue) {
-             counter = counter + 1;
+             scope.counter = scope.counter + 1;
            });
            expect(scope.counter).toEqual(0);
 
@@ -467,15 +469,22 @@ function $RootScopeProvider(){
        * perform any necessary cleanup.
        */
       $destroy: function() {
-        if ($rootScope == this) return; // we can't remove the root node;
+        // we can't destroy the root scope or a scope that has been already destroyed
+        if ($rootScope == this || this.$$destroyed) return;
         var parent = this.$parent;
 
         this.$broadcast('$destroy');
+        this.$$destroyed = true;
 
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
         if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
+
+        // This is bogus code that works around Chrome's GC leak
+        // see: https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
+        this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
+            this.$$childTail = null;
       },
 
       /**
@@ -611,7 +620,7 @@ function $RootScopeProvider(){
        * event life cycle.
        *
        * @param {string} name Event name to listen on.
-       * @param {function(event)} listener Function to call when the event is emitted.
+       * @param {function(event, args...)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        *
        * The event listener function format is: `function(event, args...)`. The `event` object
@@ -633,7 +642,7 @@ function $RootScopeProvider(){
         namedListeners.push(listener);
 
         return function() {
-          arrayRemove(namedListeners, listener);
+          namedListeners[indexOf(namedListeners, listener)] = null;
         };
       },
 
@@ -681,6 +690,14 @@ function $RootScopeProvider(){
           namedListeners = scope.$$listeners[name] || empty;
           event.currentScope = scope;
           for (i=0, length=namedListeners.length; i<length; i++) {
+
+            // if listeners were deregistered, defragment the array
+            if (!namedListeners[i]) {
+              namedListeners.splice(i, 1);
+              i--;
+              length--;
+              continue;
+            }
             try {
               namedListeners[i].apply(null, listenerArgs);
               if (stopPropagation) return event;
@@ -730,19 +747,29 @@ function $RootScopeProvider(){
               },
               defaultPrevented: false
             },
-            listenerArgs = concat([event], arguments, 1);
+            listenerArgs = concat([event], arguments, 1),
+            listeners, i, length;
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         do {
           current = next;
           event.currentScope = current;
-          forEach(current.$$listeners[name], function(listener) {
+          listeners = current.$$listeners[name] || [];
+          for (i=0, length = listeners.length; i<length; i++) {
+            // if listeners were deregistered, defragment the array
+            if (!listeners[i]) {
+              listeners.splice(i, 1);
+              i--;
+              length--;
+              continue;
+            }
+
             try {
-              listener.apply(null, listenerArgs);
+              listeners[i].apply(null, listenerArgs);
             } catch(e) {
               $exceptionHandler(e);
             }
-          });
+          }
 
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!

@@ -147,13 +147,9 @@ __`test/unit/controllersSpec.js`:__
 ...
 </pre>
 
-To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
-output.
+You should now see the following output in the Testacular tab:
 
-    Chrome: Runner reset.
-    ...
-    Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
-      Chrome 19.0.1084.36 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
+    Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)
 
 
 We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
@@ -177,10 +173,11 @@ __`test/e2e/scenarios.js`:__
 </pre>
 
 
-You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
-can see them running on {@link
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
 Angular's server}.
+
 
 # Experiments
 

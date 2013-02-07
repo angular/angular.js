@@ -5,10 +5,7 @@ describe('angular.scenario.Application', function() {
   var app, frames;
 
   function callLoadHandlers(app) {
-    var handlers = app.getFrame_().data('events').load;
-    expect(handlers).toBeDefined();
-    expect(handlers.length).toEqual(1);
-    handlers[0].handler();
+    var handler = app.getFrame_().triggerHandler('load')
   }
 
   beforeEach(function() {

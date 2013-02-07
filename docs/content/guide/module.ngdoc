@@ -5,9 +5,8 @@
 # What is a Module?
 
 Most applications have a main method which instantiates, wires, and bootstraps the application.
-Angular apps don't have a main method, instead modules serve the purpose of declaratively
-specifying how an application should be bootstrapped. There are several advantages to this
-approach:
+Angular apps don't have a main method. Instead modules declaratively specify how an application
+should be bootstrapped. There are several advantages to this approach:
 
   * The process is more declarative which is easier to understand
   * In unit-testing there is no need to load all modules, which may aid in writing unit-tests.
@@ -35,7 +34,7 @@ Important things to notice:
 
       // configure the module.
       // in this example we will create a greeting filter
-      simpleAppModule.filter('greet', function() {
+      myAppModule.filter('greet', function() {
        return function(name) {
           return 'Hello, ' + name + '!';
         };
@@ -159,9 +158,9 @@ angular.module('myModule', []).
 
 angular.module('myModule', []).
   config(function($provide, $compileProvider, $filterProvider) {
-    $provide.value('a', 123)
-    $provide.factory('a', function() { return 123; })
-    $compileProvider.directive('directiveName', ...).
+    $provide.value('a', 123);
+    $provide.factory('a', function() { return 123; });
+    $compileProvider.directive('directiveName', ...);
     $filterProvider.register('filterName', ...);
   });
 </pre>
@@ -195,7 +194,7 @@ and thus script loaders can take advantage of this property and parallelize the 
 
 # Unit Testing
 
-In its simplest form a unit-test is a way of instantiating a subset of the application in test and
+In its simplest form a unit test is a way of instantiating a subset of the application in test and
 then applying a stimulus to it. It is important to realize that each module can only be loaded
 once per injector. Typically an app has only one injector. But in tests, each test has its own
 injector, which means that the modules are loaded multiple times per VM. Properly structured
@@ -223,8 +222,8 @@ In all of these examples we are going to assume this module definition:
 Let's write some tests:
 <pre>
 describe('myApp', function() {
-  // load the application relevant modules then load a special
-  // test module which overrides the $window with mock version,
+  // load the relevant application modules then load a special
+  // test module which overrides the $window with a mock version,
   // so that calling window.alert() will not block the test
   // runner with a real alert box. This is an example of overriding
   // configuration information in tests.
