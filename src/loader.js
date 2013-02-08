@@ -15,7 +15,7 @@ function setupModuleLoader(window) {
   }
 
   return ensure(ensure(window, 'angular', Object), 'module', function() {
-    /** @type {Object.<string, angular.Module>} */
+    /** @type {Object.<ng.Module|null>} */ // TODO(i): do we want to allow null?!?
     var modules = {};
 
     /**
@@ -60,9 +60,9 @@ function setupModuleLoader(window) {
      * @param {!string} name The name of the module to create or retrieve.
      * @param {Array.<string>=} requires If specified then new module is being created. If unspecified then the
      *        the module is being retrieved for further configuration.
-     * @param {Function} configFn Optional configuration function for the module. Same as
+     * @param {Function=} configFn Optional configuration function for the module. Same as
      *        {@link angular.Module#config Module#config()}.
-     * @returns {module} new module with the {@link angular.Module} api.
+     * @returns {ng.Module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
       if (requires && modules.hasOwnProperty(name)) {
@@ -81,8 +81,7 @@ function setupModuleLoader(window) {
 
         var config = invokeLater('$injector', 'invoke');
 
-        /** @type {angular.Module} */
-        var moduleInstance = {
+        var moduleInstance = /** @lends {ng.Module}*/{
           // Private state
           _invokeQueue: invokeQueue,
           _runBlocks: runBlocks,
@@ -91,9 +90,11 @@ function setupModuleLoader(window) {
            * @ngdoc property
            * @name angular.Module#requires
            * @propertyOf angular.Module
-           * @returns {Array.<string>} List of module names which must be loaded before this module.
+           *
            * @description
            * Holds the list of modules which the injector will load before the current module is loaded.
+           *
+           * @type {Array.<string>} List of module names which must be loaded before this module.
            */
           requires: requires,
 
@@ -101,8 +102,7 @@ function setupModuleLoader(window) {
            * @ngdoc property
            * @name angular.Module#name
            * @propertyOf angular.Module
-           * @returns {string} Name of the module.
-           * @description
+           * @type {string} Name of the module.
            */
           name: name,
 
@@ -111,10 +111,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#provider
            * @methodOf angular.Module
-           * @param {string} name service name
-           * @param {Function} providerType Construction function for creating new instance of the service.
+           *
            * @description
            * See {@link AUTO.$provide#provider $provide.provider()}.
+           *
+           * @param {string} name service name
+           * @param {Function} providerType Construction function for creating new instance of the service.
            */
           provider: invokeLater('$provide', 'provider'),
 
@@ -122,10 +124,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#factory
            * @methodOf angular.Module
-           * @param {string} name service name
-           * @param {Function} providerFunction Function for creating new instance of the service.
+           *
            * @description
            * See {@link AUTO.$provide#factory $provide.factory()}.
+           *
+           * @param {string} name service name
+           * @param {Function} providerFunction Function for creating new instance of the service.
            */
           factory: invokeLater('$provide', 'factory'),
 
@@ -133,10 +137,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#service
            * @methodOf angular.Module
-           * @param {string} name service name
-           * @param {Function} constructor A constructor function that will be instantiated.
+           *
            * @description
            * See {@link AUTO.$provide#service $provide.service()}.
+           *
+           * @param {string} name service name
+           * @param {Function} constructor A constructor function that will be instantiated.
            */
           service: invokeLater('$provide', 'service'),
 
@@ -144,10 +150,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#value
            * @methodOf angular.Module
-           * @param {string} name service name
-           * @param {*} object Service instance object.
+           *
            * @description
            * See {@link AUTO.$provide#value $provide.value()}.
+           *
+           * @param {string} name service name
+           * @param {*} object Service instance object.
            */
           value: invokeLater('$provide', 'value'),
 
@@ -155,11 +163,13 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#constant
            * @methodOf angular.Module
-           * @param {string} name constant name
-           * @param {*} object Constant value.
+           *
            * @description
            * Because the constant are fixed, they get applied before other provide methods.
            * See {@link AUTO.$provide#constant $provide.constant()}.
+           *
+           * @param {string} name constant name
+           * @param {*} object Constant value.
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
 
@@ -167,10 +177,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#filter
            * @methodOf angular.Module
-           * @param {string} name Filter name.
-           * @param {Function} filterFactory Factory function for creating new instance of filter.
+           *
            * @description
            * See {@link ng.$filterProvider#register $filterProvider.register()}.
+           *
+           * @param {string} name Filter name.
+           * @param {Function} filterFactory Factory function for creating new instance of filter.
            */
           filter: invokeLater('$filterProvider', 'register'),
 
@@ -178,10 +190,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#controller
            * @methodOf angular.Module
-           * @param {string} name Controller name.
-           * @param {Function} constructor Controller constructor function.
+           *
            * @description
            * See {@link ng.$controllerProvider#register $controllerProvider.register()}.
+           *
+           * @param {string} name Controller name.
+           * @param {Function} constructor Controller constructor function.
            */
           controller: invokeLater('$controllerProvider', 'register'),
 
@@ -189,11 +203,13 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#directive
            * @methodOf angular.Module
+           *
+           * @description
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           *
            * @param {string} name directive name
            * @param {Function} directiveFactory Factory function for creating new instance of
            * directives.
-           * @description
-           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
           directive: invokeLater('$compileProvider', 'directive'),
 
@@ -201,10 +217,12 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#config
            * @methodOf angular.Module
-           * @param {Function} configFn Execute this function on module load. Useful for service
-           *    configuration.
+           *
            * @description
            * Use this method to register work which needs to be performed on module loading.
+           *
+           * @param {Function} configFn Execute this function on module load. Useful for service
+           *    configuration.
            */
           config: config,
 
@@ -212,14 +230,16 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#run
            * @methodOf angular.Module
-           * @param {Function} initializationFn Execute this function after injector creation.
-           *    Useful for application initialization.
+           *
            * @description
            * Use this method to register work which should be performed when the injector is done
            * loading all modules.
+           *
+           * @param {Function} initializationFn Execute this function after injector creation.
+           *    Useful for application initialization.
            */
-          run: function(block) {
-            runBlocks.push(block);
+          run: function(initializationFn) {
+            runBlocks.push(initializationFn);
             return this;
           }
         };
@@ -233,17 +253,17 @@ function setupModuleLoader(window) {
         /**
          * @param {string} provider
          * @param {string} method
-         * @param {String=} insertMethod
-         * @returns {angular.Module}
+         * @param {string=} insertMethod
+         * @returns {function(...[*]):ng.Module}
          */
         function invokeLater(provider, method, insertMethod) {
           return function() {
-            invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+            /** @type {Function} */(
+                /** @type {Object} */(invokeQueue)[insertMethod || 'push'])([provider, method, arguments]);
             return moduleInstance;
           }
         }
       });
     };
   });
-
 }

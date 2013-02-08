@@ -72,7 +72,7 @@ function isSameDomain(requestUrl, locationUrl) {
  * Headers are lazy parsed when first requested.
  * @see parseHeaders
  *
- * @param {(string|Object)} headers Headers to provide access to.
+ * @param {string} headers Headers to provide access to.
  * @returns {function(string=)} Returns a getter function which if called with:
  *
  *   - if called with single an argument returns a single header value or null
@@ -81,6 +81,9 @@ function isSameDomain(requestUrl, locationUrl) {
 function headersGetter(headers) {
   var headersObj = isObject(headers) ? headers : undefined;
 
+  /**
+   * @param {string=} name The header name.
+   */
   return function(name) {
     if (!headersObj) headersObj =  parseHeaders(headers);
 
@@ -100,12 +103,12 @@ function headersGetter(headers) {
  *
  * @param {*} data Data to transform.
  * @param {function(string=)} headers Http headers getter fn.
- * @param {(function|Array.<function>)} fns Function or an array of functions.
+ * @param {(Function|Array.<Function>)} fns Function or an array of functions.
  * @returns {*} Transformed data.
  */
 function transformData(data, headers, fns) {
   if (isFunction(fns))
-    return fns(data, headers);
+    return /** @type {Function} */(fns)(data, headers);
 
   forEach(fns, function(fn) {
     data = fn(data, headers);
@@ -120,6 +123,9 @@ function isSuccess(status) {
 }
 
 
+/**
+ * @constructor
+ */
 function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
@@ -132,7 +138,7 @@ function $HttpProvider() {
         // strip json vulnerability protection prefix
         data = data.replace(PROTECTION_PREFIX, '');
         if (JSON_START.test(data) && JSON_END.test(data))
-          data = fromJson(data, true);
+          data = fromJson(data);
       }
       return data;
     }],
@@ -403,7 +409,7 @@ function $HttpProvider() {
      * properties of either $httpProvider.defaults, or the per-request config object.
      *
      *
-     * @param {object} config Object describing the request to be made and how it should be
+     * @param {Object} config Object describing the request to be made and how it should be
      *    processed. The object has following properties:
      *
      *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)
@@ -431,7 +437,7 @@ function $HttpProvider() {
      *    - **responseType** - `{string}` - see {@link
      *      https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
      *
-     * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
+     * @returns {ng.$HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
      *   method takes two arguments a success and an error callback which will be called with a
      *   response object. The `success` and `error` methods take a single argument - a function that
@@ -687,6 +693,9 @@ function $HttpProvider() {
     return $http;
 
 
+    /**
+     * @param {...string} names
+     */
     function createShortMethods(names) {
       forEach(arguments, function(name) {
         $http[name] = function(url, config) {
@@ -699,7 +708,10 @@ function $HttpProvider() {
     }
 
 
-    function createShortMethodsWithData(name) {
+    /**
+     * @param {...string} names
+     */
+    function createShortMethodsWithData(names) {
       forEach(arguments, function(name) {
         $http[name] = function(url, data, config) {
           return $http(extend(config || {}, {
@@ -828,3 +840,13 @@ function $HttpProvider() {
 
   }];
 }
+
+
+/**
+ * @typedef {{
+ *    then: Function,
+ *    success: Function,
+ *    error: Function
+ * }}
+ */
+ng.$HttpPromise;

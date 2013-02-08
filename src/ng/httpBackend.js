@@ -22,6 +22,8 @@ var XHR = window.XMLHttpRequest || function() {
  *
  * During testing this implementation is swapped with {@link ngMock.$httpBackend mock
  * $httpBackend} which can be trained with responses.
+ *
+ * @constructor
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
@@ -89,6 +91,12 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
 
+    /**
+     * @param {Function} callback
+     * @param {number} status
+     * @param {string=} response
+     * @param {string=} headersString
+     */
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
       var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];

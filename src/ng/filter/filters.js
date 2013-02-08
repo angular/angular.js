@@ -1,71 +1,75 @@
 'use strict';
 
-/**
- * @ngdoc filter
- * @name ng.filter:currency
- * @function
- *
- * @description
- * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
- * symbol for current locale is used.
- *
- * @param {number} amount Input to filter.
- * @param {string=} symbol Currency symbol or identifier to be displayed.
- * @returns {string} Formatted number.
- *
- *
- * @example
-   <doc:example>
-     <doc:source>
-       <script>
-         function Ctrl($scope) {
-           $scope.amount = 1234.56;
-         }
-       </script>
-       <div ng-controller="Ctrl">
-         <input type="number" ng-model="amount"> <br>
-         default currency symbol ($): {{amount | currency}}<br>
-         custom currency identifier (USD$): {{amount | currency:"USD$"}}
-       </div>
-     </doc:source>
-     <doc:scenario>
-       it('should init with 1234.56', function() {
-         expect(binding('amount | currency')).toBe('$1,234.56');
-         expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
-       });
-       it('should update', function() {
-         input('amount').enter('-1234');
-         expect(binding('amount | currency')).toBe('($1,234.00)');
-         expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
-       });
-     </doc:scenario>
-   </doc:example>
- */
-currencyFilter.$inject = ['$locale'];
-function currencyFilter($locale) {
+var currencyFilterFactory = ['$locale', function currencyFilterFactory_($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+
+  /**
+   * @ngdoc filter
+   * @name ng.filter:currency
+   * @function
+   *
+   * @description
+   * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
+   * symbol for current locale is used.
+   *
+   * @param {number} amount Input to filter.
+   * @param {string=} currencySymbol Currency symbol or identifier to be displayed.
+   * @returns {string} Formatted number.
+   *
+   *
+   * @example
+     <doc:example>
+       <doc:source>
+         <script>
+           function Ctrl($scope) {
+             $scope.amount = 1234.56;
+           }
+         </script>
+         <div ng-controller="Ctrl">
+           <input type="number" ng-model="amount"> <br>
+           default currency symbol ($): {{amount | currency}}<br>
+           custom currency identifier (USD$): {{amount | currency:"USD$"}}
+         </div>
+       </doc:source>
+       <doc:scenario>
+         it('should init with 1234.56', function() {
+           expect(binding('amount | currency')).toBe('$1,234.56');
+           expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
+         });
+         it('should update', function() {
+           input('amount').enter('-1234');
+           expect(binding('amount | currency')).toBe('($1,234.00)');
+           expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+         });
+       </doc:scenario>
+     </doc:example>
+   */
+  return function currencyFilter(amount, currencySymbol){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
     return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
                 replace(/\u00A4/g, currencySymbol);
   };
-}
+}];
 
-/**
- * @ngdoc filter
- * @name ng.filter:number
- * @function
- *
- * @description
- * Formats a number as text.
- *
- * If the input is not a number an empty string is returned.
- *
- * @param {number|string} number Number to format.
- * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
- * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
- *
- * @example
+
+var numberFilterFactory = ['$locale', function numberFilterFactory_($locale) {
+  var formats = $locale.NUMBER_FORMATS;
+
+  /**
+   * @ngdoc filter
+   * @name ng.filter:number
+   * @function
+   *
+   * @description
+   * Formats a number as text.
+   *
+   * If the input is not a number an empty string is returned.
+   *
+   * @param {number|string} number Number to format.
+   * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
+   * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
+   *
+   * @example
    <doc:example>
      <doc:source>
        <script>
@@ -88,24 +92,19 @@ function currencyFilter($locale) {
        });
 
        it('should update', function() {
-         input('val').enter('3374.333');
-         expect(binding('val | number')).toBe('3,374.333');
-         expect(binding('val | number:0')).toBe('3,374');
-         expect(binding('-val | number:4')).toBe('-3,374.3330');
-       });
-     </doc:scenario>
-   </doc:example>
- */
-
-
-numberFilter.$inject = ['$locale'];
-function numberFilter($locale) {
-  var formats = $locale.NUMBER_FORMATS;
-  return function(number, fractionSize) {
+          input('val').enter('3374.333');
+          expect(binding('val | number')).toBe('3,374.333');
+          expect(binding('val | number:0')).toBe('3,374');
+          expect(binding('-val | number:4')).toBe('-3,374.3330');
+        });
+      </doc:scenario>
+    </doc:example>
+  */
+  return function numberFilter(number, fractionSize) {
     return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
       fractionSize);
   };
-}
+}]
 
 var DECIMAL_SEP = '.';
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
@@ -177,20 +176,32 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   return parts.join('');
 }
 
+/**
+ * @param {number} num
+ * @param {number} digits
+ * @param {boolean=} trim
+ * @returns {string}
+ */
 function padNumber(num, digits, trim) {
   var neg = '';
   if (num < 0) {
     neg =  '-';
     num = -num;
   }
-  num = '' + num;
-  while(num.length < digits) num = '0' + num;
+  var str = '' + num;
+  while(str.length < digits) str = '0' + str;
   if (trim)
-    num = num.substr(num.length - digits);
-  return neg + num;
+    str = str.substr(str.length - digits);
+  return neg + str;
 }
 
 
+/**
+ * @param {string} name
+ * @param {number} size
+ * @param {number=} offset
+ * @param {boolean=} trim
+ */
 function dateGetter(name, size, offset, trim) {
   return function(date) {
     var value = date['get' + name]();
@@ -201,6 +212,10 @@ function dateGetter(name, size, offset, trim) {
   };
 }
 
+/**
+ * @param {string} name
+ * @param {boolean=} shortForm
+ */
 function dateStrGetter(name, shortForm) {
   return function(date, formats) {
     var value = date['get' + name]();
@@ -210,6 +225,9 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+/**
+ * @param {Date} date
+ */
 function timeZoneGetter(date) {
   var zone = -1 * date.getTimezoneOffset();
   var paddedZone = (zone >= 0) ? "+" : "";
@@ -241,7 +259,7 @@ var DATE_FORMATS = {
      m: dateGetter('Minutes', 1),
     ss: dateGetter('Seconds', 2),
      s: dateGetter('Seconds', 1),
-     // while ISO 8601 requires fractions to be prefixed with `.` or `,` 
+     // while ISO 8601 requires fractions to be prefixed with `.` or `,`
      // we can be just safely rely on using `sss` since we currently don't support single or two digit fractions
    sss: dateGetter('Milliseconds', 3),
   EEEE: dateStrGetter('Day'),
@@ -253,89 +271,7 @@ var DATE_FORMATS = {
 var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
     NUMBER_STRING = /^\d+$/;
 
-/**
- * @ngdoc filter
- * @name ng.filter:date
- * @function
- *
- * @description
- *   Formats `date` to a string based on the requested `format`.
- *
- *   `format` string can be composed of the following elements:
- *
- *   * `'yyyy'`: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)
- *   * `'yy'`: 2 digit representation of year, padded (00-99). (e.g. AD 2001 => 01, AD 2010 => 10)
- *   * `'y'`: 1 digit representation of year, e.g. (AD 1 => 1, AD 199 => 199)
- *   * `'MMMM'`: Month in year (January-December)
- *   * `'MMM'`: Month in year (Jan-Dec)
- *   * `'MM'`: Month in year, padded (01-12)
- *   * `'M'`: Month in year (1-12)
- *   * `'dd'`: Day in month, padded (01-31)
- *   * `'d'`: Day in month (1-31)
- *   * `'EEEE'`: Day in Week,(Sunday-Saturday)
- *   * `'EEE'`: Day in Week, (Sun-Sat)
- *   * `'HH'`: Hour in day, padded (00-23)
- *   * `'H'`: Hour in day (0-23)
- *   * `'hh'`: Hour in am/pm, padded (01-12)
- *   * `'h'`: Hour in am/pm, (1-12)
- *   * `'mm'`: Minute in hour, padded (00-59)
- *   * `'m'`: Minute in hour (0-59)
- *   * `'ss'`: Second in minute, padded (00-59)
- *   * `'s'`: Second in minute (0-59)
- *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
- *   * `'a'`: am/pm marker
- *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
- *
- *   `format` string can also be one of the following predefined
- *   {@link guide/i18n localizable formats}:
- *
- *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale
- *     (e.g. Sep 3, 2010 12:05:08 pm)
- *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
- *   * `'fullDate'`: equivalent to `'EEEE, MMMM d,y'` for en_US  locale
- *     (e.g. Friday, September 3, 2010)
- *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010
- *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
- *   * `'shortDate'`: equivalent to `'M/d/yy'` for en_US locale (e.g. 9/3/10)
- *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
- *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
- *
- *   `format` string can contain literal values. These need to be quoted with single quotes (e.g.
- *   `"h 'in the morning'"`). In order to output single quote, use two single quotes in a sequence
- *   (e.g. `"h o''clock"`).
- *
- * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
- *    number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and it's
- *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is
- *    specified in the string input, the time is considered to be in the local timezone.
- * @param {string=} format Formatting rules (see Description). If not specified,
- *    `mediumDate` is used.
- * @returns {string} Formatted string or the input if input is not recognized as date/millis.
- *
- * @example
-   <doc:example>
-     <doc:source>
-       <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
-           {{1288323623006 | date:'medium'}}<br>
-       <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-          {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br>
-       <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
-          {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br>
-     </doc:source>
-     <doc:scenario>
-       it('should format date', function() {
-         expect(binding("1288323623006 | date:'medium'")).
-            toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
-         expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
-            toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
-         expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
-            toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
-       });
-     </doc:scenario>
-   </doc:example>
- */
-dateFilter.$inject = ['$locale'];
-function dateFilter($locale) {
+var dateFilterFactory = ['$locale', function dateFilterFactory_($locale) {
 
 
   var R_ISO8601_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -360,8 +296,88 @@ function dateFilter($locale) {
     return string;
   }
 
-
-  return function(date, format) {
+  /**
+   * @ngdoc filter
+   * @name ng.filter:date
+   * @function
+   *
+   * @description
+   *   Formats `date` to a string based on the requested `format`.
+   *
+   *   `format` string can be composed of the following elements:
+   *
+   *   * `'yyyy'`: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)
+   *   * `'yy'`: 2 digit representation of year, padded (00-99). (e.g. AD 2001 => 01, AD 2010 => 10)
+   *   * `'y'`: 1 digit representation of year, e.g. (AD 1 => 1, AD 199 => 199)
+   *   * `'MMMM'`: Month in year (January-December)
+   *   * `'MMM'`: Month in year (Jan-Dec)
+   *   * `'MM'`: Month in year, padded (01-12)
+   *   * `'M'`: Month in year (1-12)
+   *   * `'dd'`: Day in month, padded (01-31)
+   *   * `'d'`: Day in month (1-31)
+   *   * `'EEEE'`: Day in Week,(Sunday-Saturday)
+   *   * `'EEE'`: Day in Week, (Sun-Sat)
+   *   * `'HH'`: Hour in day, padded (00-23)
+   *   * `'H'`: Hour in day (0-23)
+   *   * `'hh'`: Hour in am/pm, padded (01-12)
+   *   * `'h'`: Hour in am/pm, (1-12)
+   *   * `'mm'`: Minute in hour, padded (00-59)
+   *   * `'m'`: Minute in hour (0-59)
+   *   * `'ss'`: Second in minute, padded (00-59)
+   *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
+   *   * `'s'`: Second in minute (0-59)
+   *   * `'a'`: am/pm marker
+   *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
+   *
+   *   `format` string can also be one of the following predefined
+   *   {@link guide/i18n localizable formats}:
+   *
+   *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale
+   *     (e.g. Sep 3, 2010 12:05:08 pm)
+   *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
+   *   * `'fullDate'`: equivalent to `'EEEE, MMMM d,y'` for en_US  locale
+   *     (e.g. Friday, September 3, 2010)
+   *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010
+   *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
+   *   * `'shortDate'`: equivalent to `'M/d/yy'` for en_US locale (e.g. 9/3/10)
+   *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
+   *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
+   *
+   *   `format` string can contain literal values. These need to be quoted with single quotes (e.g.
+   *   `"h 'in the morning'"`). In order to output single quote, use two single quotes in a sequence
+   *   (e.g. `"h o''clock"`).
+   *
+   * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
+   *    number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and it's
+   *    shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is
+   *    specified in the string input, the time is considered to be in the local timezone.
+   * @param {string=} format Formatting rules (see Description). If not specified,
+   *    `mediumDate` is used.
+   * @returns {string} Formatted string or the input if input is not recognized as date/millis.
+   *
+   * @example
+     <doc:example>
+       <doc:source>
+         <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
+         {{1288323623006 | date:'medium'}}<br>
+         <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
+         {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br>
+         <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
+         {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br>
+       </doc:source>
+       <doc:scenario>
+         it('should format date', function() {
+           expect(binding("1288323623006 | date:'medium'")).
+             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
+           expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
+             toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
+           expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
+             toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
+         });
+       </doc:scenario>
+     </doc:example>
+   */
+  return function dateFilter(date, format) {
     var text = '',
         parts = [],
         fn, match;
@@ -391,7 +407,7 @@ function dateFilter($locale) {
         format = parts.pop();
       } else {
         parts.push(format);
-        format = null;
+        format = undefined;
       }
     }
 
@@ -403,39 +419,38 @@ function dateFilter($locale) {
 
     return text;
   };
-}
+}];
 
 
-/**
- * @ngdoc filter
- * @name ng.filter:json
- * @function
- *
- * @description
- *   Allows you to convert a JavaScript object into JSON string.
- *
- *   This filter is mostly useful for debugging. When using the double curly {{value}} notation
- *   the binding is automatically converted to JSON.
- *
- * @param {*} object Any JavaScript object (including arrays and primitive types) to filter.
- * @returns {string} JSON string.
- *
- *
- * @example:
-   <doc:example>
-     <doc:source>
-       <pre>{{ {'name':'value'} | json }}</pre>
-     </doc:source>
-     <doc:scenario>
-       it('should jsonify filtered objects', function() {
-         expect(binding("{'name':'value'}")).toMatch(/\{\n  "name": ?"value"\n}/);
-       });
-     </doc:scenario>
-   </doc:example>
- *
- */
-function jsonFilter() {
-  return function(object) {
+function jsonFilterFactory() {
+  /**
+   * @ngdoc filter
+   * @name ng.filter:json
+   * @function
+   *
+   * @description
+   *   Allows you to convert a JavaScript object into JSON string.
+   *
+   *   This filter is mostly useful for debugging. When using the double curly {{value}} notation
+   *   the binding is automatically converted to JSON.
+   *
+   * @param {*} object Any JavaScript object (including arrays and primitive types) to filter.
+   * @returns {string|undefined} JSON string.
+   *
+   * @example:
+     <doc:example>
+       <doc:source>
+         <pre>{{ {'name':'value'} | json }}</pre>
+       </doc:source>
+       <doc:scenario>
+         it('should jsonify filtered objects', function() {
+           expect(binding("{'name':'value'}")).toMatch(/\{\n  "name": ?"value"\n}/);
+         });
+       </doc:scenario>
+     </doc:example>
+   *
+   */
+  return function jsonFilter(object) {
     return toJson(object, true);
   };
 }
@@ -449,7 +464,7 @@ function jsonFilter() {
  * Converts string to lowercase.
  * @see angular.lowercase
  */
-var lowercaseFilter = valueFn(lowercase);
+var lowercaseFilterFactory = valueFn(lowercase);
 
 
 /**
@@ -460,4 +475,4 @@ var lowercaseFilter = valueFn(lowercase);
  * Converts string to uppercase.
  * @see angular.uppercase
  */
-var uppercaseFilter = valueFn(uppercase);
+var uppercaseFilterFactory = valueFn(uppercase);

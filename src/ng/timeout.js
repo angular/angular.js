@@ -1,6 +1,9 @@
 'use strict';
 
 
+/**
+ * @constructor
+ */
 function $TimeoutProvider() {
   this.$get = ['$rootScope', '$browser', '$q', '$exceptionHandler',
        function($rootScope,   $browser,   $q,   $exceptionHandler) {
@@ -29,7 +32,7 @@ function $TimeoutProvider() {
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to false skips model dirty checking, otherwise
       *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
-      * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
+      * @returns {ng.Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       */
     function timeout(fn, delay, invokeApply) {
@@ -70,7 +73,7 @@ function $TimeoutProvider() {
       * Cancels a task associated with the `promise`. As a result of this the promise will be
       * resolved with a rejection.
       *
-      * @param {Promise=} promise Promise returned by the `$timeout` function.
+      * @param {ng.Promise} promise Promise returned by the `$timeout` function.
       * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfully
       *   canceled.
       */

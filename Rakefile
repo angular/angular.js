@@ -157,12 +157,16 @@ task :minify_angular2 => [:minify_angular] do
   input_path = path_to('angular.min.js')
   output_path = path_to('angular.min2.js')
 
+
+  # TODO(i): remove rather than suppress bogus warnings
   %x(java \
       #{java32flags()} \
       -jar lib/closure-compiler/compiler.jar \
       --compilation_level SIMPLE_OPTIMIZATIONS \
       --language_in ECMASCRIPT5_STRICT \
       --externs lib/externs/json.js \
+      --jscomp_off suspiciousCode \
+      --warning_level QUIET \
       --js  #{input_path} \
       --js_output_file #{output_path})
 
@@ -339,7 +343,7 @@ def gen_css(cssFile, minify = false)
   css.gsub! /'/, "\\\\'"
   css.gsub! /\n/, "\\n"
 
-  return %Q{angular.element(document).find('head').append('<style type="text/css">#{css}</style>');}
+  return %Q{window.angular.element(document).find('head').append('<style type="text/css">#{css}</style>');}
 end
 
 

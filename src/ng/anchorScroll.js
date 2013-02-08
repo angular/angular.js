@@ -12,6 +12,8 @@
  *
  * It also watches the `$location.hash()` and scroll whenever it changes to match any anchor.
  * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
+ *
+ * @constructor
  */
 function $AnchorScrollProvider() {
 

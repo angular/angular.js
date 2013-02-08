@@ -53,44 +53,16 @@ var /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
-    undefined         = void 0,
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,
 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
+    ng                = {}, //ng namespace for closure types
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
-
-/**
- * @ngdoc function
- * @name angular.forEach
- * @function
- *
- * @description
- * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
- * object or an array. The `iterator` function is invoked with `iterator(value, key)`, where `value`
- * is the value of an object property or an array element and `key` is the object property key or
- * array element index. Specifying a `context` for the function is optional.
- *
- * Note: this function was previously known as `angular.foreach`.
- *
-   <pre>
-     var values = {name: 'misko', gender: 'male'};
-     var log = [];
-     angular.forEach(values, function(value, key){
-       this.push(key + ': ' + value);
-     }, log);
-     expect(log).toEqual(['name: misko', 'gender:male']);
-   </pre>
- *
- * @param {Object|Array} obj Object to iterate over.
- * @param {Function} iterator Iterator function.
- * @param {Object=} context Object to become context (`this`) for the iterator function.
- * @returns {Object|Array} Reference to `obj`.
- */
 
 
 /**
@@ -115,6 +87,34 @@ function isArrayLike(obj) {
 }
 
 
+/**
+ * @ngdoc function
+ * @name angular.forEach
+ * @function
+ *
+ * @description
+ * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
+ * object or an array. The `iterator` function is invoked with `iterator(value, key)`, where `value`
+ * is the value of an object property or an array element and `key` is the object property key or
+ * array element index. Specifying a `context` for the function is optional.
+ *
+ * Note: this function was previously known as `angular.foreach`.
+ *
+ <pre>
+ var values = {name: 'misko', gender: 'male'};
+ var log = [];
+ angular.forEach(values, function(value, key){
+       this.push(key + ': ' + value);
+     }, log);
+ expect(log).toEqual(['name: misko', 'gender:male']);
+ </pre>
+ *
+ * @template T
+ * @param {Object.<T>|Array.<T>|undefined} obj Object to iterate over.
+ * @param {function(T, (string|number))} iterator Iterator function.
+ * @param {Object=} context Object to become context (`this`) for the iterator function.
+ * @returns {Object.<T>|Array.<T>|undefined} Returns the input `obj`.
+ */
 function forEach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -150,6 +150,14 @@ function sortedKeys(obj) {
   return keys.sort();
 }
 
+
+/**
+ * @template T
+ * @param {Object.<T>} obj
+ * @param {function(T, string)} iterator
+ * @param {Object=} context
+ * @return {Array.<string>} sorted array of keys
+ */
 function forEachSorted(obj, iterator, context) {
   var keys = sortedKeys(obj);
   for ( var i = 0; i < keys.length; i++) {
@@ -161,8 +169,10 @@ function forEachSorted(obj, iterator, context) {
 
 /**
  * when using forEach the params are value, key, but it is often useful to have key, value.
- * @param {function(string, *)} iteratorFn
- * @returns {function(*, string)}
+ *
+ * @template T1, T2
+ * @param {function(T1, T2)} iteratorFn
+ * @returns {function(T2, T1)}
  */
 function reverseParams(iteratorFn) {
   return function(value, key) { iteratorFn(key, value) };
@@ -174,7 +184,7 @@ function reverseParams(iteratorFn) {
  * the number string gets longer over time, and it can also overflow, where as the nextId
  * will grow much slower, it is a string, and it will never overflow.
  *
- * @returns an unique alpha-numeric string
+ * @returns {string} A unique alpha-numeric string
  */
 function nextUid() {
   var index = uid.length;
@@ -207,10 +217,10 @@ function nextUid() {
  * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects.
  *
- * @param {Object} dst Destination object.
- * @param {...Object} src Source object(s).
+ * @param {!Object} dst Destination object.
+ * @param {...Object} var_args Source object(s).
  */
-function extend(dst) {
+function extend(dst, var_args) {
   forEach(arguments, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
@@ -226,6 +236,11 @@ function int(str) {
 }
 
 
+/**
+ * @param {Object} parent
+ * @param {Object=} extra
+ * @return {*}
+ */
 function inherit(parent, extra) {
   return extend(new (extend(function() {}, {prototype:parent}))(), extra);
 }
@@ -391,12 +406,11 @@ function isFunction(value){return typeof value == 'function';}
 /**
  * Checks if `obj` is a window object.
  *
- * @private
  * @param {*} obj Object to check
  * @returns {boolean} True if `obj` is a window obj.
  */
 function isWindow(obj) {
-  return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+  return !!(obj && obj.document && obj.location && obj.alert && obj.setInterval);
 }
 
 
@@ -427,18 +441,18 @@ function trim(value) {
  * @description
  * Determines if a reference is a DOM element (or wrapped jQuery element).
  *
- * @param {*} value Reference to check.
+ * @param {*} node Reference to check.
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
-  return node &&
+  return !!(node &&
     (node.nodeName  // we are a direct element
-    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
+    || (node.bind && node.find)));  // we have a bind and find method part of jQuery API
 }
 
 /**
  * @param str 'key1,key2,...'
- * @returns {object} in the form of {key1:true, key2:true, ...}
+ * @returns {Object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str){
   var obj = {}, items = str.split(","), i;
@@ -461,10 +475,17 @@ if (msie < 9) {
 }
 
 
+/**
+ * @template T
+ * @param {!(Array.<T>|Object.<T>)} obj
+ * @param {!function(T, (string|number))} iterator
+ * @param {Object=} context
+ * @return {!Array}
+ */
 function map(obj, iterator, context) {
   var results = [];
-  forEach(obj, function(value, index, list) {
-    results.push(iterator.call(context, value, index, list));
+  forEach(obj, function(value, index) {
+    results.push(iterator.call(context, value, index));
   });
   return results;
 }
@@ -545,25 +566,26 @@ function isLeafNode (node) {
  * Note: this function is used to augment the Object type in Angular expressions. See
  * {@link ng.$filter} for more information about Angular arrays.
  *
- * @param {*} source The source that will be used to make a copy.
+ * @template T
+ * @param {!T} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
  * @param {(Object|Array)=} destination Destination into which the source is copied. If
  *     provided, must be of the same type as `source`.
- * @returns {*} The copy or updated `destination`, if `destination` was specified.
+ * @returns {!T} The copy or updated `destination`, if `destination` was specified.
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) throw Error("Can't copy Window or Scope");
   if (!destination) {
-    destination = source;
     if (source) {
       if (isArray(source)) {
-        destination = copy(source, []);
+        return copy(source, []);
       } else if (isDate(source)) {
-        destination = new Date(source.getTime());
+        return new Date(source.getTime());
       } else if (isObject(source)) {
-        destination = copy(source, {});
+        return copy(source, {});
       }
     }
+    return source;
   } else {
     if (source === destination) throw Error("Can't copy equivalent objects or arrays");
     if (isArray(source)) {
@@ -677,15 +699,15 @@ function sliceArgs(args, startIndex) {
  *
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
- * `fn`). You can supply optional `args` that are are prebound to the function. This feature is also
+ * `fn`). You can supply optional `var_args` that are are prebound to the function. This feature is also
  * known as [function currying](http://en.wikipedia.org/wiki/Currying).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
- * @param {...*} args Optional arguments to be prebound to the `fn` function call.
+ * @param {...*} var_args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
-function bind(self, fn) {
+function bind(self, fn, var_args) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
     return curryArgs.length
@@ -731,12 +753,12 @@ function toJsonReplacer(key, value) {
  * @description
  * Serializes input into a JSON-formatted string.
  *
- * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
+ * @param {*} obj Input to be serialized into JSON.
  * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
- * @returns {string} Jsonified string representing `obj`.
+ * @returns {string|undefined} Jsonified string representing `obj`.
  */
 function toJson(obj, pretty) {
-  return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
+  return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : undefined);
 }
 
 
@@ -749,11 +771,11 @@ function toJson(obj, pretty) {
  * Deserializes a JSON string.
  *
  * @param {string} json JSON string to deserialize.
- * @returns {Object|Array|Date|string|number} Deserialized thingy.
+ * @returns {Object|Array|string|number} Deserialized thingy.
  */
 function fromJson(json) {
   return isString(json)
-      ? JSON.parse(json)
+      ? /** @type {Object|Array|string|number}*/(JSON.parse(json))
       : json;
 }
 
@@ -788,15 +810,18 @@ function startingTag(element) {
 
 /**
  * Parses an escaped url query string into key-value pairs.
+ *
+ * @param {string} keyValueString
  * @returns Object.<(string|boolean)>
  */
-function parseKeyValue(/**string*/keyValue) {
-  var obj = {}, key_value, key;
-  forEach((keyValue || "").split('&'), function(keyValue){
+function parseKeyValue(keyValueString) {
+  var obj = {};
+  var key_value, key;
+  forEach((keyValueString || "").split('&'), function(keyValue){
     if (keyValue) {
-      key_value = keyValue.split('=');
-      key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      keyValue = keyValue.split('=');
+      key = decodeURIComponent(keyValue[0]);
+      obj[key] = isDefined(keyValue[1]) ? decodeURIComponent(keyValue[1]) : true;
     }
   });
   return obj;
@@ -856,11 +881,9 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp an optional application
- *   {@link angular.module module} name to load.
+ * @param {string} ngApp an optional application {@link angular.module module} name to load.
  *
  * @description
- *
  * Use this directive to auto-bootstrap on application. Only
  * one directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
@@ -878,6 +901,11 @@ function encodeUriQuery(val, pctEncodeSpaces) {
    </doc:source>
  </doc:example>
  *
+ */
+
+/**
+ * @param {!(Element|Document)} element
+ * @param {!function(!Element, Array.<!(string|Function)>)} bootstrap
  */
 function angularInit(element, bootstrap) {
   var elements = [element],
@@ -931,9 +959,9 @@ function angularInit(element, bootstrap) {
  *
  * See: {@link guide/bootstrap Bootstrap}
  *
- * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
- * @returns {AUTO.$injector} Returns the newly created injector for this app.
+ * @param {!Element} element DOM element which is the root of angular application.
+ * @param {Array.<!(string|Function)>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @returns {ng.Injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
   element = jqLite(element);
@@ -985,6 +1013,9 @@ function bindJQuery() {
 
 /**
  * throw error of the argument is falsy.
+ * @param {*} arg
+ * @param {string=} name
+ * @param {string=} reason
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
@@ -993,7 +1024,12 @@ function assertArg(arg, name, reason) {
   return arg;
 }
 
-function assertArgFn(arg, name, acceptArrayAnnotation) {
+/**
+ * @param {*} arg
+ * @param {string} name
+ * @param {boolean=} acceptArrayAnnotation
+ */
+ function assertArgFn(arg, name, acceptArrayAnnotation) {
   if (acceptArrayAnnotation && isArray(arg)) {
       arg = arg[arg.length - 1];
   }

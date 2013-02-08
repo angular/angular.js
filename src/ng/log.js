@@ -38,11 +38,13 @@
  * @name ng.$logProvider
  * @description
  * Use the `$logProvider` to configure how the application logs messages
+ *
+ * @constructor
  */
 function $LogProvider(){
   var debug = true,
       self = this;
-  
+
   /**
    * @ngdoc property
    * @name ng.$logProvider#debugEnabled
@@ -59,7 +61,7 @@ function $LogProvider(){
 		  return debug;
 	  }
   };
-  
+
   this.$get = ['$window', function($window){
     return {
       /**
@@ -101,18 +103,18 @@ function $LogProvider(){
        * Write an error message
        */
       error: consoleLog('error'),
-      
+
       /**
        * @ngdoc method
        * @name ng.$log#debug
        * @methodOf ng.$log
-       * 
+       *
        * @description
        * Write a debug message
        */
       debug: (function () {
     	var fn = consoleLog('debug');
-    	
+
     	return function() {
     		if (debug) {
     			fn.apply(self, arguments);
@@ -121,17 +123,17 @@ function $LogProvider(){
       }())
     };
 
-    function formatError(arg) {
-      if (arg instanceof Error) {
-        if (arg.stack) {
-          arg = (arg.message && arg.stack.indexOf(arg.message) === -1)
-              ? 'Error: ' + arg.message + '\n' + arg.stack
-              : arg.stack;
-        } else if (arg.sourceURL) {
-          arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
+    function formatError(error) {
+      if (error instanceof Error) {
+        if (error.stack) {
+          error = (error.message && error.stack.indexOf(error.message) === -1)
+              ? 'Error: ' + error.message + '\n' + error.stack
+              : error.stack;
+        } else if (error.sourceURL) {
+          error = error.message + '\n' + error.sourceURL + ':' + error['line'];
         }
       }
-      return arg;
+      return error;
     }
 
     function consoleLog(type) {

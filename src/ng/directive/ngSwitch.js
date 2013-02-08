@@ -1,5 +1,7 @@
 'use strict';
 
+var NG_SWITCH = 'ng-switch';
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngSwitch
@@ -8,11 +10,22 @@
  * @description
  * Conditionally change the DOM structure.
  *
- * @usageContent
- * <ANY ng-switch-when="matchValue1">...</ANY>
- *   <ANY ng-switch-when="matchValue2">...</ANY>
- *   ...
- *   <ANY ng-switch-default>...</ANY>
+ * @usage
+ *   <ng-switch on="expression">
+ *     <ng-switch-when="matchValue1">...</ng-switch-when>
+ *     <ng-switch-when="matchValue2">...</ng-switch-when>
+ *     ...
+ *     <ng-switch-default>...</ng-switch-when>
+ *   </ng-switch>
+ *
+ *   or
+ *
+ *   <ANY ng-switch="expression">
+ *     <ANY ng-switch-when="matchValue1">...</ANY>
+ *     <ANY ng-switch-when="matchValue2">...</ANY>
+ *     ...
+ *     <ANY ng-switch-default>...</ANY>
+ *   </ANY>
  *
  * @scope
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
@@ -59,14 +72,13 @@
       </doc:scenario>
     </doc:example>
  */
-var NG_SWITCH = 'ng-switch';
 var ngSwitchDirective = valueFn({
   restrict: 'EA',
   require: 'ngSwitch',
-  controller: function ngSwitchController() {
+  controller: /** @constructor */function ngSwitchController() {
     this.cases = {};
   },
-  link: function(scope, element, attr, ctrl) {
+  link: function(scope, element, /** @type {ng.ngSwitch} */attr, ctrl) {
     var watchExpr = attr.ngSwitch || attr.on,
         selectedTransclude,
         selectedElement,
@@ -111,3 +123,8 @@ var ngSwitchDefaultDirective = ngDirective({
     };
   }
 });
+
+/**
+ * @typedef {{on, change, ngSwitch}}
+ */
+ng.ngSwitchAttrs;

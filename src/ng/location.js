@@ -28,6 +28,10 @@ function stripHash(url) {
 }
 
 
+/**
+ * @param {string} url
+ * @param {Object=} obj
+ */
 function matchUrl(url, obj) {
   var match = URL_MATCH.exec(url);
 
@@ -103,6 +107,7 @@ function convertToHashbangUrl(url, basePath, hashPrefix) {
  * This object is exposed as $location service when HTML5 mode is enabled and supported
  *
  * @constructor
+ * @implements {ng.core.Location}
  * @param {string} url HTML5 url
  * @param {string} pathPrefix
  */
@@ -158,8 +163,11 @@ function LocationUrl(url, pathPrefix, appBaseUrl) {
  * This object is exposed as $location service when html5 history api is disabled or not supported
  *
  * @constructor
+ * @implements {ng.core.Location}
+ * @extends {LocationUrl}
  * @param {string} url Legacy url
  * @param {string} hashPrefix Prefix for hash part (containing path and search)
+ * @param {string} appBaseUrl absolute base url of the app
  */
 function LocationHashbangUrl(url, hashPrefix, appBaseUrl) {
   var basePath;
@@ -251,16 +259,16 @@ LocationUrl.prototype = {
    * Change path, search and hash, when called with parameter and return `$location`.
    *
    * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
-   * @return {string} url
+   * @return {string|ng.core.Location} url
    */
-  url: function(url, replace) {
+  url: function(url) {
     if (isUndefined(url))
       return this.$$url;
 
     var match = PATH_MATCH.exec(url);
     if (match[1]) this.path(decodeURIComponent(match[1]));
     if (match[2] || match[1]) this.search(match[3] || '');
-    this.hash(match[5] || '', replace);
+    this.hash(match[5] || '');
 
     return this;
   },
@@ -341,11 +349,11 @@ LocationUrl.prototype = {
    *
    * Change search part when called with parameter and return `$location`.
    *
-   * @param {string|object<string,string>=} search New search params - string or hash object
+   * @param {string|Object.<string>=} search New search params - string or hash object
    * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
    *    single search parameter. If the value is `null`, the parameter will be deleted.
    *
-   * @return {string} search
+   * @return {string|ng.core.Location} search
    */
   search: function(search, paramValue) {
     if (isUndefined(search))
@@ -358,7 +366,7 @@ LocationUrl.prototype = {
         this.$$search[search] = paramValue;
       }
     } else {
-      this.$$search = isString(search) ? parseKeyValue(search) : search;
+      this.$$search = isString(search) ? parseKeyValue(/** @type {string} */(search)) : search;
     }
 
     this.$$compose();
@@ -399,6 +407,11 @@ LocationUrl.prototype = {
 
 LocationHashbangUrl.prototype = inherit(LocationUrl.prototype);
 
+/**
+ * @constructor
+ * @implements {ng.core.Location}
+ * @extends {LocationHashbangUrl}
+ */
 function LocationHashbangInHtml5Url(url, hashPrefix, appBaseUrl, baseExtra) {
   LocationHashbangUrl.apply(this, arguments);
 
@@ -466,6 +479,8 @@ function locationGetterSetter(property, preprocess) {
  * @name ng.$locationProvider
  * @description
  * Use the `$locationProvider` to configure how the application deep linking paths are stored.
+ *
+ * @constructor
  */
 function $LocationProvider(){
   var hashPrefix = '',
@@ -480,7 +495,7 @@ function $LocationProvider(){
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.hashPrefix = function(prefix) {
-    if (isDefined(prefix)) {
+    if (prefix !== undefined) {
       hashPrefix = prefix;
       return this;
     } else {
@@ -616,3 +631,89 @@ function $LocationProvider(){
     }
 }];
 }
+
+
+ng.core = {};
+
+/**
+ * @interface
+ */
+ng.core.Location = function() {};
+
+
+/**
+ * @protected
+ * @param {!string} url
+ */
+ng.core.Location.$$parse = function(url) {};
+
+
+/**
+ * @protected
+ */
+ng.core.Location.$$compose = function() {};
+
+
+/**
+ * @protected
+ */
+ng.core.Location.$$replace;
+
+
+/**
+ * @return {!string} full url
+ */
+ng.core.Location.absUrl = function() {};
+
+
+/**
+ * @param {string=} url
+ * @return {ng.core.Location} url
+ */
+ng.core.Location.url = function(url) {};
+
+
+/**
+ * @return {!string} protocol of current url
+ */
+ng.core.Location.protocol = function() {};
+
+
+/**
+ * @return {!string}
+ */
+ng.core.Location.host = function() {};
+
+
+/**
+ * @return {!number}
+ */
+ng.core.Location.port = function() {};
+
+
+/**
+ * @param {string=} path
+ * @return {string}
+ */
+ng.core.Location.path = function(path) {};
+
+
+/**
+ * @param {!(string|Object.<string>)=} search
+ * @param {!string=} paramValue
+ * @return {!(string|ng.core.Location)}
+ */
+ng.core.Location.search = function(search, paramValue) {};
+
+
+/**
+ * @param {!string=} hash New hash fragment
+ * @return {!string} hash
+ */
+ng.core.Location.hash = function(hash) {};
+
+
+/**
+ * @return {!ng.core.Location}
+ */
+ng.core.Location.replace = function() {};

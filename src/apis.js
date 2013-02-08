@@ -33,10 +33,14 @@ function hashKey(obj) {
 
 /**
  * HashMap which can use objects as keys
+ *
+ * @constructor
+ * @param {(Object|Array)=} initMap Map of key/value data for HashMap initialization.
  */
-function HashMap(array){
-  forEach(array, this.put, this);
+function HashMap(initMap) {
+  forEach(initMap, this.put, this);
 }
+
 HashMap.prototype = {
   /**
    * Store key value pair
@@ -68,9 +72,10 @@ HashMap.prototype = {
 
 /**
  * A map where multiple values can be added to the same key such that they form a queue.
- * @returns {HashQueueMap}
+ * @constructor
  */
 function HashQueueMap() {}
+
 HashQueueMap.prototype = {
   /**
    * Same as array push, but using an array as the value for the hash

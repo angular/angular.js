@@ -8,8 +8,8 @@
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
  * template can be used by `ngInclude`, `ngView` or directive templates.
  *
- * @restrict E
- * @param {'text/ng-template'} type must be set to `'text/ng-template'`
+ * @restrict A
+ * @param {string} type must be set to `'text/ng-template'`
  *
  * @example
   <doc:example>
@@ -28,7 +28,15 @@
       });
     </doc:scenario>
   </doc:example>
+ *
+ * @usage
+   <script type="text/ng-template" id="/some/url.html">
+     This is an inlined template which can be used by $route or directive
+     via templateUrl="/some/url.html"
+   </script>
  */
+ng.scriptDirective;
+
 var scriptDirective = ['$templateCache', function($templateCache) {
   return {
     restrict: 'E',

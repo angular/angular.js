@@ -22,7 +22,7 @@
  *
  *
  * @element ANY
- * @param {expression} ngBind {@link guide/expression Expression} to evaluate.
+ * @param {string} ngBind {@link guide/expression Expression} to evaluate.
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
@@ -47,6 +47,8 @@
      </doc:scenario>
    </doc:example>
  */
+ng.ngBindDirective;
+
 var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
   scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
@@ -102,6 +104,8 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
      </doc:scenario>
    </doc:example>
  */
+ng.ngBindTemplateDirective;
+
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
     // TODO: move this to scenario runner
@@ -127,13 +131,15 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * See {@link ngSanitize.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} ngBindHtmlUnsafe {@link guide/expression Expression} to evaluate.
+ * @param {string} ngBindHtmlUnsafe {@link guide/expression Expression} to evaluate.
  */
-var ngBindHtmlUnsafeDirective = [function() {
+ng.ngBindHtmlUnsafeDirective;
+
+var ngBindHtmlUnsafeDirective = function() {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
     scope.$watch(attr.ngBindHtmlUnsafe, function ngBindHtmlUnsafeWatchAction(value) {
       element.html(value || '');
     });
   };
-}];
+};

@@ -8,6 +8,8 @@
  * @description
  * A {@link angular.element jQuery (lite)}-wrapped reference to the browser's `window.document`
  * element.
+ *
+ * @constructor
  */
 function $DocumentProvider(){
   this.$get = ['$window', function(window){
