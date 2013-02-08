@@ -63,9 +63,10 @@ var NG_SWITCH = 'ng-switch';
 var ngSwitchDirective = valueFn({
   restrict: 'EA',
   require: 'ngSwitch',
-  controller: function ngSwitchController() {
+  // asks for $scope to fool the BC controller module
+  controller: ['$scope', function ngSwitchController() {
     this.cases = {};
-  },
+  }],
   link: function(scope, element, attr, ctrl) {
     var watchExpr = attr.ngSwitch || attr.on,
         selectedTransclude,
