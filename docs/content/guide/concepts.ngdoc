@@ -234,7 +234,7 @@ The separation of the controller and the view is important because:
 
 The model is the data which is used merged with the template to produce the view. To be able to
 render the model into the view, the model has to be able to be referenced from the scope. Unlike many
-other frameworks Angular makes no restrictions or requirements an the model. There are no classes
+other frameworks Angular makes no restrictions or requirements on the model. There are no classes
 to inherit from or special accessor methods for accessing or changing the model. The model can be
 primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
 
