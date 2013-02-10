@@ -406,6 +406,35 @@ describe('jqLite', function() {
       expect(elm.attr('readOnly')).toBeUndefined();
       expect(elm.attr('disabled')).toBeUndefined();
     });
+
+    it('should prevent IE for changing text content when setting attribute', function(){
+      var unchanged = true,
+          values = ["http:/","http://","https://","ftp://","mailto:","mailto","@","a@b"],
+          contents = [
+            "text with @arroba starting word",
+            "text with @ arroba starting word",
+            "text with @",
+            "text with (space at end) @ ",
+            "@ empty before",
+            " @ space before",
+            "- @ dash before",
+            "\n @ line feed before"
+          ];
+
+          function testValueWithTextContent(value, textContent){
+            var link = angular.element("<a>" + textContent + "</a>")
+                linkText = link.text();
+            link.attr("href", value);
+            unchanged = unchanged && (linkText == link.text());
+          }
+
+      forEach(values, function (value) {
+        forEach(contents, function (content) {
+          testValueWithTextContent(value, content);
+        });
+      });
+      expect(unchanged).toBe(true);
+    });
   });
 
 
