@@ -257,7 +257,7 @@ describe('angular', function() {
       function MyObj() {
         this.bar = 'barVal';
         this.baz = 'bazVal';
-      };
+      }
       MyObj.prototype.foo = 'fooVal';
 
       var obj = new MyObj(),
@@ -266,6 +266,77 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value)});
 
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+
+
+    it('should handle JQLite and jQuery objects like arrays', function() {
+      var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
+          log = [];
+
+      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:s1', '1:s2']);
+    });
+
+
+    it('should handle NodeList objects like arrays', function() {
+      var nodeList = jqLite("<p><span>a</span><span>b</span><span>c</span></p>")[0].childNodes,
+          log = [];
+
+
+      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+
+    it('should handle HTMLCollection objects like arrays', function() {
+      document.body.innerHTML = "<p>" +
+                                  "<a name='x'>a</a>" +
+                                  "<a name='y'>b</a>" +
+                                  "<a name='x'>c</a>" +
+                                "</p>";
+
+      var htmlCollection = document.getElementsByName('x'),
+          log = [];
+
+      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:c']);
+    });
+
+
+    it('should handle arguments objects like arrays', function() {
+      var args,
+          log = [];
+
+      (function(){ args = arguments}('a', 'b', 'c'));
+
+      forEach(args, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+
+    it('should handle objects with length property as objects', function() {
+      var obj = {
+            'foo' : 'bar',
+            'length': 2
+          },
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['foo:bar', 'length:2']);
+    });
+
+
+    it('should handle objects of custom types with length property as objects', function() {
+      function CustomType() {
+        this.length = 2;
+        this.foo = 'bar'
+      }
+
+      var obj = new CustomType(),
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['length:2', 'foo:bar']);
     });
   });
 
