@@ -71,6 +71,17 @@ describe('filters', function() {
       var num = formatNumber(123.1116, pattern, ',', '.');
       expect(num).toBe('123.112');
     });
+
+		it('should format the same with string as well as numeric fractionSize', function(){
+			var num = formatNumber(123.1, pattern, ',', '.', "0");
+      expect(num).toBe('123');
+			var num = formatNumber(123.1, pattern, ',', '.', 0);
+      expect(num).toBe('123');
+			var num = formatNumber(123.1, pattern, ',', '.', "3");
+      expect(num).toBe('123.100');
+			var num = formatNumber(123.1, pattern, ',', '.', 3);
+      expect(num).toBe('123.100');
+		});
   });
 
   describe('currency', function() {
