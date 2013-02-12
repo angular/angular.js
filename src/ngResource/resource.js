@@ -19,7 +19,7 @@
  * the need to interact with the low level {@link ng.$http $http} service.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
- *   `/user/:username`. If you are using a URL with a port number (e.g. 
+ *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
  *   number, like this: `$resource('http://example.com\\:8080/api')`.
  *
@@ -109,10 +109,23 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
- *   The Resource also has these properties:
  *
- *   - '$q': the  promise from the underlying {@link ng.$http} call.
- *   - '$resolved': true if the promise has been resolved (either with success or rejection);
+ *   The Resource instances and collection have these additional properties:
+ *
+ *   - `$then`: the `then` method of a {@link ng.$q promise} derived from the underlying
+ *     {@link ng.$http $http} call.
+ *
+ *     The success callback for the `$then` method will be resolved if the underlying `$http` requests
+ *     succeeds.
+ *
+ *     The success callback is called with a single object which is the {@link ng.$http http response}
+ *     object extended with a new property `resource`. This `resource` property is a reference to the
+ *     result of the resource action — resource object or array of resources.
+ *
+ *     The error callback is called with the {@link ng.$http http response} object when an http
+ *     error occurs.
+ *
+ *   - `$resolved`: true if the promise has been resolved (either with success or rejection);
  *     Knowing if the Resource has been resolved is useful in data-binding.
  *
  * @example
@@ -415,32 +428,36 @@ angular.module('ngResource', ['ng']).
           httpConfig.data = data;
           httpConfig.url = route.url(extend({}, extractParams(data, action.params || {}), params))
 
-          function markResolved() { value.$resolved = true; };
+          function markResolved() { value.$resolved = true; }
 
           promise = $http(httpConfig);
-          value.$q = promise;
           value.$resolved = false;
-          promise.then(markResolved, markResolved)
-          promise.then(function(response) {
-              var data = response.data;
-              var q = value.$q, resolved = value.$resolved;
-              if (data) {
-                if (action.isArray) {
-                  value.length = 0;
-                  forEach(data, function(item) {
-                    value.push(new Resource(item));
-                  });
-                } else {
-                  copy(data, value);
-                  value.$q = q;
-                  value.$resolved = resolved;
-                }
+
+          promise.then(markResolved, markResolved);
+          value.$then = promise.then(function(response) {
+            var data = response.data;
+            var then = value.$then, resolved = value.$resolved;
+
+            if (data) {
+              if (action.isArray) {
+                value.length = 0;
+                forEach(data, function(item) {
+                  value.push(new Resource(item));
+                });
+              } else {
+                copy(data, value);
+                value.$then = then;
+                value.$resolved = resolved;
               }
-              (success||noop)(value, response.headers);
-            }, error);
+            }
+
+            (success||noop)(value, response.headers);
+
+            response.resource = value;
+            return response;
+          }, error).then;
 
           return value;
-
         };
 
 
