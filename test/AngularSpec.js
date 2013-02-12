@@ -31,12 +31,21 @@ describe('angular', function() {
       expect(copy(date) === date).toBeFalsy();
     });
 
-    it("should copy array", function() {
+    it("should deeply copy an array into an existing array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
       expect(copy(src, dst)).toBe(dst);
       expect(dst).toEqual([1, {name:"value"}]);
       expect(dst[1]).toEqual({name:"value"});
+      expect(dst[1]).not.toBe(src[1]);
+    });
+
+    it("should deeply copy an array into a new array", function() {
+      var src = [1, {name:"value"}];
+      var dst = copy(src);
+      expect(src).toEqual([1, {name:"value"}]);
+      expect(dst).toEqual(src);
+      expect(dst).not.toBe(src);
       expect(dst[1]).not.toBe(src[1]);
     });
 
@@ -47,11 +56,21 @@ describe('angular', function() {
       expect(dst).toEqual([]);
     });
 
-    it("should copy object", function() {
+    it("should deeply copy an object into an existing object", function() {
       var src = {a:{name:"value"}};
       var dst = {b:{key:"v"}};
       expect(copy(src, dst)).toBe(dst);
       expect(dst).toEqual({a:{name:"value"}});
+      expect(dst.a).toEqual(src.a);
+      expect(dst.a).not.toBe(src.a);
+    });
+
+    it("should deeply copy an object into an existing object", function() {
+      var src = {a:{name:"value"}};
+      var dst = copy(src, dst);
+      expect(src).toEqual({a:{name:"value"}});
+      expect(dst).toEqual(src);
+      expect(dst).not.toBe(src);
       expect(dst.a).toEqual(src.a);
       expect(dst.a).not.toBe(src.a);
     });
