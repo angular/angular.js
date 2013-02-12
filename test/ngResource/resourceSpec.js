@@ -419,51 +419,208 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   });
 
-  it("should have $q and $resolved properties for get", function () {
-    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
-    var cc = CreditCard.get({id: 123}, callback);
-    expect(cc.$q).toBeDefined();
-    expect(typeof cc.$q).toBe('object');
-    expect(cc.$resolved).toBeFalsy();
-    $httpBackend.flush();
-    expect(cc.$q).toBeDefined();
-    expect(cc.$resolved).toBeTruthy();
-  });
 
-  it("should have $q and $resolved properties for query", function() {
-    $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+  describe('promise api', function() {
 
-    var ccs = CreditCard.query({key: 'value'}, callback);
-    expect(ccs.$q).toBeDefined();
-    expect(typeof ccs.$q).toBe('object');
-    expect(ccs.$resolved).toBeFalsy();
-    $httpBackend.flush();
-    expect(ccs.$q).toBeDefined();
-    expect(ccs.$resolved).toBeTruthy();
-  });
+    var $rootScope;
 
-  it("should have $q and $resolved properties for save", function() {
-    $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
-                 respond({id: {key: 123}, name: 'rama'});
 
-    var cc = CreditCard.save({id: {key: 123}, name: 'misko'}, callback);
-    expect(cc.$q).toBeDefined();
-    expect(typeof cc.$q).toBe('object');
-    expect(cc.$resolved).toBeFalsy();
-    $httpBackend.flush();
-    expect(cc.$q).toBeDefined();
-    expect(cc.$resolved).toBeTruthy();
-  });
+    beforeEach(inject(function(_$rootScope_) {
+      $rootScope = _$rootScope_;
+    }));
 
-  it('should should have $q and $resolved properties for delete', function() {
-    $httpBackend.expect('DELETE', '/CreditCard/123').respond({});
-    var removed = CreditCard.remove({id:123}, callback);
-    expect(removed.$q).toBeDefined();
-    expect(typeof removed.$q).toBe('object');
-    expect(removed.$resolved).toBeFalsy();
-    $httpBackend.flush();
-    expect(removed.$q).toBeDefined();
-    expect(removed.$resolved).toBeTruthy();
+
+    describe('single resource', function() {
+
+      it('should add promise $then method to the result object', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+        var cc = CreditCard.get({id: 123});
+
+        cc.$then(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        expect(response).toEqualData({
+          data: {id: 123, number: '9876'},
+          status: 200,
+          config: {method: 'GET', data: undefined, url: '/CreditCard/123'},
+          resource: {id: 123, number: '9876', $resolved: true}
+        });
+        expect(typeof response.resource.$save).toBe('function');
+      });
+
+
+      it('should keep $then around after promise resolution', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+        var cc = CreditCard.get({id: 123});
+
+        cc.$then(callback);
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        callback.reset();
+
+        cc.$then(callback);
+        $rootScope.$apply(); //flush async queue
+
+        expect(callback).toHaveBeenCalledOnceWith(response);
+      });
+
+
+      it('should allow promise chaining via $then method', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+        var cc = CreditCard.get({id: 123});
+
+        cc.$then(function(response) { return 'new value'; }).then(callback);
+        $httpBackend.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith('new value');
+      });
+
+
+      it('should allow error callback registration via $then method', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond(404, 'resource not found');
+        var cc = CreditCard.get({id: 123});
+
+        cc.$then(null, callback);
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        expect(response).toEqualData({
+          data : 'resource not found',
+          status : 404,
+          config : { method : 'GET', data : undefined, url : '/CreditCard/123' }
+        });
+      });
+
+
+      it('should add $resolved boolean field to the result object', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+        var cc = CreditCard.get({id: 123});
+
+        expect(cc.$resolved).toBe(false);
+
+        cc.$then(callback);
+        expect(cc.$resolved).toBe(false);
+
+        $httpBackend.flush();
+
+        expect(cc.$resolved).toBe(true);
+      });
+
+
+      it('should set $resolved field to true when an error occurs', function() {
+        $httpBackend.expect('GET', '/CreditCard/123').respond(404, 'resource not found');
+        var cc = CreditCard.get({id: 123});
+
+        cc.$then(null, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+        expect(cc.$resolved).toBe(true);
+      });
+    });
+
+
+    describe('resource collection', function() {
+
+      it('should add promise $then method to the result object', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$then(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        expect(response).toEqualData({
+          data: [{id: 1}, {id :2}],
+          status: 200,
+          config: {method: 'GET', data: undefined, url: '/CreditCard?key=value'},
+          resource: [ { id : 1 }, { id : 2 } ]
+        });
+        expect(typeof response.resource[0].$save).toBe('function');
+        expect(typeof response.resource[1].$save).toBe('function');
+      });
+
+
+      it('should keep $then around after promise resolution', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$then(callback);
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        callback.reset();
+
+        ccs.$then(callback);
+        $rootScope.$apply(); //flush async queue
+
+        expect(callback).toHaveBeenCalledOnceWith(response);
+      });
+
+
+      it('should allow promise chaining via $then method', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$then(function(response) { return 'new value'; }).then(callback);
+        $httpBackend.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith('new value');
+      });
+
+
+      it('should allow error callback registration via $then method', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond(404, 'resource not found');
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$then(null, callback);
+        $httpBackend.flush();
+
+        var response = callback.mostRecentCall.args[0];
+
+        expect(response).toEqualData({
+          data : 'resource not found',
+          status : 404,
+          config : { method : 'GET', data : undefined, url : '/CreditCard?key=value' }
+        });
+      });
+
+
+      it('should add $resolved boolean field to the result object', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'}, callback);
+
+        expect(ccs.$resolved).toBe(false);
+
+        ccs.$then(callback);
+        expect(ccs.$resolved).toBe(false);
+
+        $httpBackend.flush();
+
+        expect(ccs.$resolved).toBe(true);
+      });
+
+
+      it('should set $resolved field to true when an error occurs', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond(404, 'resource not found');
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$then(null, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+        expect(ccs.$resolved).toBe(true);
+      });
+    });
   });
 
 
