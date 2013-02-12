@@ -556,8 +556,7 @@ function copy(source, destination){
     destination = source;
     if (source) {
       if (isArray(source)) {
-        // http://jsperf.com/copy-array-with-slice-vs-for
-        destination = source.slice(0);
+        destination = copy(source, []);
       } else if (isDate(source)) {
         destination = new Date(source.getTime());
       } else if (isObject(source)) {
