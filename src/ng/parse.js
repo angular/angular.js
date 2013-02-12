@@ -659,16 +659,30 @@ function parser(text, json, $filter, csp){
 
 function setter(obj, path, setValue) {
   var element = path.split('.');
-  for (var i = 0; element.length > 1; i++) {
-    var key = element.shift();
-    var propertyObj = obj[key];
-    if (!propertyObj) {
-      propertyObj = {};
-      obj[key] = propertyObj;
+
+  var isIsolate = obj.hasOwnProperty('$root');
+
+  if(element.length === 1 && !isIsolate) {
+    // Simple assignments (without . or []) should overwrite closest definition in parent chain
+    var key = element[0];
+    var target = obj;
+    while(target && !target.hasOwnProperty(key)) {
+      target = target.$parent;
     }
-    obj = propertyObj;
+    (target || obj)[key] = setValue;
+
+  } else {
+    for (var i = 0; element.length > 1; i++) {
+      var key = element.shift();
+      var propertyObj = obj[key];
+      if (!propertyObj) {
+        propertyObj = {};
+        obj[key] = propertyObj;
+      }
+      obj = propertyObj;
+    }
+    obj[element.shift()] = setValue;
   }
-  obj[element.shift()] = setValue;
   return setValue;
 }
 
