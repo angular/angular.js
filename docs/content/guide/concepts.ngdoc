@@ -234,7 +234,7 @@ The separation of the controller and the view is important because:
 
 The model is the data which is used merged with the template to produce the view. To be able to
 render the model into the view, the model has to be able to be referenced from the scope. Unlike many
-other frameworks Angular makes no restrictions or requirements an the model. There are no classes
+other frameworks Angular makes no restrictions or requirements on the model. There are no classes
 to inherit from or special accessor methods for accessing or changing the model. The model can be
 primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
 
@@ -248,9 +248,9 @@ primitive, object hash, or a full object Type. In short the model is a plain Jav
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-view.png">
 
-The view is what the users sees. The view begins its life as a template, it is merged with the
+The view is what the user sees. The view begins its life as a template, is merged with the
 model and finally rendered into the browser DOM. Angular takes a very different approach to
-rendering the view, compared to most other templating systems.
+rendering the view compared to most other templating systems.
 
   * **Others** - Most templating systems begin as an HTML string with special templating markup.
     Often the template markup breaks the HTML syntax which means that the template can not be
