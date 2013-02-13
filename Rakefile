@@ -94,6 +94,10 @@ task :concat => :init do
   end
 end
 
+desc 'Fetch dependencies'
+task :deps do
+  %x(npm install)
+end
 
 desc 'Minify JavaScript'
 task :minify => [:init, :concat, :concat_scenario] do
@@ -150,7 +154,7 @@ end
 
 
 desc 'Create angular distribution'
-task :package => [:clean, :minify, :version, :docs] do
+task :package => [:deps, :clean, :minify, :version, :docs] do
   zip_dir = "angular-#{NG_VERSION.full}"
   zip_file = "#{zip_dir}.zip"
 
@@ -185,7 +189,7 @@ end
 namespace :test do
 
   desc 'Run all unit tests (single run)'
-  task :unit, :browsers, :misc_options do |t, args|
+  task :unit, [:browsers, :misc_options] => [:deps] do |t, args|
     [ 'test:jqlite',
       'test:jquery',
       'test:modules'
