@@ -21,6 +21,8 @@ task :default => [:package]
 
 desc 'Init the build workspace'
 task :init do
+  %x(npm install)
+
   FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
 
   v = YAML::load( File.open( 'version.yaml' ) )
@@ -343,6 +345,8 @@ end
 
 
 def start_testacular(config, singleRun, browsers, misc_options)
+  Rake::Task[:init].invoke
+
   sh "./node_modules/testacular/bin/testacular start " +
                 "#{config} " +
                 "#{'--single-run=true' if singleRun} " +
