@@ -286,6 +286,31 @@ describe('parser', function() {
         expect(scope.b).toEqual(234);
       });
 
+      it('simple assignments (without . or []) should overwrite closest definition in parent chain', function() {
+        var child = scope.$new();
+        scope.a = 12;
+        child.$eval("a=13");
+        expect(scope.a).toEqual(13);
+
+        child.$eval("b=13");
+        expect(child.b).toEqual(13);
+        expect(scope.b).toBe(undefined);
+
+        // child already defines b above.
+        scope.b = 12;
+        child.$eval("b=13");
+        expect(scope.b).toEqual(12);
+        expect(child.b).toEqual(13);
+      });
+
+      it('simple assignments in isolate should not overwrite parent scope', function() {
+        var child = scope.$new(true);
+        scope.a = 12;
+        child.$eval("a=13");
+        expect(scope.a).toEqual(12);
+        expect(child.a).toEqual(13);
+      });
+
       it('should evaluate function call without arguments', function() {
         scope['const'] =  function(a,b){return 123;};
         expect(scope.$eval("const()")).toEqual(123);
