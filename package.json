@@ -2,9 +2,9 @@
   "name": "AngularJS",
   "version": "0.0.0",
   "dependencies" : {
-    "testacular" : "canary",
-    "jasmine-node" :  "*",
-    "q-fs" : "*",
-    "qq" : "*"
+    "testacular" : "0.5.9",
+    "jasmine-node" :  "1.2.3",
+    "q-fs" : "0.1.36",
+    "qq" : "0.3.5"
   }
 }
