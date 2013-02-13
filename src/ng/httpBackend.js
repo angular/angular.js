@@ -66,8 +66,11 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var responseHeaders = xhr.getAllResponseHeaders();
-          // begin: workaround to overcome firefox CORS http response headers bug 
+          
+          // begin: workaround to overcome Firefox CORS http response headers bug 
           // https://bugzilla.mozilla.org/show_bug.cgi?id=608735
+          // Firefox already patched in nightly. Should land in Firefox 21.
+          
           // CORS "simple response headers" http://www.w3.org/TR/cors/
           var value,
               simpleHeaders = ["Cache-Control", "Content-Language", "Content-Type",
@@ -82,6 +85,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
             });
           }
           // end workaround.              
+
           completeRequest(callback, status || xhr.status, xhr.response || xhr.responseText,
                           responseHeaders);
         }

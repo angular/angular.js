@@ -116,7 +116,8 @@ describe('$httpBackend', function() {
       };
 
       this.getAllResponseHeaders = valueFn('');
-      // for temporary FF CORS workaround
+      // for temporary Firefox CORS workaround
+	  // see https://github.com/angular/angular.js/issues/1468
       this.getResponseHeader = valueFn('');
     }
 
