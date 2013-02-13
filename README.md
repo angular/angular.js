@@ -26,10 +26,6 @@ Building AngularJS
 
 Running Tests
 -------------
-Running tests requires installation of [Testacular](http://vojtajina.github.com/testacular):
-
-    sudo npm install -g testacular
-
 To execute all unit tests, use:
 
     rake test:unit
