@@ -105,7 +105,11 @@ task :minify => [:init, :concat, :concat_scenario] do
     'angular-bootstrap.js',
     'angular-bootstrap-prettify.js'
   ].each do |file|
-    fork { closure_compile(file) }
+    unless ENV['TRAVIS']
+      fork { closure_compile(file) }
+    else
+      closure_compile(file)
+    end
   end
 
   Process.waitall

@@ -237,7 +237,7 @@ function Browser(window, document, $log, $sniffer) {
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
-    return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
+    return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : '';
   };
 
   //////////////////////////////////////////////////////////////

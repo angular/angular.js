@@ -347,6 +347,26 @@ describe("angular.scenario.dsl", function() {
         dealoc(elm);
       });
 
+      it('should execute mouseover', function() {
+        var mousedOver;
+        doc.append('<div></div>');
+        doc.find('div').mouseover(function() {
+          mousedOver = true;
+        });
+        $root.dsl.element('div').mouseover();
+        expect(mousedOver).toBe(true);
+      });
+
+      it('should bubble up the mouseover event', function() {
+        var mousedOver;
+        doc.append('<div id="outer"><div id="inner"></div></div>');
+        doc.find('#outer').mouseover(function() {
+          mousedOver = true;
+        });
+        $root.dsl.element('#inner').mouseover();
+        expect(mousedOver).toBe(true);
+      });
+
       it('should count matching elements', function() {
         doc.append('<span></span><span></span>');
         $root.dsl.element('span').count();

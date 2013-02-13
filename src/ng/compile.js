@@ -420,6 +420,7 @@ function $CompileProvider($provide) {
                   (function(transcludeFn) {
                     return function(cloneFn) {
                       var transcludeScope = scope.$new();
+                      transcludeScope.$$transcluded = true;
 
                       return transcludeFn(transcludeScope, cloneFn).
                           bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
@@ -725,6 +726,8 @@ function $CompileProvider($provide) {
                 lastValue,
                 parentGet, parentSet;
 
+            scope.$$isolateBindings[scopeName] = mode + attrName;
+
             switch (mode) {
 
               case '@': {
@@ -935,7 +938,7 @@ function $CompileProvider($provide) {
           }
 
           directives.unshift(derivedSyncDirective);
-          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, $compileNode, tAttrs, childTranscludeFn);
+          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn);
           afterTemplateChildLinkFn = compileNodes($compileNode.contents(), childTranscludeFn);
 
 
