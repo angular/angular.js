@@ -28,7 +28,7 @@ Running Tests
 -------------
 Running tests requires installation of [Testacular](http://vojtajina.github.com/testacular):
 
-    sudo npm install -g testacular
+    sudo npm install testacular
 
 To execute all unit tests, use:
 
