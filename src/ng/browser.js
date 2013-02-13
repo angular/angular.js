@@ -267,7 +267,7 @@ function Browser(window, document, $log, $sniffer) {
    *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function(name, value) {
+  self.cookies = function(name, value, exDate) {
     var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
@@ -275,7 +275,11 @@ function Browser(window, document, $log, $sniffer) {
         rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath).length + 1;
+          rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath;
+          if(exDate){            
+            rawDocument.cookie += ";expires="+Date.now() + exDate;;
+          }
+          cookieLength = rawDocument.cookie.length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
