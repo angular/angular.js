@@ -1,0 +1,158 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+<script type="text/ng-template" id="no-results">
+No Results Found...
+</script>
+    <title>AngularJS Animation Demo</title>
+    <style type="text/css">
+      body, html {
+        padding:0;
+        margin:0;
+        position:relative;
+        height:100%;
+      }
+      .cell {
+        position:absolute;
+        width:50%;
+        height:50%;
+        border:2px solid red;
+        background:white;
+        overflow:scroll;
+        box-sizing:border-box;
+      }
+      .stage {
+        padding:10px;
+      }
+      header {
+        padding:5px;
+        background:red;
+        font-size:1.5em;
+        margin-bottom:10px;
+      }
+      .cell:hover {
+        z-index:2000!important;
+        box-shadow:0 0 10px #aaa;
+        border-color:blue;
+      }
+      #wrapper {
+        margin-top:50px;
+        position:relative;
+        height:100%;
+      }
+      #nav {
+        background:black;
+        position:fixed;
+        top:0;
+        right:0;
+        left:0;
+        z-index:5000;
+        padding:15px;
+      }
+      #one { top:0; left:0; z-index:1001; }
+      #two { top:0; right:0; z-index:1002; }
+      #three { bottom:0; left:0; z-index:1003; }
+      #four { bottom:0; right:0; z-index:1004; }
+      .other header {
+        background:orange;
+      }
+      .add { width:200px; }
+      .q { float:right; width:200px; }
+      .item {
+        padding:5px;
+      }
+      .item + .item {
+        border-top:1px solid #ddd;
+      }
+      .item button {
+        float:right;
+      }
+    </style>
+  </head>
+
+  <body ng-cloak>
+    <div id="wrapper">
+
+      <form id="nav" ng-submit="add(new_item); new_item=null">
+        <input class="add" type="input" ng-model="new_item" placeholder="enter something to add" />
+        <button ng-click="add(new_item); new_item = null">Add</button>
+        <button ng-click="pop()">Pop Last</button>
+        <button ng-click="sort('name')">Order by name</button>
+        <button ng-click="sort('index')">Order by index</button>
+        <input type="search" ng-model="q" placeholder="search" class="q" />
+      </form>
+
+      <div class="cell" id="one">
+        <header>
+          Noop
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: noop-enter; leave: noop-leave; move:noop-move">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell" id="two">
+        <header>
+          Fade In / Fade Out
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: fade-enter; leave: fade-leave; move:fade-move">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell" id="three">
+        <header>
+          Slide In / Slide Out
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: slide-enter; leave: slide-leave; move:slide-move">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell other" id="four">
+        <header>
+          ngRepeat with no ngAnimate directive at all...
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../build/angular.js"></script>
+    <script src="./index.js"></script> 
+  <body>
+</html>
