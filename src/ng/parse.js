@@ -663,12 +663,15 @@ function setter(obj, path, setValue) {
   var isIsolate = obj.hasOwnProperty('$root');
 
   if(element.length === 1 && !isIsolate) {
-    // Simple assignments (without . or []) should overwrite closest definition in parent chain
+    // Simple assignment (no "." on LHS of assignment)
     var key = element[0];
     var target = obj;
+    // Find closest definition of variable in current or ancestor scope.
     while(target && !target.hasOwnProperty(key)) {
       target = target.$parent;
     }
+    // If definition exists, override it in the scope that declares it.
+    // Otherwise define the variable on the current scope.
     (target || obj)[key] = setValue;
 
   } else {
