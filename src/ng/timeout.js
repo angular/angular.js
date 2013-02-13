@@ -1,5 +1,8 @@
 'use strict';
 
+goog.provide('angular.core.$timeout');
+
+goog.require('angular.core.$locale');
 
 function $TimeoutProvider() {
   this.$get = ['$rootScope', '$browser', '$q', '$exceptionHandler',

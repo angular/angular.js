@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngRepeat');
+
+goog.require('angular.core.directive.ngPluralize');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngRepeat

@@ -1,4 +1,6 @@
-build/
+# Refer http://www.kernel.org/pub/software/scm/git/docs/gitignore.html
+
+/build/
 angularjs.netrc
 jstd.log
 .DS_Store
@@ -12,3 +14,4 @@ angular.js.tmproj
 node_modules
 angular.xcodeproj
 .idea
+*.pyc

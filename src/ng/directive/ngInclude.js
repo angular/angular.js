@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngInclude');
+
+goog.require('angular.core.directive.ngEventDirs');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngInclude

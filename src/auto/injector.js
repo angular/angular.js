@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.auto.injector');
+
+goog.require('angular.apis');
+
 /**
  * @ngdoc function
  * @name angular.injector

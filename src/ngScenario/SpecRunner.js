@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.SpecRunner');
+
+goog.require('angular.scenario.Runner');
+
 /**
  * This class is the "this" of the it/beforeEach/afterEach method.
  * Responsibilities:

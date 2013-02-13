@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$log');
+
+goog.require('angular.core.$location');
+
 /**
  * @ngdoc object
  * @name ng.$log

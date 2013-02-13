@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$browser');
+
+goog.require('angular.core.$anchorScroll');
+
 /**
  * ! This is a private undocumented service !
  *

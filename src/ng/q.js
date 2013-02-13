@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$q');
+
+goog.require('angular.core.$parse');
+
 /**
  * @ngdoc service
  * @name ng.$q

@@ -1,1 +1,3 @@
-20110615
+Version: 20121212 built at r2388
+
+Url: http://closure-compiler.googlecode.com/files/compiler-20121212.zip

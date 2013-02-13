@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.Application');
+
+goog.require('angular.scenario.Scenario');
+
 /**
  * Represents the application currently being tested and abstracts usage
  * of iframes or separate windows.

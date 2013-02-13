@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.script');
+
+goog.require('angular.core.directive.ngView');
+
 /**
  * @ngdoc directive
  * @name ng.directive:script

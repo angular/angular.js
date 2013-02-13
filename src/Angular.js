@@ -1,5 +1,7 @@
 'use strict';
 
+goog.provide('angular.Angular');
+
 ////////////////////////////////////
 
 /**

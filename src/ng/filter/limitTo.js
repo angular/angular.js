@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.filter.limitTo');
+
+goog.require('angular.core.filter.filters');
+
 /**
  * @ngdoc function
  * @name ng.filter:limitTo

@@ -1,5 +1,8 @@
 'use strict';
 
+goog.provide('angular.sanitize.directive.ngBindHtml');
+
+goog.require('angular.sanitize.sanitize');
 
 /**
  * @ngdoc directive

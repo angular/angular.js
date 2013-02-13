@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.a');
+
+goog.require('angular.core.directive.directives');
+
 /**
  * @ngdoc directive
  * @name ng.directive:a

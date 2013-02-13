@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$routeParams');
+
+goog.require('angular.core.$route');
+
 /**
  * @ngdoc object
  * @name ng.$routeParams

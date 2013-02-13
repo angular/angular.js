@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$parse');
+
+goog.require('angular.core.$log');
+
 var OPERATORS = {
     'null':function(){return null;},
     'true':function(){return true;},

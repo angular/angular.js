@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngStyle');
+
+goog.require('angular.core.directive.ngShowHide');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngStyle

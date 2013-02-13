@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.scenario.matchers');
+
+goog.require('angular.scenario.dsl');
+
 /**
  * Matchers for implementing specs. Follows the Jasmine spec conventions.
  */

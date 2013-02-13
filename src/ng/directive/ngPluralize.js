@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngPluralize');
+
+goog.require('angular.core.directive.ngNonBindable');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngPluralize

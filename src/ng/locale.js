@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$locale');
+
+goog.require('angular.core.$httpBackend');
+
 /**
  * @ngdoc object
  * @name ng.$locale

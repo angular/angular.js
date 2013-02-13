@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.$location');
+
+goog.require('angular.core.$interpolate');
+
 var URL_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     PATH_MATCH = /^([^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     HASH_MATCH = PATH_MATCH,

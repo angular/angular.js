@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngShowHide');
+
+goog.require('angular.core.directive.ngRepeat');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngShow

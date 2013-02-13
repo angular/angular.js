@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.sanitize.sanitize');
+
+goog.require('angular.resource.resource');
+
 /**
  * @ngdoc overview
  * @name ngSanitize

@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngBind');
+
+goog.require('angular.core.directive.input');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngBind

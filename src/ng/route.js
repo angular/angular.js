@@ -1,5 +1,8 @@
 'use strict';
 
+goog.provide('angular.core.$route');
+
+goog.require('angular.core.$q');
 
 /**
  * @ngdoc object

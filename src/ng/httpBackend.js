@@ -1,3 +1,7 @@
+goog.provide('angular.core.$httpBackend');
+
+goog.require('angular.core.$http');
+
 var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}

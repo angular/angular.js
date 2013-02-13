@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngTransclude');
+
+goog.require('angular.core.directive.ngSwitch');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngTransclude

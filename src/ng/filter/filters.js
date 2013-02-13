@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.filter.filters');
+
+goog.require('angular.core.filter.filter');
+
 /**
  * @ngdoc filter
  * @name ng.filter:currency

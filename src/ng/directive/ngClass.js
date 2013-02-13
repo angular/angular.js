@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.ngClass');
+
+goog.require('angular.core.directive.ngBind');
+
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {

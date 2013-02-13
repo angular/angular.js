@@ -1,5 +1,9 @@
 'use strict';
 
+goog.provide('angular.core.directive.booleanAttrs');
+
+goog.require('angular.core.directive.a');
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngHref
