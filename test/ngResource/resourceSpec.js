@@ -118,9 +118,7 @@ describe("resource", function() {
   });
 
 
-  // In order to get this passed, we need to fix $http - another breaking change,
-  // so I'm gonna submit that as a separate CL.
-  xit('should not encode @ in url params', function() {
+  it('should not encode @ in url params', function() {
    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
    //with regards to the character set (pchar) allowed in path segments
    //so we need this test to make sure that we don't over-encode the params and break stuff like
