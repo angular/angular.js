@@ -95,7 +95,7 @@ Compilation of HTML happens in three phases:
   var $compile = ...; // injected into your code
   var scope = ...;
 
-  var html = '<div ng-bind='exp'></div>';
+  var html = '<div ng-bind="exp"></div>';
 
   // Step 1: parse HTML into DOM element
   var template = angular.element(html);
