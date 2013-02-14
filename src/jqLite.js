@@ -369,6 +369,23 @@ function getBooleanAttrName(element, name) {
   return booleanAttr && BOOLEAN_ELEMENTS[element.nodeName] && booleanAttr;
 }
 
+var IE_SPECIFIC_SET_ATTRIBUTE_CONTENT_PATTERN = /.*\S.*@.+/;
+var IE_SPECIFIC_SET_ATTRIBUTE_VALUE_PATTERN = /^((ftp|https?):\/\/|mailto:|.*@.+)/;
+function useIESpecificSetAttribute(element, name, value){
+  //when setting href value of a link with a text that contains a word with
+  //the pattern above will replace the content with the href value
+  //if the href value is URL like (pattern above)
+  var linkElement; 
+
+  return msie <= 8
+      && element.nodeName === "A"
+      && name === "href"
+      && IE_SPECIFIC_SET_ATTRIBUTE_VALUE_PATTERN.test(value)
+      && (linkElement = angular.element(element))
+      && linkElement.children().length === 0
+      && IE_SPECIFIC_SET_ATTRIBUTE_CONTENT_PATTERN.test(linkElement.text());
+}
+
 forEach({
   data: JQLiteData,
   inheritedData: JQLiteInheritedData,
@@ -415,7 +432,9 @@ forEach({
   },
 
   attr: function(element, name, value){
-    var lowercasedName = lowercase(name);
+    var textNodes,
+        lowercasedName = lowercase(name);
+
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
         if (!!value) {
@@ -432,7 +451,21 @@ forEach({
                : undefined;
       }
     } else if (isDefined(value)) {
-      element.setAttribute(name, value);
+      // IE7 and IE8 in some conditions replaces links text content with href
+      // value. To prevent this, content must be detached and attached after setting the new
+      // href value
+      if (useIESpecificSetAttribute(element, lowercasedName, value)) {
+        textNodes = [];
+        while(element.firstChild){
+          textNodes.push(element.removeChild(element.firstChild));
+        }
+        element.setAttribute(name, value);
+        while (textNodes.length) {
+          element.appendChild(textNodes.shift());
+        }
+      } else {
+        element.setAttribute(name, value);
+      }
     } else if (element.getAttribute) {
       // the extra argument "2" is to get the right thing for a.href in IE, see jQuery code
       // some elements (e.g. Document) don't have get attribute, so return undefined
