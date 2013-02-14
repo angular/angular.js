@@ -300,6 +300,14 @@ function $RootScopeProvider(){
           watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
         }
 
+        if (typeof watchExp == 'string' && get.constant) {
+          var originalFn = watcher.fn;
+          watcher.fn = function(newVal, oldVal, scope) {
+            originalFn.call(this, newVal, oldVal, scope);
+            arrayRemove(array, watcher);
+          };
+        }
+
         if (!array) {
           array = scope.$$watchers = [];
         }
@@ -810,7 +818,7 @@ function $RootScopeProvider(){
 
     /**
      * function used as an initial value for watchers.
-     * because it's uniqueue we can easily tell it apart from other values
+     * because it's unique we can easily tell it apart from other values
      */
     function initWatchVal() {}
   }];
