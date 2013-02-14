@@ -118,15 +118,22 @@ describe("resource", function() {
   });
 
 
-  it('should not encode @ in url params', function() {
-    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
-    //with regards to the character set (pchar) allowed in path segments
-    //so we need this test to make sure that we don't over-encode the params and break stuff like
-    //buzz api which uses @self
+// note: Waiting to hear from Igor if if this is necessary, and if so - shouldn't it be in $http instead
+//  it('should not encode @ in url params', function() {
+//    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+//    //with regards to the character set (pchar) allowed in path segments
+//    //so we need this test to make sure that we don't over-encode the params and break stuff like
+//    //buzz api which uses @self
+//
+//    var R = $resource('/Path/:a');
+//    $httpBackend.expect('GET', '/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond('{}');
+//    R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
+//  });
 
+  it('should encode array params', function() {
     var R = $resource('/Path/:a');
-    $httpBackend.expect('GET', '/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond('{}');
-    R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
+    $httpBackend.expect('GET', '/Path/doh&foo?bar=baz1&bar=baz2').respond('{}');
+    R.get({a: 'doh&foo', bar: ['baz1', 'baz2']});
   });
 
   it('should allow relative paths in resource url', function () {
@@ -140,6 +147,7 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/api/myapp/pear+apple?from=2012-04-01&to=2012-04-29&histlen=3').respond('{}');
     R.get({ myresource: 'pear+apple', from : '2012-04-01', to : '2012-04-29', histlen : 3  });
   });
+
 
 
   it('should encode & in url params', function() {
