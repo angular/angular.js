@@ -308,7 +308,7 @@ angular.module('ngResource', ['ng']).
       this.defaults = defaults || {};
       var urlParams = this.urlParams = {};
       forEach(template.split(/\W/), function(param){
-        if (param && template.match(new RegExp("[^\\\\]:" + param + "\\W"))) {
+        if (param && (new RegExp("(^|[^\\\\]):" + param + "\\W").test(template))) {
           urlParams[param] = true;
         }
       });
