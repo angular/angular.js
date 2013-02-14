@@ -67,6 +67,7 @@ angular.module('ngCookies', ['ng']).
       function push() {
         var name,
             value,
+            exDate,
             browserCookies,
             updated;
 
@@ -80,6 +81,7 @@ angular.module('ngCookies', ['ng']).
         //update all cookies updated in $cookies
         for(name in cookies) {
           value = cookies[name];
+          exDate = cookies[name].exDate;
           if (!angular.isString(value)) {
             if (angular.isDefined(lastCookies[name])) {
               cookies[name] = lastCookies[name];
@@ -87,7 +89,7 @@ angular.module('ngCookies', ['ng']).
               delete cookies[name];
             }
           } else if (value !== lastCookies[name]) {
-            $browser.cookies(name, value);
+            $browser.cookies(name, value, exDate);
             updated = true;
           }
         }
