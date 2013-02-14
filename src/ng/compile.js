@@ -599,9 +599,7 @@ function $CompileProvider($provide) {
           directiveValue = denormalizeTemplate(directiveValue);
 
           if (directive.replace) {
-            $template = jqLite('<div>' +
-                                 trim(directiveValue) +
-                               '</div>').contents();
+            $template = jqLite('<div></div>').html(trim(directiveValue)).contents();
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
@@ -921,7 +919,7 @@ function $CompileProvider($provide) {
           content = denormalizeTemplate(content);
 
           if (replace) {
-            $template = jqLite('<div>' + trim(content) + '</div>').contents();
+            $template = jqLite('<div></div>').html(trim(content)).contents();
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
