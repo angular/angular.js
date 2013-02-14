@@ -541,18 +541,145 @@ describe('angular', function() {
   });
 
 
+  describe('isUndefined', function() {
+    it('should return true for undefined object', function() {
+      expect(isUndefined(undefined)).toBe(true);
+    });
+
+    it('should return false for defined object', function() {
+      expect(isUndefined(23)).toBe(false);
+      expect(isUndefined('abc')).toBe(false);
+      expect(isUndefined([])).toBe(false);
+      expect(isUndefined({})).toBe(false);
+    });
+  });
+
+
+  describe('isDefined', function() {
+    it('should return true for defined object', function() {
+      expect(isDefined(23)).toBe(true);
+      expect(isDefined('abc')).toBe(true);
+      expect(isDefined([])).toBe(true);
+      expect(isDefined({})).toBe(true);
+    });
+
+    it('should return false for undefined object', function() {
+      expect(isDefined(undefined)).toBe(false);
+    });
+  });
+
+
+  describe('isObject', function() {
+    it('should return true for object', function() {
+      expect(isObject({a:1})).toBe(true);
+      expect(isObject([1, 2, 4])).toBe(true);
+      expect(isObject(new Date())).toBe(true);
+    });
+
+    it('should return false for non object', function() {
+      expect(isObject(23)).toBe(false);
+      expect(isObject('abc')).toBe(false);
+      expect(isObject(true)).toBe(false);
+      expect(isObject(null)).toBe(false);
+    });
+  });
+
+
+  describe('isString', function() {
+    it('should return true for String object', function() {
+      expect(isString('')).toBe(true);
+      expect(isString('abc')).toBe(true);
+      expect(isString(typeof 1)).toBe(true);
+    });
+
+    it('should return false for non String object', function() {
+      expect(isString(23)).toBe(false);
+      expect(isString(true)).toBe(false);
+      expect(isString([])).toBe(false);
+      expect(isString({})).toBe(false);
+    });
+  });
+
+
+  describe('isNumber', function() {
+    it('should return true for Number object', function() {
+      expect(isNumber(23)).toBe(true);
+      expect(isNumber(3.14)).toBe(true);
+      expect(isNumber(Math.LN2)).toBe(true);
+      expect(isNumber(Infinity)).toBe(true);
+      expect(isNumber(NaN)).toBe(true);
+    });
+
+    it('should return false for non Number object', function() {
+      expect(isNumber('abc')).toBe(false);
+      expect(isNumber(true)).toBe(false);
+      expect(isNumber([])).toBe(false);
+      expect(isNumber({})).toBe(false);
+    });
+  });
+
+
   describe('isDate', function() {
     it('should return true for Date object', function() {
       expect(isDate(new Date())).toBe(true);
     });
 
-    it('should return false for non Date objects', function() {
+    it('should return false for non Date object', function() {
       expect(isDate([])).toBe(false);
       expect(isDate('')).toBe(false);
       expect(isDate(23)).toBe(false);
       expect(isDate({})).toBe(false);
     });
   });
+
+
+  describe('isArray', function() {
+    it('should return true for Array object', function() {
+      expect(isArray([])).toBe(true);
+      expect(isArray(['a', 'b', 'c'])).toBe(true);
+    });
+
+    it('should return false for non Array object', function() {
+      expect(isArray(23)).toBe(false);
+      expect(isArray('abc')).toBe(false);
+      expect(isArray(true)).toBe(false);
+      expect(isArray({})).toBe(false);
+    });
+  });
+
+
+  describe('isFunction', function() {
+    it('should return true for Function object', function() {
+      expect(isFunction(function(){})).toBe(true);
+      expect(isFunction(Math.sin)).toBe(true);
+    });
+
+    it('should return false for non Function object', function() {
+      expect(isFunction(23)).toBe(false);
+      expect(isFunction('abc')).toBe(false);
+      expect(isFunction(true)).toBe(false);
+      expect(isFunction([])).toBe(false);
+      expect(isFunction({})).toBe(false);
+    });
+  });
+
+
+  describe('isBoolean', function() {
+    it('should return true for Boolean object', function() {
+      expect(isBoolean(true)).toBe(true);
+      expect(isBoolean(false)).toBe(true);
+    });
+
+    it('should return false for non Boolean object', function() {
+      expect(isBoolean(23)).toBe(false);
+      expect(isBoolean('abc')).toBe(false);
+      expect(isBoolean('true')).toBe(false);
+      expect(isBoolean('false')).toBe(false);
+      expect(isBoolean([])).toBe(false);
+      expect(isBoolean({})).toBe(false);
+    });
+  });
+
 
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
