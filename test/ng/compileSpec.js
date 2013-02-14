@@ -1381,9 +1381,10 @@ describe('$compile', function() {
     }));
 
 
-    it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
+    it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
-      expect(directiveAttrs.someAttr).toBeUndefined();
+      expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
     }));
 
 
@@ -1812,27 +1813,21 @@ describe('$compile', function() {
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.$apply();
 
         expect(componentScope.attr).toEqual('some text');
         expect(componentScope.attrAlias).toEqual('some text');
         expect(componentScope.attrAlias).toEqual(componentScope.attr);
       }));
 
+      it('should set up the interpolation before it reaches the link function', inject(function() {
+        $rootScope.name = 'misko';
+        compile('<div><span my-component attr="hello {{name}}">');
+        expect(componentScope.attr).toEqual('hello misko');
+        expect(componentScope.attrAlias).toEqual('hello misko');
+      }));
 
       it('should update when interpolated attribute updates', inject(function() {
         compile('<div><span my-component attr="hello {{name}}">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.name = 'misko';
-        $rootScope.$apply();
-
-        expect(componentScope.attr).toEqual('hello misko');
-        expect(componentScope.attrAlias).toEqual('hello misko');
 
         $rootScope.name = 'igor';
         $rootScope.$apply();
