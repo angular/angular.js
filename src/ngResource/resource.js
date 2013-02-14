@@ -260,6 +260,8 @@ angular.module('ngResource', ['ng']).
         extend = angular.extend,
         copy = angular.copy,
         isFunction = angular.isFunction,
+        isArray = angular.isArray,
+        isObject = angular.isObject,
         getter = function(obj, path) {
           return $parse(path)(obj);
         };
@@ -303,6 +305,19 @@ angular.module('ngResource', ['ng']).
         replace((pctEncodeSpaces ? null : /%20/g), '+');
     }
 
+    function buildQuery(value, prefix) {
+      var out = [];
+      if (isArray(value) || isObject(value)) {
+        forEach(value, function(v, k) {
+          var newPrefix = prefix ? prefix + '[' + k + ']' : k;
+          out = out.concat(buildQuery(v, newPrefix));
+        });
+      } else {
+        out.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(value));
+      }
+      return out;
+    }
+
     function Route(template, defaults) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
@@ -339,15 +354,17 @@ angular.module('ngResource', ['ng']).
             });
           }
         });
-        url = url.replace(/\/?#$/, '');
-        var query = [];
+
+        var serializeableParams = {};
         forEach(params, function(value, key){
           if (!self.urlParams[key]) {
-            query.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
+            serializeableParams[key] = value;
           }
         });
+
+        var query = buildQuery(serializeableParams);
         query.sort();
-        url = url.replace(/\/*$/, '');
+        url = url.replace(/\/?#$/, '').replace(/\/*$/, '');
         return url + (query.length ? '?' + query.join('&') : '');
       }
     };

@@ -112,9 +112,11 @@ describe("resource", function() {
 
     $httpBackend.expect('GET', '/Path/foo%231').respond('{}');
     $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz%231').respond('{}');
+    $httpBackend.expect('GET', '/Path/doh?bar%5B0%5D=e&bar%5B1%5D%5Bbaz%5D=z&foo%5Bc%5D=d').respond('{}');
 
     R.get({a: 'foo#1'});
     R.get({a: 'doh!@foo', bar: 'baz#1'});
+    R.get({a: 'doh', foo: {c: 'd'}, bar: ['e', {baz: 'z'}]});
   });
 
 
