@@ -673,6 +673,13 @@ describe('angular', function() {
           toBe('<ng-abc x="2A">');
     });
   });
+  
+  describe('startingTag', function() {
+    it('should allow passing in Nodes instead of Elements', function() {
+      var txtNode = document.createTextNode('some text');
+      expect(startingTag(txtNode)).toBe('some text');
+    });
+  });
 
   describe('snake_case', function(){
     it('should convert to snake_case', function() {
