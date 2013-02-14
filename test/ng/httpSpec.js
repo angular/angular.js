@@ -144,7 +144,7 @@ describe('$http', function() {
 
 
       it('should jsonify objects in params map', inject(function($httpBackend, $http) {
-        $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22%3A3%7D').respond('');
+        $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22:3%7D').respond('');
         $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
       }));
 
@@ -153,6 +153,17 @@ describe('$http', function() {
           $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
           $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
       }));
+
+
+      it('should not encode @ in url params', function() {
+        //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+        //with regards to the character set (pchar) allowed in path segments
+        //so we need this test to make sure that we don't over-encode the params and break stuff
+        //like buzz api which uses @self
+
+        $httpBackend.expect('GET', '/Path?!do%26h=g%3Da+h&:bar=$baz@1').respond('');
+        $http({url: '/Path', params: {':bar': '$baz@1', '!do&h': 'g=a h'}, method: 'GET'});
+      });
     });
 
 
