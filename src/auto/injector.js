@@ -144,7 +144,7 @@ function annotate(fn) {
  * @description
  * Invoke the method and supply the method arguments from the `$injector`.
  *
- * @param {!function} fn The function to invoke. The function arguments come form the function annotation.
+ * @param {!Function} fn The function to invoke. The function arguments come form the function annotation.
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
@@ -159,7 +159,7 @@ function annotate(fn) {
  * Create a new instance of JS type. The method takes a constructor function invokes the new operator and supplies
  * all of the arguments to the constructor function as specified by the constructor annotation.
  *
- * @param {function} Type Annotated constructor function.
+ * @param {!Function} Type Annotated constructor function.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
  * @returns {Object} new instance of `Type`.
@@ -238,7 +238,7 @@ function annotate(fn) {
  *    ).toEqual(['$compile', '$rootScope']);
  * </pre>
  *
- * @param {function|Array.<string|Function>} fn Function for which dependent service names need to be retrieved as described
+ * @param {Function|Array.<string|Function>} fn Function for which dependent service names need to be retrieved as described
  *   above.
  *
  * @returns {Array.<string>} The names of the services which the function requires.
@@ -394,7 +394,10 @@ function annotate(fn) {
  *      decorated or delegated to.
  */
 
-
+/**
+ * @param {Array.<string|Function>} modulesToLoad
+ * @return {ng.Injector}
+ */
 function createInjector(modulesToLoad) {
   var INSTANTIATING = {},
       providerSuffix = 'Provider',
@@ -417,7 +420,7 @@ function createInjector(modulesToLoad) {
       instanceCache = {},
       instanceInjector = (instanceCache.$injector =
           createInternalInjector(instanceCache, function(servicename) {
-            var provider = providerInjector.get(servicename + providerSuffix);
+            var provider = /** @type {!ng.Provider} */(providerInjector.get(servicename + providerSuffix));
             return instanceInjector.invoke(provider.$get, provider);
           }));
 
@@ -430,6 +433,11 @@ function createInjector(modulesToLoad) {
   // $provider
   ////////////////////////////////////
 
+  /**
+   * @template T
+   * @param {function(...[?]):T} delegate
+   * @return {function((string|Object), *):(T|undefined)}
+   */
   function supportObject(delegate) {
     return function(key, value) {
       if (isObject(key)) {
@@ -440,14 +448,21 @@ function createInjector(modulesToLoad) {
     }
   }
 
+  /**
+   * @param {!string} name
+   * @param {!(ng.Provider|Function|Array)} provider_
+   * @return {ng.Provider}}
+   */
   function provider(name, provider_) {
     if (isFunction(provider_) || isArray(provider_)) {
-      provider_ = providerInjector.instantiate(provider_);
+      provider_ = /** @type {ng.Provider}*/(
+          providerInjector.instantiate(/** @type {ng.Injectable}*/(provider_))
+      );
     }
     if (!provider_.$get) {
       throw Error('Provider ' + name + ' must define $get factory method.');
     }
-    return providerCache[name + providerSuffix] = provider_;
+    return providerCache[name + providerSuffix] = /** @type {ng.Provider}*/(provider_);
   }
 
   function factory(name, factoryFn) { return provider(name, { $get: factoryFn }); }
@@ -466,12 +481,12 @@ function createInjector(modulesToLoad) {
   }
 
   function decorator(serviceName, decorFn) {
-    var origProvider = providerInjector.get(serviceName + providerSuffix),
+    var origProvider = /** @type {ng.Provider}*/(providerInjector.get(serviceName + providerSuffix)),
         orig$get = origProvider.$get;
 
     origProvider.$get = function() {
       var origInstance = instanceInjector.invoke(orig$get, origProvider);
-      return instanceInjector.invoke(decorFn, null, {$delegate: origInstance});
+      return instanceInjector.invoke(decorFn, undefined, {$delegate: origInstance});
     };
   }
 
@@ -523,6 +538,11 @@ function createInjector(modulesToLoad) {
   // internal Injector
   ////////////////////////////////////
 
+  /**
+   * @param cache
+   * @param factory
+   * @return {ng.Injector}
+   */
   function createInternalInjector(cache, factory) {
 
     function getService(serviceName) {
@@ -583,12 +603,15 @@ function createInjector(modulesToLoad) {
     }
 
     function instantiate(Type, locals) {
-      var Constructor = function() {},
-          instance, returnedValue;
+      /**
+       * @constructor
+       */
+      var Constructor = function() {};
 
       Constructor.prototype = (isArray(Type) ? Type[Type.length - 1] : Type).prototype;
-      instance = new Constructor();
-      returnedValue = invoke(Type, instance, locals);
+
+      var instance = new Constructor();
+      var returnedValue = invoke(Type, instance, locals);
 
       return isObject(returnedValue) ? returnedValue : instance;
     }
@@ -601,3 +624,44 @@ function createInjector(modulesToLoad) {
     };
   }
 }
+
+
+/**
+ * @typedef {{
+ *   invoke: function(ng.Injectable, !Object=, !Object=):*,
+ *   instantiate: function(ng.Injectable, !Object=):*,
+ *   get: function(!string):*,
+ *   annotate: function(!Function):!Array.<!string>
+ * }}
+ */
+ng.Injector;
+
+/**
+ * @typedef {{
+ *   $get: function():*
+ * }}
+ */
+ng.Provider;
+
+
+/**
+ * @typedef {!(Function|Array.<!(string|Function)>)}
+ */
+ng.Injectable;
+
+
+/**
+ * @typedef {{
+ *   requires: !Array.<string>,
+ *   invokeQueue: !Array.<Array.<*>>,
+ *
+ *   service: function(!string, ng.Injectable):ng.Module,
+ *   factory: function(!string, ng.Injectable):ng.Module,
+ *   value: function(!string, *):ng.Module,
+ *
+ *   filter: function(!string, ng.Injectable):ng.Module,
+ *
+ *   init: function(ng.Injectable):ng.Module
+ * }}
+ */
+ng.Module;

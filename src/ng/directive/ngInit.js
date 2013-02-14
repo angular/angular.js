@@ -9,7 +9,7 @@
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
- * @param {expression} ngInit {@link guide/expression Expression} to eval.
+ * @param {string} ngInit {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>

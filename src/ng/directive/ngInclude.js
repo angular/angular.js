@@ -83,7 +83,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
   return {
     restrict: 'ECA',
     terminal: true,
-    compile: function(element, attr) {
+    compile: function(element, /** @type {ng.ngIncludeAttrs;}*/ attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
@@ -129,3 +129,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     }
   };
 }];
+
+
+/**
+ * @typedef {{autoscroll}}
+ */
+ng.ngIncludeAttrs;

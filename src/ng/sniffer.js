@@ -7,11 +7,15 @@
  * @requires $window
  * @requires $document
  *
- * @property {boolean} history Does the browser support html5 history api ?
- * @property {boolean} hashchange Does the browser support hashchange event ?
- *
  * @description
  * This is very simple implementation of testing browser's features.
+ *
+ * @property {boolean} history Does the browser support html5 history api ?
+ * @property {boolean} hashchange Does the browser support hashchange event ?
+ */
+
+/**
+ * @constructor
  */
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {

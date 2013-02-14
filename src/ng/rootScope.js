@@ -58,6 +58,10 @@
  * All other scopes are child scopes of the root scope. Scopes provide mechanism for watching the model and provide
  * event processing life-cycle. See {@link guide/scope developer guide on scopes}.
  */
+
+/**
+ * @constructor
+ */
 function $RootScopeProvider(){
   var TTL = 10;
 
@@ -119,14 +123,7 @@ function $RootScopeProvider(){
          expect(parent.salutation).toEqual('Hello');
      * </pre>
      *
-     *
-     * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
-     *     for the current scope. Defaults to {@link ng}.
-     * @param {Object.<string, *>=} instanceCache Provides pre-instantiated services which should
-     *     append/override services provided by `providers`. This is handy when unit-testing and having
-     *     the need to override a default service.
-     * @returns {Object} Newly created scope.
-     *
+     * @constructor
      */
     function Scope() {
       this.$id = nextUid();
@@ -167,12 +164,12 @@ function $RootScopeProvider(){
        * the scope and its child scopes to be permanently detached from the parent and thus stop
        * participating in model change detection and listener notification by invoking.
        *
-       * @param {boolean} isolate if true then the scope does not prototypically inherit from the
+       * @param {!boolean=} isolate if true then the scope does not prototypically inherit from the
        *         parent scope. The scope is isolated, as it can not see parent scope properties.
        *         When creating widgets it is useful for the widget to not accidentally read parent
        *         state.
        *
-       * @returns {Object} The newly created child scope.
+       * @returns {ng.Scope} The newly created child scope.
        *
        */
       $new: function(isolate) {
@@ -187,6 +184,10 @@ function $RootScopeProvider(){
           child = new Scope();
           child.$root = this.$root;
         } else {
+          /**
+           * @constructor
+           * @extends {ng.Scope}
+           */
           Child = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. These will then show up as class
             // name in the debugger.
@@ -205,7 +206,7 @@ function $RootScopeProvider(){
         } else {
           this.$$childHead = this.$$childTail = child;
         }
-        return child;
+        return /** @type ng.Scope */ (child);
       },
 
       /**
@@ -267,14 +268,14 @@ function $RootScopeProvider(){
        *
        *
        *
-       * @param {(function()|string)} watchExpression Expression that is evaluated on each
+       * @param {(function()|string)} watchExp Expression that is evaluated on each
        *    {@link ng.$rootScope.Scope#$digest $digest} cycle. A change in the return value triggers a
        *    call to the `listener`.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(scope)`: called with current `scope` as a parameter.
        * @param {(function()|string)=} listener Callback called whenever the return value of
-       *   the `watchExpression` changes.
+       *   the `watchExp` changes.
        *
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
@@ -507,10 +508,12 @@ function $RootScopeProvider(){
            expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
        * </pre>
        *
-       * @param {(string|function())=} expression An angular expression to be executed.
+       * @param {(string|function())} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
+       *
+       * @param {Object=} locals Map of local variables to be used during expression evaluation
        *
        * @returns {*} The result of evaluating the expression.
        */
@@ -536,7 +539,7 @@ function $RootScopeProvider(){
        * Any exceptions from the execution of the expression are forwarded to the
        * {@link ng.$exceptionHandler $exceptionHandler} service.
        *
-       * @param {(string|function())=} expression An angular expression to be executed.
+       * @param {(string|function())} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
@@ -585,7 +588,7 @@ function $RootScopeProvider(){
        *    was executed using the {@link ng.$rootScope.Scope#$digest $digest()} method.
        *
        *
-       * @param {(string|function())=} exp An angular expression to be executed.
+       * @param {(string|function())=} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with current `scope` parameter.
@@ -620,7 +623,8 @@ function $RootScopeProvider(){
        * event life cycle.
        *
        * @param {string} name Event name to listen on.
-       * @param {function(event, args...)} listener Function to call when the event is emitted.
+       * @param {function((ng.ScopeBroadcastEvent|ng.ScopeEmitEvent), ...[*])} listener Function to
+       *    call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        *
        * The event listener function format is: `function(event, args...)`. The `event` object
@@ -662,21 +666,22 @@ function $RootScopeProvider(){
        * Afterwards, the event traverses upwards toward the root scope and calls all registered
        * listeners along the way. The event will stop propagating if one of the listeners cancels it.
        *
-       * Any exception emmited from the {@link ng.$rootScope.Scope#$on listeners} will be passed
+       * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
-       * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
+       * @return {ng.ScopeEmitEvent} Event object, see {@link ng.$rootScope.Scope#$on}
        */
       $emit: function(name, args) {
         var empty = [],
             namedListeners,
             scope = this,
             stopPropagation = false,
+            /** @type {ng.ScopeEmitEvent} */
             event = {
               name: name,
-              targetScope: scope,
+              targetScope: /** @type ng.Scope */(scope), // TODO(i): remove type cast
               stopPropagation: function() {stopPropagation = true;},
               preventDefault: function() {
                 event.defaultPrevented = true;
@@ -733,15 +738,16 @@ function $RootScopeProvider(){
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
-       * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
+       * @return {ng.ScopeBroadcastEvent} Event object, see {@link ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
         var target = this,
             current = target,
             next = target,
+            /** @type ng.ScopeBroadcastEvent */
             event = {
               name: name,
-              targetScope: target,
+              targetScope: /** @type ng.Scope */ (target),  // TODO(i): remove type cast
               preventDefault: function() {
                 event.defaultPrevented = true;
               },
@@ -815,3 +821,43 @@ function $RootScopeProvider(){
     function initWatchVal() {}
   }];
 }
+
+/**
+ * @typedef {{
+ *   $id: string,
+ *   $watch: function((function()|string), (function()|string)=, boolean=):(function():undefined),
+ *   $digest: function():undefined,
+ *   $apply: function((string|Function)=),
+ *   $new: function(!boolean=):ng.Scope,
+ *   $destroy: function():undefined,
+ *   $eval: function((string|function())): *,
+ *   $evalAsync: function((string|function())): undefined,
+ *   $on: function(string, function((ng.ScopeBroadcastEvent|ng.ScopeEmitEvent), ...[*])):(function():undefined),
+ *   $emit: function(string, ...[*]): ng.ScopeEmitEvent,
+ *   $broadcast: function(string, ...[*]): ng.ScopeBroadcastEvent
+ * }}
+ */
+ng.Scope;
+
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  targetScope: ng.Scope,
+ *  preventDefault: function(): undefined,
+ *  defaultPrevented: boolean
+ * }}
+ */
+ng.ScopeBroadcastEvent;
+
+
+/**
+ * @typedef {{
+ *  name: string,
+ *  targetScope: ng.Scope,
+ *  stopPropagation: function(): undefined,
+ *  preventDefault: function(): undefined,
+ *  defaultPrevented: boolean
+ * }}
+ */
+ng.ScopeEmitEvent;

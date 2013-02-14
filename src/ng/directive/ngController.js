@@ -20,7 +20,7 @@
  *
  * @element ANY
  * @scope
- * @param {expression} ngController Name of a globally accessible constructor function or an
+ * @param {string} ngController Name of a globally accessible constructor function or an
  *     {@link guide/expression expression} that on the current scope evaluates to a
  *     constructor function.
  *
@@ -95,9 +95,11 @@
      </doc:scenario>
    </doc:example>
  */
-var ngControllerDirective = [function() {
+ng.ngController;
+
+var ngControllerDirective = function() {
   return {
     scope: true,
     controller: '@'
   };
-}];
+};

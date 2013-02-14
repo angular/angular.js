@@ -15,12 +15,13 @@
  * service, which can be used for convenient testing of the application without the interaction with
  * the real browser apis.
  */
+
 /**
- * @param {object} window The global window object.
- * @param {object} document jQuery wrapped document.
- * @param {function()} XHR XMLHttpRequest constructor.
- * @param {object} $log console.log or an object with the same interface.
- * @param {object} $sniffer $sniffer service
+ * @param {Object} window The global window object.
+ * @param {Object} document jQuery wrapped document.
+ * @param {Object} $log console.log or an object with the same interface.
+ * @param {Object} $sniffer $sniffer service
+ * @constructor
  */
 function Browser(window, document, $log, $sniffer) {
   var self = this,
@@ -105,12 +106,11 @@ function Browser(window, document, $log, $sniffer) {
   };
 
   /**
-   * @param {number} interval How often should browser call poll functions (ms)
-   * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
-   *
-   * @description
    * Configures the poller to run in the specified intervals, using the specified
    * setTimeout fn and kicks it off.
+   *
+   * @param {number} interval How often should browser call poll functions (ms)
+   * @param {function(function(), number=)} setTimeout Reference to a real or fake `setTimeout` fn.
    */
   function startPoller(interval, setTimeout) {
     (function check() {
@@ -143,7 +143,7 @@ function Browser(window, document, $log, $sniffer) {
    * NOTE: this api is intended for use only by the $location service. Please use the
    * {@link ng.$location $location service} to change url.
    *
-   * @param {string} url New url (when used as setter)
+   * @param {string=} url New url (when used as setter)
    * @param {boolean=} replace Should new url replace current history record ?
    */
   self.url = function(url, replace) {
@@ -205,7 +205,7 @@ function Browser(window, document, $log, $sniffer) {
    * @param {function(string)} listener Listener function to be called when url changes.
    * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
    */
-  self.onUrlChange = function(callback) {
+  self.onUrlChange = function(listener) {
     if (!urlChangeInit) {
       // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
       // don't fire popstate when user change the address bar and don't fire hashchange when url
@@ -221,8 +221,8 @@ function Browser(window, document, $log, $sniffer) {
       urlChangeInit = true;
     }
 
-    urlChangeListeners.push(callback);
-    return callback;
+    urlChangeListeners.push(listener);
+    return listener;
   };
 
   //////////////////////////////////////////////////////////////
@@ -230,10 +230,7 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
 
   /**
-   * Returns current <base href>
-   * (always relative - without domain)
-   *
-   * @returns {string=}
+   * @returns {string|undefined} Returns current <base href> (always relative - without domain)
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
@@ -251,9 +248,6 @@ function Browser(window, document, $log, $sniffer) {
    * @name ng.$browser#cookies
    * @methodOf ng.$browser
    *
-   * @param {string=} name Cookie name
-   * @param {string=} value Cokkie value
-   *
    * @description
    * The cookies method provides a 'private' low level access to browser cookies.
    * It is not meant to be used directly, use the $cookie service instead.
@@ -265,7 +259,9 @@ function Browser(window, document, $log, $sniffer) {
    *   <li>cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)</li>
    * </ul>
    *
-   * @returns {Object} Hash of all cookies (if called without any parameter)
+   * @param {string=} name Cookie name
+   * @param {(string|undefined)=} value Cookie value
+   * @returns {Object|undefined} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function(name, value) {
     var cookieLength, cookieArray, cookie, i, index;
@@ -355,6 +351,10 @@ function Browser(window, document, $log, $sniffer) {
 
 }
 
+
+/**
+ * @constructor
+ */
 function $BrowserProvider(){
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function( $window,   $log,   $sniffer,   $document){

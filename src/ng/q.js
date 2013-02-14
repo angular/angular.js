@@ -123,30 +123,34 @@
  *   you can treat promises attached to a scope as if they were the resulting values.
  * - Q has many more features that $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
- * 
+ *
  *  # Testing
- * 
+ *
  *  <pre>
  *    it('should simulate promise', inject(function($q, $rootSCope) {
  *      var deferred = $q.defer();
  *      var promise = deferred.promise;
  *      var resolvedValue;
- * 
+ *
  *      promise.then(function(value) { resolvedValue = value; });
  *      expect(resolvedValue).toBeUndefined();
- * 
+ *
  *      // Simulate resolving of promise
  *      deferred.resolve(123);
  *      // Note that the 'then' function does not get called synchronously.
  *      // This is because we want the promise API to always be async, whether or not
  *      // it got called synchronously or asynchronously.
  *      expect(resolvedValue).toBeUndefined();
- * 
+ *
  *      // Propagate promise resolution to 'then' functions using $apply().
  *      $rootScope.$apply();
  *      expect(resolvedValue).toEqual(123);
  *    });
  *  </pre>
+ */
+
+/**
+ * @constructor
  */
 function $QProvider() {
 
@@ -161,10 +165,10 @@ function $QProvider() {
 /**
  * Constructs a promise manager.
  *
- * @param {function(function)} nextTick Function for executing functions in the next turn.
- * @param {function(...*)} exceptionHandler Function into which unexpected exceptions are passed for
+ * @param {function(Function)} nextTick Function for executing functions in the next turn.
+ * @param {function(...[*])} exceptionHandler Function into which unexpected exceptions are passed for
  *     debugging purposes.
- * @returns {object} Promise manager.
+ * @returns {Object} Promise manager.
  */
 function qFactory(nextTick, exceptionHandler) {
 
@@ -175,7 +179,7 @@ function qFactory(nextTick, exceptionHandler) {
    * @description
    * Creates a `Deferred` object which represents a task which will finish in the future.
    *
-   * @returns {Deferred} Returns a new instance of deferred.
+   * @returns {ng.Deferred} Returns a new instance of deferred.
    */
   var defer = function() {
     var pending = [],
@@ -291,7 +295,7 @@ function qFactory(nextTick, exceptionHandler) {
    * </pre>
    *
    * @param {*} reason Constant, message, exception or an object representing the rejection reason.
-   * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
+   * @returns {ng.Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
   var reject = function(reason) {
     return {
@@ -316,8 +320,8 @@ function qFactory(nextTick, exceptionHandler) {
    * the promise comes from a source that can't be trusted.
    *
    * @param {*} value Value or a promise
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
-   *   each value corresponding to the promise at the same index in the `promises` array. If any of
+   * @returns {ng.Promise} Returns a single promise that will be resolved with an array of values,
+   *   each value coresponding to the promise at the same index in the `promises` array. If any of
    *   the promises is resolved with a rejection, this resulting promise will be resolved with the
    *   same rejection.
    */
@@ -377,8 +381,8 @@ function qFactory(nextTick, exceptionHandler) {
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
    *
-   * @param {Array.<Promise>} promises An array of promises.
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
+   * @param {Array.<ng.Promise>} promises An array of promises.
+   * @returns {ng.Promise} Returns a single promise that will be resolved with an array of values,
    *   each value corresponding to the promise at the same index in the `promises` array. If any of
    *   the promises is resolved with a rejection, this resulting promise will be resolved with the
    *   same rejection.
@@ -413,3 +417,19 @@ function qFactory(nextTick, exceptionHandler) {
     all: all
   };
 }
+
+
+/**
+ * @typedef {{then: Function}}
+ */
+ng.Promise;
+
+
+/**
+ * @typedef {{
+ *    promise: ng.Promise,
+ *    resolve: function(*): undefined,
+ *    reject: function(*): undefined
+ * }}
+ */
+ng.Deferred;

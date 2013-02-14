@@ -9,7 +9,7 @@
  * element is clicked.
  *
  * @element ANY
- * @param {expression} ngClick {@link guide/expression Expression} to evaluate upon
+ * @param {string} ngClick {@link guide/expression Expression} to evaluate upon
  * click. (Event object is available as `$event`)
  *
  * @example
@@ -29,6 +29,8 @@
      </doc:scenario>
    </doc:example>
  */
+ng.ngClick;
+
 /*
  * A directive that allows creation of custom onclick handlers that are defined as angular
  * expressions and are compiled and executed within the current scope.
@@ -93,7 +95,7 @@ forEach(
  * Specify custom behavior on mouseup event.
  *
  * @element ANY
- * @param {expression} ngMouseup {@link guide/expression Expression} to evaluate upon
+ * @param {string} ngMouseup {@link guide/expression Expression} to evaluate upon
  * mouseup. (Event object is available as `$event`)
  *
  * @example
@@ -207,7 +209,7 @@ forEach(
  * server and reloading the current page).
  *
  * @element form
- * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
+ * @param {string} ngSubmit {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>

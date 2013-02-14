@@ -32,7 +32,7 @@
  * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
  *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
  *    `required` when you want to data-bind to the `required` attribute.
- * @param {comprehension_expression=} ngOptions in one of the following forms:
+ * @param {string=} ngOptions collection comprehension expression in one of the following forms:
  *
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`

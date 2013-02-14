@@ -9,6 +9,8 @@
  *
  * This provider allows controller registration via the
  * {@link ng.$controllerProvider#register register} method.
+ *
+ * @constructor
  */
 function $ControllerProvider() {
   var controllers = {};
@@ -18,13 +20,13 @@ function $ControllerProvider() {
    * @ngdoc function
    * @name ng.$controllerProvider#register
    * @methodOf ng.$controllerProvider
-   * @param {string} name Controller name
+   * @param {string|Object.<Function|Array>} name Controller name
    * @param {Function|Array} constructor Controller constructor fn (optionally decorated with DI
    *    annotations in the array notation).
    */
   this.register = function(name, constructor) {
     if (isObject(name)) {
-      extend(controllers, name)
+      extend(controllers, /** @type Object */(name))
     } else {
       controllers[name] = constructor;
     }
@@ -58,7 +60,7 @@ function $ControllerProvider() {
      */
     return function(constructor, locals) {
       if(isString(constructor)) {
-        var name = constructor;
+        var name = /** @type {string} */(constructor);
         constructor = controllers.hasOwnProperty(name)
             ? controllers[name]
             : getter(locals.$scope, name, true) || getter($window, name, true);

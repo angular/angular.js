@@ -48,6 +48,7 @@
  * {@link guide/dev_guide.templates.filters Understanding Angular Filters} in the angular Developer
  * Guide.
  */
+
 /**
  * @ngdoc method
  * @name ng.$filterProvider#register
@@ -55,8 +56,8 @@
  * @description
  * Register filter factory function.
  *
- * @param {String} name Name of the filter.
- * @param {function} fn The filter factory function which is injectable.
+ * @param {string} name Name of the filter.
+ * @param {Function} fn The filter factory function which is injectable.
  */
 
 
@@ -71,11 +72,17 @@
  *
  *         {{ expression | [ filter_name ] }}
  *
- * @param {String} name Name of the filter function to retrieve
+ * @param {string} name Name of the filter function to retrieve
  * @return {Function} the filter function
  */
-$FilterProvider.$inject = ['$provide'];
-function $FilterProvider($provide) {
+ng.$Filter;
+
+var $FilterProvider = ['$provide',
+  /**
+   * @constructor
+   * @param $provide
+   */
+    function $FilterProvider_($provide) {
   var suffix = 'Filter';
 
   function register(name, factory) {
@@ -91,13 +98,13 @@ function $FilterProvider($provide) {
 
   ////////////////////////////////////////
 
-  register('currency', currencyFilter);
-  register('date', dateFilter);
-  register('filter', filterFilter);
-  register('json', jsonFilter);
-  register('limitTo', limitToFilter);
-  register('lowercase', lowercaseFilter);
-  register('number', numberFilter);
-  register('orderBy', orderByFilter);
-  register('uppercase', uppercaseFilter);
-}
+  register('currency', currencyFilterFactory);
+  register('date', dateFilterFactory);
+  register('filter', filterFilterFactory);
+  register('json', jsonFilterFactory);
+  register('limitTo', limitToFilterFactory);
+  register('lowercase', lowercaseFilterFactory);
+  register('number', numberFilterFactory);
+  register('orderBy', orderByFilterFactory);
+  register('uppercase', uppercaseFilterFactory);
+}];

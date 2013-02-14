@@ -25,6 +25,10 @@
  *  $routeParams ==> {chapterId:1, sectionId:2, search:'moby'}
  * </pre>
  */
+
+/**
+ * @constructor
+ */
 function $RouteParamsProvider() {
   this.$get = valueFn({});
 }

@@ -7,10 +7,12 @@
  * @function
  *
  * @description
- *
  * Used for configuring routes. See {@link ng.$route $route} for an example.
+ *
+ * @constructor
  */
 function $RouteProvider(){
+  /** @type Object.<Object> */
   var routes = {};
 
   /**
@@ -35,6 +37,7 @@ function $RouteProvider(){
    *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with newly
    *      created scope or the name of a {@link angular.Module#controller registered controller}
    *      if passed as a string.
+   *
    *    - `template` – `{string=|function()=}` – html template as a string or function that returns
    *      an html template as a string which should be used by {@link ng.directive:ngView ngView} or
    *      {@link ng.directive:ngInclude ngInclude} directives.
@@ -59,7 +62,7 @@ function $RouteProvider(){
    *      `$routeChangeSuccess` event is fired. The map object is:
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
-   *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
+   *      - `factory` - `{string|Function}`: If `string` then it is an alias for a service.
    *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
    *        and the return value is treated as the dependency. If the result is a promise, it is resolved
    *        before its value is injected into the controller.
@@ -116,7 +119,7 @@ function $RouteProvider(){
    * @returns {Object} self
    */
   this.otherwise = function(params) {
-    this.when(null, params);
+    this.when('null', params);
     return this;
   };
 
@@ -452,7 +455,9 @@ function $RouteProvider(){
 
 
     /**
-     * @returns the current active route, by matching it against the URL
+     * @returns {{controller, template, templateUrl, resolve, reloadOnSearch, redirectTo, params,
+     *    pathParams}} the currently active route, found by matching routedefs against
+     *    $location.path()
      */
     function parseRoute() {
       // Match a route

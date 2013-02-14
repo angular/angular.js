@@ -95,10 +95,88 @@ task :concat => :init do
 end
 
 
+desc 'Minify source files into angular.min.js'
+task :minify_angular => [:init] do
+  min_path = path_to('angular.min.js')
+
+  angular_prefix = %x(cat src/angular.prefix)
+  angular_suffix = %x(cat src/angular.suffix)
+
+  %x(java \
+    #{java32flags()} \
+    -jar lib/closure-compiler/compiler.jar \
+    --compilation_level SIMPLE_OPTIMIZATIONS \
+    --language_in ECMASCRIPT5_STRICT \
+    --warning_level VERBOSE \
+    --externs lib/externs/json.js \
+    --jscomp_off nonStandardJsDocs \
+    --jscomp_error ambiguousFunctionDecl \
+    --jscomp_error checkRegExp \
+    --jscomp_error checkTypes \
+    --jscomp_error checkVars \
+    --jscomp_error const \
+    --jscomp_error constantProperty \
+    --jscomp_error deprecated \
+    --jscomp_error duplicateMessage \
+    --jscomp_error es5Strict \
+    --jscomp_error externsValidation \
+    --jscomp_error globalThis \
+    --jscomp_error internetExplorerChecks \
+    --jscomp_error invalidCasts \
+    --jscomp_error misplacedTypeAnnotation \
+    --jscomp_error missingProperties \
+    --jscomp_error suspiciousCode \
+    --jscomp_error strictModuleDepCheck \
+    --jscomp_error typeInvalidation \
+    --jscomp_error undefinedNames \
+    --jscomp_error undefinedVars \
+    --jscomp_error unknownDefines \
+    --jscomp_error uselessCode \
+    --jscomp_error visibility \
+    --output_wrapper '#{angular_prefix} %output% #{angular_suffix}' \
+    --js  #{files['angularSrc'].flatten.join(" \\\n --js ")} \
+    --js_output_file #{min_path})
+
+  rewrite_file(min_path) do |content|
+    content.gsub!('"NG_VERSION_FULL"', NG_VERSION.full).
+            gsub!('"NG_VERSION_MAJOR"', NG_VERSION.major).
+            gsub!('"NG_VERSION_MINOR"', NG_VERSION.minor).
+            gsub!('"NG_VERSION_DOT"', NG_VERSION.dot).
+            gsub!('"NG_VERSION_CODENAME"', NG_VERSION.codename).
+            gsub!(/\s*['"]use strict['"];?\s*/, ''). # remove all file-specific strict mode flags
+            sub!(/\(function\([^)]*\)\s*\{/, "\\0\n'use strict';") # add single strict mode flag
+  end
+end
+
+
+desc 'Double-minify angular.min.js into angular.min.js'
+task :minify_angular2 => [:minify_angular] do
+  # We double minify to rename free floating fns in angular closure, this will go away
+  # when we switch to namespaces
+
+  input_path = path_to('angular.min.js')
+  output_path = path_to('angular.min2.js')
+
+
+  # TODO(i): remove rather than suppress bogus warnings
+  %x(java \
+      #{java32flags()} \
+      -jar lib/closure-compiler/compiler.jar \
+      --compilation_level SIMPLE_OPTIMIZATIONS \
+      --language_in ECMASCRIPT5_STRICT \
+      --externs lib/externs/json.js \
+      --jscomp_off suspiciousCode \
+      --warning_level QUIET \
+      --js  #{input_path} \
+      --js_output_file #{output_path})
+
+  FileUtils.cp output_path, input_path
+end
+
+
 desc 'Minify JavaScript'
-task :minify => [:init, :concat, :concat_scenario] do
-  [ 'angular.js',
-    'angular-cookies.js',
+task :minify => [:init, :concat, :concat_scenario, :minify_angular] do
+  [ 'angular-cookies.js',
     'angular-loader.js',
     'angular-resource.js',
     'angular-sanitize.js',
@@ -261,7 +339,7 @@ def gen_css(cssFile, minify = false)
   css.gsub! /'/, "\\\\'"
   css.gsub! /\n/, "\\n"
 
-  return %Q{angular.element(document).find('head').append('<style type="text/css">#{css}</style>');}
+  return %Q{window.angular.element(document).find('head').append('<style type="text/css">#{css}</style>');}
 end
 
 

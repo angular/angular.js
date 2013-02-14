@@ -20,7 +20,7 @@
  * @element ANY
  * @scope
  * @priority 1000
- * @param {repeat_expression} ngRepeat The expression indicating how to enumerate a collection. Two
+ * @param {string} ngRepeat An expression indicating how to enumerate a collection. Two
  *   formats are currently supported:
  *
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`

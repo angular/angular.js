@@ -304,6 +304,9 @@
  * @param {string} expression Angular expression that will be evaluated.
  */
 
+/**
+ * @type {Object}
+ */
 var ngAttributeAliasDirectives = {};
 
 

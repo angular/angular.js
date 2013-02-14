@@ -5,374 +5,11 @@ var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 
 var inputType = {
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.text
-   *
-   * @description
-   * Standard HTML text input with angular data binding.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Adds `required` validation error key if the value is not entered.
-   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
-   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
-   *    `required` when you want to data-bind to the `required` attribute.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
-   *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
-   * @param {string=} ngChange Angular expression to be executed when input changes due to user
-   *    interaction with the input element.
-   * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trimming the
-   *    input.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.text = 'guest';
-             $scope.word = /^\s*\w*\s*$/;
-           }
-         </script>
-         <form name="myForm" ng-controller="Ctrl">
-           Single word: <input type="text" name="input" ng-model="text"
-                               ng-pattern="word" required ng-trim="false">
-           <span class="error" ng-show="myForm.input.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.input.$error.pattern">
-             Single word only!</span>
-
-           <tt>text = {{text}}</tt><br/>
-           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-          </form>
-        </doc:source>
-        <doc:scenario>
-          it('should initialize to model', function() {
-            expect(binding('text')).toEqual('guest');
-            expect(binding('myForm.input.$valid')).toEqual('true');
-          });
-
-          it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-
-          it('should be invalid if multi word', function() {
-            input('text').enter('hello world');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-
-          it('should not be trimmed', function() {
-            input('text').enter('untrimmed ');
-            expect(binding('text')).toEqual('untrimmed ');
-            expect(binding('myForm.input.$valid')).toEqual('true');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'text': textInputType,
-
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.number
-   *
-   * @description
-   * Text input with number validation and transformation. Sets the `number` validation
-   * error if not a valid number.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
-   * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
-   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
-   *    `required` when you want to data-bind to the `required` attribute.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
-   *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
-   * @param {string=} ngChange Angular expression to be executed when input changes due to user
-   *    interaction with the input element.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.value = 12;
-           }
-         </script>
-         <form name="myForm" ng-controller="Ctrl">
-           Number: <input type="number" name="input" ng-model="value"
-                          min="0" max="99" required>
-           <span class="error" ng-show="myForm.list.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.list.$error.number">
-             Not valid number!</span>
-           <tt>value = {{value}}</tt><br/>
-           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-          </form>
-        </doc:source>
-        <doc:scenario>
-          it('should initialize to model', function() {
-           expect(binding('value')).toEqual('12');
-           expect(binding('myForm.input.$valid')).toEqual('true');
-          });
-
-          it('should be invalid if empty', function() {
-           input('value').enter('');
-           expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-
-          it('should be invalid if over max', function() {
-           input('value').enter('123');
-           expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'number': numberInputType,
-
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.url
-   *
-   * @description
-   * Text input with URL validation. Sets the `url` validation error key if the content is not a
-   * valid URL.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
-   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
-   *    `required` when you want to data-bind to the `required` attribute.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
-   *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
-   * @param {string=} ngChange Angular expression to be executed when input changes due to user
-   *    interaction with the input element.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.text = 'http://google.com';
-           }
-         </script>
-         <form name="myForm" ng-controller="Ctrl">
-           URL: <input type="url" name="input" ng-model="text" required>
-           <span class="error" ng-show="myForm.input.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.input.$error.url">
-             Not valid url!</span>
-           <tt>text = {{text}}</tt><br/>
-           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-           <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
-          </form>
-        </doc:source>
-        <doc:scenario>
-          it('should initialize to model', function() {
-            expect(binding('text')).toEqual('http://google.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
-          });
-
-          it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-
-          it('should be invalid if not url', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'url': urlInputType,
-
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.email
-   *
-   * @description
-   * Text input with email validation. Sets the `email` validation error key if not a valid email
-   * address.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `required` validation error key if the value is not entered.
-   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
-   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
-   *    `required` when you want to data-bind to the `required` attribute.
-   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
-   *    minlength.
-   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
-   *    maxlength.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
-   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
-   *    patterns defined as scope expressions.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.text = 'me@example.com';
-           }
-         </script>
-           <form name="myForm" ng-controller="Ctrl">
-             Email: <input type="email" name="input" ng-model="text" required>
-             <span class="error" ng-show="myForm.input.$error.required">
-               Required!</span>
-             <span class="error" ng-show="myForm.input.$error.email">
-               Not valid email!</span>
-             <tt>text = {{text}}</tt><br/>
-             <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-             <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-             <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-             <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-             <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
-           </form>
-        </doc:source>
-        <doc:scenario>
-          it('should initialize to model', function() {
-            expect(binding('text')).toEqual('me@example.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
-          });
-
-          it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-
-          it('should be invalid if not email', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'email': emailInputType,
-
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.radio
-   *
-   * @description
-   * HTML radio button.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string} value The value to which the expression should be set when selected.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} ngChange Angular expression to be executed when input changes due to user
-   *    interaction with the input element.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.color = 'blue';
-           }
-         </script>
-         <form name="myForm" ng-controller="Ctrl">
-           <input type="radio" ng-model="color" value="red">  Red <br/>
-           <input type="radio" ng-model="color" value="green"> Green <br/>
-           <input type="radio" ng-model="color" value="blue"> Blue <br/>
-           <tt>color = {{color}}</tt><br/>
-          </form>
-        </doc:source>
-        <doc:scenario>
-          it('should change state', function() {
-            expect(binding('color')).toEqual('blue');
-
-            input('color').select('red');
-            expect(binding('color')).toEqual('red');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'radio': radioInputType,
-
-
-  /**
-   * @ngdoc inputType
-   * @name ng.directive:input.checkbox
-   *
-   * @description
-   * HTML checkbox.
-   *
-   * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} ngTrueValue The value to which the expression should be set when selected.
-   * @param {string=} ngFalseValue The value to which the expression should be set when not selected.
-   * @param {string=} ngChange Angular expression to be executed when input changes due to user
-   *    interaction with the input element.
-   *
-   * @example
-      <doc:example>
-        <doc:source>
-         <script>
-           function Ctrl($scope) {
-             $scope.value1 = true;
-             $scope.value2 = 'YES'
-           }
-         </script>
-         <form name="myForm" ng-controller="Ctrl">
-           Value1: <input type="checkbox" ng-model="value1"> <br/>
-           Value2: <input type="checkbox" ng-model="value2"
-                          ng-true-value="YES" ng-false-value="NO"> <br/>
-           <tt>value1 = {{value1}}</tt><br/>
-           <tt>value2 = {{value2}}</tt><br/>
-          </form>
-        </doc:source>
-        <doc:scenario>
-          it('should change state', function() {
-            expect(binding('value1')).toEqual('true');
-            expect(binding('value2')).toEqual('YES');
-
-            input('value1').check();
-            input('value2').check();
-            expect(binding('value1')).toEqual('false');
-            expect(binding('value2')).toEqual('NO');
-          });
-        </doc:scenario>
-      </doc:example>
-   */
   'checkbox': checkboxInputType,
 
   'hidden': noop,
@@ -387,7 +24,81 @@ function isEmpty(value) {
 }
 
 
-function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.text
+ *
+ * @description
+ * Standard HTML text input with angular data binding.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Adds `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
+ * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ *    maxlength.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+ *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+ *    patterns defined as scope expressions.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trimming the
+ *    input.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+        <script>
+          function Ctrl($scope) {
+            $scope.text = 'guest';
+            $scope.word = /^\s*\w*\s*$/;
+          }
+        </script>
+        <form name="myForm" ng-controller="Ctrl">
+         Single word: <input type="text" name="input" ng-model="text"
+          ng-pattern="word" required ng-trim="false">
+          <span class="error" ng-show="myForm.input.$error.required">Required!</span>
+          <span class="error" ng-show="myForm.input.$error.pattern">Single word only!</span>
+
+          <tt>text = {{text}}</tt><br/>
+          <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+          <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+          <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+          <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should initialize to model', function() {
+          expect(binding('text')).toEqual('guest');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if empty', function() {
+          input('text').enter('');
+          expect(binding('text')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should be invalid if multi word', function() {
+          input('text').enter('hello world');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should not be trimmed', function() {
+          input('text').enter('untrimmed ');
+          expect(binding('text')).toEqual('untrimmed ');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.textInputType;
+
+function textInputType(scope, element, /** @type {ng.InputAttrs} */attr, ctrl, $sniffer, $browser) {
 
   var listener = function() {
     var value = element.val();
@@ -507,6 +218,77 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 }
 
+
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.number
+ *
+ * @description
+ * Text input with number validation and transformation. Sets the `number` validation
+ * error if not a valid number.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
+ * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
+ * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ *    maxlength.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+ *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+ *    patterns defined as scope expressions.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.value = 12;
+         }
+       </script>
+       <form name="myForm" ng-controller="Ctrl">
+         Number: <input type="number" name="input" ng-model="value"
+                        min="0" max="99" required>
+         <span class="error" ng-show="myForm.list.$error.required">
+           Required!</span>
+         <span class="error" ng-show="myForm.list.$error.number">
+           Not valid number!</span>
+         <tt>value = {{value}}</tt><br/>
+         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should initialize to model', function() {
+         expect(binding('value')).toEqual('12');
+         expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if empty', function() {
+         input('value').enter('');
+         expect(binding('value')).toEqual('');
+         expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should be invalid if over max', function() {
+         input('value').enter('123');
+         expect(binding('value')).toEqual('');
+         expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.numberInputType;
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
@@ -569,6 +351,74 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   });
 }
 
+
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.url
+ *
+ * @description
+ * Text input with URL validation. Sets the `url` validation error key if the content is not a
+ * valid URL.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
+ * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ *    maxlength.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+ *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+ *    patterns defined as scope expressions.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.text = 'http://google.com';
+         }
+       </script>
+       <form name="myForm" ng-controller="Ctrl">
+         URL: <input type="url" name="input" ng-model="text" required>
+         <span class="error" ng-show="myForm.input.$error.required">
+           Required!</span>
+         <span class="error" ng-show="myForm.input.$error.url">
+           Not valid url!</span>
+         <tt>text = {{text}}</tt><br/>
+         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+         <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should initialize to model', function() {
+          expect(binding('text')).toEqual('http://google.com');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if empty', function() {
+          input('text').enter('');
+          expect(binding('text')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should be invalid if not url', function() {
+          input('text').enter('xxx');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.urlInputType;
+
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
@@ -586,6 +436,72 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(urlValidator);
 }
 
+
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.email
+ *
+ * @description
+ * Text input with email validation. Sets the `email` validation error key if not a valid email
+ * address.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+ *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+ *    `required` when you want to data-bind to the `required` attribute.
+ * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+ *    maxlength.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+ *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+ *    patterns defined as scope expressions.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.text = 'me@example.com';
+         }
+       </script>
+         <form name="myForm" ng-controller="Ctrl">
+           Email: <input type="email" name="input" ng-model="text" required>
+           <span class="error" ng-show="myForm.input.$error.required">
+             Required!</span>
+           <span class="error" ng-show="myForm.input.$error.email">
+             Not valid email!</span>
+           <tt>text = {{text}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+           <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
+         </form>
+      </doc:source>
+      <doc:scenario>
+        it('should initialize to model', function() {
+          expect(binding('text')).toEqual('me@example.com');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if empty', function() {
+          input('text').enter('');
+          expect(binding('text')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should be invalid if not email', function() {
+          input('text').enter('xxx');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.emailInputType;
+
 function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
@@ -602,6 +518,47 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$formatters.push(emailValidator);
   ctrl.$parsers.push(emailValidator);
 }
+
+
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.radio
+ *
+ * @description
+ * HTML radio button.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string} value The value to which the expression should be set when selected.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.color = 'blue';
+         }
+       </script>
+       <form name="myForm" ng-controller="Ctrl">
+         <input type="radio" ng-model="color" value="red">  Red <br/>
+         <input type="radio" ng-model="color" value="green"> Green <br/>
+         <input type="radio" ng-model="color" value="blue"> Blue <br/>
+         <tt>color = {{color}}</tt><br/>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should change state', function() {
+          expect(binding('color')).toEqual('blue');
+
+          input('color').select('red');
+          expect(binding('color')).toEqual('red');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.radioInputType;
 
 function radioInputType(scope, element, attr, ctrl) {
   // make the name unique, if not defined
@@ -624,6 +581,53 @@ function radioInputType(scope, element, attr, ctrl) {
 
   attr.$observe('value', ctrl.$render);
 }
+
+
+/**
+ * @ngdoc inputType
+ * @name ng.directive:input.checkbox
+ *
+ * @description
+ * HTML checkbox.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} ngTrueValue The value to which the expression should be set when selected.
+ * @param {string=} ngFalseValue The value to which the expression should be set when not selected.
+ * @param {string=} ngChange Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.value1 = true;
+           $scope.value2 = 'YES'
+         }
+       </script>
+       <form name="myForm" ng-controller="Ctrl">
+         Value1: <input type="checkbox" ng-model="value1"> <br/>
+         Value2: <input type="checkbox" ng-model="value2"
+                        ng-true-value="YES" ng-false-value="NO"> <br/>
+         <tt>value1 = {{value1}}</tt><br/>
+         <tt>value2 = {{value2}}</tt><br/>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should change state', function() {
+          expect(binding('value1')).toEqual('true');
+          expect(binding('value2')).toEqual('YES');
+
+          input('value1').check();
+          input('value2').check();
+          expect(binding('value1')).toEqual('false');
+          expect(binding('value2')).toEqual('NO');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
+ng.checkboxInputType;
 
 function checkboxInputType(scope, element, attr, ctrl) {
   var trueValue = attr.ngTrueValue,
@@ -775,6 +779,8 @@ function checkboxInputType(scope, element, attr, ctrl) {
       </doc:scenario>
     </doc:example>
  */
+ng.inputDirective;
+
 var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
   return {
     restrict: 'E',
@@ -929,7 +935,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   $element.addClass(PRISTINE_CLASS);
   toggleValidCss(true);
 
-  // convenience method for easy toggling of classes
+  /**
+   * Convenience method for easy toggling of classes
+   * @param {boolean} isValid
+   * @param {string=} validationErrorKey
+   */
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
     $element.
@@ -1248,6 +1258,8 @@ var requiredDirective = function() {
       </doc:scenario>
     </doc:example>
  */
+ng.ngListDirective;
+
 var ngListDirective = function() {
   return {
     require: 'ngModel',
@@ -1300,3 +1312,9 @@ var ngValueDirective = function() {
     }
   };
 };
+
+
+/**
+ * @typedef {{ngFalseValue, ngTrueValue, ngPattern, ngTrim}}
+ */
+ng.InputAttrs;

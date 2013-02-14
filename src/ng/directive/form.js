@@ -13,17 +13,6 @@ var nullFormCtrl = {
  * @ngdoc object
  * @name ng.directive:form.FormController
  *
- * @property {boolean} $pristine True if user has not interacted with the form yet.
- * @property {boolean} $dirty True if user has already interacted with the form.
- * @property {boolean} $valid True if all of the containing forms and controls are valid.
- * @property {boolean} $invalid True if at least one containing control or form is invalid.
- *
- * @property {Object} $error Is an object hash, containing references to all invalid controls or
- *  forms, where:
- *
- *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
- *  - values are arrays of controls or forms that are invalid with given error.
- *
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
@@ -31,9 +20,18 @@ var nullFormCtrl = {
  * Each {@link ng.directive:form form} directive creates an instance
  * of `FormController`.
  *
+ * @property {boolean} $pristine True if user has not interacted with the form yet.
+ * @property {boolean} $dirty True if user has already interacted with the form.
+ * @property {boolean} $valid True if all of the containing forms and controls are valid.
+ * @property {boolean} $invalid True if at least one containing control or form is invalid.
+ * @property {Object} $error Is an object hash, containing references to all invalid controls or
+ *  forms, where:
+ *
+ *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
+ *  - values are arrays of controls or forms that are invalid with given error.
+ *
+ * @constructor
  */
-//asks for $scope to fool the BC controller module
-FormController.$inject = ['$element', '$attrs', '$scope'];
 function FormController(element, attrs) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
@@ -54,7 +52,11 @@ function FormController(element, attrs) {
   element.addClass(PRISTINE_CLASS);
   toggleValidCss(true);
 
-  // convenience method for easy toggling of classes
+  /**
+   * Convenience method for easy toggling of classes
+   * @param {boolean} isValid
+   * @param {string=} validationErrorKey
+   */
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
     element.
@@ -150,6 +152,10 @@ function FormController(element, attrs) {
     });
   };
 }
+
+//asks for $scope to fool the BC controller module
+FormController.$inject = ['$element', '$attrs', '$scope'];
+
 
 
 /**
@@ -256,6 +262,11 @@ function FormController(element, attrs) {
         });
       </doc:scenario>
     </doc:example>
+ */
+
+/**
+ * @param {boolean=} isNgForm
+ * @return {Array}
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {

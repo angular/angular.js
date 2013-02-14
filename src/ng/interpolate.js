@@ -6,8 +6,9 @@
  * @function
  *
  * @description
- *
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
+ *
+ * @constructor
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
@@ -21,7 +22,7 @@ function $InterpolateProvider() {
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
    * @param {string=} value new value to set the starting symbol to.
-   * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
+   * @returns {string|$InterpolateProvider} Returns the symbol when used as getter and self if used as setter.
    */
   this.startSymbol = function(value){
     if (value) {
@@ -40,7 +41,7 @@ function $InterpolateProvider() {
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
    * @param {string=} value new value to set the ending symbol to.
-   * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
+   * @returns {string|$InterpolateProvider} Returns the symbol when used as getter and self if used as setter.
    */
   this.endSymbol = function(value){
     if (value) {
@@ -81,8 +82,8 @@ function $InterpolateProvider() {
      * @param {string} text The text with markup to interpolate.
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
      *    embedded expression in order to return an interpolation function. Strings with no
-     *    embedded expression will return null for the interpolation function.
-     * @returns {function(context)} an interpolation function which is used to compute the interpolated
+     *    embedded expression will return undefined instead of an interpolation function.
+     * @returns {function(ng.Scope)|undefined} an interpolation function which is used to compute the interpolated
      *    string. The function has these parameters:
      *
      *    * `context`: an object against which any expressions embedded in the strings are evaluated
@@ -123,11 +124,11 @@ function $InterpolateProvider() {
 
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
-        fn = function(context) {
+        fn = function(/** @type {ng.Scope} */scope) {
           try {
             for(var i = 0, ii = length, part; i<ii; i++) {
               if (typeof (part = parts[i]) == 'function') {
-                part = part(context);
+                part = part(scope);
                 if (part == null || part == undefined) {
                   part = '';
                 } else if (typeof part != 'string') {

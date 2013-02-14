@@ -92,11 +92,11 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 
  *
  *
- * @param {string|DOMElement} element Element or HTML string to compile into a template function.
- * @param {function(angular.Scope[, cloneAttachFn]} transclude function available to directives.
+ * @param {string|Element} element Element or HTML string to compile into a template function.
+ * @param {function(ng.Scope, ng.$compile.cloneAttachFn=)} transclude function available to directives.
  * @param {number} maxPriority only apply directives lower then given priority (Only effects the
  *                 root element(s), not their children)
- * @returns {function(scope[, cloneAttachFn])} a link function which is used to bind template
+ * @returns {function(ng.Scope, ng.$compile.cloneAttachFn=)} a link function which is used to bind template
  * (a DOM element/tree) to a scope. Where:
  *
  *  * `scope` - A {@link ng.$rootScope.Scope Scope} to bind to.
@@ -145,11 +145,9 @@ var NON_ASSIGNABLE_MODEL_EXPRESSION = 'Non-assignable model expression: ';
 /**
  * @ngdoc service
  * @name ng.$compileProvider
- * @function
  *
- * @description
+ * @constructor
  */
-$CompileProvider.$inject = ['$provide'];
 function $CompileProvider($provide) {
   var hasDirectives = {},
       Suffix = 'Directive',
@@ -167,11 +165,11 @@ function $CompileProvider($provide) {
    * @description
    * Register a new directives with the compiler.
    *
-   * @param {string} name Name of the directive in camel-case. (ie <code>ngBind</code> which will match as
+   * @param {!(string|Object)} name Name of the directive in camel-case. (ie <code>ngBind</code> which will match as
    *                <code>ng-bind</code>).
-   * @param {function} directiveFactory An injectable directive factroy function. See {@link guide/directive} for more
+   * @param {!Function} directiveFactory An injectable directive factory function. See {@link guide/directive} for more
    *                info.
-   * @returns {ng.$compileProvider} Self for chaining.
+   * @returns {$CompileProvider} Returns self for method chaining.
    */
    this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
@@ -203,7 +201,8 @@ function $CompileProvider($provide) {
       }
       hasDirectives[name].push(directiveFactory);
     } else {
-      forEach(name, reverseParams(registerDirective));
+      forEach(/** @type {Object.<!Function>}*/(name),
+          reverseParams(/** @type {function(!(string|number), !Function):$CompileProvider} */(registerDirective)));
     }
     return this;
   };
@@ -215,7 +214,13 @@ function $CompileProvider($provide) {
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
              $controller,   $rootScope) {
 
-    var Attributes = function(element, attr) {
+
+      /**
+       * @param {!JQLite=} element Element the attributes belong to.
+       * @param {Object=} attr Initial attribute values.
+       * @constructor
+       */
+    var Attributes = function Attributes(element, attr) {
       this.$$element = element;
       this.$attr = attr || {};
     };
@@ -228,10 +233,11 @@ function $CompileProvider($provide) {
        * Set a normalized attribute on the element in a way such that all directives
        * can share the attribute. This function properly handles boolean attributes.
        * @param {string} key Normalized key. (ie ngAttribute)
-       * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
+       * @param {string|boolean|undefined|null} value The value to set. If `null` or `undefined`
+       *     attribute will be deleted.
        * @param {boolean=} writeAttr If false, does not write the value to DOM element attribute.
        *     Defaults to true.
-       * @param {string=} attrName Optional none normalized name. Defaults to key.
+       * @param {string=} attrName Optional denormalized attribute name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
         var booleanKey = getBooleanAttrName(this.$$element[0], key),
@@ -258,7 +264,9 @@ function $CompileProvider($provide) {
           if (value === null || value === undefined) {
             this.$$element.removeAttr(attrName);
           } else {
-            this.$$element.attr(attrName, value);
+            /** @type {JQLite} */
+            var e = this.$$element;
+            e.attr(attrName, value);
           }
         }
 
@@ -310,6 +318,12 @@ function $CompileProvider($provide) {
 
     //================================
 
+      /**
+       * @param {!JQLite} $compileNodes
+       * @param transcludeFn
+       * @param {!number=} maxPriority
+       * @return {Function}
+       */
     function compile($compileNodes, transcludeFn, maxPriority) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, where as we need to preserve the original selector so that we can modify it.
@@ -358,13 +372,14 @@ function $CompileProvider($provide) {
      * function, which is the a linking function for the node.
      *
      * @param {NodeList} nodeList an array of nodes to compile
-     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
+     * @param {function(ng.Scope, ng.$compile.cloneAttachFn=)} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement=} $rootElement If the nodeList is the root of the compilation tree then the
+     * @param {!JQLite=} $rootElement If the nodeList is the root of the compilation tree then the
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
-     * @param {number=} max directive priority
-     * @returns {?function} A composite linking function of all of the matched directives or null.
+     * @param {number=} maxPriority Up to what priority directives should be evaluated.
+     * @returns {?ng.$compile.compositeLinkFn} A composite linking function of all of the matched
+     *        directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
       var linkFns = [],
@@ -393,6 +408,9 @@ function $CompileProvider($provide) {
       // return a linking function if we have found anything, null otherwise
       return linkFnFound ? compositeLinkFn : null;
 
+      /**
+       * @type {ng.$compile.compositeLinkFn}
+       */
       function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
         var nodeLinkFn, childLinkFn, node, childScope, childTranscludeFn, i, ii, n;
 
@@ -520,13 +538,13 @@ function $CompileProvider($provide) {
      * is responsible for inlining directive templates as well as terminating the application
      * of the directives if the terminal directive has been reached..
      *
-     * @param {Array} directives Array of collected directives to execute their compile function.
+     * @param {!Array} directives Array of collected directives to execute their compile function.
      *        this needs to be pre-sorted by priority order.
-     * @param {Node} compileNode The raw DOM node to apply the compile functions to
-     * @param {Object} templateAttrs The shared attribute function
-     * @param {function(angular.Scope[, cloneAttachFn]} transcludeFn A linking function, where the
+     * @param {!Node} compileNode The raw DOM node to apply the compile functions to
+     * @param {!Object} templateAttrs The shared attribute function
+     * @param {!function(ng.Scope, ng.$compile.cloneAttachFn=)} transcludeFn A linking function, where the
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
-     * @param {DOMElement} $rootElement If we are working on the root of the compile tree then this
+     * @param {!JQLite=} $rootElement If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace widgets on it.
      * @returns linkFn
      */
@@ -584,7 +602,7 @@ function $CompileProvider($provide) {
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
-            replaceWith($rootElement, jqLite($template[0]), compileNode);
+            replaceWith(/** @type {!JQLite} */($rootElement), jqLite($template[0]), compileNode);
             childTranscludeFn = compile($template, transcludeFn, terminalPriority);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
@@ -608,7 +626,7 @@ function $CompileProvider($provide) {
               throw new Error(MULTI_ROOT_TEMPLATE_ERROR + directiveValue);
             }
 
-            replaceWith($rootElement, $compileNode, compileNode);
+            replaceWith(/** @type {!JQLite} */($rootElement), $compileNode, compileNode);
 
             var newTemplateAttrs = {$attr: {}};
 
@@ -833,6 +851,7 @@ function $CompileProvider($provide) {
      * looks up the directive and decorates it with exception handling and proper parameters. We
      * call this the boundDirective.
      *
+     * @param {Array} tDirectives Array of directives found in the template.
      * @param {string} name name of the directive to look up.
      * @param {string} location The directive must be found in specific format.
      *   String containing any of theses characters:
@@ -841,6 +860,7 @@ function $CompileProvider($provide) {
      *   * `A': attribute
      *   * `C`: class
      *   * `M`: comment
+     * @param {!number=} maxPriority Up to what priority the directives should be evaluated.
      * @returns true if directive was added.
      */
     function addDirective(tDirectives, name, location, maxPriority) {
@@ -867,8 +887,8 @@ function $CompileProvider($provide) {
      * on the template need to be merged with the existing attributes in the DOM.
      * The desired effect is to have both of the attributes present.
      *
-     * @param {object} dst destination attributes (original DOM)
-     * @param {object} src source attributes (from the directive template)
+     * @param {Object} dst destination attributes (original DOM)
+     * @param {Object} src source attributes (from the directive template)
      */
     function mergeTemplateAttributes(dst, src) {
       var srcAttr = src.$attr,
@@ -1048,11 +1068,11 @@ function $CompileProvider($provide) {
      * This is a special jqLite.replaceWith, which can replace items which
      * have no parents, provided that the containing jqLite collection is provided.
      *
-     * @param {JqLite=} $rootElement The root of the compile tree. Used so that we can replace nodes
-     *    in the root of the tree.
-     * @param {JqLite} $element The jqLite element which we are going to replace. We keep the shell,
-     *    but replace its DOM node reference.
-     * @param {Node} newNode The new DOM node.
+     * @param {!JQLite} $rootElement The root of the compile tree. Used so that
+     *     we can replace nodes in the root of the tree.
+     * @param {!JQLite} $element The jqLite element which we are going to
+     *     replace. We keep the shell, but replace its DOM node reference.
+     * @param {!Node} newNode The new DOM node.
      */
     function replaceWith($rootElement, $element, newNode) {
       var oldNode = $element[0],
@@ -1077,6 +1097,12 @@ function $CompileProvider($provide) {
     }
   }];
 }
+
+/**
+ * @type {Array.<string>}
+ */
+$CompileProvider.$inject = ['$provide'];
+
 
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
 /**
@@ -1110,7 +1136,7 @@ function directiveNormalize(name) {
  * @ngdoc property
  * @name ng.$compile.directive.Attributes#$attr
  * @propertyOf ng.$compile.directive.Attributes
- * @returns {object} A map of DOM element attribute names to the normalized name. This is
+ * @returns {Object} A map of DOM element attribute names to the normalized name. This is
  *          needed to do reverse lookup from normalized name back to actual name.
  */
 
@@ -1138,7 +1164,7 @@ function directiveNormalize(name) {
  */
 
 function nodesetLinkingFn(
-  /* angular.Scope */ scope,
+  /* ng.Scope */ scope,
   /* NodeList */ nodeList,
   /* Element */ rootElement,
   /* function(Function) */ boundTranscludeFn
@@ -1146,8 +1172,23 @@ function nodesetLinkingFn(
 
 function directiveLinkingFn(
   /* nodesetLinkingFn */ nodesetLinkingFn,
-  /* angular.Scope */ scope,
+  /* ng.Scope */ scope,
   /* Node */ node,
   /* Element */ rootElement,
   /* function(Function) */ boundTranscludeFn
 ){}
+
+
+ng.$compile = {};
+
+/**
+ * @typedef {function(Element, ng.Scope):undefined}
+ */
+ng.$compile.cloneAttachFn;
+
+
+/**
+ * @typedef {function(!ng.Scope, !NodeList, !JQLite, !Function=)}
+ *                    scope, nodeList, $rootElement, boundTranscludeFn
+ */
+ng.$compile.compositeLinkFn;

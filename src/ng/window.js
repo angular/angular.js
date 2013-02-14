@@ -23,6 +23,10 @@
      </doc:scenario>
    </doc:example>
  */
+
+/**
+ * @constructor
+ */
 function $WindowProvider(){
   this.$get = valueFn(window);
 }

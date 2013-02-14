@@ -227,7 +227,7 @@ function callerFile(offset) {
  * Triggers a browser event. Attempts to choose the right event if one is
  * not specified.
  *
- * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
+ * @param {Object} element Either a wrapped jQuery/jqLite node or a Element
  * @param {string} type Optional event type.
  * @param {Array.<string>=} keys Optional list of pressed keys
  *        (valid values: 'alt', 'meta', 'shift', 'ctrl')

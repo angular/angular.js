@@ -101,9 +101,13 @@ function lex(text, csp){
     return chars.indexOf(lastCh) != -1;
   }
 
+  /**
+   * @param {number=} [i=1]
+   * @return {?string}
+   */
   function peek(i) {
     var num = i || 1;
-    return index + num < text.length ? text.charAt(index + num) : false;
+    return index + num < text.length ? text.charAt(index + num) : null;
   }
   function isNumber(ch) {
     return '0' <= ch && ch <= '9';
@@ -121,6 +125,11 @@ function lex(text, csp){
     return ch == '-' || ch == '+' || isNumber(ch);
   }
 
+  /**
+   * @param {string} error
+   * @param {number=} start
+   * @param {number=} end
+   */
   function throwError(error, start, end) {
     end = end || index;
     throw Error("Lexer Error: " + error + " at column" +
@@ -306,8 +315,12 @@ function parser(text, json, $filter, csp){
   return value;
 
   ///////////////////////////////////
+  /**
+   * @param msg {string}
+   * @param token {{text: string, index: number}}
+   */
   function throwError(msg, token) {
-    throw Error("Syntax Error: Token '" + token.text +
+    throw new Error("Syntax Error: Token '" + token.text +
       "' " + msg + " at column " +
       (token.index + 1) + " of the expression [" +
       text + "] starting at [" + text.substring(token.index) + "].");
@@ -319,6 +332,13 @@ function parser(text, json, $filter, csp){
     return tokens[0];
   }
 
+  /**
+   * @param {string=} e1
+   * @param {string=} e2
+   * @param {string=} e3
+   * @param {string=} e4
+   * @return {({text: string, index: number}|undefined)}
+   */
   function peek(e1, e2, e3, e4) {
     if (tokens.length > 0) {
       var token = tokens[0];
@@ -328,9 +348,14 @@ function parser(text, json, $filter, csp){
         return token;
       }
     }
-    return false;
   }
 
+  /**
+   * @param {string=} e1
+   * @param {string=} e2
+   * @param {string=} e3
+   * @param {string=} e4
+   */
   function expect(e1, e2, e3, e4){
     var token = peek(e1, e2, e3, e4);
     if (token) {
@@ -540,7 +565,7 @@ function parser(text, json, $filter, csp){
         context = primary;
         primary = fieldAccess(primary);
       } else {
-        throwError("IMPOSSIBLE");
+        throwError("!!!", {}); // should never happen
       }
     }
     return primary;
@@ -676,7 +701,7 @@ function setter(obj, path, setValue) {
  * Return the value accesible from the object by path. Any undefined traversals are ignored
  * @param {Object} obj starting object
  * @param {string} path path to traverse
- * @param {boolean=true} bindFnToScope
+ * @param {boolean=} [bindFnToScope=true]
  * @returns value as accesbile by path
  */
 //TODO(misko): this function needs to be removed
@@ -855,6 +880,10 @@ function getterFn(path, csp) {
  *    The return function also has an `assign` property, if the expression is assignable, which
  *    allows one to set values to expressions.
  *
+ */
+
+/**
+ * @constructor
  */
 function $ParseProvider() {
   var cache = {};

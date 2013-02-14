@@ -59,7 +59,9 @@ angularFiles = {
     'src/ng/directive/ngView.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js'
+    'src/ng/directive/style.js',
+
+    'src/angular-bootstrap.js'
   ],
 
   'angularSrcModules': [
@@ -127,7 +129,8 @@ angularFiles = {
   'jstdExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
+    'src/angular-dev.js',
+    'src/ngScenario/angular-dev.js'
   ],
 
   'jstdScenario': [
@@ -168,8 +171,9 @@ angularFiles = {
   ],
 
   'jstdPerfExclude': [
-    'src/ng/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
+    'src/angular-bootstrap.js',
+    'src/angular-dev.js',
+    'src/ngScenario/angular-dev.js'
   ],
 
   'jstdJquery': [
@@ -190,7 +194,8 @@ angularFiles = {
 
   'jstdJqueryExclude': [
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js',
+    'src/angular-dev.js',
+    'src/ngScenario/angular-dev.js',
     'test/jquery_remove.js'
   ]
 };
