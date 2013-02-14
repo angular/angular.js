@@ -175,7 +175,7 @@ end
 
 
 desc 'Minify JavaScript'
-task :minify => [:init, :concat, :concat_scenario, :minify_angular2] do
+task :minify => [:init, :concat, :concat_scenario, :minify_angular] do
   [ 'angular-cookies.js',
     'angular-loader.js',
     'angular-resource.js',
