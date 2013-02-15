@@ -3,12 +3,13 @@
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {
+    var oldVal;
 
     scope.$watch(attr[name], ngClassWatchAction, true);
 
     attr.$observe('class', function(value) {
       var ngClass = scope.$eval(attr[name]);
-      ngClassWatchAction(ngClass, ngClass);
+      ngClassWatchAction(ngClass);
     });
 
 
@@ -26,13 +27,14 @@ function classDirective(name, selector) {
     }
 
 
-    function ngClassWatchAction(newVal, oldVal) {
+    function ngClassWatchAction(newVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
           removeClass(oldVal);
         }
         addClass(newVal);
       }
+      oldVal = newVal;
     }
 
 

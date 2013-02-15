@@ -52,7 +52,7 @@ describe('ngClass', function() {
     expect(element.hasClass('B')).toBeFalsy();
     expect(element.hasClass('AnotB')).toBeTruthy();
 
-    $rootScope.conditionB = function() { return true };
+    $rootScope.conditionB = function() { return true; };
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBeTruthy();
     expect(element.hasClass('A')).toBeTruthy();
@@ -277,5 +277,16 @@ describe('ngClass', function() {
 
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
+  }));
+
+  it('should initialize classes correctly when $observe and $watch provide different initial values',
+    inject(function($rootScope, $compile) {
+      $rootScope.x = 'test';
+      element = $compile(
+        '<form name="f">' +
+          '<input name="x" ng-model="x" required ng-class="{error: f.x.$invalid}">' +
+        '</form>')($rootScope);
+      $rootScope.$digest();
+      expect(element.find('input').hasClass('error')).toBeFalsy();
   }));
 });
