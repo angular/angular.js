@@ -82,7 +82,7 @@
  */
 function filterFilter() {
   return function(array, expression) {
-    if (!(array instanceof Array)) return array;
+    if (!isArray(array)) return array;
     var predicates = [];
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
