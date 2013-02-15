@@ -235,6 +235,15 @@ describe('ngClass', function() {
     expect(element.hasClass('too')).toBeFalsy();
   }));
 
+  it('should not mess up class application due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
+    $rootScope.foo = true;
+    $rootScope.$watch("anything", function() {
+      $rootScope.foo = false;
+    });
+    element = $compile('<div ng-class="{foo:foo}"/>')($rootScope);
+    $rootScope.$digest();
+    expect(element.hasClass('foo')).toBeFalsy();
+  }));
 
   it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
