@@ -145,16 +145,20 @@ function Browser(window, document, $log, $sniffer) {
    *
    * @param {string} url New url (when used as setter)
    * @param {boolean=} replace Should new url replace current history record ?
+   * @param {object=} state object to use with pushState/replaceState
+   * @param {string=} title to use with pushState/replaceState
    */
-  self.url = function(url, replace) {
+  self.url = function(url, replace, state, title) {
     // setter
     if (url) {
       if (lastBrowserUrl == url) return;
       lastBrowserUrl = url;
       if ($sniffer.history) {
-        if (replace) history.replaceState(null, '', url);
+        var title = title || ''
+        if(isUndefined(state)) state = null
+        if (replace) history.replaceState(state, title, url);
         else {
-          history.pushState(null, '', url);
+          history.pushState(state, title, url);
           // Crazy Opera Bug: http://my.opera.com/community/forums/topic.dml?id=1185462
           baseElement.attr('href', baseElement.attr('href'));
         }
@@ -173,12 +177,12 @@ function Browser(window, document, $log, $sniffer) {
   var urlChangeListeners = [],
       urlChangeInit = false;
 
-  function fireUrlChange() {
+  function fireUrlChange(ev) {
     if (lastBrowserUrl == self.url()) return;
 
     lastBrowserUrl = self.url();
     forEach(urlChangeListeners, function(listener) {
-      listener(self.url());
+      listener(self.url(), ev);
     });
   }
 
