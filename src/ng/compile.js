@@ -794,6 +794,18 @@ function $CompileProvider($provide) {
               $transclude: boundTranscludeFn
             };
 
+            // Lets allow a child scope to provide its own local implementations of services
+            // which are used in preference to the global services in the cache.
+            //
+            // This behavior is only enabled if the $scope has a $$scopeInjections object
+            // containing the local services to use in preference when injecting the controller.
+            if (scope && scope.$$scopeInjections) {
+              forEach(scope.$$scopeInjections, function (value, key) {
+                if (!locals.hasOwnProperty(key)) {
+                  locals[key] = value;
+                }
+              });
+            }
             controller = directive.controller;
             if (controller == '@') {
               controller = attrs[directive.name];
