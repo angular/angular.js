@@ -198,6 +198,8 @@ function qFactory(nextTick, exceptionHandler) {
               }
             });
           }
+
+          return deferred.promise;
         }
       },
 
@@ -236,6 +238,18 @@ function qFactory(nextTick, exceptionHandler) {
           }
 
           return result.promise;
+        },
+
+        success: function(fn) {
+          return this.then(function(value) {
+            fn(value);
+          });
+        },
+
+        error: function(fn) {
+          return this.then(null, function(value) {
+            fn(value);
+          });
         }
       }
     };
