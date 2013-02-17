@@ -4,6 +4,7 @@ var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\
 var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var DATE_REGEXP = /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$/;
+var TIME_REGEXP = /^([0-2]\d)(:)([0-5]\d)(:)?([0-5]\d)?(\.\d+)?$/;
 
 var inputType = {
 
@@ -289,6 +290,74 @@ var inputType = {
       </doc:example>
    */
   'date': dateInputType,
+  
+  
+  /**
+   * @ngdoc inputType
+   * @name ng.directive:input.time
+   *
+   * @description
+   * Text input with time validation. Sets the `time` validation error key if the content is not a
+   * valid time.
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
+   * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
+   *    minlength.
+   * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
+   *    maxlength.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
+   *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+   *    patterns defined as scope expressions.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+      <doc:example>
+        <doc:source>
+         <script>
+           function Ctrl($scope) {
+             $scope.text = '2012-08-14';
+           }
+         </script>
+         <form name="myForm" ng-controller="Ctrl">
+           Time: <input type="time" name="input" ng-model="text" required>
+           <span class="error" ng-show="myForm.input.$error.required">
+             Required!</span>
+           <span class="error" ng-show="myForm.input.$error.time">
+             Not valid time!</span>
+           <tt>text = {{text}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+           <tt>myForm.$error.time = {{!!myForm.$error.time}}</tt><br/>
+          </form>
+        </doc:source>
+        <doc:scenario>
+          it('should initialize to model', function() {
+            expect(binding('text')).toEqual('http://google.com');
+            expect(binding('myForm.input.$valid')).toEqual('true');
+          });
+
+          it('should be invalid if empty', function() {
+            input('text').enter('');
+            expect(binding('text')).toEqual('');
+            expect(binding('myForm.input.$valid')).toEqual('false');
+          });
+
+          it('should be invalid if not time', function() {
+            input('text').enter('xxx');
+            expect(binding('myForm.input.$valid')).toEqual('false');
+          });
+        </doc:scenario>
+      </doc:example>
+   */
+  'time': timeInputType,
   
 
   /**
@@ -697,6 +766,55 @@ function dateInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     var max = Date.parse(attr.max);
     var maxValidator = function(value) {
       if (!isEmpty(value) && Date.parse(value) > max) {
+        ctrl.$setValidity('max', false);
+        return undefined;
+      } else {
+        ctrl.$setValidity('max', true);
+        return value;
+      }
+    };
+
+    ctrl.$parsers.push(maxValidator);
+    ctrl.$formatters.push(maxValidator);
+  }
+}
+
+function timeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  
+  var timeValidator = function(value) {
+    if (isEmpty(value) || TIME_REGEXP.test(value)) {
+      ctrl.$setValidity('time', true);
+      return value === '' ? null : value;
+    } else {
+      ctrl.$setValidity('time', false);
+      return undefined;
+    }
+  };
+
+  ctrl.$formatters.push(timeValidator);
+  ctrl.$parsers.push(timeValidator);
+  
+  if (attr.min) {
+    var min = Date.parse('2000-01-01T'+attr.min);
+    var minValidator = function(value) {
+      if (!isEmpty(value) && Date.parse('2000-01-01T'+value) < min) {
+        ctrl.$setValidity('min', false);
+        return undefined;
+      } else {
+        ctrl.$setValidity('min', true);
+        return value;
+      }
+    };
+
+    ctrl.$parsers.push(minValidator);
+    ctrl.$formatters.push(minValidator);
+  }
+  
+  if (attr.max) {
+    var max = Date.parse('2000-01-01T'+attr.max);
+    var maxValidator = function(value) {
+      if (!isEmpty(value) && Date.parse('2000-01-01T'+value) > max) {
         ctrl.$setValidity('max', false);
         return undefined;
       } else {
