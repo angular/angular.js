@@ -657,6 +657,12 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function dateInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  
+  // as the input event doesn't trigger from the calendar dialog in chrome,
+  // we add a binding to the change event
+  element.bind('change', function() {
+  	element.triggerHandler('input');
+  });
 
   var dateValidator = function(value) {
     if (isEmpty(value) || DATE_REGEXP.test(value)) {
