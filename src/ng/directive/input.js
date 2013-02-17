@@ -253,38 +253,39 @@ var inputType = {
         <doc:source>
          <script>
            function Ctrl($scope) {
-             $scope.text = '2012-08-14';
+             $scope.value = '2012-08-14';
            }
          </script>
          <form name="myForm" ng-controller="Ctrl">
-           Date: <input type="date" name="input" ng-model="text" required>
-           <span class="error" ng-show="myForm.input.$error.required">
+           Date: <input type="date" name="input" ng-model="value"
+                          min="2012-08-01" max="2012-08-31" required>
+           <span class="error" ng-show="myForm.list.$error.required">
              Required!</span>
-           <span class="error" ng-show="myForm.input.$error.date">
+           <span class="error" ng-show="myForm.list.$error.date">
              Not valid date!</span>
-           <tt>text = {{text}}</tt><br/>
+           <tt>value = {{value}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-           <tt>myForm.$error.date = {{!!myForm.$error.date}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
-            expect(binding('text')).toEqual('http://google.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+           expect(binding('value')).toEqual('2012-08-14');
+           expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+           input('value').enter('');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
-          it('should be invalid if not date', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+          it('should be invalid if over max', function() {
+           input('value').enter('2012-09-30');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
@@ -321,38 +322,39 @@ var inputType = {
         <doc:source>
          <script>
            function Ctrl($scope) {
-             $scope.text = '2012-08-14';
+             $scope.value = '20:00';
            }
          </script>
          <form name="myForm" ng-controller="Ctrl">
-           Time: <input type="time" name="input" ng-model="text" required>
-           <span class="error" ng-show="myForm.input.$error.required">
+           Time: <input type="time" name="input" ng-model="value"
+                          min="18:00" max="22:00" required>
+           <span class="error" ng-show="myForm.list.$error.required">
              Required!</span>
-           <span class="error" ng-show="myForm.input.$error.time">
+           <span class="error" ng-show="myForm.list.$error.time">
              Not valid time!</span>
-           <tt>text = {{text}}</tt><br/>
+           <tt>value = {{value}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
            <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
-           <tt>myForm.$error.time = {{!!myForm.$error.time}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
-            expect(binding('text')).toEqual('http://google.com');
-            expect(binding('myForm.input.$valid')).toEqual('true');
+           expect(binding('value')).toEqual('20:00');
+           expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
-            input('text').enter('');
-            expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+           input('value').enter('');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
-          it('should be invalid if not time', function() {
-            input('text').enter('xxx');
-            expect(binding('myForm.input.$valid')).toEqual('false');
+          it('should be invalid if over max', function() {
+           input('value').enter('23:00');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
