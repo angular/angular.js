@@ -26,13 +26,15 @@ function classDirective(name, selector) {
     }
 
 
-    function ngClassWatchAction(newVal, oldVal) {
+    var oldVal = undefined;
+    function ngClassWatchAction(newVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
           removeClass(oldVal);
         }
         addClass(newVal);
       }
+      oldVal = newVal;
     }
 
 
