@@ -429,7 +429,7 @@ describe('ngView', function() {
       $rootScope.$digest();
       expect($rootScope.load).toHaveBeenCalledOnce();
     });
-  })
+  });
 
 
   it('should set $scope and $controllerController on the view', function() {
@@ -457,6 +457,30 @@ describe('ngView', function() {
       expect(div.scope().state).toEqual('WORKS');
 
       expect(div.controller()).toBe($route.current.scope.ctrl);
+    });
+  });
+
+  it('should not set $scope or $controllerController on top level text elements in the view', function() {
+    function MyCtrl($scope) {}
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {templateUrl: 'tpl.html', controller: MyCtrl});
+    });
+
+    inject(function($templateCache, $location, $rootScope, $route) {
+      $templateCache.put('tpl.html', '<div></div>  ');
+      $location.url('/foo');
+      $rootScope.$digest();
+
+      forEach(element.contents(), function(node) {
+        if ( node.nodeType == 3 ) {
+          expect(jqLite(node).scope()).not.toBe($route.current.scope);
+          expect(jqLite(node).controller()).not.toBeDefined();
+        } else {
+          expect(jqLite(node).scope()).toBe($route.current.scope);
+          expect(jqLite(node).controller()).toBeDefined();
+        }
+      });
     });
   });
 });
