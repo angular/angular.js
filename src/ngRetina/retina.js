@@ -50,7 +50,7 @@ angular.module('ngRetina', []).config(function($provide) {
     return $delegate;
   });
 })
-.directive('ngSrc', function($window, $http, $interpolate, $cacheFactory) {
+.directive('ngSrc', function($window, $http, $cacheFactory) {
   var cache = $cacheFactory('retinaImageURLs');
   var mediaQuery = "(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), "
     + "(-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)";
