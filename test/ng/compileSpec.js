@@ -116,12 +116,17 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
+    it('should attach scope to the document node when it is compiled explicitly', inject(function($document){
+      $compile($document)($rootScope);
+      expect($document.scope()).toBe($rootScope);
+    }));
+
     it('should wrap root text nodes in spans', inject(function($compile, $rootScope) {
       element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
       var text = element.contents();
       expect(text[0].nodeName).toEqual('#text');
       text = $compile(text)($rootScope);
-      expect(lowercase(text[0].nodeName)).toEqual('span');
+      expect(text[0].nodeName).toEqual('SPAN');
       expect(element.find('span').text()).toEqual('A<a>B</a>C');
     }));
 
@@ -137,6 +142,41 @@ describe('$compile', function() {
       expect(spans.text().indexOf('C')).toEqual(0);
     });
 
+    it('should not leak memory when there are top level empty text nodes', function() {
+      var calcCacheSize = function() {
+        var size = 0;
+        forEach(jqLite.cache, function(item, key) { size++; });
+        return size;
+      };
+
+      // We compile the contents of element (i.e. not element itself)
+      // Then delete these contents and check the cache has been reset to zero
+
+      // First with only elements at the top level
+      element = jqLite('<div><div></div></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with non-empty text nodes at the top level
+      // (in this case the compiler will wrap them in a <span>)
+      element = jqLite('<div>xxx</div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with comment nodes at the top level
+      element = jqLite('<div><!-- comment --></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Finally with empty text nodes at the top level
+      element = jqLite('<div>   \n<div></div>   </div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+    });
 
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
