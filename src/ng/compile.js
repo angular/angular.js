@@ -330,7 +330,14 @@ function $CompileProvider($provide) {
         var $linkNode = cloneConnectFn
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
-        $linkNode.data('$scope', scope);
+
+        // Attach scope only to non-text nodes.
+        for(var i = 0, ii = $linkNode.length; i<ii; i++) {
+          var node = $linkNode[i];
+          if (node.nodeType == 1 /* element */ || node.nodeType == 9 /* document */) {
+            $linkNode.eq(i).data('$scope', scope);
+          }
+        }
         safeAddClass($linkNode, 'ng-scope');
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
