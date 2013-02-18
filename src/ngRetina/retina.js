@@ -12,7 +12,7 @@
  * 
  * Add support for Retina displays when using element attribute "ng-src".
  * This module overrides the built-in directive "ng-src" with one which 
- * distinguishes between standard or a high-resolution (Retina) displays.
+ * distinguishes between standard or high-resolution (Retina) displays.
  */
 
 /**
@@ -36,6 +36,10 @@
  *   interpreted, such that the image in high-resolution is referenced.
  *   This module also rewrites <img ng-src="..."> tags, which contain a static
  *   image url, ie. one without any mark-up directives.
+ *
+ *   Note that when using this module, adding the element attributes 'width="..."'
+ *   and 'height="..."' becomes mandatory, as the displayed high-resolution image
+ *   otherwise gets scaled to the double size.
  */
 
 angular.module('ngRetina', []).config(function($provide) {
