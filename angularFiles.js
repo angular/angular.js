@@ -147,13 +147,15 @@ angularFiles = {
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
+    'src/ngRetina/retina.js',
     'test/matchers.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/*.js',
     'test/ngSanitize/directive/*.js',
-    'test/ngSanitize/filter/*.js'
+    'test/ngSanitize/filter/*.js',
+    'test/ngRetina/*.js'
   ],
 
   'jstdPerf': [
