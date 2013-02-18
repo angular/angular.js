@@ -740,6 +740,155 @@ describe('input', function() {
   });
 
 
+  describe('date', function() {
+
+    it('should reset the model if view is invalid', function() {
+      compileInput('<input type="date" ng-model="from"/>');
+
+      scope.$apply(function() {
+        scope.from = '2012-08-14';
+      });
+      expect(inputElm.val()).toBe('2012-08-14');
+
+      try {
+        // to allow non-date values, we have to change type so that
+        // the browser which have number validation will not interfere with
+        // this test. IE8 won't allow it hence the catch.
+        inputElm[0].setAttribute('type', 'text');
+      } catch (e) {}
+
+      changeInputValueTo('2012X');
+      expect(inputElm.val()).toBe('2012X');
+      expect(scope.from).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+    it('should parse empty string to null', function() {
+      compileInput('<input type="date" ng-model="from" />');
+
+      scope.$apply(function() {
+        scope.from = '2012-08-14';
+      });
+
+      changeInputValueTo('');
+      expect(scope.from).toBeNull();
+      expect(inputElm).toBeValid();
+    });
+
+
+    describe('min', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="date" ng-model="value" name="alias" min="2012-01-01" />');
+        scope.$digest();
+
+        changeInputValueTo('2011-12-31');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+
+        changeInputValueTo('2012-02-01');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe('2012-02-01');
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+    });
+
+
+    describe('max', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="date" ng-model="value" name="alias" max="2012-04-14" />');
+        scope.$digest();
+
+        changeInputValueTo('2012-06-14');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+
+        changeInputValueTo('2012-02-14');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe('2012-02-14');
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+    });
+  });
+  
+  describe('time', function() {
+
+    it('should reset the model if view is invalid', function() {
+      compileInput('<input type="time" ng-model="from"/>');
+
+      scope.$apply(function() {
+        scope.from = '11:00';
+      });
+      expect(inputElm.val()).toBe('11:00');
+
+      try {
+        // to allow non-time values, we have to change type so that
+        // the browser which have number validation will not interfere with
+        // this test. IE8 won't allow it hence the catch.
+        inputElm[0].setAttribute('type', 'text');
+      } catch (e) {}
+
+      changeInputValueTo('11X');
+      expect(inputElm.val()).toBe('11X');
+      expect(scope.from).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should parse empty string to null', function() {
+      compileInput('<input type="time" ng-model="from" />');
+
+      scope.$apply(function() {
+        scope.from = '11:10';
+      });
+
+      changeInputValueTo('');
+      expect(scope.from).toBeNull();
+      expect(inputElm).toBeValid();
+    });
+
+
+    describe('min', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="time" ng-model="value" name="alias" min="11:00" />');
+        scope.$digest();
+
+        changeInputValueTo('01:59');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
+
+        changeInputValueTo('11:20');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe('11:20');
+        expect(scope.form.alias.$error.min).toBeFalsy();
+      });
+    });
+
+
+    describe('max', function() {
+
+      it('should validate', function() {
+        compileInput('<input type="time" ng-model="value" name="alias" max="11:00" />');
+        scope.$digest();
+
+        changeInputValueTo('11:20');
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.max).toBeTruthy();
+
+        changeInputValueTo('01:59');
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe('01:59');
+        expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+    });
+  });
+
   describe('radio', function() {
 
     it('should update the model', function() {
