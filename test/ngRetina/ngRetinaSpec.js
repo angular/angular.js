@@ -10,7 +10,6 @@ describe('test module angular-retina', function() {
       module(function($provide) {
         $provide.provider('$window', function() {
           this.$get = function() {
-            window.devicePixelRatio = 1;
             window.matchMedia = function(query) {
               return {matches: true};
             };
@@ -104,7 +103,6 @@ describe('test module angular-retina', function() {
       module(function($provide) {
         $provide.provider('$window', function() {
           this.$get = function() {
-            window.devicePixelRatio = 1;
             window.matchMedia = function(query) {
               return {matches: false};
             };
