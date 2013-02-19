@@ -10,6 +10,11 @@ describe('test module angular-retina', function() {
       module(function($provide) {
         $provide.provider('$window', function() {
           this.$get = function() {
+            try {
+              window.devicePixelRatio = 2;
+            } catch (TypeError) {
+              // in Firefox window.devicePixelRatio only has a getter
+            }
             window.matchMedia = function(query) {
               return {matches: true};
             };
@@ -103,6 +108,11 @@ describe('test module angular-retina', function() {
       module(function($provide) {
         $provide.provider('$window', function() {
           this.$get = function() {
+            try {
+              window.devicePixelRatio = 1;
+            } catch (TypeError) {
+              // in Firefox window.devicePixelRatio only has a getter
+            }
             window.matchMedia = function(query) {
               return {matches: false};
             };
