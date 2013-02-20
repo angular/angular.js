@@ -72,7 +72,7 @@ _Note: This release also contains all bug fixes available in [1.0.5](#1.0.5)._
 ## Bug Fixes
 
 - **$compile:**
-  - sanitize values bound to a[href]
+  - sanitize values bound to `a[href]`
   ([9532234b](https://github.com/angular/angular.js/commit/9532234bf1c408af9a6fd2c4743fdb585b920531))
   - rename $compileNote to compileNode
   ([92ca7efa](https://github.com/angular/angular.js/commit/92ca7efaa4bc4f37da3008b234e19343a1fa4207),
@@ -81,7 +81,7 @@ _Note: This release also contains all bug fixes available in [1.0.5](#1.0.5)._
   ([791804bd](https://github.com/angular/angular.js/commit/791804bdbfa6da7a39283623bd05628a01cd8720))
   - allow startingTag method to handle text / comment nodes
   ([755beb2b](https://github.com/angular/angular.js/commit/755beb2b66ce9f9f9a218f2355bbaf96d94fbc15))
-- **$cookies:** set cookies on Safari&IE when base[href] is undefined
+- **$cookies:** set cookies on Safari&IE when `base[href]` is undefined
   ([70909245](https://github.com/angular/angular.js/commit/7090924515214752b919b0c5630b3ea5e7c77223),
    [#1190](https://github.com/angular/angular.js/issues/1190))
 - **$http:**
