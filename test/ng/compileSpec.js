@@ -2354,7 +2354,148 @@ describe('$compile', function() {
         expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
       });
     });
+  });
 
 
+  describe('href sanitization', function() {
+
+    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:data:evilPayload');
+    }));
+
+
+    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      // case-sensitive
+      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // tab in protocol
+      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // space before
+      $rootScope.testUrl = " javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // ws chars before
+      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // post-fixed with proper url
+      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      $rootScope.$apply();
+      expect(element[0].href).toBeOneOf(
+          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
+          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
+      );
+    }));
+
+
+    it('should sanitize ngHref bindings as well', inject(function($compile, $rootScope) {
+      element = $compile('<a ng-href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      $rootScope.testUrl = "foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('foo/bar');
+
+      $rootScope.testUrl = "/foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('/foo/bar');
+
+      $rootScope.testUrl = "../foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('../foo/bar');
+
+      $rootScope.testUrl = "#foo";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('#foo');
+
+      $rootScope.testUrl = "http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('http://foo/bar');
+
+      $rootScope.testUrl = " http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe(' http://foo/bar');
+
+      $rootScope.testUrl = "https://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('https://foo/bar');
+
+      $rootScope.testUrl = "ftp://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('ftp://foo/bar');
+
+      $rootScope.testUrl = "mailto:foo@bar.com";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('mailto:foo@bar.com');
+    }));
+
+
+    it('should not sanitize href on elements other than anchor', inject(function($compile, $rootScope) {
+      element = $compile('<div href="{{testUrl}}"></div>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize attributes other than href', inject(function($compile, $rootScope) {
+      element = $compile('<a title="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('title')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should allow reconfiguration of the href whitelist', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect(returnVal).toBe($compileProvider);
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+        $rootScope.testUrl = "javascript:doEvilStuff()";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+
+        $rootScope.testUrl = "http://recon/figured";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('unsafe:http://recon/figured');
+      });
+    });
   });
 });
