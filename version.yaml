@@ -1,5 +1,5 @@
 # AngularJS build config file
 ---
-version: 1.0.5-snapshot
+version: 1.0.5
 codename: flatulent-propulsion
-stable: 1.0.4
+stable: 1.0.5
