@@ -1,3 +1,123 @@
+<a name="1.1.3"></a>
+# 1.1.3 radioactive-gargle (2013-02-20)
+
+_Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
+out and please give us feedback._
+
+_Note: This release also contains all bug fixes available in [1.0.5](#1.0.5)._
+
+
+## Bug Fixes
+
+- **$compile:**
+  - initialize interpolated attributes before directive linking
+  ([bb8448c0](https://github.com/angular/angular.js/commit/bb8448c011127306df08c7479b66e5afe7a0fa94))
+  - interpolate @ locals before the link function runs
+  ([2ed53087](https://github.com/angular/angular.js/commit/2ed53087d7dd06d728e333a449265f7685275548))
+- **$http:**
+  - do not encode special characters `@$:,` in params
+  ([288b69a3](https://github.com/angular/angular.js/commit/288b69a314e9bd14458b6647532eb62aad5c5cdf))
+- **$resource:**
+  - params should expand array values properly
+  ([2a212344](https://github.com/angular/angular.js/commit/2a2123441c2b749b8f316a24c3ca3f77a9132a01))
+
+
+
+## Features
+
+- **$http:** allow overriding the XSRF header and cookie name
+  ([8155c3a2](https://github.com/angular/angular.js/commit/8155c3a29ea0eb14806913b8ac08ba7727e1969c))
+- **$parse:** added `constant` and `literal` properties
+  ([1ed63858](https://github.com/angular/angular.js/commit/1ed638582d2f2c7f89384d9712f4cfac52cc5b70))
+- **$resource:** expose promise based api via $then and $resolved
+  ([dba6bc73](https://github.com/angular/angular.js/commit/dba6bc73e802fdae685a9f351d3e23c7efa8568a))
+- **$routeProvider:** add support to catch-all parameters in routes
+  ([7eafbb98](https://github.com/angular/angular.js/commit/7eafbb98c64c0dc079d7d3ec589f1270b7f6fea5))
+- **Scope:**
+  - expose transcluded and isolate scope info for batarang
+  ([649b8922](https://github.com/angular/angular.js/commit/649b892205615a144dafff9984c0e6ab10ed341d))
+  - only evaluate constant $watch expressions once
+  ([1d7a95df](https://github.com/angular/angular.js/commit/1d7a95df565192fc02a18b0b297b39dd615eaeb5))
+- **angular.noConflict:** added api to restore previous angular namespace reference
+  ([12ba6cec](https://github.com/angular/angular.js/commit/12ba6cec4fb79521101744e02a7e09f9fbb591c4))
+- **Directives:**
+  - **ngSwitch:** support multiple matches on ngSwitchWhen and ngSwitchDefault
+  ([0af17204](https://github.com/angular/angular.js/commit/0af172040e03811c59d01682968241e3df226774),
+   [#1074](https://github.com/angular/angular.js/issues/1074))
+- **Filters:**
+  - **date:** add `[.,]sss` formatter for milliseconds
+  ([df744f3a](https://github.com/angular/angular.js/commit/df744f3af46fc227a934f16cb63c7a6038e7133b))
+  - **filter:** add comparison function to filter
+  ([ace54ff0](https://github.com/angular/angular.js/commit/ace54ff08c4593195b49eadb04d258e6409d969e))
+
+
+## Breaking Changes
+
+- **$http:** due to [288b69a3](https://github.com/angular/angular.js/commit/288b69a314e9bd14458b6647532eb62aad5c5cdf),
+  $http now follows RFC3986 and does not encode special characters like `$@,:` in params.
+  If your application needs to encode these characters, encode them manually, before sending the request.
+- **$resource:** due to [2a212344](https://github.com/angular/angular.js/commit/2a2123441c2b749b8f316a24c3ca3f77a9132a01),
+  if the server relied on the buggy behavior of serializing arrays as http query arguments then
+  either the backend should be fixed or a simple serialization of the array should be done
+  on the client before calling the resource service.
+
+
+
+
+<a name="1.0.5"></a>
+# 1.0.5 flatulent-propulsion (2013-02-20)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - sanitize values bound to a[href]
+  ([9532234b](https://github.com/angular/angular.js/commit/9532234bf1c408af9a6fd2c4743fdb585b920531))
+  - rename $compileNote to compileNode
+  ([92ca7efa](https://github.com/angular/angular.js/commit/92ca7efaa4bc4f37da3008b234e19343a1fa4207),
+   [#1941](https://github.com/angular/angular.js/issues/1941))
+  - should not leak memory when there are top level empty text nodes
+  ([791804bd](https://github.com/angular/angular.js/commit/791804bdbfa6da7a39283623bd05628a01cd8720))
+  - allow startingTag method to handle text / comment nodes
+  ([755beb2b](https://github.com/angular/angular.js/commit/755beb2b66ce9f9f9a218f2355bbaf96d94fbc15))
+- **$cookies:** set cookies on Safari&IE when base[href] is undefined
+  ([70909245](https://github.com/angular/angular.js/commit/7090924515214752b919b0c5630b3ea5e7c77223),
+   [#1190](https://github.com/angular/angular.js/issues/1190))
+- **$http:**
+  - patch for Firefox bug w/ CORS and response headers
+  ([e19b04c9](https://github.com/angular/angular.js/commit/e19b04c9ec985821edf1269c628cfa261f81d631),
+   [#1468](https://github.com/angular/angular.js/issues/1468))
+- **$resource:**
+  - update RegExp to allow urlParams with out leading slash
+  ([b7e1fb05](https://github.com/angular/angular.js/commit/b7e1fb0515798e1b4f3f2426f6b050951bee2617))
+- **Directives:**
+  - **a:** workaround IE bug affecting mailto urls
+  ([37e8b122](https://github.com/angular/angular.js/commit/37e8b12265291918396bfee65d444a8f63697b73),
+   [#1949](https://github.com/angular/angular.js/issues/1949))
+  - **ngClass:** keep track of old ngClass value manually
+  ([5f5d4fea](https://github.com/angular/angular.js/commit/5f5d4feadbfa9d8ecc8150041dfd2bca2b2e9fea),
+   [#1637](https://github.com/angular/angular.js/issues/1637))
+  - **ngSwitch:** make ngSwitch compatible with controller backwards-compatiblity module
+  ([9b7c1d0f](https://github.com/angular/angular.js/commit/9b7c1d0f7ce442d4ad2ec587e66d2d335e64fa4e))
+- **Filters:**
+  - **date:**  invert timezone sign and always display sign
+  ([b001c8ec](https://github.com/angular/angular.js/commit/b001c8ece5472626bf49cf82753e8ac1aafd2513),
+   [#1261](https://github.com/angular/angular.js/issues/1261))
+  - **number:** fix formatting when "0" passed as fractionSize
+  ([f5835963](https://github.com/angular/angular.js/commit/f5835963d5982003a713dd354eefd376ed39ac02))
+- **scenario runner:** include error messages in XML output
+  ([d46fe3c2](https://github.com/angular/angular.js/commit/d46fe3c23fa269dcc10249148f2af14f3db6b066))
+- **Misc:**
+  - don't use instanceof to detect arrays
+  ([3c2aee01](https://github.com/angular/angular.js/commit/3c2aee01b0b299995eb92f4255159585b0f53c10),
+   [#1966](https://github.com/angular/angular.js/issues/1966))
+  - angular.forEach should correctly iterate over objects with length prop
+  ([ec54712f](https://github.com/angular/angular.js/commit/ec54712ff3dab1ade44f94fa82d67edeffa79a1d),
+   [#1840](https://github.com/angular/angular.js/issues/1840))
+
+
+
 <a name="1.1.2"></a>
 # 1.1.2 tofu-animation (2013-01-22)
 
