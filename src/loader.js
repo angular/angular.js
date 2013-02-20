@@ -163,6 +163,10 @@ function setupModuleLoader(window) {
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
 
+          //
+          animation: invokeLater('$animationProvider', 'register'),
+          //
+
           /**
            * @ngdoc method
            * @name angular.Module#filter
