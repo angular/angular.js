@@ -652,9 +652,14 @@ function $CompileProvider($provide) {
           }
         }
 
-        if ((directiveValue = directive.template)) {
+        if (directive.template) {
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
+
+          directiveValue = (isFunction(directive.template))
+              ? directive.template($compileNode, templateAttrs)
+              : directive.template;
+
           directiveValue = denormalizeTemplate(directiveValue);
 
           if (directive.replace) {
@@ -977,11 +982,14 @@ function $CompileProvider($provide) {
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
             controller: null, templateUrl: null, transclude: null, scope: null
-          });
+          }),
+          templateUrl = (isFunction(origAsyncDirective.templateUrl))
+              ? origAsyncDirective.templateUrl($compileNode, tAttrs)
+              : origAsyncDirective.templateUrl;
 
       $compileNode.html('');
 
-      $http.get(origAsyncDirective.templateUrl, {cache: $templateCache}).
+      $http.get(templateUrl, {cache: $templateCache}).
         success(function(content) {
           var compileNode, tempTemplateAttrs, $template;
 
