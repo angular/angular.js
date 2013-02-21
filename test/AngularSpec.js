@@ -658,7 +658,7 @@ describe('angular', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
-      expect(element.data('$injector')).toBe(injector);
+      expect(element.injector()).toBe(injector);
       dealoc(element);
     });
 
@@ -671,6 +671,78 @@ describe('angular', function() {
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
+    });
+
+
+    describe('deferred bootstrap', function() {
+      var originalName = window.name,
+          element;
+
+      beforeEach(function() {
+        window.name = '';
+        element = jqLite('<div>{{1+2}}</div>');
+      });
+
+      afterEach(function() {
+        dealoc(element);
+        window.name = originalName;
+      });
+
+
+      it('should wait for extra modules', function() {
+        window.name = 'NG_DEFER_BOOTSTRAP!';
+        angular.bootstrap(element);
+
+        expect(element.html()).toBe('{{1+2}}');
+
+        angular.resumeBootstrap();
+
+        expect(element.html()).toBe('3');
+        expect(window.name).toEqual('');
+      });
+
+
+      it('should load extra modules', function() {
+        element = jqLite('<div>{{1+2}}</div>');
+        window.name = 'NG_DEFER_BOOTSTRAP!';
+
+        var bootstrapping = jasmine.createSpy('bootstrapping');
+        angular.bootstrap(element, [bootstrapping]);
+
+        expect(bootstrapping).not.toHaveBeenCalled();
+        expect(element.injector()).toBeUndefined();
+
+        angular.module('addedModule', []).value('foo', 'bar');
+        angular.resumeBootstrap(['addedModule']);
+
+        expect(bootstrapping).toHaveBeenCalledOnce();
+        expect(element.injector().get('foo')).toEqual('bar');
+      });
+
+
+      it('should not defer bootstrap without window.name cue', function() {
+        angular.bootstrap(element, []);
+        angular.module('addedModule', []).value('foo', 'bar');
+
+        expect(function() {
+          element.injector().get('foo');
+        }).toThrow('Unknown provider: fooProvider <- foo');
+
+        expect(element.injector().get('$http')).toBeDefined();
+      });
+
+
+      it('should restore the original window.name after bootstrap', function() {
+        window.name = 'NG_DEFER_BOOTSTRAP!my custom name';
+        angular.bootstrap(element);
+
+        expect(element.html()).toBe('{{1+2}}');
+
+        angular.resumeBootstrap();
+
+        expect(element.html()).toBe('3');
+        expect(window.name).toEqual('my custom name');
+      });
     });
   });
 
