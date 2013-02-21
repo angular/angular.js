@@ -664,6 +664,47 @@ describe('angular', function() {
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
     });
+
+    it('should wait for extra modules', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      var origHash = window.location.hash;
+      window.location.hash = origHash + '_WAITFORMODULES';
+      angular.bootstrap(element);
+
+      expect(element.html()).toBe('{{1+2}}');
+
+      angular.resumeBootstrapWithExtraModules();
+
+      expect(element.html()).toBe('3');
+      expect(window.location.hash).toEqual(origHash);
+      dealoc(element);
+    });
+
+    it('should load extra modules', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      window.location.hash += '_WAITFORMODULES';
+      angular.bootstrap(element, []);
+
+      expect(element.data('$injector')).toBeUndefined();
+
+      angular.module('addedModule', []).value('foo', 'bar');
+      angular.resumeBootstrapWithExtraModules(['addedModule']);
+
+      expect(element.data('$injector').get('foo')).toEqual('bar');
+      dealoc(element);
+    });
+
+    it('should not load extra modules without URL cue', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element, []);
+
+      angular.module('addedModule', []).value('foo', 'bar');
+
+      expect(function() {
+        element.data('$injector').get('foo');
+      }).toThrow('Unknown provider: fooProvider <- foo');
+      dealoc(element);
+    });
   });
 
 
@@ -673,7 +714,7 @@ describe('angular', function() {
           toBe('<ng-abc x="2A">');
     });
   });
-  
+
   describe('startingTag', function() {
     it('should allow passing in Nodes instead of Elements', function() {
       var txtNode = document.createTextNode('some text');
@@ -741,11 +782,11 @@ describe('angular', function() {
   describe('noConflict', function() {
     var globalAngular;
     beforeEach(function() {
-      globalAngular = angular;  
+      globalAngular = angular;
     });
 
     afterEach(function() {
-      angular = globalAngular;  
+      angular = globalAngular;
     });
 
     it('should return angular', function() {
@@ -757,7 +798,7 @@ describe('angular', function() {
       var a = angular.noConflict();
       expect(angular).toBeUndefined();
     });
-      
+
   });
 
 });

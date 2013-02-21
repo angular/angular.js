@@ -58,7 +58,7 @@ var /** holds major version number for IE or NaN for real browsers */
     toString          = Object.prototype.toString,
 
 
-    _angular          = window.angular, 
+    _angular          = window.angular,
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
@@ -964,22 +964,37 @@ function angularInit(element, bootstrap) {
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
-  element = jqLite(element);
-  modules = modules || [];
-  modules.unshift(['$provide', function($provide) {
-    $provide.value('$rootElement', element);
-  }]);
-  modules.unshift('ng');
-  var injector = createInjector(modules);
-  injector.invoke(
-    ['$rootScope', '$rootElement', '$compile', '$injector', function(scope, element, compile, injector){
-      scope.$apply(function() {
-        element.data('$injector', injector);
-        compile(element)(scope);
+  var resumeBootstrapInternal = function() {
+    element = jqLite(element);
+    modules = modules || [];
+    modules.unshift(['$provide', function($provide) {
+      $provide.value('$rootElement', element);
+    }]);
+    modules.unshift('ng');
+    var injector = createInjector(modules);
+    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector',
+       function(scope, element, compile, injector) {
+        scope.$apply(function() {
+          element.data('$injector', injector);
+          compile(element)(scope);
+        });
+      }]
+    );
+    return injector;
+  };
+
+  if (window.location.hash.match(/_WAITFORMODULES$/)) {
+    window.location.hash = window.location.hash.replace('_WAITFORMODULES', '');
+
+    window.angular.resumeBootstrapWithExtraModules = function(extraModules) {
+      forEach(extraModules, function(module) {
+        modules.push(module);
       });
-    }]
-  );
-  return injector;
+      resumeBootstrapInternal();
+    };
+    return null;
+  }
+  return resumeBootstrapInternal();
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
