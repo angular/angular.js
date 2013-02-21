@@ -305,6 +305,83 @@ describe('ngModel', function() {
     expect(element).toBeInvalid();
     expect(element).toHaveClass('ng-invalid-required');
   }));
+
+
+  it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty) on multiple input',
+      inject(function($compile, $rootScope, $sniffer) {
+    var element = $compile('<input type="email" ng-model="value" multiple />')($rootScope);
+    $rootScope.$digest();
+
+    expect(element).toBeValid();
+    expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'invalid-email';
+    });
+    expect(element).toBeInvalid();
+    expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    element.val('invalid-again');
+    browserTrigger(element, ($sniffer.hasEvent('input')) ? 'input' : 'change');
+    expect(element).toBeInvalid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com';
+    });    
+    expect(element).toBeValid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen';
+    });
+    expect(element).toBeInvalid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it';
+    });
+    expect(element).toBeValid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.';
+    });
+    expect(element).toBeInvalid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
+
+    $rootScope.$apply(function() {
+      $rootScope.value = 'vojta@google.com, sebastian@janzen.it, sebastian+2@janzen.it';
+    });
+    expect(element).toBeValid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
+    dealoc(element);
+  }));
+
+  it('should set invalid classes on init and multiple', inject(function($compile, $rootScope) {
+    var element = $compile('<input type="email" ng-model="value" required multiple />')($rootScope);
+    $rootScope.$digest();
+
+    expect(element).toBeInvalid();
+    expect(element).toHaveClass('ng-invalid-required');
+  }));
 });
 
 
