@@ -53,6 +53,8 @@
  *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of the
  *     parameter value is a function, it will be executed every time when a param value needs to be
  *     obtained for a request (unless the param was overriden).
+ *   - **`url`** – {string} – action specific `url` override. The url templating is supported just like
+ *     for the resource-level urls.
  *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
  *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
@@ -306,30 +308,32 @@ angular.module('ngResource', ['ng']).
     function Route(template, defaults) {
       this.template = template = template + '#';
       this.defaults = defaults || {};
-      var urlParams = this.urlParams = {};
-      forEach(template.split(/\W/), function(param){
-        if (param && (new RegExp("(^|[^\\\\]):" + param + "\\W").test(template))) {
-          urlParams[param] = true;
-        }
-      });
-      this.template = template.replace(/\\:/g, ':');
+      this.urlParams = {};
     }
 
     Route.prototype = {
-      setUrlParams: function(config, params) {
+      setUrlParams: function(config, params, actionUrl) {
         var self = this,
-            url = this.template,
+            url = actionUrl || self.template,
             val,
             encodedVal;
 
+        var urlParams = self.urlParams = {};
+        forEach(url.split(/\W/), function(param){
+          if (param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
+              urlParams[param] = true;
+          }
+        });
+        url = url.replace(/\\:/g, ':');
+
         params = params || {};
-        forEach(this.urlParams, function(_, urlParam){
+        forEach(self.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
           if (angular.isDefined(val) && val !== null) {
             encodedVal = encodeUriSegment(val);
-            url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+            url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");
           } else {
-            url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W)", "g"), function(match,
+            url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match,
                 leadingSlashes, tail) {
               if (tail.charAt(0) == '/') {
                 return tail;
@@ -427,7 +431,7 @@ angular.module('ngResource', ['ng']).
             }
           });
           httpConfig.data = data;
-          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params));
+          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
 
           function markResolved() { value.$resolved = true; }
 
