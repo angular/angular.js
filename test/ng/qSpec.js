@@ -683,7 +683,7 @@ describe('q', function() {
   });
 
 
-  describe('all', function() {
+  describe('all (array)', function() {
     it('should resolve all of nothing', function() {
       var result;
       q.all([]).then(function(r) { result = r; });
@@ -742,6 +742,72 @@ describe('q', function() {
     });
   });
 
+  describe('all (hash)', function() {
+    it('should resolve all of nothing', function() {
+      var result;
+      q.all({}).then(function(r) { result = r; });
+      mockNextTick.flush();
+      expect(result).toEqual({});
+    });
+
+
+    it('should take a hash of promises and return a promise for a hash of results', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.all({en: promise, fr: deferred1.promise, es: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred, 'hi');
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'hola');
+      expect(logStr()).toBe('');
+      syncResolve(deferred1, 'salut');
+      expect(logStr()).toBe('success({en:hi,es:hola,fr:salut})');
+    });
+
+
+    it('should reject the derived promise if at least one of the promises in the hash is rejected',
+        function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.all({en: promise, fr: deferred1.promise, es: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'hola');
+      expect(logStr()).toBe('');
+      syncReject(deferred1, 'oops');
+      expect(logStr()).toBe('error(oops)');
+    });
+
+
+    it('should ignore multiple resolutions of an (evil) hash promise', function() {
+      var evilPromise = {
+        then: function(success, error) {
+          evilPromise.success = success;
+          evilPromise.error = error;
+        }
+      }
+
+      q.all({good: promise, evil: evilPromise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      evilPromise.success('first');
+      evilPromise.success('muhaha');
+      evilPromise.error('arghhh');
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success({evil:first,good:done})');
+    });
+
+    it('should handle correctly situation when given the same promise several times', function() {
+      q.all({first: promise, second: promise, third: promise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success({first:done,second:done,third:done})');
+    });
+  });
 
   describe('exception logging', function() {
     var mockExceptionLogger = {
