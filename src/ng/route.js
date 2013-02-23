@@ -129,6 +129,24 @@ function $RouteProvider(){
     return this;
   };
 
+  var caseSensitive = true;
+  /**
+   * @ngdoc method
+   * @name ng.$routeProvider#caseSensitive
+   * @methodOf ng.$routeProvider
+   *
+   * @description
+   * Defines whether matching of routes is case sensitive or not (defaults to case sensitive)
+   * 
+   *
+   * @param {boolean} isCaseSensitive Whether future routing matches should be case sensitive or not.
+   * @returns {Object} self
+   */
+  this.caseSensitive = function(isCaseSensitive) {
+    caseSensitive = isCaseSensitive;
+
+    return this;
+  }
 
   this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache',
       function( $rootScope,   $location,   $routeParams,   $q,   $injector,   $http,   $templateCache) {
@@ -351,6 +369,7 @@ function $RouteProvider(){
 
       // Escape regexp special characters.
       when = '^' + when.replace(/[-\/\\^$:*+?.()|[\]{}]/g, "\\$&") + '$';
+
       var regex = '',
           params = [],
           dst = {};
@@ -377,7 +396,7 @@ function $RouteProvider(){
       // Append trailing path part.
       regex += when.substr(lastMatchedIndex);
 
-      var match = on.match(new RegExp(regex));
+      var match = on.match(new RegExp(regex, !caseSensitive ? 'i' : ''));
       if (match) {
         forEach(params, function(name, index) {
           dst[name] = match[index + 1];
