@@ -178,6 +178,28 @@ describe('$compile', function() {
       expect(calcCacheSize()).toEqual(0);
     });
 
+
+    it('should not blow up when elements with no childNodes property are compiled', inject(
+        function($compile, $rootScope) {
+      // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
+      // the plugin's context rather than the usual DOM apis are exposed on this element, so
+      // childNodes might not exist.
+      if (msie < 9) return;
+
+      element = jqLite('<div>{{1+2}}</div>');
+      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+
+      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      expect(element[0].childNodes[1].textContent).toBe('fake node');
+
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+
+      // object's children can't be compiled in this case, so we expect them to be raw
+      expect(element.html()).toBe("3");
+    }));
+
+
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
         element = $compile(

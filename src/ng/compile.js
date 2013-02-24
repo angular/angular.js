@@ -433,7 +433,7 @@ function $CompileProvider($provide) {
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
             : null;
 
-        childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes.length)
+        childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes || !nodeList[i].childNodes.length)
             ? null
             : compileNodes(nodeList[i].childNodes,
                  nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
