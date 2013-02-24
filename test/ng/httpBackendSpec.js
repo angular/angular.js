@@ -110,7 +110,7 @@ describe('$httpBackend', function() {
 
       this.send = function() {
         this.status = 200;
-        this.responseText = 'response';
+        this.response = 'response';
         this.readyState = 4;
         this.onreadystatechange();
       };
@@ -248,7 +248,7 @@ describe('$httpBackend', function() {
     function respond(status, content) {
       xhr = MockXhr.$$lastInstance;
       xhr.status = status;
-      xhr.responseText = content;
+      xhr.response = content;
       xhr.readyState = 4;
       xhr.onreadystatechange();
     }

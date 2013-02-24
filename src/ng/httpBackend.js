@@ -87,7 +87,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           }
           // end of the workaround.
 
-          completeRequest(callback, status || xhr.status, xhr.response || xhr.responseText,
+          completeRequest(callback, status || xhr.status, xhr.response,
                           responseHeaders);
         }
       };
