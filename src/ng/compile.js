@@ -156,7 +156,7 @@ function $CompileProvider($provide) {
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
       MULTI_ROOT_TEMPLATE_ERROR = 'Template must have exactly one root element. was: ',
-      urlSanitizationWhitelist = /^\s*(https?|ftp|mailto):/;
+      urlSanitizationWhitelist = /^\s*(https?|ftp|mailto|file):/;
 
 
   /**
