@@ -2591,4 +2591,41 @@ describe('$compile', function() {
       });
     });
   });
+
+  describe('ngAttr* attribute binding', function() {
+
+    it('should bind after digest but not before', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng-attr-test="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+
+    it('should work with different prefixes', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test2')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+      expect(element.attr('test2')).toBe('Misko');
+      expect(element.attr('test3')).toBe('Misko');
+    }));
+
+
+    it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}"></span>')($rootScope);
+      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test3')).toBeUndefined();
+      expect(element.attr('test4')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test2')).toBe('Misko');
+      expect(element.attr('test3')).toBe('Misko');
+      expect(element.attr('test4')).toBe('Misko');
+    }));
+  });
 });
