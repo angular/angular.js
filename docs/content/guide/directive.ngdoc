@@ -53,7 +53,7 @@ the following example.
   </doc:scenario>
 </doc:example>
 
-# String interpolation
+# Text and attribute bindings
 
 During the compilation process the {@link api/ng.$compile compiler} matches text and
 attributes using the {@link api/ng.$interpolate $interpolate} service to see if they
@@ -65,6 +65,31 @@ here:
 <pre>
 <a href="img/{{username}}.jpg">Hello {{username}}!</a>
 </pre>
+
+
+# ngAttr attribute bindings
+
+If an attribute with a binding is prefixed with `ngAttr` prefix (denormalized prefix: 'ng-attr-',
+'ng:attr-') then during the compilation the prefix will be removed and the binding will be applied
+to an unprefixed attribute. This allows binding to attributes that would otherwise be eagerly
+processed by browsers in their uncompilled form (e.g. `img[src]` or svg's `circle[cx]` attributes).
+
+For example, considering template:
+
+    <svg>
+      <circle ng-attr-cx="{{cx}}"></circle>
+    </svg>
+
+and model cx set to 5, will result in rendering this dom:
+
+    <svg>
+      <circle cx="5"></circle>
+    </svg>
+
+If you were to bind `{{cx}}` directly to the `cx` attribute, you'd get the following error:
+`Error: Invalid value for attribute cx="{{cx}}"`. With `ng-attr-cx` you can work around this
+problem.
+
 
 # Compilation process, and directive matching
 

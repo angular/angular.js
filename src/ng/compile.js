@@ -349,7 +349,8 @@ function $CompileProvider($provide) {
             ? identity
             : function denormalizeTemplate(template) {
               return template.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
-            };
+        },
+        NG_ATTR_BINDING = /^ngAttr[A-Z]/;
 
 
     return compile;
@@ -514,11 +515,16 @@ function $CompileProvider($provide) {
               directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority);
 
           // iterate over the attributes
-          for (var attr, name, nName, value, nAttrs = node.attributes,
+          for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             attr = nAttrs[j];
             if (attr.specified) {
               name = attr.name;
+              // support ngAttr attribute binding
+              ngAttrName = directiveNormalize(name);
+              if (NG_ATTR_BINDING.test(ngAttrName)) {
+                name = ngAttrName.substr(6).toLowerCase();
+              }
               nName = directiveNormalize(name.toLowerCase());
               attrsMap[nName] = name;
               attrs[nName] = value = trim((msie && name == 'href')
