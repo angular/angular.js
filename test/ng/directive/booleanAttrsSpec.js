@@ -88,9 +88,14 @@ describe('boolean attr directives', function() {
 
 
 describe('ngSrc', function() {
+  var element;
+
+  afterEach(function() {
+    dealoc(element);
+  });
 
   it('should interpolate the expression and bind to src', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+    element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('src')).toEqual('some/');
@@ -99,8 +104,43 @@ describe('ngSrc', function() {
       $rootScope.id = 1;
     });
     expect(element.attr('src')).toEqual('some/1');
+  }));
 
-    dealoc(element);
+  it('should set the attribute when ngAttrExpression true', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-src="some/{{id}}" ng-attr-when="true"></div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.attr('src')).toEqual('some/');
+
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('src')).toEqual('some/1');
+  }));
+
+  it('should set the attribute when ngAttrExpression true only when expression resolves to true', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-src="some/{{id}}" ng-attr-when="flipAttribute"></div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.attr('src')).toBeUndefined();
+
+    $rootScope.$apply(function() {
+        $rootScope.id = 1;
+        $rootScope.flipAttribute = true;
+    });
+    expect(element.attr('src')).toEqual('some/1');
+  }));
+
+  it('should not set the attribute when ngAttrExpression true when expression remains false', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-src="some/{{id}}" ng-attr-when="false"></div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.attr('src')).toBeUndefined();
+
+    $rootScope.$apply(function() {
+        $rootScope.id = 1;
+    });
+    expect(element.attr('src')).toBeUndefined();
   }));
 
   if (msie) {
@@ -110,7 +150,7 @@ describe('ngSrc', function() {
       // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
       // to set the property as well to achieve the desired effect
 
-      var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+      element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
 
       $rootScope.$digest();
       expect(element.prop('src')).toEqual('some/');
@@ -119,8 +159,6 @@ describe('ngSrc', function() {
         $rootScope.id = 1;
       });
       expect(element.prop('src')).toEqual('some/1');
-
-      dealoc(element);
     }));
   }
 });
@@ -145,6 +183,40 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('some/1');
   }));
 
+  it('should set the attribute when ngAttrWhen is true', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-href="some/{{id}}" ng-attr-when="true"></div>')($rootScope)
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('some/');
+
+    $rootScope.$apply(function() {
+        $rootScope.id = 1;
+    });
+    expect(element.attr('href')).toEqual('some/1');
+  }));
+
+  it('should set the attribute when ngAttrWhen resolves true', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-href="some/{{id}}" ng-attr-when="flipAttribute"></div>')($rootScope)
+    $rootScope.$digest();
+    expect(element.attr('href')).toBeUndefined();
+
+    $rootScope.$apply(function() {
+        $rootScope.id = 1;
+        $rootScope.flipAttribute = true;
+    });
+    expect(element.attr('href')).toEqual('some/1');
+  }));
+
+  it('should not set the attribute when ngAttrWhen not resolving true', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-href="some/{{id}}" ng-attr-when="false"></div>')($rootScope)
+    $rootScope.$digest();
+    expect(element.attr('href')).toBeUndefined();
+
+    $rootScope.$apply(function() {
+        $rootScope.id = 1;
+    });
+    expect(element.attr('href')).toBeUndefined();
+  }));
+
 
   it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
     element = $compile('<a ng-href="{{url}}" rel="{{rel}}"></a>')($rootScope);
@@ -157,8 +229,9 @@ describe('ngHref', function() {
 
 
   it('should bind href even if no interpolation', inject(function($rootScope, $compile) {
-    element = $compile('<a ng-href="http://server"></a>')($rootScope)
-    $rootScope.$digest();
-    expect(element.attr('href')).toEqual('http://server');
-  }));
+        element = $compile('<a ng-href="http://server"></a>')($rootScope)
+        $rootScope.$digest();
+        expect(element.attr('href')).toEqual('http://server');
+    }));
+
 });

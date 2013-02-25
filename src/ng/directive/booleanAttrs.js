@@ -22,8 +22,14 @@
  * <a ng-href="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
  *
+ * Use optional `ngAttrWhen` expression to prevent or defer setting the attribute:
+ * <pre>
+ * <a ng-href="http://www.gravatar.com/avatar/{{hash}}" ng-attr-when="angular.isString(hash)" />
+ * </pre>
+ *
  * @element A
  * @param {template} ngHref any string which can contain `{{}}` markup.
+ * @param {template} ngAttrWhen any boolean expression
  *
  * @example
  * This example uses `link` variable inside `href` attribute:
@@ -101,8 +107,15 @@
  * <img ng-src="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
  *
+ * Use optional `ngAttrWhen` expression to prevent or defer setting the attribute:
+ *
+ * <pre>
+ * <img ng-src="http://www.gravatar.com/avatar/{{hash}}" ng-attr-when="angular.isString(hash)" />
+ * </pre>
+ *
  * @element IMG
  * @param {template} ngSrc any string which can contain `{{}}` markup.
+ * @param {template} ngAttrWhen any boolean expression
  */
 
 /**
@@ -332,7 +345,7 @@ forEach(['src', 'href'], function(attrName) {
     return {
       priority: 99, // it needs to run after the attributes are interpolated
       link: function(scope, element, attr) {
-        attr.$observe(normalized, function(value) {
+        var setAttr = function (value) {
           if (!value)
              return;
 
@@ -343,6 +356,15 @@ forEach(['src', 'href'], function(attrName) {
           // to set the property as well to achieve the desired effect.
           // we use attr[attrName] value since $set can sanitize the url.
           if (msie) element.prop(attrName, attr[attrName]);
+        };
+        attr.$observe(normalized, function(value) {
+          if (! angular.isUndefined(attr.ngAttrWhen)) {
+              if (toBoolean(scope.$eval(attr.ngAttrWhen))) {
+                  setAttr(value);
+              }
+          } else {
+              setAttr(value);
+          }
         });
       }
     };
