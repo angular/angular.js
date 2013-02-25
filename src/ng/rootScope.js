@@ -137,6 +137,7 @@ function $RootScopeProvider(){
       this.$$destroyed = false;
       this.$$asyncQueue = [];
       this.$$listeners = {};
+      this.$$isolateBindings = {};
     }
 
     /**
@@ -297,6 +298,14 @@ function $RootScopeProvider(){
         if (!isFunction(listener)) {
           var listenFn = compileToFn(listener || noop, 'listener');
           watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
+        }
+
+        if (typeof watchExp == 'string' && get.constant) {
+          var originalFn = watcher.fn;
+          watcher.fn = function(newVal, oldVal, scope) {
+            originalFn.call(this, newVal, oldVal, scope);
+            arrayRemove(array, watcher);
+          };
         }
 
         if (!array) {
@@ -618,10 +627,6 @@ function $RootScopeProvider(){
        * Listens on events of a given type. See {@link ng.$rootScope.Scope#$emit $emit} for discussion of
        * event life cycle.
        *
-       * @param {string} name Event name to listen on.
-       * @param {function(event)} listener Function to call when the event is emitted.
-       * @returns {function()} Returns a deregistration function for this listener.
-       *
        * The event listener function format is: `function(event, args...)`. The `event` object
        * passed into the listener has the following attributes:
        *
@@ -632,6 +637,10 @@ function $RootScopeProvider(){
        *     propagation (available only for events that were `$emit`-ed).
        *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag to true.
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
+       *
+       * @param {string} name Event name to listen on.
+       * @param {function(event, args...)} listener Function to call when the event is emitted.
+       * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -809,7 +818,7 @@ function $RootScopeProvider(){
 
     /**
      * function used as an initial value for watchers.
-     * because it's uniqueue we can easily tell it apart from other values
+     * because it's unique we can easily tell it apart from other values
      */
     function initWatchVal() {}
   }];

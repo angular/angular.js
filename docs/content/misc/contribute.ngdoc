@@ -222,7 +222,8 @@ To run the E2E test suite:
 
 To create and submit a change:
 
-1. Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code changes to be
+1. <a name="CLA"></a>
+   Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code changes to be
    accepted, the CLA must be signed. It's a quick process, we promise!
 
    For individuals we have a [simple click-through form](http://code.google.com/legal/individual-cla-v1.0.html). For

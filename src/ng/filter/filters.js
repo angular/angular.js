@@ -168,7 +168,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize) formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
   }
 
   parts.push(isNegative ? pattern.negPre : pattern.posPre);
@@ -211,8 +211,12 @@ function dateStrGetter(name, shortForm) {
 }
 
 function timeZoneGetter(date) {
-  var offset = date.getTimezoneOffset();
-  return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
+  var zone = -1 * date.getTimezoneOffset();
+  var paddedZone = (zone >= 0) ? "+" : "";
+
+  paddedZone += padNumber(zone / 60, 2) + padNumber(Math.abs(zone % 60), 2);
+
+  return paddedZone;
 }
 
 function ampmGetter(date, formats) {
@@ -237,6 +241,9 @@ var DATE_FORMATS = {
      m: dateGetter('Minutes', 1),
     ss: dateGetter('Seconds', 2),
      s: dateGetter('Seconds', 1),
+     // while ISO 8601 requires fractions to be prefixed with `.` or `,` 
+     // we can be just safely rely on using `sss` since we currently don't support single or two digit fractions
+   sss: dateGetter('Milliseconds', 3),
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: ampmGetter,
@@ -275,6 +282,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'m'`: Minute in hour (0-59)
  *   * `'ss'`: Second in minute, padded (00-59)
  *   * `'s'`: Second in minute (0-59)
+ *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
  *
@@ -319,7 +327,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
          expect(binding("1288323623006 | date:'medium'")).
             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
          expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
-            toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
+            toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
          expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
             toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
        });

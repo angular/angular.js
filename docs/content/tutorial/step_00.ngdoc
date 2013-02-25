@@ -109,7 +109,7 @@ __`app/index.html`:__
 
           <html ng-app>
 
-  The `ng-app` attribute is represents an Angular directive (named `ngApp`; Angular uses
+  The `ng-app` attribute represents an Angular directive (named `ngApp`; Angular uses
   `name-with-dashes` for attribute names and `camelCase` for the corresponding directive name)
   used to flag an element which Angular should consider to be the root element of our application.
   This gives application developers the freedom to tell Angular if the entire html page or only a
@@ -127,7 +127,7 @@ being the element on which the `ngApp` directive was defined.
 
 * Double-curly binding with an expression:
 
-          Nothing here {{'yet' + '!'}}`
+          Nothing here {{'yet' + '!'}}
 
   This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
   by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.

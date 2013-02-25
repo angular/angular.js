@@ -11,15 +11,25 @@
  *
  * The reasoning for this change is to allow easy creation of action links with `ngClick` directive
  * without changing the location or causing page reloads, e.g.:
- * <a href="" ng-click="model.$save()">Save</a>
+ * `<a href="" ng-click="model.$save()">Save</a>`
  */
 var htmlAnchorDirective = valueFn({
   restrict: 'E',
   compile: function(element, attr) {
-    // turn <a href ng-click="..">link</a> into a link in IE
-    // but only if it doesn't have name attribute, in which case it's an anchor
-    if (!attr.href) {
-      attr.$set('href', '');
+
+    if (msie <= 8) {
+
+      // turn <a href ng-click="..">link</a> into a stylable link in IE
+      // but only if it doesn't have name attribute, in which case it's an anchor
+      if (!attr.href && !attr.name) {
+        attr.$set('href', '');
+      }
+
+      // add a comment node to anchors to workaround IE bug that causes element content to be reset
+      // to new attribute content if attribute is updated with value containing @ and element also
+      // contains value with @
+      // see issue #1949
+      element.append(document.createComment('IE fix'));
     }
 
     return function(scope, element) {

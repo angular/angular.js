@@ -3,6 +3,7 @@
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ngDirective(function(scope, element, attr) {
+    var oldVal = undefined;
 
     scope.$watch(attr[name], ngClassWatchAction, true);
 
@@ -26,13 +27,14 @@ function classDirective(name, selector) {
     }
 
 
-    function ngClassWatchAction(newVal, oldVal) {
+    function ngClassWatchAction(newVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
           removeClass(oldVal);
         }
         addClass(newVal);
       }
+      oldVal = newVal;
     }
 
 
@@ -65,7 +67,7 @@ function classDirective(name, selector) {
  *
  * The directive won't add duplicate classes if a particular class was already set.
  *
- * When the expression changes, the previously added classes are removed and only then the classes
+ * When the expression changes, the previously added classes are removed and only then the
  * new classes are added.
  *
  * @element ANY

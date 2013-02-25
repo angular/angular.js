@@ -109,7 +109,7 @@ beforeEach(function() {
         if (this.actual.callCount != 1) {
           if (this.actual.callCount == 0) {
             return [
-              'Expected spy ' + this.actual.identity + ' to have been called with ' +
+              'Expected spy ' + this.actual.identity + ' to have been called once with ' +
                 jasmine.pp(expectedArgs) + ' but it was never called.',
               'Expected spy ' + this.actual.identity + ' not to have been called with ' +
                 jasmine.pp(expectedArgs) + ' but it was.'
@@ -117,16 +117,16 @@ beforeEach(function() {
           }
 
           return [
-            'Expected spy ' + this.actual.identity + ' to have been called with ' +
-              jasmine.pp(expectedArgs) + ' but it was never called.',
-            'Expected spy ' + this.actual.identity + ' not to have been called with ' +
+            'Expected spy ' + this.actual.identity + ' to have been called once with ' +
+              jasmine.pp(expectedArgs) + ' but it was called ' + this.actual.callCount + ' times.',
+            'Expected spy ' + this.actual.identity + ' not to have been called once with ' +
               jasmine.pp(expectedArgs) + ' but it was.'
           ];
         } else {
           return [
-            'Expected spy ' + this.actual.identity + ' to have been called with ' +
+            'Expected spy ' + this.actual.identity + ' to have been called once with ' +
               jasmine.pp(expectedArgs) + ' but was called with ' + jasmine.pp(this.actual.argsForCall),
-            'Expected spy ' + this.actual.identity + ' not to have been called with ' +
+            'Expected spy ' + this.actual.identity + ' not to have been called once with ' +
               jasmine.pp(expectedArgs) + ' but was called with ' + jasmine.pp(this.actual.argsForCall)
           ];
         }

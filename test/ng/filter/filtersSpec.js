@@ -71,6 +71,17 @@ describe('filters', function() {
       var num = formatNumber(123.1116, pattern, ',', '.');
       expect(num).toBe('123.112');
     });
+
+		it('should format the same with string as well as numeric fractionSize', function(){
+			var num = formatNumber(123.1, pattern, ',', '.', "0");
+      expect(num).toBe('123');
+			var num = formatNumber(123.1, pattern, ',', '.', 0);
+      expect(num).toBe('123');
+			var num = formatNumber(123.1, pattern, ',', '.', "3");
+      expect(num).toBe('123.100');
+			var num = formatNumber(123.1, pattern, ',', '.', 3);
+      expect(num).toBe('123.100');
+		});
   });
 
   describe('currency', function() {
@@ -162,9 +173,9 @@ describe('filters', function() {
 
   describe('date', function() {
 
-    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
-    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
-    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
+    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
+    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
+    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
 
     var date;
@@ -192,14 +203,23 @@ describe('filters', function() {
       expect(date(morning, "yy-MM-dd HH:mm:ss")).
                       toEqual('10-09-03 07:05:08');
 
+      expect(date(morning, "yy-MM-dd HH:mm:ss.sss")).
+                      toEqual('10-09-03 07:05:08.001');
+
       expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
-                      toEqual('2010-9-3 12=0:5:8AM0500');
+                      toEqual('2010-9-3 12=0:5:8AM-0500');
 
       expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=00:05:08AM0500');
+                      toEqual('2010-09-03 12=00:05:08AM-0500');
+
+      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+                      toEqual('2010-09-03 12=00:05:08.123AM-0500');
 
       expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=12:05:08PM0500');
+                      toEqual('2010-09-03 12=12:05:08PM-0500');
+
+      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+                      toEqual('2010-09-03 12=12:05:08.012PM-0500');
 
       expect(date(noon, "EEE, MMM d, yyyy")).
                       toEqual('Fri, Sep 3, 2010');
@@ -211,14 +231,30 @@ describe('filters', function() {
                       toEqual('September 03, 1');
     });
 
+    it('should format timezones correctly (as per ISO_8601)', function() {
+      //Note: TzDate's first argument is offset, _not_ timezone.
+      var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
+      var eastOfUTC = new angular.mock.TzDate(-5, '2010-09-03T12:05:08.000Z');
+      var westOfUTC = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z');
+
+      expect(date(utc, "yyyy-MM-ddTHH:mm:ssZ")).
+                    toEqual('2010-09-03T12:05:08+0000')
+
+      expect(date(eastOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
+                    toEqual('2010-09-03T17:05:08+0500')
+
+      expect(date(westOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
+                    toEqual('2010-09-03T07:05:08-0500')
+    });
+
     it('should treat single quoted strings as string literals', function() {
       expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ")).
-                      toEqual('2010de axdd adZ 12=0:5:8AM0500');
+                      toEqual('2010de axdd adZ 12=0:5:8AM-0500');
     });
 
     it('should treat a sequence of two single quotes as a literal single quote', function() {
       expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
-                      toEqual("2010de a'dd adZ 12=0:5:8AM0500");
+                      toEqual("2010de a'dd adZ 12=0:5:8AM-0500");
     });
 
     it('should accept default formats', function() {

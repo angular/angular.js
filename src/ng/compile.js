@@ -155,7 +155,8 @@ function $CompileProvider($provide) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      MULTI_ROOT_TEMPLATE_ERROR = 'Template must have exactly one root element. was: ';
+      MULTI_ROOT_TEMPLATE_ERROR = 'Template must have exactly one root element. was: ',
+      urlSanitizationWhitelist = /^\s*(https?|ftp|mailto):/;
 
 
   /**
@@ -209,11 +210,41 @@ function $CompileProvider($provide) {
   };
 
 
+  /**
+   * @ngdoc function
+   * @name ng.$compileProvider#urlSanitizationWhitelist
+   * @methodOf ng.$compileProvider
+   * @function
+   *
+   * @description
+   * Retrieves or overrides the default regular expression that is used for whitelisting of safe
+   * urls during a[href] sanitization.
+   *
+   * The sanitization is a security measure aimed at prevent XSS attacks via html links.
+   *
+   * Any url about to be assigned to a[href] via data-binding is first normalized and turned into an
+   * absolute url. Afterwards the url is matched against the `urlSanitizationWhitelist` regular
+   * expression. If a match is found the original url is written into the dom. Otherwise the
+   * absolute url is prefixed with `'unsafe:'` string and only then it is written into the DOM.
+   *
+   * @param {RegExp=} regexp New regexp to whitelist urls with.
+   * @returns {RegExp|ng.$compileProvider} Current RegExp if called without value or self for
+   *    chaining otherwise.
+   */
+  this.urlSanitizationWhitelist = function(regexp) {
+    if (isDefined(regexp)) {
+      urlSanitizationWhitelist = regexp;
+      return this;
+    }
+    return urlSanitizationWhitelist;
+  };
+
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope',
+            '$controller', '$rootScope', '$document',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope) {
+             $controller,   $rootScope,   $document) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -235,7 +266,8 @@ function $CompileProvider($provide) {
        */
       $set: function(key, value, writeAttr, attrName) {
         var booleanKey = getBooleanAttrName(this.$$element[0], key),
-            $$observers = this.$$observers;
+            $$observers = this.$$observers,
+            normalizedVal;
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -253,6 +285,19 @@ function $CompileProvider($provide) {
             this.$attr[key] = attrName = snake_case(key, '-');
           }
         }
+
+
+        // sanitize a[href] values
+        if (nodeName_(this.$$element[0]) === 'A' && key === 'href') {
+          urlSanitizationNode.setAttribute('href', value);
+
+          // href property always returns normalized absolute url, so we can match against that
+          normalizedVal = urlSanitizationNode.href;
+          if (!normalizedVal.match(urlSanitizationWhitelist)) {
+            this[key] = value = 'unsafe:' + normalizedVal;
+          }
+        }
+
 
         if (writeAttr !== false) {
           if (value === null || value === undefined) {
@@ -297,7 +342,8 @@ function $CompileProvider($provide) {
       }
     };
 
-    var startSymbol = $interpolate.startSymbol(),
+    var urlSanitizationNode = $document[0].createElement('a'),
+        startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
         denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
             ? identity
@@ -330,7 +376,14 @@ function $CompileProvider($provide) {
         var $linkNode = cloneConnectFn
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
-        $linkNode.data('$scope', scope);
+
+        // Attach scope only to non-text nodes.
+        for(var i = 0, ii = $linkNode.length; i<ii; i++) {
+          var node = $linkNode[i];
+          if (node.nodeType == 1 /* element */ || node.nodeType == 9 /* document */) {
+            $linkNode.eq(i).data('$scope', scope);
+          }
+        }
         safeAddClass($linkNode, 'ng-scope');
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
@@ -380,7 +433,7 @@ function $CompileProvider($provide) {
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
             : null;
 
-        childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes.length)
+        childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes || !nodeList[i].childNodes.length)
             ? null
             : compileNodes(nodeList[i].childNodes,
                  nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
@@ -420,6 +473,7 @@ function $CompileProvider($provide) {
                   (function(transcludeFn) {
                     return function(cloneFn) {
                       var transcludeScope = scope.$new();
+                      transcludeScope.$$transcluded = true;
 
                       return transcludeFn(transcludeScope, cloneFn).
                           bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
@@ -725,6 +779,8 @@ function $CompileProvider($provide) {
                 lastValue,
                 parentGet, parentSet;
 
+            scope.$$isolateBindings[scopeName] = mode + attrName;
+
             switch (mode) {
 
               case '@': {
@@ -732,6 +788,10 @@ function $CompileProvider($provide) {
                   scope[scopeName] = value;
                 });
                 attrs.$$observers[attrName].$$scope = parentScope;
+                if( attrs[attrName] ) {
+                  // If the attribute has been provided then we trigger an interpolation to ensure the value is there for use in the link fn
+                  scope[scopeName] = $interpolate(attrs[attrName])(parentScope);
+                }
                 break;
               }
 
@@ -935,7 +995,7 @@ function $CompileProvider($provide) {
           }
 
           directives.unshift(derivedSyncDirective);
-          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, $compileNode, tAttrs, childTranscludeFn);
+          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn);
           afterTemplateChildLinkFn = compileNodes($compileNode.contents(), childTranscludeFn);
 
 
@@ -1015,9 +1075,9 @@ function $CompileProvider($provide) {
     function addAttrInterpolateDirective(node, directives, value, name) {
       var interpolateFn = $interpolate(value, true);
 
-
       // no interpolation found -> ignore
       if (!interpolateFn) return;
+
 
       directives.push({
         priority: 100,
@@ -1030,7 +1090,7 @@ function $CompileProvider($provide) {
             interpolateFn = $interpolate(attr[name], true);
           }
 
-          attr[name] = undefined;
+          attr[name] = interpolateFn(scope);
           ($$observers[name] || ($$observers[name] = [])).$$inter = true;
           (attr.$$observers && attr.$$observers[name].$$scope || scope).
             $watch(interpolateFn, function interpolateFnWatchAction(value) {
