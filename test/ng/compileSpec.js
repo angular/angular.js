@@ -2479,6 +2479,10 @@ describe('$compile', function() {
       $rootScope.testUrl = "mailto:foo@bar.com";
       $rootScope.$apply();
       expect(element.attr('href')).toBe('mailto:foo@bar.com');
+
+      $rootScope.testUrl = "file:///foo/bar.html";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('file:///foo/bar.html');
     }));
 
 
