@@ -1018,10 +1018,10 @@ function $CompileProvider($provide) {
 
 
           while(linkQueue.length) {
-            var controller = linkQueue.pop(),
-                linkRootElement = linkQueue.pop(),
-                beforeTemplateLinkNode = linkQueue.pop(),
-                scope = linkQueue.pop(),
+            var scope = linkQueue.shift(),
+                beforeTemplateLinkNode = linkQueue.shift(),
+                linkRootElement = linkQueue.shift(),
+                controller = linkQueue.shift(),
                 linkNode = compileNode;
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
