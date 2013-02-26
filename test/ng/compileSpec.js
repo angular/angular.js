@@ -741,12 +741,16 @@ describe('$compile', function() {
               $rootScope.$digest();
 
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>',
+                  '<div><b class="i-hello"></b><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
 
               $httpBackend.flush();
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello!</span><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
             }
         ));
 
@@ -773,8 +777,10 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
 
@@ -803,8 +809,10 @@ describe('$compile', function() {
               element = template($rootScope);
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
 
@@ -1491,13 +1499,13 @@ describe('$compile', function() {
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet !</option>' +
+                  '<option value="">Greet !</option>' +
                 '</select>');
       $rootScope.name = 'Misko';
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet Misko!</option>' +
+                  '<option value="">Greet Misko!</option>' +
                 '</select>');
     }));
 
