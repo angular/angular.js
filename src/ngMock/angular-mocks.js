@@ -1686,7 +1686,6 @@ window.jstestdriver && (function(window) {
    * @description
    *
    * *NOTE*: This is function is also published on window for easy access.<br>
-   * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
    *
    * This function registers a module configuration code. It collects the configuration information
    * which will be used when the injector is created by {@link angular.mock.inject inject}.
@@ -1719,7 +1718,6 @@ window.jstestdriver && (function(window) {
    * @description
    *
    * *NOTE*: This is function is also published on window for easy access.<br>
-   * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
    *
    * The inject function wraps a function into an injectable function. The inject() creates new
    * instance of {@link AUTO.$injector $injector} per test, which is then used for
