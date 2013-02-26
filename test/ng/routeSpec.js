@@ -24,7 +24,6 @@ describe('$route', function() {
       $routeProvider.when('/Book/:book/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
-      $routeProvider.caseSensitive(true);
     });
     inject(function($route, $location, $rootScope) {
       $rootScope.$on('$routeChangeStart', function(event, next, current) {
@@ -45,12 +44,6 @@ describe('$route', function() {
       $httpBackend.flush();
       expect(log).toEqual('before();after();');
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
-
-      log = '';
-      $location.path('/BOOK/Moby/CHAPTER/Intro').search('p=123');
-      $rootScope.$digest();
-      expect(log).toEqual('before();after();');
-      expect($route.current).toEqual(null);
 
       log = '';
       $location.path('/Blank').search('ignore');
@@ -125,18 +118,17 @@ describe('$route', function() {
     });
   });
 
-  it('should route and fire change event correctly when the case insensitive flag is triggered', function() {
+  it('should route and fire change event correctly whenever the case insensitive flag is utilized', function() {
     var log = '',
         lastRoute,
         nextRoute;
 
     module(function($routeProvider) {
       $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
-          {controller: noop, templateUrl: 'Chapter.html'});
+          {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
       $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
-      $routeProvider.caseSensitive(false);
     });
     inject(function($route, $location, $rootScope) {
       $rootScope.$on('$routeChangeStart', function(event, next, current) {
@@ -159,7 +151,7 @@ describe('$route', function() {
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
 
       log = '';
-      $location.path('/book1/Moby/chapter/Intro/one/EDIT').search('p=123');
+      $location.path('/BOOK1/Moby/CHAPTER/Intro/one/EDIT').search('p=123');
       $rootScope.$digest();
       expect(log).toEqual('before();after();');
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
@@ -171,19 +163,19 @@ describe('$route', function() {
       expect($route.current.params).toEqual({ignore:true});
 
       log = '';
-      $location.path('/Book1/Moby/Chapter/Intro/one/two/edit').search('p=123');
+      $location.path('/BLANK');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+
+      log = '';
+      $location.path('/Book2/Moby/one/two/Chapter/Intro').search('p=123');
       $rootScope.$digest();
       expect(log).toEqual('before();after();');
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
 
       log = '';
       $location.path('/BOOK2/Moby/one/two/CHAPTER/Intro').search('p=123');
-      $rootScope.$digest();
-      expect(log).toEqual('before();after();');
-      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
-
-      log = '';
-      $location.path('/NONE');
       $rootScope.$digest();
       expect(log).toEqual('before();after();');
       expect($route.current).toEqual(null);
