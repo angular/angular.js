@@ -122,6 +122,12 @@ describe("resource", function() {
     R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
 
+  it('should not encode string "null" to "+" in url params', function() {
+   var R = $resource('/Path/:a');
+   $httpBackend.expect('GET', '/Path/null').respond('{}');
+   R.get({a: 'null'});
+  });
+
   it('should allow relative paths in resource url', function () {
     var R = $resource(':relativePath');
     $httpBackend.expect('GET', 'data.json').respond('{}');
