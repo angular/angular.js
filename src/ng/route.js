@@ -347,7 +347,7 @@ function $RouteProvider(){
     /**
      * @param on {string} current url
      * @param when {string} route when template to match the url against
-     * @param whenProperties {Object} properties to define how when's matching behavior
+     * @param whenProperties {Object} properties to define when's matching behavior
      * @return {?Object}
      */
     function switchRouteMatcher(on, when, whenProperties) {
