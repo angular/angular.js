@@ -1102,11 +1102,13 @@ function $CompileProvider($provide) {
         compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
           var $$observers = (attr.$$observers || (attr.$$observers = {}));
 
-          if (name === 'class') {
-            // we need to interpolate classes again, in the case the element was replaced
-            // and therefore the two class attrs got merged - we want to interpolate the result
-            interpolateFn = $interpolate(attr[name], true);
-          }
+          // we need to interpolate again, in case the attribute value has been updated
+          // (e.g. by another directive's compile function)
+          interpolateFn = $interpolate(attr[name], true);
+
+          // if attribute was updated so that there is no interpolation going on we don't want to
+          // register any observers
+          if (!interpolateFn) return;
 
           attr[name] = interpolateFn(scope);
           ($$observers[name] || ($$observers[name] = [])).$$inter = true;
@@ -1203,7 +1205,7 @@ function directiveNormalize(name) {
  * @param {string} name Normalized element attribute name of the property to modify. The name is
  *          revers translated using the {@link ng.$compile.directive.Attributes#$attr $attr}
  *          property to the original name.
- * @param {string} value Value to set the attribute to.
+ * @param {string} value Value to set the attribute to. The value can be an interpolated string.
  */
 
 
