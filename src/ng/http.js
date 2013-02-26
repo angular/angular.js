@@ -356,10 +356,20 @@ function $HttpProvider() {
      *   // register the interceptor via an anonymous factory
      *   $httpProvider.requestInterceptors.push(function(dependency1, dependency2) {
      *     return function(promise) {
-     *       return function(config) {
-     *         // do something
+     *       return promise.then(function(config) {
+     *         // do something with the config object
+     *
+     *         // example: alter the request's URL
+     *         config.url = '/intercepted';
+     *
+     *         // example: add an extra HTTP header
+     *         config.headers.custom = 'intercepted';
+     *
+     *         // example: modify the request's data
+     *         config.data = { intercepted: true };
+     *
      *         return config;
-     *       };
+     *       });
      *     };
      *   });
      * </pre>
