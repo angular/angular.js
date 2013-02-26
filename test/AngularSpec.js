@@ -415,6 +415,14 @@ describe('angular', function() {
       //encode ' ' as '%20' when a flag is used
       expect(encodeUriQuery('  ', true)).
         toEqual('%20%20');
+
+      //do not encode `null` as '+' when flag is used
+      expect(encodeUriQuery('null', true)).
+        toEqual('null');
+
+      //do not encode `null` with no flag
+      expect(encodeUriQuery('null')).
+        toEqual('null');
     });
   });
 
@@ -673,7 +681,7 @@ describe('angular', function() {
           toBe('<ng-abc x="2A">');
     });
   });
-  
+
   describe('startingTag', function() {
     it('should allow passing in Nodes instead of Elements', function() {
       var txtNode = document.createTextNode('some text');
@@ -741,11 +749,11 @@ describe('angular', function() {
   describe('noConflict', function() {
     var globalAngular;
     beforeEach(function() {
-      globalAngular = angular;  
+      globalAngular = angular;
     });
 
     afterEach(function() {
-      angular = globalAngular;  
+      angular = globalAngular;
     });
 
     it('should return angular', function() {
@@ -757,7 +765,7 @@ describe('angular', function() {
       var a = angular.noConflict();
       expect(angular).toBeUndefined();
     });
-      
+
   });
 
 });
