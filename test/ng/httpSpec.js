@@ -12,7 +12,7 @@ describe('$http', function() {
       $exceptionHandlerProvider.mode('log');
   }));
 
-  afterEach(inject(function($exceptionHandler, $httpBackend) {
+  afterEach(inject(function($exceptionHandler, $httpBackend, $rootScope) {
     forEach($exceptionHandler.errors, function(e) {
       dump('Unhandled exception: ', e)
     });
@@ -21,13 +21,150 @@ describe('$http', function() {
       throw 'Unhandled exceptions trapped in $exceptionHandler!';
     }
 
+    $rootScope.$digest();
     $httpBackend.verifyNoOutstandingExpectation();
   }));
 
 
   describe('$httpProvider', function() {
-
     describe('interceptors', function() {
+     it('should accept injected rejected response interceptor', function() {
+        var wasCalled = false;
+        module(function($httpProvider, $provide) {
+          $httpProvider.responseInterceptors.push('injectedInterceptor');
+          $provide.factory('injectedInterceptor', ['$q', function($q) {
+            return function(promise) {
+              return promise.then(null, function authInterceptor(response) {
+                wasCalled = true;
+                expect(response.status).toEqual(401);
+                return $q.reject(response);
+              });
+            };
+          }]);
+        });
+        inject(function($http, $httpBackend) {
+          $httpBackend.expect('GET', '/url').respond(401);
+          $http({method: 'GET', url: '/url'});
+          $httpBackend.flush();
+          expect(wasCalled).toEqual(true);
+        });
+      });
+
+
+      it('should chain request, requestReject, response and responseReject interceptors', function() {
+        module(function($httpProvider) {
+          var savedConfig, savedResponse;
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              request: function(config) {
+                config.url += '/1';
+                savedConfig = config;
+                return $q.reject('/2');
+              }
+            };
+          });
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              requestError: function(error) {
+                savedConfig.url += error;
+                return $q.when(savedConfig);
+              }
+            };
+          });
+          $httpProvider.interceptors.push(function() {
+            return {
+              responseError: function(rejection) {
+                savedResponse.data += rejection;
+                return savedResponse;
+              }
+            };
+          });
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              response: function(response) {
+                response.data += ':1';
+                savedResponse = response
+                return $q.reject(':2');
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          var response;
+          $httpBackend.expect('GET', '/url/1/2').respond('response');
+          $http({method: 'GET', url: '/url'}).then(function(r) {
+            response = r;
+          });
+          $rootScope.$apply();
+          $httpBackend.flush();
+          expect(response.data).toEqual('response:1:2');
+        });
+      });
+
+
+      it('should verify order of execution', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              request: function(config) {
+                config.url += '/outer';
+                return config;
+              },
+              response: function(response) {
+                response.data = '{' + response.data + '} outer';
+                return response;
+              }
+            };
+          });
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              request: function(config) {
+                config.url += '/inner';
+                return config;
+              },
+              response: function(response) {
+                response.data = '{' + response.data + '} inner';
+                return response;
+              }
+            };
+          });
+          $httpProvider.responseInterceptors.push(function($q) {
+            return function(promise) {
+              var defer = $q.defer();
+
+              promise.then(function(response) {
+                response.data = '[' + response.data + '] legacy-1';
+                defer.resolve(response);
+              });
+              return defer.promise;
+            };
+          });
+          $httpProvider.responseInterceptors.push(function($q) {
+            return function(promise) {
+              var defer = $q.defer();
+
+              promise.then(function(response) {
+                response.data = '[' + response.data + '] legacy-2';
+                defer.resolve(response);
+              });
+              return defer.promise;
+            };
+          });
+        });
+        inject(function($http, $httpBackend) {
+          var response;
+          $httpBackend.expect('GET', '/url/outer/inner').respond('response');
+          $http({method: 'GET', url: '/url'}).then(function(r) {
+            response = r;
+          });
+          $httpBackend.flush();
+          expect(response.data).toEqual('{{[[response] legacy-1] legacy-2} inner} outer');
+        });
+      });
+    });
+
+
+    describe('response interceptors', function() {
 
       it('should default to an empty array', module(function($httpProvider) {
         expect($httpProvider.responseInterceptors).toEqual([]);
@@ -44,7 +181,7 @@ describe('$http', function() {
                   data: response.data + '?',
                   status: 209,
                   headers: response.headers,
-                  config: response.config
+                  request: response.config
                 });
                 return deferred.promise;
               });
@@ -97,6 +234,136 @@ describe('$http', function() {
 
           $httpBackend.flush();
           expect(response).toBe('HELLO!');
+        });
+      });
+    });
+
+
+    describe('request interceptors', function() {
+      it('should pass request config as a promise', function() {
+        var run = false;
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                expect(config.url).toEqual('/url');
+                expect(config.data).toEqual({one: "two"});
+                expect(config.headers.foo).toEqual('bar');
+                run = true;
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('POST', '/url').respond('');
+          $http({method: 'POST', url: '/url', data: {one: 'two'}, headers: {foo: 'bar'}});
+          $rootScope.$apply();
+          expect(run).toEqual(true);
+        });
+      });
+
+      it('should allow manipulation of request', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                config.url = '/intercepted';
+                config.headers.foo = 'intercepted';
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('GET', '/intercepted', null, function (headers) {
+            return headers.foo === 'intercepted';
+          }).respond('');
+          $http.get('/url');
+          $rootScope.$apply();
+        });
+      });
+
+      it('should reject the http promise if an interceptor fails', function() {
+        var reason = new Error('interceptor failed');
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function($q) {
+            return {
+              request: function(promise) {
+                return $q.reject(reason);
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          var success = jasmine.createSpy(), error = jasmine.createSpy();
+          $http.get('/url').then(success, error);
+          $rootScope.$apply();
+          expect(success).not.toHaveBeenCalled();
+          expect(error).toHaveBeenCalledWith(reason);
+        });
+      });
+
+      it('should not manipulate the passed-in config', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                config.url = '/intercepted';
+                config.headers.foo = 'intercepted';
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          var config = { method: 'get', url: '/url', headers: { foo: 'bar'} };
+          $httpBackend.expect('GET', '/intercepted').respond('');
+          $http.get('/url');
+          $rootScope.$apply();
+          expect(config.method).toEqual('get');
+          expect(config.url).toEqual('/url');
+          expect(config.headers.foo).toEqual('bar')
+        });
+      });
+
+      it('should support interceptors defined as services', function() {
+        module(function($provide, $httpProvider) {
+          $provide.factory('myInterceptor', function() {
+            return {
+              request: function(config) {
+                config.url = '/intercepted';
+                return config;
+              }
+            };
+          });
+          $httpProvider.interceptors.push('myInterceptor');
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('POST', '/intercepted').respond('');
+          $http.post('/url');
+          $rootScope.$apply();
+        });
+      });
+
+      it('should support complex interceptors based on promises', function() {
+        module(function($provide, $httpProvider) {
+          $provide.factory('myInterceptor', function($q, $rootScope) {
+            return {
+              request: function(config) {
+                return $q.when('/intercepted').then(function(intercepted) {
+                  config.url = intercepted;
+                  return config;
+                });
+              }
+            };
+          });
+          $httpProvider.interceptors.push('myInterceptor');
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('POST', '/intercepted').respond('');
+          $http.post('/two');
+          $rootScope.$apply();
         });
       });
     });
@@ -938,7 +1205,7 @@ describe('$http', function() {
           $http({method: 'GET', url: '/url'}); // Notice no cache given in config.
           $httpBackend.flush();
 
-          // Second should be served from cache, without sending request to server. 
+          // Second should be served from cache, without sending request to server.
           $http({method: 'get', url: '/url'}).success(callback);
           $rootScope.$digest();
 
@@ -1004,6 +1271,7 @@ describe('$http', function() {
         expect($http.pendingRequests.length).toBe(0);
 
         $http({method: 'get', url: '/some'});
+        $rootScope.$digest();
         expect($http.pendingRequests.length).toBe(1);
 
         $httpBackend.flush();
@@ -1016,13 +1284,16 @@ describe('$http', function() {
 
         $http({method: 'get', url: '/cached', cache: true});
         $http({method: 'get', url: '/cached', cache: true});
+        $rootScope.$digest();
         expect($http.pendingRequests.length).toBe(2);
 
         $httpBackend.flush();
         expect($http.pendingRequests.length).toBe(0);
 
         $http({method: 'get', url: '/cached', cache: true});
-        expect($http.pendingRequests.length).toBe(1);
+        spyOn($http.pendingRequests, 'push').andCallThrough();
+        $rootScope.$digest();
+        expect($http.pendingRequests.push).toHaveBeenCalledOnce();
 
         $rootScope.$apply();
         expect($http.pendingRequests.length).toBe(0);
@@ -1035,6 +1306,7 @@ describe('$http', function() {
           expect($http.pendingRequests.length).toBe(0);
         });
 
+        $rootScope.$digest();
         expect($http.pendingRequests.length).toBe(1);
         $httpBackend.flush();
       });
@@ -1071,10 +1343,11 @@ describe('$http', function() {
       $provide.value('$httpBackend', $httpBackend);
     });
 
-    inject(function($http) {
+    inject(function($http, $rootScope) {
       $http({
         method: 'GET', url: 'some.html', timeout: 12345, withCredentials: true, responseType: 'json'
       });
+      $rootScope.$digest();
       expect($httpBackend).toHaveBeenCalledOnce();
     });
 
@@ -1093,11 +1366,12 @@ describe('$http', function() {
       $provide.value('$httpBackend', $httpBackend);
     });
 
-    inject(function($http) {
+    inject(function($http, $rootScope) {
       $http.defaults.withCredentials = true;
       $http({
         method: 'GET', url: 'some.html', timeout: 12345, responseType: 'json'
       });
+      $rootScope.$digest();
       expect($httpBackend).toHaveBeenCalledOnce();
     });
 
