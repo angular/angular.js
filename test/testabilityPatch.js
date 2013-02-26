@@ -114,7 +114,7 @@ function sortedHtml(element, showNgClass) {
 
         var attr = attributes[i];
         if(attr.name.match(/^ng[\:\-]/) ||
-            attr.value &&
+            (attr.value || attr.value == '') &&
             attr.value !='null' &&
             attr.value !='auto' &&
             attr.value !='false' &&
