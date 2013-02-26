@@ -826,7 +826,7 @@ angular.mock.dump = function(object) {
    </pre>
  */
 angular.mock.$HttpBackendProvider = function() {
-  this.$get = [createHttpBackendMock];
+  this.$get = ['$rootScope', createHttpBackendMock];
 };
 
 /**
@@ -843,7 +843,7 @@ angular.mock.$HttpBackendProvider = function() {
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock
  */
-function createHttpBackendMock($delegate, $browser) {
+function createHttpBackendMock($rootScope, $delegate, $browser) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -1173,6 +1173,7 @@ function createHttpBackendMock($delegate, $browser) {
    *   is called an exception is thrown (as this typically a sign of programming error).
    */
   $httpBackend.flush = function(count) {
+    $rootScope.$digest();
     if (!responses.length) throw Error('No pending request to flush !');
 
     if (angular.isDefined(count)) {
@@ -1205,6 +1206,7 @@ function createHttpBackendMock($delegate, $browser) {
    * </pre>
    */
   $httpBackend.verifyNoOutstandingExpectation = function() {
+    $rootScope.$digest();
     if (expectations.length) {
       throw Error('Unsatisfied requests: ' + expectations.join(', '));
     }
@@ -1606,7 +1608,7 @@ angular.module('ngMockE2E', ['ng']).config(function($provide) {
  *   control how a matched request is handled.
  */
 angular.mock.e2e = {};
-angular.mock.e2e.$httpBackendDecorator = ['$delegate', '$browser', createHttpBackendMock];
+angular.mock.e2e.$httpBackendDecorator = ['$rootScope', '$delegate', '$browser', createHttpBackendMock];
 
 
 angular.mock.clearDataCache = function() {
