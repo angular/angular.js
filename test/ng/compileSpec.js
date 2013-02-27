@@ -647,6 +647,49 @@ describe('$compile', function() {
       });
 
 
+      describe('template function', function() {
+
+        beforeEach(module(function() {
+          directive('replace', valueFn({
+            replace: true,
+            template: function(e,f) {
+              return '<div class="log" style="width: 10px" high-log>Replace!</div>'
+            }, 
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceattr', valueFn({
+            replace: true,
+            template: function(e, f) {
+              expect(e.text()).toBe('ignore');
+              return '<div class="log" style="width: 10px" high-log ' + f.myattr + '="123">Replace!</div>'
+            }, 
+            compile: function(element, attr) {
+              expect(element.text()).toBe('Replace!');
+              expect(attr.dynamic).toBe('123');
+              attr.$set('dynamic', '456');
+            }
+          }));
+        }));
+
+
+        it('should replace element with template returned by function', inject(function($compile, $rootScope) {
+          element = $compile('<div><div replace>ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
+          expect(element.find('div').attr('compiled')).toBe('COMPILED');
+        }));
+
+        it('should pass element and attributes to template function', inject(function($compile, $rootScope) {
+          element = $compile('<div><div replaceattr myattr="dynamic">ignore</div><div>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
+          expect(element.find('div').attr('dynamic')).toBe('456');
+        }));
+      });
+
+
       describe('templateUrl', function() {
 
         beforeEach(module(
@@ -1212,6 +1255,59 @@ describe('$compile', function() {
             expect(element.text()).toBe('boom!1|boom!2|');
           });
         });
+      });
+
+      describe('templateUrl function', function() {
+
+        beforeEach(module(
+          function() {
+            directive('hello', valueFn({
+              restrict: 'CAM', templateUrl: function(e,t) {
+                return 'hello.html';
+              },
+              transclude: true
+            }));
+            directive('cau', valueFn({
+              restrict: 'CAM', templateUrl: function(e,t) {
+                expect(isElement(e)).toBeTruthy();
+                return 'cau'+t.test+'.html';
+              }
+            }));
+          }
+        ));
+
+        it('should compile, link and flush the template inline when using functions as templateUrl', inject(
+            function($compile, $templateCache, $rootScope) {
+              $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
+              $rootScope.name = 'Elvis';
+              element = $compile('<div><b hello></b></div>')($rootScope);
+
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).toBeOneOf(
+                '<div><b><span>Hello, Elvis!</span></b></div>',
+                '<div><b hello=""><span>Hello, Elvis!</span></b></div>' //ie8
+              );
+            }
+        ));
+
+        it('should pass element and attributes to the templateUrl function', inject(
+            function($compile, $templateCache, $rootScope) {
+              $templateCache.put('cau2.html', '<span>Hey, {{name}}!</span>');
+              $templateCache.put('cau3.html', '<span>Say: Hey, {{name}}!</span>');
+              $rootScope.name = 'me';
+              element = $compile('<div><b cau test="2"></b><b cau test="3"></b></div>')($rootScope);
+
+              $rootScope.$digest();
+              
+              expect(sortedHtml(element)).toBeOneOf(
+                '<div><b test="2"><span>Hey, me!</span></b><b test="3">' +
+                '<span>Say: Hey, me!</span></b></div>',
+                '<div><b cau="" test="2"><span>Hey, me!</span></b><b cau="" test="3">' +
+                '<span>Say: Hey, me!</span></b></div>' //ie8
+              );
+            }
+        ));
       });
 
 
