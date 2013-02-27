@@ -703,4 +703,44 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(person.id).toEqual(456);
   });
+
+  it('should support overriding url template (action specific)', function() {
+  //  no url parameter in action
+      $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+      var TypeItem = $resource('/:type/:typeId', {type: 'Order'}, {
+          get: {
+              method: 'GET',
+              params: {type: 'Customer'}
+          }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+
+  //    url parameter in action, parameter ending the string
+      $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+      var TypeItem = $resource('', {type: 'Order'}, {
+          get: {
+              method: 'GET',
+              params: {type: 'Customer'},
+              url: '/:type/:typeId'
+          }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+
+  //    url parameter in action, parameter not ending the string
+      $httpBackend.expect('GET', '/Customer/123/pay').respond({id: 'abc'});
+      var TypeItem = $resource('', {type: 'Order'}, {
+          get: {
+              method: 'GET',
+              params: {type: 'Customer'},
+              url: '/:type/:typeId/pay'
+          }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+  });
 });
