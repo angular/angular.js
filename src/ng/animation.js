@@ -15,6 +15,18 @@ function $AnimationProvider($provide) {
     }
   };
 
+  register('noopShow', function() {
+    return function(element) {
+      element.css('display', 'block');
+    };
+  });
+
+  register('noopHide', function() {
+    return function(element) {
+      element.css('display', 'none');
+    };
+  });
+
   register('noopEnter', function() {
     return function(node, parent, after) {
       after ? after.after(node) : parent.append(node);

@@ -78,12 +78,14 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
-                  function($http,   $templateCache,   $anchorScroll,   $compile) {
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$noopAnimator',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $noopAnimator) {
   return {
     restrict: 'ECA',
     terminal: true,
-    compile: function(element, attr) {
+    require: '?ngAnimate', // optional
+    compile: function(element, attr, animator) {
+      animator = animator || $noopAnimator;
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
@@ -98,6 +100,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             childScope = null;
           }
 
+          animator.animate('leave', element);
           element.html('');
         };
 
@@ -111,8 +114,10 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (childScope) childScope.$destroy();
               childScope = scope.$new();
 
+              animator.animate('leave', element);
               element.html(response);
               $compile(element.contents())(childScope);
+              animator.animate('enter', element);
 
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                 $anchorScroll();

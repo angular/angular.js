@@ -97,3 +97,30 @@ angular.module('Animator', [])
       after ? after.after(node) : parent.append(node);
     };
   })
+
+  .animation('fade-show', function() {
+    return function(element) {
+      alert('a');
+      element.css({
+        'opacity':0,
+        'display':'block'
+      });
+      element.animate({
+        'opacity':1
+      });
+    };
+  })
+
+  .animation('fade-hide', function() {
+    return function(element) {
+      element.css('display','block');
+      element.animate({
+        opacity : 0
+      }, function() {
+        element.css({
+          'opacity':1,
+          'display':'none'
+        });
+      });
+    };
+  })

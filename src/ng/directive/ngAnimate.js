@@ -32,7 +32,9 @@ var Animator = function($animation) {
   var animators = {
     'enter': $animation('noopEnter'),
     'leave': $animation('noopLeave'),
-    'move':  $animation('noopMove')
+    'move':  $animation('noopMove'),
+    'show':  $animation('noopShow'),
+    'hide':  $animation('noopHide')
   };
 
   this.set = function(name, animator) {

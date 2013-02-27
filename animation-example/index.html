@@ -5,75 +5,23 @@
 No Results Found...
 </script>
     <title>AngularJS Animation Demo</title>
-    <style type="text/css">
-      body, html {
-        padding:0;
-        margin:0;
-        position:relative;
-        height:100%;
-      }
-      .cell {
-        position:absolute;
-        width:50%;
-        height:50%;
-        border:2px solid red;
-        background:white;
-        overflow:scroll;
-        box-sizing:border-box;
-      }
-      .stage {
-        padding:10px;
-      }
-      header {
-        padding:5px;
-        background:red;
-        font-size:1.5em;
-        margin-bottom:10px;
-      }
-      .cell:hover {
-        z-index:2000!important;
-        box-shadow:0 0 10px #aaa;
-        border-color:blue;
-      }
-      #wrapper {
-        margin-top:50px;
-        position:relative;
-        height:100%;
-      }
-      #nav {
-        background:black;
-        position:fixed;
-        top:0;
-        right:0;
-        left:0;
-        z-index:5000;
-        padding:15px;
-      }
-      #one { top:0; left:0; z-index:1001; }
-      #two { top:0; right:0; z-index:1002; }
-      #three { bottom:0; left:0; z-index:1003; }
-      #four { bottom:0; right:0; z-index:1004; }
-      .other header {
-        background:orange;
-      }
-      .add { width:200px; }
-      .q { float:right; width:200px; }
-      .item {
-        padding:5px;
-      }
-      .item + .item {
-        border-top:1px solid #ddd;
-      }
-      .item button {
-        float:right;
-      }
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <style>
+#main-nav {
+  margin-bottom:1em;
+}
+#wrapper {
+  margin-top:80px;
+}
     </style>
   </head>
 
   <body ng-cloak>
     <div id="wrapper">
 
+
       <form id="nav" ng-submit="add(new_item); new_item=null">
+        <div ng-include="'./nav.html'"></div>
         <input class="add" type="input" ng-model="new_item" placeholder="enter something to add" />
         <button ng-click="add(new_item); new_item = null">Add</button>
         <button ng-click="pop()">Pop Last</button>
@@ -109,7 +57,7 @@ No Results Found...
             class="item"
             ng-show="items.length > 0"
             ng-repeat="item in items | filter:q | orderBy:order"
-            ng-animate="enter: fade-enter; leave: fade-leave; move:fade-move">
+            ng-animate="enter: fade-enter; leave: fade-leave; move:fade-move; show: fade-show; hide: fade-hide">
             <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
             <button ng-click="remove(item.index)">Remove</button>
           </div>

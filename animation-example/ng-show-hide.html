@@ -1,0 +1,96 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+    <title>AngularJS Animation Demo</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <style>
+      .buttons {
+        float:right;
+      }
+      .block {
+        overflow:hidden;
+        position:relative;
+        padding:20px;
+      }
+    </style>
+  </head>
+
+  <body ng-cloak>
+    <nav id="nav">
+      <div ng-include="'./nav.html'"></div>
+    </nav>
+    <div id="wrapper">
+      <div class="cell" id="one">
+        <header>
+          Noop <span ng-hide="on1" ng-animate="show: display-inline">(hidden)</span>
+          <nav class="buttons">
+            <input type="button" ng-click="on1=true" ng-disabled="on1==true" value="show" />
+            <input type="button" ng-click="on1=false" ng-disabled="on1==false" value="hide" />
+            <input type="button" ng-click="on1=!on1" value="toggle" />
+          </nav>
+        </header>
+        <div class="block" ng-show="on1" ng-animate="show: noopShow; hide: noopHide">
+          123
+        </div>
+      </div>
+
+      <div class="cell" id="two">
+        <header>
+          Fade <span ng-hide="on2" ng-animate="show: display-inline">(hidden)</span>
+          <nav class="buttons">
+            <input type="button" ng-click="on2=true" ng-disabled="on2==true" value="show" />
+            <input type="button" ng-click="on2=false" ng-disabled="on2==false" value="hide" />
+            <input type="button" ng-click="on2=!on2" value="toggle" />
+          </nav>
+        </header>
+        <div class="block" ng-show="on2" ng-animate="show: fade-show; hide: fade-hide">
+          <p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a justo ac diam porttitor ultricies. Etiam viverra adipiscing metus ut adipiscing. Vestibulum ac semper urna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla ultricies, dolor sed ultricies placerat, sapien nisi faucibus felis, sit amet condimentum sem ante sed magna. Sed varius tincidunt odio, et gravida odio feugiat sit amet. Cras nisi libero, euismod dignissim convallis fermentum, rhoncus eu lectus. Morbi at neque nibh. Mauris mattis adipiscing neque, sed lobortis mauris mollis in. Maecenas porttitor dictum nulla, vel tempus enim pretium malesuada.
+          </p>
+
+          <p>
+Curabitur tristique eleifend sapien, quis mattis lectus accumsan ac. Phasellus leo ante, commodo eget placerat id, vulputate nec neque. Pellentesque varius lorem eget erat mattis pellentesque. Maecenas magna est, ullamcorper sit amet elementum sed, pulvinar id elit. In aliquam scelerisque nibh eget pulvinar. Praesent tempor facilisis aliquet. Donec ut metus ut nunc convallis elementum quis a neque. Duis turpis libero, luctus sit amet imperdiet facilisis, tempus nec erat. Integer orci augue, ullamcorper sed aliquam sed, accumsan non lorem. Pellentesque libero tortor, mollis a suscipit ut, dignissim commodo turpis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras id odio sem. Mauris sem dolor, lacinia vel elementum eu, laoreet sed ante.
+          </p>
+        </div>
+      </div>
+
+      <div class="cell" id="three">
+        <header>
+          Slide <span ng-hide="on3" ng-animate="show: display-inline">(hidden)</span>
+          <nav class="buttons">
+            <input type="button" ng-click="on3=true" ng-disabled="on3==true" value="show" />
+            <input type="button" ng-click="on3=false" ng-disabled="on3==false" value="hide" />
+            <input type="button" ng-click="on3=!on3" value="toggle" />
+          </nav>
+        </header>
+        <div class="block" ng-show="on3" ng-animate="show: slide-show; hide: slide-hide">
+          <p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a justo ac diam porttitor ultricies. Etiam viverra adipiscing metus ut adipiscing. Vestibulum ac semper urna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla ultricies, dolor sed ultricies placerat, sapien nisi faucibus felis, sit amet condimentum sem ante sed magna. Sed varius tincidunt odio, et gravida odio feugiat sit amet. Cras nisi libero, euismod dignissim convallis fermentum, rhoncus eu lectus. Morbi at neque nibh. Mauris mattis adipiscing neque, sed lobortis mauris mollis in. Maecenas porttitor dictum nulla, vel tempus enim pretium malesuada.
+          </p>
+
+          <p>
+Curabitur tristique eleifend sapien, quis mattis lectus accumsan ac. Phasellus leo ante, commodo eget placerat id, vulputate nec neque. Pellentesque varius lorem eget erat mattis pellentesque. Maecenas magna est, ullamcorper sit amet elementum sed, pulvinar id elit. In aliquam scelerisque nibh eget pulvinar. Praesent tempor facilisis aliquet. Donec ut metus ut nunc convallis elementum quis a neque. Duis turpis libero, luctus sit amet imperdiet facilisis, tempus nec erat. Integer orci augue, ullamcorper sed aliquam sed, accumsan non lorem. Pellentesque libero tortor, mollis a suscipit ut, dignissim commodo turpis. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras id odio sem. Mauris sem dolor, lacinia vel elementum eu, laoreet sed ante.
+          </p>
+        </div>
+      </div>
+
+      <div class="cell" id="four">
+        <header>
+          ngShow / ngHide with no ngAnimate directive <span ng-hide="on4" ng-animate="show: display-inline">(hidden)</span>
+          <nav class="buttons">
+            <input type="button" ng-click="on4=true" ng-disabled="on4==true" value="show" />
+            <input type="button" ng-click="on4=false" ng-disabled="on4==false" value="hide" />
+            <input type="button" ng-click="on4=!on4" value="toggle" />
+          </nav>
+        </header>
+        <div class="block" ng-show="on4">
+          123
+        </div>
+      </div>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../build/angular.js"></script>
+    <script src="./show-hide.js"></script> 
+  <body>
+</html>

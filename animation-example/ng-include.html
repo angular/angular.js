@@ -1,0 +1,50 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+<script type="text/ng-template" id="tpl_1">
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada risus eu magna posuere eu laoreet odio ornare. Proin malesuada gravida magna at lacinia. Donec metus erat, rutrum sit amet faucibus quis, mattis at sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean feugiat nibh in quam facilisis a rutrum risus malesuada. Fusce libero libero, scelerisque eget luctus a, blandit vel nisi. Proin elit nisi, adipiscing nec congue et, ornare vel enim. Nam orci dui, volutpat vitae fringilla vitae, scelerisque ut neque. Etiam libero orci, consequat ac porttitor a, feugiat nec orci. Nullam volutpat rhoncus dolor sed pellentesque. Etiam ornare, enim molestie semper imperdiet, urna ligula porta massa, in tempor diam quam ut velit. Ut sit amet nulla sem, pellentesque bibendum elit. Sed lectus libero, iaculis a vestibulum at, laoreet tempor orci. Praesent scelerisque urna et velit eleifend viverra.
+  </p>
+</script>
+<script type="text/ng-template" id="tpl_2">
+  <img src="http://angularjs.org/img/AngularJS-large.png" />
+</script>
+    <title>AngularJS Animation Demo</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <style>
+      .buttons {
+        float:right;
+      }
+      .block {
+        overflow:hidden;
+        position:relative;
+        padding:20px;
+      }
+    </style>
+  </head>
+
+  <body ng-cloak>
+    <nav id="nav">
+      <div ng-include="'nav.html'"></div>
+    </nav>
+    <div id="wrapper">
+      <div class="cell" id="one" ng-init="in1='tpl_1'">
+        <header>
+          Noop
+          <nav class="buttons">
+            <input type="button" ng-click="in1='tpl_1'; rand1=false" ng-disabled="in1=='tpl_1'" value="template 1" />
+            <input type="button" ng-click="in1='tpl_2'; rand1=false" ng-disabled="in1=='tpl_2'" value="template 2" />
+            <input type="button" ng-click="in1=randomTemplate(); rand1=true" ng-disabled="rand1==true" value="uncached" />
+            <input type="button" ng-click="in1=null; rand1=false" ng-disabled="in1==null" value="nothing" />
+          </nav>
+        </header>
+        <div class="block" ng-include="in1" ng-animate="enter: noopEnter; hide: noopLeave;">
+        </div>
+      </div>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../build/angular.js"></script>
+    <script src="./include.js"></script> 
+  <body>
+</html>
