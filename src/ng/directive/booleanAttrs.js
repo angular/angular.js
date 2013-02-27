@@ -66,7 +66,7 @@
         it('should execute ng-click but not reload when no href but name specified', function() {
           element('#link-5').click();
           expect(input('value').val()).toEqual('5');
-          expect(element('#link-5').attr('href')).toBe('');
+          expect(element('#link-5').attr('href')).toBe(undefined);
         });
 
         it('should only change url when only ng-href', function() {
@@ -340,8 +340,9 @@ forEach(['src', 'href'], function(attrName) {
 
           // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
-          // to set the property as well to achieve the desired effect
-          if (msie) element.prop(attrName, value);
+          // to set the property as well to achieve the desired effect.
+          // we use attr[attrName] value since $set can sanitize the url.
+          if (msie) element.prop(attrName, attr[attrName]);
         });
       }
     };

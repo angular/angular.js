@@ -168,7 +168,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
       fraction += '0';
     }
 
-    if (fractionSize) formatedText += decimalSep + fraction.substr(0, fractionSize);
+    if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
   }
 
   parts.push(isNegative ? pattern.negPre : pattern.posPre);
@@ -284,7 +284,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'s'`: Second in minute (0-59)
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: am/pm marker
- *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
+ *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *
  *   `format` string can also be one of the following predefined
  *   {@link guide/i18n localizable formats}:

@@ -818,8 +818,8 @@ function $HttpProvider() {
               if (isObject(v)) {
                 v = toJson(v);
               }
-              parts.push(encodeURIComponent(key) + '=' +
-                         encodeURIComponent(v));
+              parts.push(encodeUriQuery(key) + '=' +
+                         encodeUriQuery(v));
             });
           });
           return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');

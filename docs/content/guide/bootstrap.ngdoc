@@ -48,11 +48,10 @@ initialization.
 
 # Automatic Initialization
 
-Angular initializes automatically upon `DOMContentLoaded` event, at which point Angular looks for
-the {@link api/ng.directive:ngApp `ng-app`} directive which
-designates your application root. If the {@link
-api/ng.directive:ngApp `ng-app`} directive is found then Angular
-will:
+Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
+evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
+for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.
+If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular will:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link api/AUTO.$injector injector}

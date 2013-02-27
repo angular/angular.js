@@ -57,11 +57,31 @@ var /** holds major version number for IE or NaN for real browsers */
     push              = [].push,
     toString          = Object.prototype.toString,
 
+
+    _angular          = window.angular, 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
+
+/**
+ * @ngdoc function
+ * @name angular.noConflict
+ * @function
+ *
+ * @description
+ * Restores the previous global value of angular and returns the current instance. Other libraries may already use the
+ * angular namespace. Or a previous version of angular is already loaded on the page. In these cases you may want to
+ * restore the previous namespace and keep a reference to angular.
+ *
+ * @return {Object} The current angular namespace
+ */
+function noConflict() {
+  var a = window.angular;
+  window.angular = _angular;
+  return a;
+}
 
 /**
  * @ngdoc function
@@ -90,6 +110,30 @@ var /** holds major version number for IE or NaN for real browsers */
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
+
+
+/**
+ * @private
+ * @param {*} obj
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
+ */
+function isArrayLike(obj) {
+  if (!obj || (typeof obj.length !== 'number')) return false;
+
+  // We have on object which has length property. Should we treat it as array?
+  if (typeof obj.hasOwnProperty != 'function' &&
+      typeof obj.constructor != 'function') {
+    // This is here for IE8: it is a bogus object treat it as array;
+    return true;
+  } else  {
+    return obj instanceof JQLite ||                      // JQLite
+           (jQuery && obj instanceof jQuery) ||          // jQuery
+           toString.call(obj) !== '[object Object]' ||   // some browser native object
+           typeof obj.callee === 'function';              // arguments (on IE8 looks like regular obj)
+  }
+}
+
+
 function forEach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -101,7 +145,7 @@ function forEach(obj, iterator, context) {
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
-    } else if (isObject(obj) && isNumber(obj.length)) {
+    } else if (isArrayLike(obj)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
@@ -542,9 +586,7 @@ function copy(source, destination){
   } else {
     if (source === destination) throw Error("Can't copy equivalent objects or arrays");
     if (isArray(source)) {
-      while(destination.length) {
-        destination.pop();
-      }
+      destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
         destination.push(copy(source[i]));
       }
@@ -755,9 +797,18 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {}
-  return jqLite('<div>').append(element).html().
-      match(/^(<[^>]+>)/)[1].
-      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
+  // As Per DOM Standards
+  var TEXT_NODE = 3;
+  var elemHtml = jqLite('<div>').append(element).html();
+  try {
+    return element[0].nodeType === TEXT_NODE ? lowercase(elemHtml) :
+        elemHtml.
+          match(/^(<[^>]+>)/)[1].
+          replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
+  } catch(e) {
+    return lowercase(elemHtml);
+  }
+
 }
 
 
@@ -824,7 +875,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
              replace(/%3A/gi, ':').
              replace(/%24/g, '$').
              replace(/%2C/gi, ',').
-             replace((pctEncodeSpaces ? null : /%20/g), '+');
+             replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
 }
 
 

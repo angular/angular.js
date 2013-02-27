@@ -116,12 +116,17 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
+    it('should attach scope to the document node when it is compiled explicitly', inject(function($document){
+      $compile($document)($rootScope);
+      expect($document.scope()).toBe($rootScope);
+    }));
+
     it('should wrap root text nodes in spans', inject(function($compile, $rootScope) {
       element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
       var text = element.contents();
       expect(text[0].nodeName).toEqual('#text');
       text = $compile(text)($rootScope);
-      expect(lowercase(text[0].nodeName)).toEqual('span');
+      expect(text[0].nodeName).toEqual('SPAN');
       expect(element.find('span').text()).toEqual('A<a>B</a>C');
     }));
 
@@ -136,6 +141,63 @@ describe('$compile', function() {
       expect(spans.length).toEqual(1);
       expect(spans.text().indexOf('C')).toEqual(0);
     });
+
+    it('should not leak memory when there are top level empty text nodes', function() {
+      var calcCacheSize = function() {
+        var size = 0;
+        forEach(jqLite.cache, function(item, key) { size++; });
+        return size;
+      };
+
+      // We compile the contents of element (i.e. not element itself)
+      // Then delete these contents and check the cache has been reset to zero
+
+      // First with only elements at the top level
+      element = jqLite('<div><div></div></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with non-empty text nodes at the top level
+      // (in this case the compiler will wrap them in a <span>)
+      element = jqLite('<div>xxx</div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with comment nodes at the top level
+      element = jqLite('<div><!-- comment --></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Finally with empty text nodes at the top level
+      element = jqLite('<div>   \n<div></div>   </div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
+
+    it('should not blow up when elements with no childNodes property are compiled', inject(
+        function($compile, $rootScope) {
+      // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
+      // the plugin's context rather than the usual DOM apis are exposed on this element, so
+      // childNodes might not exist.
+      if (msie < 9) return;
+
+      element = jqLite('<div>{{1+2}}</div>');
+      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+
+      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      expect(element[0].childNodes[1].textContent).toBe('fake node');
+
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+
+      // object's children can't be compiled in this case, so we expect them to be raw
+      expect(element.html()).toBe("3");
+    }));
 
 
     describe('multiple directives per element', function() {
@@ -640,6 +702,10 @@ describe('$compile', function() {
               }
             }));
 
+            directive('replace', valueFn({
+              replace: true,
+              template: '<span>Hello, {{name}}!</span>'
+            }));
           }
         ));
 
@@ -679,12 +745,16 @@ describe('$compile', function() {
               $rootScope.$digest();
 
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>',
+                  '<div><b class="i-hello"></b><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
 
               $httpBackend.flush();
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello!</span><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
             }
         ));
 
@@ -711,8 +781,10 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
 
@@ -741,10 +813,37 @@ describe('$compile', function() {
               element = template($rootScope);
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
+
+
+        it('should compile template when replacing element in another template',
+            inject(function($compile, $templateCache, $rootScope) {
+          $templateCache.put('hello.html', '<div replace></div>');
+          $rootScope.name = 'Elvis';
+          element = $compile('<div><b class="hello"></b></div>')($rootScope);
+
+          $rootScope.$digest();
+
+          expect(sortedHtml(element)).
+            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
+        }));
+
+
+        it('should compile template when replacing root element',
+            inject(function($compile, $templateCache, $rootScope) {
+              $rootScope.name = 'Elvis';
+              element = $compile('<div replace></div>')($rootScope);
+
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<span replace="">Hello, Elvis!</span>');
+            }));
 
 
         it('should resolve widgets after cloning in append mode', function() {
@@ -1381,9 +1480,10 @@ describe('$compile', function() {
     }));
 
 
-    it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
+    it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
-      expect(directiveAttrs.someAttr).toBeUndefined();
+      expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
     }));
 
 
@@ -1428,13 +1528,13 @@ describe('$compile', function() {
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet !</option>' +
+                  '<option value="">Greet !</option>' +
                 '</select>');
       $rootScope.name = 'Misko';
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet Misko!</option>' +
+                  '<option value="">Greet Misko!</option>' +
                 '</select>');
     }));
 
@@ -1794,6 +1894,9 @@ describe('$compile', function() {
             ref: '=',
             refAlias: '= ref',
             reference: '=',
+            optref: '=?',
+            optrefAlias: '=? optref',
+            optreference: '=?',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1812,27 +1915,21 @@ describe('$compile', function() {
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.$apply();
 
         expect(componentScope.attr).toEqual('some text');
         expect(componentScope.attrAlias).toEqual('some text');
         expect(componentScope.attrAlias).toEqual(componentScope.attr);
       }));
 
+      it('should set up the interpolation before it reaches the link function', inject(function() {
+        $rootScope.name = 'misko';
+        compile('<div><span my-component attr="hello {{name}}">');
+        expect(componentScope.attr).toEqual('hello misko');
+        expect(componentScope.attrAlias).toEqual('hello misko');
+      }));
 
       it('should update when interpolated attribute updates', inject(function() {
         compile('<div><span my-component attr="hello {{name}}">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.name = 'misko';
-        $rootScope.$apply();
-
-        expect(componentScope.attr).toEqual('hello misko');
-        expect(componentScope.attrAlias).toEqual('hello misko');
 
         $rootScope.name = 'igor';
         $rootScope.$apply();
@@ -1932,6 +2029,33 @@ describe('$compile', function() {
         $rootScope.$apply();
 
         expect(lastRefValueInParent).toBe('new');
+      }));
+    });
+
+
+    describe('optional object reference', function() {
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component optref="name">');
+        expect(componentScope.optRef).toBe(undefined);
+        expect(componentScope.optRefAlias).toBe(componentScope.optRef);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+
+        $rootScope.name = {};
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+      }));
+
+      it('should not throw exception when reference does not exist', inject(function() {
+        compile('<div><span my-component>');
+
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(undefined);
+        expect(componentScope.optreference).toBe(undefined);
       }));
     });
 
@@ -2319,7 +2443,152 @@ describe('$compile', function() {
         expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
       });
     });
+  });
 
 
+  describe('href sanitization', function() {
+
+    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:data:evilPayload');
+    }));
+
+
+    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      // case-sensitive
+      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // tab in protocol
+      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // space before
+      $rootScope.testUrl = " javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // ws chars before
+      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // post-fixed with proper url
+      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      $rootScope.$apply();
+      expect(element[0].href).toBeOneOf(
+          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
+          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
+      );
+    }));
+
+
+    it('should sanitize ngHref bindings as well', inject(function($compile, $rootScope) {
+      element = $compile('<a ng-href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      $rootScope.testUrl = "foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('foo/bar');
+
+      $rootScope.testUrl = "/foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('/foo/bar');
+
+      $rootScope.testUrl = "../foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('../foo/bar');
+
+      $rootScope.testUrl = "#foo";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('#foo');
+
+      $rootScope.testUrl = "http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('http://foo/bar');
+
+      $rootScope.testUrl = " http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe(' http://foo/bar');
+
+      $rootScope.testUrl = "https://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('https://foo/bar');
+
+      $rootScope.testUrl = "ftp://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('ftp://foo/bar');
+
+      $rootScope.testUrl = "mailto:foo@bar.com";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('mailto:foo@bar.com');
+
+      $rootScope.testUrl = "file:///foo/bar.html";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('file:///foo/bar.html');
+    }));
+
+
+    it('should not sanitize href on elements other than anchor', inject(function($compile, $rootScope) {
+      element = $compile('<div href="{{testUrl}}"></div>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize attributes other than href', inject(function($compile, $rootScope) {
+      element = $compile('<a title="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('title')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should allow reconfiguration of the href whitelist', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect(returnVal).toBe($compileProvider);
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+        $rootScope.testUrl = "javascript:doEvilStuff()";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+
+        $rootScope.testUrl = "http://recon/figured";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('unsafe:http://recon/figured');
+      });
+    });
   });
 });

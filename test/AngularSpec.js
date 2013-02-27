@@ -31,12 +31,21 @@ describe('angular', function() {
       expect(copy(date) === date).toBeFalsy();
     });
 
-    it("should copy array", function() {
+    it("should deeply copy an array into an existing array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
       expect(copy(src, dst)).toBe(dst);
       expect(dst).toEqual([1, {name:"value"}]);
       expect(dst[1]).toEqual({name:"value"});
+      expect(dst[1]).not.toBe(src[1]);
+    });
+
+    it("should deeply copy an array into a new array", function() {
+      var src = [1, {name:"value"}];
+      var dst = copy(src);
+      expect(src).toEqual([1, {name:"value"}]);
+      expect(dst).toEqual(src);
+      expect(dst).not.toBe(src);
       expect(dst[1]).not.toBe(src[1]);
     });
 
@@ -47,11 +56,21 @@ describe('angular', function() {
       expect(dst).toEqual([]);
     });
 
-    it("should copy object", function() {
+    it("should deeply copy an object into an existing object", function() {
       var src = {a:{name:"value"}};
       var dst = {b:{key:"v"}};
       expect(copy(src, dst)).toBe(dst);
       expect(dst).toEqual({a:{name:"value"}});
+      expect(dst.a).toEqual(src.a);
+      expect(dst.a).not.toBe(src.a);
+    });
+
+    it("should deeply copy an object into an existing object", function() {
+      var src = {a:{name:"value"}};
+      var dst = copy(src, dst);
+      expect(src).toEqual({a:{name:"value"}});
+      expect(dst).toEqual(src);
+      expect(dst).not.toBe(src);
       expect(dst.a).toEqual(src.a);
       expect(dst.a).not.toBe(src.a);
     });
@@ -257,7 +276,7 @@ describe('angular', function() {
       function MyObj() {
         this.bar = 'barVal';
         this.baz = 'bazVal';
-      };
+      }
       MyObj.prototype.foo = 'fooVal';
 
       var obj = new MyObj(),
@@ -266,6 +285,77 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value)});
 
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
+    });
+
+
+    it('should handle JQLite and jQuery objects like arrays', function() {
+      var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
+          log = [];
+
+      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:s1', '1:s2']);
+    });
+
+
+    it('should handle NodeList objects like arrays', function() {
+      var nodeList = jqLite("<p><span>a</span><span>b</span><span>c</span></p>")[0].childNodes,
+          log = [];
+
+
+      forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+
+    it('should handle HTMLCollection objects like arrays', function() {
+      document.body.innerHTML = "<p>" +
+                                  "<a name='x'>a</a>" +
+                                  "<a name='y'>b</a>" +
+                                  "<a name='x'>c</a>" +
+                                "</p>";
+
+      var htmlCollection = document.getElementsByName('x'),
+          log = [];
+
+      forEach(htmlCollection, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      expect(log).toEqual(['0:a', '1:c']);
+    });
+
+
+    it('should handle arguments objects like arrays', function() {
+      var args,
+          log = [];
+
+      (function(){ args = arguments}('a', 'b', 'c'));
+
+      forEach(args, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+
+    it('should handle objects with length property as objects', function() {
+      var obj = {
+            'foo' : 'bar',
+            'length': 2
+          },
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['foo:bar', 'length:2']);
+    });
+
+
+    it('should handle objects of custom types with length property as objects', function() {
+      function CustomType() {
+        this.length = 2;
+        this.foo = 'bar'
+      }
+
+      var obj = new CustomType(),
+          log = [];
+
+      forEach(obj, function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['length:2', 'foo:bar']);
     });
   });
 
@@ -325,6 +415,14 @@ describe('angular', function() {
       //encode ' ' as '%20' when a flag is used
       expect(encodeUriQuery('  ', true)).
         toEqual('%20%20');
+
+      //do not encode `null` as '+' when flag is used
+      expect(encodeUriQuery('null', true)).
+        toEqual('null');
+
+      //do not encode `null` with no flag
+      expect(encodeUriQuery('null')).
+        toEqual('null');
     });
   });
 
@@ -584,6 +682,13 @@ describe('angular', function() {
     });
   });
 
+  describe('startingTag', function() {
+    it('should allow passing in Nodes instead of Elements', function() {
+      var txtNode = document.createTextNode('some text');
+      expect(startingTag(txtNode)).toBe('some text');
+    });
+  });
+
   describe('snake_case', function(){
     it('should convert to snake_case', function() {
       expect(snake_case('ABC')).toEqual('a_b_c');
@@ -640,4 +745,27 @@ describe('angular', function() {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
     }));
   });
+
+  describe('noConflict', function() {
+    var globalAngular;
+    beforeEach(function() {
+      globalAngular = angular;
+    });
+
+    afterEach(function() {
+      angular = globalAngular;
+    });
+
+    it('should return angular', function() {
+      var a = angular.noConflict();
+      expect(a).toBe(globalAngular);
+    });
+
+    it('should restore original angular', function() {
+      var a = angular.noConflict();
+      expect(angular).toBeUndefined();
+    });
+
+  });
+
 });

@@ -102,7 +102,7 @@
  *     return result + 1;
  *   });
  *
- *   // promiseB will be resolved immediately after promiseA is resolved and it's value will be
+ *   // promiseB will be resolved immediately after promiseA is resolved and its value will be
  *   // the result of promiseA incremented by 1
  * </pre>
  *
@@ -127,7 +127,7 @@
  *  # Testing
  * 
  *  <pre>
- *    it('should simulate promise', inject(function($q, $rootSCope) {
+ *    it('should simulate promise', inject(function($q, $rootScope) {
  *      var deferred = $q.defer();
  *      var promise = deferred.promise;
  *      var resolvedValue;
@@ -312,7 +312,7 @@ function qFactory(nextTick, exceptionHandler) {
    * @methodOf ng.$q
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
-   * This is useful when you are dealing with on object that might or might not be a promise, or if
+   * This is useful when you are dealing with an object that might or might not be a promise, or if
    * the promise comes from a source that can't be trusted.
    *
    * @param {*} value Value or a promise
@@ -377,29 +377,30 @@ function qFactory(nextTick, exceptionHandler) {
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
    *
-   * @param {Array.<Promise>} promises An array of promises.
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
-   *   each value corresponding to the promise at the same index in the `promises` array. If any of
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} Returns a single promise that will be resolved with an array/hash of values,
+   *   each value corresponding to the promise at the same index/key in the `promises` array/hash. If any of
    *   the promises is resolved with a rejection, this resulting promise will be resolved with the
    *   same rejection.
    */
   function all(promises) {
     var deferred = defer(),
-        counter = promises.length,
-        results = [];
+        counter = 0,
+        results = isArray(promises) ? [] : {};
 
-    if (counter) {
-      forEach(promises, function(promise, index) {
-        ref(promise).then(function(value) {
-          if (index in results) return;
-          results[index] = value;
-          if (!(--counter)) deferred.resolve(results);
-        }, function(reason) {
-          if (index in results) return;
-          deferred.reject(reason);
-        });
+    forEach(promises, function(promise, key) {
+      counter++;
+      ref(promise).then(function(value) {
+        if (results.hasOwnProperty(key)) return;
+        results[key] = value;
+        if (!(--counter)) deferred.resolve(results);
+      }, function(reason) {
+        if (results.hasOwnProperty(key)) return;
+        deferred.reject(reason);
       });
-    } else {
+    });
+
+    if (counter === 0) {
       deferred.resolve(results);
     }
 

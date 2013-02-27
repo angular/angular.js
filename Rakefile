@@ -21,6 +21,8 @@ task :default => [:package]
 
 desc 'Init the build workspace'
 task :init do
+  %x(npm install)
+
   FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
 
   v = YAML::load( File.open( 'version.yaml' ) )
@@ -105,11 +107,7 @@ task :minify => [:init, :concat, :concat_scenario] do
     'angular-bootstrap.js',
     'angular-bootstrap-prettify.js'
   ].each do |file|
-    unless ENV['TRAVIS']
-      fork { closure_compile(file) }
-    else
-      closure_compile(file)
-    end
+    fork { closure_compile(file) }
   end
 
   Process.waitall
@@ -347,6 +345,8 @@ end
 
 
 def start_testacular(config, singleRun, browsers, misc_options)
+  Rake::Task[:init].invoke
+
   sh "./node_modules/testacular/bin/testacular start " +
                 "#{config} " +
                 "#{'--single-run=true' if singleRun} " +
