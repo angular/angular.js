@@ -215,6 +215,96 @@ describe('ngRepeat', function() {
   });
 
 
+  describe("optional count", function() {
+    it("should optionally parse a count option", function() {
+      expect(function() {
+        element = jqLite('<ul><li ng-repeat="count for item in items"></li></ul>');
+        $compile(element)(scope);
+      }).not.toThrow();
+    });
+
+
+    it("should assign to the count as a simple identifier", function() {
+      element = $compile(
+        '<ul>' +
+        '<li ng-repeat="count for n in nums"}}></li>' +
+        '</ul>')(scope);
+      $compile(element)(scope);
+      scope.nums = [1, 2, 3, 4, 5];
+      scope.$digest();
+      expect(scope.count).toEqual(5);
+    });
+
+
+    it("should assign to the count as a property on an object", function() {
+      element = $compile(
+        '<ul>' +
+        '<li ng-repeat="count.nums for n in nums"}}></li>' +
+        '</ul>')(scope);
+      $compile(element)(scope);
+      scope.nums = [1, 2, 3, 4, 5];
+      scope.$digest();
+      expect(scope.count.nums).toEqual(5);
+    });
+
+
+    it("should update the count when growing/shrinking an array", function() {
+      element = $compile(
+        '<ul>' +
+        '<li ng-repeat="count.items for item in items">{{item.name}};</li>' +
+        '</ul>')(scope);
+
+        Array.prototype.extraProperty = "should be ignored";
+
+        // INIT
+        scope.items = [{name: 'misko'}, {name:'shyam'}];
+        scope.$digest();
+        expect(scope.count.items).toEqual(2)
+        delete Array.prototype.extraProperty;
+
+        // GROW
+        scope.items.push({name: 'adam'});
+        scope.$digest();
+        expect(scope.count.items).toEqual(3)
+
+        // SHRINK
+        scope.items.pop();
+        scope.items.shift();
+        scope.$digest();
+        expect(scope.count.items).toEqual(1)
+    });
+
+
+    it("should update the count when we filter out properties from an obj", function() {
+      element = $compile(
+        '<ul>' +
+        '<li ng-repeat="count for (key, val) in items"></li>' +
+        '</ul>')(scope);
+      scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
+      scope.$digest();
+      expect(scope.count).toEqual(4);
+    });
+
+
+    it("should update the count when using a filter expression", function() {
+      element = $compile(
+        '<ul>' +
+        '<li ng-repeat="count for n in nums | filter:odd">{{n}}|</li>' +
+        '</ul>')(scope);
+      scope.nums = [1, 2, 3, 4, 5, 6];
+
+      scope.$digest();
+      expect(element.text()).toEqual('1|2|3|4|5|6|');
+      expect(scope.count).toEqual(6);
+
+      scope.odd = function(n) { return n % 2 === 1; };
+      scope.$digest();
+      expect(element.text()).toEqual('1|3|5|');
+      expect(scope.count).toEqual(3);
+    });
+  })
+
+
   it('should expose iterator offset as $index when iterating over arrays',
       function() {
     element = $compile(
@@ -293,7 +383,7 @@ describe('ngRepeat', function() {
   });
 
 
-  it('should calculate $first, $middle and $last when we filter out properties from an obj', function() {
+  it('should calculate $first, $middle, and $last when we filter out properties from an obj', function() {
     element = $compile(
         '<ul>' +
             '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$middle}}-{{$last}}|</li>' +
