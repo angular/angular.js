@@ -983,18 +983,18 @@ function bootstrap(element, modules) {
     return injector;
   };
 
-  if (window.location.hash.match(/_WAITFORMODULES$/)) {
-    window.location.hash = window.location.hash.replace('_WAITFORMODULES', '');
-
-    window.angular.resumeBootstrapWithExtraModules = function(extraModules) {
-      forEach(extraModules, function(module) {
-        modules.push(module);
-      });
-      resumeBootstrapInternal();
-    };
-    return null;
+  var NG_WAIT_REGEXP = /_NG_WAIT_FOR_MODULES$/;
+  if (!window.location.hash.match(NG_WAIT_REGEXP)) {
+    return resumeBootstrapInternal();
   }
-  return resumeBootstrapInternal();
+
+  window.location.hash = window.location.hash.replace(NG_WAIT_REGEXP, '');
+  angular.resumeBootstrapWithExtraModules = function(extraModules) {
+    forEach(extraModules, function(module) {
+      modules.push(module);
+    });
+    resumeBootstrapInternal();
+  };
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;

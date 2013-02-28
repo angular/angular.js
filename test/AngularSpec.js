@@ -650,7 +650,7 @@ describe('angular', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
-      expect(element.data('$injector')).toBe(injector);
+      expect(element.injector()).toBe(injector);
       dealoc(element);
     });
 
@@ -668,7 +668,7 @@ describe('angular', function() {
     it('should wait for extra modules', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var origHash = window.location.hash;
-      window.location.hash = origHash + '_WAITFORMODULES';
+      window.location.hash = origHash + '_NG_WAIT_FOR_MODULES';
       angular.bootstrap(element);
 
       expect(element.html()).toBe('{{1+2}}');
@@ -682,15 +682,19 @@ describe('angular', function() {
 
     it('should load extra modules', function() {
       var element = jqLite('<div>{{1+2}}</div>');
-      window.location.hash += '_WAITFORMODULES';
-      angular.bootstrap(element, []);
+      window.location.hash += '_NG_WAIT_FOR_MODULES';
 
-      expect(element.data('$injector')).toBeUndefined();
+      var bootstrapping = jasmine.createSpy('bootstrapping');
+      angular.bootstrap(element, [bootstrapping]);
+
+      expect(bootstrapping).not.toHaveBeenCalled();
+      expect(element.injector()).toBeUndefined();
 
       angular.module('addedModule', []).value('foo', 'bar');
       angular.resumeBootstrapWithExtraModules(['addedModule']);
 
-      expect(element.data('$injector').get('foo')).toEqual('bar');
+      expect(bootstrapping).toHaveBeenCalledOnce();
+      expect(element.injector().get('foo')).toEqual('bar');
       dealoc(element);
     });
 
@@ -701,8 +705,10 @@ describe('angular', function() {
       angular.module('addedModule', []).value('foo', 'bar');
 
       expect(function() {
-        element.data('$injector').get('foo');
+        element.injector().get('foo');
       }).toThrow('Unknown provider: fooProvider <- foo');
+
+      expect(element.injector().get('$http')).toBeDefined();
       dealoc(element);
     });
   });
