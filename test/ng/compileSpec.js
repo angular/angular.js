@@ -1503,6 +1503,12 @@ describe('$compile', function() {
           expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
         };
       });
+      directive('replaceSomeAttr', valueFn({
+        compile: function(element, attr) {
+          attr.$set('someAttr', 'bar-{{1+1}}');
+          expect(element).toBe(attr.$$element);
+        }
+      }));
     }));
 
 
@@ -1543,6 +1549,12 @@ describe('$compile', function() {
       expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
     }));
 
+    it('should allow directive to replace interpolated attributes', inject(
+        function($compile, $rootScope) {
+      element = $compile('<div some-attr="foo-{{1+1}}" replace-some-attr></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('some-attr')).toEqual('bar-2');
+    }));
 
     it('should call observer of non-interpolated attr through $evalAsync',
       inject(function($rootScope, $compile) {
