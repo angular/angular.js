@@ -83,6 +83,7 @@ task :concat => :init do
 
   concat_module('resource', ['src/ngResource/resource.js'])
   concat_module('cookies', ['src/ngCookies/cookies.js'])
+  concat_module('retina', ['src/ngRetina/retina.js'])
   concat_module('bootstrap', ['src/bootstrap/bootstrap.js'])
   concat_module('bootstrap-prettify', ['src/bootstrap/bootstrap-prettify.js',
                                        'src/bootstrap/google-prettify/prettify.js'],
@@ -101,6 +102,7 @@ desc 'Minify JavaScript'
 task :minify => [:init, :concat, :concat_scenario] do
   [ 'angular.js',
     'angular-cookies.js',
+    'angular-retina.js',
     'angular-loader.js',
     'angular-resource.js',
     'angular-sanitize.js',
