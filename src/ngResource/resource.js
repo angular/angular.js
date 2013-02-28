@@ -36,6 +36,10 @@
  *   If the parameter value is prefixed with `@` then the value of that parameter is extracted from
  *   the data object (useful for non-GET operations).
  *
+ *   If a parameter named `suffix` is supplied, its value will be appended to the url. For example
+ *   {suffix: '.json'} will result in URL like `/path/resource.json`
+ *
+ *
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
  *   default set of resource actions. The declaration should be created in the format of {@link
  *   ng.$http#Parameters $http.config}:
@@ -316,8 +320,10 @@ angular.module('ngResource', ['ng']).
         var self = this,
             url = actionUrl || self.template,
             val,
-            encodedVal;
+            encodedVal,
+            suffix = '';
 
+        if (params.hasOwnProperty('suffix')) {suffix = params['suffix']; delete params['suffix'];}
         var urlParams = self.urlParams = {};
         forEach(url.split(/\W/), function(param){
           if (param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
@@ -332,7 +338,8 @@ angular.module('ngResource', ['ng']).
           if (angular.isDefined(val) && val !== null) {
             encodedVal = encodeUriSegment(val);
             url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");
-          } else {
+          }
+          else {
             url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match,
                 leadingSlashes, tail) {
               if (tail.charAt(0) == '/') {
@@ -345,7 +352,8 @@ angular.module('ngResource', ['ng']).
         });
 
         // set the url
-        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '');
+        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '') + suffix;
+
 
         // set params - delegate param encoding to $http
         forEach(params, function(value, key){
