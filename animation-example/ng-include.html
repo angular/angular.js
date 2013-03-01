@@ -2,12 +2,16 @@
 <html ng-app="Animator" ng-controller="AppCtrl">
   <head>
 <script type="text/ng-template" id="tpl_1">
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada risus eu magna posuere eu laoreet odio ornare. Proin malesuada gravida magna at lacinia. Donec metus erat, rutrum sit amet faucibus quis, mattis at sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean feugiat nibh in quam facilisis a rutrum risus malesuada. Fusce libero libero, scelerisque eget luctus a, blandit vel nisi. Proin elit nisi, adipiscing nec congue et, ornare vel enim. Nam orci dui, volutpat vitae fringilla vitae, scelerisque ut neque. Etiam libero orci, consequat ac porttitor a, feugiat nec orci. Nullam volutpat rhoncus dolor sed pellentesque. Etiam ornare, enim molestie semper imperdiet, urna ligula porta massa, in tempor diam quam ut velit. Ut sit amet nulla sem, pellentesque bibendum elit. Sed lectus libero, iaculis a vestibulum at, laoreet tempor orci. Praesent scelerisque urna et velit eleifend viverra.
-  </p>
+  <div class="slide">
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada risus eu magna posuere eu laoreet odio ornare. Proin malesuada gravida magna at lacinia. Donec metus erat, rutrum sit amet faucibus quis, mattis at sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean feugiat nibh in quam facilisis a rutrum risus malesuada. Fusce libero libero, scelerisque eget luctus a, blandit vel nisi. Proin elit nisi, adipiscing nec congue et, ornare vel enim. Nam orci dui, volutpat vitae fringilla vitae, scelerisque ut neque. Etiam libero orci, consequat ac porttitor a, feugiat nec orci. Nullam volutpat rhoncus dolor sed pellentesque. Etiam ornare, enim molestie semper imperdiet, urna ligula porta massa, in tempor diam quam ut velit. Ut sit amet nulla sem, pellentesque bibendum elit. Sed lectus libero, iaculis a vestibulum at, laoreet tempor orci. Praesent scelerisque urna et velit eleifend viverra.
+    </p>
+  </div>
 </script>
 <script type="text/ng-template" id="tpl_2">
-  <img src="http://angularjs.org/img/AngularJS-large.png" />
+  <div class="slide">
+    <img src="http://angularjs.org/img/AngularJS-large.png" />
+  </div>
 </script>
     <title>AngularJS Animation Demo</title>
     <link rel="stylesheet" type="text/css" href="./styles.css" />
@@ -19,6 +23,18 @@
         overflow:hidden;
         position:relative;
         padding:20px;
+      }
+      .pos {
+        position:relative;
+        height:100%;
+      }
+      .pos div {
+        position:absolute;
+        padding:20px;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
       }
     </style>
   </head>
@@ -39,6 +55,48 @@
           </nav>
         </header>
         <div class="block" ng-include="in1" ng-animate="enter: noopEnter; hide: noopLeave;">
+        </div>
+      </div>
+
+      <div class="cell" id="two" ng-init="in2='tpl_1'">
+        <header>
+          Fade In / Fade Out
+          <nav class="buttons">
+            <input type="button" ng-click="in2='tpl_1'; rand2=false" ng-disabled="in2=='tpl_1'" value="template 1" />
+            <input type="button" ng-click="in2='tpl_2'; rand2=false" ng-disabled="in2=='tpl_2'" value="template 2" />
+            <input type="button" ng-click="in2=randomTemplate(); rand2=true" ng-disabled="rand2==true" value="uncached" />
+            <input type="button" ng-click="in2=null; rand2=false" ng-disabled="in2==null" value="nothing" />
+          </nav>
+        </header>
+        <div class="block pos" ng-include="in2" ng-animate="enter: fadeEnter; leave: fadeLeave;">
+        </div>
+      </div>
+
+      <div class="cell" id="three" ng-init="in3='tpl_1'">
+        <header>
+          Fade In / Fade Out
+          <nav class="buttons">
+            <input type="button" ng-click="in3='tpl_1'; rand3=false" ng-disabled="in3=='tpl_1'" value="template 1" />
+            <input type="button" ng-click="in3='tpl_2'; rand3=false" ng-disabled="in3=='tpl_2'" value="template 2" />
+            <input type="button" ng-click="in3=randomTemplate(); rand3=true" ng-disabled="rand3==true" value="uncached" />
+            <input type="button" ng-click="in3=null; rand3=false" ng-disabled="in3==null" value="nothing" />
+          </nav>
+        </header>
+        <div class="block pos" ng-include="in3" ng-animate="enter: slideEnter; leave: slideLeave;">
+        </div>
+      </div>
+
+      <div class="cell" id="four" ng-init="in4='tpl_1'">
+        <header>
+          ngInclude with no ngAnimate
+          <nav class="buttons">
+            <input type="button" ng-click="in4='tpl_1'; rand4=false" ng-disabled="in4=='tpl_1'" value="template 1" />
+            <input type="button" ng-click="in4='tpl_2'; rand4=false" ng-disabled="in4=='tpl_2'" value="template 2" />
+            <input type="button" ng-click="in4=randomTemplate(); rand4=true" ng-disabled="rand4==true" value="uncached" />
+            <input type="button" ng-click="in4=null; rand4=false" ng-disabled="in4==null" value="nothing" />
+          </nav>
+        </header>
+        <div class="block pos" ng-include="in4">
         </div>
       </div>
     </div>

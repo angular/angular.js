@@ -84,13 +84,13 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     restrict: 'ECA',
     terminal: true,
     require: '?ngAnimate', // optional
-    compile: function(element, attr, animator) {
-      animator = animator || $noopAnimator;
+    compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, element) {
+      return function(scope, element, attr, animator) {
+        animator = animator || $noopAnimator;
         var changeCounter = 0,
             childScope;
 
@@ -100,8 +100,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             childScope = null;
           }
 
-          animator.animate('leave', element);
-          element.html('');
+          animator.animate('leave', element.contents(), element);
         };
 
         scope.$watch(srcExp, function ngIncludeWatchAction(src) {
@@ -114,10 +113,12 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (childScope) childScope.$destroy();
               childScope = scope.$new();
 
-              animator.animate('leave', element);
-              element.html(response);
-              $compile(element.contents())(childScope);
-              animator.animate('enter', element);
+              if(element.children().length) {
+                animator.animate('leave', element.contents(), element);
+              }
+              var contents = jqLite(response);
+              animator.animate('enter', contents, element);
+              $compile(contents)(childScope);
 
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                 $anchorScroll();
