@@ -30,11 +30,15 @@ angularFiles = {
     'src/ng/locale.js',
     'src/ng/timeout.js',
 
+    'src/ng/animation.js',
+
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
     'src/ng/filter/filters.js',
     'src/ng/filter/limitTo.js',
     'src/ng/filter/orderBy.js',
+
+    'src/ng/directive/ngAnimate.js',
 
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',

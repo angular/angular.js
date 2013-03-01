@@ -1,0 +1,106 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+<script type="text/ng-template" id="no-results">
+No Results Found...
+</script>
+    <title>AngularJS Animation Demo</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <style>
+#main-nav {
+  margin-bottom:1em;
+}
+#wrapper {
+  margin-top:80px;
+}
+    </style>
+  </head>
+
+  <body ng-cloak>
+    <div id="wrapper">
+
+
+      <form id="nav" ng-submit="add(new_item); new_item=null">
+        <div ng-include="'./nav.html'"></div>
+        <input class="add" type="input" ng-model="new_item" placeholder="enter something to add" />
+        <button ng-click="add(new_item); new_item = null">Add</button>
+        <button ng-click="pop()">Pop Last</button>
+        <button ng-click="sort('name')">Order by name</button>
+        <button ng-click="sort('index')">Order by index</button>
+        <input type="search" ng-model="q" placeholder="search" class="q" />
+      </form>
+
+      <div class="cell" id="one">
+        <header>
+          Noop
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: noop-enter; leave: noop-leave; move:noop-move">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell" id="two">
+        <header>
+          Fade In / Fade Out
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: fade-enter; leave: fade-leave; move:fade-move; show: fade-show; hide: fade-hide">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell" id="three">
+        <header>
+          Slide In / Slide Out
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order"
+            ng-animate="enter: slide-enter; leave: slide-leave; move:slide-move">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell other" id="four">
+        <header>
+          ngRepeat with no ngAnimate directive at all...
+        </header>
+        <div class="stage">
+          <div ng-show="items.length == 0" ng-include="'no-results'"></div>
+          <div
+            class="item"
+            ng-show="items.length > 0"
+            ng-repeat="item in items | filter:q | orderBy:order">
+            <strong>{{ $index + 1 }}:</strong> {{ item.name }} ({{ item.index }})
+            <button ng-click="remove(item.index)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../build/angular.js"></script>
+    <script src="./index.js"></script> 
+  <body>
+</html>

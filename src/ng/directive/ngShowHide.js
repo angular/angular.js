@@ -33,11 +33,17 @@
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngShowDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-    element.css('display', toBoolean(value) ? '' : 'none');
-  });
-});
+var ngShowDirective = ['$noopAnimator', function($noopAnimator) {
+  return {
+    require: '?ngAnimate', // optional
+    link: function(scope, element, attr, animator) {
+      animator = animator || $noopAnimator;
+      scope.$watch(attr.ngShow, function ngShowWatchAction(value){
+        toBoolean(value) ? animator.animate('show', element) : animator.animate('hide', element);
+      });
+    }
+  };
+}];
 
 
 /**
@@ -73,8 +79,14 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngHideDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-    element.css('display', toBoolean(value) ? 'none' : '');
-  });
-});
+var ngHideDirective = ['$noopAnimator', function($noopAnimator) {
+  return {
+    require: '?ngAnimate', // optional
+    link : function(scope, element, attr, animator) {
+      animator = animator || $noopAnimator;
+      scope.$watch(attr.ngHide, function ngHideWatchAction(value){
+        toBoolean(value) ? animator.animate('hide', element) : animator.animate('show', element);
+      });
+    }
+  };
+}];

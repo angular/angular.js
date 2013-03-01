@@ -56,7 +56,8 @@ afterEach(function() {
     });
   });
   if (count) {
-    throw new Error('Found jqCache references that were not deallocated! count: ' + count);
+    throw new Error(jasmine.getEnv().currentSpec.getFullName() +
+        ': Found jqCache references that were not deallocated! count: ' + count);
   }
 });
 
