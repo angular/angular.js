@@ -92,13 +92,18 @@ function $RouteProvider(){
    *      If the option is set to `false` and url in the browser changes, then
    *      `$routeUpdate` event is broadcasted on the root scope.
    *
+   *    - `[caseInsensitiveMatch=false]` - {boolean=} - match routes without being case sensitive
+   *
+   *      If the option is set to `true`, then the particular route can be matched without being
+   *      case sensitive
+   *
    * @returns {Object} self
    *
    * @description
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true}, route);
+    routes[path] = extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
 
     // create redirection for trailing slashes
     if (path) {
@@ -343,14 +348,16 @@ function $RouteProvider(){
     /**
      * @param on {string} current url
      * @param when {string} route when template to match the url against
+     * @param whenProperties {Object} properties to define when's matching behavior
      * @return {?Object}
      */
-    function switchRouteMatcher(on, when) {
+    function switchRouteMatcher(on, when, whenProperties) {
       // TODO(i): this code is convoluted and inefficient, we should construct the route matching
       //   regex only once and then reuse it
 
       // Escape regexp special characters.
       when = '^' + when.replace(/[-\/\\^$:*+?.()|[\]{}]/g, "\\$&") + '$';
+
       var regex = '',
           params = [],
           dst = {};
@@ -377,7 +384,7 @@ function $RouteProvider(){
       // Append trailing path part.
       regex += when.substr(lastMatchedIndex);
 
-      var match = on.match(new RegExp(regex));
+      var match = on.match(new RegExp(regex, whenProperties.caseInsensitiveMatch ? 'i' : ''));
       if (match) {
         forEach(params, function(name, index) {
           dst[name] = match[index + 1];
@@ -466,7 +473,7 @@ function $RouteProvider(){
       // Match a route
       var params, match;
       forEach(routes, function(route, path) {
-        if (!match && (params = switchRouteMatcher($location.path(), path))) {
+        if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
           match = inherit(route, {
             params: extend({}, $location.search(), params),
             pathParams: params});

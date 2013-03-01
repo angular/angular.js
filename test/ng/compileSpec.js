@@ -647,6 +647,32 @@ describe('$compile', function() {
       });
 
 
+      describe('template as function', function() {
+
+        beforeEach(module(function() {
+          directive('myDirective', valueFn({
+            replace: true,
+            template: function($element, $attrs) {
+              expect($element.text()).toBe('original content');
+              expect($attrs.myDirective).toBe('some value');
+              return '<div id="templateContent">template content</div>';
+            },
+            compile: function($element, $attrs) {
+              expect($element.text()).toBe('template content');
+              expect($attrs.id).toBe('templateContent');
+            }
+          }));
+        }));
+
+
+        it('should evaluate `template` when defined as fn and use returned string as template', inject(
+            function($compile, $rootScope) {
+          element = $compile('<div my-directive="some value">original content<div>')($rootScope);
+          expect(element.text()).toEqual('template content');
+        }));
+      });
+
+
       describe('templateUrl', function() {
 
         beforeEach(module(
@@ -1215,6 +1241,37 @@ describe('$compile', function() {
       });
 
 
+      describe('template as function', function() {
+
+        beforeEach(module(function() {
+          directive('myDirective', valueFn({
+            replace: true,
+            templateUrl: function($element, $attrs) {
+              expect($element.text()).toBe('original content');
+              expect($attrs.myDirective).toBe('some value');
+              return 'my-directive.html';
+            },
+            compile: function($element, $attrs) {
+              expect($element.text()).toBe('template content');
+              expect($attrs.id).toBe('templateContent');
+            }
+          }));
+        }));
+
+
+        it('should evaluate `templateUrl` when defined as fn and use returned value as url', inject(
+            function($compile, $rootScope, $templateCache) {
+          $templateCache.put('my-directive.html', '<div id="templateContent">template content</span>');
+          element = $compile('<div my-directive="some value">original content<div>')($rootScope);
+          expect(element.text()).toEqual('');
+
+          $rootScope.$digest();
+
+          expect(element.text()).toEqual('template content');
+        }));
+      });
+
+
       describe('scope', function() {
         var iscope;
 
@@ -1446,6 +1503,12 @@ describe('$compile', function() {
           expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
         };
       });
+      directive('replaceSomeAttr', valueFn({
+        compile: function(element, attr) {
+          attr.$set('someAttr', 'bar-{{1+1}}');
+          expect(element).toBe(attr.$$element);
+        }
+      }));
     }));
 
 
@@ -1484,6 +1547,14 @@ describe('$compile', function() {
       $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
       expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
+    }));
+
+
+    it('should allow directive to replace interpolated attributes before attr interpolation compilation', inject(
+        function($compile, $rootScope) {
+      element = $compile('<div some-attr="foo-{{1+1}}" replace-some-attr></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('some-attr')).toEqual('bar-2');
     }));
 
 
