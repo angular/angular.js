@@ -10,8 +10,6 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
-  var dist = {};
-  dist['build/angular-'+ NG_VERSION.full +'.zip'] = 'build/**';
 
   //config
   grunt.initConfig({
@@ -134,7 +132,10 @@ module.exports = function(grunt) {
     },
 
     compress: {
-      zip: { files: dist }
+      build: {
+        options: {archive: 'build/angular-'+ NG_VERSION.full +'.zip'},
+        src: ['**'], cwd: 'build', expand: true
+      }
     },
 
     write: {

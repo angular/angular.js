@@ -1,17 +1,17 @@
 {
   "name": "AngularJS",
   "version": "0.0.0",
-  "dependencies" : {
-    "testacular": "canary",
-    "jasmine-node" :  "*",
-    "q-fs" : "~0.1.36",
-    "qq" : "*",
-    "grunt": "git+https://github.com/gruntjs/grunt.git#1f77fef26c",
-    "grunt-contrib-clean": "git+https://github.com/gruntjs/grunt-contrib-clean.git#15b40e46a6",
-    "grunt-contrib-copy": "git+https://github.com/gruntjs/grunt-contrib-copy.git#d658081862",
-    "grunt-contrib-connect": "git+https://github.com/gruntjs/grunt-contrib-connect.git#949bf6dd5e",
-    "grunt-contrib-compress": "git+https://github.com/gruntjs/grunt-contrib-compress.git#8f99393daa",
-    "shelljs": "0.0.x",
-    "yaml-js": "0.0.x"
+  "dependencies": {
+    "testacular": "0.5.9",
+    "jasmine-node": "1.2.3",
+    "q-fs": "0.1.36",
+    "qq": "0.3.5",
+    "grunt": "0.4.0",
+    "grunt-contrib-clean": "0.4.0",
+    "grunt-contrib-copy": "0.4.0",
+    "grunt-contrib-connect": "0.1.2",
+    "grunt-contrib-compress": "0.4.1",
+    "shelljs": "0.1.2",
+    "yaml-js": "0.0.5"
   }
 }
