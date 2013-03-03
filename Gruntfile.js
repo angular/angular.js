@@ -139,7 +139,8 @@ module.exports = function(grunt) {
     },
 
     write: {
-      version: {file: 'build/version.txt', val: NG_VERSION.full}
+      versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
+      versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
     }
   });
   
