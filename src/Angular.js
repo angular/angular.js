@@ -984,11 +984,11 @@ function bootstrap(element, modules) {
   };
 
   var NG_WAIT_REGEXP = /_NG_WAIT_FOR_MODULES$/;
-  if (!window.location.hash.match(NG_WAIT_REGEXP)) {
+  if (!window.name.match(NG_WAIT_REGEXP)) {
     return resumeBootstrapInternal();
   }
 
-  window.location.hash = window.location.hash.replace(NG_WAIT_REGEXP, '');
+  window.name = window.name.replace(NG_WAIT_REGEXP, '');
   angular.resumeBootstrapWithExtraModules = function(extraModules) {
     forEach(extraModules, function(module) {
       modules.push(module);

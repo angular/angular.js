@@ -667,8 +667,8 @@ describe('angular', function() {
 
     it('should wait for extra modules', function() {
       var element = jqLite('<div>{{1+2}}</div>');
-      var origHash = window.location.hash;
-      window.location.hash = origHash + '_NG_WAIT_FOR_MODULES';
+      var origName = window.name;
+      window.name = origName + '_NG_WAIT_FOR_MODULES';
       angular.bootstrap(element);
 
       expect(element.html()).toBe('{{1+2}}');
@@ -676,13 +676,13 @@ describe('angular', function() {
       angular.resumeBootstrapWithExtraModules();
 
       expect(element.html()).toBe('3');
-      expect(window.location.hash).toEqual(origHash);
+      expect(window.name).toEqual(origName);
       dealoc(element);
     });
 
     it('should load extra modules', function() {
       var element = jqLite('<div>{{1+2}}</div>');
-      window.location.hash += '_NG_WAIT_FOR_MODULES';
+      window.name += '_NG_WAIT_FOR_MODULES';
 
       var bootstrapping = jasmine.createSpy('bootstrapping');
       angular.bootstrap(element, [bootstrapping]);
