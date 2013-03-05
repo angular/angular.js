@@ -25,5 +25,14 @@ describe('ngKeyup and ngKeydown directives', function() {
     expect($rootScope.touched).toEqual(true);
   }));
 
+  it('should get called on a keypress', inject(function($rootScope, $compile) {
+    element = $compile('<input ng-keypress="touched = true">')($rootScope);
+    $rootScope.$digest();
+    expect($rootScope.touched).toBeFalsy();
+
+    browserTrigger(element, 'keypress');
+    expect($rootScope.touched).toEqual(true);
+  }));
+
 });
 
