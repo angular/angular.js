@@ -18,6 +18,15 @@
  * The returned resource object has action methods which provide high-level behaviors without
  * the need to interact with the low level {@link ng.$http $http} service.
  *
+ * # Installation
+ * To use $resource make sure you have included the `angular-resource.js` that comes in Angular 
+ * package. You also can find this stuff in {@link http://code.angularjs.org/ code.angularjs.org}.
+ * Finally load the module in your application:
+ *
+ *        angular.module('app', ['ngResource']);
+ *
+ * and you ready to get started!
+ *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
