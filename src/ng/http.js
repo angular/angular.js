@@ -659,6 +659,22 @@ function $HttpProvider() {
           defaults.headers.common,
           defaults.headers[lowercase(config.method)],
           requestConfig.headers);
+      /*
+      var reqTransformFn = config.transformRequest || defaults.transformRequest,
+          respTransformFn = config.transformResponse || defaults.transformResponse,
+          reqHeaders = prepareRequestHeaders(config),
+          reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
+          promise, header;
+
+      // strip content-type if data is undefined
+      if (isUndefined(config.data)) {
+        for (header in reqHeaders) {
+            if (lowercase(header) === 'content-type') {
+                delete reqHeaders[header];
+            }
+        }
+      }
+      */
 
       var xsrfValue = isSameDomain(config.url, $browser.url())
           ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
@@ -728,6 +744,40 @@ function $HttpProvider() {
         return (isSuccess(response.status))
           ? resp
           : $q.reject(resp);
+      }
+
+      function prepareRequestHeaders(config) {
+        var xsrfHeader = {},
+            xsrfCookieName = config.xsrfCookieName || defaults.xsrfCookieName,
+            xsrfHeaderName = config.xsrfHeaderName || defaults.xsrfHeaderName,
+            xsrfToken = isSameDomain(config.url, $browser.url()) ?
+                            $browser.cookies()[xsrfCookieName] : undefined;
+        xsrfHeader[xsrfHeaderName] = xsrfToken;
+
+        var defHeaders = defaults.headers,
+            reqHeaders = extend(xsrfHeader, config.headers);
+
+        var defHeaderName, lowercaseDefHeaderName, reqHeaderName;
+
+
+        defHeaders = extend(defHeaders.common, defHeaders[lowercase(config.method)]);
+
+        // using for-in instead of forEach to avoid unecessary iteration after header has been found
+        defaultHeadersIteration:
+        for (defHeaderName in defHeaders) {
+          lowercaseDefHeaderName = lowercase(defHeaderName);
+
+          for (reqHeaderName in reqHeaders) {
+            if (lowercase(reqHeaderName) === lowercaseDefHeaderName) {
+              continue defaultHeadersIteration;
+            }
+          }
+
+          reqHeaders[defHeaderName] = defHeaders[defHeaderName];
+        }
+
+        return reqHeaders;
+
       }
     }
 

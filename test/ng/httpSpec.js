@@ -717,6 +717,21 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should override default headers with custom in a case insensitive manner', function() {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return headers['accept'] == 'Rewritten' &&
+                 headers['content-type'] == 'Rewritten' &&
+                 headers['Accept'] === undefined &&
+                 headers['Content-Type'] === undefined;
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'accept': 'Rewritten',
+          'content-type': 'Rewritten'
+        }});
+        $httpBackend.flush();
+      });
+
       it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
         $browser.cookies('XSRF-TOKEN', 'secret');
         $browser.url('http://host.com/base');
