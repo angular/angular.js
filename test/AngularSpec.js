@@ -658,7 +658,7 @@ describe('angular', function() {
       var element = jqLite('<div>{{1+2}}</div>');
       var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
-      expect(element.data('$injector')).toBe(injector);
+      expect(element.injector()).toBe(injector);
       dealoc(element);
     });
 
@@ -670,6 +670,53 @@ describe('angular', function() {
       }).toThrow('No module: doesntexist');
 
       expect(element.html()).toBe('{{1+2}}');
+      dealoc(element);
+    });
+
+    it('should wait for extra modules', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      var origName = window.name;
+      window.name = origName + '_NG_WAIT_FOR_MODULES';
+      angular.bootstrap(element);
+
+      expect(element.html()).toBe('{{1+2}}');
+
+      angular.resumeBootstrapWithExtraModules();
+
+      expect(element.html()).toBe('3');
+      expect(window.name).toEqual(origName);
+      dealoc(element);
+    });
+
+    it('should load extra modules', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      window.name += '_NG_WAIT_FOR_MODULES';
+
+      var bootstrapping = jasmine.createSpy('bootstrapping');
+      angular.bootstrap(element, [bootstrapping]);
+
+      expect(bootstrapping).not.toHaveBeenCalled();
+      expect(element.injector()).toBeUndefined();
+
+      angular.module('addedModule', []).value('foo', 'bar');
+      angular.resumeBootstrapWithExtraModules(['addedModule']);
+
+      expect(bootstrapping).toHaveBeenCalledOnce();
+      expect(element.injector().get('foo')).toEqual('bar');
+      dealoc(element);
+    });
+
+    it('should not load extra modules without URL cue', function() {
+      var element = jqLite('<div>{{1+2}}</div>');
+      angular.bootstrap(element, []);
+
+      angular.module('addedModule', []).value('foo', 'bar');
+
+      expect(function() {
+        element.injector().get('foo');
+      }).toThrow('Unknown provider: fooProvider <- foo');
+
+      expect(element.injector().get('$http')).toBeDefined();
       dealoc(element);
     });
   });
