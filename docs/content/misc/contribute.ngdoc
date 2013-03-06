@@ -131,6 +131,10 @@ minified AngularJS files:
 
         grunt package
 
+NOTE: If you're using Windows you must run your command line with administrative privileges (right click, run as
+Administrator).
+
+
 The build output can be located under the `build` directory. It consists of the following files and
 directories:
 
