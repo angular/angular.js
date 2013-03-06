@@ -12,4 +12,4 @@ before_script:
   - grunt webserver > /dev/null &
 
 script:
-  - grunt test --in=[Firefox] --reporters=dots
+  - grunt test --browsers=Firefox --reporters=dots
