@@ -21,21 +21,19 @@ Building AngularJS
 ---------
 [Once you have your environment setup](http://docs.angularjs.org/misc/contribute) just run:
 
-    rake package
+    grunt package
 
 
 Running Tests
 -------------
 To execute all unit tests, use:
 
-    rake test:unit
+    grunt test:unit
 
 To execute end-to-end (e2e) tests, use:
 
-    rake package
-    rake webserver &
-    rake test:e2e
+    grunt package
+    grunt test:e2e
 
-To learn more about the rake tasks, run `rake -T` and also read our
-[contribution guidelines](http://docs.angularjs.org/misc/contribute) and instructions in this
-[commit message](https://github.com/angular/angular.js/commit/9d168f058f9c6d7eeae0daa7cb72ea4e02a0003a).
+To learn more about the grunt tasks, run `grunt --help` and also read our
+[contribution guidelines](http://docs.angularjs.org/misc/contribute).
