@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
-
+  var dist = 'angular-'+ NG_VERSION.full;
 
   //global beforeEach
   util.init();
@@ -147,8 +147,8 @@ module.exports = function(grunt) {
 
     compress: {
       build: {
-        options: {archive: 'build/angular-'+ NG_VERSION.full +'.zip'},
-        src: ['**'], cwd: 'build', expand: true
+        options: {archive: 'build/' + dist +'.zip'},
+        src: ['**'], cwd: 'build', expand: true, dest: dist + '/' + dist
       }
     },
 
