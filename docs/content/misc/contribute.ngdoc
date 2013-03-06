@@ -81,15 +81,11 @@ Several steps are needed to check out and build AngularJS:
 Before you can build AngularJS, you must install or configure the following dependencies on your
 machine:
 
-* {@link http://rake.rubyforge.org Rake}: We use Rake as our build system, which is pre-installed
-on most Macintosh and Linux machines. If that is not true in your case, you can grab it from the
-Rake website.
-
 * Git: The {@link http://help.github.com/mac-git-installation Github Guide to Installing Git} is
 quite a good source for information on Git.
 
-* {@link http://nodejs.org Node.js}: We use Node to generate the documentation and to run a
-development web server. Depending on your system, you can install Node either from source or as a
+* {@link http://nodejs.org Node.js}: We use Node to generate the documentation, run a
+development web server, run tests, and generate a build. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
   Once installed, you'll also need several npms (node packages), which you can install once you checked out a local copy
@@ -97,6 +93,10 @@ pre-packaged bundle.
 
   * `cd angular.js`
   * `npm install`
+
+* {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
+
+  * `sudo npm install -g grunt-cli`
 
 
 ## Creating a Github Account and Forking Angular
@@ -108,7 +108,7 @@ https://github.com/angular/angular.js main angular repository}.
 
 ## Building AngularJS
 
-To build AngularJS, you check out the source code and use Rake to generate the non-minified and
+To build AngularJS, you check out the source code and use Grunt to generate the non-minified and
 minified AngularJS files:
 
 1. To clone your Github repository, run:
@@ -129,7 +129,7 @@ minified AngularJS files:
 
 5. To build AngularJS, run:
 
-        rake package
+        grunt package
 
 The build output can be located under the `build` directory. It consists of the following files and
 directories:
@@ -158,7 +158,7 @@ made available a local web server based on Node.js.
 
 1. To start the web server, run:
 
-        rake webserver
+        grunt webserver
 
 2. To access the local server, go to this website:
 
@@ -173,18 +173,20 @@ made available a local web server based on Node.js.
 Our unit and integration tests are written with Jasmine and executed with Testacular.  To run all of the
 tests once on Chrome run:
 
-    rake test:unit
+    grunt test:unit
 
 To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
 
-    rake test:unit[Opera+Firefox]
+    grunt test:unit --browsers Opera,Firefox
+
+Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
 
 During development it's however more productive to continuously run unit tests every time the source or test files
 change. To execute tests in this mode run:
 
 1. To start the Testacular server, capture Chrome browser and run unit tests, run:
 
-        rake autotest:jqlite
+        grunt autotest:jqlite
 
 2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
    of Testacular running, read Testacular's console output for the correct url):
@@ -194,9 +196,9 @@ change. To execute tests in this mode run:
 3. To re-run tests just change any source or test file.
 
 
-To learn more about all of the preconfigured Rake tasks run:
+To learn more about all of the preconfigured Grunt tasks run:
 
-    rake -T
+    grunt --help
 
 
 ## Running the end-to-end Test Suite
@@ -205,7 +207,7 @@ To run the E2E test suite:
 
 1. Start the local web server if it's not running already.
 
-        rake webserver
+        grunt webserver
 
 2. In a browser, go to:
 
@@ -213,7 +215,13 @@ To run the E2E test suite:
 
    or in terminal run:
 
-        rake test:e2e
+        grunt test:end2end
+
+For convenience you can also simply run:
+
+        grunt test:e2e
+
+This will start the webserver for you and run the tests.
 
 
 
