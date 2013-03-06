@@ -10,6 +10,7 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
+  util.init();
 
   //config
   grunt.initConfig({
