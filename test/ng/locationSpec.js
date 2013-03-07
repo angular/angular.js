@@ -676,6 +676,19 @@ describe('$location', function() {
       expect(match[8]).toBe('foo');
       expect(match[10]).toBe('bar');
     });
+
+    it('should parse FFOS app:// urls', function() {
+      var match = URL_MATCH.exec('app://{d0419af1-8b42-41c5-96f4-ef4179e52315}/path');
+
+      expect(match[1]).toBe('app');
+      expect(match[3]).toBe('{d0419af1-8b42-41c5-96f4-ef4179e52315}');
+      expect(match[5]).toBeFalsy();
+      expect(match[6]).toBe('/path');
+      expect(match[8]).toBeFalsy();
+
+      match = URL_MATCH.exec('app://}foo{')
+      expect(match).toBe(null);
+    });
   });
 
 
