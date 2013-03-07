@@ -31,4 +31,9 @@ describe('Filter: orderBy', function() {
     toEqual([{a:2, b:1},{a:15, b:1}]);
   });
 
+  it('should sort array of Date objects', function(){
+    expect(orderBy([{a:new Date('1/12/1980'), b: 1}, {a:new Date('1/6/1980'), b: 2}],['a'])).
+      toEqualData([{a:new Date('1/6/1980'), b:2}, {a:new Date('1/12/1980'), b: 1}]);
+  })
+
 });
