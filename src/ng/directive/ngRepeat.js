@@ -1,5 +1,7 @@
 'use strict';
 
+/*global angular, ngDirective, WrappedArray, WrappedObject, isArray, whatChanged, FlattenedChanges */
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngRepeat
@@ -61,129 +63,132 @@ var ngRepeatDirective = ngDirective({
   transclude: 'element',
   priority: 1000,
   terminal: true,
-  compile: function(element, attr, linker) {
-    return function(scope, iterStartElement, attr){
-      var expression = attr.ngRepeat;
-      var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-        lhs, rhs, valueIdent, keyIdent;
-      if (! match) {
-        throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" +
-          expression + "'.");
-      }
-      lhs = match[1];
-      rhs = match[2];
-      match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
-      if (!match) {
-        throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-            lhs + "'.");
-      }
-      valueIdent = match[3] || match[1];
-      keyIdent = match[2];
+  compile: function(element, attr, clone) {
+    var expression = attr.ngRepeat;
+    var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/);
+    if (!match) {
+      throw new Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" + expression + "'.");
+    }
+    var identifiers = match[1];
+    var sourceExpression = match[2];
 
-      // Store a list of elements from previous run. This is a hash where key is the item from the
-      // iterator, and the value is an array of objects with following properties.
-      //   - scope: bound scope
-      //   - element: previous element.
-      //   - index: position
-      // We need an array of these objects since the same object can be returned from the iterator.
-      // We expect this to be a rare case.
-      var lastOrder = new HashQueueMap();
+    match = identifiers.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+    if (!match) {
+      throw new Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+          identifiers + "'.");
+    }
+    var valueIdentifier = match[3] || match[1];
+    var keyIdentifier = match[2];
+
+    var updateScope = function(scope, value, key) {
+      scope[valueIdentifier] = value;
+      if (keyIdentifier) {
+        scope[keyIdentifier] = key;
+      }
+    };
+
+    // Return the linking function for this directive
+    return function(scope, startElement, attr){
+      var originalCollection = new WrappedArray([]);
+      var originalChildItems = [];
+      var containerElement = startElement.parent();
 
       scope.$watch(function ngRepeatWatch(scope){
-        var index, length,
-            collection = scope.$eval(rhs),
-            cursor = iterStartElement,     // current position of the node
-            // Same as lastOrder but it has the current state. It will become the
-            // lastOrder on the next iteration.
-            nextOrder = new HashQueueMap(),
-            arrayLength,
-            childScope,
-            key, value, // key/value of iteration
-            array,
-            last;       // last object information {scope, element, index}
+        var item, key;
+        var source = scope.$eval(sourceExpression);
+        var newCollection = isArray(source) ? new WrappedArray(source) : new WrappedObject(source);
+        var newChildItems = [];
+        var temp = whatChanged(originalCollection, newCollection);
+        var changes = new FlattenedChanges(temp).changes;
 
-
-
-        if (!isArray(collection)) {
-          // if object, extract keys, sort them and use to determine order of iteration over obj props
-          array = [];
-          for(key in collection) {
-            if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-              array.push(key);
+        // Iterate over the flattened changes array - updating the childscopes and elements accordingly
+        var lastChildScope, newChildScope, newChildItem;
+        var currentElement = startElement;
+        var itemIndex = 0, changeIndex = 0;
+        while(changeIndex < changes.length) {
+          item = changes[changeIndex];
+          if ( !angular.isDefined(item) ) {
+            // No change for this item just copy it over
+            newChildItem = originalChildItems[itemIndex];
+            newChildItems.push(newChildItem);
+            currentElement = newChildItem.element;
+            itemIndex++;
+            changeIndex++;
+            continue;
+          }
+          if ( item.deleted ) {
+            // An item has been deleted here - destroy the old scope and remove the old element
+            var originalChildItem = originalChildItems[itemIndex];
+            originalChildItem.scope.$destroy();
+            originalChildItem.element.remove();
+            // If an item is added or moved here as well then the index will incremented in the added or moved if statement below
+            if ( !item.added && !item.moved ) {
+              itemIndex++;
             }
           }
-          array.sort();
-        } else {
-          array = collection || [];
-        }
-
-        arrayLength = array.length;
-
-        // we are not using forEach for perf reasons (trying to avoid #call)
-        for (index = 0, length = array.length; index < length; index++) {
-          key = (collection === array) ? index : array[index];
-          value = collection[key];
-
-          last = lastOrder.shift(value);
-
-          if (last) {
-            // if we have already seen this object, then we need to reuse the
-            // associated scope/element
-            childScope = last.scope;
-            nextOrder.push(value, last);
-
-            if (index === last.index) {
-              // do nothing
-              cursor = last.element;
-            } else {
-              // existing item which got moved
-              last.index = index;
-              // This may be a noop, if the element is next, but I don't know of a good way to
-              // figure this out,  since it would require extra DOM access, so let's just hope that
-              // the browsers realizes that it is noop, and treats it as such.
-              cursor.after(last.element);
-              cursor = last.element;
-            }
-          } else {
-            // new item which we don't know about
-            childScope = scope.$new();
-          }
-
-          childScope[valueIdent] = value;
-          if (keyIdent) childScope[keyIdent] = key;
-          childScope.$index = index;
-
-          childScope.$first = (index === 0);
-          childScope.$last = (index === (arrayLength - 1));
-          childScope.$middle = !(childScope.$first || childScope.$last);
-
-          if (!last) {
-            linker(childScope, function(clone){
-              cursor.after(clone);
-              last = {
-                  scope: childScope,
-                  element: (cursor = clone),
-                  index: index
-                };
-              nextOrder.push(value, last);
+          if ( item.added ) {
+            // An item has been added here - create a new scope and clone a new element
+            newChildItem = { scope: scope.$new() };
+            updateScope(newChildItem.scope, item.value, newCollection.key(item.index));
+            clone(newChildItem.scope, function(newChildElement){
+              currentElement.after(newChildElement);
+              currentElement = newChildItem.element = newChildElement;
             });
+            newChildItems.push(newChildItem);
+            itemIndex++;
           }
-        }
-
-        //shrink children
-        for (key in lastOrder) {
-          if (lastOrder.hasOwnProperty(key)) {
-            array = lastOrder[key];
-            while(array.length) {
-              value = array.pop();
-              value.element.remove();
-              value.scope.$destroy();
+          if ( item.modified ) {
+            // This item is a primitive that has been modified - update the scope
+            newChildItem = originalChildItems[itemIndex];
+            updateScope(newChildItem.scope, item.newValue, newCollection.key(item.index));
+            newChildItems.push(newChildItem);
+            currentElement = newChildItem.element;
+            itemIndex++;
+          }
+          if ( item.moved ) {
+            // An object has moved here from somewhere else - move the element accordingly
+            newChildItem = originalChildItems[item.oldIndex];
+            if (keyIdentifier && isArray(source)) {
+              // We are iterating keys, but over an array rather than an object so we need to fix up the scope
+              updateScope(newChildItem.scope, item.value, newCollection.key(item.index));
             }
+            newChildItems.push(newChildItem);
+            currentElement.after(newChildItem.element);
+            currentElement = newChildItem.element;
+            itemIndex++;
           }
+          changeIndex++;
+        }
+        while( itemIndex < newCollection.length() ) {
+          // No change for this item just copy it over
+          newChildItem = originalChildItems[itemIndex];
+          newChildItems.push(newChildItem);
+          currentElement = newChildItem.element;
+          itemIndex++;
         }
 
-        lastOrder = nextOrder;
+        // Update $index, $first, $middle & $last
+        for(var index=0; index<newChildItems.length; index++) {
+          if (angular.isDefined(newChildItems[index]) ) {
+            newChildScope = newChildItems[index].scope;
+            newChildScope.$index = index;
+            newChildScope.$first = (index === 0);
+            newChildScope.$middle = (index !== 0);
+            newChildScope.$last = false;
+            lastChildScope = newChildScope;
+          }
+        }
+        // Fix up last item
+        if ( angular.isDefined(lastChildScope) ) {
+          lastChildScope.$last = true;
+          lastChildScope.$middle = false;
+        }
+
+        // Store originals for next time
+        originalCollection = newCollection.copy();
+        originalChildItems = newChildItems.slice(0);
       });
+
     };
   }
 });
