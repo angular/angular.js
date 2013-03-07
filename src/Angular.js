@@ -395,6 +395,29 @@ function isArray(value) {
 
 /**
  * @ngdoc function
+ * @name angular.isURIComponent
+ * @function
+ *
+ * @description
+ * Determines if a reference is a valid value to be
+ * URI decoded.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` can be decoded
+ * with the decodeURIComponent function.
+ */
+function isURIComponent(value) {
+  try {
+    decodeURIComponent(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+
+/**
+ * @ngdoc function
  * @name angular.isFunction
  * @function
  *
@@ -824,7 +847,8 @@ function parseKeyValue(/**string*/keyValue) {
     if (keyValue) {
       key_value = keyValue.split('=');
       key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      obj[key] = isDefined(key_value[1]) && isURIComponent(key_value[1]) ?
+          decodeURIComponent(key_value[1]) : true;
     }
   });
   return obj;
