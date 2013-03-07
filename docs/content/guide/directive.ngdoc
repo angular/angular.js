@@ -382,7 +382,7 @@ compiler}. The attributes are:
 
     * `$scope` - Current scope associated with the element
     * `$element` - Current element
-    * `$attrs` - Current attributes obeject for the element
+    * `$attrs` - Current attributes object for the element
     * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
       `function(cloneLinkingFn)`.
 
