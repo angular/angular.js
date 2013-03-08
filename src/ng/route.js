@@ -397,7 +397,7 @@ function $RouteProvider(){
       var next = parseRoute(),
           last = $route.current;
 
-      if (next && last && next.$route === last.$route
+      if (next && last && next.$$route === last.$$route
           && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
         last.params = next.params;
         copy(last.params, $routeParams);
@@ -477,7 +477,7 @@ function $RouteProvider(){
           match = inherit(route, {
             params: extend({}, $location.search(), params),
             pathParams: params});
-          match.$route = route;
+          match.$$route = route;
         }
       });
       // No route matched; fallback to "otherwise" route
