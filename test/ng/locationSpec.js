@@ -549,6 +549,16 @@ describe('$location', function() {
         }
       );
     });
+
+    it('should convert html5 url with search param to hashbang', function () {
+      initService(true, '!', false);
+      inject(
+        initBrowser('http://domain.com/base/index.html?a', '/base/index.html'),
+        function($browser, $location) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!/index.html?a');
+        }
+      );
+    });
   });
 
 
