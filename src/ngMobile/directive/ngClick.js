@@ -163,7 +163,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
   // Actual linking function.
   return function(scope, element, attr) {
-    var expressionFn = $parse(attr.ngClick),
+    var clickHandler = $parse(attr.ngClick),
         tapping = false,
         tapElement,  // Used to blur the element after a tap.
         startTime,   // Used to check if the tap was held too long.
@@ -221,7 +221,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
         scope.$apply(function() {
           // TODO(braden): This is sending the touchend, not a tap or click. Is that kosher?
-          expressionFn(scope, {$event: event});
+          clickHandler(scope, {$event: event});
         });
       }
       tapping = false;
@@ -236,7 +236,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // desktop as well, to allow more portable sites.
     element.bind('click', function(event) {
       scope.$apply(function() {
-        expressionFn(scope, {$event: event});
+        clickHandler(scope, {$event: event});
       });
     });
   };
