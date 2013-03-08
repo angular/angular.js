@@ -59,7 +59,7 @@ function $ControllerProvider() {
     return function(constructor, locals) {
       if(isString(constructor)) {
         var name = constructor;
-        constructor = controllers.hasOwnProperty(name)
+        constructor = hasOwn.call(controllers, name)
             ? controllers[name]
             : getter(locals.$scope, name, true) || getter($window, name, true);
 

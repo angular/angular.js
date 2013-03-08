@@ -337,7 +337,7 @@ angular.module('ngResource', ['ng']).
 
         params = params || {};
         forEach(self.urlParams, function(_, urlParam){
-          val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
+          val = Object.prototype.hasOwnProperty.call(params, urlParam) ? params[urlParam] : self.defaults[urlParam];
           if (angular.isDefined(val) && val !== null) {
             encodedVal = encodeUriSegment(val);
             url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");

@@ -191,7 +191,7 @@
 
       if (IGNORE[prop] || prop.match(/^moz[A-Z]/)) { //skip special variables which keep on changing
         continue;
-      } else if (!globalVars.hasOwnProperty(varKey)) {
+      } else if (!hasOwn.call(globalVars, varKey)) {
         //console.log('new global variable found: ', prop);
         try {
           globalVars[varKey] = window[prop];

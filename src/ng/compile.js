@@ -177,7 +177,7 @@ function $CompileProvider($provide) {
    this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
       assertArg(directiveFactory, 'directive');
-      if (!hasDirectives.hasOwnProperty(name)) {
+      if (!hasOwn.call(hasDirectives, name)) {
         hasDirectives[name] = [];
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
           function($injector, $exceptionHandler) {
@@ -917,7 +917,7 @@ function $CompileProvider($provide) {
      */
     function addDirective(tDirectives, name, location, maxPriority) {
       var match = false;
-      if (hasDirectives.hasOwnProperty(name)) {
+      if (hasOwn.call(hasDirectives, name)) {
         for(var directive, directives = $injector.get(name + Suffix),
             i = 0, ii = directives.length; i<ii; i++) {
           try {
@@ -964,7 +964,7 @@ function $CompileProvider($provide) {
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
-        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
+        } else if (key.charAt(0) != '$' && !hasOwn.call(dst, key)) {
           dst[key] = value;
           dstAttr[key] = srcAttr[key];
         }

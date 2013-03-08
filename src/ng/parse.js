@@ -200,7 +200,7 @@ function lex(text, csp){
       text:ident
     };
 
-    if (OPERATORS.hasOwnProperty(ident)) {
+    if (hasOwn.call(OPERATORS, ident)) {
       token.fn = token.json = OPERATORS[ident];
     } else {
       var getter = getterFn(ident, csp);
@@ -732,7 +732,7 @@ var getterFnCache = {};
  */
 function cspSafeGetterFn(key0, key1, key2, key3, key4) {
   return function(scope, locals) {
-    var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
+    var pathVal = (locals && hasOwn.call(locals, key0)) ? locals : scope,
         promise;
 
     if (pathVal === null || pathVal === undefined) return pathVal;
@@ -795,7 +795,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4) {
 };
 
 function getterFn(path, csp) {
-  if (getterFnCache.hasOwnProperty(path)) {
+  if (hasOwn.call(getterFnCache, path)) {
     return getterFnCache[path];
   }
 
@@ -827,7 +827,7 @@ function getterFn(path, csp) {
                       // we simply dereference 's' on any .dot notation
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
-                      : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
+                      : '((k&&hasOwn.call(k,"' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
               'if (s && s.then) {\n' +
                 ' if (!("$$v" in s)) {\n' +
                   ' p=s;\n' +
@@ -892,7 +892,7 @@ function $ParseProvider() {
     return function(exp) {
       switch(typeof exp) {
         case 'string':
-          return cache.hasOwnProperty(exp)
+          return hasOwn.call(cache, exp)
             ? cache[exp]
             : cache[exp] =  parser(exp, false, $filter, $sniffer.csp);
         case 'function':
