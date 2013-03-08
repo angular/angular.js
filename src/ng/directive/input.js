@@ -461,6 +461,10 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       patternValidator = function(value) {
         var patternObj = scope.$eval(pattern);
 
+        if (angular.isString(patternObj) && patternObj.match(/^\/(.*)\/$/)) {
+          patternObj = new RegExp(patternObj.substr(1, patternObj.length - 2));
+        }
+
         if (!patternObj || !patternObj.test) {
           throw new Error('Expected ' + pattern + ' to be a RegExp but was ' + patternObj);
         }
