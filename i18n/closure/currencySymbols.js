@@ -16,14 +16,14 @@
 /**
  * @fileoverview A utility to get better currency format pattern.
  *
- * This module implement a new currency format representation model. It
+ * This module implements a new currency format representation model. It
  * provides 3 currency representation forms: global, portable and local. Local
  * format is the most popular format people use to represent currency in its
  * circulating country without worrying about how it should be distinguished
  * from other currencies.  Global format is a formal representation in context
  * of multiple currencies in same page, it is ISO 4217 currency code. Portable
  * format is a compromise between global and local. It looks similar to how
- * people would like to see how their currencies is being represented in other
+ * people would like to see how their currency is being represented in other
  * media. While at the same time, it should be distinguishable to world's
  * popular currencies (like USD, EUR) and currencies somewhat relevant in the
  * area (like CNY in HK, though native currency is HKD). There is no guarantee
@@ -43,15 +43,14 @@ goog.i18n.currency.PRECISION_MASK_ = 0x07;
 
 
 /**
- * If this flag is set, it means the currency sign should position before
- * number.
+ * Whether the currency sign should be positioned after the number.
  * @private
  */
 goog.i18n.currency.POSITION_FLAG_ = 0x08;
 
 
 /**
- * Should a space to inserted between number and currency sign.
+ * Whether a space should be inserted between the number and currency sign.
  * @private
  */
 goog.i18n.currency.SPACE_FLAG_ = 0x20;
@@ -59,8 +58,8 @@ goog.i18n.currency.SPACE_FLAG_ = 0x20;
 
 /**
  * This function will add tier2 currency support. Be default, only tier1
- * (most popular currencies) are supportted. If an application really need
- * to support some of the rarely used currency, it should call this function
+ * (most popular currencies) are supported. If an application really needs
+ * to support some of the rarely used currencies, it should call this function
  * before any other functions in this namespace.
  */
 goog.i18n.currency.addTier2Support = function() {
@@ -75,8 +74,8 @@ goog.i18n.currency.addTier2Support = function() {
  * Global currency pattern always uses ISO-4217 currency code as prefix. Local
  * currency sign is added if it is different from currency code. Each currency
  * is unique in this form. The negative side is that ISO code looks weird in
- * some countries as poeple normally do not use it. Local currency sign
- * alleviate the problem, but also make it a little verbose.
+ * some countries as people normally do not use it. Local currency sign
+ * alleviates the problem, but also makes it a little verbose.
  *
  * @param {string} currencyCode ISO-4217 3-letter currency code.
  * @return {string} Global currency pattern string for given currency.
@@ -85,9 +84,6 @@ goog.i18n.currency.getGlobalCurrencyPattern = function(currencyCode) {
   var info = goog.i18n.currency.CurrencyInfo[currencyCode];
   var patternNum = info[0];
   if (currencyCode == info[1]) {
-    if ((patternNum & goog.i18n.currency.POSITION_FLAG_) == 0) {
-      patternNum |= goog.i18n.currency.SPACE_FLAG_;
-    }
     return goog.i18n.currency.getCurrencyPattern_(patternNum, info[1]);
   }
   return currencyCode + ' ' +
@@ -104,10 +100,8 @@ goog.i18n.currency.getGlobalCurrencyPattern = function(currencyCode) {
  */
 goog.i18n.currency.getGlobalCurrencySign = function(currencyCode) {
   var info = goog.i18n.currency.CurrencyInfo[currencyCode];
-  if (currencyCode == info[1]) {
-      return currencyCode;
-  }
-  return currencyCode + ' ' + info[1];
+  return (currencyCode == info[1]) ? currencyCode :
+      currencyCode + ' ' + info[1];
 };
 
 
@@ -128,6 +122,7 @@ goog.i18n.currency.getLocalCurrencyPattern = function(currencyCode) {
 /**
  * Returns local currency sign string for those applications that need to
  * handle currency sign separately.
+ *
  * @param {string} currencyCode ISO-4217 3-letter currency code.
  * @return {string} Local currency sign for given currency.
  */
@@ -156,6 +151,7 @@ goog.i18n.currency.getPortableCurrencyPattern = function(currencyCode) {
 /**
  * Return portable currency sign string for those applications that need to
  * handle currency sign themselves.
+ *
  * @param {string} currencyCode ISO-4217 3-letter currency code.
  * @return {string} Portable currency sign for given currency.
  */
@@ -165,10 +161,13 @@ goog.i18n.currency.getPortableCurrencySign = function(currencyCode) {
 
 
 /**
- * This function returns the default currency sign position. Some application
+ * This function returns the default currency sign position. Some applications
  * may want to handle currency sign and currency amount separately. This
- * function can be used in such situation to position the currency sign
- * relative to amount field correctly.
+ * function can be used in such situations to correctly position the currency
+ * sign relative to the amount.
+ *
+ * To match the behavior of ICU, position is not determined by display locale.
+ *
  * @param {string} currencyCode ISO-4217 3-letter currency code.
  * @return {boolean} true if currency should be positioned before amount field.
  */
@@ -179,13 +178,12 @@ goog.i18n.currency.isPrefixSignPosition = function(currencyCode) {
 
 
 /**
- * This function construct the currency pattern. Currency sign is provided. The
+ * This function constructs the currency pattern. Currency sign is provided. The
  * pattern information is encoded in patternNum.
  *
  * @param {number} patternNum Encoded pattern number that has
  *     currency pattern information.
- * @param {string} sign the currency sign that will be used in pattern.
- *
+ * @param {string} sign The currency sign that will be used in pattern.
  * @return {string} currency pattern string.
  * @private
  */
@@ -212,55 +210,96 @@ goog.i18n.currency.getCurrencyPattern_ = function(patternNum, sign) {
 
 
 /**
+ * Modify currency pattern string by adjusting precision for given currency.
+ * Standard currency pattern will have 2 digit after decimal point.
+ * Examples:
+ *   $#,##0.00 ->  $#,##0    (precision == 0)
+ *   $#,##0.00 ->  $#,##0.0  (precision == 1)
+ *   $#,##0.00 ->  $#,##0.000  (precision == 3)
+ *
+ * @param {string} pattern currency pattern string.
+ * @param {string} currencyCode 3-letter currency code.
+ * @return {string} modified currency pattern string.
+ */
+goog.i18n.currency.adjustPrecision = function(pattern, currencyCode) {
+  var strParts = ['0'];
+  var info = goog.i18n.currency.CurrencyInfo[currencyCode];
+  var precision = info[0] & goog.i18n.currency.PRECISION_MASK_;
+  if (precision > 0) {
+    strParts.push('.');
+    for (var i = 0; i < precision; i++) {
+      strParts.push('0');
+    }
+  }
+  return pattern.replace(/0.00/g, strParts.join(''));
+};
+
+
+/**
  * Tier 1 currency information.
+ *
+ * The first number in the array is a combination of the precision mask and
+ * other flags. The precision mask indicates how many decimal places to show for
+ * the currency. Valid values are [0..7]. The position flag indicates whether
+ * the currency sign should be positioned after the number. Valid values are 0
+ * (before the number) or 16 (after the number). The space flag indicates
+ * whether a space should be inserted between the currency sign and number.
+ * Valid values are 0 (no space) and 24 (space).
+ *
+ * The number in the array is calculated by adding together the mask and flag
+ * values. For example:
+ *
+ * 0: no precision (0), currency sign first (0), no space (0)
+ * 2: two decimals precision (2), currency sign first (0), no space (0)
+ * 18: two decimals precision (2), currency sign last (16), no space (0)
+ * 42: two decimals precision (2), currency sign last (16), space (24)
+ *
  * @type {!Object.<!Array>}
  */
 goog.i18n.currency.CurrencyInfo = {
-  'AED': [2, '\u062F\u002e\u0625', 'DH'],
-  'ARS': [2, '$', 'AR$'],
+  'AED': [2, 'dh', '\u062f.\u0625.', 'DH'],
   'AUD': [2, '$', 'AU$'],
   'BDT': [2, '\u09F3', 'Tk'],
   'BRL': [2, 'R$', 'R$'],
   'CAD': [2, '$', 'C$'],
-  'CHF': [2, 'Fr.', 'CHF'],
+  'CHF': [2, 'CHF', 'CHF'],
   'CLP': [0, '$', 'CL$'],
   'CNY': [2, '¥', 'RMB¥'],
-  'COP': [2, '$', 'COL$'],
-  'CRC': [2, '\u20a1', 'CR₡'],
-  'CUP': [2, '$', '$MN'],
-  'CZK': [10, 'Kč', 'Kč'],
-  'DKK': [26, 'kr', 'kr'],
+  'COP': [0, '$', 'COL$'],
+  'CRC': [0, '\u20a1', 'CR\u20a1'],
+  'CZK': [2, 'K\u010d', 'K\u010d'],
+  'DKK': [18, 'kr', 'kr'],
   'DOP': [2, '$', 'RD$'],
   'EGP': [2, '£', 'LE'],
-  'EUR': [26, '€', '€'],
+  'EUR': [18, '€', '€'],
   'GBP': [2, '£', 'GB£'],
   'HKD': [2, '$', 'HK$'],
-  'ILS': [10, '\u20AA', 'IL₪'],
-  'INR': [2, 'Rs', 'Rs'],
-  'ISK': [10, 'kr', 'kr'],
+  'ILS': [2, '\u20AA', 'IL\u20AA'],
+  'INR': [2, '\u20B9', 'Rs'],
+  'ISK': [0, 'kr', 'kr'],
   'JMD': [2, '$', 'JA$'],
   'JPY': [0, '¥', 'JP¥'],
   'KRW': [0, '\u20A9', 'KR₩'],
   'LKR': [2, 'Rs', 'SLRs'],
-  'MNT': [2, '\u20AE', 'MN₮'],
+  'MNT': [0, '\u20AE', 'MN₮'],
   'MXN': [2, '$', 'Mex$'],
   'MYR': [2, 'RM', 'RM'],
-  'NOK': [26, 'kr', 'NOkr'],
+  'NOK': [18, 'kr', 'NOkr'],
   'PAB': [2, 'B/.', 'B/.'],
   'PEN': [2, 'S/.', 'S/.'],
-  'PHP': [2, 'P', 'PHP'],
-  'PKR': [2, 'Rs.', 'PKRs.'],
-  'RUB': [10, 'руб', 'руб'],
-  'SAR': [2, '\u0633\u002E\u0631', 'SR'],
-  'SEK': [10, 'kr', 'kr'],
+  'PHP': [2, '\u20B1', 'Php'],
+  'PKR': [0, 'Rs', 'PKRs.'],
+  'RUB': [42, 'руб.', 'руб.'],
+  'SAR': [2, 'Rial', 'Rial'],
+  'SEK': [2, 'kr', 'kr'],
   'SGD': [2, '$', 'S$'],
   'THB': [2, '\u0e3f', 'THB'],
-  'TRY': [2, 'YTL', 'YTL'],
+  'TRY': [2, 'TL', 'YTL'],
   'TWD': [2, 'NT$', 'NT$'],
   'USD': [2, '$', 'US$'],
   'UYU': [2, '$', 'UY$'],
-  'VND': [10, '\u20AB', 'VN₫'],
-  'YER': [2, 'YER', 'YER'],
+  'VND': [0, '\u20AB', 'VN\u20AB'],
+  'YER': [0, 'Rial', 'Rial'],
   'ZAR': [2, 'R', 'ZAR']
 };
 
@@ -270,116 +309,114 @@ goog.i18n.currency.CurrencyInfo = {
  * @type {!Object.<!Array>}
  */
 goog.i18n.currency.CurrencyInfoTier2 = {
-  'AFN': [18, '\u060b', 'AFN'],
-  'ALL': [2, 'Lek', 'Lek'],
-  'AMD': [10, '\u0564\u0580\u002e', 'dram'],
-  'ANG': [2, '\u0083', 'NAƒ'],
+  'AFN': [16, 'Af.', 'AFN'],
+  'ALL': [0, 'Lek', 'Lek'],
+  'AMD': [0, 'Dram', 'dram'],
   'AOA': [2, 'Kz', 'Kz'],
-  'AWG': [2, 'ƒ', 'Afl.'],
-  'AZN': [2, 'm', 'man'],
-  'BAM': [18, 'КМ', 'KM'],
+  'ARS': [2, '$', 'AR$'],
+  'AWG': [2, 'Afl.', 'Afl.'],
+  'AZN': [2, 'man.', 'man.'],
+  'BAM': [18, 'KM', 'KM'],
   'BBD': [2, '$', 'Bds$'],
-  'BGN': [10, '\u043b\u0432', 'лв'],
-  'BHD': [3, '\u0628\u002e\u062f\u002e', 'BD'],
+  'BGN': [2, 'lev', 'lev'],
+  'BHD': [3, 'din', 'din'],
   'BIF': [0, 'FBu', 'FBu'],
   'BMD': [2, '$', 'BD$'],
   'BND': [2, '$', 'B$'],
-  'BOB': [2, 'B$', 'B$'],
-  'BSD': [2, '$', 'B$'],
+  'BOB': [2, 'Bs', 'Bs'],
+  'BSD': [2, '$', 'BS$'],
   'BTN': [2, 'Nu.', 'Nu.'],
   'BWP': [2, 'P', 'pula'],
-  'BYR': [0, 'Br', 'Br'],
+  'BYR': [0, 'BYR', 'BYR'],
   'BZD': [2, '$', 'BZ$'],
-  'CDF': [2, 'F', 'CDF'],
-  'CVE': [2, '$', 'Esc'],
+  'CDF': [2, 'FrCD', 'CDF'],
+  'CUC': [1, '$', 'CUC$'],
+  'CUP': [2, '$', 'CU$'],
+  'CVE': [2, 'CVE', 'Esc'],
   'DJF': [0, 'Fdj', 'Fdj'],
-  'DZD': [2, '\u062f\u062C', 'DA'],
-  'EEK': [10, 'EEK', 'EEK'],
+  'DZD': [2, 'din', 'din'],
   'ERN': [2, 'Nfk', 'Nfk'],
-  'ETB': [2, 'Br', 'Br'],
+  'ETB': [2, 'Birr', 'Birr'],
   'FJD': [2, '$', 'FJ$'],
   'FKP': [2, '£', 'FK£'],
   'GEL': [2, 'GEL', 'GEL'],
-  'GHS': [2, '\u20B5', 'GHS¢'],
+  'GHS': [2, 'GHS', 'GHS'],
   'GIP': [2, '£', 'GI£'],
-  'GMD': [2, 'D', 'GMD'],
+  'GMD': [2, 'GMD', 'GMD'],
   'GNF': [0, 'FG', 'FG'],
   'GTQ': [2, 'Q', 'GTQ'],
-  'GYD': [2, '$', 'GY$'],
+  'GYD': [0, '$', 'GY$'],
   'HNL': [2, 'L', 'HNL'],
   'HRK': [2, 'kn', 'kn'],
-  'HTG': [2, 'G', 'HTG'],
-  'HUF': [10, 'Ft', 'Ft'],
-  'IDR': [2, 'Rp', 'Rp'],
-  'IQD': [3, '\u0639\u062F', 'IQD'],
-  'IRR': [2, '\ufdfc', 'IRR'],
-  'JOD': [3, 'JOD', 'JOD'],
-  'KES': [2, 'KSh', 'KSh'],
-  'KGS': [2, 'som', 'som'],
-  'KHR': [10, '\u17DB', 'KHR'],
-  'KMF': [0, 'KMF', 'KMF'],
-  'KPW': [2, '\u20A9', 'KPW'],
-  'KWD': [3, '\u062F\u002e\u0643', 'KWD'],
-  'KYD': [2, '$', 'CI$'],
-  'KZT': [10, 'KZT', 'KZT'],
-  'LAK': [2, '\u20AD', 'LA₭'],
-  'LBP': [2, '\u0644\u002e\u0644', 'LBP'],
+  'HTG': [2, 'HTG', 'HTG'],
+  'HUF': [0, 'Ft', 'Ft'],
+  'IDR': [0, 'Rp', 'Rp'],
+  'IQD': [0, 'din', 'IQD'],
+  'IRR': [0, 'Rial', 'IRR'],
+  'JOD': [3, 'din', 'JOD'],
+  'KES': [2, 'Ksh', 'Ksh'],
+  'KGS': [2, 'KGS', 'KGS'],
+  'KHR': [2, 'Riel', 'KHR'],
+  'KMF': [0, 'CF', 'KMF'],
+  'KPW': [0, '\u20A9KP', 'KPW'],
+  'KWD': [3, 'din', 'KWD'],
+  'KYD': [2, '$', 'KY$'],
+  'KZT': [2, '\u20B8', 'KZT'],
+  'LAK': [0, '\u20AD', '\u20AD'],
+  'LBP': [0, 'L£', 'LBP'],
   'LRD': [2, '$', 'L$'],
-  'LSL': [2, 'L', 'LSL'],
-  'LTL': [10, 'Lt', 'Lt'],
-  'LVL': [10, 'Ls', 'Ls'],
-  'LYD': [3, '\u0644\u002e\u062F', 'LD'],
-  'MAD': [2, '\u0645\u002E\u062F\u002E', 'MAD'],
+  'LSL': [2, 'LSL', 'LSL'],
+  'LTL': [2, 'Lt', 'Lt'],
+  'LVL': [2, 'Ls', 'Ls'],
+  'LYD': [3, 'din', 'LD'],
+  'MAD': [2, 'dh', 'MAD'],
   'MDL': [2, 'MDL', 'MDL'],
-  'MGA': [1, 'MGA', 'MGA'],
-  'MKD': [2, 'MKD', 'MKD'],
-  'MMK': [2, 'K', 'MMK'],
-  'MOP': [2, 'MOP$', 'MOP$'],
-  'MRO': [1, 'UM', 'UM'],
-  'MUR': [2, 'Rs', 'MURs'],
-  'MVR': [2, 'Rf', 'MRF'],
-  'MWK': [2, 'MK', 'MK'],
+  'MGA': [0, 'Ar', 'MGA'],
+  'MKD': [2, 'din', 'MKD'],
+  'MMK': [0, 'K', 'MMK'],
+  'MOP': [2, 'MOP', 'MOP$'],
+  'MRO': [0, 'MRO', 'MRO'],
+  'MUR': [0, 'MURs', 'MURs'],
+  'MWK': [2, 'MWK', 'MWK'],
   'MZN': [2, 'MTn', 'MTn'],
   'NAD': [2, '$', 'N$'],
-  'NGN': [2, '\u20A6', 'NG₦'],
+  'NGN': [2, '\u20A6', 'NG\u20A6'],
   'NIO': [2, 'C$', 'C$'],
   'NPR': [2, 'Rs', 'NPRs'],
   'NZD': [2, '$', 'NZ$'],
-  'OMR': [3, '\u0639\u002E\u062F\u002E', 'OMR'],
-  'PGK': [2, 'K', 'PGK'],
-  'PLN': [10, 'zł', 'zł'],
-  'PYG': [0, '\u20b2', 'PYG'],
-  'QAR': [2, '\u0642\u002E\u0631', 'QR'],
-  'RON': [2, 'L', 'RON'],
-  'RSD': [2, 'РС\u0414', 'RSD'],
+  'OMR': [3, 'Rial', 'OMR'],
+  'PGK': [2, 'PGK', 'PGK'],
+  'PLN': [2, 'z\u0142', 'z\u0142'],
+  'PYG': [0, 'Gs', 'PYG'],
+  'QAR': [2, 'Rial', 'QR'],
+  'RON': [2, 'RON', 'RON'],
+  'RSD': [0, 'din', 'RSD'],
   'RWF': [0, 'RF', 'RF'],
   'SBD': [2, '$', 'SI$'],
-  'SCR': [2, 'SR', 'SCR'],
+  'SCR': [2, 'SCR', 'SCR'],
   'SDG': [2, 'SDG', 'SDG'],
   'SHP': [2, '£', 'SH£'],
-  'SKK': [10, 'Sk', 'Sk'],
-  'SLL': [2, 'Le', 'Le'],
-  'SOS': [2, 'So. Sh.', 'So. Sh.'],
+  'SLL': [0, 'SLL', 'SLL'],
+  'SOS': [0, 'SOS', 'SOS'],
   'SRD': [2, '$', 'SR$'],
-  'STD': [2, 'Db', 'Db'],
-  'SYP': [18, 'SYP', 'SYP'],
-  'SZL': [2, 'L', 'SZL'],
-  'TJS': [2, 'TJS', 'TJS'],
-  'TMM': [2, 'm', 'TMM'],
-  'TND': [3, '\u062F\u002e\u062A ', 'DT'],
+  'STD': [0, 'Db', 'Db'],
+  'SYP': [16, '£', 'SY£'],
+  'SZL': [2, 'SZL', 'SZL'],
+  'TJS': [2, 'Som', 'TJS'],
+  'TND': [3, 'din', 'DT'],
   'TOP': [2, 'T$', 'T$'],
   'TTD': [2, '$', 'TT$'],
-  'TZS': [10, 'TZS', 'TZS'],
-  'UAH': [10, '\u20B4', 'грн'],
-  'UGX': [2, 'USh', 'USh'],
-  'UZS': [2, 'UZS', 'UZS'],
-  'VEF': [2, 'Bs.F', 'Bs.F'],
-  'VUV': [0, 'Vt', 'Vt'],
-  'WST': [2, 'WS$', 'WS$'],
+  'TZS': [0, 'TSh', 'TSh'],
+  'UAH': [2, '\u20B4', 'UAH'],
+  'UGX': [0, 'UGX', 'UGX'],
+  'UYU': [1, '$', '$U'],
+  'UZS': [0, 'so\u02bcm', 'UZS'],
+  'VEF': [2, 'Bs', 'Bs'],
+  'VUV': [0, 'VUV', 'VUV'],
+  'WST': [2, 'WST', 'WST'],
   'XAF': [0, 'FCFA', 'FCFA'],
   'XCD': [2, '$', 'EC$'],
   'XOF': [0, 'CFA', 'CFA'],
-  'XPF': [0, 'F', 'XPF'],
-  'ZMK': [2, 'ZK', 'ZK'],
-  'ZWL': [2, '$', 'ZW$']
+  'XPF': [0, 'FCFP', 'FCFP'],
+  'ZMK': [0, 'ZMK', 'ZMK']
 };
