@@ -549,6 +549,16 @@ describe('$location', function() {
         }
       );
     });
+
+   it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
+      initService(true, '!', false);
+      inject(
+        initBrowser('http://domain.com/base/index.html', '/base/index.html'),
+        function($browser, $location) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!/index.html');
+        }
+      );
+    });
   });
 
 
@@ -1209,7 +1219,7 @@ describe('$location', function() {
     );
 
 
-    it('should listen on click events on href and prevent browser default in hashbang mode', function() {
+   it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/#/somePath">link</a>');
@@ -1253,20 +1263,21 @@ describe('$location', function() {
 
       inject(function($location, $rootScope, $browser, $rootElement) {
         var log = '',
-          link = $rootElement.find('a');
+            link = $rootElement.find('a'),
+            browserUrlBefore = $browser.url();
 
         $rootScope.$on('$locationChangeStart', function(event) {
           event.preventDefault();
           log += '$locationChangeStart';
         });
         $rootScope.$on('$locationChangeSuccess', function() {
-          throw new Error('after cancelation in html5 mode');
+          throw new Error('after cancellation in html5 mode');
         });
 
         browserTrigger(link, 'click');
 
         expect(log).toEqual('$locationChangeStart');
-        expect($browser.url()).toEqual('http://server/');
+        expect($browser.url()).toBe(browserUrlBefore);
 
         dealoc($rootElement);
       });
