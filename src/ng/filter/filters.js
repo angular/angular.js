@@ -223,6 +223,44 @@ function ampmGetter(date, formats) {
   return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
 }
 
+function timeStampGetter(milliseconds) {
+  return function(date) { 
+    return milliseconds ? Math.round(date.getTime() / 1000) : date.getTime();
+  }
+}
+
+function dayInYearGetter (date) {
+  var is_leap  = function (year) {
+    if (!(year % 4)) {
+      if (!(year % 100)) {
+        if (!(year%400)) {
+          return true;
+        } else return false;
+      } else return true;
+    } else  return false;
+  }, 
+  days = [31, (is_leap(date.getFullYear()) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+  passed = 0, i = 0;
+
+  for (; i < date.getMonth(); i++) {
+    passed += days[i];
+  }
+
+  return passed + date.getDate();
+}
+
+function weekInYearGetter(d) {
+  var temp = new Date(d);
+  temp.setHours(0,0,0);
+  temp.setDate(temp.getDate() + 4 - (temp.getDay()||7));
+
+  var yearStart = new Date(0,0,1);
+  yearStart.setFullYear(temp.getFullYear());
+  var weekNo = Math.ceil(( ( (temp - yearStart) / 86400000) + 1)/7);
+  
+  return weekNo;
+}
+
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
     yy: dateGetter('FullYear', 2, 0, true),
@@ -247,10 +285,14 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: ampmGetter,
-     Z: timeZoneGetter
-};
+     Z: timeZoneGetter,
+     U: timeStampGetter(true),
+     u: timeStampGetter(),
+     W: weekInYearGetter,
+     D: dayInYearGetter
+ };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEUuWD']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|U|u|W|D))(.*)/,
     NUMBER_STRING = /^\d+$/;
 
 /**
@@ -285,6 +327,10 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
+ *   * `'U'`: Unix timestamp
+ *   * `'u'`: Unix timestamp in milliseconds as used in javascript
+ *   * `'W'`: Week in year
+ *   * `'D'`: Day in year
  *
  *   `format` string can also be one of the following predefined
  *   {@link guide/i18n localizable formats}:

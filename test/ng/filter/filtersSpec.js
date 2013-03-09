@@ -72,16 +72,16 @@ describe('filters', function() {
       expect(num).toBe('123.112');
     });
 
-		it('should format the same with string as well as numeric fractionSize', function(){
-			var num = formatNumber(123.1, pattern, ',', '.', "0");
+    it('should format the same with string as well as numeric fractionSize', function(){
+      var num = formatNumber(123.1, pattern, ',', '.', "0");
       expect(num).toBe('123');
-			var num = formatNumber(123.1, pattern, ',', '.', 0);
+      var num = formatNumber(123.1, pattern, ',', '.', 0);
       expect(num).toBe('123');
-			var num = formatNumber(123.1, pattern, ',', '.', "3");
+      var num = formatNumber(123.1, pattern, ',', '.', "3");
       expect(num).toBe('123.100');
-			var num = formatNumber(123.1, pattern, ',', '.', 3);
+      var num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
-		});
+    });
   });
 
   describe('currency', function() {
@@ -200,11 +200,11 @@ describe('filters', function() {
     });
 
     it('should accept various format strings', function() {
-      expect(date(morning, "yy-MM-dd HH:mm:ss")).
-                      toEqual('10-09-03 07:05:08');
+      expect(date(morning, "yy-MM-dd - D/W -  HH:mm:ss")).
+                      toEqual('10-09-03 - 246/35 -  07:05:08');
 
-      expect(date(morning, "yy-MM-dd HH:mm:ss.sss")).
-                      toEqual('10-09-03 07:05:08.001');
+      expect(date(morning, "yy-MM-dd HH:mm:ss.sss / U")).
+                      toEqual('10-09-03 07:05:08.001 / 1283515508');
 
       expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
                       toEqual('2010-9-3 12=0:5:8AM-0500');
@@ -227,8 +227,8 @@ describe('filters', function() {
       expect(date(noon, "EEEE, MMMM dd, yyyy")).
                       toEqual('Friday, September 03, 2010');
 
-      expect(date(earlyDate, "MMMM dd, y")).
-                      toEqual('September 03, 1');
+      expect(date(earlyDate, "MMMM dd, y - u:W")).
+                      toEqual('September 03, 1 - -62114410492000:36');
     });
 
     it('should format timezones correctly (as per ISO_8601)', function() {
