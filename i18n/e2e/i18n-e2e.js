@@ -182,4 +182,17 @@ describe("localized filters", function() {
       });
     })
   });
+  
+  describe("cy-gb locale", function() {
+    beforeEach(function() {
+      browser().navigateTo("localeTest_cy-gb.html");
+    });
+
+    it('should check filters for cy-gb locale', function() {
+      expect(binding('input | date:"medium"')).toBe('4 Meh 1977 02:07:23');
+      expect(binding('input | date:"longDate"')).toBe("4 Mehefin 1977");
+      expect(binding('input | number')).toBe('234,234,443,432');
+      expect(binding('input | currency')).toBe('£234,234,443,432.00');
+    });
+  })
 });
