@@ -607,20 +607,20 @@ forEach({
 
       if (!eventFns) {
         if (type == 'mouseenter' || type == 'mouseleave') {
-          var counter = 0;
+          var entered = false;
 
           events.mouseenter = [];
           events.mouseleave = [];
 
           bindFn(element, 'mouseover', function(event) {
-            counter++;
-            if (counter == 1) {
+            if (!entered) {
+              entered = true;
               handle(event, 'mouseenter');
             }
           });
           bindFn(element, 'mouseout', function(event) {
-            counter --;
-            if (counter == 0) {
+            if (entered && indexOf(element.getElementsByTagName('*'), (event.toElement || event.relatedTarget)) === -1) {
+              entered = false;
               handle(event, 'mouseleave');
             }
           });

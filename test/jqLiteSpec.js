@@ -799,8 +799,6 @@ describe('jqLite', function() {
         expect(log).toEqual('parentEnter;childEnter;');
 
         child.mouseout();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseout();
         expect(log).toEqual('parentEnter;childEnter;childLeave;');
         parent.mouseout();
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
