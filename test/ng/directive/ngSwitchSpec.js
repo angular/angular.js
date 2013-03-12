@@ -95,6 +95,68 @@ describe('ngSwitch', function() {
   }));
 
 
+  it('should always display the elements that do not match a switch',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li>always </li>' +
+        '<li ng-switch-when="1">one </li>' +
+        '<li ng-switch-when="2">two </li>' +
+        '<li ng-switch-default>other, </li>' +
+        '<li ng-switch-default>other too </li>' +
+      '</ul>')($rootScope);
+    $rootScope.$apply();
+    expect(element.text()).toEqual('always other, other too ');
+    $rootScope.select = 1;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('always one ');
+  }));
+
+
+  it('should display the elements that do not have ngSwitchWhen nor ' +
+     'ngSwitchDefault at the position specified in the template, when the ' +
+     'first and last elements in the ngSwitch body do not have a ngSwitch* ' +
+     'directive', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li>1</li>' +
+        '<li ng-switch-when="1">2</li>' +
+        '<li>3</li>' +
+        '<li ng-switch-when="2">4</li>' +
+        '<li ng-switch-default>5</li>' +
+        '<li>6</li>' +
+        '<li ng-switch-default>7</li>' +
+        '<li>8</li>' +
+      '</ul>')($rootScope);
+    $rootScope.$apply();
+    expect(element.text()).toEqual('135678');
+    $rootScope.select = 1;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('12368');
+  }));
+
+
+  it('should display the elements that do not have ngSwitchWhen nor ' +
+     'ngSwitchDefault at the position specified in the template when the ' +
+     'first and last elements in the ngSwitch have a ngSwitch* directive',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when="1">2</li>' +
+        '<li>3</li>' +
+        '<li ng-switch-when="2">4</li>' +
+        '<li ng-switch-default>5</li>' +
+        '<li>6</li>' +
+        '<li ng-switch-default>7</li>' +
+      '</ul>')($rootScope);
+    $rootScope.$apply();
+    expect(element.text()).toEqual('3567');
+    $rootScope.select = 1;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('236');
+  }));
+
+
   it('should call change on switch', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="url" change="name=\'works\'">' +

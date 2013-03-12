@@ -703,4 +703,66 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(person.id).toEqual(456);
   });
+
+
+  describe('action-level url override', function() {
+
+    it('should support overriding url template with static url', function() {
+      $httpBackend.expect('GET', '/override-url?type=Customer&typeId=123').respond({id: 'abc'});
+      var TypeItem = $resource('/:type/:typeId', {type: 'Order'}, {
+          get: {
+            method: 'GET',
+            params: {type: 'Customer'},
+            url: '/override-url'
+          }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+    });
+
+
+    it('should support overriding url template with a new template ending in param', function() {
+      //    url parameter in action, parameter ending the string
+      $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+      var TypeItem = $resource('/foo/:type', {type: 'Order'}, {
+        get: {
+          method: 'GET',
+          params: {type: 'Customer'},
+          url: '/:type/:typeId'
+        }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+
+      //    url parameter in action, parameter not ending the string
+      $httpBackend.expect('GET', '/Customer/123/pay').respond({id: 'abc'});
+      var TypeItem = $resource('/foo/:type', {type: 'Order'}, {
+        get: {
+          method: 'GET',
+          params: {type: 'Customer'},
+          url: '/:type/:typeId/pay'
+        }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+    });
+
+
+    it('should support overriding url template with a new template ending in string', function() {
+      $httpBackend.expect('GET', '/Customer/123/pay').respond({id: 'abc'});
+      var TypeItem = $resource('/foo/:type', {type: 'Order'}, {
+        get: {
+          method: 'GET',
+          params: {type: 'Customer'},
+          url: '/:type/:typeId/pay'
+        }
+      });
+      var item = TypeItem.get({typeId: 123});
+      $httpBackend.flush();
+      expect(item).toEqualData({id: 'abc'});
+    });
+  });
 });

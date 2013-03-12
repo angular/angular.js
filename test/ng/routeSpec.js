@@ -117,6 +117,72 @@ describe('$route', function() {
     });
   });
 
+
+  it('should route and fire change event correctly whenever the case insensitive flag is utilized', function() {
+    var log = '',
+        lastRoute,
+        nextRoute;
+
+    module(function($routeProvider) {
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+          {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
+      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+          {controller: noop, templateUrl: 'Chapter.html'});
+      $routeProvider.when('/Blank', {});
+    });
+    inject(function($route, $location, $rootScope) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        log += 'before();';
+        expect(current).toBe($route.current);
+        lastRoute = current;
+        nextRoute = next;
+      });
+      $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+        log += 'after();';
+        expect(current).toBe($route.current);
+        expect(lastRoute).toBe(last);
+        expect(nextRoute).toBe(current);
+      });
+
+      $location.path('/Book1/Moby/Chapter/Intro/one/edit').search('p=123');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+
+      log = '';
+      $location.path('/BOOK1/Moby/CHAPTER/Intro/one/EDIT').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+
+      log = '';
+      $location.path('/Blank').search('ignore');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({ignore:true});
+
+      log = '';
+      $location.path('/BLANK');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+
+      log = '';
+      $location.path('/Book2/Moby/one/two/Chapter/Intro').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+
+      log = '';
+      $location.path('/BOOK2/Moby/one/two/CHAPTER/Intro').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+    });
+  });
+
+
   it('should not change route when location is canceled', function() {
     module(function($routeProvider) {
       $routeProvider.when('/somePath', {template: 'some path'});
@@ -219,44 +285,11 @@ describe('$route', function() {
   });
 
 
-  it('should handle unknown routes with "otherwise" route definition', function() {
-    function NotFoundCtrl() {}
-
-    module(function($routeProvider){
-      $routeProvider.when('/foo', {templateUrl: 'foo.html'});
-      $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
-    });
-
-    inject(function($route, $location, $rootScope) {
-      var onChangeSpy = jasmine.createSpy('onChange');
-
-      $rootScope.$on('$routeChangeStart', onChangeSpy);
-      expect($route.current).toBeUndefined();
-      expect(onChangeSpy).not.toHaveBeenCalled();
-
-      $location.path('/unknownRoute');
-      $rootScope.$digest();
-
-      expect($route.current.templateUrl).toBe('404.html');
-      expect($route.current.controller).toBe(NotFoundCtrl);
-      expect(onChangeSpy).toHaveBeenCalled();
-
-      onChangeSpy.reset();
-      $location.path('/foo');
-      $rootScope.$digest();
-
-      expect($route.current.templateUrl).toEqual('foo.html');
-      expect($route.current.controller).toBeUndefined();
-      expect(onChangeSpy).toHaveBeenCalled();
-    });
-  });
-
-
   it('should chain whens and otherwise', function() {
     module(function($routeProvider){
       $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
-                     otherwise({templateUrl: 'bar.html'}).
-                     when('/baz', {templateUrl: 'baz.html'});
+          otherwise({templateUrl: 'bar.html'}).
+          when('/baz', {templateUrl: 'baz.html'});
     });
 
     inject(function($route, $location, $rootScope) {
@@ -266,6 +299,94 @@ describe('$route', function() {
       $location.url('/baz');
       $rootScope.$digest();
       expect($route.current.templateUrl).toBe('baz.html');
+    });
+  });
+
+
+  describe('otherwise', function() {
+
+    it('should handle unknown routes with "otherwise" route definition', function() {
+      function NotFoundCtrl() {}
+
+      module(function($routeProvider){
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        var onChangeSpy = jasmine.createSpy('onChange');
+
+        $rootScope.$on('$routeChangeStart', onChangeSpy);
+        expect($route.current).toBeUndefined();
+        expect(onChangeSpy).not.toHaveBeenCalled();
+
+        $location.path('/unknownRoute');
+        $rootScope.$digest();
+
+        expect($route.current.templateUrl).toBe('404.html');
+        expect($route.current.controller).toBe(NotFoundCtrl);
+        expect(onChangeSpy).toHaveBeenCalled();
+
+        onChangeSpy.reset();
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect($route.current.templateUrl).toEqual('foo.html');
+        expect($route.current.controller).toBeUndefined();
+        expect(onChangeSpy).toHaveBeenCalled();
+      });
+    });
+
+
+    it('should update $route.current and $route.next when default route is matched', function() {
+      module(function($routeProvider){
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.otherwise({templateUrl: '404.html'});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        var currentRoute, nextRoute,
+            onChangeSpy = jasmine.createSpy('onChange').andCallFake(function(e, next) {
+          currentRoute = $route.current;
+          nextRoute = next;
+        });
+
+
+        // init
+        $rootScope.$on('$routeChangeStart', onChangeSpy);
+        expect($route.current).toBeUndefined();
+        expect(onChangeSpy).not.toHaveBeenCalled();
+
+
+        // match otherwise route
+        $location.path('/unknownRoute');
+        $rootScope.$digest();
+
+        expect(currentRoute).toBeUndefined();
+        expect(nextRoute.templateUrl).toBe('404.html');
+        expect($route.current.templateUrl).toBe('404.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+        onChangeSpy.reset();
+
+        // match regular route
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect(currentRoute.templateUrl).toBe('404.html');
+        expect(nextRoute.templateUrl).toBe('foo.html');
+        expect($route.current.templateUrl).toEqual('foo.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+        onChangeSpy.reset();
+
+        // match otherwise route again
+        $location.path('/anotherUnknownRoute');
+        $rootScope.$digest();
+
+        expect(currentRoute.templateUrl).toBe('foo.html');
+        expect(nextRoute.templateUrl).toBe('404.html');
+        expect($route.current.templateUrl).toEqual('404.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+      });
     });
   });
 
