@@ -211,6 +211,11 @@ describe('angular', function() {
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
     });
+
+    it('should correctly test for keys that are present on Object.prototype', function() {
+      expect(equals({}, {hasOwnProperty: 1})).toBe(false);
+      expect(equals({}, {toString: null})).toBe(false);
+    });
   });
 
   describe('size', function() {
