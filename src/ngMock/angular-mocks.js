@@ -485,6 +485,10 @@ angular.mock.$LogProvider = function() {
       return self.date.getTime() - self.offsetDiff;
     };
 
+    self.valueOf = function() {
+      return self.getTime();
+    };
+
     self.toLocaleDateString = function() {
       return self.date.toLocaleDateString();
     };
@@ -572,7 +576,7 @@ angular.mock.$LogProvider = function() {
         'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
         'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
         'setYear', 'toDateString', 'toGMTString', 'toJSON', 'toLocaleFormat', 'toLocaleString',
-        'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
+        'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString'];
 
     angular.forEach(unimplementedMethods, function(methodName) {
       self[methodName] = function() {
