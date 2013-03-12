@@ -100,15 +100,15 @@ function annotate(fn) {
  *
  * <pre>
  *   // inferred (only works if code not minified/obfuscated)
- *   $inject.invoke(function(serviceA){});
+ *   $injector.invoke(function(serviceA){});
  *
  *   // annotated
  *   function explicit(serviceA) {};
  *   explicit.$inject = ['serviceA'];
- *   $inject.invoke(explicit);
+ *   $injector.invoke(explicit);
  *
  *   // inline
- *   $inject.invoke(['serviceA', function(serviceA){}]);
+ *   $injector.invoke(['serviceA', function(serviceA){}]);
  * </pre>
  *
  * ## Inference
