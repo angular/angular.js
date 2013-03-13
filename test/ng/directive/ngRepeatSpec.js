@@ -1,7 +1,11 @@
 'use strict';
 
 describe('ngRepeat', function() {
-  var element, $compile, scope, $exceptionHandler;
+  var element, $compile, scope, $exceptionHandler, $compileProvider;
+
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
 
 
   beforeEach(module(function($exceptionHandlerProvider) {
@@ -445,6 +449,95 @@ describe('ngRepeat', function() {
     var lis = element.find('li');
     expect(lis.eq(0).data('mark')).toEqual('b');
     expect(lis.eq(1).data('mark')).toEqual('a');
+  });
+
+
+  describe('nesting in replaced directive templates', function() {
+
+    it('should work when placed on a root element of attr directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          template: '<span ng-repeat="i in items">{{log(i)}}</span>'
+        }
+      });
+      element = jqLite('<span replace-me-with-repeater></span>');
+      $compile(element)($rootScope);
+      expect(element.text()).toBe('');
+      var logs = [];
+      $rootScope.log = function(t) { logs.push(t); };
+
+      // This creates one item, but it has no parent so we can't get to it
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+
+      // This cleans up to prevent memory leak
+      $rootScope.items = [];
+      $rootScope.$apply();
+      expect(angular.mock.dump(element)).toBe('<!-- ngRepeat: i in items -->');
+      expect(logs).toEqual([1, 2, 1, 2]);
+    }));
+
+
+    iit('should work when placed on a root element of attr directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        }
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in items">{{log(i)}}</div>');
+      element = jqLite('<span>-</span><span replace-me-with-repeater></span><span>-</span>');
+      $compile(element)($rootScope);
+      expect(element.text()).toBe('--');
+      var logs = [];
+      $rootScope.log = function(t) { logs.push(t); };
+
+      // This creates one item, but it has no parent so we can't get to it
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+
+      // This cleans up to prevent memory leak
+      $rootScope.items = [];
+      $rootScope.$apply();
+      expect(sortedHtml(element)).toBe('<span>-</span><!-- ngRepeat: i in items --><span>-</span>');
+      expect(logs).toEqual([1, 2, 1, 2]);
+    }));
+
+
+    it('should work when placed on a root element of element directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          template: '<div ng-repeat="i in [1,2,3]">{{i}}</div>'
+        }
+      });
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
+
+
+    it('should work when placed on a root element of element directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        }
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
   });
 
 
