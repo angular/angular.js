@@ -1,103 +1,127 @@
-﻿var ngChildWindowDirective = ['$compile', '$timeout', function factory(c, $timeout) {
-    //Traversing through the object to find the value that we want. If fail, then return the original object.
-    var setObjectValue = function (obj, columnName, value) {
-        if (typeof obj != 'object' || typeof columnName != 'string')
-            return;
-        var args = columnName.split('.');
-        var valOfInterest = args.splice(-1, 1)[0];
-        var cObj = obj;
-        for (var i = 0, len = args.length; i < len; i++) {
-            cObj = cObj[args[i]];
-            if (!cObj) {
-                return;
-            }
-        }
-        cObj[valOfInterest] = value;
-    };
-    var ngChildWindow = {
-        scope: false,
-        terminal: true,
-        compile: function (tElement, tAttrs, transclude) {
-            return {
-                pre: function (scope, iElement, iAttrs, controller) {
-                    var linker,
-                        childWindow,
-                        element = iElement,
-                        loaded = false;
+﻿'use strict';
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngChildWindow
+ *
+ * @description
+ * The 'ngChildWindow' allows creation of external child windows that share the same
+ * scope as the parent window.
+ *
+ * Note: When using 'createElement' in native JavaScript to create a new element for the child 
+ * window, make sure not to use the parent 'window' object to create the element. Otherwise, it
+ * will create the new DOM element under the context of the parent, and some browser such as IE
+ * will not allow injection of DOM elements with different window context.
+ *
+ * @param {string} ngChildWindow angular expression evaluating to a URL of an html page or a
+ * template html string.
+ * @param {bool} toggle Toggles (close/open) the child-window.
+ * @param {string} name value used in sepcifying the target attribute or the name of the
+ * child window. 
+ * If specified, a property with the same value will be injected into the scope containing the
+ * child-window's window instance.
+ * @param {string} [specs] a comma separated list of items. See native javascript
+ * window.open() specs options.
+ * @example
+ *
+ */
 
-                    var openWindow = function () {
-                        //create a childwindow with the specified html uri
-                        if (iAttrs.ngUri) {
-                            childWindow = $window.open(iAttrs.ngUri, iAttrs.name || '_blank', iAttrs.ngSpecs, iAttrs.ngReplace);
-                            //otherwise, create a blank childwindow.  
-                        } else {
-                            childWindow = $window.open(null, iAttrs.ngName || '_blank', iAttrs.ngSpecs, iAttrs.ngReplace);
-                        }
-                        //Using native onload event because .ready() get fired too early without all dom elements initiated.
-                        childWindow.onload = function () {
-                            loaded = true;
-                            //If user specified an html page, we will replace the body with the returned link object.
-                            if (iAttrs.ngUri) {
-                                linker = c($(childWindow.document).contents());
-                                var angularContent = linker(scope);
-
-                                var documentContent = angularContent.lenght > 1 ? $(angularContent[2]) : $(angularContent[1]);
-
-                                //Note: since browsers won't allow replacing the entire html element, we have to replace the header and body separately.
-
-                                //Replace header
-                                $(childWindow.document).contents().find('head').replaceWith(documentContent.find('head'));
-                                //Replace body
-                                $(childWindow.document.body).replaceWith(documentContent.find('body'));
-                            } else {
-                                //Otherwise, we create a view using the template file path.
-                                linker = c($(iAttrs.ngTemplate || '<div data-ng-include src="\'' + iAttrs.ngTemplateUri + '\'"></div>'));
-                                $(childWindow.document.body).append(linker(controller || scope));
-
-                                //inject title if user specified.
-                                if (iAttrs.ngTitle) {
-                                    if ($(childWindow.document.head.title).length === 0) {
-                                        $(childWindow.document.head).append($('<title></title>').html(iAttrs.ngTitle));
-                                        return;
-                                    }
-                                    $(childWindow.document.head.title).html(iAttrs.ngTitle);
-                                }
+/**
+ * @ngdoc event
+ * @name ng.directive:ngChildWindow#childWindowLoaded
+ * @eventOf ng.directive:ngChildWindow
+ * @eventType broadcast on the current ngChildWindow scope
+ * @description
+ * This event get broadcast every time the ngChildWindow content is initalized and loaded.
+ * The args passed with the event contains the childWindow's window instance.
+ */
+var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache',
+    function factory(c, $window, $http, $templateCache) {
+        var ngChildWindow = {
+            scope: false,
+            terminal: true,
+            compile: function (tElement, tAttrs, transclude) {
+                return {
+                    pre: function (scope, iElement, iAttrs, controller) {
+                        var linker,
+                            childWindow,
+                            element = iElement,
+                            testHTML = /\<.*\>.*<\/.*\>/i,
+                        templateValue = scope.$eval(iAttrs.ngChildWindow),
+                        isTemplateString = testHTML.test(templateValue);
+                        var unbindCallback = function () {
+                            /*If window is closed by the user, then we want to toggle false back
+                                to the scope object.
+                            */
+                            var ngToggle = iAttrs.ngToggle,
+                            i = ngToggle.lastIndexOf('.'),
+                            root = scope;
+                            if (i >= 0) {
+                                root = scope.$eval(ngToggle.slice(0, i));
+                                ngToggle = ngToggle.slice(i + 1);
                             }
-                            //Properly digest any child scope (since $timeout automatically call digest, we do not have to explicitly call digest).
-                            $timeout(function () {
-                                //Notify any child scope of the childWindow object since any child scope will still be within the context of the parent window. 
+
+                            root[ngToggle] = false;
+                            if (!scope.$$phase) {
+                                scope.$digest();
+                            }
+                        };
+                        var initalizeChildWindowAsync = function () {
+                            childWindow.onbeforeunload = unbindCallback;
+                            $http.get(templateValue, { cache: $templateCache })
+                            .then(function (response) {
+                                angular.element(childWindow.document).contents()
+                                    .html(response.data
+                                    .replace(/(\<!.*\>|\<\/*html.*\>|\n|\r|\t|\s{2,})/igm, ''))
+                                c(angular.element(childWindow.document).contents())(scope);
                                 scope.$broadcast('childWindowLoaded', childWindow);
                             });
+                            if (!scope.$$phase) {
+                                scope.$digest();
+                            }
                         };
 
-                        $(childWindow).unload(function () {
-                            if (!loaded) {
-                                return;
+                        var openWindow = function () {
+                            if (isTemplateString) {
+                                childWindow = $window.open(null, iAttrs.ngName
+                                    || '_blank', iAttrs.specs, iAttrs.replace);
+                                linker = c(angular.element(templateValue));
+
+                                angular.element(childWindow.document.body).append(linker(scope));
+
+                                scope.$broadcast('childWindowLoaded', childWindow);
+                                childWindow.onbeforeunload = unbindCallback;
+                            } else {
+                                childWindow = $window.open(templateValue, iAttrs.name
+                                    || '_blank', iAttrs.ngSpecs, iAttrs.replace);
+                                childWindow.onload = initalizeChildWindowAsync;
+                                /*Specail case for IE, otherwise window onload event won't get
+                                called.*/
+                                childWindow.onbeforeload = new initalizeChildWindowAsync();
                             }
-                            var varName = $(element).attr('data-ng-toggle') || $(element).attr('ng-toggle');
-                            setObjectValue(scope, varName, false);
-                            childWindow = undefined;
-                            loaded = false;
+                        };
+                        var temp;
+                        //Watch for toggle state of childWindow. 
+                        scope.$watch(iAttrs.ngToggle, function (state) {
+                            if (state) {
+                                if (childWindow && !childWindow.closed) {
+                                    return;
+                                }
+                                openWindow();
+                            } else if (childWindow) {
+                                childWindow.close();
+                                angular.element(childWindow.document).contents().html('');
+                                scope[iAttrs.ngName] = childWindow = undefined;
+
+                            }
+                            /*if name is given, then we set the instance of the childwindow
+                            back to the scope.*/
+                            if (iAttrs.ngName) {
+                                scope[iAttrs.ngName] = childWindow;
+                            }
                         });
-                    };
-                    //Watch for toggle state of childWindow. 
-                    scope.$watch(iAttrs.ngToggle, function (state) {
-                        if (state) {
-                            if (childWindow && !childWindow.closed) {
-                                return;
-                            }
-                            openWindow();
-                        } else if (childWindow) {
-                            childWindow.close();
-                        }
-                        //if name is given, then we set the instance of the childwindow back to the scope.
-                        if (iAttrs.ngName) {
-                            scope[iAttrs.ngName] = childWindow;
-                        }
-                    });
-                }
-            };
-        }
-    };
-    return ngChildWindow;
-}];
+                    }
+                };
+            }
+        };
+        return ngChildWindow;
+    }];

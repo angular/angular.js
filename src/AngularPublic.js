@@ -101,7 +101,8 @@ function publishExternalAPI(angular){
             ngChange: ngChangeDirective,
             required: requiredDirective,
             ngRequired: requiredDirective,
-            ngValue: ngValueDirective
+            ngValue: ngValueDirective,
+            ngChildWindow: ngChildWindowDirective
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);
