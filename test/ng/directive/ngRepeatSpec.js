@@ -1,7 +1,11 @@
 'use strict';
 
 describe('ngRepeat', function() {
-  var element, $compile, scope;
+  var element, $compile, scope, $compileProvider;
+
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
 
 
   beforeEach(inject(function(_$compile_, $rootScope) {
@@ -361,6 +365,75 @@ describe('ngRepeat', function() {
     scope.$digest();
 
     expect(element.text()).toMatch(/a\|1\|\|\|\{\s*\}\|/);
+  });
+
+
+  describe('nesting in replaced directive templates', function() {
+
+    // TODO: THIS TEST IS STILL FAILING BUT CAUSES STACK OVERFLOW SO IT'S DISABLED
+    xit('should work when placed on a root element of attr directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          template: '<span ng-repeat="i in [1,2,3]">{{i}}</span>'
+        }
+      });
+      element = $compile('<div replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
+
+
+    // TODO: THIS TEST IS STILL FAILING BUT CAUSES INFINITE LOOP SO IT'S DISABLED
+    xit('should work when placed on a root element of attr directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        }
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
+      element = $compile('<span replace-me-with-repeater></span>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
+
+
+    iit('should work when placed on a root element of element directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          template: '<div ng-repeat="i in [1,2,3]">{{i}}</div>'
+        }
+      });
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
+
+
+    iit('should work when placed on a root element of element directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        }
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
   });
 
 
