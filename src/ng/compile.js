@@ -749,7 +749,7 @@ function $CompileProvider($provide) {
                     newTemplateAttrs
                 )
             );
-            mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
+            mergeTemplateAttributes(templateAttrs, newTemplateAttrs, directive.name);
 
             ii = directives.length;
           } else {
@@ -1007,15 +1007,16 @@ function $CompileProvider($provide) {
      *
      * @param {object} dst destination attributes (original DOM)
      * @param {object} src source attributes (from the directive template)
+     * @param {string} ignoreName attribute which should be ignored
      */
-    function mergeTemplateAttributes(dst, src) {
+    function mergeTemplateAttributes(dst, src, ignoreName) {
       var srcAttr = src.$attr,
           dstAttr = dst.$attr,
           $element = dst.$$element;
 
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
-        if (key.charAt(0) != '$') {
+        if (key.charAt(0) != '$' && key != ignoreName) {
           if (src[key]) {
             value += (key === 'style' ? ';' : ' ') + src[key];
           }
@@ -1030,7 +1031,7 @@ function $CompileProvider($provide) {
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
-        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
+        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key) && key != ignoreName) {
           dst[key] = value;
           dstAttr[key] = srcAttr[key];
         }
@@ -1073,14 +1074,19 @@ function $CompileProvider($provide) {
             tempTemplateAttrs = {$attr: {}};
             replaceWith($rootElement, $compileNode, compileNode);
             collectDirectives(compileNode, directives, tempTemplateAttrs);
-            mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
+            mergeTemplateAttributes(tAttrs, tempTemplateAttrs, origAsyncDirective.name);
           } else {
             compileNode = beforeTemplateCompileNode;
             $compileNode.html(content);
           }
 
           directives.unshift(derivedSyncDirective);
-          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn);
+          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn, $compileNode);
+          forEach($rootElement, function(node, i) {
+            if (node == compileNode) {
+              $rootElement[i] = $compileNode[0];
+            }
+          });
           afterTemplateChildLinkFn = compileNodes($compileNode[0].childNodes, childTranscludeFn);
 
 
@@ -1089,7 +1095,7 @@ function $CompileProvider($provide) {
                 beforeTemplateLinkNode = linkQueue.shift(),
                 linkRootElement = linkQueue.shift(),
                 controller = linkQueue.shift(),
-                linkNode = compileNode;
+                linkNode = $compileNode[0];
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               // it was cloned therefore we have to clone as well.
