@@ -228,8 +228,8 @@ describe('form', function() {
                                        // the issue in the wild, I'm not going to bother to do it
                                        // now. (i)
 
-        // IE9 is special and it doesn't fire submit event when form was destroyed
-        if (msie != 9) {
+        // IE9 and IE10 are special and don't fire submit event when form was destroyed
+        if (msie < 9) {
           expect(reloadPrevented).toBe(true);
           $timeout.flush();
         }
