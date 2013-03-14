@@ -249,10 +249,10 @@ describe('filters', function() {
                     toEqual('2010-09-03T07:05:08-0500')
 
       expect(date(eastOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T17:05:08+0530')
+                    toEqual('2010-09-03T17:35:08+0530')
 
       expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
-                    toEqual('2010-09-03T07:05:08-0530')
+                    toEqual('2010-09-03T06:35:08-0530')
     });
 
     it('should treat single quoted strings as string literals', function() {
