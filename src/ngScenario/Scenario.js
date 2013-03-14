@@ -231,8 +231,10 @@ function callerFile(offset) {
  * @param {string} type Optional event type.
  * @param {Array.<string>=} keys Optional list of pressed keys
  *        (valid values: 'alt', 'meta', 'shift', 'ctrl')
+ * @param {number} x Optional x-coordinate for mouse/touch events.
+ * @param {number} y Optional y-coordinate for mouse/touch events.
  */
-function browserTrigger(element, type, keys) {
+function browserTrigger(element, type, keys, x, y) {
   if (element && !element.nodeName) element = element[0];
   if (!element) return;
   if (!type) {
@@ -304,7 +306,9 @@ function browserTrigger(element, type, keys) {
       return originalPreventDefault.apply(evnt, arguments);
     };
 
-    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, pressed('ctrl'), pressed('alt'),
+    x = x || 0;
+    y = y || 0;
+    evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
                         pressed('shift'), pressed('meta'), 0, element);
 
     element.dispatchEvent(evnt);
