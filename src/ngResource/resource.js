@@ -21,7 +21,10 @@
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
- *   number, like this: `$resource('http://example.com\\:8080/api')`.
+ *   number, like this: `$resource('http://example.com\\:8080/api')`. 
+ *
+ *   If you are using a url with a suffix, just add the suffix, like this: `$resource('http://example.com/resource.json')` or
+ *   `$resource('http://example.com/:id.json')
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If any of the parameter value is a function, it will be executed every time
@@ -35,9 +38,6 @@
  *
  *   If the parameter value is prefixed with `@` then the value of that parameter is extracted from
  *   the data object (useful for non-GET operations).
- *
- *   If a parameter named `suffix` is supplied, its value will be appended to the url. For example
- *   {suffix: '.json'} will result in URL like `/path/resource.json`
  *
  *
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
@@ -352,7 +352,7 @@ angular.module('ngResource', ['ng']).
         });
 
         // set the url
-        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '') + suffix;
+        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '').replace(/\/\.(?=\w*($|\?))/, '.');
 
 
         // set params - delegate param encoding to $http
