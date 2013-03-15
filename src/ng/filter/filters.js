@@ -214,7 +214,8 @@ function timeZoneGetter(date) {
   var zone = -1 * date.getTimezoneOffset();
   var paddedZone = (zone >= 0) ? "+" : "";
 
-  paddedZone += padNumber(zone / 60, 2) + padNumber(Math.abs(zone % 60), 2);
+  paddedZone += padNumber(Math[zone > 0 ? 'floor' : 'ceil'](zone / 60), 2) +
+                padNumber(Math.abs(zone % 60), 2);
 
   return paddedZone;
 }

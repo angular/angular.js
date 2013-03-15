@@ -4,7 +4,7 @@
 # current angular version. If this rule matches the appcache-offline.manifest will be served for
 # requests to appcache.manifest
 #
-# This file must be processed by Rake in order to replace %ANGULAR_VERSION% with the actual version.
+# This file must be processed by Grunt in order to replace %ANGULAR_VERSION% with the actual version.
 
 Options -Indexes
 RewriteEngine on

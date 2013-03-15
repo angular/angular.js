@@ -6,13 +6,16 @@
  * @restrict EA
  *
  * @description
- * Conditionally change the DOM structure.
+ * Conditionally change the DOM structure. Elements within ngSwitch but without
+ * ngSwitchWhen or ngSwitchDefault directives will be preserved at the location
+ * as specified in the template
  *
  * @usageContent
  * <ANY ng-switch-when="matchValue1">...</ANY>
  *   <ANY ng-switch-when="matchValue2">...</ANY>
  *   ...
  *   <ANY ng-switch-default>...</ANY>
+ *   <ANY>...</ANY>
  *
  * @scope
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
@@ -25,6 +28,7 @@
  * * `ngSwitchDefault`: the default case when no other case match. If there
  *   are multiple default cases, all of them will be displayed when no other
  *   case match.
+ *
  *
  * @example
     <doc:example>
@@ -90,9 +94,9 @@ var ngSwitchDirective = valueFn({
         forEach(selectedTranscludes, function(selectedTransclude) {
           var selectedScope = scope.$new();
           selectedScopes.push(selectedScope);
-          selectedTransclude(selectedScope, function(caseElement) {
+          selectedTransclude.transclude(selectedScope, function(caseElement) {
             selectedElements.push(caseElement);
-            element.append(caseElement);
+            selectedTransclude.element.after(caseElement);
           });
         });
       }
@@ -107,7 +111,7 @@ var ngSwitchWhenDirective = ngDirective({
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
       ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
-      ctrl.cases['!' + attrs.ngSwitchWhen].push(transclude);
+      ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: transclude, element: element });
     };
   }
 });
@@ -119,7 +123,7 @@ var ngSwitchDefaultDirective = ngDirective({
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
       ctrl.cases['?'] = (ctrl.cases['?'] || []);
-      ctrl.cases['?'].push(transclude);
+      ctrl.cases['?'].push({ transclude: transclude, element: element });
     };
   }
 });

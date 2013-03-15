@@ -923,6 +923,77 @@ describe('$http', function() {
             expect(callback).toHaveBeenCalledOnce();
           })
       );
+
+      describe('$http.defaults.cache', function () {
+
+        it('should be undefined by default', function() {
+          expect($http.defaults.cache).toBeUndefined()
+        });
+
+        it('should cache requests when no cache given in request config', function() {
+          $http.defaults.cache = cache;
+
+          // First request fills the cache from server response.
+          $httpBackend.expect('GET', '/url').respond(200, 'content');
+          $http({method: 'GET', url: '/url'}); // Notice no cache given in config.
+          $httpBackend.flush();
+
+          // Second should be served from cache, without sending request to server. 
+          $http({method: 'get', url: '/url'}).success(callback);
+          $rootScope.$digest();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe('content');
+
+          // Invalidate cache entry.
+          $http.defaults.cache.remove("/url");
+
+          // After cache entry removed, a request should be sent to server.
+          $httpBackend.expect('GET', '/url').respond(200, 'content');
+          $http({method: 'GET', url: '/url'});
+          $httpBackend.flush();
+        });
+
+        it('should have less priority than explicitly given cache', inject(function($cacheFactory) {
+          var localCache = $cacheFactory('localCache');
+          $http.defaults.cache = cache;
+
+          // Fill local cache.
+          $httpBackend.expect('GET', '/url').respond(200, 'content-local-cache');
+          $http({method: 'GET', url: '/url', cache: localCache});
+          $httpBackend.flush();
+
+          // Fill default cache.
+          $httpBackend.expect('GET', '/url').respond(200, 'content-default-cache');
+          $http({method: 'GET', url: '/url'});
+          $httpBackend.flush();
+
+          // Serve request from default cache when no local given.
+          $http({method: 'get', url: '/url'}).success(callback);
+          $rootScope.$digest();
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe('content-default-cache');
+          callback.reset();
+
+          // Serve request from local cache when it is given (but default filled too).
+          $http({method: 'get', url: '/url', cache: localCache}).success(callback);
+          $rootScope.$digest();
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe('content-local-cache');
+        }));
+
+        it('should be skipped if {cache: false} is passed in request config', function() {
+          $http.defaults.cache = cache;
+
+          $httpBackend.expect('GET', '/url').respond(200, 'content');
+          $http({method: 'GET', url: '/url'});
+          $httpBackend.flush();
+
+          $httpBackend.expect('GET', '/url').respond();
+          $http({method: 'GET', url: '/url', cache: false});
+          $httpBackend.flush();
+        });
+      });
     });
 
 

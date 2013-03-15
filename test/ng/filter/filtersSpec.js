@@ -236,6 +236,8 @@ describe('filters', function() {
       var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
       var eastOfUTC = new angular.mock.TzDate(-5, '2010-09-03T12:05:08.000Z');
       var westOfUTC = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z');
+      var eastOfUTCPartial = new angular.mock.TzDate(-5.5, '2010-09-03T12:05:08.000Z');
+      var westOfUTCPartial = new angular.mock.TzDate(+5.5, '2010-09-03T12:05:08.000Z');
 
       expect(date(utc, "yyyy-MM-ddTHH:mm:ssZ")).
                     toEqual('2010-09-03T12:05:08+0000')
@@ -245,6 +247,12 @@ describe('filters', function() {
 
       expect(date(westOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
                     toEqual('2010-09-03T07:05:08-0500')
+
+      expect(date(eastOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
+                    toEqual('2010-09-03T17:35:08+0530')
+
+      expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
+                    toEqual('2010-09-03T06:35:08-0530')
     });
 
     it('should treat single quoted strings as string literals', function() {
