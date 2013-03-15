@@ -6,7 +6,14 @@
  *
  * @description
  * The `ngShow` and `ngHide` directives show or hide a portion of the DOM tree (HTML)
- * conditionally.
+ * conditionally based on <strong>"truthy"</strong> values evaluated within an {expression}. In other
+ * words, if the expression assigned to <strong>ngShow evaluates to a true value</strong> then <strong>the element is set to visible</strong>
+ * (via `display:block` in css) and <strong>if false</strong> then <strong>the element is set to hidden</strong> (so display:none).
+ * With ngHide this is the reverse whereas true values cause the element itself to become
+ * hidden.
+ *
+ * Additionally, you can also provide animations via the ngAnimate directive to animate
+ * the show and hide effects.
  *
  * @element ANY
  * @param {expression} ngShow If the {@link guide/expression expression} is truthy
@@ -33,11 +40,17 @@
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngShowDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-    element.css('display', toBoolean(value) ? '' : 'none');
-  });
-});
+var ngShowDirective = ['$defaultAnimator', function($defaultAnimator) {
+  return {
+    require: '?ngAnimate', // optional
+    link: function(scope, element, attr, animator) {
+      animator = animator || $defaultAnimator;
+      scope.$watch(attr.ngShow, function ngShowWatchAction(value){
+        toBoolean(value) ? animator.animate('show', element) : animator.animate('hide', element);
+      });
+    }
+  };
+}];
 
 
 /**
@@ -45,8 +58,15 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  * @name ng.directive:ngHide
  *
  * @description
- * The `ngHide` and `ngShow` directives hide or show a portion of the DOM tree (HTML)
- * conditionally.
+ * The `ngShow` and `ngHide` directives show or hide a portion of the DOM tree (HTML)
+ * conditionally based on <strong>"truthy"</strong> values evaluated within an {expression}. In other
+ * words, if the expression assigned to <strong>ngShow evaluates to a true value</strong> then <strong>the element is set to visible</strong>
+ * (via `display:block` in css) and <strong>if false</strong> then <strong>the element is set to hidden</strong> (so display:none).
+ * With ngHide this is the reverse whereas true values cause the element itself to become
+ * hidden.
+ *
+ * Additionally, you can also provide animations via the ngAnimate directive to animate
+ * the show and hide effects.
  *
  * @element ANY
  * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
@@ -73,8 +93,14 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngHideDirective = ngDirective(function(scope, element, attr){
-  scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-    element.css('display', toBoolean(value) ? 'none' : '');
-  });
-});
+var ngHideDirective = ['$defaultAnimator', function($defaultAnimator) {
+  return {
+    require: '?ngAnimate', // optional
+    link : function(scope, element, attr, animator) {
+      animator = animator || $defaultAnimator;
+      scope.$watch(attr.ngHide, function ngHideWatchAction(value){
+        toBoolean(value) ? animator.animate('hide', element) : animator.animate('show', element);
+      });
+    }
+  };
+}];

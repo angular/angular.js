@@ -282,3 +282,138 @@ describe('ngInclude', function() {
     }));
   });
 });
+
+describe('ngInclude ngAnimate', function() {
+  var element;
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes', function() {
+    var timeouts = [];
+
+    module(function($animationProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="enter: customEnter;">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      expect(child.attr('class')).toContain('ng-animate-custom-enter-setup');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).toContain('ng-animate-custom-enter-start');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).not.toContain('ng-animate-custom-enter-setup');
+      expect(child.attr('class')).not.toContain('ng-animate-custom-enter-start');
+    });
+  });
+
+  it('should fire off the leave animation + add and remove the css classes', function() {
+    var timeouts = [];
+
+    module(function($provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="leave: customLeave; ">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      $rootScope.tpl = '';
+      $rootScope.$digest();
+
+      expect(child.attr('class')).toContain('ng-animate-custom-leave-setup');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).toContain('ng-animate-custom-leave-start');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).not.toContain('ng-animate-custom-leave-setup');
+      expect(child.attr('class')).not.toContain('ng-animate-custom-leave-start');
+    });
+  });
+
+  it('should catch and use the correct duration for animation', function() {
+    var timeouts = [];
+
+    module(function($animationProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="enter: customEnter; ">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '0.5s linear all';
+      child.css(cssProp, cssValue);
+
+      $rootScope.tpl = 'enter';
+      $rootScope.$digest();
+
+      timeouts.pop().fn(); //first delay which happens after setup
+      expect(timeouts.pop().delay).toBe(500);
+    });
+  });
+
+});

@@ -460,3 +460,147 @@ describe('ngView', function() {
     });
   });
 });
+
+describe('ngView ngAnimate', function() {
+  var element;
+
+  beforeEach(module(function() {
+    return function($rootScope, $compile) {
+      element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes', function() {
+    var timeouts = [];
+
+    module(function($routeProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+      $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+    })
+
+    inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
+      element = $compile(
+        '<div ' +
+          'ng-view ' +
+          'ng-animate="enter: customEnter;">' +
+        '</div>'
+      )($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      expect(child.attr('class')).toContain('ng-animate-custom-enter-setup');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).toContain('ng-animate-custom-enter-start');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).not.toContain('ng-animate-custom-enter-setup');
+      expect(child.attr('class')).not.toContain('ng-animate-custom-enter-start');
+    });
+  });
+
+  it('should fire off the leave animation + add and remove the css classes', function() {
+    var timeouts = [];
+
+    module(function($routeProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+      $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+    })
+
+    inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+      element = $compile(
+        '<div ' +
+          'ng-view ' +
+          'ng-animate="leave: customLeave;">' +
+        '</div>'
+      )($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      $location.path('/');
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      expect(child.attr('class')).toContain('ng-animate-custom-leave-setup');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).toContain('ng-animate-custom-leave-start');
+      timeouts.pop().fn();
+
+      expect(child.attr('class')).not.toContain('ng-animate-custom-leave-setup');
+      expect(child.attr('class')).not.toContain('ng-animate-custom-leave-start');
+    });
+  });
+
+  it('should catch and use the correct duration for animations', function() {
+    var timeouts = [];
+
+    module(function($routeProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+      $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+    })
+
+    inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+      element = $compile(
+        '<div ' +
+          'ng-view ' +
+          'ng-animate="enter: customEnter;">' +
+        '</div>'
+      )($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '0.5s linear all';
+      child.css(cssProp, cssValue);
+
+      timeouts.pop().fn(); //first delay which happens after setup
+      expect(timeouts.pop().delay).toBe(500);
+    });
+  });
+
+});

@@ -96,4 +96,38 @@ describe('$sniffer', function() {
       expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
     });
   });
+
+  describe('vendorPrefix', function() {
+
+    it('should return the correct vendor prefix based on the browser', function() {
+      inject(function($sniffer, $window) {
+        var expectedPrefix;
+        var ua = $window.navigator.userAgent.toLowerCase();
+        if(/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+          expectedPrefix = 'webkit';
+        }
+        else if(/firefox/i.test(ua)) {
+          expectedPrefix = 'moz';
+        }
+        else if(/ie/i.test(ua)) {
+          expectedPrefix = 'ms';
+        }
+        else if(/opera/i.test(ua)) {
+          expectedPrefix = 'o';
+        }
+        expect($sniffer.vendorPrefix.toLowerCase()).toBe(expectedPrefix);
+      });
+    });
+
+  });
+
+  describe('supportsTransitions', function() {
+
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).not.toBe(undefined);
+      });
+    });
+
+  });
 });

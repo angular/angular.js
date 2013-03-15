@@ -100,7 +100,8 @@ function publishExternalAPI(angular){
             ngChange: ngChangeDirective,
             required: requiredDirective,
             ngRequired: requiredDirective,
-            ngValue: ngValueDirective
+            ngValue: ngValueDirective,
+            ngAnimate: ngAnimateDirective
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);
@@ -112,6 +113,7 @@ function publishExternalAPI(angular){
         $document: $DocumentProvider,
         $exceptionHandler: $ExceptionHandlerProvider,
         $filter: $FilterProvider,
+        $animation: $AnimationProvider,
         $interpolate: $InterpolateProvider,
         $http: $HttpProvider,
         $httpBackend: $HttpBackendProvider,
@@ -127,6 +129,7 @@ function publishExternalAPI(angular){
         $timeout: $TimeoutProvider,
         $window: $WindowProvider
       });
+      $provide.factory('$defaultAnimator', $defaultAnimatorFactory);
     }
   ]);
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+    <title>AngularJS Animation Demo</title>
+    <style>
+      .ng-animate-fade-enter-setup {
+        -webkit-transition:0.5s linear all;
+        -moz-transition:0.5s linear all;
+        -ms-transition:0.5s linear all;
+        -o-transition:0.5s linear all;
+        transition:0.5s linear all;
+      }
+      .ng-animate-fade-enter-setup.ng-animate-fade-enter-start {
+        background:red;
+      }
+      .ng-animate-fade-leave-setup {
+        -webkit-transition:0.5s linear all;
+        -moz-transition:0.5s linear all;
+        -ms-transition:0.5s linear all;
+        -o-transition:0.5s linear all;
+        transition:0.5s linear all;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <section ng-init="in1='tpl1'" when="1">
+        <header>
+          <h1>
+            CSS3 Animation
+            <span>
+              <strong>enter:</strong>
+              <em>fadeEnter</em>
+            </span>
+            <span>
+              <strong>leave:</strong>
+              <em>fadeLeave</em>
+            </span>
+            <span>
+              <strong>move:</strong>
+              <em>fadeMove</em>
+            </span>
+          </h3>
+        </header>
+        <div>
+          <input type="search" ng-model="q" />
+          <div ng-repeat="item in items | filter:q" ng-animate="enter: fadeEnter; leave: fadeLeave; move: fadeMove;">
+            {{ item }}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="../../../build/angular.js"></script>
+    <script src="./module.js"></script>
+  <body>
+</html>

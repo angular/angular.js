@@ -1,3 +1,4 @@
+
 'use strict';
 
 /**
@@ -139,7 +140,12 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
         if (template) {
           clearContent();
 
-          var contents = jqLite('<div/>').html(template).contents();
+          //TODO misko, make a decision based on on wrapping contents
+            //var contents = jqLite('<div/>').html(response);   //everything is wrapped inside one parent <div> tag which works for animations
+            //var contents = jqLite('<div/>').html(response).children();    (one or more items ... bad for animation ... also comments are included)
+            //var contents = jqLite('<div/>').html(response).contents();    (one or more items ... bad for animation ... only elements)
+
+          var contents = jqLite('<div/>').html(response);
           var link = $compile(contents),
               current = $route.current,
               controller;

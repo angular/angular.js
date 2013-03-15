@@ -446,6 +446,7 @@ describe('ngRepeat', function() {
       scope.items = ['hello', 'cau', 'ahoj'];
       scope.$digest();
       lis = element.find('li');
+      lis[2].id = 'yes';
 
       scope.items = ['ahoj', 'hello', 'cau'];
       scope.$digest();
@@ -456,4 +457,13 @@ describe('ngRepeat', function() {
       expect(newLis[2]).toEqual(lis[1]);
     });
   });
+});
+
+describe('ngRepeat ngAnimate', function() {
+  var element;
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
 });

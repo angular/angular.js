@@ -106,3 +106,140 @@ describe('ngSwitch', function() {
     // afterwards a global afterEach will check for leaks in jq data cache object
   }));
 });
+
+describe('ngSwitch ngAnimate', function() {
+  var element;
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + set and remove the classes', function() {
+    var timeouts = [];
+
+    module(function($animationProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $sniffer) {
+      var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+
+      var $scope = $rootScope.$new();
+      var style = vendorPrefix + 'transition: 1s linear all';
+      element = $compile(
+        '<div ng-switch on="val" ng-animate="enter: coolEnter; leave: coolLeave">' +
+          '<div ng-switch-when="one" style="' + style + '">one</div>' +
+          '<div ng-switch-when="two" style="' + style + '">two</div>' +
+          '<div ng-switch-when="three" style="' + style + '">three</div>' +
+        '</div>'
+      )($scope);
+
+      $scope.val = 'one';
+      $scope.$digest();
+
+      expect(element.children().length).toBe(1);
+      var first = element.children()[0];
+
+      expect(first.className).toContain('ng-animate-cool-enter-setup');
+      timeouts.pop().fn();
+
+      expect(first.className).toContain('ng-animate-cool-enter-start');
+      timeouts.pop().fn();
+
+      expect(first.className).not.toContain('ng-animate-cool-enter-setup');
+      expect(first.className).not.toContain('ng-animate-cool-enter-start');
+    });
+  })
+
+
+  it('should fire off the leave animation + set and remove the classes', function() {
+    var timeouts = [];
+
+    module(function($animationProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $sniffer) {
+      var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+
+      var $scope = $rootScope.$new();
+      var style = vendorPrefix + 'transition: 1s linear all';
+      element = $compile(
+        '<div ng-switch on="val" ng-animate="enter: coolEnter; leave: coolLeave">' +
+          '<div ng-switch-when="one" style="' + style + '">one</div>' +
+          '<div ng-switch-when="two" style="' + style + '">two</div>' +
+          '<div ng-switch-when="three" style="' + style + '">three</div>' +
+        '</div>'
+      )($scope);
+
+      $scope.val = 'two';
+      $scope.$digest();
+
+      timeouts.pop().fn(); //enter setup for the 1st element
+      timeouts.pop().fn(); //enter start for the 1st element
+
+      $scope.val = 'three';
+      $scope.$digest();
+
+      expect(element.children().length).toBe(2);
+      var first = element.children()[0];
+
+      expect(first.className).toContain('ng-animate-cool-leave-setup');
+
+      timeouts.pop().fn(); //enter setup for the 2nd element
+      timeouts.pop().fn(); //enter start for the 2nd element
+      timeouts.pop().fn(); //leave start for the 1st element
+
+      expect(first.className).toContain('ng-animate-cool-leave-start');
+      timeouts.pop().fn(); //leave end for the 1st element
+
+      expect(first.className).not.toContain('ng-animate-cool-leave-setup');
+      expect(first.className).not.toContain('ng-animate-cool-leave-start');
+    });
+  });
+
+  it('should catch and use the correct duration for animation', function() {
+    var timeouts = [];
+
+    module(function($animationProvider, $provide) {
+      $provide.value('$window', extend(window, {
+        setTimeout : function(fn, delay) {
+          timeouts.push({
+            fn: fn,
+            delay: delay
+          });
+        }
+      }));
+    })
+
+    inject(function($compile, $rootScope, $sniffer) {
+      var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+      element = $compile(
+        '<div ng-switch on="val" ng-animate="enter: coolEnter; leave: coolLeave">' +
+          '<div ng-switch-when="one" style="' + vendorPrefix + 'transition: 0.5s linear all">one</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.val = 'one';
+      $rootScope.$digest();
+
+      timeouts.pop().fn(); //first delay which happens after setup
+      expect(timeouts.pop().delay).toBe(500);
+    });
+  });
+
+});

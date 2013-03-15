@@ -70,13 +70,15 @@
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ['$parse', function($parse) {
+var ngRepeatDirective = ['$parse', '$defaultAnimator', function($parse, $defaultAnimator) {
   return {
     transclude: 'element',
     priority: 1000,
     terminal: true,
+    require: '?ngAnimate', // optional
     compile: function(element, attr, linker) {
-      return function(scope, iterStartElement, attr){
+      return function(scope, iterStartElement, attr, animator){
+        animator = animator || $defaultAnimator;
         var expression = attr.ngRepeat;
         var match = expression.match(/^((.+)\s+from)?\s*(.+)\s+in\s+(.*)\s*$/),
           hashExp, hashExpFn, hashFn, lhs, rhs, valueIdent, keyIdent,
@@ -202,6 +204,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
             if (lastOrder.hasOwnProperty(key)) {
               block = lastOrder[key];
               block.element.remove();
+              animator.animate('leave', block.element, block.element.parent());
               block.scope.$destroy();
               blockRemove(block);
             }
@@ -225,7 +228,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
                 // existing item which got moved
                 blockRemove(block);
                 blockInsertAfter(lastBlock, block);
-                cursor.after(block.element);
+                animator.animate('move', block.element, block.parent(), cursor);
                 cursor = block.element;
               }
             } else {
@@ -242,7 +245,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
 
             if (!block.element) {
               linker(childScope, function(clone){
-                cursor.after(clone);
+                animator.animate('enter', clone, cursor.parent(), cursor);
                 cursor = clone;
                 block.scope = childScope;
                 block.element = clone;
