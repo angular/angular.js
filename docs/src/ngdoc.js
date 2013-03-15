@@ -272,8 +272,9 @@ Doc.prototype = {
       self = this;
 
     dom.h(title(this.name), function() {
-      notice('deprecated', 'Deprecated API', self.deprecated);
 
+      notice('deprecated', 'Deprecated API', self.deprecated);
+      dom.tag('a', {href: 'http://github.com/angular/angular.js/edit/master/' + self.file, class: 'improve-docs btn btn-primary'}, 'Improve this doc');
       if (self.ngdoc != 'overview') {
         dom.h('Description', self.description, dom.html);
       }
