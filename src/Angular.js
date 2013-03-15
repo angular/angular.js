@@ -1007,8 +1007,14 @@ function snake_case(name, separator){
 }
 
 function bindJQuery() {
-  // bind to jQuery if present;
-  jQuery = window.jQuery;
+  // bind to any given jQuery - useful to include the internal one anyway
+  if (!window.angularjsUseJquery) {
+	jQuery = window.jQuery;
+  } else if (window.angularjsUseJquery === 'internal') {
+	jQuery = null;
+  } else {
+	jQuery = window.angularjsUseJquery;
+  }
   // reset to jQuery or default to us.
   if (jQuery) {
     jqLite = jQuery;

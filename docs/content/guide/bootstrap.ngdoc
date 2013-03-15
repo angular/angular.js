@@ -79,6 +79,10 @@ If you need to have more control over the initialization process, you can use a 
 bootstrapping method instead. Examples of when you'd need to do this include using script loaders
 or the need to perform an operation before Angular compiles a page.
 
+By default, Angular includes jQuery if it finds it, otherwise it reverts to using the included
+jQuery lite. You can override this behavior by using the `window.angularjsUseJquery` variable
+before the script tab loading Angular. You can make this variable point to any existing jQuery
+instance, or just set it to `"internal"` if you want to use the included jQuery anyway.
 
 Here is an example of manually initializing Angular. The example is equivalent to using the {@link
 api/ng.directive:ngApp ng-app} directive.
