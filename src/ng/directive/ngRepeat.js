@@ -33,7 +33,7 @@
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
- *  *   * `$hash(item) from {repeat_expression}` – You can also provide an optional hashing function
+ *   * `$hash(item) from {repeat_expression}` – You can also provide an optional hashing function
  *     which can be used to keep track of objects assigned within the ngRepeat repeat expression.
  *     A hashing function is used by ngRepeat to figure out which objects have been added, moved or removed within a list of 
  *     items. By default, ngRepeat uses the index of each item within the list of items as a default hashing mechanism.
