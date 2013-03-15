@@ -320,6 +320,145 @@ function $RootScopeProvider(){
         };
       },
 
+
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$watchProps
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Shallow watches the properties of an object and fires whenever any of the properties change
+       * (for arrays this implies watching the array items, for object maps this implies watching the properties).
+       * If a change is detected the `listener` callback is fired.
+       *
+       * - The `obj` object is observed via standard $watch operation and is examined on every call to $digest() to
+       *   see if anything has been modified within it's contents.
+       * - The `listener` is called whenever anything within the `obj` has changed. Examples include adding new items
+       *   into the object or array, removing and moving items around.
+       *
+       *
+       * # Example
+       * <pre>
+          $scope.names = ['igor', 'matias', 'misko', 'james'];
+          $scope.dataCount = 4;
+
+          $scope.$watchProps('names', function(newNames, oldNames) {
+            $scope.dataCount = newNames.length;
+          });
+
+          expect($scope.dataCount).toEqual(4);
+          $scope.$digest();
+
+          //still at 4 ... no changes
+          expect($scope.dataCount).toEqual(4);
+
+          $scope.names.pop();
+          $scope.$digest();
+
+          //now there's been a change
+          expect($scope.dataCount).toEqual(3);
+       * </pre>
+       *
+       *
+       * @param {string} watchExpression evaluated as {@link guide/expression expression}. The expression value should evaluate to
+       *    an object or an array which is observed on each {@link ng.$rootScope.Scope#$digest $digest} cycle.
+       *    Any change within the `obj` collection will trigger call to the `listener`.
+       *
+       * @param {function(newCollection, oldCollection)} listener a callback function that is fired with both
+       *    the `newCollection` and `oldCollection` as parameters.
+       *    The `newCollection` object is the newly modified data obtained from the `obj` expression and the `oldCollection`
+       *    object is a copy of the former collection data.
+       *
+       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function is executed
+       * then the internal watch operation is terminated.
+       */
+      $watchProps: function(obj, listener) {
+        var self = this;
+        var oldValue;
+        var newValue;
+        var changeDetected = 0;
+        var objGetter = $parse(obj);
+        var myArray = [];
+        var myObject = [];
+        var oldLength = 0;
+
+        return this.$watch(
+          function() {
+            newValue = objGetter(self);
+            var newLength, key;
+
+            if (!newValue || typeof newValue !== 'object') {
+              if (oldValue !== newValue) {
+                oldValue = newValue;
+                changeDetected++;
+              }
+            } else if (isArray(newValue)) {
+              if (oldValue != myArray) {
+                // we are transitioning from something which was not an array into array.
+                oldValue = myArray;
+                oldLength = oldValue.length = 0;
+                changeDetected++;
+              }
+
+              newLength = newValue.length;
+
+              if (oldLength !== newLength) {
+                // if counts do not match we need to render
+                changeDetected++;
+                oldValue.length = oldLength = newLength;
+              }
+              // copy the items to oldValue and look for changes.
+              for (var i = 0; i < newLength; i++) {
+                if (oldValue[i] !== newValue[i]) {
+                  changeDetected++;
+                  oldValue[i] = newValue[i];
+                }
+              }
+            } else {
+              if (oldValue != myObject) {
+                // we are transitioning from something which was not an object into object.
+                oldValue = myObject = {};
+                oldLength = 0;
+                changeDetected++;
+              }
+              // copy the items to oldValue and look for changes.
+              newLength = 0;
+              for (key in newValue) {
+                if (newValue.hasOwnProperty(key)) {
+                  newLength++;
+                  if (oldValue.hasOwnProperty(key)) {
+                    if (oldValue[key] !== newValue[key]) {
+                      changeDetected++;
+                      oldValue[key] = newValue[key];
+                    }
+                  } else {
+                    oldLength++;
+                    oldValue[key] = newValue[key];
+                    changeDetected++;
+                  }
+                }
+              }
+              if (oldLength > newLength) {
+                // we used to have more keys, need to find them and destroy them.
+                changeDetected++;
+                for(key in oldValue) {
+                  if (oldValue.hasOwnProperty(key)) {
+                    if (!newValue.hasOwnProperty(key)) {
+                      oldLength--;
+                      delete oldValue[key];
+                    }
+                  }
+                }
+              }
+            }
+            return changeDetected;
+          },
+          function() {
+            listener(newValue, oldValue, self);
+          });
+      },
+
       /**
        * @ngdoc function
        * @name ng.$rootScope.Scope#$digest
