@@ -22,7 +22,37 @@
  * @param {string} [specs] a comma separated list of items. See native javascript
  * window.open() specs options.
  * @example
- *
+  <example>
+    <file name="index.html">
+     <div ng-controller="Ctrl">
+       <div data-ng-child-window="'template1.html'" data-ng-name="childWindow"
+       data-ng-specs="height=300, width=500" data-ng-toggle="childWindowToggle"> </div>
+       <input type="button" value="New Child Window" data-ng-click="openChildWindow()"/>
+     </div>
+    </file>
+    <file name="script.js">
+      function Ctrl($scope) {
+        scope.childWindowToggle = false;
+
+        scope.someValue = 'IT WORKS!';
+        scope.titleValue = 'This is the title';
+        scope.openChildWindow = function () {
+            scope.childWindowToggle = true;
+        };
+      }
+     </file>
+    <file name="template1.html">
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+            <title>{{titleValue}}</title>
+        </head>
+        <body>
+            <h1>{{someValue}}</h1>
+        </body>
+        </html>
+    </file>
+  </example>
  */
 
 /**
@@ -31,11 +61,11 @@
  * @eventOf ng.directive:ngChildWindow
  * @eventType broadcast on the current ngChildWindow scope
  * @description
- * This event get broadcast every time the ngChildWindow content is initalized and loaded.
+ * This event gets broadcast every time the ngChildWindow content is initalized and loaded.
  * The args passed with the event contains the childWindow's window instance.
  */
-var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache',
-    function factory(c, $window, $http, $templateCache) {
+var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache', '$parse',
+    function factory(c, $window, $http, $templateCache, $parse) {
         var ngChildWindow = {
             scope: false,
             terminal: true,
@@ -52,15 +82,7 @@ var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache',
                             /*If window is closed by the user, then we want to toggle false back
                                 to the scope object.
                             */
-                            var ngToggle = iAttrs.ngToggle,
-                            i = ngToggle.lastIndexOf('.'),
-                            root = scope;
-                            if (i >= 0) {
-                                root = scope.$eval(ngToggle.slice(0, i));
-                                ngToggle = ngToggle.slice(i + 1);
-                            }
-
-                            root[ngToggle] = false;
+                            $parse(iAttrs.ngToggle).assign(scope, false);
                             if (!scope.$$phase) {
                                 scope.$digest();
                             }
@@ -82,10 +104,12 @@ var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache',
 
                         var openWindow = function () {
                             if (isTemplateString) {
+
                                 childWindow = $window.open(null, iAttrs.ngName
                                     || '_blank', iAttrs.specs, iAttrs.replace);
+                                /*since this is a blank new window, we don't need to wait for it
+                                to finish loading*/
                                 linker = c(angular.element(templateValue));
-
                                 angular.element(childWindow.document.body).append(linker(scope));
 
                                 scope.$broadcast('childWindowLoaded', childWindow);
@@ -111,7 +135,6 @@ var ngChildWindowDirective = ['$compile', '$window', '$http', '$templateCache',
                                 childWindow.close();
                                 angular.element(childWindow.document).contents().html('');
                                 scope[iAttrs.ngName] = childWindow = undefined;
-
                             }
                             /*if name is given, then we set the instance of the childwindow
                             back to the scope.*/
