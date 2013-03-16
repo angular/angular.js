@@ -977,6 +977,19 @@ describe('select', function() {
         expect(option.attr('id')).toBe('road-runner');
         expect(option.attr('custom-attr')).toBe('custom-attr');
       });
+
+      it ('should select the null option, if it\'s available and no other option is selected', inject(function($timeout) {
+        // selectedIndex is used here because jqLite incorrectly reports element.val()
+        scope.$apply(function() {
+          scope.values = [{name: 'A'}];
+        });
+        createSingleSelect(true);
+        // ensure the first option (the null option) is selected
+        expect(element[0].selectedIndex).toEqual(0);
+        scope.$digest();
+        // ensure the option has not changed following the digest
+        expect(element[0].selectedIndex).toEqual(0);
+      }));
     });
 
 
