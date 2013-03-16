@@ -613,10 +613,24 @@ function parser(text, json, $filter, csp){
         args.push(argsFn[i](self, locals));
       }
       var fnPtr = fn(self, locals) || noop;
+
       // IE stupidity!
-      return fnPtr.apply
+      var valOrPromise = fnPtr.apply
           ? fnPtr.apply(context, args)
           : fnPtr(args[0], args[1], args[2], args[3], args[4]);
+      var promise;
+
+      if (valOrPromise && valOrPromise.then) {
+        if (!("$$v" in valOrPromise)) {
+          promise = valOrPromise;
+          promise.$$v = undefined;
+          promise.then(function(val) {
+            promise.$$v = val;
+          });
+        }
+        valOrPromise = valOrPromise.$$v;
+      }
+      return valOrPromise;
     };
   }
 
