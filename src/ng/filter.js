@@ -7,7 +7,7 @@
  *
  * Filters are just functions which transform input to an output. However filters need to be Dependency Injected. To
  * achieve this a filter definition consists of a factory function which is annotated with dependencies and is
- * responsible for creating a the filter function.
+ * responsible for creating a filter function.
  *
  * <pre>
  *   // Filter registration
