@@ -96,7 +96,7 @@ var ngRepeatDirective = ngDirective({
             // Same as lastOrder but it has the current state. It will become the
             // lastOrder on the next iteration.
             nextOrder = new HashQueueMap(),
-            arrayLength,
+            arrayBound,
             childScope,
             key, value, // key/value of iteration
             array,
@@ -117,7 +117,7 @@ var ngRepeatDirective = ngDirective({
           array = collection || [];
         }
 
-        arrayLength = array.length;
+        arrayBound = array.length-1;
 
         // we are not using forEach for perf reasons (trying to avoid #call)
         for (index = 0, length = array.length; index < length; index++) {
@@ -154,7 +154,7 @@ var ngRepeatDirective = ngDirective({
           childScope.$index = index;
 
           childScope.$first = (index === 0);
-          childScope.$last = (index === (arrayLength - 1));
+          childScope.$last = (index === arrayBound);
           childScope.$middle = !(childScope.$first || childScope.$last);
 
           if (!last) {
