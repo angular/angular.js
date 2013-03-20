@@ -587,6 +587,31 @@ angular.mock.$LogProvider = function() {
   angular.mock.TzDate.prototype = Date.prototype;
 })();
 
+// TODO(misko): document
+angular.mock.createMockWindow = function() {
+  var mockWindow = {};
+  var setTimeoutQueue = [];
+
+  mockWindow.document = window.document;
+  mockWindow.getComputedStyle = angular.bind(window, window.getComputedStyle);
+  mockWindow.scrollTo = angular.bind(window, window.scrollTo);
+  mockWindow.navigator = window.navigator;
+  mockWindow.setTimeout = function(fn, delay) {
+    setTimeoutQueue.push({fn: fn, delay: delay});
+  };
+  mockWindow.setTimeout.queue = [];
+  mockWindow.setTimeout.expect = function(delay) {
+    expect(setTimeoutQueue.length > 0).toBe(true);
+    expect(delay).toEqual(setTimeoutQueue[0].delay);
+    return {
+      process: function() {
+        setTimeoutQueue.shift().fn();
+      }
+    };
+  };
+
+  return mockWindow;
+};
 
 /**
  * @ngdoc function

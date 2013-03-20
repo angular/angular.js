@@ -9,6 +9,8 @@ angularFiles = {
     'src/auto/injector.js',
 
     'src/ng/anchorScroll.js',
+    'src/ng/animation.js',
+    'src/ng/animator.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
@@ -71,7 +73,6 @@ angularFiles = {
     'src/ngMock/angular-mocks.js',
     'src/ngMobile/mobile.js',
     'src/ngMobile/directive/ngClick.js',
-
     'src/bootstrap/bootstrap.js'
   ],
 
@@ -103,6 +104,7 @@ angularFiles = {
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
+    'test/ngAnimate/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/*.js',

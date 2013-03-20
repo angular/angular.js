@@ -3,6 +3,14 @@ img.AngularJS-small {
   height: 25px;
 }
 
+.breadcrumb li > * {
+  float:left;
+  margin:0 2px 0 0;
+}
+
+.breadcrumb {
+  padding-bottom:2px;
+}
 
 .clear-navbar {
   margin-top: 60px;

@@ -16,6 +16,13 @@
  *   * `$middle` – `{boolean}` – true if the repeated element is between the first and last in the iterator.
  *   * `$last` – `{boolean}` – true if the repeated element is last in the iterator.
  *
+ * Additionally, you can also provide animations via the ngAnimate attribute to animate the <strong>enter</strong>,
+ * <strong>leave</strong> and <strong>move</strong> effects.
+ *
+ * @animations
+ * enter - when a new item is added to the list or when an item is revealed after a filter
+ * leave - when an item is removed from the list or when an item is filtered out
+ * move - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
  *
  * @element ANY
  * @scope
@@ -33,29 +40,23 @@
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
- *   * `hash_expression from variable in expression` – An optional `hash_expression` can be used to uniquely associate
- *     the repeat contents with the DOM elements to provide the repeater with more concise way to deal with
- *     position changes. When a unique hash identifier, which provided via the `hash_expression`, is assigned to each item,
- *     the repeater has a clear way to distinguish whether an item has been moved around as opposed to just having been
- *     removed and added elsewhere in the repeat contents.
+ *   * `hash_expression from variable in expression` – You can also provide an optional hashing function
+ *     which can be used to associate the objects in the collection with the DOM elements. If no hashing function
+ *     is specified the ng-repeat associates elements by position in the collection. items. It is an error to have
+ *     more then one item hash resolve to the same key. (This would mean that two distinct objects are mapped to
+ *     the same DOM element, which is not possible.)
  *
- *     By default, ngRepeat uses the index position of the repeat contents to keep track of items in the DOM. The
- *     expanded version of this using the `hash_expression` would be the same as:
+ *     For example: `item in items` is equivalent to `$index from item in items'. This implies that the DOM elements
+ *     will be associated by item position in array.
  *
+ *     For example: `$hash(item) from item in items`. A built in `$hash()` function can be used to assign a unique
+ *     `$$hashKey` property to each item in the array. This property is then used as a key to associated DOM elements
+ *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
+ *     element in the same way in the DOM.
  *
- *     `$index from item in items` 
- *
- *
- *     Examples of using `hash_expression include:
- *
- *     - `item.id from item in items` - Use an already existing (unique) property as the hash identifier.
- *     - `$hash(item) from item in items` - Tell the repeater to use the item itself as the hash identifier (keep
- *     in mind that this only works for string and primitive values. Therefore, if you're using an object or model, then use
- *     a unique property of that object such as an ID value).
- *
- *
- *     Keep in mind that the `hash_expression` must provide a hash identifier that is unqiue. Any duplicate identifier values
- *     (within the repeated items) are incorrect to the nature of ngRepeat and may result in unexpected behavior.
+ *     For example: `item.id from item it items` Is a typical pattern when the items come from the database. In this
+ *     case the object identity does not matter. Two objects are considered the equivalent as long as their `id`
+ *     is same.
  *
  * @example
  * This example initializes the scope to a list of names and
@@ -81,13 +82,14 @@
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ['$parse', function($parse) {
+var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
   return {
     transclude: 'element',
     priority: 1000,
     terminal: true,
     compile: function(element, attr, linker) {
       return function(scope, iterStartElement, attr){
+        var animate = $animator(attr);
         var expression = attr.ngRepeat;
         var match = expression.match(/^((.+)\s+from)?\s*(.+)\s+in\s+(.*)\s*$/),
           hashExp, hashExpFn, hashFn, lhs, rhs, valueIdent, keyIdent,
@@ -212,7 +214,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
           for (key in lastOrder) {
             if (lastOrder.hasOwnProperty(key)) {
               block = lastOrder[key];
-              block.element.remove();
+              animate.leave(block.element);
               block.scope.$destroy();
               blockRemove(block);
             }
@@ -236,7 +238,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
                 // existing item which got moved
                 blockRemove(block);
                 blockInsertAfter(lastBlock, block);
-                cursor.after(block.element);
+                animate.move(block.element, null, cursor || iterStartElement);
                 cursor = block.element;
               }
             } else {
@@ -253,7 +255,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
 
             if (!block.element) {
               linker(childScope, function(clone){
-                cursor.after(clone);
+                animate.enter(clone, null, cursor || iterStartElement);
                 cursor = clone;
                 block.scope = childScope;
                 block.element = clone;

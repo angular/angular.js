@@ -1,0 +1,83 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+    <title>AngularJS Animation Demo</title>
+    <style>
+      .show-setup {
+        -webkit-transition:all 1s;
+        -webkit-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -moz-transition:all 1s;
+        -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -ms-transition:all 1s;
+        -ms-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -o-transition:all 1s;
+        -o-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        transition:all 1s;
+        transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        display:block;
+        opacity:0;
+      }
+      .show-setup.show-start {
+        opacity:1;
+      }
+      .hide-setup {
+        -webkit-transition:all 1s;
+        -webkit-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -moz-transition:all 1s;
+        -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -ms-transition:all 1s;
+        -ms-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -o-transition:all 1s;
+        -o-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        transition:all 1s;
+        transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        display:block;
+        opacity:1;
+      }
+      .hide-setup.hide-start {
+        opacity:0;
+      }
+      .ng-cloak {
+        display:none;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div ng-include="'nav.html'"></div>
+
+    <main class="ng-cloak">
+      <section ng-init="on=false">
+        <header>
+          <h1>
+            CSS3 Animation
+            <span>
+              <strong>enter:</strong>
+              <em>fadeEnter</em>
+            </span>
+            <span>
+              <strong>leave:</strong>
+              <em>fadeLeave</em>
+            </span>
+            <span>
+              <strong>move:</strong>
+              <em>fadeMove</em>
+            </span>
+          </h3>
+        </header>
+        <div>
+          <button ng-click="on=true">Show</button>
+          <button ng-click="on=false">Hide</button>
+        </div>
+        <div ng-show="on" ng-animate="show: show; hide: hide">
+          content
+        </div>
+      </section>
+    </main>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="../../../build/angular.js"></script>
+    <script src="./module.js"></script>
+  <body>
+</html>

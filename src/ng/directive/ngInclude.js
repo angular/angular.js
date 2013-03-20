@@ -12,6 +12,13 @@
  * (e.g. ngInclude won't work for cross-domain requests on all browsers and for
  *  file:// access on some browsers).
  *
+ * Additionally, you can also provide animations via the ngAnimate attribute to animate the <strong>enter</strong>
+ * and <strong>leave</strong> effects.
+ *
+ * @animations
+ * enter - happens just after the ngInclude contents change and a new DOM element is created and injected into the ngInclude container
+ * leave - happens just after the ngInclude contents change and just before the former contents are removed from the DOM
+ *
  * @scope
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
@@ -78,8 +85,8 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
-                  function($http,   $templateCache,   $anchorScroll,   $compile) {
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator) {
   return {
     restrict: 'ECA',
     terminal: true,
@@ -88,7 +95,8 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, element) {
+      return function(scope, element, attr) {
+        var animate = $animator(attr);
         var changeCounter = 0,
             childScope;
 
@@ -97,8 +105,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             childScope.$destroy();
             childScope = null;
           }
-
-          element.html('');
+          animate.leave(element.contents(), element);
         };
 
         scope.$watch(srcExp, function ngIncludeWatchAction(src) {
@@ -111,8 +118,21 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (childScope) childScope.$destroy();
               childScope = scope.$new();
 
-              element.html(response);
-              $compile(element.contents())(childScope);
+              //TODO: Igor + Matias (figure out better "onEmpty" checking solution)
+              if(element.children().length && /\S+/.test(element.html())) {
+                animate.leave(element.contents(), element);
+              } else {
+                element.html('');
+              }
+
+              //TODO misko, make a decision based on on wrapping contents
+                //var contents = jqLite('<div/>').html(response);   //everything is wrapped inside one parent <div> tag which works for animations
+                //var contents = jqLite('<div/>').html(response).children();    (one or more items ... bad for animation ... also comments are included)
+                //var contents = jqLite('<div/>').html(response).contents();    (one or more items ... bad for animation ... only elements)
+
+              var contents = jqLite('<div/>').html(response);
+              animate.enter(contents, element);
+              $compile(contents)(childScope);
 
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                 $anchorScroll();
@@ -123,7 +143,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
-          } else clearContent();
+          } else {
+            clearContent();
+          }
         });
       };
     }

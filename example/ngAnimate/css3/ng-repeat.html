@@ -1,0 +1,91 @@
+<!DOCTYPE html> 
+<html ng-app="Animator" ng-controller="AppCtrl">
+  <head>
+    <title>AngularJS Animation Demo</title>
+    <style>
+      .fade-enter-setup {
+        -webkit-transition:all 1s;
+        -webkit-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -moz-transition:all 1s;
+        -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -ms-transition:all 1s;
+        -ms-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -o-transition:all 1s;
+        -o-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        transition:all 1s;
+        transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+
+        position:relative;
+        left:0;
+        opacity:0;
+      }
+      .fade-enter-setup.fade-enter-start {
+        left:0;
+        opacity:1;
+      }
+      .fade-leave-setup {
+        position:relative;
+        -webkit-transition:all 1s;
+        -webkit-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -moz-transition:all 1s;
+        -moz-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -ms-transition:all 1s;
+        -ms-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        -o-transition:all 1s;
+        -o-transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        transition:all 1s;
+        transition-timing-function: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+        left:0;
+        opacity:1;
+      }
+      .fade-leave-setup.fade-leave-start {
+        left:-100px;
+        opacity:0;
+      }
+      .fade-enter-cb-setup {
+        position:absolute;
+        height:100px;
+        opacity:0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div ng-include="'nav.html'"></div>
+
+    <main>
+      <section ng-init="in1='tpl1'" when="1">
+        <header>
+          <h1>
+            CSS3 Animation
+            <span>
+              <strong>enter:</strong>
+              <em>fadeEnter</em>
+            </span>
+            <span>
+              <strong>leave:</strong>
+              <em>fadeLeave</em>
+            </span>
+            <span>
+              <strong>move:</strong>
+              <em>fadeMove</em>
+            </span>
+          </h3>
+        </header>
+        <div>
+          <input type="search" ng-model="q" />
+        </div>
+        <div class="results">
+          <div ng-repeat="$hash(item) from item in items | filter:q" ng-animate="enter: fade-enter; leave: fade-leave; move: fade-move;">
+            {{ item }}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="../../../build/angular.js"></script>
+    <script src="./module.js"></script>
+  <body>
+</html>

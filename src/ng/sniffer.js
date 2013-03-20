@@ -16,8 +16,23 @@
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
-        android = int((/android (\d+)/.exec(lowercase($window.navigator.userAgent)) || [])[1]),
-        document = $document[0];
+        android = int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
+        document = $document[0] || {},
+        vendorPrefix,
+        vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
+        bodyStyle = document.body && document.body.style,
+        transitions = false;
+
+    if (bodyStyle) {
+      for(var prop in bodyStyle) {
+        if(vendorRegex.test(prop)) {
+          vendorPrefix = prop.match(vendorRegex)[0];
+          break;
+        }
+      }
+      transitions = !!(vendorPrefix + 'Transition' in bodyStyle);
+    }
+
 
     return {
       // Android has history.pushState, but it does not update location correctly
@@ -41,7 +56,9 @@ function $SnifferProvider() {
 
         return eventSupport[event];
       },
-      csp: document.securityPolicy ? document.securityPolicy.isActive : false
+      csp: document.securityPolicy ? document.securityPolicy.isActive : false,
+      vendorPrefix: vendorPrefix,
+      supportsTransitions : transitions
     };
   }];
 }
