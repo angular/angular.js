@@ -1,16 +1,27 @@
 'use strict';
 
 describe('ngRepeat', function() {
-  var element, $compile, scope;
+  var element, $compile, scope, $exceptionHandler;
 
 
-  beforeEach(inject(function(_$compile_, $rootScope) {
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
+
+  beforeEach(inject(function(_$compile_, $rootScope, _$exceptionHandler_) {
     $compile = _$compile_;
+    $exceptionHandler = _$exceptionHandler_;
     scope = $rootScope.$new();
   }));
 
 
-  afterEach(function(){
+  afterEach(function() {
+    if ($exceptionHandler.errors.length) {
+      dump(jasmine.getEnv().currentSpec.getFullName());
+      dump('$exceptionHandler has errors');
+      dump($exceptionHandler.errors);
+      expect($exceptionHandler.errors).toBe([]);
+    }
     dealoc(element);
   });
 
@@ -44,89 +55,6 @@ describe('ngRepeat', function() {
   });
 
 
-  it('should iterate over an array of primitives', function() {
-    element = $compile(
-      '<ul>' +
-        '<li ng-repeat="item in items">{{item}};</li>' +
-      '</ul>')(scope);
-
-    Array.prototype.extraProperty = "should be ignored";
-    // INIT
-    scope.items = [true, true, true];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('true;true;true;');
-    delete Array.prototype.extraProperty;
-
-    scope.items = [false, true, true];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('false;true;true;');
-
-    scope.items = [false, true, false];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('false;true;false;');
-
-    scope.items = [true];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(1);
-    expect(element.text()).toEqual('true;');
-
-    scope.items = [true, true, false];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('true;true;false;');
-
-    scope.items = [true, false, false];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('true;false;false;');
-
-    // string
-    scope.items = ['a', 'a', 'a'];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('a;a;a;');
-
-    scope.items = ['ab', 'a', 'a'];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('ab;a;a;');
-
-    scope.items = ['test'];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(1);
-    expect(element.text()).toEqual('test;');
-
-    scope.items = ['same', 'value'];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('same;value;');
-
-    // number
-    scope.items = [12, 12, 12];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('12;12;12;');
-
-    scope.items = [53, 12, 27];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('53;12;27;');
-
-    scope.items = [89];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(1);
-    expect(element.text()).toEqual('89;');
-
-    scope.items = [89, 23];
-    scope.$digest();
-    expect(element.find('li').length).toEqual(2);
-    expect(element.text()).toEqual('89;23;');
-  });
-
-
   it('should iterate over on object/map', function() {
     element = $compile(
       '<ul>' +
@@ -138,47 +66,166 @@ describe('ngRepeat', function() {
   });
 
 
-  it('should iterate over object with changing primitive property values', function() {
-    // test for issue #933
+  describe('track by', function() {
+    it('should track using expression function', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="item in items track by item.id">{{item.name}};</li>' +
+              '</ul>')(scope);
+      scope.items = [{id: 'misko'}, {id: 'igor'}];
+      scope.$digest();
+      var li0 = element.find('li')[0];
+      var li1 = element.find('li')[1];
 
-    element = $compile(
-      '<ul>' +
-        '<li ng-repeat="(key, value) in items">' +
-          '{{key}}:{{value}};' +
-          '<input type="checkbox" ng-model="items[key]">' +
-        '</li>' +
-      '</ul>')(scope);
+      scope.items.push(scope.items.shift());
+      scope.$digest();
+      expect(element.find('li')[0]).toBe(li1);
+      expect(element.find('li')[1]).toBe(li0);
+    });
 
-    scope.items = {misko: true, shyam: true, zhenbo:true};
-    scope.$digest();
-    expect(element.find('li').length).toEqual(3);
-    expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
 
-    browserTrigger(element.find('input').eq(0), 'click');
+    it('should track using build in $id function', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="item in items track by $id(item)">{{item.name}};</li>' +
+              '</ul>')(scope);
+      scope.items = [{name: 'misko'}, {name: 'igor'}];
+      scope.$digest();
+      var li0 = element.find('li')[0];
+      var li1 = element.find('li')[1];
 
-    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
-    expect(element.find('input')[0].checked).toBe(false);
-    expect(element.find('input')[1].checked).toBe(true);
-    expect(element.find('input')[2].checked).toBe(true);
+      scope.items.push(scope.items.shift());
+      scope.$digest();
+      expect(element.find('li')[0]).toBe(li1);
+      expect(element.find('li')[1]).toBe(li0);
+    });
 
-    browserTrigger(element.find('input').eq(0), 'click');
-    expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
-    expect(element.find('input')[0].checked).toBe(true);
-    expect(element.find('input')[1].checked).toBe(true);
-    expect(element.find('input')[2].checked).toBe(true);
 
-    browserTrigger(element.find('input').eq(1), 'click');
-    expect(element.text()).toEqual('misko:true;shyam:false;zhenbo:true;');
-    expect(element.find('input')[0].checked).toBe(true);
-    expect(element.find('input')[1].checked).toBe(false);
-    expect(element.find('input')[2].checked).toBe(true);
+    it('should iterate over an array of primitives', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="item in items track by $index">{{item}};</li>' +
+          '</ul>')(scope);
 
-    scope.items = {misko: false, shyam: true, zhenbo: true};
-    scope.$digest();
-    expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
-    expect(element.find('input')[0].checked).toBe(false);
-    expect(element.find('input')[1].checked).toBe(true);
-    expect(element.find('input')[2].checked).toBe(true);
+      Array.prototype.extraProperty = "should be ignored";
+      // INIT
+      scope.items = [true, true, true];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('true;true;true;');
+      delete Array.prototype.extraProperty;
+
+      scope.items = [false, true, true];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('false;true;true;');
+
+      scope.items = [false, true, false];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('false;true;false;');
+
+      scope.items = [true];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(1);
+      expect(element.text()).toEqual('true;');
+
+      scope.items = [true, true, false];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('true;true;false;');
+
+      scope.items = [true, false, false];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('true;false;false;');
+
+      // string
+      scope.items = ['a', 'a', 'a'];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('a;a;a;');
+
+      scope.items = ['ab', 'a', 'a'];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('ab;a;a;');
+
+      scope.items = ['test'];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(1);
+      expect(element.text()).toEqual('test;');
+
+      scope.items = ['same', 'value'];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(2);
+      expect(element.text()).toEqual('same;value;');
+
+      // number
+      scope.items = [12, 12, 12];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('12;12;12;');
+
+      scope.items = [53, 12, 27];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('53;12;27;');
+
+      scope.items = [89];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(1);
+      expect(element.text()).toEqual('89;');
+
+      scope.items = [89, 23];
+      scope.$digest();
+      expect(element.find('li').length).toEqual(2);
+      expect(element.text()).toEqual('89;23;');
+    });
+
+
+    it('should iterate over object with changing primitive property values', function() {
+      // test for issue #933
+
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="(key, value) in items track by $index">' +
+              '{{key}}:{{value}};' +
+              '<input type="checkbox" ng-model="items[key]">' +
+              '</li>' +
+              '</ul>')(scope);
+
+      scope.items = {misko: true, shyam: true, zhenbo:true};
+      scope.$digest();
+      expect(element.find('li').length).toEqual(3);
+      expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
+
+      browserTrigger(element.find('input').eq(0), 'click');
+
+      expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
+      expect(element.find('input')[0].checked).toBe(false);
+      expect(element.find('input')[1].checked).toBe(true);
+      expect(element.find('input')[2].checked).toBe(true);
+
+      browserTrigger(element.find('input').eq(0), 'click');
+      expect(element.text()).toEqual('misko:true;shyam:true;zhenbo:true;');
+      expect(element.find('input')[0].checked).toBe(true);
+      expect(element.find('input')[1].checked).toBe(true);
+      expect(element.find('input')[2].checked).toBe(true);
+
+      browserTrigger(element.find('input').eq(1), 'click');
+      expect(element.text()).toEqual('misko:true;shyam:false;zhenbo:true;');
+      expect(element.find('input')[0].checked).toBe(true);
+      expect(element.find('input')[1].checked).toBe(false);
+      expect(element.find('input')[2].checked).toBe(true);
+
+      scope.items = {misko: false, shyam: true, zhenbo: true};
+      scope.$digest();
+      expect(element.text()).toEqual('misko:false;shyam:true;zhenbo:true;');
+      expect(element.find('input')[0].checked).toBe(false);
+      expect(element.find('input')[1].checked).toBe(true);
+      expect(element.find('input')[2].checked).toBe(true);
+    });
   });
 
 
@@ -199,19 +246,18 @@ describe('ngRepeat', function() {
 
 
   it('should error on wrong parsing of ngRepeat', function() {
-    expect(function() {
-      element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
-      $compile(element)(scope);
-    }).toThrow("Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+    element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
+    $compile(element)(scope);
+    expect($exceptionHandler.errors.shift()[0].message).
+        toBe("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
   });
 
 
   it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
-    expect(function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
-    }).toThrow("'item' in 'item in collection' should be identifier or (key, value) but got " +
-               "'i dont parse'.");
+    expect($exceptionHandler.errors.shift()[0].message).
+        toBe("'item' in 'item in collection' should be identifier or (key, value) but got 'i dont parse'.");
   });
 
 
@@ -311,7 +357,7 @@ describe('ngRepeat', function() {
   it('should ignore $ and $$ properties', function() {
     element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')(scope);
     scope.items = ['a', 'b', 'c'];
-    scope.items.$$hashkey = 'xxx';
+    scope.items.$$hashKey = 'xxx';
     scope.items.$root = 'yyy';
     scope.$digest();
 
@@ -393,43 +439,23 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should support duplicates', function() {
-      scope.items = [a, a, b, c];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).not.toEqual(lis[0]);
-      expect(newElements[2]).toEqual(lis[1]);
-      expect(newElements[3]).toEqual(lis[2]);
-
-      lis = newElements;
-      scope.$digest();
-      newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
-
-      scope.$digest();
-      newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
-    });
-
-
-    it('should remove last item when one duplicate instance is removed', function() {
+    it('should throw error on duplicates and recover', function() {
       scope.items = [a, a, a];
       scope.$digest();
-      lis = element.find('li');
+      expect($exceptionHandler.errors.shift().message).
+          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items');
 
-      scope.items = [a, a];
+      // recover
+      scope.items = [a];
       scope.$digest();
       var newElements = element.find('li');
-      expect(newElements.length).toEqual(2);
+      expect(newElements.length).toEqual(1);
       expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
+
+      scope.items = [];
+      scope.$digest();
+      var newElements = element.find('li');
+      expect(newElements.length).toEqual(0);
     });
 
 
