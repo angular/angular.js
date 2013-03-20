@@ -249,7 +249,7 @@ describe('ngClass', function() {
 
   it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
-      '<li ng-repeat="i in items" ' +
+      '<li ng-repeat="i in items track by $index" ' +
       'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
       '<ul>')($rootScope);
     $rootScope.items = ['a','b','a'];

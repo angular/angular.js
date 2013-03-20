@@ -20,7 +20,7 @@
  * @element ANY
  * @scope
  * @priority 1000
- * @param {repeat_expression} ngRepeat The expression indicating how to enumerate a collection. Two
+ * @param {repeat_expression} ngRepeat The expression indicating how to enumerate a collection. These
  *   formats are currently supported:
  *
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
@@ -32,6 +32,24 @@
  *     and `expression` is the scope expression giving the collection to enumerate.
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
+ *
+ *   * `variable in expression track by tracking_expression` – You can also provide an optional tracking function
+ *     which can be used to associate the objects in the collection with the DOM elements. If no tractking function
+ *     is specified the ng-repeat associates elements by identity in the collection. It is an error to have
+ *     more then one tractking function to  resolve to the same key. (This would mean that two distinct objects are
+ *     mapped to the same DOM element, which is not possible.)
+ *
+ *     For example: `item in items` is equivalent to `item in items track by $id(item)'. This implies that the DOM elements
+ *     will be associated by item identity in the array.
+ *
+ *     For example: `item in items track by $id(item)`. A built in `$id()` function can be used to assign a unique
+ *     `$$hashKey` property to each item in the array. This property is then used as a key to associated DOM elements
+ *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
+ *     element in the same way ian the DOM.
+ *
+ *     For example: `item in items track by item.id` Is a typical pattern when the items come from the database. In this
+ *     case the object identity does not matter. Two objects are considered equivalent as long as their `id`
+ *     property is same.
  *
  * @example
  * This example initializes the scope to a list of names and
@@ -57,133 +75,164 @@
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ngDirective({
-  transclude: 'element',
-  priority: 1000,
-  terminal: true,
-  compile: function(element, attr, linker) {
-    return function(scope, iterStartElement, attr){
-      var expression = attr.ngRepeat;
-      var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-        lhs, rhs, valueIdent, keyIdent;
-      if (! match) {
-        throw Error("Expected ngRepeat in form of '_item_ in _collection_' but got '" +
-          expression + "'.");
-      }
-      lhs = match[1];
-      rhs = match[2];
-      match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
-      if (!match) {
-        throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-            lhs + "'.");
-      }
-      valueIdent = match[3] || match[1];
-      keyIdent = match[2];
+var ngRepeatDirective = ['$parse', function($parse) {
+  return {
+    transclude: 'element',
+    priority: 1000,
+    terminal: true,
+    compile: function(element, attr, linker) {
+      return function($scope, $element, $attr){
+        var expression = $attr.ngRepeat;
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
+          trackByExp, hashExpFn, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+          hashFnLocals = {$id: hashKey};
 
-      // Store a list of elements from previous run. This is a hash where key is the item from the
-      // iterator, and the value is an array of objects with following properties.
-      //   - scope: bound scope
-      //   - element: previous element.
-      //   - index: position
-      // We need an array of these objects since the same object can be returned from the iterator.
-      // We expect this to be a rare case.
-      var lastOrder = new HashQueueMap();
+        if (!match) {
+          throw Error("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got '" +
+            expression + "'.");
+        }
 
-      scope.$watch(function ngRepeatWatch(scope){
-        var index, length,
-            collection = scope.$eval(rhs),
-            cursor = iterStartElement,     // current position of the node
-            // Same as lastOrder but it has the current state. It will become the
-            // lastOrder on the next iteration.
-            nextOrder = new HashQueueMap(),
-            arrayBound,
-            childScope,
-            key, value, // key/value of iteration
-            array,
-            last;       // last object information {scope, element, index}
+        lhs = match[1];
+        rhs = match[2];
+        trackByExp = match[4];
 
-
-
-        if (!isArray(collection)) {
-          // if object, extract keys, sort them and use to determine order of iteration over obj props
-          array = [];
-          for(key in collection) {
-            if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-              array.push(key);
-            }
-          }
-          array.sort();
+        if (trackByExp) {
+          hashExpFn = $parse(trackByExp);
+          trackByIdFn = function(key, value, index) {
+            // assign key, value, and $index to the locals so that they can be used in hash functions
+            if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
+            hashFnLocals[valueIdentifier] = value;
+            hashFnLocals.$index = index;
+            return hashExpFn($scope, hashFnLocals);
+          };
         } else {
-          array = collection || [];
+          trackByIdFn = function(key, value) {
+            return hashKey(value);
+          }
         }
+        
+        match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+        if (!match) {
+          throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+              lhs + "'.");
+        }
+        valueIdentifier = match[3] || match[1];
+        keyIdentifier = match[2];
 
-        arrayBound = array.length-1;
+        // Store a list of elements from previous run. This is a hash where key is the item from the
+        // iterator, and the value is objects with following properties.
+        //   - scope: bound scope
+        //   - element: previous element.
+        //   - index: position
+        var lastBlockMap = {};
 
-        // we are not using forEach for perf reasons (trying to avoid #call)
-        for (index = 0, length = array.length; index < length; index++) {
-          key = (collection === array) ? index : array[index];
-          value = collection[key];
+        //watch props
+        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+          var index, length,
+              cursor = $element,     // current position of the node
+              // Same as lastBlockMap but it has the current state. It will become the
+              // lastBlockMap on the next iteration.
+              nextBlockMap = {},
+              arrayLength,
+              childScope,
+              key, value, // key/value of iteration
+              trackById,
+              collectionKeys,
+              block,       // last object information {scope, element, id}
+              nextBlockOrder = [];
 
-          last = lastOrder.shift(value);
 
-          if (last) {
-            // if we have already seen this object, then we need to reuse the
-            // associated scope/element
-            childScope = last.scope;
-            nextOrder.push(value, last);
-
-            if (index === last.index) {
-              // do nothing
-              cursor = last.element;
-            } else {
-              // existing item which got moved
-              last.index = index;
-              // This may be a noop, if the element is next, but I don't know of a good way to
-              // figure this out,  since it would require extra DOM access, so let's just hope that
-              // the browsers realizes that it is noop, and treats it as such.
-              cursor.after(last.element);
-              cursor = last.element;
-            }
+          if (isArray(collection)) {
+            collectionKeys = collection;
           } else {
-            // new item which we don't know about
-            childScope = scope.$new();
+            // if object, extract keys, sort them and use to determine order of iteration over obj props
+            collectionKeys = [];
+            for (key in collection) {
+              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
+                collectionKeys.push(key);
+              }
+            }
+            collectionKeys.sort();
           }
 
-          childScope[valueIdent] = value;
-          if (keyIdent) childScope[keyIdent] = key;
-          childScope.$index = index;
+          arrayLength = collectionKeys.length;
 
-          childScope.$first = (index === 0);
-          childScope.$last = (index === arrayBound);
-          childScope.$middle = !(childScope.$first || childScope.$last);
+          // locate existing items
+          length = nextBlockOrder.length = collectionKeys.length;
+          for(index = 0; index < length; index++) {
+           key = (collection === collectionKeys) ? index : collectionKeys[index];
+           value = collection[key];
+           trackById = trackByIdFn(key, value, index);
+           if((block = lastBlockMap[trackById])) {
+             delete lastBlockMap[trackById];
+             nextBlockMap[trackById] = block;
+             nextBlockOrder[index] = block;
+           } else if (nextBlockMap.hasOwnProperty(trackById)) {
+             // restore lastBlockMap
+             forEach(nextBlockOrder, function(block) {
+               if (block && block.element) lastBlockMap[block.id] = block;
+             });
+             // This is a duplicate and we need to throw an error
+             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression);
+           } else {
+             // new never before seen block
+             nextBlockOrder[index] = { id: trackById };
+           }
+         }
 
-          if (!last) {
-            linker(childScope, function(clone){
-              cursor.after(clone);
-              last = {
-                  scope: childScope,
-                  element: (cursor = clone),
-                  index: index
-                };
-              nextOrder.push(value, last);
-            });
-          }
-        }
-
-        //shrink children
-        for (key in lastOrder) {
-          if (lastOrder.hasOwnProperty(key)) {
-            array = lastOrder[key];
-            while(array.length) {
-              value = array.pop();
-              value.element.remove();
-              value.scope.$destroy();
+          // remove existing items
+          for (key in lastBlockMap) {
+            if (lastBlockMap.hasOwnProperty(key)) {
+              block = lastBlockMap[key];
+              block.element.remove();
+              block.scope.$destroy();
             }
           }
-        }
 
-        lastOrder = nextOrder;
-      });
-    };
-  }
-});
+          // we are not using forEach for perf reasons (trying to avoid #call)
+          for (index = 0, length = collectionKeys.length; index < length; index++) {
+            key = (collection === collectionKeys) ? index : collectionKeys[index];
+            value = collection[key];
+            block = nextBlockOrder[index];
+
+            if (block.element) {
+              // if we have already seen this object, then we need to reuse the
+              // associated scope/element
+              childScope = block.scope;
+
+              if (block.element == cursor) {
+                // do nothing
+                cursor = block.element;
+              } else {
+                // existing item which got moved
+                cursor.after(block.element);
+                cursor = block.element;
+              }
+            } else {
+              // new item which we don't know about
+              childScope = $scope.$new();
+            }
+
+            childScope[valueIdentifier] = value;
+            if (keyIdentifier) childScope[keyIdentifier] = key;
+            childScope.$index = index;
+            childScope.$first = (index === 0);
+            childScope.$last = (index === (arrayLength - 1));
+            childScope.$middle = !(childScope.$first || childScope.$last);
+
+            if (!block.element) {
+              linker(childScope, function(clone){
+                cursor.after(clone);
+                cursor = clone;
+                block.scope = childScope;
+                block.element = clone;
+                nextBlockMap[block.id] = block;
+              });
+            }
+          }
+          lastBlockMap = nextBlockMap;
+        });
+      };
+    }
+  };
+}];
