@@ -529,7 +529,7 @@ function createInjector(modulesToLoad) {
       if (typeof serviceName !== 'string') {
         throw Error('Service name expected');
       }
-      if (cache.hasOwnProperty(serviceName)) {
+      if (hasOwn.call(cache, serviceName)) {
         if (cache[serviceName] === INSTANTIATING) {
           throw Error('Circular dependency: ' + path.join(' <- '));
         }
@@ -554,7 +554,7 @@ function createInjector(modulesToLoad) {
       for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
         args.push(
-          locals && locals.hasOwnProperty(key)
+          locals && hasOwn.call(locals, key)
           ? locals[key]
           : getService(key)
         );

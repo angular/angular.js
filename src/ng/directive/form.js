@@ -65,7 +65,7 @@ function FormController(element, attrs) {
   form.$addControl = function(control) {
     controls.push(control);
 
-    if (control.$name && !form.hasOwnProperty(control.$name)) {
+    if (control.$name && !hasOwn.call(form, control.$name)) {
       form[control.$name] = control;
     }
   };

@@ -108,7 +108,7 @@ var ngRepeatDirective = ngDirective({
           // if object, extract keys, sort them and use to determine order of iteration over obj props
           array = [];
           for(key in collection) {
-            if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
+            if (hasOwn.call(collection, key) && key.charAt(0) != '$') {
               array.push(key);
             }
           }
@@ -172,7 +172,7 @@ var ngRepeatDirective = ngDirective({
 
         //shrink children
         for (key in lastOrder) {
-          if (lastOrder.hasOwnProperty(key)) {
+          if (hasOwn.call(lastOrder, key)) {
             array = lastOrder[key];
             while(array.length) {
               value = array.pop();

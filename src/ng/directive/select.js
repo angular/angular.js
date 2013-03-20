@@ -177,7 +177,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
 
       self.hasOption = function(value) {
-        return optionsMap.hasOwnProperty(value);
+        return hasOwn.call(optionsMap, value);
       }
 
       $scope.$on('$destroy', function() {

@@ -211,6 +211,11 @@ describe('angular', function() {
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
     });
+
+    it('should correctly test for keys that are present on Object.prototype', function() {
+      expect(equals({}, {hasOwnProperty: 1})).toBe(false);
+      expect(equals({}, {toString: null})).toBe(false);
+    });
   });
 
   describe('size', function() {
@@ -229,6 +234,10 @@ describe('angular', function() {
 
       expect(size(obj)).toBe(5);
       expect(size(obj, true)).toBe(3);
+    });
+
+    it('when counting own properties should work well with objects that define "hasOwnProperty"', function() {
+      expect(size({hasOwnProperty: 1, foo: 2}, true)).toBe(2);
     });
 
     it('should return the string length', function() {
@@ -356,6 +365,19 @@ describe('angular', function() {
 
       forEach(obj, function(value, key) { log.push(key + ':' + value)});
       expect(log).toEqual(['length:2', 'foo:bar']);
+    });
+
+    it('should handle objects that define a "hasOwnProperty" key', function() {
+      var obj = {
+            foo: 1,
+            hasOwnProperty: 2
+          },
+          log = [];
+
+      forEach(obj, function(value, key) {
+        log.push(key + ':' + value);
+      });
+      expect(log).toEqual(['foo:1', 'hasOwnProperty:2']);
     });
   });
 

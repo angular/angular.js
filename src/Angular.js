@@ -3,6 +3,13 @@
 ////////////////////////////////////
 
 /**
+ * hasOwnProperty may be overriden by a property of the same name, or entirely
+ * absent from an object that does not inherit Object.prototype; this copy is
+ * used instead
+ */
+var hasOwn = Object.prototype.hasOwnProperty;
+
+/**
  * @ngdoc function
  * @name angular.lowercase
  * @function
@@ -137,7 +144,7 @@ function forEach(obj, iterator, context) {
   if (obj) {
     if (isFunction(obj)){
       for (key in obj) {
-        if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
+        if (key != 'prototype' && key != 'length' && key != 'name' && hasOwn.call(obj, key)) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -148,7 +155,7 @@ function forEach(obj, iterator, context) {
         iterator.call(context, obj[key], key);
     } else {
       for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (hasOwn.call(obj, key)) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -160,7 +167,7 @@ function forEach(obj, iterator, context) {
 function sortedKeys(obj) {
   var keys = [];
   for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (hasOwn.call(obj, key)) {
       keys.push(key);
     }
   }
@@ -506,7 +513,7 @@ function size(obj, ownPropsOnly) {
     return obj.length;
   } else if (isObject(obj)){
     for (key in obj)
-      if (!ownPropsOnly || obj.hasOwnProperty(key))
+      if (!ownPropsOnly || hasOwn.call(obj, key))
         size++;
   }
 
@@ -607,7 +614,7 @@ function shallowCopy(src, dst) {
   dst = dst || {};
 
   for(var key in src) {
-    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+    if (hasOwn.call(src, key) && key.substr(0, 2) !== '$$') {
       dst[key] = src[key];
     }
   }
@@ -665,7 +672,7 @@ function equals(o1, o2) {
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] &&
+          if (!hasOwn.call(keySet, key) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
               !isFunction(o2[key])) return false;

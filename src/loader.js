@@ -65,7 +65,7 @@ function setupModuleLoader(window) {
      * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
-      if (requires && modules.hasOwnProperty(name)) {
+      if (requires && hasOwn.call(modules, name)) {
         modules[name] = null;
       }
       return ensure(modules, name, function() {
