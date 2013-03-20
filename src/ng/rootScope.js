@@ -327,9 +327,8 @@ function $RootScopeProvider(){
        * @methodOf ng.$rootScope.Scope
        * @function
        *
-       * @description
-       * Shallow watches the properties of an object and fires whenever any of the properties change.
-       * (For arrays this implies watching the array items, for object maps this implies watching the properties.)
+       * Shallow watches the properties of an object and fires whenever any of the properties change
+       * (for arrays this implies watching the array items, for object maps this implies watching the properties).
        * If a change is detected the `listener` callback is fired.
        *
        * - The `obj` object is observed via standard $watch operation and is examined on every call to $digest() to
@@ -340,38 +339,38 @@ function $RootScopeProvider(){
        *
        * # Example
        * <pre>
-          var scope = $rootScope;
-          scope.names = ['igor', 'matias', 'misko', 'james'];
-          scope.dataCount = 4;
+          $scope.names = ['igor', 'matias', 'misko', 'james'];
+          $scope.dataCount = 4;
 
-          scope.$watchProps('names', function(newNames, oldNames) {
-            scope.dataCount = newNames.length;
+          $scope.$watchProps('names', function(newNames, oldNames) {
+            $scope.dataCount = newNames.length;
           });
 
-          expect(scope.dataCount).toEqual(4);
-          scope.$digest();
+          expect($scope.dataCount).toEqual(4);
+          $scope.$digest();
 
           //still at 4 ... no changes
-          expect(scope.dataCount).toEqual(4);
+          expect($scope.dataCount).toEqual(4);
 
-          scope.names.pop();
-          scope.$digest();
+          $scope.names.pop();
+          $scope.$digest();
 
           //now there's been a change
-          expect(scope.dataCount).toEqual(3);
+          expect($scope.dataCount).toEqual(3);
        * </pre>
        *
        *
-       * @param {string} Evaluated as {@link guide/expression expression}. The expression value should evaluate to
-       *    An object or an array which is observed on each {@link ng.$rootScope.Scope#$digest $digest} cycle.
-       *    Any change within the obj collection will trigger call to the `listener`.
+       * @param {string} watchExpression evaluated as {@link guide/expression expression}. The expression value should evaluate to
+       *    an object or an array which is observed on each {@link ng.$rootScope.Scope#$digest $digest} cycle.
+       *    Any change within the `obj` collection will trigger call to the `listener`.
        *
        * @param {function(newCollection, oldCollection)} listener a callback function that is fired with both
        *    the `newCollection` and `oldCollection` as parameters.
        *    The `newCollection` object is the newly modified data obtained from the `obj` expression and the `oldCollection`
        *    object is a copy of the former collection data.
        *
-       * @returns {function()} Returns a de-registration function for this listener.
+       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function is executed
+       * then the internal watch operation is terminated.
        */
       $watchProps: function(obj, listener) {
         var self = this;

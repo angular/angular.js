@@ -1,16 +1,27 @@
 'use strict';
 
 describe('ngRepeat', function() {
-  var element, $compile, scope;
+  var element, $compile, scope, $exceptionHandler;
 
 
-  beforeEach(inject(function(_$compile_, $rootScope) {
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
+
+  beforeEach(inject(function(_$compile_, $rootScope, _$exceptionHandler_) {
     $compile = _$compile_;
+    $exceptionHandler = _$exceptionHandler_;
     scope = $rootScope.$new();
   }));
 
 
-  afterEach(function(){
+  afterEach(function() {
+    if ($exceptionHandler.errors.length) {
+      dump(jasmine.getEnv().currentSpec.getFullName());
+      dump('$exceptionHandler has errors');
+      dump($exceptionHandler.errors);
+      expect(true).toBe(false);
+    }
     dealoc(element);
   });
 
@@ -199,19 +210,19 @@ describe('ngRepeat', function() {
 
 
   it('should error on wrong parsing of ngRepeat', function() {
-    expect(function() {
-      element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
-      $compile(element)(scope);
-    }).toThrow("Expected ngRepeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+    element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
+    $compile(element)(scope);
+    expect($exceptionHandler.errors.shift()[0].message).
+        toEqual("Expected ngRepeat in form of '(_hash_ from) _item_ in _collection_' but got 'i dont parse'.");
   });
 
 
   it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
-    expect(function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
-    }).toThrow("'item' in 'item in collection' should be identifier or (key, value) but got " +
-               "'i dont parse'.");
+    expect($exceptionHandler.errors.shift()[0].message).
+        toEqual("'item' in 'item in collection' should be identifier or (key, value) but got " +
+                "'i dont parse'.");
   });
 
 
@@ -311,7 +322,7 @@ describe('ngRepeat', function() {
   it('should ignore $ and $$ properties', function() {
     element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')(scope);
     scope.items = ['a', 'b', 'c'];
-    scope.items.$$hashkey = 'xxx';
+    scope.items.$$hashKey = 'xxx';
     scope.items.$root = 'yyy';
     scope.$digest();
 
@@ -370,7 +381,7 @@ describe('ngRepeat', function() {
     beforeEach(function() {
       element = $compile(
         '<ul>' +
-          '<li ng-repeat="item in items">{{key}}:{{val}}|></li>' +
+          '<li ng-repeat="$hash(item) from item in items">{{key}}:{{val}}|></li>' +
         '</ul>')(scope);
       a = {};
       b = {};
@@ -393,43 +404,23 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should support duplicates', function() {
-      scope.items = [a, a, b, c];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).not.toEqual(lis[0]);
-      expect(newElements[2]).toEqual(lis[1]);
-      expect(newElements[3]).toEqual(lis[2]);
-
-      lis = newElements;
-      scope.$digest();
-      newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
-
-      scope.$digest();
-      newElements = element.find('li');
-      expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
-      expect(newElements[2]).toEqual(lis[2]);
-      expect(newElements[3]).toEqual(lis[3]);
-    });
-
-
-    it('should remove last item when one duplicate instance is removed', function() {
+    it('should throw error on duplicates and recover', function() {
       scope.items = [a, a, a];
       scope.$digest();
-      lis = element.find('li');
+      expect($exceptionHandler.errors.shift().message).
+          toEqual('Duplicate hashes in the repeater are not allowed.');
 
-      scope.items = [a, a];
+      // recover
+      scope.items = [a];
       scope.$digest();
       var newElements = element.find('li');
-      expect(newElements.length).toEqual(2);
+      expect(newElements.length).toEqual(1);
       expect(newElements[0]).toEqual(lis[0]);
-      expect(newElements[1]).toEqual(lis[1]);
+
+      scope.items = [];
+      scope.$digest();
+      var newElements = element.find('li');
+      expect(newElements.length).toEqual(0);
     });
 
 
