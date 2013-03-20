@@ -23,13 +23,13 @@
     </doc:example>
  */
 
-ngMobile.config(function($provide) {
-  $provide.decorator('ngClickDirective', function($delegate) {
+ngMobile.config(['$provide', function($provide) {
+  $provide.decorator('ngClickDirective', ['$delegate', function($delegate) {
     // drop the default ngClick directive
     $delegate.shift();
     return $delegate;
-  });
-});
+  }]);
+}]);
 
 ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     function($parse, $timeout, $rootElement) {
