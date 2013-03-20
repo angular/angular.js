@@ -5,6 +5,9 @@ describe('$sniffer', function() {
   function sniffer($window, $document) {
     $window.navigator = {};
     $document = jqLite($document || {});
+    if (!$document[0].body) {
+      $document[0].body = window.document.body;
+    }
     return new $SnifferProvider().$get[2]($window, $document);
   }
 
@@ -21,11 +24,11 @@ describe('$sniffer', function() {
 
   describe('hashchange', function() {
     it('should be true if onhashchange property defined', function() {
-      expect(sniffer({onhashchange: true}, {}).hashchange).toBe(true);
+      expect(sniffer({onhashchange: true}).hashchange).toBe(true);
     });
 
     it('should be false if onhashchange property not defined', function() {
-      expect(sniffer({}, {}).hashchange).toBe(false);
+      expect(sniffer({}).hashchange).toBe(false);
     });
 
     it('should be false if documentMode is 7 (IE8 comp mode)', function() {
@@ -83,7 +86,7 @@ describe('$sniffer', function() {
 
   describe('csp', function() {
     it('should be false if document.securityPolicy.isActive not available', function() {
-      expect(sniffer({}, {}).csp).toBe(false);
+      expect(sniffer({}).csp).toBe(false);
     });
 
 
@@ -95,5 +98,39 @@ describe('$sniffer', function() {
       expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
       expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
     });
+  });
+
+  describe('vendorPrefix', function() {
+
+    it('should return the correct vendor prefix based on the browser', function() {
+      inject(function($sniffer, $window) {
+        var expectedPrefix;
+        var ua = $window.navigator.userAgent.toLowerCase();
+        if(/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+          expectedPrefix = 'Webkit';
+        }
+        else if(/firefox/i.test(ua)) {
+          expectedPrefix = 'Moz';
+        }
+        else if(/ie/i.test(ua)) {
+          expectedPrefix = 'Ms';
+        }
+        else if(/opera/i.test(ua)) {
+          expectedPrefix = 'O';
+        }
+        expect($sniffer.vendorPrefix).toBe(expectedPrefix);
+      });
+    });
+
+  });
+
+  describe('supportsTransitions', function() {
+
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).not.toBe(undefined);
+      });
+    });
+
   });
 });
