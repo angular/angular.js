@@ -473,7 +473,7 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       forEach(element.contents(), function(node) {
-        if ( node.nodeType == 3 ) {
+        if ( node.nodeType == 3 /* text node */) {
           expect(jqLite(node).scope()).not.toBe($route.current.scope);
           expect(jqLite(node).controller()).not.toBeDefined();
         } else {
@@ -483,4 +483,106 @@ describe('ngView', function() {
       });
     });
   });
+});
+
+describe('ngAnimate', function() {
+  var element, window;
+
+  beforeEach(module(function($provide, $routeProvider) {
+    $provide.value('$window', window = angular.mock.createMockWindow());
+    $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+    return function($templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
+    }
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes',
+      inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+        element = $compile('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>')($rootScope);
+
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        //if we add the custom css stuff here then it will get picked up before the animation takes place
+        var child = jqLite(element.children()[0]);
+        var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+        var cssValue = '1s linear all';
+        child.css(cssProp, cssValue);
+
+        if ($sniffer.supportsTransitions) {
+          expect(child.attr('class')).toContain('custom-enter-setup');
+          window.setTimeout.expect(1).process();
+
+          expect(child.attr('class')).toContain('custom-enter-start');
+          window.setTimeout.expect(1000).process();
+        } else {
+          expect(window.setTimeout.queue).toEqual([]);
+        }
+
+        expect(child.attr('class')).not.toContain('custom-enter-setup');
+        expect(child.attr('class')).not.toContain('custom-enter-start');
+      }));
+
+  it('should fire off the leave animation + add and remove the css classes',
+      inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+    $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+    element = $compile('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>')($rootScope);
+
+    $location.path('/foo');
+    $rootScope.$digest();
+
+    //if we add the custom css stuff here then it will get picked up before the animation takes place
+    var child = jqLite(element.children()[0]);
+    var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+    var cssValue = '1s linear all';
+    child.css(cssProp, cssValue);
+
+    $location.path('/');
+    $rootScope.$digest();
+
+    if ($sniffer.supportsTransitions) {
+      expect(child.attr('class')).toContain('custom-leave-setup');
+      window.setTimeout.expect(1).process();
+
+      expect(child.attr('class')).toContain('custom-leave-start');
+      window.setTimeout.expect(1000).process();
+    } else {
+      expect(window.setTimeout.queue).toEqual([]);
+    }
+
+    expect(child.attr('class')).not.toContain('custom-leave-setup');
+    expect(child.attr('class')).not.toContain('custom-leave-start');
+  }));
+
+  it('should catch and use the correct duration for animations',
+      inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+    $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+    element = $compile(
+        '<div ' +
+            'ng-view ' +
+            'ng-animate="{enter: \'customEnter\'}">' +
+            '</div>'
+    )($rootScope);
+
+    $location.path('/foo');
+    $rootScope.$digest();
+
+    //if we add the custom css stuff here then it will get picked up before the animation takes place
+    var child = jqLite(element.children()[0]);
+    var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+    var cssValue = '0.5s linear all';
+    child.css(cssProp, cssValue);
+
+    if($sniffer.supportsTransitions) {
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect($sniffer.supportsTransitions ? 500 : 0).process();
+    } else {
+      expect(window.setTimeout.queue).toEqual([]);
+    }
+  }));
+
 });

@@ -475,6 +475,22 @@ describe('ngdoc', function() {
             '<div><p>I am self.</p></div>');
       });
     });
+
+    describe('@animations', function() {
+      it('should render @this', function() {
+        var doc = new Doc('@name a\n@animations\nenter - Add text\nleave - Remove text\n');
+        doc.ngdoc = 'filter';
+        doc.parse();
+        expect(doc.html()).toContain(
+            '<h3 id="Animations">Animations</h3>\n' +
+            '<div class="animations">' +
+              '<ul>' +
+                '<li>enter - Add text</li>' +
+                '<li>leave - Remove text</li>' +
+              '</ul>' +
+            '</div>');
+      });
+    });
   });
 
   describe('usage', function() {

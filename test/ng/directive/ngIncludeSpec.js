@@ -280,3 +280,116 @@ describe('ngInclude', function() {
     }));
   });
 });
+
+describe('ngInclude ngAnimate', function() {
+  var element, vendorPrefix, window;
+
+  beforeEach(module(function($animationProvider, $provide) {
+    $provide.value('$window', window = angular.mock.createMockWindow());
+    return function($sniffer) {
+      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{enter: \'custom-enter\'}">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = vendorPrefix + 'transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      if ($sniffer.supportsTransitions) {
+        expect(child.attr('class')).toContain('custom-enter-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(child.attr('class')).toContain('custom-enter-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+       expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(child.attr('class')).not.toContain('custom-enter-setup');
+      expect(child.attr('class')).not.toContain('custom-enter-start');
+  }));
+
+  it('should fire off the leave animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{leave: \'custom-leave\'}">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = vendorPrefix + 'transition';
+      var cssValue = '1s linear all';
+      child.css(cssProp, cssValue);
+
+      $rootScope.tpl = '';
+      $rootScope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        expect(child.attr('class')).toContain('custom-leave-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(child.attr('class')).toContain('custom-leave-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+       expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(child.attr('class')).not.toContain('custom-leave-setup');
+      expect(child.attr('class')).not.toContain('custom-leave-start');
+  }));
+
+  it('should catch and use the correct duration for animation',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{enter: \'custom-enter\'}">' +
+        '</div>'
+      )($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      var cssProp = vendorPrefix + 'transition';
+      var cssValue = '0.5s linear all';
+      child.css(cssProp, cssValue);
+
+      $rootScope.tpl = 'enter';
+      $rootScope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(500).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+  }));
+
+});

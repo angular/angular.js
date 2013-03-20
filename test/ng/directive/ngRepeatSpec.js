@@ -189,11 +189,11 @@ describe('ngRepeat', function() {
 
       element = $compile(
           '<ul>' +
-              '<li ng-repeat="(key, value) in items track by $index">' +
+            '<li ng-repeat="(key, value) in items track by $index">' +
               '{{key}}:{{value}};' +
               '<input type="checkbox" ng-model="items[key]">' +
-              '</li>' +
-              '</ul>')(scope);
+            '</li>' +
+          '</ul>')(scope);
 
       scope.items = {misko: true, shyam: true, zhenbo:true};
       scope.$digest();
@@ -410,6 +410,24 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should preserve data on move of elements', function() {
+    element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')(scope);
+    scope.array = ['a', 'b'];
+    scope.$digest();
+
+    var lis = element.find('li');
+    lis.eq(0).data('mark', 'a');
+    lis.eq(1).data('mark', 'b');
+
+    scope.array = ['b', 'a'];
+    scope.$digest();
+
+    var lis = element.find('li');
+    expect(lis.eq(0).data('mark')).toEqual('b');
+    expect(lis.eq(1).data('mark')).toEqual('a');
+  });
+
+
   describe('stability', function() {
     var a, b, c, d, lis;
 
@@ -481,6 +499,7 @@ describe('ngRepeat', function() {
       scope.items = ['hello', 'cau', 'ahoj'];
       scope.$digest();
       lis = element.find('li');
+      lis[2].id = 'yes';
 
       scope.items = ['ahoj', 'hello', 'cau'];
       scope.$digest();
@@ -491,4 +510,190 @@ describe('ngRepeat', function() {
       expect(newLis[2]).toEqual(lis[1]);
     });
   });
+});
+
+describe('ngRepeat ngAnimate', function() {
+  var element, vendorPrefix, window;
+
+  beforeEach(module(function($animationProvider, $provide) {
+    $provide.value('$window', window = angular.mock.createMockWindow());
+    return function($sniffer) {
+      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    element = $compile(
+      '<div><div ' +
+        'ng-repeat="item in items" ' +
+        'ng-animate="{enter: \'custom-enter\'}">' +
+        '{{ item }}' + 
+      '</div></div>'
+    )($rootScope);
+
+    $rootScope.items = ['1','2','3'];
+    $rootScope.$digest();
+
+    //if we add the custom css stuff here then it will get picked up before the animation takes place
+    var cssProp = vendorPrefix + 'transition';
+    var cssValue = '1s linear all';
+    var kids = element.children();
+    for(var i=0;i<kids.length;i++) {
+      kids[i] = jqLite(kids[i]);
+      kids[i].css(cssProp, cssValue);
+    }
+
+    if ($sniffer.supportsTransitions) {
+      angular.forEach(kids, function(kid) {
+        expect(kid.attr('class')).toContain('custom-enter-setup');
+        window.setTimeout.expect(1).process();
+      });
+
+      angular.forEach(kids, function(kid) {
+        expect(kid.attr('class')).toContain('custom-enter-start');
+        window.setTimeout.expect(1000).process();
+      });
+    } else {
+      expect(window.setTimeout.queue).toEqual([]);
+    }
+
+    angular.forEach(kids, function(kid) {
+      expect(kid.attr('class')).not.toContain('custom-enter-setup');
+      expect(kid.attr('class')).not.toContain('custom-enter-start');
+    });
+  }));
+
+  it('should fire off the leave animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $sniffer) {
+
+    element = $compile(
+      '<div><div ' +
+        'ng-repeat="item in items" ' +
+        'ng-animate="{leave: \'custom-leave\'}">' +
+        '{{ item }}' + 
+      '</div></div>'
+    )($rootScope);
+
+    $rootScope.items = ['1','2','3'];
+    $rootScope.$digest();
+
+    //if we add the custom css stuff here then it will get picked up before the animation takes place
+    var cssProp = vendorPrefix + 'transition';
+    var cssValue = '1s linear all';
+    var kids = element.children();
+    for(var i=0;i<kids.length;i++) {
+      kids[i] = jqLite(kids[i]);
+      kids[i].css(cssProp, cssValue);
+    }
+
+    $rootScope.items = ['1','3'];
+    $rootScope.$digest();
+
+    //the last element gets pushed down when it animates
+    var kid = jqLite(element.children()[1]);
+    if ($sniffer.supportsTransitions) {
+      expect(kid.attr('class')).toContain('custom-leave-setup');
+      window.setTimeout.expect(1).process();
+      expect(kid.attr('class')).toContain('custom-leave-start');
+      window.setTimeout.expect(1000).process();
+    } else {
+      expect(window.setTimeout.queue).toEqual([]);
+    }
+
+    expect(kid.attr('class')).not.toContain('custom-leave-setup');
+    expect(kid.attr('class')).not.toContain('custom-leave-start');
+  }));
+
+  it('should fire off the move animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $sniffer) {
+      element = $compile(
+        '<div>' +
+          '<div ng-repeat="item in items" ng-animate="{move: \'custom-move\'}">' +
+            '{{ item }}' +
+          '</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.items = ['1','2','3'];
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '1s linear all';
+      var kids = element.children();
+      for(var i=0;i<kids.length;i++) {
+        kids[i] = jqLite(kids[i]);
+        kids[i].css(cssProp, cssValue);
+      }
+
+      $rootScope.items = ['2','3','1'];
+      $rootScope.$digest();
+
+      //the last element gets pushed down when it animates
+      var kids  = element.children();
+      var first = jqLite(kids[0]);
+      var left  = jqLite(kids[1]);
+      var right = jqLite(kids[2]);
+
+      if ($sniffer.supportsTransitions) {
+        expect(first.attr('class')).toContain('custom-move-setup');
+        window.setTimeout.expect(1).process();
+        expect(left.attr('class')).toContain('custom-move-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(first.attr('class')).toContain('custom-move-start');
+        window.setTimeout.expect(1000).process();
+        expect(left.attr('class')).toContain('custom-move-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(first.attr('class')).not.toContain('custom-move-setup');
+      expect(first.attr('class')).not.toContain('custom-move-start');
+      expect(left.attr('class')).not.toContain('custom-move-setup');
+      expect(left.attr('class')).not.toContain('custom-move-start');
+      expect(right.attr('class')).not.toContain('custom-move-setup');
+      expect(right.attr('class')).not.toContain('custom-move-start');
+  }));
+
+  it('should catch and use the correct duration for animation',
+    inject(function($compile, $rootScope, $sniffer) {
+
+      element = $compile(
+        '<div><div ' +
+          'ng-repeat="item in items" ' +
+          'ng-animate="{enter: \'custom-enter\'}">' +
+          '{{ item }}' +
+        '</div></div>'
+      )($rootScope);
+
+      $rootScope.items = ['a','b'];
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var kids = element.children();
+      var first = jqLite(kids[0]);
+      var second = jqLite(kids[1]);
+      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssValue = '0.5s linear all';
+      first.css(cssProp, cssValue);
+      second.css(cssProp, cssValue);
+
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(500).process();
+        window.setTimeout.expect(500).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+  }));
+
 });
