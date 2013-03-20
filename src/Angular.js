@@ -247,6 +247,11 @@ function inherit(parent, extra) {
   return extend(new (extend(function() {}, {prototype:parent}))(), extra);
 }
 
+var START_SPACE = /^\s*/;
+var END_SPACE = /\s*$/;
+function stripWhitespace(str) {
+  return isString(str) ? str.replace(START_SPACE, '').replace(END_SPACE, '') : str;
+}
 
 /**
  * @ngdoc function
