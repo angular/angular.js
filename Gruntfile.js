@@ -45,17 +45,17 @@ module.exports = function(grunt) {
 
 
     test: {
-      jqlite: 'testacular-jqlite.conf.js',
-      jquery: 'testacular-jquery.conf.js',
-      modules: 'testacular-modules.conf.js',
+      jqlite: 'karma-jqlite.conf.js',
+      jquery: 'karma-jquery.conf.js',
+      modules: 'karma-modules.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
-      end2end: 'testacular-e2e.conf.js'
+      end2end: 'karma-e2e.conf.js'
     },
 
 
     autotest: {
-      jqlite: 'testacular-jqlite.conf.js',
-      jquery: 'testacular-jquery.conf.js'
+      jqlite: 'karma-jqlite.conf.js',
+      jquery: 'karma-jquery.conf.js'
     },
 
 
