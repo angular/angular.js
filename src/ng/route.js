@@ -486,7 +486,7 @@ function $RouteProvider(){
     }
 
     /**
-     * @returns interpolation of the redirect path with the parametrs
+     * @returns interpolation of the redirect path with the parameters
      */
     function interpolate(string, params) {
       var result = [];

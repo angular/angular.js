@@ -72,7 +72,7 @@ here:
 If an attribute with a binding is prefixed with `ngAttr` prefix (denormalized prefix: 'ng-attr-',
 'ng:attr-') then during the compilation the prefix will be removed and the binding will be applied
 to an unprefixed attribute. This allows binding to attributes that would otherwise be eagerly
-processed by browsers in their uncompilled form (e.g. `img[src]` or svg's `circle[cx]` attributes).
+processed by browsers in their uncompiled form (e.g. `img[src]` or svg's `circle[cx]` attributes).
 
 For example, considering template:
 
@@ -280,7 +280,7 @@ In most cases you will not need such fine control and so the above can be simpli
 different parts of this skeleton are explained in following sections. In this section we are
 interested only in some of this skeleton.
 
-The first step in simplyfing the code is to rely on the default values. Therefore the above can be
+The first step in simplifying the code is to rely on the default values. Therefore the above can be
 simplified as:
 
 <pre>

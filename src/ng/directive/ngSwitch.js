@@ -20,7 +20,7 @@
  * @scope
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
  * @paramDescription
- * On child elments add:
+ * On child elements add:
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
  *   case will be displayed. If the same match appears multiple times, all the
@@ -59,7 +59,7 @@
          select('selection').option('home');
          expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Home Span/);
         });
-        it('should select deafault', function() {
+        it('should select default', function() {
          select('selection').option('other');
          expect(element('.doc-example-live [ng-switch]').text()).toMatch(/default/);
         });

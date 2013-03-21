@@ -10,7 +10,7 @@
  * directive to avoid the undesirable flicker effect caused by the html template display.
  *
  * The directive can be applied to the `<body>` element, but typically a fine-grained application is
- * prefered in order to benefit from progressive rendering of the browser view.
+ * preferred in order to benefit from progressive rendering of the browser view.
  *
  * `ngCloak` works in cooperation with a css rule that is embedded within `angular.js` and
  *  `angular.min.js` files. Following is the css rule:
