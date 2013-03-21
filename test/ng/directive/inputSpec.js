@@ -309,7 +309,7 @@ describe('ngModel', function() {
 
 
 describe('input', function() {
-  var formElm, inputElm, scope, $compile, changeInputValueTo;
+  var formElm, inputElm, scope, $compile, $sniffer, $browser, changeInputValueTo;
 
   function compileInput(inputHtml) {
     inputElm = jqLite(inputHtml);
@@ -318,7 +318,9 @@ describe('input', function() {
     $compile(formElm)(scope);
   }
 
-  beforeEach(inject(function($injector, $sniffer) {
+  beforeEach(inject(function($injector, _$sniffer_, _$browser_) {
+    $sniffer = _$sniffer_;
+    $browser = _$browser_;
     $compile = $injector.get('$compile');
     scope = $injector.get('$rootScope');
 
@@ -383,6 +385,34 @@ describe('input', function() {
 
     changeInputValueTo('adam');
     expect(scope.name).toEqual('adam');
+  });
+
+  describe('"paste" and "cut" events', function() {
+    beforeEach(function() {
+      // Force browser to report a lack of an 'input' event
+      $sniffer.hasEvent = function(eventName) {
+        return eventName !== 'input';
+      };
+    });
+
+    it('should update the model on "paste" event', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+      inputElm.val('mark');
+      browserTrigger(inputElm, 'paste');
+      $browser.defer.flush();
+      expect(scope.name).toEqual('mark');
+    });
+
+    it('should update the model on "cut" event', function() {
+      compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+      inputElm.val('john');
+      browserTrigger(inputElm, 'cut');
+      $browser.defer.flush();
+      expect(scope.name).toEqual('john');
+    });
+
   });
 
 
