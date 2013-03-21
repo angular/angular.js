@@ -208,7 +208,7 @@ if (exports) {
     var files = [];
 
     [].splice.call(arguments, 0).forEach(function(file) {
-      if (file.match(/testacular/)) {
+      if (file.match(/karma/)) {
         files.push(file);
       } else {
         angularFiles[file].forEach(function(f) {
