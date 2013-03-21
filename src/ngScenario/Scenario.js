@@ -145,7 +145,7 @@ angular.scenario.setUpAndRun = function(config) {
 
 /**
  * Iterates through list with iterator function that must call the
- * continueFunction to continute iterating.
+ * continueFunction to continue iterating.
  *
  * @param {Array} list list to iterate over
  * @param {function()} iterator Callback function(value, continueFunction)
