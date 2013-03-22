@@ -231,7 +231,7 @@ In this example we will build a directive that displays the current time.
            }
 
            // listen on DOM destroy (removal) event, and cancel the next UI update
-           // to prevent updating time ofter the DOM element was removed.
+           // to prevent updating time after the DOM element was removed.
            element.bind('$destroy', function() {
              $timeout.cancel(timeoutId);
            });
