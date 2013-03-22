@@ -1237,7 +1237,7 @@ describe('$location', function() {
         expect($location.url()).toEqual('');
 
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-          throw Error('there is no before when user enters URL directly to browser');
+          $log.info('start', newUrl, oldUrl);
         });
         $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
           $log.info('after', newUrl, oldUrl);
@@ -1247,6 +1247,8 @@ describe('$location', function() {
         $browser.url('http://server/#/somePath');
         $browser.poll();
 
+        expect($log.info.logs.shift()).
+          toEqual(['start', 'http://server/#/somePath', 'http://server/']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/somePath', 'http://server/']);
       })
