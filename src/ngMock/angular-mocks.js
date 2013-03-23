@@ -244,7 +244,7 @@ angular.mock.$ExceptionHandlerProvider = function() {
    *   - `rethrow`: If any errors are are passed into the handler in tests, it typically
    *                means that there is a bug in the application or test, so this mock will
    *                make these tests fail.
-   *   - `log`: Sometimes it is desirable to test that an error is throw, for this case the `log` mode stores an
+   *   - `log`: Sometimes it is desirable to test that an error is thrown, for this case the `log` mode stores an
    *            array of errors in `$exceptionHandler.errors`, to allow later assertion of them.
    *            See {@link ngMock.$log#assertEmpty assertEmpty()} and
    *             {@link ngMock.$log#reset reset()}
@@ -1653,7 +1653,7 @@ window.jasmine && (function(window) {
    * @name angular.mock.module
    * @description
    *
-   * *NOTE*: This is function is also published on window for easy access.<br>
+   * *NOTE*: This function is also published on window for easy access.<br>
    * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
    *
    * This function registers a module configuration code. It collects the configuration information
@@ -1687,8 +1687,12 @@ window.jasmine && (function(window) {
    * @name angular.mock.inject
    * @description
    *
+<<<<<<< HEAD
    * *NOTE*: This is function is also published on window for easy access.<br>
    * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
+=======
+   * *NOTE*: This function is also published on window for easy access.<br>
+>>>>>>> 8dca056... docs(mocks): fix typos
    *
    * The inject function wraps a function into an injectable function. The inject() creates new
    * instance of {@link AUTO.$injector $injector} per test, which is then used for
