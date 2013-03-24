@@ -144,12 +144,11 @@ angularFiles = {
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
-    'build/angular-scenario.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngMobile/mobile.js',
-    'src/ngMobile/directive/ngClick.js',
+    'src/ngMobile/directive/*.js',
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
@@ -159,8 +158,7 @@ angularFiles = {
     'test/ngResource/*.js',
     'test/ngSanitize/*.js',
     'test/ngSanitize/directive/*.js',
-    'test/ngSanitize/filter/*.js',
-    'test/ngMobile/directive/*.js'
+    'test/ngSanitize/filter/*.js'
   ],
 
   'jstdPerf': [
