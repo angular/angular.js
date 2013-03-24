@@ -38,7 +38,7 @@ your application as follows:
 var myApp = angular.module('myApp',[]);
 
 myApp.controller('GreetingCtrl', ['$scope', function($scope) {
-  scope.greeting = 'Hola!';
+  $scope.greeting = 'Hola!';
 }]);
 
 Note also that we use the array notation to explicitly specify the dependency
