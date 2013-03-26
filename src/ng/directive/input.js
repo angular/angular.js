@@ -888,8 +888,8 @@ var VALID_CLASS = 'ng-valid',
  * </example>
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
-    function($scope, $exceptionHandler, $attr, $element, $parse) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$rootScope',
+    function($scope, $exceptionHandler, $attr, $element, $parse, $rootScope) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -937,6 +937,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
+  function broadcastStatus(){
+    if(this.$dirty)
+      invalidCount > 0 ? $rootScope.$broadcast('modelInvalid',this) : $rootScope.$broadcast('modelValid',this); 
+  };
   /**
    * @ngdoc function
    * @name ng.directive:ngModel.NgModelController#$setValidity
@@ -1026,6 +1030,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     forEach(this.$parsers, function(fn) {
       value = fn(value);
     });
+    broadcastStatus.call(this);
 
     if (this.$modelValue !== value) {
       this.$modelValue = value;
@@ -1056,6 +1061,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       while(idx--) {
         value = formatters[idx](value);
       }
+      broadcastStatus.call(ctrl);
 
       if (ctrl.$viewValue !== value) {
         ctrl.$viewValue = value;
