@@ -178,25 +178,23 @@ describe('ngInclude', function() {
   it('should discard pending xhr callbacks if a new template is requested before the current ' +
       'finished loading', inject(function($rootScope, $compile, $httpBackend) {
     element = jqLite("<ng:include src='templateUrl'></ng:include>");
-    var log = [];
+    var log = {};
 
     $rootScope.templateUrl = 'myUrl1';
     $rootScope.logger = function(msg) {
-      log.push(msg);
+      log[msg] = true;
     }
     $compile(element)($rootScope);
-    expect(log.join('; ')).toEqual('');
+    expect(log).toEqual({});
 
     $httpBackend.expect('GET', 'myUrl1').respond('<div>{{logger("url1")}}</div>');
     $rootScope.$digest();
-    expect(log.join('; ')).toEqual('');
+    expect(log).toEqual({});
     $rootScope.templateUrl = 'myUrl2';
     $httpBackend.expect('GET', 'myUrl2').respond('<div>{{logger("url2")}}</div>');
-    $rootScope.$digest();
     $httpBackend.flush(); // now that we have two requests pending, flush!
 
-    expect(log.join('; ')).toEqual('url2; url2'); // it's here twice because we go through at
-                                                  // least two digest cycles
+    expect(log).toEqual({ url2 : true });
   }));
 
 
