@@ -213,7 +213,7 @@ services, and filters. The factory methods are registered with the module, and t
 of declaring factories is:
 
 <pre>
-  angualar.module('myModule', []).
+  angular.module('myModule', []).
     config(['depProvider', function(depProvider){
       ...
     }]).
