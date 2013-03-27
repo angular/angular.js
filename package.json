@@ -14,5 +14,11 @@
     "shelljs": "0.1.2",
     "karma": "0.8.4",
     "yaml-js": "0.0.5"
-  }
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
+    }
+  ]
 }
