@@ -14,6 +14,10 @@
  *
  * The service guarantees that the identity of the `$routeParams` object will remain unchanged
  * (but its properties will likely change) even when a route change occurs.
+ * 
+ * Note that routeParams are only generated when an ng-view will be rendered. In
+ * the absence of a view, routeParams may be unpopulated. You will be able to
+ * retrieve the extracted parameters from $route.current.params instead.
  *
  * @example
  * <pre>
