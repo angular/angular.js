@@ -178,8 +178,9 @@ have a look at an example:
 <body ng-controller="MainCtrl">
  <p>Good {{timeOfDay}}, {{name}}!</p>
  <div ng-controller="ChildCtrl">
-   <p>Good {{timeOfDay}}, {{name}}!</p>
-   <p ng-controller="BabyCtrl">Good {{timeOfDay}}, {{name}}!</p>
+  <p>Good {{timeOfDay}}, {{name}}!</p>
+  <p ng-controller="BabyCtrl">Good {{timeOfDay}}, {{name}}!</p>
+ </div>
 </body>
 
 function MainCtrl($scope) {
