@@ -98,7 +98,7 @@ To configure the `$location` service, retrieve the
 
 - **hashPrefix(prefix)**: {string}<br />
   prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
-  default: `'!'`
+  default: `""`
 
 ### Example configuration
 <pre>
