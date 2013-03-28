@@ -180,6 +180,7 @@ have a look at an example:
  <div ng-controller="ChildCtrl">
    <p>Good {{timeOfDay}}, {{name}}!</p>
    <p ng-controller="BabyCtrl">Good {{timeOfDay}}, {{name}}!</p>
+ </div>
 </body>
 
 function MainCtrl($scope) {
