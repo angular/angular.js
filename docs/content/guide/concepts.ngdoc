@@ -101,7 +101,7 @@ implementing custom event callbacks, or when working with a third-party library 
      re-rendering the DOM to reflect any changes.
 
 
-Here is the explanation of how the `Hello wold` example achieves the data-binding effect when the
+Here is the explanation of how the `Hello world` example achieves the data-binding effect when the
 user enters text into the text field.
 
   1. During the compilation phase:
