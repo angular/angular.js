@@ -101,7 +101,7 @@ implementing custom event callbacks, or when working with a third-party library 
      re-rendering the DOM to reflect any changes.
 
 
-Here is the explanation of how the `Hello wold` example achieves the data-binding effect when the
+Here is the explanation of how the `Hello world` example achieves the data-binding effect when the
 user enters text into the text field.
 
   1. During the compilation phase:
@@ -232,7 +232,7 @@ The separation of the controller and the view is important because:
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-model.png">
 
-The model is the data which is used merged with the template to produce the view. To be able to
+The model is the data which is merged with the template to produce the view. To be able to
 render the model into the view, the model has to be able to be referenced from the scope. Unlike many
 other frameworks Angular makes no restrictions or requirements on the model. There are no classes
 to inherit from or special accessor methods for accessing or changing the model. The model can be
