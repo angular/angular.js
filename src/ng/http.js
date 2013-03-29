@@ -216,7 +216,7 @@ function $HttpProvider() {
      *
      * @description
      * The `$http` service is a core Angular service that facilitates communication with the remote
-     * HTTP servers via browser's {@link https://developer.mozilla.org/en/xmlhttprequest
+     * HTTP servers via the browser's {@link https://developer.mozilla.org/en/xmlhttprequest
      * XMLHttpRequest} object or via {@link http://en.wikipedia.org/wiki/JSONP JSONP}.
      *
      * For unit testing applications that use `$http` service, see
@@ -226,13 +226,13 @@ function $HttpProvider() {
      * $resource} service.
      *
      * The $http API is based on the {@link ng.$q deferred/promise APIs} exposed by
-     * the $q service. While for simple usage patterns this doesn't matter much, for advanced usage,
-     * it is important to familiarize yourself with these apis and guarantees they provide.
+     * the $q service. While for simple usage patterns this doesn't matter much, for advanced usage
+     * it is important to familiarize yourself with these APIs and the guarantees they provide.
      *
      *
      * # General usage
      * The `$http` service is a function which takes a single argument — a configuration object —
-     * that is used to generate an http request and returns  a {@link ng.$q promise}
+     * that is used to generate an HTTP request and returns  a {@link ng.$q promise}
      * with two $http specific methods: `success` and `error`.
      *
      * <pre>
@@ -247,21 +247,21 @@ function $HttpProvider() {
      *     });
      * </pre>
      *
-     * Since the returned value of calling the $http function is a Promise object, you can also use
+     * Since the returned value of calling the $http function is a `promise`, you can also use
      * the `then` method to register callbacks, and these callbacks will receive a single argument –
-     * an object representing the response. See the api signature and type info below for more
+     * an object representing the response. See the API signature and type info below for more
      * details.
      *
-     * A response status code that falls in the [200, 300) range is considered a success status and
+     * A response status code between 200 and 299 is considered a success status and
      * will result in the success callback being called. Note that if the response is a redirect,
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
      *
      * # Shortcut methods
      *
-     * Since all invocation of the $http service require definition of the http method and url and
-     * POST and PUT requests require response body/data to be provided as well, shortcut methods
-     * were created to simplify using the api:
+     * Since all invocations of the $http service require passing in an HTTP method and URL, and
+     * POST/PUT requests require request data to be provided as well, shortcut methods
+     * were created:
      *
      * <pre>
      *   $http.get('/someUrl').success(successCallback);
@@ -280,24 +280,24 @@ function $HttpProvider() {
      *
      * # Setting HTTP Headers
      *
-     * The $http service will automatically add certain http headers to all requests. These defaults
+     * The $http service will automatically add certain HTTP headers to all requests. These defaults
      * can be fully configured by accessing the `$httpProvider.defaults.headers` configuration
      * object, which currently contains this default configuration:
      *
      * - `$httpProvider.defaults.headers.common` (headers that are common for all requests):
      *   - `Accept: application/json, text/plain, * / *`
-     * - `$httpProvider.defaults.headers.post`: (header defaults for HTTP POST requests)
+     * - `$httpProvider.defaults.headers.post`: (header defaults for POST requests)
      *   - `Content-Type: application/json`
-     * - `$httpProvider.defaults.headers.put` (header defaults for HTTP PUT requests)
+     * - `$httpProvider.defaults.headers.put` (header defaults for PUT requests)
      *   - `Content-Type: application/json`
      *
-     * To add or overwrite these defaults, simply add or remove a property from this configuration
+     * To add or overwrite these defaults, simply add or remove a property from these configuration
      * objects. To add headers for an HTTP method other than POST or PUT, simply add a new object
-     * with name equal to the lower-cased http method name, e.g.
+     * with the lowercased HTTP method name as the key, e.g.
      * `$httpProvider.defaults.headers.get['My-Header']='value'`.
      *
-     * Additionally, the defaults can be set at runtime via the `$http.defaults` object in a similar
-     * fashion as described above.
+     * Additionally, the defaults can be set at runtime via the `$http.defaults` object in the same
+     * fashion.
      *
      *
      * # Transforming Requests and Responses
@@ -307,36 +307,36 @@ function $HttpProvider() {
      *
      * Request transformations:
      *
-     * - if the `data` property of the request config object contains an object, serialize it into
+     * - If the `data` property of the request configuration object contains an object, serialize it into
      *   JSON format.
      *
      * Response transformations:
      *
-     *  - if XSRF prefix is detected, strip it (see Security Considerations section below)
-     *  - if json response is detected, deserialize it using a JSON parser
+     *  - If XSRF prefix is detected, strip it (see Security Considerations section below).
+     *  - If JSON response is detected, deserialize it using a JSON parser.
      *
      * To globally augment or override the default transforms, modify the `$httpProvider.defaults.transformRequest` and
-     * `$httpProvider.defaults.transformResponse` properties of the `$httpProvider`. These properties are by default an
+     * `$httpProvider.defaults.transformResponse` properties. These properties are by default an
      * array of transform functions, which allows you to `push` or `unshift` a new transformation function into the
      * transformation chain. You can also decide to completely override any default transformations by assigning your
      * transformation functions to these properties directly without the array wrapper.
      *
      * Similarly, to locally override the request/response transforms, augment the `transformRequest` and/or
-     * `transformResponse` properties of the config object passed into `$http`.
+     * `transformResponse` properties of the configuration object passed into `$http`.
      *
      *
      * # Caching
      *
-     * To enable caching set the configuration property `cache` to `true`. When the cache is
+     * To enable caching, set the configuration property `cache` to `true`. When the cache is
      * enabled, `$http` stores the response from the server in local cache. Next time the
      * response is served from the cache without sending a request to the server.
      *
      * Note that even if the response is served from cache, delivery of the data is asynchronous in
      * the same way that real requests are.
      *
-     * If there are multiple GET requests for the same url that should be cached using the same
+     * If there are multiple GET requests for the same URL that should be cached using the same
      * cache, but the cache is not populated yet, only one request to the server will be made and
-     * the remaining requests will be fulfilled using the response for the first request.
+     * the remaining requests will be fulfilled using the response from the first request.
      *
      * A custom default cache built with $cacheFactory can be provided in $http.defaults.cache.
      * To skip it, set configuration property `cache` to `false`.
@@ -347,14 +347,14 @@ function $HttpProvider() {
      * Before you start creating interceptors, be sure to understand the
      * {@link ng.$q $q and deferred/promise APIs}.
      *
-     * For purposes of global error handling, authentication or any kind of synchronous or
+     * For purposes of global error handling, authentication, or any kind of synchronous or
      * asynchronous pre-processing of request or postprocessing of responses, it is desirable to be
      * able to intercept requests before they are handed to the server and
-     * responses  before they are handed over to the application code that
+     * responses before they are handed over to the application code that
      * initiated these requests. The interceptors leverage the {@link ng.$q
-     * promise APIs} to fulfil this need for both synchronous and asynchronous pre-processing.
+     * promise APIs} to fulfill this need for both synchronous and asynchronous pre-processing.
      *
-     * The interceptors are service factories that are registered with the $httpProvider by
+     * The interceptors are service factories that are registered with the `$httpProvider` by
      * adding them to the `$httpProvider.interceptors` array. The factory is called and
      * injected with dependencies (if specified) and returns the interceptor.
      *
@@ -474,7 +474,7 @@ function $HttpProvider() {
      * When designing web applications, consider security threats from:
      *
      * - {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-     *   JSON Vulnerability}
+     *   JSON vulnerability}
      * - {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}
      *
      * Both server and the client must cooperate in order to eliminate these threats. Angular comes
@@ -484,8 +484,8 @@ function $HttpProvider() {
      * ## JSON Vulnerability Protection
      *
      * A {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-     * JSON Vulnerability} allows third party web-site to turn your JSON resource URL into
-     * {@link http://en.wikipedia.org/wiki/JSON#JSONP JSONP} request under some conditions. To
+     * JSON vulnerability} allows third party website to turn your JSON resource URL into
+     * {@link http://en.wikipedia.org/wiki/JSONP JSONP} request under some conditions. To
      * counter this your server can prefix all JSON requests with following string `")]}',\n"`.
      * Angular will automatically strip the prefix before processing it as JSON.
      *
@@ -506,7 +506,7 @@ function $HttpProvider() {
      * ## Cross Site Request Forgery (XSRF) Protection
      *
      * {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF} is a technique by which
-     * an unauthorized site can gain your user's private data. Angular provides following mechanism
+     * an unauthorized site can gain your user's private data. Angular provides a mechanism
      * to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie
      * (by default, `XSRF-TOKEN`) and sets it as an HTTP header (`X-XSRF-TOKEN`). Since only
      * JavaScript that runs on your domain could read the cookie, your server can be assured that
@@ -514,12 +514,12 @@ function $HttpProvider() {
      * cross-domain requests.
      *
      * To take advantage of this, your server needs to set a token in a JavaScript readable session
-     * cookie called `XSRF-TOKEN` on first HTTP GET request. On subsequent non-GET requests the
+     * cookie called `XSRF-TOKEN` on the first HTTP GET request. On subsequent XHR requests the
      * server can verify that the cookie matches `X-XSRF-TOKEN` HTTP header, and therefore be sure
-     * that only JavaScript running on your domain could have read the token. The token must be
-     * unique for each user and must be verifiable by the server (to prevent the JavaScript making
+     * that only JavaScript running on your domain could have sent the request. The token must be
+     * unique for each user and must be verifiable by the server (to prevent the JavaScript from making
      * up its own tokens). We recommend that the token is a digest of your site's authentication
-     * cookie with {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
+     * cookie with a {@link https://en.wikipedia.org/wiki/Salt_(cryptography) salt} for added security.
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
      * properties of either $httpProvider.defaults, or the per-request config object.
@@ -736,7 +736,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `GET` request
+     * Shortcut method to perform `GET` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
@@ -749,7 +749,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `DELETE` request
+     * Shortcut method to perform `DELETE` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
@@ -762,7 +762,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `HEAD` request
+     * Shortcut method to perform `HEAD` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
@@ -775,7 +775,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `JSONP` request
+     * Shortcut method to perform `JSONP` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request.
      *                     Should contain `JSON_CALLBACK` string.
@@ -790,7 +790,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `POST` request
+     * Shortcut method to perform `POST` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
@@ -804,7 +804,7 @@ function $HttpProvider() {
      * @methodOf ng.$http
      *
      * @description
-     * Shortcut method to perform `PUT` request
+     * Shortcut method to perform `PUT` request.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
@@ -856,7 +856,7 @@ function $HttpProvider() {
 
 
     /**
-     * Makes the request
+     * Makes the request.
      *
      * !!! ACCESSES CLOSURE VARS:
      * $httpBackend, defaults, $log, $rootScope, defaultCache, $http.pendingRequests
