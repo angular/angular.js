@@ -83,6 +83,12 @@ describe('angular', function() {
       expect(copy([{key:null}])).toEqual([{key:null}]);
     });
 
+    it("should copy an object with properities and arrays", function() {
+      var src = {name:"value", "array1": [ {"p1": "v1"}, {"p2": "v2"} ]};
+      var dst = copy(src);
+      expect(dst).toEqual(src);
+    });
+
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).toThrow("Can't copy Window or Scope");
     }));
