@@ -8,6 +8,8 @@ var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
 var NEW_LINE = /\n\r?/;
 var globalID = 0;
+var fs = require('fs');
+var fspath = require('path');
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -123,7 +125,22 @@ Doc.prototype = {
           content.replace(/<file\s+name="([^"]*)"\s*>([\s\S]*?)<\/file>/gmi, function(_, name, content) {
             example.addSource(name, content);
           });
+          content.replace(/<file\s+src="([^"]+)"\s*\/?>/gmi, function(_, file) {
+            if(fspath.existsSync(file)) {
+              var content = fs.readFileSync(file, 'utf8');
+              if(content && content.length > 0) {
+                var name = fspath.basename(file);
+                example.addSource(name, content);
+              }
+            }
+            return '';
+          })
           return placeholder(example.toHtml());
+        }).
+        replace(/(?:\*\s+)?<file.+?src="([^"]+)"\s*\/?>/i, function(_, file) {
+          if(fspath.existsSync(file)) {
+            return fs.readFileSync(file, 'utf8');
+          }
         }).
         replace(/^<doc:example(\s+[^>]*)?>([\s\S]*)<\/doc:example>/mi, function(_, attrs, content) {
           var html, script, scenario,
