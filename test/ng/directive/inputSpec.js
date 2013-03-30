@@ -476,6 +476,18 @@ describe('input', function() {
     });
 
 
+    it('should validate in-lined pattern with modifiers', function() {
+      compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
+      scope.$digest();
+
+      changeInputValueTo('aB');
+      expect(inputElm).toBeValid();
+
+      changeInputValueTo('xx');
+      expect(inputElm).toBeInvalid();
+    });
+
+
     it('should validate pattern from scope', function() {
       compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
       scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
