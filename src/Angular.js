@@ -877,6 +877,17 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 }
 
 
+var sanitizeUrl = function() {
+  var a = document.createElement('a');
+
+  return function(url) {
+    a.setAttribute('href', url);
+    // href property always returns normalized absolute url, so we can match against that
+    return a.href;
+  };
+}();
+
+
 /**
  * @ngdoc directive
  * @name ng.directive:ngApp
