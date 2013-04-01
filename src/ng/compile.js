@@ -242,9 +242,9 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document',
+            '$controller', '$rootScope',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document) {
+             $controller,   $rootScope) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -289,10 +289,7 @@ function $CompileProvider($provide) {
 
         // sanitize a[href] values
         if (nodeName_(this.$$element[0]) === 'A' && key === 'href') {
-          urlSanitizationNode.setAttribute('href', value);
-
-          // href property always returns normalized absolute url, so we can match against that
-          normalizedVal = urlSanitizationNode.href;
+          normalizedVal = sanitizeUrl(value);
           if (!normalizedVal.match(urlSanitizationWhitelist)) {
             this[key] = value = 'unsafe:' + normalizedVal;
           }
@@ -342,8 +339,7 @@ function $CompileProvider($provide) {
       }
     };
 
-    var urlSanitizationNode = $document[0].createElement('a'),
-        startSymbol = $interpolate.startSymbol(),
+    var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
         denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
             ? identity
