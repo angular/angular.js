@@ -8,6 +8,8 @@ var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
 var NEW_LINE = /\n\r?/;
 var globalID = 0;
+var fs = require('fs');
+var fspath = require('path');
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -113,6 +115,19 @@ Doc.prototype = {
       return id;
     }
 
+    function extractInlineDocCode(text, tag) {
+      if(tag == 'all') {
+        //use a greedy operator to match the last </docs> tag
+        regex = /\/\/<docs.*?>([.\s\S]+)\/\/<\/docs>/im;
+      }
+      else {
+        //use a non-greedy operator to match the next </docs> tag
+        regex = new RegExp("\/\/<docs\\s*tag=\"" + tag + "\".*?>([.\\s\\S]+?)\/\/<\/docs>","im");
+      }
+      var matches = regex.exec(text.toString());
+      return matches && matches.length > 1 ? matches[1] : "";
+    }
+
     parts.forEach(function(text, i) {
       parts[i] = (text || '').
         replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?>([\s\S]*?)<\/example>/gmi, function(_, module, deps, content) {
@@ -123,7 +138,29 @@ Doc.prototype = {
           content.replace(/<file\s+name="([^"]*)"\s*>([\s\S]*?)<\/file>/gmi, function(_, name, content) {
             example.addSource(name, content);
           });
+          content.replace(/<file\s+src="([^"]+)"(?:\s+tag="([^"]+)")?(?:\s+name="([^"]+)")?\s*\/?>/gmi, function(_, file, tag, name) {
+            if(fspath.existsSync(file)) {
+              var content = fs.readFileSync(file, 'utf8');
+              if(content && content.length > 0) {
+                if(tag && tag.length > 0) {
+                  content = extractInlineDocCode(content, tag);
+                }
+                name = name && name.length > 0 ? name : fspath.basename(file);
+                example.addSource(name, content);
+              }
+            }
+            return '';
+          })
           return placeholder(example.toHtml());
+        }).
+        replace(/(?:\*\s+)?<file.+?src="([^"]+)"(?:\s+tag="([^"]+)")?\s*\/?>/i, function(_, file, tag) {
+          if(fspath.existsSync(file)) {
+            var content = fs.readFileSync(file, 'utf8');
+            if(tag && tag.length > 0) {
+              content = extractInlineDocCode(content, tag);
+            }
+            return content;
+          }
         }).
         replace(/^<doc:example(\s+[^>]*)?>([\s\S]*)<\/doc:example>/mi, function(_, attrs, content) {
           var html, script, scenario,
