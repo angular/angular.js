@@ -130,8 +130,13 @@ Doc.prototype = {
 
     parts.forEach(function(text, i) {
       parts[i] = (text || '').
-        replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?>([\s\S]*?)<\/example>/gmi, function(_, module, deps, content) {
+        replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?(\s+animations="true")?>([\s\S]*?)<\/example>/gmi,
+          function(_, module, deps, animations, content) {
+
           var example = new Example(self.scenarios);
+          if(animations) {
+            example.enableAnimations();
+          }
 
           example.setModule(module);
           example.addDeps(deps);
@@ -437,9 +442,11 @@ Doc.prototype = {
       var restrict = self.restrict || 'AC';
 
       if (restrict.match(/E/)) {
+        dom.html('<p>');
         dom.text('This directive can be used as custom element, but we aware of ');
         dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
         dom.text('.');
+        dom.html('</p>');
       }
 
       if (self.usage) {
