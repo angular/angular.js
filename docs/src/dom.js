@@ -89,7 +89,9 @@ DOM.prototype = {
           replace(/-+/gm, '-').
           replace(/-*$/gm, '');
       anchor = {'id': id};
-      className = {'class': id.toLowerCase().replace(/[._]/mg, '-')};
+      var classNameValue = id.toLowerCase().replace(/[._]/mg, '-');
+      if(classNameValue == 'hide') classNameValue = '';
+      className = {'class': classNameValue};
     }
     this.tag('h' + this.headingDepth, anchor, heading);
     if (content instanceof Array) {

@@ -16,6 +16,13 @@
  *   * `$middle` – `{boolean}` – true if the repeated element is between the first and last in the iterator.
  *   * `$last` – `{boolean}` – true if the repeated element is last in the iterator.
  *
+ * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**,
+ * **leave** and **move** effects.
+ *
+ * @animations
+ * enter - when a new item is added to the list or when an item is revealed after a filter
+ * leave - when an item is removed from the list or when an item is filtered out
+ * move - when an adjacent item is filtered out causing a reorder or when the item contents are reordered
  *
  * @element ANY
  * @scope
@@ -75,13 +82,15 @@
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ['$parse', function($parse) {
+var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
+  var NG_REMOVED = '$$NG_REMOVED';
   return {
     transclude: 'element',
     priority: 1000,
     terminal: true,
     compile: function(element, attr, linker) {
       return function($scope, $element, $attr){
+        var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
           trackByExp, hashExpFn, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
@@ -130,6 +139,7 @@ var ngRepeatDirective = ['$parse', function($parse) {
         $scope.$watchCollection(rhs, function ngRepeatAction(collection){
           var index, length,
               cursor = $element,     // current position of the node
+              nextCursor,
               // Same as lastBlockMap but it has the current state. It will become the
               // lastBlockMap on the next iteration.
               nextBlockMap = {},
@@ -184,7 +194,8 @@ var ngRepeatDirective = ['$parse', function($parse) {
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
-              block.element.remove();
+              animate.leave(block.element);
+              block.element[0][NG_REMOVED] = true;
               block.scope.$destroy();
             }
           }
@@ -200,12 +211,17 @@ var ngRepeatDirective = ['$parse', function($parse) {
               // associated scope/element
               childScope = block.scope;
 
-              if (block.element == cursor) {
+              nextCursor = cursor[0];
+              do {
+                nextCursor = nextCursor.nextSibling;
+              } while(nextCursor && nextCursor[NG_REMOVED]);
+
+              if (block.element[0] == nextCursor) {
                 // do nothing
                 cursor = block.element;
               } else {
                 // existing item which got moved
-                cursor.after(block.element);
+                animate.move(block.element, null, cursor);
                 cursor = block.element;
               }
             } else {
@@ -221,8 +237,8 @@ var ngRepeatDirective = ['$parse', function($parse) {
             childScope.$middle = !(childScope.$first || childScope.$last);
 
             if (!block.element) {
-              linker(childScope, function(clone){
-                cursor.after(clone);
+              linker(childScope, function(clone) {
+                animate.enter(clone, null, cursor);
                 cursor = clone;
                 block.scope = childScope;
                 block.element = clone;
@@ -236,3 +252,4 @@ var ngRepeatDirective = ['$parse', function($parse) {
     }
   };
 }];
+

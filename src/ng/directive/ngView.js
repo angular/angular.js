@@ -12,6 +12,13 @@
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
+ * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
+ * and **leave** effects.
+ *
+ * @animations
+ * enter - happens just after the ngView contents are changed (when the new view DOM element is inserted into the DOM)
+ * leave - happens just after the current ngView contents change and just before the former contents are removed from the DOM
+ *
  * @scope
  * @example
     <example module="ngView">
@@ -105,15 +112,16 @@
  * Emitted every time the ngView content is reloaded.
  */
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
-                       '$controller',
+                       '$controller', '$animator',
                function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
-                        $controller) {
+                        $controller,  $animator) {
   return {
     restrict: 'ECA',
     terminal: true,
     link: function(scope, element, attr) {
       var lastScope,
-          onloadExp = attr.onload || '';
+          onloadExp = attr.onload || '',
+          animate = $animator(scope, attr);
 
       scope.$on('$routeChangeSuccess', update);
       update();
@@ -127,7 +135,7 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
       }
 
       function clearContent() {
-        element.html('');
+        animate.leave(element.contents(), element);
         destroyLastScope();
       }
 
@@ -136,8 +144,8 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
             template = locals && locals.$template;
 
         if (template) {
-          element.html(template);
-          destroyLastScope();
+          clearContent();
+          animate.enter(jqLite('<div></div>').html(template).contents(), element);
 
           var link = $compile(element.contents()),
               current = $route.current,
