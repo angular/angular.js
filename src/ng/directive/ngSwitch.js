@@ -47,40 +47,77 @@
  *
  *
  * @example
-    <doc:example>
-      <doc:source>
-        <script>
-          function Ctrl($scope) {
-            $scope.items = ['settings', 'home', 'other'];
-            $scope.selection = $scope.items[0];
-          }
-        </script>
-        <div ng-controller="Ctrl">
-          <select ng-model="selection" ng-options="item for item in items">
-          </select>
-          <tt>selection={{selection}}</tt>
-          <hr/>
-          <div ng-switch on="selection" >
+  <example animations="true">
+    <file name="index.html">
+      <div ng-controller="Ctrl">
+        <select ng-model="selection" ng-options="item for item in items">
+        </select>
+        <tt>selection={{selection}}</tt>
+        <hr/>
+        <div
+          class="example-animate-container"
+          ng-switch on="selection"
+          ng-animate="{enter: 'example-enter', leave: 'example-leave'}">
             <div ng-switch-when="settings">Settings Div</div>
-            <span ng-switch-when="home">Home Span</span>
-            <span ng-switch-default>default</span>
-          </div>
+            <div ng-switch-when="home">Home Span</div>
+            <div ng-switch-default>default</div>
         </div>
-      </doc:source>
-      <doc:scenario>
-        it('should start in settings', function() {
-         expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Settings Div/);
-        });
-        it('should change to home', function() {
-         select('selection').option('home');
-         expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Home Span/);
-        });
-        it('should select default', function() {
-         select('selection').option('other');
-         expect(element('.doc-example-live [ng-switch]').text()).toMatch(/default/);
-        });
-      </doc:scenario>
-    </doc:example>
+      </div>
+    </file>
+    <file name="script.js">
+      function Ctrl($scope) {
+        $scope.items = ['settings', 'home', 'other'];
+        $scope.selection = $scope.items[0];
+      }
+    </file>
+    <file name="animations.css">
+      .example-leave-setup, .example-enter-setup {
+        -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+      }
+
+      .example-animate-container > * {
+        display:block;
+        padding:10px;
+      }
+
+      .example-enter-setup {
+        top:-50px;
+      }
+      .example-enter-start.example-enter-start {
+        top:0;
+      }
+
+      .example-leave-setup {
+        top:0;
+      }
+      .example-leave-start.example-leave-start {
+        top:50px;
+      }
+    </file>
+    <file name="scenario.js">
+      it('should start in settings', function() {
+        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Settings Div/);
+      });
+      it('should change to home', function() {
+        select('selection').option('home');
+        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Home Span/);
+      });
+      it('should select default', function() {
+        select('selection').option('other');
+        expect(element('.doc-example-live [ng-switch]').text()).toMatch(/default/);
+      });
+    </file>
+  </example>
  */
 var ngSwitchDirective = ['$animator', function($animator) {
   return {

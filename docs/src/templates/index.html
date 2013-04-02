@@ -34,6 +34,7 @@
       addTag('link', {rel: 'stylesheet', href: 'css/bootstrap.min.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/font-awesome.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
       if (jQuery) addTag('script', {src: debug ? 'js/jquery.js' : 'js/jquery.min.js'});
       addTag('script', {src: path('angular.js')}, sync);
       addTag('script', {src: path('angular-resource.js') }, sync);
@@ -231,21 +232,21 @@
             <li class="nav-header section" ng-show="module.directives">
               <a href="{{URL.directive}}" class="guide">directive</a>
             </li>
-            <li ng-repeat="page in module.directives" ng-class="navClass(page)">
+            <li ng-repeat="page in module.directives" ng-class="navClass(page)" ng-animate="'slide'">
               <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
             </li>
 
             <li class="nav-header section" ng-show="module.filters">
               <a href="{{URL.filter}}" class="guide">filter</a>
             </li>
-            <li ng-repeat="page in module.filters" ng-class="navClass(page)">
+            <li ng-repeat="page in module.filters" ng-class="navClass(page)" ng-animate="'slide'">
               <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
             </li>
 
             <li class="nav-header section" ng-show="module.services">
               <a href="{{URL.service}}" class="guide">service</a>
             </li>
-            <li ng-repeat="service in module.services" ng-class="navClass(service.instance, service.provider)">
+            <li ng-repeat="service in module.services" ng-animate="'slide'" ng-class="navClass(service.instance, service.provider)">
               <a ng-show="service.provider" class="pull-right" href="{{service.provider.url}}" tabindex="2"><i class="icon-cog"></i></a>
               <a href="{{service.instance.url}}" tabindex="2">{{service.name}}</a>
             </li>
@@ -253,7 +254,7 @@
             <li class="nav-header section" ng-show="module.types">
               <a href="{{URL.type}}" class="guide">Types</a>
             </li>
-            <li ng-repeat="page in module.types" ng-class="navClass(page)">
+            <li ng-repeat="page in module.types" ng-class="navClass(page)" ng-animate="'slide'">
               <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
             </li>
 
@@ -281,7 +282,7 @@
 
         <div id="loading" ng-show="loading">Loading...</div>
 
-        <div ng-hide="loading" ng-include src="currentPage.partialUrl" onload="afterPartialLoaded()" autoscroll class="content"></div>
+        <div ng-hide="loading" ng-include src="currentPage.partialUrl" onload="afterPartialLoaded()" autoscroll class="content" ng-animate="{enter: 'slide-reveal'}" ></div>
 
         <div id="disqus" class="disqus">
           <h2>Discussion</h2>

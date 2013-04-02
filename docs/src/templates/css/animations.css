@@ -1,0 +1,73 @@
+.reveal-setup {
+  -webkit-transition:1s linear all;
+  -moz-transition:1s linear all;
+  -ms-transition:1s linear all;
+  -o-transition:1s linear all;
+  transition:1s linear all;
+
+  opacity:0;
+}
+.reveal-setup.reveal-start {
+  opacity:1;
+}
+
+.slide-reveal-setup {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -ms-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+  opacity:0.5;
+}
+.slide-reveal-setup.slide-reveal-start {
+  opacity:1;
+}
+
+.slide-enter-setup {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -ms-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+
+  position:relative;
+  left:10px;
+  opacity:0;
+}
+.slide-enter-setup.slide-enter-start {
+  left:0;
+  opacity:1;
+}
+
+.slide-leave-setup {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -ms-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+
+  opacity:1;
+}
+.slide-leave-setup.slide-leave-start {
+  opacity:0;
+}
+
+.example-animate-container {
+  position:relative;
+  background:white;
+  border:1px solid black;
+  height:40px;
+  overflow:hidden;
+}
+
+.example-animate-container > div {
+  padding:1em;
+}
+
+.animator-container.animations-off * {
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: color 0 ease-in; /* opera is special :) */
+  transition: none;
+}
