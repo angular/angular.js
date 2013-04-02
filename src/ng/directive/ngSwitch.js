@@ -10,12 +10,13 @@
  * ngSwitchWhen or ngSwitchDefault directives will be preserved at the location
  * as specified in the template
  *
- * @usageContent
- * <ANY ng-switch-when="matchValue1">...</ANY>
+ * @usage
+ * <ANY ng-switch="expression">
+ *   <ANY ng-switch-when="matchValue1">...</ANY>
  *   <ANY ng-switch-when="matchValue2">...</ANY>
  *   ...
  *   <ANY ng-switch-default>...</ANY>
- *   <ANY>...</ANY>
+ * </ANY>
  *
  * @scope
  * @param {*} ngSwitch|on expression to match against <tt>ng-switch-when</tt>.
