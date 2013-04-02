@@ -1114,4 +1114,30 @@ describe('Scope', function() {
       });
     });
   });
+
+  describe("doc examples", function() {
+
+    it("should properly fire off watch listeners upon scope changes", inject(function($rootScope) {
+//<docs tag="docs1">
+      var scope = $rootScope.$new();
+      scope.salutation = 'Hello';
+      scope.name = 'World';
+
+      expect(scope.greeting).toEqual(undefined);
+
+      scope.$watch('name', function() {
+       scope.greeting = scope.salutation + ' ' + scope.name + '!';
+      }); // initialize the watch
+
+      expect(scope.greeting).toEqual(undefined);
+      scope.name = 'Misko';
+      // still old value, since watches have not been called yet
+      expect(scope.greeting).toEqual(undefined);
+
+      scope.$digest(); // fire all  the watches
+      expect(scope.greeting).toEqual('Hello Misko!');
+//</docs>
+    }));
+
+  });
 });
