@@ -60,11 +60,11 @@
 
        Search: <input ng-model="searchText">
        <table id="searchTextResults">
-         <tr><th>Name</th><th>Phone</th><tr>
+         <tr><th>Name</th><th>Phone</th></tr>
          <tr ng-repeat="friend in friends | filter:searchText">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
-         <tr>
+         </tr>
        </table>
        <hr>
        Any: <input ng-model="search.$"> <br>
@@ -72,11 +72,11 @@
        Phone only <input ng-model="search.phone"å><br>
        Equality <input type="checkbox" ng-model="strict"><br>
        <table id="searchObjResults">
-         <tr><th>Name</th><th>Phone</th><tr>
+         <tr><th>Name</th><th>Phone</th></tr>
          <tr ng-repeat="friend in friends | filter:search:strict">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
-         <tr>
+         </tr>
        </table>
      </doc:source>
      <doc:scenario>
