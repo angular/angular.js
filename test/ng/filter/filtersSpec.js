@@ -333,18 +333,18 @@ describe('filters', function() {
     });
 
     it('should support different degrees of subsecond precision', function () {
-      var format = 'yyyy-MM-dd';
+      var format = 'yyyy-MM-dd ss';
 
       var localDay = new Date(Date.UTC(2003, 9-1, 10, 13, 2, 3, 123)).getDate();
 
-      expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.123456Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.12345Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.1234Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.123Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-' + localDay);
-      expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay);
+      expect(date('2003-09-10T13:02:03.12345678Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1234567Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.123456Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.12345Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1234Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.123Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.12Z', format)).toEqual('2003-09-' + localDay + ' 03');
+      expect(date('2003-09-10T13:02:03.1Z', format)).toEqual('2003-09-' + localDay + ' 03');
     });
   });
 });
