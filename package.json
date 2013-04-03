@@ -11,7 +11,7 @@
     "grunt-contrib-connect": "0.1.2",
     "grunt-contrib-compress": "0.4.1",
     "shelljs": "0.1.2",
-    "karma": "~0.8",
+    "karma": "0.8.4",
     "yaml-js": "0.0.5"
   }
 }
