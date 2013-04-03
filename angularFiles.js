@@ -104,7 +104,6 @@ angularFiles = {
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
-    'test/ngAnimate/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/*.js',
