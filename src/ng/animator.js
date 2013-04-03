@@ -283,7 +283,7 @@ var $AnimatorProvider = function() {
     }
 
     function show(element) {
-      element.css('display', 'block');
+      element.css('display', '');
     }
 
     function hide(element) {

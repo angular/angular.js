@@ -50,7 +50,7 @@ describe("$animator", function() {
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
-      expect(element.css('display')).toBe('block');
+      expect(element[0].style.display).toBe('');
     }));
 
     it("should animate the hide animation event", inject(function($animator, $compile, $rootScope) {
@@ -125,9 +125,9 @@ describe("$animator", function() {
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
-      expect(element.css('display')).toBe('block');
+      expect(element[0].style.display).toBe('');
       window.setTimeout.expect(1).process();
-      expect(element.css('display')).toBe('block');
+      expect(element[0].style.display).toBe('');
     }));
 
     it("should animate the hide animation event", inject(function($animator, $rootScope) {
