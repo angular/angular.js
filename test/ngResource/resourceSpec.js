@@ -205,6 +205,16 @@ describe("resource", function() {
   });
 
 
+  it('should not throw TypeError on null default params', function() {
+    $httpBackend.expect('GET', '/Path?').respond('{}');
+    var R = $resource('/Path', {param: null}, {get: {method: 'GET'}});
+
+    expect(function() {
+      R.get({});
+    }).not.toThrow();
+  });
+
+
   it('should handle multiple params with same name', function() {
     var R = $resource('/:id/:id');
 
