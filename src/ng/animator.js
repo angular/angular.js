@@ -65,7 +65,7 @@
  * /&#42;
  *  Keep in mind that you want to combine both CSS
  *  classes together to avoid any CSS-specificity
- *  conflicts 
+ *  conflicts
  * &#42;/
  * .animate-enter-setup.animate-enter-start {
  *  /&#42; The animation code itself &#42;/
@@ -118,7 +118,7 @@
  * make sure your animations remember to fire off the done function once the animations are complete.
  *
  * @param {expression} ngAnimate Used to configure the DOM manipulation animations.
- * 
+ *
  */
 
 /**
@@ -268,7 +268,6 @@ var $AnimatorProvider = function() {
 
                 $window.setTimeout(done, duration * 1000);
               } else {
-                dump(3)
                 done();
               }
             }
