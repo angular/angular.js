@@ -94,7 +94,7 @@ _Note: This release also contains all bug fixes available in [1.0.6](#1.0.6)._
 
 
 <a name="1.0.6"></a>
-# 1.1.3 universal-irreversibility (2013-04-04)
+# 1.0.6 universal-irreversibility (2013-04-04)
 
 
 ## Bug Fixes
