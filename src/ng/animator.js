@@ -240,7 +240,7 @@ var $AnimatorProvider = function() {
             beforeFn(element, parent, after);
             if (element.length == 0) return done();
 
-            var memento = (noop || polyfillSetup)(element);
+            var memento = (polyfillSetup || noop)(element);
 
             // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
             // keep at 1 for animation dom rerender
