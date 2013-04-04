@@ -1,3 +1,137 @@
+<a name="1.1.4"></a>
+# 1.1.4 quantum-manipulation (2013-04-03)
+
+_Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
+out and please give us feedback._
+
+_Note: This release also contains all bug fixes available in [1.0.6](#1.0.6)._
+
+
+## Features
+
+- **$compile:**
+  - allow directives to modify interpolated attributes
+  ([fe8d893b](https://github.com/angular/angular.js/commit/fe8d893b839e9b14e3e55a3a0523cc1e6355bdd5))
+  - support for dynamic template generation
+  ([eb53423a](https://github.com/angular/angular.js/commit/eb53423a41136fcda0c5e711f2d104952080354b))
+  - add attribute binding support via ngAttr*
+  ([cf17c6af](https://github.com/angular/angular.js/commit/cf17c6af475eace31cf52944afd8e10d3afcf6c0),
+   [#1050](https://github.com/angular/angular.js/issues/1050), [#1925](https://github.com/angular/angular.js/issues/1925))
+  - `'=?'` makes `'='` binding optional
+  ([ac899d0d](https://github.com/angular/angular.js/commit/ac899d0da59157fa1c6429510791b6c3103d9401),
+   [#909](https://github.com/angular/angular.js/issues/909), [#1435](https://github.com/angular/angular.js/issues/1435))
+
+- **$q:** `$q.all()` now accepts hash
+  ([e27bb6eb](https://github.com/angular/angular.js/commit/e27bb6eb132a68665c8fca3f5a216b19b1129ba6))
+
+- **$resource:** ability to override url in resource actions
+  ([60f1f099](https://github.com/angular/angular.js/commit/60f1f099fc7e5197808cd6acb7407cdc40f50a3f))
+
+- **$route:** add `caseInsensitiveMatch` option for url matching
+  ([5e18a15f](https://github.com/angular/angular.js/commit/5e18a15fb01d2e81adda68503754289fa9655082))
+
+- **http:**
+  - support request/response promise chaining
+  ([4ae46814](https://github.com/angular/angular.js/commit/4ae46814ff4e7c0bbcdbbefc0a97277283a84065))
+  - set custom default cache in $http.defaults.cache
+  ([99f3b70b](https://github.com/angular/angular.js/commit/99f3b70b2d316f5bb39e21249e752c29f49c90ab))
+
+
+- **JQLite:** `ready()` now supports `document.readyState=='complete'`
+  ([753fc9e5](https://github.com/angular/angular.js/commit/753fc9e58d5e554d4930548558efecc283557eeb))
+
+- **Scenario:** autodisable animations when running e2e tests
+  ([fec4ef38](https://github.com/angular/angular.js/commit/fec4ef38815340e8e5a6b65fd6c08f5c74e701d8))
+
+- **Scope:** add `$watchCollection` method for observing collections
+  ([5eb96855](https://github.com/angular/angular.js/commit/5eb968553a1130461ab8704535691e00eb154ac2))
+
+- **angular.bootstrap:** support deferred bootstrap (mainly useful for tools like test runners and Batarang)
+  ([603fe0d1](https://github.com/angular/angular.js/commit/603fe0d19608ffe1915d8bc23bf412912e7ee1ac))
+
+- **ngMobile:** add ngMobile module with mobile-specific ngClick
+  ([707c65d5](https://github.com/angular/angular.js/commit/707c65d5a228b44ab3aea2fad95516fe6c57169a))
+
+- **Directives:**
+  - **ngKeypress:** add ngKeypress directive for handling keypress event
+  ([f20646bc](https://github.com/angular/angular.js/commit/f20646bce5f0c914992a78fc2556bda136c27ac9))
+  - **ngSwitch:** Preserve the order of the elements not in the ng-switch
+  ([e88d6179](https://github.com/angular/angular.js/commit/e88d6179c3a6a137e75fa09de906fc83c6515db2),
+   [#1074](https://github.com/angular/angular.js/issues/1074))
+  - **ngAnimate:** add support for animation
+  ([0b6f1ce5](https://github.com/angular/angular.js/commit/0b6f1ce5f89f47f9302ff1e8cd8f4b92f837c413))
+  - **ngRepeat:** add support for custom tracking of items
+  ([61f2767c](https://github.com/angular/angular.js/commit/61f2767ce65562257599649d9eaf9da08f321655))
+
+
+## Breaking Changes
+
+- **$route:** due to [6f71e809](https://github.com/angular/angular.js/commit/6f71e809141bf89501e55c378921d6e7ec9512bc),
+  in $routeChangeStart event, nextRoute.$route property is gone. Use the nextRoute object itself instead of nextRoute.$route.
+
+- **ngRepeat:** due to [61f2767c](https://github.com/angular/angular.js/commit/61f2767ce65562257599649d9eaf9da08f321655), it is now considered an error to have two identical items (identified by the new "track by" expression) in a collection that is fed into the repeater. This behavior was previously tolerated.
+
+- **ngSwitch:** due to [e88d6179](https://github.com/angular/angular.js/commit/e88d6179c3a6a137e75fa09de906fc83c6515db2),
+  elements not in the ng-switch were rendered after the ng-switch elements.  Now they are rendered in-place.
+
+  Templates with ngSwitch directives and nested non-ngSwitchWhen elements should be updated to preserve render order.
+
+  For example: The following was previously rendered with `<li>1</li>` after `<li>2</li>`:
+
+        <ul ng-switch="select">
+          <li>1</li>
+          <li ng-switch-when="option">2</li>
+        </ul>
+
+  To keep the old behaviour, use:
+
+        <ul ng-switch="select">
+          <li ng-switch-when="1">2</li>
+          <li>1</li>
+        </ul>
+
+
+
+<a name="1.0.6"></a>
+# 1.1.3 universal-irreversibility (2013-04-04)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - compile replace directives in external template
+  ([398691be](https://github.com/angular/angular.js/commit/398691beb3fc40a481afa258d181de06ec0d153c),
+   [#1859](https://github.com/angular/angular.js/issues/1859))
+  - whitelist file:// in url sanitization
+  ([7b236b29](https://github.com/angular/angular.js/commit/7b236b29aa3a6f6dfe722815e0a2667d9b7f0899))
+  - handle elements with no childNodes property
+  ([bec614fd](https://github.com/angular/angular.js/commit/bec614fd90c48c3921a4b659912008574e553b40))
+- **$http:** don't encode URL query substring "null" to "+"
+  ([86d191ed](https://github.com/angular/angular.js/commit/86d191ed4aea9015adc71b852223475c5c762c34))
+- **$httpBackend:** prevent DOM err due to dereferencing .responseText
+  ([509ec745](https://github.com/angular/angular.js/commit/509ec745fdbb54b54672fbf8595a4958c16f2b53),
+   [#1922](https://github.com/angular/angular.js/issues/1922))
+- **$location:**
+  - parse FirefoxOS packaged app urls
+  ([3a81dd8b](https://github.com/angular/angular.js/commit/3a81dd8bddbade81c4c9f734813458d0d969a4bf),
+   [#2112](https://github.com/angular/angular.js/issues/2112))
+  - correctly rewrite html5 url to hashbang url
+  ([9befe370](https://github.com/angular/angular.js/commit/9befe37014141fbfdf0cded318d28322fc058c13))
+- **$route:** make nextRoute.$route private
+  ([6f71e809](https://github.com/angular/angular.js/commit/6f71e809141bf89501e55c378921d6e7ec9512bc),
+   [#1907](https://github.com/angular/angular.js/issues/1907))
+- **mocks:** prevent NPE when module definition outside of it.
+  ([5c735eb4](https://github.com/angular/angular.js/commit/5c735eb4ab07144a62949472ed388cb185099201))
+- **dateFilter:** correct timezone date filter for 1/2 hour offsets
+  ([1c1cd4fd](https://github.com/angular/angular.js/commit/1c1cd4fdf6b6d7511c7b8dc61b8042011dc54830))
+
+
+
+
+
+
+
 <a name="1.1.3"></a>
 # 1.1.3 radioactive-gargle (2013-02-20)
 
