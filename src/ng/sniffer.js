@@ -33,7 +33,7 @@ function $SnifferProvider() {
           break;
         }
       }
-      transitions = !!(vendorPrefix + 'Transition' in bodyStyle);
+      transitions = !!(('transition' in bodyStyle) || (vendorPrefix + 'Transition' in bodyStyle));
     }
 
 

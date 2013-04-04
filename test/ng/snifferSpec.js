@@ -132,5 +132,54 @@ describe('$sniffer', function() {
       });
     });
 
+    it('should be false when there is no transition style', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(false);
+      });
+    });
+
+    it('should be true with vendor-specific transitions', function() {
+      module(function($provide) {
+        var transitionStyle = '1s linear all';
+        var doc = {
+          body : {
+            style : {
+              WebkitTransition : transitionStyle,
+              MozTransition : transitionStyle,
+              OTransition : transitionStyle
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(true);
+      });
+    });
+
+    it('should be true with w3c-style transitions', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              transition : '1s linear all'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(true);
+      });
+    });
+
   });
 });
