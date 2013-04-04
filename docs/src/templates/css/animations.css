@@ -1,7 +1,6 @@
 .reveal-setup {
   -webkit-transition:1s linear all;
   -moz-transition:1s linear all;
-  -ms-transition:1s linear all;
   -o-transition:1s linear all;
   transition:1s linear all;
 
@@ -11,45 +10,55 @@
   opacity:1;
 }
 
+.nav-list li {
+  height:20px;
+  overflow:hidden;
+}
+
 .slide-reveal-setup {
   -webkit-transition:0.5s linear all;
   -moz-transition:0.5s linear all;
-  -ms-transition:0.5s linear all;
   -o-transition:0.5s linear all;
   transition:0.5s linear all;
   opacity:0.5;
-}
-.slide-reveal-setup.slide-reveal-start {
-  opacity:1;
-}
-
-.slide-enter-setup {
-  -webkit-transition:0.5s linear all;
-  -moz-transition:0.5s linear all;
-  -ms-transition:0.5s linear all;
-  -o-transition:0.5s linear all;
-  transition:0.5s linear all;
 
   position:relative;
-  left:10px;
   opacity:0;
+  top:10px;
 }
-.slide-enter-setup.slide-enter-start {
-  left:0;
+.slide-reveal-setup.slide-reveal-start {
+  top:0;
   opacity:1;
 }
 
-.slide-leave-setup {
-  -webkit-transition:0.5s linear all;
-  -moz-transition:0.5s linear all;
-  -ms-transition:0.5s linear all;
-  -o-transition:0.5s linear all;
-  transition:0.5s linear all;
+.expand-enter-setup {
+  -webkit-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -moz-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -o-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+
+  opacity:0;
+  line-height:0;
+  height:0!important;
+}
+.expand-enter-setup.expand-enter-start {
+  opacity:1;
+  line-height:20px;
+  height:20px!important;
+}
+
+.expand-leave-setup {
+  -webkit-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -moz-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -o-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
 
   opacity:1;
+  height:20px;
 }
-.slide-leave-setup.slide-leave-start {
+.expand-leave-setup.expand-leave-start {
   opacity:0;
+  height:0;
 }
 
 .example-animate-container {
@@ -67,7 +76,6 @@
 .animator-container.animations-off * {
   -webkit-transition: none;
   -moz-transition: none;
-  -ms-transition: none;
   -o-transition: color 0 ease-in; /* opera is special :) */
   transition: none;
 }
