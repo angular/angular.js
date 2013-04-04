@@ -9,7 +9,7 @@
  * @description
  * The `ngAnimate` directive works as an attribute that is attached alongside pre-existing directives.
  * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place while
- * without burduning the directive which uses the animation with animation details. The built dn directives
+ * without burduning the directive which uses the animation with animation details. The built in directives
  * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView` already accept `ngAnimate` directive.
  * Custom directives can take advantage of animation through {@link ng.$animator $animator service}.
  *
