@@ -56,7 +56,12 @@ img.AngularJS-small {
 }
 
 .form-search > ul.nav > li.last {
-  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+
+.form-search > ul.nav > li.last + li.api-list-item {
+  margin-top:-1em;
+  padding-bottom: 1em;
 }
 
 .form-search .well {
