@@ -76,6 +76,17 @@ describe("$animator", function() {
             }
           }
         });
+       $animationProvider.register('setup-memo', function() {
+          return {
+            setup: function(element) {
+              return "memento";
+            },
+            start: function(element, done, memento) {
+              element.text(memento);
+              done();
+            }
+          }
+        });
       })
       inject(function($animator, $compile, $rootScope) {
         element = $compile('<div></div>')($rootScope);
@@ -184,6 +195,16 @@ describe("$animator", function() {
       window.setTimeout.expect(1).process();
       expect(child.attr('class')).toContain('custom-leave-start');
       window.setTimeout.expect(0).process();
+    }));
+
+    it("should run polyfillSetup and return the memento", inject(function($animator, $rootScope) {
+      animator = $animator($rootScope, {
+        ngAnimate : '{show: \'setup-memo\'}'
+      });
+      expect(element.text()).toEqual('');
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      expect(element.text()).toBe('memento');
     }));
   });
 
