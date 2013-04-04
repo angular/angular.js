@@ -20,12 +20,14 @@
  *
  * # Installation
  * To use $resource make sure you have included the `angular-resource.js` that comes in Angular 
- * package. You also can find this stuff in {@link http://code.angularjs.org/ code.angularjs.org}.
+ * package. You can also find this file on Google CDN, bower as well as at
+ * {@link http://code.angularjs.org/ code.angularjs.org}.
+ *
  * Finally load the module in your application:
  *
  *        angular.module('app', ['ngResource']);
  *
- * and you ready to get started!
+ * and you are ready to get started!
  *
  * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
