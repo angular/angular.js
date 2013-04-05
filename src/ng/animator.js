@@ -8,8 +8,8 @@
  *
  * @description
  * The `ngAnimate` directive works as an attribute that is attached alongside pre-existing directives.
- * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place while
- * without burduning the directive which uses the animation with animation details. The built in directives
+ * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place
+ * without burdening the directive which uses the animation with animation details. The built in directives
  * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView` already accept `ngAnimate` directive.
  * Custom directives can take advantage of animation through {@link ng.$animator $animator service}.
  *
@@ -46,7 +46,7 @@
  *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
- * This is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
+ * It is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
  * All that is required is the following CSS code:
  *
  * <pre>
