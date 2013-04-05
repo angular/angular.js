@@ -9,7 +9,7 @@
  * A tap is a brief, down-and-up touch without much motion.
  *
  * @element ANY
- * @param {expression} ngClick {@link guide/expression Expression} to evaluate
+ * @param {expression} ng-click {@link guide/expression Expression} to evaluate
  * upon tap. (Event object is available as `$event`)
  *
  * @example
