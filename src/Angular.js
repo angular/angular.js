@@ -892,7 +892,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  *
  * @description
  *
- * Use this directive to auto-bootstrap on application. Only
+ * Use this directive to auto-bootstrap an application. Only
  * one directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
  * at the root of the page.
