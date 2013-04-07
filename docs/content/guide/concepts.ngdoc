@@ -143,8 +143,8 @@ provides the execution context for expressions. The scopes are nested in a hiera
 which closely follow the DOM structure. (See individual directive documentation to see which
 directives cause a creation of new scopes.)
 
-The following example demonstrates how `name` {@link guide/expression expression} will evaluate
-into different value depending on which scope it is evaluated in. The example is followed by
+The following example demonstrates how the `name` {@link guide/expression expression} will evaluate
+into a different value depending on which scope it is evaluated in. The example is followed by
 a diagram depicting the scope boundaries.
 
 <div class="clear">
