@@ -96,7 +96,7 @@ function annotate(fn) {
  * # Injection Function Annotation
  *
  * JavaScript does not have annotations, and annotations are needed for dependency injection. The
- * following ways are all valid way of annotating function with injection arguments and are equivalent.
+ * following are all valid ways of annotating function with injection arguments and are equivalent.
  *
  * <pre>
  *   // inferred (only works if code not minified/obfuscated)
