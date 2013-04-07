@@ -61,7 +61,7 @@ This is how we get the ball rolling (refer to the diagram and example below):
 
 The diagram and the example below describe how Angular interacts with the browser's event loop.
 
-  1. The browser's event-loop waits for an event to arrive. An event is a user interactions, timer event,
+  1. The browser's event-loop waits for an event to arrive. An event is a user interaction, timer event,
      or network event (response from a server).
   2. The event's callback gets executed. This enters the JavaScript context. The callback can
       modify the DOM structure.
