@@ -102,8 +102,8 @@
 var ngShowDirective = ['$animator', function($animator) {
   return function(scope, element, attr) {
     var animate = $animator(scope, attr);
-    scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-      animate[toBoolean(value) ? 'show' : 'hide'](element);
+    scope.$watch(attr.ngShow, function ngShowWatchAction(value, oldValue){
+      animate[toBoolean(value) ? 'show' : 'hide'](element, value === oldValue);
     });
   };
 }];
@@ -211,8 +211,8 @@ var ngShowDirective = ['$animator', function($animator) {
 var ngHideDirective = ['$animator', function($animator) {
   return function(scope, element, attr) {
     var animate = $animator(scope, attr);
-    scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-      animate[toBoolean(value) ? 'hide' : 'show'](element);
+    scope.$watch(attr.ngHide, function ngHideWatchAction(value, oldValue){
+      animate[toBoolean(value) ? 'hide' : 'show'](element, value === oldValue);
     });
   };
 }];
