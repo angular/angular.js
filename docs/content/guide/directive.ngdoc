@@ -250,7 +250,12 @@ In this example we will build a directive that displays the current time.
 
 # Writing directives (long version)
 
-An example skeleton of the directive is shown here, for the complete list see below.
+There are different ways to declare a directive. The difference resides in the return 
+value of the factory function. You can either return a Directive Definition Object
+(see below) that defines the directive properties, or just the postLink function
+of such an object (all other properties will have the default values).
+
+Here's an example directive declared with a Directive Definition Object:
 
 <pre>
   var myModule = angular.module(...);
@@ -276,12 +281,11 @@ An example skeleton of the directive is shown here, for the complete list see be
   });
 </pre>
 
-In most cases you will not need such fine control and so the above can be simplified. All of the
-different parts of this skeleton are explained in following sections. In this section we are
-interested only in some of this skeleton.
+In most cases you will not need such fine control and so the above can be simplified. You can still
+return a Directive Definition Object, but only setting the 'compile' function property of the Object,
+and rely on the default values for other properties. 
 
-The first step in simplifying the code is to rely on the default values. Therefore the above can be
-simplified as:
+Therefore the above can be simplified as:
 
 <pre>
   var myModule = angular.module(...);
@@ -296,8 +300,10 @@ simplified as:
   });
 </pre>
 
-Most directives concern themselves only with instances, not with template transformations, allowing
-further simplification:
+Finally, most directives concern themselves only with instances, not with template transformations, allowing
+further simplification.
+
+Here we only define the postLink function:
 
 <pre>
   var myModule = angular.module(...);
