@@ -790,6 +790,37 @@ describe('ngMock', function() {
     });
 
 
+    it('should return an abort function', function() {
+      hb.when('GET', '/url').respond(200, '', {});
+
+      var abortFn = hb('GET', '/url', null, callback);
+      expect(abortFn()).toBe(true);
+      expect(abortFn()).toBe(true);
+
+      expect(function() {
+        hb.flush();
+      }).toThrow('No pending request to flush !');
+      expect(callback).toHaveBeenCalledOnceWith(-1, null, null);
+      hb.verifyNoOutstandingRequest();
+    });
+
+
+    it('should not abort a completed request', function() {
+      hb.when('GET', '/url').respond(200, '', {});
+
+      var abortFn = hb('GET', '/url', null, callback);
+      hb.flush();
+      expect(abortFn()).toBe(false);
+      expect(abortFn()).toBe(false);
+
+      expect(function() {
+        hb.flush();
+      }).toThrow('No pending request to flush !');
+      expect(callback).toHaveBeenCalledOnceWith(200, '', '');
+      hb.verifyNoOutstandingRequest();
+    });
+
+
     it('should respond undefined when JSONP method', function() {
       hb.when('JSONP', '/url1').respond(200);
       hb.expect('JSONP', '/url2').respond(200);

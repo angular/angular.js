@@ -572,6 +572,15 @@ describe('$http', function() {
 
         $exceptionHandler.errors = [];
       }));
+
+
+      it('should not $apply if already in an $apply phase', function() {
+        $rootScope.$apply(function() {
+          $httpBackend.expect('GET').respond(200);
+          var promise = $http({method: 'GET', url: '/some'});
+          expect(promise.abort()).toBe(true);
+        });
+      });
     });
 
 
@@ -978,4 +987,79 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
+
+
+  it('should abort pending requests', inject(function($httpBackend, $http) {
+    $httpBackend.expect('GET', 'some.html').respond(200);
+    var promise = $http({method: 'GET', url: 'some.html'});
+    var successFn = jasmine.createSpy();
+    promise.success(successFn);
+    promise.error(function(data, status, headers) {
+      expect(data).toBeNull();
+      expect(status).toBe(0);
+      expect(headers()).toEqual({});
+      callback();
+    });
+    var aborted = promise.abort();
+    expect(function() {
+      $httpBackend.flush();
+    }).toThrow('No pending request to flush !');
+    expect(aborted).toBe(true);
+    expect(successFn).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
+  it('should not abort resolved requests', inject(function($httpBackend, $http) {
+    $httpBackend.expect('GET', 'some.html').respond(200);
+    var promise = $http({method: 'GET', url: 'some.html'});
+    var errorFn = jasmine.createSpy();
+    promise.error(errorFn);
+    promise.success(function(data, status, headers) {
+      expect(data).toBeUndefined();
+      expect(status).toBe(200);
+      expect(headers()).toEqual({});
+      callback();
+    });
+    $httpBackend.flush();
+    var aborted = promise.abort();
+    expect(function() {
+      $httpBackend.flush();
+    }).toThrow('No pending request to flush !');
+    expect(aborted).toBe(false);
+    expect(errorFn).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
+  it('should reject aborted cache requests', inject(function($cacheFactory, $http, $rootScope) {
+    var successFn = jasmine.createSpy('successFn');
+    var rejectFn = jasmine.createSpy('rejectFn');
+    var cache = $cacheFactory();
+    cache.put('/alreadyCachedURL', 'content');
+    var promise = $http.get('/alreadyCachedURL', {cache: cache});
+    promise.then(successFn, rejectFn);
+    expect(promise.abort()).toBe(true);
+    $rootScope.$digest();
+    expect(successFn).not.toHaveBeenCalled();
+    expect(rejectFn).toHaveBeenCalledOnce();
+    $rootScope.$digest();
+    expect(promise.abort()).toBe(true);
+  }));
+
+
+  it('should not reject resolved cache requests', inject(function($cacheFactory, $http, $rootScope) {
+    var successFn = jasmine.createSpy('successFn');
+    var rejectFn = jasmine.createSpy('rejectFn');
+    var cache = $cacheFactory();
+    cache.put('/alreadyCachedURL', 'content');
+    var promise = $http.get('/alreadyCachedURL', {cache: cache});
+    promise.then(successFn, rejectFn);
+    $rootScope.$digest();
+    expect(promise.abort()).toBe(false);
+    expect(successFn).toHaveBeenCalledOnce();
+    expect(rejectFn).not.toHaveBeenCalled();
+    $rootScope.$digest();
+    expect(promise.abort()).toBe(false);
+  }));
 });
