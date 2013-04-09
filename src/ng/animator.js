@@ -121,21 +121,24 @@
  *
  */
 
-/**
- * @ngdoc function
- * @name ng.$animator
- *
- * @description
- * The $animator service provides the DOM manipulation API which is decorated with animations.
- *
- * @param {Scope} scope the scope for the ng-animate.
- * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
- *        passed into the linking function of the directive using the `$animator`.)
- * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
- */
 var $AnimatorProvider = function() {
-  this.$get = ['$animation', '$window', '$sniffer', function($animation, $window, $sniffer) {
-    return function(scope, attrs) {
+  var globalAnimationEnabled = true;
+
+  this.$get = ['$animation', '$window', '$sniffer', '$rootScope', function($animation, $window, $sniffer, $rootScope) {
+  /**
+   * @ngdoc function
+   * @name ng.$animator
+   * @function
+   *
+   * @description
+   * The $animator.create service provides the DOM manipulation API which is decorated with animations.
+   *
+   * @param {Scope} scope the scope for the ng-animate.
+   * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
+   *        passed into the linking function of the directive using the `$animator`.)
+   * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
+   */
+   var AnimatorService = function(scope, attrs) {
       var ngAnimateAttr = attrs.ngAnimate;
       var animator = {};
 
@@ -230,7 +233,7 @@ var $AnimatorProvider = function() {
           var startClass = className + '-start';
 
           return function(element, parent, after) {
-            if (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
+            if (!globalAnimationEnabled || !$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
               return;
@@ -280,32 +283,54 @@ var $AnimatorProvider = function() {
           }
         }
       }
-    }
 
-    function show(element) {
-      element.css('display', '');
-    }
-
-    function hide(element) {
-      element.css('display', 'none');
-    }
-
-    function insert(element, parent, after) {
-      if (after) {
-        after.after(element);
-      } else {
-        parent.append(element);
+      function show(element) {
+        element.css('display', '');
       }
-    }
 
-    function remove(element) {
-      element.remove();
-    }
+      function hide(element) {
+        element.css('display', 'none');
+      }
 
-    function move(element, parent, after) {
-      // Do not remove element before insert. Removing will cause data associated with the
-      // element to be dropped. Insert will implicitly do the remove.
-      insert(element, parent, after);
-    }
+      function insert(element, parent, after) {
+        if (after) {
+          after.after(element);
+        } else {
+          parent.append(element);
+        }
+      }
+
+      function remove(element) {
+        element.remove();
+      }
+
+      function move(element, parent, after) {
+        // Do not remove element before insert. Removing will cause data associated with the
+        // element to be dropped. Insert will implicitly do the remove.
+        insert(element, parent, after);
+      }
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#enabled
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @param {Boolean=} If provided then set the animation on or off.
+     * @return {Boolean} Current animation state.
+     *
+     * @description
+     * Globally enables/disables animations.
+     *
+    */
+    AnimatorService.enabled = function(value) {
+      if (arguments.length) {
+        globalAnimationEnabled = !!value;
+      }
+      return globalAnimationEnabled;
+    };
+
+    return AnimatorService;
   }];
 };

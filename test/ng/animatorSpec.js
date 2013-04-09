@@ -8,6 +8,20 @@ describe("$animator", function() {
     dealoc(element);
   });
 
+  describe("enable / disable", function() {
+
+    it("should disable and enable the animations", inject(function($animator) {
+      expect($animator.enabled()).toBe(true);
+
+      expect($animator.enabled(0)).toBe(false);
+      expect($animator.enabled()).toBe(false);
+
+      expect($animator.enabled(1)).toBe(true);
+      expect($animator.enabled()).toBe(true);
+    }));
+
+  });
+
   describe("without animation", function() {
     var window, animator;
 
@@ -46,20 +60,27 @@ describe("$animator", function() {
       expect(element.text()).toBe('21');
     }));
 
-    it("should animate the show animation event", inject(function($animator, $compile, $rootScope) {
+    it("should animate the show animation event", inject(function() {
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
       expect(element[0].style.display).toBe('');
     }));
 
-    it("should animate the hide animation event", inject(function($animator, $compile, $rootScope) {
+    it("should animate the hide animation event", inject(function() {
       element.css('display','block');
       expect(element.css('display')).toBe('block');
       animator.hide(element);
       expect(element.css('display')).toBe('none');
     }));
 
+    it("should still perform DOM operations even if animations are disabled", inject(function($animator) {
+      $animator.enabled(false);
+      element.css('display','block');
+      expect(element.css('display')).toBe('block');
+      animator.hide(element);
+      expect(element.css('display')).toBe('none');
+    }));
   });
 
   describe("with polyfill", function() {
@@ -205,6 +226,63 @@ describe("$animator", function() {
       animator.show(element);
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
+    }));
+
+    it("should not run if animations are disabled", inject(function($animator, $rootScope) {
+      $animator.enabled(false);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{show: \'setup-memo\'}'
+      });
+      element.text('123');
+      expect(element.text()).toBe('123');
+      animator.show(element);
+      expect(element.text()).toBe('123');
+
+      $animator.enabled(true);
+
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      expect(element.text()).toBe('memento');
+    }));
+  });
+
+  describe("with css3", function() {
+    var window, animator, prefix, vendorPrefix;
+
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        return function($sniffer) {
+          vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+        };
+      })
+    });
+
+    it("should skip animations if disabled and run when enabled",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+      $animator.enabled(false);
+      element = $compile('<div style="transition: 1s linear all">1</div>')($rootScope);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'inline-show\'}'
+      });
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+      animator.show(element);
+      expect(element[0].style.display).toBe('');
+
+      $animator.enabled(true);
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+
+      animator.show(element);
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(1000).process();
+      }
+      expect(element[0].style.display).toBe('');
     }));
   });
 
