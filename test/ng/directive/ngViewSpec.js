@@ -486,7 +486,26 @@ describe('ngView', function() {
 });
 
 describe('ngAnimate', function() {
-  var element, window;
+  var window;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
+
+
 
   beforeEach(module(function($provide, $routeProvider) {
     $provide.value('$window', window = angular.mock.createMockWindow());
@@ -496,13 +515,9 @@ describe('ngAnimate', function() {
     }
   }));
 
-  afterEach(function(){
-    dealoc(element);
-  });
-
   it('should fire off the enter animation + add and remove the css classes',
       inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
-        element = $compile('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>')($rootScope);
+        element = $compile(html('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>'))($rootScope);
 
         $location.path('/foo');
         $rootScope.$digest();
@@ -530,7 +545,7 @@ describe('ngAnimate', function() {
   it('should fire off the leave animation + add and remove the css classes',
       inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
     $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-    element = $compile('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>')($rootScope);
+    element = $compile(html('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>'))($rootScope);
 
     $location.path('/foo');
     $rootScope.$digest();
@@ -561,12 +576,12 @@ describe('ngAnimate', function() {
   it('should catch and use the correct duration for animations',
       inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
     $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-    element = $compile(
+    element = $compile(html(
         '<div ' +
             'ng-view ' +
-            'ng-animate="{enter: \'customEnter\'}">' +
+            'ng-animate="{enter: \'customEnter\', animateFirst: false}">' +
             '</div>'
-    )($rootScope);
+    ))($rootScope);
 
     $location.path('/foo');
     $rootScope.$digest();

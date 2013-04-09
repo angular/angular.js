@@ -40,6 +40,10 @@
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
  *
+ * Keep in mind that, by default, **all** initial animations will be skipped until the first digest cycle has fully
+ * passed. This helps prevent any unexpected animations from occurring while the application or directive is initializing. To
+ * override this behavior, you may pass "animateFirst: true" into the ngAnimate attribute expression.
+ *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
  * This is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
@@ -140,6 +144,30 @@ var $AnimatorProvider = function() {
    */
    var AnimatorService = function(scope, attrs) {
       var ngAnimateAttr = attrs.ngAnimate;
+
+      // avoid running animations on start
+      var animationEnabled = false;
+      var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
+
+      if (!animationEnabled) {
+        if(isObject(ngAnimateValue) && ngAnimateValue['animateFirst']) {
+          animationEnabled = true;
+        } else {
+          var enableSubsequent = function() {
+            removeWatch();
+            scope.$evalAsync(function() {
+              animationEnabled = true;
+            });
+          };
+          var removeWatch = noop;
+
+          if (scope.$$phase) {
+            enableSubsequent();
+          } else {
+            removeWatch = scope.$watch(enableSubsequent);
+          }
+        }
+      }
       var animator = {};
 
       /**
@@ -214,7 +242,6 @@ var $AnimatorProvider = function() {
       return animator;
 
       function animateActionFactory(type, beforeFn, afterFn) {
-        var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
         var className = ngAnimateAttr
             ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
             : '';
@@ -233,7 +260,8 @@ var $AnimatorProvider = function() {
           var startClass = className + '-start';
 
           return function(element, parent, after) {
-            if (!globalAnimationEnabled || !$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
+            if (!animationEnabled || !globalAnimationEnabled ||
+                (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart)) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
               return;
@@ -268,7 +296,6 @@ var $AnimatorProvider = function() {
                       0,
                       duration);
                 });
-
                 $window.setTimeout(done, duration * 1000);
               } else {
                 done();

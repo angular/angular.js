@@ -513,7 +513,24 @@ describe('ngRepeat', function() {
 });
 
 describe('ngRepeat ngAnimate', function() {
-  var element, vendorPrefix, window;
+  var vendorPrefix, window;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
 
   beforeEach(module(function($animationProvider, $provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
@@ -522,20 +539,18 @@ describe('ngRepeat ngAnimate', function() {
     };
   }));
 
-  afterEach(function(){
-    dealoc(element);
-  });
-
   it('should fire off the enter animation + add and remove the css classes',
     inject(function($compile, $rootScope, $sniffer) {
 
-    element = $compile(
+    element = $compile(html(
       '<div><div ' +
         'ng-repeat="item in items" ' +
         'ng-animate="{enter: \'custom-enter\'}">' +
         '{{ item }}' + 
       '</div></div>'
-    )($rootScope);
+    ))($rootScope);
+
+    $rootScope.$digest(); // re-enable the animations;
 
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
@@ -572,13 +587,13 @@ describe('ngRepeat ngAnimate', function() {
   it('should fire off the leave animation + add and remove the css classes',
     inject(function($compile, $rootScope, $sniffer) {
 
-    element = $compile(
+    element = $compile(html(
       '<div><div ' +
         'ng-repeat="item in items" ' +
         'ng-animate="{leave: \'custom-leave\'}">' +
         '{{ item }}' + 
       '</div></div>'
-    )($rootScope);
+    ))($rootScope);
 
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
@@ -612,13 +627,13 @@ describe('ngRepeat ngAnimate', function() {
 
   it('should fire off the move animation + add and remove the css classes',
     inject(function($compile, $rootScope, $sniffer) {
-      element = $compile(
+      element = $compile(html(
         '<div>' +
           '<div ng-repeat="item in items" ng-animate="{move: \'custom-move\'}">' +
             '{{ item }}' +
           '</div>' +
         '</div>'
-      )($rootScope);
+      ))($rootScope);
 
       $rootScope.items = ['1','2','3'];
       $rootScope.$digest();
@@ -666,13 +681,15 @@ describe('ngRepeat ngAnimate', function() {
   it('should catch and use the correct duration for animation',
     inject(function($compile, $rootScope, $sniffer) {
 
-      element = $compile(
+      element = $compile(html(
         '<div><div ' +
           'ng-repeat="item in items" ' +
           'ng-animate="{enter: \'custom-enter\'}">' +
           '{{ item }}' +
         '</div></div>'
-      )($rootScope);
+      ))($rootScope);
+
+      $rootScope.$digest(); // re-enable the animations;
 
       $rootScope.items = ['a','b'];
       $rootScope.$digest();
