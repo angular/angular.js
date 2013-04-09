@@ -215,7 +215,24 @@ describe('ngSwitch', function() {
 });
 
 describe('ngSwitch ngAnimate', function() {
-  var element, vendorPrefix, window;
+  var vendorPrefix, window;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
 
   beforeEach(module(function($animationProvider, $provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
@@ -224,22 +241,19 @@ describe('ngSwitch ngAnimate', function() {
     };
   }));
 
-  afterEach(function(){
-    dealoc(element);
-  });
-
   it('should fire off the enter animation + set and remove the classes',
     inject(function($compile, $rootScope, $sniffer) {
       var $scope = $rootScope.$new();
       var style = vendorPrefix + 'transition: 1s linear all';
-      element = $compile(
+      element = $compile(html(
         '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
           '<div ng-switch-when="one" style="' + style + '">one</div>' +
           '<div ng-switch-when="two" style="' + style + '">two</div>' +
           '<div ng-switch-when="three" style="' + style + '">three</div>' +
         '</div>'
-      )($scope);
+      ))($scope);
 
+      $rootScope.$digest(); // re-enable the animations;
       $scope.val = 'one';
       $scope.$digest();
 
@@ -265,14 +279,15 @@ describe('ngSwitch ngAnimate', function() {
     inject(function($compile, $rootScope, $sniffer) {
       var $scope = $rootScope.$new();
       var style = vendorPrefix + 'transition: 1s linear all';
-      element = $compile(
+      element = $compile(html(
         '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
           '<div ng-switch-when="one" style="' + style + '">one</div>' +
           '<div ng-switch-when="two" style="' + style + '">two</div>' +
           '<div ng-switch-when="three" style="' + style + '">three</div>' +
         '</div>'
-      )($scope);
+      ))($scope);
 
+      $rootScope.$digest(); // re-enable the animations;
       $scope.val = 'two';
       $scope.$digest();
 
@@ -313,12 +328,13 @@ describe('ngSwitch ngAnimate', function() {
 
   it('should catch and use the correct duration for animation',
     inject(function($compile, $rootScope, $sniffer) {
-      element = $compile(
+      element = $compile(html(
         '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
           '<div ng-switch-when="one" style="' + vendorPrefix + 'transition: 0.5s linear all">one</div>' +
         '</div>'
-      )($rootScope);
+      ))($rootScope);
 
+      $rootScope.$digest(); // re-enable the animations;
       $rootScope.val = 'one';
       $rootScope.$digest();
 

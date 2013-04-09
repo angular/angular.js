@@ -282,7 +282,24 @@ describe('ngInclude', function() {
 });
 
 describe('ngInclude ngAnimate', function() {
-  var element, vendorPrefix, window;
+  var vendorPrefix, window;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
 
   beforeEach(module(function($animationProvider, $provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
@@ -300,12 +317,12 @@ describe('ngInclude ngAnimate', function() {
 
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
-      element = $compile(
+      element = $compile(html(
         '<div ' +
           'ng-include="tpl" ' +
           'ng-animate="{enter: \'custom-enter\'}">' +
         '</div>'
-      )($rootScope);
+      ))($rootScope);
       $rootScope.$digest();
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
@@ -332,12 +349,12 @@ describe('ngInclude ngAnimate', function() {
     inject(function($compile, $rootScope, $templateCache, $sniffer) {
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
-      element = $compile(
+      element = $compile(html(
         '<div ' +
           'ng-include="tpl" ' +
           'ng-animate="{leave: \'custom-leave\'}">' +
         '</div>'
-      )($rootScope);
+      ))($rootScope);
       $rootScope.$digest();
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
@@ -367,12 +384,12 @@ describe('ngInclude ngAnimate', function() {
     inject(function($compile, $rootScope, $templateCache, $sniffer) {
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
-      element = $compile(
+      element = $compile(html(
         '<div ' +
           'ng-include="tpl" ' +
           'ng-animate="{enter: \'custom-enter\'}">' +
         '</div>'
-      )($rootScope);
+      ))($rootScope);
       $rootScope.$digest();
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
