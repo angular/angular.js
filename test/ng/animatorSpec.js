@@ -11,8 +11,6 @@ describe("$animator", function() {
   describe("enable / disable", function() {
 
     it("should disable and enable the animations", inject(function($animator) {
-      expect($animator.isEnabled()).toBe(true);
-
       $animator.disable();
       expect($animator.isDisabled()).toBe(true);
       expect($animator.isEnabled()).toBe(false);
@@ -144,7 +142,7 @@ describe("$animator", function() {
 
     it("should animate the enter animation event", inject(function($animator, $rootScope) {
       animator = $animator($rootScope, {
-        ngAnimate : '{enter: \'custom\'}'
+        ngAnimate : '{enter: \'custom\', animateFirst: true}'
       });
       expect(element.contents().length).toBe(0);
       animator.enter(child, element);
@@ -155,6 +153,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
+      $rootScope.$digest();
       element.append(child);
       expect(element.contents().length).toBe(1);
       animator.leave(child, element);
@@ -166,6 +165,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{move: \'custom\'}'
       });
+      $rootScope.$digest();
       var child1 = $compile('<div>1</div>')($rootScope);
       var child2 = $compile('<div>2</div>')($rootScope);
       element.append(child1);
@@ -180,6 +180,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
@@ -192,6 +193,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{hide: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','block');
       expect(element.css('display')).toBe('block');
       animator.hide(element);
@@ -206,6 +208,8 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '"custom"'
       });
+
+      $rootScope.$digest();
 
       //enter
       animator.enter(child, element);
@@ -248,6 +252,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'setup-memo\'}'
       });
+      $rootScope.$digest();
       expect(element.text()).toEqual('');
       animator.show(element);
       window.setTimeout.expect(1).process();
@@ -260,6 +265,8 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'setup-memo\'}'
       });
+      $rootScope.$digest();
+
       element.text('123');
       expect(element.text()).toBe('123');
       animator.show(element);
@@ -291,6 +298,8 @@ describe("$animator", function() {
       var animator = $animator($rootScope, {
         ngAnimate : '{show: \'inline-show\'}'
       });
+
+      $rootScope.$digest();
 
       element.css('display','none');
       expect(element.css('display')).toBe('none');

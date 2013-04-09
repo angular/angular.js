@@ -529,6 +529,7 @@ describe('ngAnimate', function() {
 
   it('should fire off the leave animation + add and remove the css classes',
       inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+
     $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
     element = $compile('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>')($rootScope);
 
@@ -559,12 +560,13 @@ describe('ngAnimate', function() {
   }));
 
   it('should catch and use the correct duration for animations',
-      inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      inject(function($compile, $rootScope, $sniffer, $location, $templateCache, $animator) {
+
     $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
     element = $compile(
         '<div ' +
             'ng-view ' +
-            'ng-animate="{enter: \'customEnter\'}">' +
+            'ng-animate="{enter: \'customEnter\', animateFirst: false}">' +
             '</div>'
     )($rootScope);
 

@@ -101,8 +101,9 @@
 //TODO(misko): refactor to remove element from the DOM
 var ngShowDirective = ['$animator', function($animator) {
   return function(scope, element, attr) {
-    var animate = $animator(scope, attr);
+    var animate;
     scope.$watch(attr.ngShow, function ngShowWatchAction(value){
+      animate = animate || $animator(scope, attr);
       animate[toBoolean(value) ? 'show' : 'hide'](element);
     });
   };
@@ -210,8 +211,9 @@ var ngShowDirective = ['$animator', function($animator) {
 //TODO(misko): refactor to remove element from the DOM
 var ngHideDirective = ['$animator', function($animator) {
   return function(scope, element, attr) {
-    var animate = $animator(scope, attr);
+    var animate;
     scope.$watch(attr.ngHide, function ngHideWatchAction(value){
+      animate = animate || $animator(scope, attr);
       animate[toBoolean(value) ? 'hide' : 'show'](element);
     });
   };

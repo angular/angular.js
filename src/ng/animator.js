@@ -40,6 +40,10 @@
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
  *
+ * Keep in mind that <strong>all</strong> animations across the application will be disabled until the first digest cycle has fully
+ * passed. This helps prevent any unexpected starting animations for directives that are dependent on ngAnimate to animate once
+ * an application has first loaded.
+ *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
  * This is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
@@ -215,6 +219,18 @@ var $AnimatorProvider = function() {
 
       function animateActionFactory(type, beforeFn, afterFn) {
         var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
+
+        //avoid running animations on start
+        var skipAnimation = true;
+        if(isObject(ngAnimateValue) && ngAnimateValue['animateFirst']) {
+          skipAnimation = false;
+        }
+        else {
+          scope.$evalAsync(function() {
+            skipAnimation = false;
+          });
+        }
+
         var className = ngAnimateAttr
             ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
             : '';
@@ -233,7 +249,7 @@ var $AnimatorProvider = function() {
           var startClass = className + '-start';
 
           return function(element, parent, after) {
-            if (animationDisabled || !$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
+            if (skipAnimation || animationDisabled || (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart)) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
               return;

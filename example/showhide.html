@@ -1,0 +1,57 @@
+<!doctype html>
+<html ng-app>
+<head>
+  <meta charset="utf-8">
+  <title>AngularJS Plunker</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="../build/angular.js"></script>  
+<style>
+/* Put your css in here */
+.animate-hide-setup,
+.animate-show-setup {
+ -webkit-transition: 2s linear all; /* Safari/Chrome */
+ -moz-transition: 2s linear all; /* Firefox */
+ -ms-transition: 2s linear all; /* IE10 */
+ -o-transition: 2s linear all; /* Opera */
+ transition: 2s linear all; /* Future Browsers */
+
+}
+.animate-show-setup {
+ /* The animation preparation code */
+ opacity: 0;
+}
+ 
+
+.animate-show-setup.animate-show-start {
+ /* The animation code itself */
+ opacity: 1;
+}
+.animate-hide-setup {
+ /* The animation preparation code */
+ opacity: 1;
+}
+ 
+
+.animate-hide-setup.animate-hide-start {
+ /* The animation code itself */
+ opacity: 0;
+}
+</style>
+</head>
+<body ng-init="show=false">
+  Show? <input type='checkbox' ng-model='show'> {{show}}
+  <div ng-show='show' ng-animate="'animate'" ng-cloak>
+    This text should be initially hidden
+  </div>
+  <div ng-hide='show' ng-animate="'animate'" ng-cloak>
+    This text should be initialy visible
+  </div>
+  <div ng-show='show' ng-animate="'animate'" ng-cloak>
+    This text should be initially hidden
+  </div>  
+  <div ng-hide='show' ng-animate="'animate'" ng-cloak>
+    This text should be initialy visible
+  </div>
+  
+</body>
+</html>

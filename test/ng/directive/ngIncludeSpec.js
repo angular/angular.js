@@ -297,7 +297,6 @@ describe('ngInclude ngAnimate', function() {
 
   it('should fire off the enter animation + add and remove the css classes',
     inject(function($compile, $rootScope, $templateCache, $sniffer) {
-
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
       element = $compile(
