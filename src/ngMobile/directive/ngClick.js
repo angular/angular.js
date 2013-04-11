@@ -43,7 +43,7 @@ ngMobile.directive('ngClick', ['$parse', '$mobile', function($parse, $mobile) {
       startTime,  // Used to check if the tap was held too long.
       touchStartX,
       touchStartY,
-      expressionFn = $parse(attr.ngClick),
+      expressionFn = $parse(attrs.ngClick),
       clickHandler = function(event) {
         scope.$apply(function() {
           // TODO(braden): This is sending the touchend, click or pointerup. Is that kosher?
