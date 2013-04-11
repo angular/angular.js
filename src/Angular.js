@@ -1031,7 +1031,7 @@ function bindJQuery() {
 }
 
 /**
- * throw error of the argument is falsy.
+ * throw error if the argument is falsy.
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
