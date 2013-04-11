@@ -1687,12 +1687,7 @@ window.jasmine && (function(window) {
    * @name angular.mock.inject
    * @description
    *
-<<<<<<< HEAD
-   * *NOTE*: This is function is also published on window for easy access.<br>
-   * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
-=======
    * *NOTE*: This function is also published on window for easy access.<br>
->>>>>>> 8dca056... docs(mocks): fix typos
    *
    * The inject function wraps a function into an injectable function. The inject() creates new
    * instance of {@link AUTO.$injector $injector} per test, which is then used for
