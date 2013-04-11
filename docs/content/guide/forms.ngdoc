@@ -206,7 +206,7 @@ In the following example we create two directives.
 
 <doc:example module="form-example1">
 <doc:source>
-<div ng-controller="Controller">
+<div>
   <form name="form" class="css-form" novalidate>
     <div>
       Size (integer 0 - 10):
