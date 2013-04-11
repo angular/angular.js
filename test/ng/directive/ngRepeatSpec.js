@@ -612,6 +612,7 @@ describe('ngRepeat ngAnimate', function() {
 
   it('should fire off the move animation + add and remove the css classes',
     inject(function($compile, $rootScope, $sniffer) {
+
       element = $compile(
         '<div>' +
           '<div ng-repeat="item in items" ng-animate="{move: \'custom-move\'}">' +

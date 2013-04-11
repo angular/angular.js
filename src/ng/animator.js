@@ -40,6 +40,10 @@
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
  *
+ * Keep in mind that <strong>all</strong> animations across the application will be disabled until the first digest cycle has fully
+ * passed. This helps prevent any unexpected starting animations for directives that are dependent on ngAnimate to animate once
+ * an application has first loaded.
+ *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
  * This is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
@@ -121,21 +125,24 @@
  *
  */
 
-/**
- * @ngdoc function
- * @name ng.$animator
- *
- * @description
- * The $animator service provides the DOM manipulation API which is decorated with animations.
- *
- * @param {Scope} scope the scope for the ng-animate.
- * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
- *        passed into the linking function of the directive using the `$animator`.)
- * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
- */
 var $AnimatorProvider = function() {
-  this.$get = ['$animation', '$window', '$sniffer', function($animation, $window, $sniffer) {
-    return function(scope, attrs) {
+  var animationDisabled = false;
+
+  this.$get = ['$animation', '$window', '$sniffer', '$rootScope', function($animation, $window, $sniffer, $rootScope) {
+  /**
+   * @ngdoc function
+   * @name ng.$animator
+   * @function
+   *
+   * @description
+   * The $animator.create service provides the DOM manipulation API which is decorated with animations.
+   *
+   * @param {Scope} scope the scope for the ng-animate.
+   * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
+   *        passed into the linking function of the directive using the `$animator`.)
+   * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
+   */
+   var AnimatorService = function(scope, attrs) {
       var ngAnimateAttr = attrs.ngAnimate;
       var animator = {};
 
@@ -212,6 +219,18 @@ var $AnimatorProvider = function() {
 
       function animateActionFactory(type, beforeFn, afterFn) {
         var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
+
+        //avoid running animations on start
+        var skipAnimation = true;
+        if(isObject(ngAnimateValue) && ngAnimateValue['animateFirst']) {
+          skipAnimation = false;
+        }
+        else {
+          scope.$evalAsync(function() {
+            skipAnimation = false;
+          });
+        }
+
         var className = ngAnimateAttr
             ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
             : '';
@@ -230,7 +249,7 @@ var $AnimatorProvider = function() {
           var startClass = className + '-start';
 
           return function(element, parent, after) {
-            if (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
+            if (skipAnimation || animationDisabled || (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart)) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
               return;
@@ -280,32 +299,96 @@ var $AnimatorProvider = function() {
           }
         }
       }
-    }
 
-    function show(element) {
-      element.css('display', '');
-    }
-
-    function hide(element) {
-      element.css('display', 'none');
-    }
-
-    function insert(element, parent, after) {
-      if (after) {
-        after.after(element);
-      } else {
-        parent.append(element);
+      function show(element) {
+        element.css('display', '');
       }
-    }
 
-    function remove(element) {
-      element.remove();
-    }
+      function hide(element) {
+        element.css('display', 'none');
+      }
 
-    function move(element, parent, after) {
-      // Do not remove element before insert. Removing will cause data associated with the
-      // element to be dropped. Insert will implicitly do the remove.
-      insert(element, parent, after);
-    }
+      function insert(element, parent, after) {
+        if (after) {
+          after.after(element);
+        } else {
+          parent.append(element);
+        }
+      }
+
+      function remove(element) {
+        element.remove();
+      }
+
+      function move(element, parent, after) {
+        // Do not remove element before insert. Removing will cause data associated with the
+        // element to be dropped. Insert will implicitly do the remove.
+        insert(element, parent, after);
+      }
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#enable
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @description
+     * Globally enables animation events across the module
+     *
+    */
+    AnimatorService.enable = function() {
+      if(animationDisabled) {
+        animationDisabled = false;
+        $rootScope.$broadcast('$animationEnabled');
+      }
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#disable
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @description
+     * Globally disables animation events across the module
+     *
+    */
+    AnimatorService.disable = function() {
+      if(!animationDisabled) {
+        animationDisabled = true;
+        $rootScope.$broadcast('$animationDisabled');
+      }
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#isDisabled
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @description
+     * Checks to see if animations are disabled for the animator 
+     *
+    */
+    AnimatorService.isDisabled = function() {
+      return animationDisabled;
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#isDisabled
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @description
+     * Checks to see if animations are enabled for the animator 
+     *
+    */
+    AnimatorService.isEnabled = function() {
+      return !animationDisabled;
+    };
+
+    return AnimatorService;
   }];
 };

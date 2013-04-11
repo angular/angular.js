@@ -65,9 +65,10 @@ describe('ngShow / ngHide - ngAnimate', function() {
         '<div ' +
           'style="'+vendorPrefix+'transition: 1s linear all"' +
           'ng-show="on" ' +
-          'ng-animate="{show: \'custom-show\', hide: \'custom-hide\'}">' +
+          'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst : true}">' +
         '</div>'
       )($scope);
+
       $scope.$digest();
 
       if ($sniffer.supportsTransitions) {
@@ -97,17 +98,41 @@ describe('ngShow / ngHide - ngAnimate', function() {
       expect(element.attr('class')).not.toContain('custom-hide-start');
       expect(element.attr('class')).not.toContain('custom-hide-setup');
     }));
+
+    it('should skip the initial show state on the first digest', function() {
+      var fired = false;
+      module(function($animationProvider) {
+        $animationProvider.register('destructive-animation', function() {
+          return {
+            setup : function() {},
+            start : function(element, done) {
+              dump('asd');
+              fired = true;
+            }
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.val = true;
+        var element = $compile('<div ng-show="val" ng-animate="\'destructive-animation\'">123</div>')($rootScope);
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+        $rootScope.$digest();
+        expect(element.css('display')).toBe('');
+        expect(fired).toBe(false);
+      });
+    });
   });
 
   describe('ngHide', function() {
-    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer) {
+    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer, $animator) {
       var $scope = $rootScope.$new();
       $scope.off = true;
       element = $compile(
           '<div ' +
               'style="'+vendorPrefix+'transition: 1s linear all"' +
               'ng-hide="off" ' +
-              'ng-animate="{show: \'custom-show\', hide: \'custom-hide\'}">' +
+              'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst : true}">' +
               '</div>'
       )($scope);
       $scope.$digest();
@@ -140,5 +165,32 @@ describe('ngShow / ngHide - ngAnimate', function() {
       expect(element.attr('class')).not.toContain('custom-show-start');
       expect(element.attr('class')).not.toContain('custom-show-setup');
     }));
+
+    it('should skip the initial hide state on the first digest', function() {
+      var fired = false;
+      module(function($animationProvider) {
+        $animationProvider.register('destructive-animation', function() {
+          return {
+            setup : function() {},
+            start : function(element, done) {
+              dump('asd');
+              fired = true;
+            }
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.val = false;
+        var element = $compile('<div ng-hide="val" ng-animate="{ hide:\'destructive-animation\' }">123</div>')($rootScope);
+        element.css('display','block');
+        expect(element.css('display')).toBe('block');
+
+        $rootScope.val = true;
+        $rootScope.$digest();
+
+        expect(element.css('display')).toBe('none');
+        expect(fired).toBe(false);
+      });
+    });
   });
 });

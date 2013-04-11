@@ -8,6 +8,44 @@ describe("$animator", function() {
     dealoc(element);
   });
 
+  describe("enable / disable", function() {
+
+    it("should disable and enable the animations", inject(function($animator) {
+      $animator.disable();
+      expect($animator.isDisabled()).toBe(true);
+      expect($animator.isEnabled()).toBe(false);
+
+      $animator.enable();
+      expect($animator.isDisabled()).toBe(false);
+      expect($animator.isEnabled()).toBe(true);
+    }));
+
+    it("should broadcast the $animationDisabled and animationEnabled events upon toggle", inject(function($rootScope, $animator) {
+      var enabled = false, disabled = false;;
+      $rootScope.$on('$animationDisabled', function() {
+        disabled = true;
+      });
+      $rootScope.$on('$animationEnabled', function() {
+        enabled = true;
+      });
+
+      $animator.disable();
+      expect(disabled).toBe(true);
+
+      disabled = false;
+      $animator.disable();
+      expect(disabled).toBe(false);
+
+      $animator.enable();
+      expect(enabled).toBe(true);
+
+      enabled = false;
+      $animator.enable();
+      expect(enabled).toBe(false);
+    }));
+
+  });
+
   describe("without animation", function() {
     var window, animator;
 
@@ -60,6 +98,13 @@ describe("$animator", function() {
       expect(element.css('display')).toBe('none');
     }));
 
+    it("should still perform DOM operations even if animations are disabled", inject(function($animator, $rootScope) {
+      $animator.disable();
+      element.css('display','block');
+      expect(element.css('display')).toBe('block');
+      animator.hide(element);
+      expect(element.css('display')).toBe('none');
+    }));
   });
 
   describe("with polyfill", function() {
@@ -97,7 +142,7 @@ describe("$animator", function() {
 
     it("should animate the enter animation event", inject(function($animator, $rootScope) {
       animator = $animator($rootScope, {
-        ngAnimate : '{enter: \'custom\'}'
+        ngAnimate : '{enter: \'custom\', animateFirst: true}'
       });
       expect(element.contents().length).toBe(0);
       animator.enter(child, element);
@@ -108,6 +153,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
+      $rootScope.$digest();
       element.append(child);
       expect(element.contents().length).toBe(1);
       animator.leave(child, element);
@@ -119,6 +165,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{move: \'custom\'}'
       });
+      $rootScope.$digest();
       var child1 = $compile('<div>1</div>')($rootScope);
       var child2 = $compile('<div>2</div>')($rootScope);
       element.append(child1);
@@ -133,6 +180,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
@@ -145,6 +193,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{hide: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','block');
       expect(element.css('display')).toBe('block');
       animator.hide(element);
@@ -159,6 +208,8 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '"custom"'
       });
+
+      $rootScope.$digest();
 
       //enter
       animator.enter(child, element);
@@ -201,10 +252,69 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'setup-memo\'}'
       });
+      $rootScope.$digest();
       expect(element.text()).toEqual('');
       animator.show(element);
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
+    }));
+
+    it("should not run if animations are disabled", inject(function($animator, $rootScope) {
+      $animator.disable();
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{show: \'setup-memo\'}'
+      });
+      $rootScope.$digest();
+
+      element.text('123');
+      expect(element.text()).toBe('123');
+      animator.show(element);
+      expect(element.text()).toBe('123');
+
+      $animator.enable();
+
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      expect(element.text()).toBe('memento');
+    }));
+  });
+
+  describe("with css3", function() {
+    var window, animator, prefix, vendorPrefix;
+
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        return function($sniffer) {
+          vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+        };
+      })
+    });
+
+    it("should skip animations if disabled and run when enabled", inject(function($animator, $rootScope, $compile) {
+      $animator.disable();
+      element = $compile('<div style="transition: 1s linear all">1</div>')($rootScope);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'inline-show\'}'
+      });
+
+      $rootScope.$digest();
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+      animator.show(element);
+      expect(element.css('display')).toBe('');
+
+      $animator.enable();
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(1000).process();
+      expect(element.css('display')).toBe('');
     }));
   });
 
