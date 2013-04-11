@@ -261,6 +261,17 @@ var $AnimatorProvider = function() {
               // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
               // keep at 1 for animation dom rerender
               $window.setTimeout(beginAnimation, 1);
+
+              function getMaxDuration(durationString){
+                if (isUndefined(durationString)){
+                  return 0;
+                }
+
+                var normalizedValues = map(durationString.split(','), function(val){
+                  return parseFloat(val);
+                });
+                return Math.max.apply(null, normalizedValues);
+              }
   
               function beginAnimation() {
                 element.addClass(startClass);
@@ -276,8 +287,8 @@ var $AnimatorProvider = function() {
                   forEach(element, function(element) {
                     var globalStyles = $window.getComputedStyle(element) || {};
                     duration = Math.max(
-                        parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
-                        parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
+                        getMaxDuration(globalStyles[w3cTransitionProp    + durationKey]) ||
+                        getMaxDuration(globalStyles[vendorTransitionProp + durationKey]) ||
                         0,
                         duration);
                   });
