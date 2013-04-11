@@ -226,7 +226,7 @@ function $HttpProvider() {
      * $resource} service.
      *
      * The $http API is based on the {@link ng.$q deferred/promise APIs} exposed by
-     * the $q service. While for simple usage patters this doesn't matter much, for advanced usage,
+     * the $q service. While for simple usage patterns this doesn't matter much, for advanced usage,
      * it is important to familiarize yourself with these apis and guarantees they provide.
      *
      *
