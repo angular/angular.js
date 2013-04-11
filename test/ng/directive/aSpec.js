@@ -58,4 +58,12 @@ describe('a', function() {
 
     expect(element.text()).toBe('hello@you');
   });
+
+  it('should not cause failures with triggerHandler', function() {
+    element = jqLite('<a href="" ng-click="foo=\'bar\'">link</a>"');
+    element = $compile(element)($rootScope);
+
+    element.triggerHandler('click');
+    expect($rootScope.foo).toEqual('bar');
+  });
 });
