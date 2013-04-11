@@ -391,7 +391,7 @@ describe('ngRepeat', function() {
 
 
   it('should iterate over non-existent elements of a sparse array', function() {
-    element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')(scope);
+    element = $compile('<ul><li ng-repeat="item in array track by $index">{{item}}|</li></ul>')(scope);
     scope.array = ['a', 'b'];
     scope.array[4] = 'c';
     scope.array[6] = 'd';
@@ -457,11 +457,31 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should throw error on duplicates and recover', function() {
+    it('should throw error on adding existing duplicates and recover', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items');
+          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
+
+      // recover
+      scope.items = [a];
+      scope.$digest();
+      var newElements = element.find('li');
+      expect(newElements.length).toEqual(1);
+      expect(newElements[0]).toEqual(lis[0]);
+
+      scope.items = [];
+      scope.$digest();
+      var newElements = element.find('li');
+      expect(newElements.length).toEqual(0);
+    });
+
+
+    it('should throw error on new duplicates and recover', function() {
+      scope.items = [d, d, d];
+      scope.$digest();
+      expect($exceptionHandler.errors.shift().message).
+          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
 
       // recover
       scope.items = [a];
