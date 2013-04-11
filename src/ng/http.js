@@ -252,7 +252,7 @@ function $HttpProvider() {
      * an object representing the response. See the api signature and type info below for more
      * details.
      *
-     * A response status code that falls in the [200, 300) range is considered a success status and
+     * A response status code that falls in the (200, 300) range is considered a success status and
      * will result in the success callback being called. Note that if the response is a redirect,
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
