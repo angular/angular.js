@@ -194,6 +194,7 @@ var $AnimatorProvider = function() {
        * Reveals the element by setting the CSS property `display` to `block` and then starts the show animation directly after.
        *
        * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+       * @param {boolean} instant Should the actual animation be shown or skip it? (useful for setting initial state)
       */
       animator.show = animateActionFactory('show', show, noop);
 
@@ -206,6 +207,7 @@ var $AnimatorProvider = function() {
        * Starts the hide animation first and sets the CSS `display` property to `none` upon completion.
        *
        * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+       * @param {boolean} instant Should the actual animation be shown or skip it? (useful for setting initial state)
       */
       animator.hide = animateActionFactory('hide', noop, hide);
       return animator;
@@ -235,10 +237,11 @@ var $AnimatorProvider = function() {
               afterFn(element, parent, after);
               return;
             }
+            var instant = (typeof(parent) === 'boolean') && parent === true;
 
-            element.addClass(setupClass);
+            if (!instant) element.addClass(setupClass);
             beforeFn(element, parent, after);
-            if (element.length == 0) return done();
+            if (element.length == 0 || instant) return done();
 
             var memento = (polyfillSetup || noop)(element);
 

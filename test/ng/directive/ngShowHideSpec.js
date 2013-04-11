@@ -69,6 +69,28 @@ describe('ngShow / ngHide - ngAnimate', function() {
         '</div>'
       )($scope);
       $scope.$digest();
+      // initially no animation should be fired, lets check
+      expect(element.attr('class')).not.toContain('custom-show-start');
+      expect(element.attr('class')).not.toContain('custom-show-setup');
+
+      // lets fire hide animation
+      $scope.on = false;
+      $scope.$digest();
+      if ($sniffer.supportsTransitions) {
+        expect(element.attr('class')).toContain('custom-hide-setup');
+        window.setTimeout.expect(1).process();
+        expect(element.attr('class')).toContain('custom-hide-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(element.attr('class')).not.toContain('custom-hide-start');
+      expect(element.attr('class')).not.toContain('custom-hide-setup');
+
+      // and show animation:
+      $scope.on = true;
+      $scope.$digest();
 
       if ($sniffer.supportsTransitions) {
         expect(element.attr('class')).toContain('custom-show-setup');
@@ -83,19 +105,6 @@ describe('ngShow / ngHide - ngAnimate', function() {
       expect(element.attr('class')).not.toContain('custom-show-start');
       expect(element.attr('class')).not.toContain('custom-show-setup');
 
-      $scope.on = false;
-      $scope.$digest();
-      if ($sniffer.supportsTransitions) {
-        expect(element.attr('class')).toContain('custom-hide-setup');
-        window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-hide-start');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-hide-start');
-      expect(element.attr('class')).not.toContain('custom-hide-setup');
     }));
   });
 
@@ -111,20 +120,11 @@ describe('ngShow / ngHide - ngAnimate', function() {
               '</div>'
       )($scope);
       $scope.$digest();
-
-      if ($sniffer.supportsTransitions) {
-        expect(element.attr('class')).toContain('custom-hide-setup');
-        window.setTimeout.expect(1).process();
-
-        expect(element.attr('class')).toContain('custom-hide-start');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
+      // initially no animation should be fired, lets check
       expect(element.attr('class')).not.toContain('custom-hide-start');
       expect(element.attr('class')).not.toContain('custom-hide-setup');
 
+      // lets fire show animation
       $scope.off = false;
       $scope.$digest();
 
@@ -139,6 +139,24 @@ describe('ngShow / ngHide - ngAnimate', function() {
 
       expect(element.attr('class')).not.toContain('custom-show-start');
       expect(element.attr('class')).not.toContain('custom-show-setup');
+
+      // lets fire hide animation
+      $scope.off = true;
+      $scope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        expect(element.attr('class')).toContain('custom-hide-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(element.attr('class')).toContain('custom-hide-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(element.attr('class')).not.toContain('custom-hide-start');
+      expect(element.attr('class')).not.toContain('custom-hide-setup');
+
     }));
   });
 });
