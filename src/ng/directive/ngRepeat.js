@@ -153,7 +153,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, hashExpFn, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+          trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
@@ -166,13 +166,13 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         trackByExp = match[4];
 
         if (trackByExp) {
-          hashExpFn = $parse(trackByExp);
+          trackByExpGetter = $parse(trackByExp);
           trackByIdFn = function(key, value, index) {
             // assign key, value, and $index to the locals so that they can be used in hash functions
             if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
             hashFnLocals[valueIdentifier] = value;
             hashFnLocals.$index = index;
-            return hashExpFn($scope, hashFnLocals);
+            return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
           trackByIdFn = function(key, value) {
@@ -233,7 +233,8 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
            key = (collection === collectionKeys) ? index : collectionKeys[index];
            value = collection[key];
            trackById = trackByIdFn(key, value, index);
-           if((block = lastBlockMap[trackById])) {
+           if(lastBlockMap.hasOwnProperty(trackById)) {
+             block = lastBlockMap[trackById]
              delete lastBlockMap[trackById];
              nextBlockMap[trackById] = block;
              nextBlockOrder[index] = block;
@@ -243,10 +244,12 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                if (block && block.element) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
-             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression);
+             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression +
+                 ' key: ' + trackById);
            } else {
              // new never before seen block
              nextBlockOrder[index] = { id: trackById };
+             nextBlockMap[trackById] = false;
            }
          }
 
