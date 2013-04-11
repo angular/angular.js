@@ -3,7 +3,7 @@
 @description
 
 Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
-expression }}`. Expressions are processed by {@link api/ng.$parse $parse}
+expression }}`. Expressions are processed by the {@link api/ng.$parse $parse}
 service.
 
 For example, these are all valid expressions in angular:
@@ -179,7 +179,7 @@ angular uses, to differentiate its API names from others. If angular didn't use 
 `a.length()` would return undefined because neither a nor angular define such a property.
 
 Consider that in a future version of Angular we might choose to add a length method, in which case
-the behavior of the expression would change. Worse yet, you the developer could create a length
+the behavior of the expression would change. Worse yet, you, the developer, could create a length
 property and then we would have a collision. This problem exists because Angular augments existing
 objects with additional behavior. By prefixing its additions with $ we are reserving our namespace
 so that angular developers and developers who use Angular can develop in harmony without collisions.
