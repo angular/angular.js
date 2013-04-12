@@ -69,27 +69,31 @@ function makeSwipeDirective(directiveName, direction) {
       var swipeHandler = $parse(attr[directiveName]),
         startCoords, valid,
         totalX, totalY,
-        lastX, lastY;
+        lastX, lastY,
+        firstId,
 
-      function validSwipe(event) {
-        // Check that it's within the coordinates.
-        // Absolute vertical distance must be within tolerances.
-        // Horizontal distance, we take the current X - the starting X.
-        // This is negative for leftward swipes and positive for rightward swipes.
-        // After multiplying by the direction (-1 for left, +1 for right), legal swipes
-        // (ie. same direction as the directive wants) will have a positive delta and
-        // illegal ones a negative delta.
-        // Therefore this delta must be positive, and larger than the minimum.
-        if (!startCoords) return false;
-        var coords = getCoordinates(event),
-          deltaY = Math.abs(coords.y - startCoords.y),
-          deltaX = (coords.x - startCoords.x) * direction;
-        return valid && // Short circuit for already-invalidated swipes.
-            deltaY < MAX_VERTICAL_DISTANCE &&
-            deltaX > 0 &&
-            deltaX > MIN_HORIZONTAL_DISTANCE &&
-            deltaY / deltaX < MAX_VERTICAL_RATIO;
-      }
+
+        validSwipe = function(pointer) {
+          // Check that it's within the coordinates.
+          // Absolute vertical distance must be within tolerances.
+          // Horizontal distance, we take the current X - the starting X.
+          // This is negative for leftward swipes and positive for rightward swipes.
+          // After multiplying by the direction (-1 for left, +1 for right), legal swipes
+          // (ie. same direction as the directive wants) will have a positive delta and
+          // illegal ones a negative delta.
+          // Therefore this delta must be positive, and larger than the minimum.
+          var coords = {
+              x: pointer.clientX,
+              y: pointer.clientY
+            },
+            deltaY = Math.abs(coords.y - startCoords.y),
+            deltaX = (coords.x - startCoords.x) * direction;
+          return valid && // Short circuit for already-invalidated swipes.
+              deltaY < MAX_VERTICAL_DISTANCE &&
+              deltaX > 0 &&
+              deltaX > MIN_HORIZONTAL_DISTANCE &&
+              deltaY / deltaX < MAX_VERTICAL_RATIO;
+        };
 
       $mobile.getPointerEvents(scope, element, {
         down: function(id, pointer, event) {
@@ -152,7 +156,7 @@ function makeSwipeDirective(directiveName, direction) {
           if(firstId === id) {
             firstId = undefined;      // Resets the state
 
-            if (validSwipe(event)) {
+            if (validSwipe(pointer)) {
               // Prevent this swipe from bubbling up to any other elements with ngSwipes.
               event.stopPropagation();
               scope.$apply(function() {
