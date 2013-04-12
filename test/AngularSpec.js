@@ -83,6 +83,15 @@ describe('angular', function() {
       expect(copy([{key:null}])).toEqual([{key:null}]);
     });
 
+    it('should not copy $$ properties or prototype properties', function() {
+      var original = {$$some: true, $$: true};
+      var clone = {};
+
+      expect(copy(original, clone)).toBe(clone);
+      expect(clone.$$some).toBeUndefined();
+      expect(clone.$$).toBeUndefined();
+    });
+
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).toThrow("Can't copy Window or Scope");
     }));

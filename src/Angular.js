@@ -598,7 +598,9 @@ function copy(source, destination){
         delete destination[key];
       });
       for ( var key in source) {
-        destination[key] = copy(source[key]);
+        if (source.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+          destination[key] = copy(source[key]);
+        }
       }
     }
   }
