@@ -582,13 +582,26 @@ function createInjector(modulesToLoad) {
       }
     }
 
-    function instantiate(Type, locals) {
+    function instantiate(fn, locals) {
       var Constructor = function() {},
-          instance, returnedValue;
+          instanceFunction,
+          instance,
+          returnedValue;
 
-      Constructor.prototype = (isArray(Type) ? Type[Type.length - 1] : Type).prototype;
+      // TODO: Extract this distinction to a function?
+      // Is given function annotated?
+      if(isArray(fn)){
+          // YES: e.g. $injector.invoke(['serviceA', function(serviceA){}])
+          instanceFunction  = fn[fn.length - 1]
+      }
+      else{
+          // NO: e.g. $injector.invoke(function(serviceA){})
+          instanceFunction = fn;
+      }
+
+      Constructor.prototype = instanceFunction.prototype;
       instance = new Constructor();
-      returnedValue = invoke(Type, instance, locals);
+      returnedValue = invoke(fn, instance, locals);
 
       return isObject(returnedValue) ? returnedValue : instance;
     }
