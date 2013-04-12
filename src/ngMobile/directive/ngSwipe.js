@@ -55,34 +55,21 @@
  */
 
 function makeSwipeDirective(directiveName, direction) {
-  ngMobile.directive(directiveName, ['$parse', function($parse) {
-    // The maximum vertical delta for a swipe should be less than 75px.
-    var MAX_VERTICAL_DISTANCE = 75;
+  ngMobile.directive(directiveName, ['$parse', '$mobile', function($parse, $mobile) {
+    // The maximum vertical delta for a swipe should be less than 58pts.
+    var MAX_VERTICAL_DISTANCE = $mobile.getPointSize() * 58,
     // Vertical distance should not be more than a fraction of the horizontal distance.
-    var MAX_VERTICAL_RATIO = 0.3;
-    // At least a 30px lateral motion is necessary for a swipe.
-    var MIN_HORIZONTAL_DISTANCE = 30;
+      MAX_VERTICAL_RATIO = 0.3,
+    // At least a 24pt lateral motion is necessary for a swipe.
+      MIN_HORIZONTAL_DISTANCE = $mobile.getPointSize() * 24,
     // The total distance in any direction before we make the call on swipe vs. scroll.
-    var MOVE_BUFFER_RADIUS = 10;
-
-    function getCoordinates(event) {
-      var touches = event.touches && event.touches.length ? event.touches : [event];
-      var e = (event.changedTouches && event.changedTouches[0]) ||
-          (event.originalEvent && event.originalEvent.changedTouches &&
-              event.originalEvent.changedTouches[0]) ||
-          touches[0].originalEvent || touches[0];
-
-      return {
-        x: e.clientX,
-        y: e.clientY
-      };
-    }
+      MOVE_BUFFER_RADIUS = 10;
 
     return function(scope, element, attr) {
-      var swipeHandler = $parse(attr[directiveName]);
-      var startCoords, valid;
-      var totalX, totalY;
-      var lastX, lastY;
+      var swipeHandler = $parse(attr[directiveName]),
+        startCoords, valid,
+        totalX, totalY,
+        lastX, lastY;
 
       function validSwipe(event) {
         // Check that it's within the coordinates.
@@ -94,9 +81,9 @@ function makeSwipeDirective(directiveName, direction) {
         // illegal ones a negative delta.
         // Therefore this delta must be positive, and larger than the minimum.
         if (!startCoords) return false;
-        var coords = getCoordinates(event);
-        var deltaY = Math.abs(coords.y - startCoords.y);
-        var deltaX = (coords.x - startCoords.x) * direction;
+        var coords = getCoordinates(event),
+          deltaY = Math.abs(coords.y - startCoords.y),
+          deltaX = (coords.x - startCoords.x) * direction;
         return valid && // Short circuit for already-invalidated swipes.
             deltaY < MAX_VERTICAL_DISTANCE &&
             deltaX > 0 &&
@@ -104,65 +91,81 @@ function makeSwipeDirective(directiveName, direction) {
             deltaY / deltaX < MAX_VERTICAL_RATIO;
       }
 
-      element.bind('touchstart mousedown', function(event) {
-        startCoords = getCoordinates(event);
-        valid = true;
-        totalX = 0;
-        totalY = 0;
-        lastX = startCoords.x;
-        lastY = startCoords.y;
-      });
+      $mobile.getPointerEvents(scope, element, {
+        down: function(id, pointer, event) {
+          if(!firstId) {
+            firstId = id;
+            startCoords = {
+              x: pointer.clientX,
+              y: pointer.clientY
+            };
+            valid = true;
+            totalX = 0;
+            totalY = 0;
+            lastX = startCoords.x;
+            lastY = startCoords.y;
+          }
+        },
+        move: function(id, pointer, event) {  // Resets the state
+          if(firstId === id && valid) {
 
-      element.bind('touchcancel', function(event) {
-        valid = false;
-      });
+            // Android will send a touchcancel if it thinks we're starting to scroll.
+            // So when the total distance (+ or - or both) exceeds 10px in either direction,
+            // we either:
+            // - On totalX > totalY, we send preventDefault() and treat this as a swipe.
+            // - On totalY > totalX, we let the browser handle it as a scroll.
 
-      element.bind('touchmove mousemove', function(event) {
-        if (!valid) return;
+            // Invalidate a touch while it's in progress if it strays too far away vertically.
+            // We don't want a scroll down and back up while drifting sideways to be a swipe just
+            // because you happened to end up vertically close in the end.
+            var coords = {
+              x: pointer.clientX,
+              y: pointer.clientY
+            };
 
-        // Android will send a touchcancel if it thinks we're starting to scroll.
-        // So when the total distance (+ or - or both) exceeds 10px in either direction,
-        // we either:
-        // - On totalX > totalY, we send preventDefault() and treat this as a swipe.
-        // - On totalY > totalX, we let the browser handle it as a scroll.
+            if (Math.abs(coords.y - startCoords.y) > MAX_VERTICAL_DISTANCE) {
+              valid = false;
+              firstId = undefined;      // Resets the state
+              return;
+            }
 
-        // Invalidate a touch while it's in progress if it strays too far away vertically.
-        // We don't want a scroll down and back up while drifting sideways to be a swipe just
-        // because you happened to end up vertically close in the end.
-        if (!startCoords) return;
-        var coords = getCoordinates(event);
+            totalX += Math.abs(coords.x - lastX);
+            totalY += Math.abs(coords.y - lastY);
 
-        if (Math.abs(coords.y - startCoords.y) > MAX_VERTICAL_DISTANCE) {
-          valid = false;
-          return;
-        }
+            lastX = coords.x;
+            lastY = coords.y;
 
-        totalX += Math.abs(coords.x - lastX);
-        totalY += Math.abs(coords.y - lastY);
+            if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
+              return;
+            }
 
-        lastX = coords.x;
-        lastY = coords.y;
+            // One of totalX or totalY has exceeded the buffer, so decide on swipe vs. scroll.
+            if (totalY > totalX) {
+              valid = false;
+              firstId = undefined;      // Resets the state
+            } else {
+              event.preventDefault();
+            }
+          }
+        },
+        up: function(id, pointer, event) {
+          if(firstId === id) {
+            firstId = undefined;      // Resets the state
 
-        if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
-          return;
-        }
-
-        // One of totalX or totalY has exceeded the buffer, so decide on swipe vs. scroll.
-        if (totalY > totalX) {
-          valid = false;
-          return;
-        } else {
-          event.preventDefault();
-        }
-      });
-
-      element.bind('touchend mouseup', function(event) {
-        if (validSwipe(event)) {
-          // Prevent this swipe from bubbling up to any other elements with ngSwipes.
-          event.stopPropagation();
-          scope.$apply(function() {
-            swipeHandler(scope, {$event:event});
-          });
+            if (validSwipe(event)) {
+              // Prevent this swipe from bubbling up to any other elements with ngSwipes.
+              event.stopPropagation();
+              scope.$apply(function() {
+                swipeHandler(scope, {$event:pointer});
+              });
+            }
+          }
+        },
+        cancel: function(id, event) {
+          if(firstId === id) {
+            firstId = undefined;      // Resets the state
+            valid = false;
+          }
         }
       });
     };
