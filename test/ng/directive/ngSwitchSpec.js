@@ -236,8 +236,9 @@ describe('ngSwitch ngAnimate', function() {
 
   beforeEach(module(function($animationProvider, $provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer) {
+    return function($sniffer, $animator) {
       vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+      $animator.enabled(true);
     };
   }));
 
