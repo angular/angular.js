@@ -171,54 +171,38 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
 
 
   // These functions effectively emulate pointer events for mice in desktop browsers
-  // That don't support pointer events
-  emulatedCaptures,    // Maps mice to event handlers
-  emulatedCaptureCount,  // Counts the number of active handlers
+  // that don't support pointer events
+  emulatedCapture,    // Stores the element and event handler
   $document = angular.element($window.document),  // We attach the global events here
 
   // Passes global events to the elements event handler
   captureListener = function(event) {
-    var key;
-    for (key in emulatedCaptures) {
-      if (emulatedCaptures.hasOwnProperty(key)) {
-        emulatedCaptures[key](event);
-      }
-    }
+    emulatedCapture[1](event);
   },
 
   // Captures mouse events globally to emulate pointer capture
   // Some IE's support this natively however this is standards compliant
-  setEmulatedCapture = function(pointerId, callback) {
-    if (!emulatedCaptures) {
-      emulatedCaptures = {};
-      emulatedCaptureCount = 0;
-    }
-
+  setEmulatedCapture = function(element, eventHandler) {
     try {
-      if(emulatedCaptures[pointerId]) {
-        emulatedCaptures[pointerId]({identifier: pointerId, type: 'capture'});
+      if(emulatedCapture) {
+        var event = $window.document.createEvent('MouseEvents');
+        event.initMouseEvent('lostpointercapture', true, true, window, 0, 0, 0, 0, 0, false, false,
+          false, false, 0, emulatedCapture[0][0]);
+        emulatedCapture[1](event);
+      } else {
+        $document.bind('mousemove mouseup', captureListener);
       }
     } finally {
-      emulatedCaptures[pointerId] = callback;
-      if(emulatedCaptureCount <= 0) {
-        $document.bind('mousemove mouseup', captureListener);
-        emulatedCaptureCount = 1;
-      } else {
-        emulatedCaptureCount += 1;
-      }
+      emulatedCapture = [element, eventHandler];
     }
   },
 
-  // Removes the element event handler from the registry
-  releaseEmulatedCapture = function(pointerId) {
-    if (emulatedCaptures && emulatedCaptures[pointerId]) {
-      delete emulatedCaptures[pointerId];
-      emulatedCaptureCount -= 1;
-
-      if (emulatedCaptureCount <= 0) {
-        $document.unbind('mousemove', captureListener);
-        $document.unbind('mouseup', captureListener);
-      }
+  // Stops tracking mouse events for the selected element
+  releaseEmulatedCapture = function(element) {
+    if (emulatedCapture && emulatedCapture[0] === element) {
+      emulatedCapture = undefined;
+      $document.unbind('mousemove', captureListener);
+      $document.unbind('mouseup', captureListener);
     }
   },
 
@@ -258,7 +242,7 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
                 if (this.releasePointerCapture) {
                   this.releasePointerCapture(pointerId);
                 } else if (event.type == 'mousedown') {
-                  releaseEmulatedCapture(pointerId);
+                  releaseEmulatedCapture(element);
                 }
               }
             }
@@ -272,7 +256,7 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
               this.setPointerCapture(pointerId);
               event.preventDefault();  // This prevents mouse emulation events
             } else if (event.type == 'mousedown') {
-              setEmulatedCapture(pointerId, doEvent);
+              setEmulatedCapture(element, doEvent);
             }
 
             if(callbacks['down']) {
@@ -299,7 +283,7 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
             if (target.releasePointerCapture) {
               target.releasePointerCapture(pointerId);
             } else if (event.type == 'mouseup') {
-              releaseEmulatedCapture(pointerId);
+              releaseEmulatedCapture(element);
             }
             
             
@@ -342,12 +326,7 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
         element.unbind(evts[i], doEvent);
       }
       
-      for (i in emulatedCaptures) {
-        if (emulatedCaptures.hasOwnProperty(i) && emulatedCaptures[i] === doEvent) {
-          releaseEmulatedCapture(i);
-          break;
-        }
-      }
+      releaseEmulatedCapture(element);
     });
   };
 
