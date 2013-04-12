@@ -91,7 +91,9 @@ ngMobile.directive('ngClick', ['$parse', '$mobile', function($parse, $mobile) {
                 tapElement.blur();
               }
               
-              clickHandler(event);
+              // Send the pointer as it has the clientX / Y set so more useful then the raw
+              //  event object on touch devices. Mouse / Pointers this is the event object.
+              clickHandler(pointer);
             }
           } finally {
             firstId = undefined;    // Resets the state
