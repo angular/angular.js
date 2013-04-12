@@ -45,11 +45,12 @@ describe('ngShow / ngHide', function() {
 describe('ngShow / ngHide - ngAnimate', function() {
   var window;
   var vendorPrefix;
-  var body, element;
+  var body, element, $rootElement;
 
   function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+    body.append($rootElement);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
@@ -61,12 +62,15 @@ describe('ngShow / ngHide - ngAnimate', function() {
   afterEach(function(){
     dealoc(body);
     dealoc(element);
+    body.removeAttr('ng-animation-running');
   });
 
   beforeEach(module(function($animationProvider, $provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer) {
+    return function($sniffer, _$rootElement_, $animator) {
       vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+      $rootElement = _$rootElement_;
+      $animator.enabled(true);
     };
   }));
 
@@ -111,11 +115,14 @@ describe('ngShow / ngHide - ngAnimate', function() {
       expect(element.attr('class')).not.toContain('custom-hide-setup');
     }));
 
-    it('should skip the initial show state on the first digest', function() {
+    it('should skip animation if parent animation running', function() {
       var fired = false;
-      inject(function($compile, $rootScope, $sniffer) {
+      inject(function($animator, $compile, $rootScope, $sniffer) {
+        $animator.enabled(true);
+        $rootScope.$digest();
         $rootScope.val = true;
         var element = $compile(html('<div ng-show="val" ng-animate="\'animation\'">123</div>'))($rootScope);
+        $rootElement.controller('ngAnimate').running = true;
         element.css('display','none');
         expect(element.css('display')).toBe('none');
 
@@ -123,6 +130,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
         expect(element[0].style.display).toBe('');
         expect(fired).toBe(false);
 
+        $rootElement.controller('ngAnimate').running = false;
         $rootScope.val = false;
         $rootScope.$digest();
         if ($sniffer.supportsTransitions) {
@@ -178,7 +186,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
       expect(element.attr('class')).not.toContain('custom-show-setup');
     }));
 
-    it('should skip the initial hide state on the first digest', function() {
+    it('should disable animation when parent animation is running', function() {
       var fired = false;
       module(function($animationProvider) {
         $animationProvider.register('destructive-animation', function() {
@@ -193,6 +201,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
       inject(function($compile, $rootScope) {
         $rootScope.val = false;
         var element = $compile(html('<div ng-hide="val" ng-animate="{ hide:\'destructive-animation\' }">123</div>'))($rootScope);
+        $rootElement.controller('ngAnimate').running = true;
         element.css('display','block');
         expect(element.css('display')).toBe('block');
 

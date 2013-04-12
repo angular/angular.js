@@ -4,8 +4,9 @@ describe('ngView', function() {
   var element;
 
   beforeEach(module(function() {
-    return function($rootScope, $compile) {
+    return function($rootScope, $compile, $animator) {
       element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
+      $animator.enabled(true);
     };
   }));
 
@@ -510,8 +511,9 @@ describe('ngAnimate', function() {
   beforeEach(module(function($provide, $routeProvider) {
     $provide.value('$window', window = angular.mock.createMockWindow());
     $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
-    return function($templateCache) {
+    return function($templateCache, $animator) {
       $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
+      $animator.enabled(true);
     }
   }));
 
@@ -579,8 +581,8 @@ describe('ngAnimate', function() {
     element = $compile(html(
         '<div ' +
             'ng-view ' +
-            'ng-animate="{enter: \'customEnter\', animateFirst: false}">' +
-            '</div>'
+            'ng-animate="{enter: \'customEnter\'}">' +
+          '</div>'
     ))($rootScope);
 
     $location.path('/foo');

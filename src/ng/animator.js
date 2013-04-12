@@ -40,9 +40,7 @@
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
  *
- * Keep in mind that, by default, **all** initial animations will be skipped until the first digest cycle has fully
- * passed. This helps prevent any unexpected animations from occurring while the application or directive is initializing. To
- * override this behavior, you may pass "animateFirst: true" into the ngAnimate attribute expression.
+ * Keep in mind that if an animation is running, no child element of such animation can also be animated.
  *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
@@ -126,217 +124,211 @@
  */
 
 var $AnimatorProvider = function() {
-  var globalAnimationEnabled = true;
+  var NG_ANIMATE_CONTROLLER = '$ngAnimateController';
+  var rootAnimateController = {running:true};
 
-  this.$get = ['$animation', '$window', '$sniffer', '$rootScope', function($animation, $window, $sniffer, $rootScope) {
-  /**
-   * @ngdoc function
-   * @name ng.$animator
-   * @function
-   *
-   * @description
-   * The $animator.create service provides the DOM manipulation API which is decorated with animations.
-   *
-   * @param {Scope} scope the scope for the ng-animate.
-   * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
-   *        passed into the linking function of the directive using the `$animator`.)
-   * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
-   */
-   var AnimatorService = function(scope, attrs) {
-      var ngAnimateAttr = attrs.ngAnimate;
-
-      // avoid running animations on start
-      var animationEnabled = false;
-      var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
-
-      if (!animationEnabled) {
-        if(isObject(ngAnimateValue) && ngAnimateValue['animateFirst']) {
-          animationEnabled = true;
-        } else {
-          var enableSubsequent = function() {
-            removeWatch();
-            scope.$evalAsync(function() {
-              animationEnabled = true;
-            });
-          };
-          var removeWatch = noop;
-
-          if (scope.$$phase) {
-            enableSubsequent();
-          } else {
-            removeWatch = scope.$watch(enableSubsequent);
-          }
-        }
+  this.$get = ['$animation', '$window', '$sniffer', '$rootElement', '$rootScope',
+      function($animation, $window, $sniffer, $rootElement, $rootScope) {
+    $rootElement.data(NG_ANIMATE_CONTROLLER, rootAnimateController);
+    var unregister = $rootScope.$watch(function() {
+      unregister();
+      if (rootAnimateController.running) {
+        $window.setTimeout(function() {
+          rootAnimateController.running = false;
+        }, 0);
       }
-      var animator = {};
+    });
 
-      /**
-       * @ngdoc function
-       * @name ng.animator#enter
-       * @methodOf ng.$animator
-       * @function
-       *
-       * @description
-       * Injects the element object into the DOM (inside of the parent element) and then runs the enter animation.
-       *
-       * @param {jQuery/jqLite element} element the element that will be the focus of the enter animation
-       * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the enter animation
-       * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
-      */
-      animator.enter = animateActionFactory('enter', insert, noop);
-
-      /**
-       * @ngdoc function
-       * @name ng.animator#leave
-       * @methodOf ng.$animator
-       * @function
-       *
-       * @description
-       * Runs the leave animation operation and, upon completion, removes the element from the DOM.
-       *
-       * @param {jQuery/jqLite element} element the element that will be the focus of the leave animation
-       * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the leave animation
-      */
-      animator.leave = animateActionFactory('leave', noop, remove);
-
-      /**
-       * @ngdoc function
-       * @name ng.animator#move
-       * @methodOf ng.$animator
-       * @function
-       *
-       * @description
-       * Fires the move DOM operation. Just before the animation starts, the animator will either append it into the parent container or
-       * add the element directly after the after element if present. Then the move animation will be run.
-       *
-       * @param {jQuery/jqLite element} element the element that will be the focus of the move animation
-       * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the move animation
-       * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
-      */
-      animator.move = animateActionFactory('move', move, noop);
-
-      /**
-       * @ngdoc function
-       * @name ng.animator#show
-       * @methodOf ng.$animator
-       * @function
-       *
-       * @description
-       * Reveals the element by setting the CSS property `display` to `block` and then starts the show animation directly after.
-       *
-       * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
-      */
-      animator.show = animateActionFactory('show', show, noop);
-
-      /**
-       * @ngdoc function
-       * @name ng.animator#hide
-       * @methodOf ng.$animator
-       *
-       * @description
-       * Starts the hide animation first and sets the CSS `display` property to `none` upon completion.
-       *
-       * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
-      */
-      animator.hide = animateActionFactory('hide', noop, hide);
-      return animator;
-
-      function animateActionFactory(type, beforeFn, afterFn) {
-        var className = ngAnimateAttr
-            ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
-            : '';
-        var animationPolyfill = $animation(className);
-
-        var polyfillSetup = animationPolyfill && animationPolyfill.setup;
-        var polyfillStart = animationPolyfill && animationPolyfill.start;
-
-        if (!className) {
-          return function(element, parent, after) {
-            beforeFn(element, parent, after);
-            afterFn(element, parent, after);
-          }
-        } else {
-          var setupClass = className + '-setup';
-          var startClass = className + '-start';
-
-          return function(element, parent, after) {
-            if (!animationEnabled || !globalAnimationEnabled ||
-                (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart)) {
+    /**
+     * @ngdoc function
+     * @name ng.$animator
+     * @function
+     *
+     * @description
+     * The $animator.create service provides the DOM manipulation API which is decorated with animations.
+     *
+     * @param {Scope} scope the scope for the ng-animate.
+     * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
+     *        passed into the linking function of the directive using the `$animator`.)
+     * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
+     */
+     var AnimatorService = function(scope, attrs) {
+        var ngAnimateAttr = attrs.ngAnimate;
+        var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
+        var animator = {};
+  
+        /**
+         * @ngdoc function
+         * @name ng.animator#enter
+         * @methodOf ng.$animator
+         * @function
+         *
+         * @description
+         * Injects the element object into the DOM (inside of the parent element) and then runs the enter animation.
+         *
+         * @param {jQuery/jqLite element} element the element that will be the focus of the enter animation
+         * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the enter animation
+         * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
+        */
+        animator.enter = animateActionFactory('enter', insert, noop);
+  
+        /**
+         * @ngdoc function
+         * @name ng.animator#leave
+         * @methodOf ng.$animator
+         * @function
+         *
+         * @description
+         * Runs the leave animation operation and, upon completion, removes the element from the DOM.
+         *
+         * @param {jQuery/jqLite element} element the element that will be the focus of the leave animation
+         * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the leave animation
+        */
+        animator.leave = animateActionFactory('leave', noop, remove);
+  
+        /**
+         * @ngdoc function
+         * @name ng.animator#move
+         * @methodOf ng.$animator
+         * @function
+         *
+         * @description
+         * Fires the move DOM operation. Just before the animation starts, the animator will either append it into the parent container or
+         * add the element directly after the after element if present. Then the move animation will be run.
+         *
+         * @param {jQuery/jqLite element} element the element that will be the focus of the move animation
+         * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the move animation
+         * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
+        */
+        animator.move = animateActionFactory('move', move, noop);
+  
+        /**
+         * @ngdoc function
+         * @name ng.animator#show
+         * @methodOf ng.$animator
+         * @function
+         *
+         * @description
+         * Reveals the element by setting the CSS property `display` to `block` and then starts the show animation directly after.
+         *
+         * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+        */
+        animator.show = animateActionFactory('show', show, noop);
+  
+        /**
+         * @ngdoc function
+         * @name ng.animator#hide
+         * @methodOf ng.$animator
+         *
+         * @description
+         * Starts the hide animation first and sets the CSS `display` property to `none` upon completion.
+         *
+         * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+        */
+        animator.hide = animateActionFactory('hide', noop, hide);
+        return animator;
+  
+        function animateActionFactory(type, beforeFn, afterFn) {
+          var className = ngAnimateAttr
+              ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
+              : '';
+          var animationPolyfill = $animation(className);
+  
+          var polyfillSetup = animationPolyfill && animationPolyfill.setup;
+          var polyfillStart = animationPolyfill && animationPolyfill.start;
+  
+          if (!className) {
+            return function(element, parent, after) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
-              return;
             }
-
-            element.addClass(setupClass);
-            beforeFn(element, parent, after);
-            if (element.length == 0) return done();
-
-            var memento = (polyfillSetup || noop)(element);
-
-            // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
-            // keep at 1 for animation dom rerender
-            $window.setTimeout(beginAnimation, 1);
-
-            function beginAnimation() {
-              element.addClass(startClass);
-              if (polyfillStart) {
-                polyfillStart(element, done, memento);
-              } else if (isFunction($window.getComputedStyle)) {
-                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-                var w3cTransitionProp = 'transition'; //one day all browsers will have this
-
-                var durationKey = 'Duration';
-                var duration = 0;
-                //we want all the styles defined before and after
-                forEach(element, function(element) {
-                  var globalStyles = $window.getComputedStyle(element) || {};
-                  duration = Math.max(
-                      parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
-                      parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
-                      0,
-                      duration);
-                });
-                $window.setTimeout(done, duration * 1000);
-              } else {
-                done();
+          } else {
+            var setupClass = className + '-setup';
+            var startClass = className + '-start';
+  
+            return function(element, parent, after) {
+              if (!parent) {
+                parent = after ? after.parent() : element.parent();
               }
-            }
+              if ((!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) ||
+                  (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
+                beforeFn(element, parent, after);
+                afterFn(element, parent, after);
+                return;
+              }
 
-            function done() {
-              afterFn(element, parent, after);
-              element.removeClass(setupClass);
-              element.removeClass(startClass);
+              element.data(NG_ANIMATE_CONTROLLER, {running:true});
+              element.addClass(setupClass);
+              beforeFn(element, parent, after);
+              if (element.length == 0) return done();
+  
+              var memento = (polyfillSetup || noop)(element);
+  
+              // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
+              // keep at 1 for animation dom rerender
+              $window.setTimeout(beginAnimation, 1);
+  
+              function beginAnimation() {
+                element.addClass(startClass);
+                if (polyfillStart) {
+                  polyfillStart(element, done, memento);
+                } else if (isFunction($window.getComputedStyle)) {
+                  var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+                  var w3cTransitionProp = 'transition'; //one day all browsers will have this
+  
+                  var durationKey = 'Duration';
+                  var duration = 0;
+                  //we want all the styles defined before and after
+                  forEach(element, function(element) {
+                    var globalStyles = $window.getComputedStyle(element) || {};
+                    duration = Math.max(
+                        parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
+                        parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
+                        0,
+                        duration);
+                  });
+                  $window.setTimeout(done, duration * 1000);
+                } else {
+                  done();
+                }
+              }
+  
+              function done() {
+                afterFn(element, parent, after);
+                element.removeClass(setupClass);
+                element.removeClass(startClass);
+                element.removeData(NG_ANIMATE_CONTROLLER);
+              }
             }
           }
         }
-      }
-
-      function show(element) {
-        element.css('display', '');
-      }
-
-      function hide(element) {
-        element.css('display', 'none');
-      }
-
-      function insert(element, parent, after) {
-        if (after) {
-          after.after(element);
-        } else {
-          parent.append(element);
+  
+        function show(element) {
+          element.css('display', '');
         }
-      }
-
-      function remove(element) {
-        element.remove();
-      }
-
-      function move(element, parent, after) {
-        // Do not remove element before insert. Removing will cause data associated with the
-        // element to be dropped. Insert will implicitly do the remove.
-        insert(element, parent, after);
-      }
-    };
+  
+        function hide(element) {
+          element.css('display', 'none');
+        }
+  
+        function insert(element, parent, after) {
+          if (after) {
+            after.after(element);
+          } else {
+            parent.append(element);
+          }
+        }
+  
+        function remove(element) {
+          element.remove();
+        }
+  
+        function move(element, parent, after) {
+          // Do not remove element before insert. Removing will cause data associated with the
+          // element to be dropped. Insert will implicitly do the remove.
+          insert(element, parent, after);
+        }
+      };
 
     /**
      * @ngdoc function
@@ -353,9 +345,9 @@ var $AnimatorProvider = function() {
     */
     AnimatorService.enabled = function(value) {
       if (arguments.length) {
-        globalAnimationEnabled = !!value;
+        rootAnimateController.running = !value;
       }
-      return globalAnimationEnabled;
+      return !rootAnimateController.running;
     };
 
     return AnimatorService;

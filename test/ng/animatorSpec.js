@@ -2,11 +2,12 @@
 
 describe("$animator", function() {
 
-  var body, element;
+  var body, element, $rootElement;
 
   function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+    body.append($rootElement);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
@@ -21,7 +22,18 @@ describe("$animator", function() {
 
   describe("enable / disable", function() {
 
-    it("should disable and enable the animations", inject(function($animator) {
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', angular.mock.createMockWindow());
+      });
+    });
+
+    it("should disable and enable the animations", inject(function($animator, $rootScope, $window) {
+      expect($animator.enabled()).toBe(false);
+
+      $rootScope.$digest();
+      $window.setTimeout.expect(0).process();
+
       expect($animator.enabled()).toBe(true);
 
       expect($animator.enabled(0)).toBe(false);
@@ -40,9 +52,10 @@ describe("$animator", function() {
       module(function($animationProvider, $provide) {
         $provide.value('$window', window = angular.mock.createMockWindow());
       })
-      inject(function($animator, $compile, $rootScope) {
+      inject(function($animator, $compile, $rootScope, _$rootElement_) {
         animator = $animator($rootScope, {});
         element = $compile('<div></div>')($rootScope);
+        $rootElement = _$rootElement_;
       })
     });
 
@@ -131,7 +144,10 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{enter: \'custom\'}'
       });
+
       $rootScope.$digest(); // re-enable the animations;
+      window.setTimeout.expect(0).process();
+
       expect(element.contents().length).toBe(0);
       animator.enter(child, element);
       window.setTimeout.expect(1).process();
@@ -141,7 +157,10 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
-      $rootScope.$digest();
+
+      $rootScope.$digest(); // re-enable the animations;
+      window.setTimeout.expect(0).process();
+
       element.append(child);
       expect(element.contents().length).toBe(1);
       animator.leave(child, element);
@@ -150,6 +169,7 @@ describe("$animator", function() {
     }));
 
     it("should animate the move animation event", inject(function($animator, $compile, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{move: \'custom\'}'
       });
@@ -165,6 +185,7 @@ describe("$animator", function() {
     }));
 
     it("should animate the show animation event", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'custom\'}'
       });
@@ -178,6 +199,7 @@ describe("$animator", function() {
     }));
 
     it("should animate the hide animation event", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{hide: \'custom\'}'
       });
@@ -192,6 +214,7 @@ describe("$animator", function() {
 
     it("should assign the ngAnimate string to all events if a string is given",
         inject(function($animator, $sniffer, $rootScope) {
+      $animator.enabled(true);
       if (!$sniffer.supportsTransitions) return;
       animator = $animator($rootScope, {
         ngAnimate : '"custom"'
@@ -237,6 +260,7 @@ describe("$animator", function() {
     }));
 
     it("should run polyfillSetup and return the memento", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'setup-memo\'}'
       });
@@ -248,6 +272,8 @@ describe("$animator", function() {
     }));
 
     it("should not run if animations are disabled", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+      $rootScope.$digest(); // clear initial animation suppression
       $animator.enabled(false);
 
       animator = $animator($rootScope, {
@@ -274,8 +300,10 @@ describe("$animator", function() {
     beforeEach(function() {
       module(function($animationProvider, $provide) {
         $provide.value('$window', window = angular.mock.createMockWindow());
-        return function($sniffer) {
+        return function($sniffer, _$rootElement_, $animator) {
           vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+          $rootElement = _$rootElement_;
+          $animator.enabled(true);
         };
       })
     });
@@ -287,8 +315,6 @@ describe("$animator", function() {
       var animator = $animator($rootScope, {
         ngAnimate : '{show: \'inline-show\'}'
       });
-
-      $rootScope.$digest(); // skip no-animate on first digest.
 
       element.css('display','none');
       expect(element.css('display')).toBe('none');

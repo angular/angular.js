@@ -24,15 +24,17 @@ beforeEach(function() {
 
   // reset to jQuery or default to us.
   bindJQuery();
-  jqLite(document.body).html('');
+  jqLite(document.body).html('').removeData();
 });
 
 afterEach(function() {
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
+    var $rootElement = this.$injector.get('$rootElement');
     var $log = this.$injector.get('$log');
     // release the injector
     dealoc($rootScope);
+    dealoc($rootElement);
 
     // check $log mock
     $log.assertEmpty && $log.assertEmpty();
