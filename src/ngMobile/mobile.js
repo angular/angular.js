@@ -7,7 +7,7 @@
  */
 
 /*
- * Touch events and other mobile helpers by Braden Shepherdson (braden.shepherdson@gmail.com) and Stephen von Takach (steve@cotag.me)
+ * Touch events and other mobile helpers
  * Based on jQuery Mobile touch event handling (jquerymobile.com)
  * and Microsoft PointerDraw http://ie.microsoft.com/testdrive/ieblog/2011/oct/PointerDraw.js.source.html
  */

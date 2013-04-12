@@ -8,8 +8,8 @@
  *
  * @description
  * The `ngAnimate` directive works as an attribute that is attached alongside pre-existing directives.
- * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place while
- * without burduning the directive which uses the animation with animation details. The built dn directives
+ * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place
+ * without burdening the directive which uses the animation with animation details. The built in directives
  * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView` already accept `ngAnimate` directive.
  * Custom directives can take advantage of animation through {@link ng.$animator $animator service}.
  *
@@ -40,9 +40,13 @@
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
  *
+ * Keep in mind that, by default, **all** initial animations will be skipped until the first digest cycle has fully
+ * passed. This helps prevent any unexpected animations from occurring while the application or directive is initializing. To
+ * override this behavior, you may pass "animateFirst: true" into the ngAnimate attribute expression.
+ *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
- * This is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
+ * It is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
  * All that is required is the following CSS code:
  *
  * <pre>
@@ -121,22 +125,49 @@
  *
  */
 
-/**
- * @ngdoc function
- * @name ng.$animator
- *
- * @description
- * The $animator service provides the DOM manipulation API which is decorated with animations.
- *
- * @param {Scope} scope the scope for the ng-animate.
- * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
- *        passed into the linking function of the directive using the `$animator`.)
- * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
- */
 var $AnimatorProvider = function() {
-  this.$get = ['$animation', '$window', '$sniffer', function($animation, $window, $sniffer) {
-    return function(scope, attrs) {
+  var globalAnimationEnabled = true;
+
+  this.$get = ['$animation', '$window', '$sniffer', '$rootScope', function($animation, $window, $sniffer, $rootScope) {
+  /**
+   * @ngdoc function
+   * @name ng.$animator
+   * @function
+   *
+   * @description
+   * The $animator.create service provides the DOM manipulation API which is decorated with animations.
+   *
+   * @param {Scope} scope the scope for the ng-animate.
+   * @param {Attributes} attr the attributes object which contains the ngAnimate key / value pair. (The attributes are
+   *        passed into the linking function of the directive using the `$animator`.)
+   * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
+   */
+   var AnimatorService = function(scope, attrs) {
       var ngAnimateAttr = attrs.ngAnimate;
+
+      // avoid running animations on start
+      var animationEnabled = false;
+      var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
+
+      if (!animationEnabled) {
+        if(isObject(ngAnimateValue) && ngAnimateValue['animateFirst']) {
+          animationEnabled = true;
+        } else {
+          var enableSubsequent = function() {
+            removeWatch();
+            scope.$evalAsync(function() {
+              animationEnabled = true;
+            });
+          };
+          var removeWatch = noop;
+
+          if (scope.$$phase) {
+            enableSubsequent();
+          } else {
+            removeWatch = scope.$watch(enableSubsequent);
+          }
+        }
+      }
       var animator = {};
 
       /**
@@ -211,7 +242,6 @@ var $AnimatorProvider = function() {
       return animator;
 
       function animateActionFactory(type, beforeFn, afterFn) {
-        var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
         var className = ngAnimateAttr
             ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
             : '';
@@ -230,7 +260,8 @@ var $AnimatorProvider = function() {
           var startClass = className + '-start';
 
           return function(element, parent, after) {
-            if (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) {
+            if (!animationEnabled || !globalAnimationEnabled ||
+                (!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart)) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
               return;
@@ -265,7 +296,6 @@ var $AnimatorProvider = function() {
                       0,
                       duration);
                 });
-
                 $window.setTimeout(done, duration * 1000);
               } else {
                 done();
@@ -280,32 +310,54 @@ var $AnimatorProvider = function() {
           }
         }
       }
-    }
 
-    function show(element) {
-      element.css('display', '');
-    }
-
-    function hide(element) {
-      element.css('display', 'none');
-    }
-
-    function insert(element, parent, after) {
-      if (after) {
-        after.after(element);
-      } else {
-        parent.append(element);
+      function show(element) {
+        element.css('display', '');
       }
-    }
 
-    function remove(element) {
-      element.remove();
-    }
+      function hide(element) {
+        element.css('display', 'none');
+      }
 
-    function move(element, parent, after) {
-      // Do not remove element before insert. Removing will cause data associated with the
-      // element to be dropped. Insert will implicitly do the remove.
-      insert(element, parent, after);
-    }
+      function insert(element, parent, after) {
+        if (after) {
+          after.after(element);
+        } else {
+          parent.append(element);
+        }
+      }
+
+      function remove(element) {
+        element.remove();
+      }
+
+      function move(element, parent, after) {
+        // Do not remove element before insert. Removing will cause data associated with the
+        // element to be dropped. Insert will implicitly do the remove.
+        insert(element, parent, after);
+      }
+    };
+
+    /**
+     * @ngdoc function
+     * @name ng.animator#enabled
+     * @methodOf ng.$animator
+     * @function
+     *
+     * @param {Boolean=} If provided then set the animation on or off.
+     * @return {Boolean} Current animation state.
+     *
+     * @description
+     * Globally enables/disables animations.
+     *
+    */
+    AnimatorService.enabled = function(value) {
+      if (arguments.length) {
+        globalAnimationEnabled = !!value;
+      }
+      return globalAnimationEnabled;
+    };
+
+    return AnimatorService;
   }];
 };

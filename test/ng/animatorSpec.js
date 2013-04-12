@@ -2,10 +2,35 @@
 
 describe("$animator", function() {
 
-  var element;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
 
   afterEach(function(){
-    dealoc(element);
+    dealoc(body);
+  });
+
+  describe("enable / disable", function() {
+
+    it("should disable and enable the animations", inject(function($animator) {
+      expect($animator.enabled()).toBe(true);
+
+      expect($animator.enabled(0)).toBe(false);
+      expect($animator.enabled()).toBe(false);
+
+      expect($animator.enabled(1)).toBe(true);
+      expect($animator.enabled()).toBe(true);
+    }));
+
   });
 
   describe("without animation", function() {
@@ -46,20 +71,27 @@ describe("$animator", function() {
       expect(element.text()).toBe('21');
     }));
 
-    it("should animate the show animation event", inject(function($animator, $compile, $rootScope) {
+    it("should animate the show animation event", inject(function() {
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
       expect(element[0].style.display).toBe('');
     }));
 
-    it("should animate the hide animation event", inject(function($animator, $compile, $rootScope) {
+    it("should animate the hide animation event", inject(function() {
       element.css('display','block');
       expect(element.css('display')).toBe('block');
       animator.hide(element);
       expect(element.css('display')).toBe('none');
     }));
 
+    it("should still perform DOM operations even if animations are disabled", inject(function($animator) {
+      $animator.enabled(false);
+      element.css('display','block');
+      expect(element.css('display')).toBe('block');
+      animator.hide(element);
+      expect(element.css('display')).toBe('none');
+    }));
   });
 
   describe("with polyfill", function() {
@@ -99,6 +131,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{enter: \'custom\'}'
       });
+      $rootScope.$digest(); // re-enable the animations;
       expect(element.contents().length).toBe(0);
       animator.enter(child, element);
       window.setTimeout.expect(1).process();
@@ -108,6 +141,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
+      $rootScope.$digest();
       element.append(child);
       expect(element.contents().length).toBe(1);
       animator.leave(child, element);
@@ -119,6 +153,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{move: \'custom\'}'
       });
+      $rootScope.$digest();
       var child1 = $compile('<div>1</div>')($rootScope);
       var child2 = $compile('<div>2</div>')($rootScope);
       element.append(child1);
@@ -133,6 +168,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','none');
       expect(element.css('display')).toBe('none');
       animator.show(element);
@@ -145,6 +181,7 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{hide: \'custom\'}'
       });
+      $rootScope.$digest();
       element.css('display','block');
       expect(element.css('display')).toBe('block');
       animator.hide(element);
@@ -159,6 +196,8 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '"custom"'
       });
+
+      $rootScope.$digest();
 
       //enter
       animator.enter(child, element);
@@ -201,16 +240,79 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{show: \'setup-memo\'}'
       });
+      $rootScope.$digest();
       expect(element.text()).toEqual('');
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      expect(element.text()).toBe('memento');
+    }));
+
+    it("should not run if animations are disabled", inject(function($animator, $rootScope) {
+      $animator.enabled(false);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{show: \'setup-memo\'}'
+      });
+      $rootScope.$digest();
+
+      element.text('123');
+      expect(element.text()).toBe('123');
+      animator.show(element);
+      expect(element.text()).toBe('123');
+
+      $animator.enabled(true);
+
       animator.show(element);
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
     }));
   });
 
+  describe("with css3", function() {
+    var window, animator, prefix, vendorPrefix;
+
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        return function($sniffer) {
+          vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+        };
+      })
+    });
+
+    it("should skip animations if disabled and run when enabled",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+      $animator.enabled(false);
+      element = $compile(html('<div style="' + vendorPrefix + 'transition: 1s linear all">1</div>'))($rootScope);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'inline-show\'}'
+      });
+
+      $rootScope.$digest(); // skip no-animate on first digest.
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+      animator.show(element);
+      expect(element[0].style.display).toBe('');
+
+      $animator.enabled(true);
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+
+      animator.show(element);
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(1000).process();
+      }
+      expect(element[0].style.display).toBe('');
+    }));
+  });
+
   it("should throw an error when an invalid ng-animate syntax is provided", inject(function($compile, $rootScope) {
     expect(function() {
       element = $compile('<div ng-repeat="i in is" ng-animate=":"></div>')($rootScope);
+      $rootScope.$digest();
     }).toThrow("Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
 });

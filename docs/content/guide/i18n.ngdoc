@@ -53,7 +53,7 @@ There are two approaches to providing locale rules to Angular:
 You can pre-bundle the desired locale file with Angular by concatenating the content of the
 locale-specific file to the end of `angular.js` or `angular.min.js` file.
 
-For example on *nix, to create a an angular.js file that contains localization rules for german
+For example on *nix, to create an angular.js file that contains localization rules for german
 locale, you can do the following:
 
 `cat angular.js i18n/angular-locale_de-ge.js > angular_de-ge.js`
