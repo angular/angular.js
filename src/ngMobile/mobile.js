@@ -163,7 +163,7 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   preventGhostClick = function(x, y) {
     if (!touchCoordinates) {
       $rootElement.bind('click', onClick, true);
-      $rootElement.bind('touchstart MSPointerDown pointerdown', onTouchStart, true);
+      $rootElement.bind('touchstart', onTouchStart, true);
       touchCoordinates = [];
     }
 
@@ -177,60 +177,75 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   // These functions effectively emulate pointer events for mice in desktop browsers
   // that don't support pointer events
   emulatedCapture,    // Stores the element and event handler
+  captureHandlers = [],
   $document = angular.element($window.document),  // We attach the global events here
+  
+  // Run through all the event handlers associated with this element
+  triggerEmulatedCapture = function(event) {
+    var i;
+    for (i = 0; i < captureHandlers.length; i += 1) {
+      captureHandlers[i](event);
+    }
+  },
 
   // Captures mouse events globally to emulate pointer capture
-  // Some IE's support this natively however this is standards compliant
+  // We use IE's native support for legacy browsers
   setEmulatedCapture = function(element, eventHandler) {
-    try {
+    if (emulatedCapture && element[0] == emulatedCapture[0]) {   // Don't re-capture
+      captureHandlers.push(eventHandler);
+      return;
+    }
+    
+    try{
       if(emulatedCapture) {
         if($window.document.createEvent) {
           // Standards based browsers:
           var event = $window.document.createEvent('MouseEvents');
           event.initMouseEvent('lostpointercapture', true, true, window, 0, 0, 0, 0, 0, false, false,
-            false, false, 0, emulatedCapture[0][0]);
-          emulatedCapture[1](event);
+            false, false, 0, emulatedCapture[0]);
+          triggerEmulatedCapture(event);
         } else {
           // IE <= 8
-          releaseEmulatedCapture(emulatedCapture[0]);
+          releaseEmulatedCapture(emulatedCapture);
+          element.bind('mousemove mouseup losecapture', triggerEmulatedCapture)
+          element[0].setCapture(false);
         }
       } else {
         if($window.document.createEvent) {
           // Standards based browsers:
-          $document.bind('mousemove mouseup', eventHandler);
+          $document.bind('mousemove mouseup', triggerEmulatedCapture);
         } else {
           // IE <= 8
-          element.bind('mousemove mouseup losecapture', eventHandler)
+          element.bind('mousemove mouseup losecapture', triggerEmulatedCapture)
           element[0].setCapture(false);
         }
       }
     } finally {
-      emulatedCapture = [element, eventHandler];
+      captureHandlers = [eventHandler];
+      emulatedCapture = element;
     }
   },
 
   // Stops tracking mouse events for the selected element
   releaseEmulatedCapture = function(element) {
-    if (emulatedCapture && emulatedCapture[0] === element) {
+    if (emulatedCapture && emulatedCapture === element) {
       if($window.document.createEvent) {
         // Standards based browsers: 
-        $document.unbind('mousemove', emulatedCapture[1]);
-        $document.unbind('mouseup', emulatedCapture[1]);
+        $document.unbind('mousemove', triggerEmulatedCapture);
+        $document.unbind('mouseup', triggerEmulatedCapture);
       } else {
         // IE <= 8
-        var el = emulatedCapture[0];
-        el[0].releaseCapture();
-        el.unbind('mousemove', emulatedCapture[1]);
-        el.unbind('mouseup', emulatedCapture[1]);
-        el.unbind('losecapture', emulatedCapture[1]);
+        emulatedCapture[0].releaseCapture(); // This will trigger losecapture
+        emulatedCapture.unbind('mousemove', triggerEmulatedCapture);
+        emulatedCapture.unbind('mouseup', triggerEmulatedCapture);
+        emulatedCapture.unbind('losecapture', triggerEmulatedCapture);
       }
       emulatedCapture = undefined;
+      captureHandlers = [];
     }
   },
 
-  //
-  // A function for ensuring comminality across input types
-  //
+  // Pointer events ensures comminality across input types
   pointerEvents = function(scope, element, callbacks) {
     var tracker = {},
       events,
@@ -253,20 +268,13 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
             // protect against failing to get an up or end on this pointerId
             if (tracker[pointerId]) {
               try {
-                if (callbacks['cancel']) {
-                  callbacks['cancel'](pointerId, event);
-                } else if (callbacks['up']) {
-                  callbacks['up'](pointerId, pointerObj, event);
-                }
-              } catch(e) {
-              } finally {
-                delete tracker[pointerId];
                 if (this.releasePointerCapture) {
                   this.releasePointerCapture(pointerId);
                 } else if (event.type == 'mousedown') {
                   releaseEmulatedCapture(element);
                 }
-              }
+              } catch(e) {}
+              delete tracker[pointerId];
             }
             
             // Track the element the event started on and if we should execute the attached action
