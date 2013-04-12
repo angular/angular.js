@@ -22,22 +22,28 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   getPointSize = function() {
     if (ptSize) return ptSize;
 
-    // create an empty element
-    var div = $window.document.createElement("div"),
-      body = $window.document.getElementsByTagName("body")[0],
-      ppi;
+    if(window.document.defaultView) {
+      // create an empty element
+      var div = $window.document.createElement("div"),
+        body = $window.document.getElementsByTagName("body")[0],
+        ppi;
 
-    // give it an absolute size of one inch
-    div.style.width="1in";
-    // append it to the body
-    body.appendChild(div);
-    // read the computed width
-    ppi = $window.document.defaultView.getComputedStyle(div, null).getPropertyValue('width');
-    // remove it again
-    body.removeChild(div);
+      // give it an absolute size of one inch
+      div.style.width="1in";
+      // append it to the body
+      body.appendChild(div);
+      // read the computed width
+      ppi = $window.document.defaultView.getComputedStyle(div, null).getPropertyValue('width');
+      // remove it again
+      body.removeChild(div);
 
-    ptSize = parseFloat(ppi) / 72.0;
-    return ptSize;
+      ptSize = parseFloat(ppi) / 72.0;
+      return ptSize;
+    } else {
+      // for IE8
+      ptSize = 1.3333;
+      return ptSize;
+    }
   },
 
 
@@ -156,10 +162,8 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   // zone around the touchstart where clicks will get busted.
   preventGhostClick = function(x, y) {
     if (!touchCoordinates) {
-      $rootElement[0].addEventListener('click', onClick, true);
-      $rootElement[0].addEventListener('touchstart', onTouchStart, true);
-      $rootElement[0].addEventListener('MSPointerDown', onTouchStart, true);
-      $rootElement[0].addEventListener('pointerdown', onTouchStart, true);
+      $rootElement.bind('click', onClick, true);
+      $rootElement.bind('touchstart MSPointerDown pointerdown', onTouchStart, true);
       touchCoordinates = [];
     }
 
@@ -175,22 +179,30 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   emulatedCapture,    // Stores the element and event handler
   $document = angular.element($window.document),  // We attach the global events here
 
-  // Passes global events to the elements event handler
-  captureListener = function(event) {
-    emulatedCapture[1](event);
-  },
-
   // Captures mouse events globally to emulate pointer capture
   // Some IE's support this natively however this is standards compliant
   setEmulatedCapture = function(element, eventHandler) {
     try {
       if(emulatedCapture) {
-        var event = $window.document.createEvent('MouseEvents');
-        event.initMouseEvent('lostpointercapture', true, true, window, 0, 0, 0, 0, 0, false, false,
-          false, false, 0, emulatedCapture[0][0]);
-        emulatedCapture[1](event);
+        if($window.document.createEvent) {
+          // Standards based browsers:
+          var event = $window.document.createEvent('MouseEvents');
+          event.initMouseEvent('lostpointercapture', true, true, window, 0, 0, 0, 0, 0, false, false,
+            false, false, 0, emulatedCapture[0][0]);
+          emulatedCapture[1](event);
+        } else {
+          // IE <= 8
+          releaseEmulatedCapture(emulatedCapture[0]);
+        }
       } else {
-        $document.bind('mousemove mouseup', captureListener);
+        if($window.document.createEvent) {
+          // Standards based browsers:
+          $document.bind('mousemove mouseup', eventHandler);
+        } else {
+          // IE <= 8
+          element.bind('mousemove mouseup losecapture', eventHandler)
+          element[0].setCapture(false);
+        }
       }
     } finally {
       emulatedCapture = [element, eventHandler];
@@ -200,9 +212,19 @@ ngMobile.factory('$mobile', ['$timeout', '$rootElement', '$window', function($ti
   // Stops tracking mouse events for the selected element
   releaseEmulatedCapture = function(element) {
     if (emulatedCapture && emulatedCapture[0] === element) {
+      if($window.document.createEvent) {
+        // Standards based browsers: 
+        $document.unbind('mousemove', emulatedCapture[1]);
+        $document.unbind('mouseup', emulatedCapture[1]);
+      } else {
+        // IE <= 8
+        var el = emulatedCapture[0];
+        el[0].releaseCapture();
+        el.unbind('mousemove', emulatedCapture[1]);
+        el.unbind('mouseup', emulatedCapture[1]);
+        el.unbind('losecapture', emulatedCapture[1]);
+      }
       emulatedCapture = undefined;
-      $document.unbind('mousemove', captureListener);
-      $document.unbind('mouseup', captureListener);
     }
   },
 
