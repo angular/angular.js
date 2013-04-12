@@ -81,7 +81,7 @@ ngMobile.directive('ngClick', ['$parse', '$mobile', function($parse, $mobile) {
             dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
 
           try {
-            if (diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
+            if (event.type == 'touchend' && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
               $mobile.preventGhostClick(x, y);
 
               // Blur the focused element (the button, probably) before firing the callback.
