@@ -225,6 +225,12 @@ LocationUrl.prototype = {
   $$replace: false,
 
   /**
+   * Broadcast a location change event the next time it changes
+   * @private
+   */
+  $$notify: true,
+
+  /**
    * @ngdoc method
    * @name ng.$location#absUrl
    * @methodOf ng.$location
@@ -394,6 +400,22 @@ LocationUrl.prototype = {
    */
   replace: function() {
     this.$$replace = true;
+    return this;
+  },
+
+  /**
+   * @ngdoc method
+   * @name ng.$location#notify
+   * @methodOf ng.$location
+   *
+   * @description
+   * Allows to skip the location change broadcast event next time the location changes
+   * when called with a false parameter
+   *
+   * @param {boolean=} notify Set to false to disable the location change event once
+   */
+  notify: function(notify) {
+    this.$$notify = notify;
     return this;
   }
 };
@@ -592,20 +614,27 @@ function $LocationProvider(){
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = $browser.url();
       var currentReplace = $location.$$replace;
+      var currentNotify = $location.$$notify;
 
       if (!changeCounter || oldUrl != $location.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
-          if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
-              defaultPrevented) {
-            $location.$$parse(oldUrl);
-          } else {
+          if (currentNotify == true) {  
+            if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
+                defaultPrevented) {
+              $location.$$parse(oldUrl);
+            } else {
+              $browser.url($location.absUrl(), currentReplace);
+              afterLocationChange(oldUrl);
+            }
+          }
+          else {
             $browser.url($location.absUrl(), currentReplace);
-            afterLocationChange(oldUrl);
           }
         });
       }
       $location.$$replace = false;
+      $location.$$notify = true;
 
       return changeCounter;
     });
