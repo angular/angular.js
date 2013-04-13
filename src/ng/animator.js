@@ -262,15 +262,19 @@ var $AnimatorProvider = function() {
               // keep at 1 for animation dom rerender
               $window.setTimeout(beginAnimation, 1);
 
-              function getMaxDuration(durationString){
-                if (isUndefined(durationString)){
-                  return 0;
-                }
-
-                var normalizedValues = map(durationString.split(','), function(val){
-                  return parseFloat(val);
-                });
-                return Math.max.apply(null, normalizedValues);
+              function getMaxDuration(durationString, delayString) {
+                var durations = safelySplitByComma(durationString),
+                    delays = safelySplitByComma(delayString),
+                    overallTimeSpent = 0;
+ 
+                  for (var i = 0, ii = Math.max(durations.length, delays.length); i < ii; i++) {
+                    var combinedDuration = (parseFloat(durations.shift() || 0) + parseFloat(delays.shift() || 0));
+                    if (combinedDuration > overallTimeSpent) {
+                      overallTimeSpent = combinedDuration;
+                    }
+                  }
+ 
+                  return overallTimeSpent;
               }
   
               function beginAnimation() {
@@ -281,14 +285,19 @@ var $AnimatorProvider = function() {
                   var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
                   var w3cTransitionProp = 'transition'; //one day all browsers will have this
   
-                  var durationKey = 'Duration';
-                  var duration = 0;
+                  var durationKey = 'Duration',
+                      delayKey = 'Delay',
+                      duration = 0;
+                  
                   //we want all the styles defined before and after
                   forEach(element, function(element) {
                     var globalStyles = $window.getComputedStyle(element) || {};
                     duration = Math.max(
-                        getMaxDuration(globalStyles[w3cTransitionProp    + durationKey]) ||
-                        getMaxDuration(globalStyles[vendorTransitionProp + durationKey]) ||
+                        getMaxDuration(globalStyles[w3cTransitionProp    + durationKey],
+                                       globalStyles[w3cTransitionProp    + delayKey]) ||
+
+                        getMaxDuration(globalStyles[vendorTransitionProp + durationKey],
+                                       globalStyles[vendorTransitionProp + delayKey]) ||
                         0,
                         duration);
                   });

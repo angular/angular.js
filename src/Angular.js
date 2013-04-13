@@ -185,6 +185,10 @@ function reverseParams(iteratorFn) {
   return function(value, key) { iteratorFn(key, value) };
 }
 
+function safelySplitByComma(str){
+  return isUndefined(str) ? [] : str.split(',');
+}
+
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
  * characters such as '012ABC'. The reason why we are not using simply a number counter is that

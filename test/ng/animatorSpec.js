@@ -335,6 +335,36 @@ describe("$animator", function() {
       expect(element[0].style.display).toBe('');
     }));
 
+  it("should skip animations if disabled and run when enabled picking the longest specified duration/delay combination",
+    inject(function($animator, $rootScope, $compile, $sniffer) {
+      $animator.enabled(false);
+      element = $compile(html('<div style="' + vendorPrefix + 
+        'transition-duration: 1s, 2000ms, 1s; ' + vendorPrefix +
+        'transition-delay: 2s, 1000ms, 2s; ' + vendorPrefix + 
+        'transition-property: height, left, opacity">foo</div>'))($rootScope);
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'inline-show\'}'
+      });
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+      animator.show(element);
+      expect(element[0].style.display).toBe('');
+
+      $animator.enabled(true);
+
+      element.css('display','none');
+      expect(element.css('display')).toBe('none');
+
+      animator.show(element);
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(3000).process();
+      }
+      expect(element[0].style.display).toBe('');
+    }));
+
   });
 
   it("should throw an error when an invalid ng-animate syntax is provided", inject(function($compile, $rootScope) {
