@@ -205,6 +205,28 @@ describe('$route', function() {
   });
 
 
+  it('should not change route when $routeChangeStart is canceled', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/somePath', {template: 'some path'});
+    });
+    inject(function($route, $location, $rootScope, $log) {
+      $rootScope.$on('$routeChangeStart', function(event) {
+        $log.info('$routeChangeStart');
+        event.preventDefault();
+      });
+
+      $rootScope.$on('$routeChangeSuccess', function(event) {
+        throw new Error('Should not get here');
+      });
+
+      $location.path('/somePath');
+      $rootScope.$digest();
+
+      expect($log.info.logs.shift()).toEqual(['$routeChangeStart']);
+    });
+  });
+
+
   describe('should match a route that contains special chars in the path', function() {
     beforeEach(module(function($routeProvider) {
       $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});

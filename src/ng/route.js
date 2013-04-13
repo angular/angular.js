@@ -275,6 +275,11 @@ function $RouteProvider(){
      * defined in `resolve` route property. Once  all of the dependencies are resolved
      * `$routeChangeSuccess` is fired.
      *
+     * Call event.preventDefault() to prevent changing route but leave the browser Url
+     * to it's new location (as opposed to calling event.preventDefault() on $location's
+     * $locationChangeStart event which cancels changing the browser's Url).
+     *
+     *
      * @param {Route} next Future route information.
      * @param {Route} current Current route information.
      */
@@ -405,7 +410,9 @@ function $RouteProvider(){
         $rootScope.$broadcast('$routeUpdate', last);
       } else if (next || last) {
         forceReload = false;
-        $rootScope.$broadcast('$routeChangeStart', next, last);
+        if ( $rootScope.$broadcast('$routeChangeStart', next, last).defaultPrevented ){
+          return;
+        }
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
