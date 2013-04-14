@@ -524,6 +524,26 @@ describe('parser', function() {
             expect(scope.$eval('greeting')).toBe('hello!');
           });
 
+          it('should evaluate a nested promise and eventualy get its value', function() {
+            var nestedDeferred = q.defer();
+            var nestedPromise = nestedDeferred.promise;
+
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            deferred.resolve(nestedPromise);
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            nestedDeferred.resolve('hello!');
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe('hello!');
+          });
 
           it('should evaluate a promise and eventualy ignore its rejection', function() {
             scope.greeting = promise;
@@ -588,6 +608,42 @@ describe('parser', function() {
             expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
           });
 
+          it('should evaluate and dereference promises returned by functions', function() {
+            scope.returnsPromise = function() { return promise; };
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            deferred.resolve('hello!');
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('returnsPromise()')).toBe('hello!');
+          });
+
+          it('should evaluate and dereference nested promises returned by functions', function() {
+            var nestedDeferred = q.defer()
+            var nestedPromise = nestedDeferred.promise
+
+            scope.returnsPromise = function() { return promise; };
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            deferred.resolve(nestedPromise);
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            nestedDeferred.resolve('hello!')
+            expect(scope.$eval('returnsPromise()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('returnsPromise()')).toBe('hello!');
+          });
 
           it('should evaluate and dereference promises used as function arguments', function() {
             scope.greet = function(name) { return 'Hi ' + name + '!'; };
