@@ -406,32 +406,35 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   };
 
-  // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
-  // input event on backspace, delete or cut
-  if ($sniffer.hasEvent('input')) {
-    element.bind('input', listener);
+  if (attr.ngUpdateOn) {
+    element.bind(attr.ngUpdateOn, listener);
   } else {
-    var timeout;
+    // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
+    // input event on backspace, delete or cut
+    if ($sniffer.hasEvent('input')) {
+      element.bind('input', listener);
+    } else {
+      var timeout;
 
-    element.bind('keydown', function(event) {
-      var key = event.keyCode;
+      element.bind('keydown', function(event) {
+        var key = event.keyCode;
 
-      // ignore
-      //    command            modifiers                   arrows
-      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+        // ignore
+        //    command            modifiers                   arrows
+        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
 
-      if (!timeout) {
-        timeout = $browser.defer(function() {
-          listener();
-          timeout = null;
-        });
-      }
-    });
+        if (!timeout) {
+          timeout = $browser.defer(function() {
+            listener();
+            timeout = null;
+          });
+        }
+      });
 
-    // if user paste into input using mouse, we need "change" event to catch it
-    element.bind('change', listener);
+      // if user paste into input using mouse, we need "change" event to catch it
+      element.bind('change', listener);
+    }
   }
-
 
   ctrl.$render = function() {
     element.val(isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
