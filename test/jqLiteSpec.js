@@ -1128,6 +1128,19 @@ describe('jqLite', function() {
       expect(clickSpy1).toHaveBeenCalledOnce();
       expect(clickSpy2).toHaveBeenCalledOnce();
     });
+
+    it('should pass a dummy event', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+	  event;
+
+      element.bind('poke', pokeSpy);
+
+      element.triggerHandler('poke');
+      event = pokeSpy.mostRecentCall.args[0];
+      expect(event.type).toEqual('poke');
+      expect(event.preventDefault).toBeDefined();
+    });
   });
 
 

@@ -54,7 +54,7 @@
  * - [replaceWith()](http://api.jquery.com/replaceWith/)
  * - [text()](http://api.jquery.com/text/)
  * - [toggleClass()](http://api.jquery.com/toggleClass/)
- * - [triggerHandler()](http://api.jquery.com/triggerHandler/) - Doesn't pass native event objects to handlers.
+ * - [triggerHandler()](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
  * - [unbind()](http://api.jquery.com/unbind/) - Does not support namespaces
  * - [val()](http://api.jquery.com/val/)
  * - [wrap()](http://api.jquery.com/wrap/)
@@ -743,9 +743,18 @@ forEach({
 
   triggerHandler: function(element, eventName) {
     var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
+    var event;
+
+    if (document.createEventObject) {
+      event = document.createEventObject();
+      event.type = eventName;
+    } else {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, false, true);
+    }
 
     forEach(eventFns, function(fn) {
-      fn.call(element, null);
+      fn.call(element, event);
     });
   }
 }, function(fn, name){
