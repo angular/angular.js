@@ -280,7 +280,9 @@ var $AnimatorProvider = function() {
                   var duration = 0;
                   //we want all the styles defined before and after
                   forEach(element, function(element) {
-                    var globalStyles = $window.getComputedStyle(element) || {};
+                    if (element.nodeType !== 1 /* ELEMENT_NODE */) return;
+                    var globalStyles = $window.getComputedStyle(element);
+                    if (!globalStyles) return;
                     duration = Math.max(
                         parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
                         parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
