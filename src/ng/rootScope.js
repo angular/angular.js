@@ -9,7 +9,7 @@
  * value as last time so we optimize the operation.
  *
  * Closures construction is expensive in terms of speed as well as memory:
- *   - No closures, instead ups prototypical inheritance for API
+ *   - No closures, instead use prototypical inheritance for API
  *   - Internal state needs to be stored on scope directly, which means that private state is
  *     exposed as $$____ properties
  *
