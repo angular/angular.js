@@ -2,7 +2,7 @@
 #
 # Script to initialize angular repo
 # - install required node packages
-# - install Testacular
+# - install Karma
 # - install git hooks
 
 
@@ -22,10 +22,10 @@ fi
 echo "Installing required npm packages..."
 npm install
 
-testacular=`which testacular 2>&1`
+karma=`which karma 2>&1`
 if [ $? -ne 0 ]; then
-  echo "Installing Testacular..."
-  npm install -g testacular
+  echo "Installing Karma..."
+  npm install -g karma
 fi
 
 echo "Installing git hooks..."
