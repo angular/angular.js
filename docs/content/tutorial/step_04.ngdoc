@@ -134,7 +134,7 @@ The unit test now verifies that the default ordering property is set.
 We used Jasmine's API to extract the controller construction into a `beforeEach` block, which is
 shared by all tests in the parent `describe` block.
 
-You should now see the following output in the Testacular tab:
+You should now see the following output in the Karma tab:
 
         Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)
 

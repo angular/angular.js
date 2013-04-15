@@ -174,7 +174,7 @@ made available a local web server based on Node.js.
 <a name="unit-tests"></a>
 ## Running the Unit Test Suite
 
-Our unit and integration tests are written with Jasmine and executed with Testacular.  To run all of the
+Our unit and integration tests are written with Jasmine and executed with Karma.  To run all of the
 tests once on Chrome run:
 
     grunt test:unit
@@ -188,12 +188,12 @@ Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
 During development it's however more productive to continuously run unit tests every time the source or test files
 change. To execute tests in this mode run:
 
-1. To start the Testacular server, capture Chrome browser and run unit tests, run:
+1. To start the Karma server, capture Chrome browser and run unit tests, run:
 
         grunt autotest:jqlite
 
 2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
-   of Testacular running, read Testacular's console output for the correct url):
+   of Karma running, read Karma's console output for the correct url):
 
         http://localhost:9876/
 
