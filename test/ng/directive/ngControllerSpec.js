@@ -27,6 +27,10 @@ describe('ngController', function() {
     $window.Child = function($scope) {
       $scope.name = 'Adam';
     };
+
+    $window.Public = function() {
+      this.mark = 'works';
+    }
   }));
 
   afterEach(function() {
@@ -38,6 +42,13 @@ describe('ngController', function() {
     element = $compile('<div ng-controller="Greeter">{{greet(name)}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Hello Misko!');
+  }));
+
+
+  it('should publish controller into scope', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-controller="Public as p">{{p.mark}}</div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.text()).toBe('works');
   }));
 
 
