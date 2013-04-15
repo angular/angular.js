@@ -792,7 +792,7 @@ describe('jqLite', function() {
             if (msie < 9){
               var evnt = document.createEventObject();
               evnt.srcElement = element;
-              evnt.relatedTarget = relatedTarget;		
+              evnt.relatedTarget = relatedTarget;
               element.fireEvent('on' + type, evnt);
               return;
             };
@@ -1152,6 +1152,21 @@ describe('jqLite', function() {
       element.triggerHandler('click');
       expect(clickSpy1).toHaveBeenCalledOnce();
       expect(clickSpy2).toHaveBeenCalledOnce();
+    });
+
+    it('should pass in a dummy event', function() {
+      // we need the event to have at least preventDefault because angular will call it on
+      // all anchors with no href automatically
+
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          event;
+
+      element.bind('click', pokeSpy);
+
+      element.triggerHandler('click');
+      event = pokeSpy.mostRecentCall.args[0];
+      expect(event.preventDefault).toBeDefined();
     });
   });
 
