@@ -508,9 +508,9 @@ describe('input', function() {
       changeInputValueTo('x');
       expect(inputElm).toBeInvalid();
 
-      scope.regexp = /abc?/;
+      scope.regexp = /abc?/i;
 
-      changeInputValueTo('ab');
+      changeInputValueTo('aB');
       expect(inputElm).toBeValid();
 
       changeInputValueTo('xx');
