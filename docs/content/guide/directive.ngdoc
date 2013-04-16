@@ -157,7 +157,7 @@ able to quickly stamp out new `li`s for every `action` in `user.actions`. This m
 to save a clean copy of the `li` element for cloning purposes and as new `action`s are inserted,
 the template `li` element needs to be cloned and inserted into `ul`. But cloning the `li` element
 is not enough. It also needs to compile the `li` so that its directives such as
-`{{action.descriptions}}` evaluate against the right {@link api/ng.$rootScope.Scope
+`{{action.description}}` evaluate against the right {@link api/ng.$rootScope.Scope
 scope}. A naive method would be to simply insert a copy of the `li` element and then compile it.
 But compiling on every `li` element clone would be slow, since the compilation requires that we
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
