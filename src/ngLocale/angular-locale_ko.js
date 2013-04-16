@@ -3,57 +3,57 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": {
-      "0": "오전",
-      "1": "오후"
+      "0": "\uc624\uc804",
+      "1": "\uc624\ud6c4"
     },
     "DAY": {
-      "0": "일요일",
-      "1": "월요일",
-      "2": "화요일",
-      "3": "수요일",
-      "4": "목요일",
-      "5": "금요일",
-      "6": "토요일"
+      "0": "\uc77c\uc694\uc77c",
+      "1": "\uc6d4\uc694\uc77c",
+      "2": "\ud654\uc694\uc77c",
+      "3": "\uc218\uc694\uc77c",
+      "4": "\ubaa9\uc694\uc77c",
+      "5": "\uae08\uc694\uc77c",
+      "6": "\ud1a0\uc694\uc77c"
     },
     "MONTH": {
-      "0": "1월",
-      "1": "2월",
-      "2": "3월",
-      "3": "4월",
-      "4": "5월",
-      "5": "6월",
-      "6": "7월",
-      "7": "8월",
-      "8": "9월",
-      "9": "10월",
-      "10": "11월",
-      "11": "12월"
+      "0": "1\uc6d4",
+      "1": "2\uc6d4",
+      "2": "3\uc6d4",
+      "3": "4\uc6d4",
+      "4": "5\uc6d4",
+      "5": "6\uc6d4",
+      "6": "7\uc6d4",
+      "7": "8\uc6d4",
+      "8": "9\uc6d4",
+      "9": "10\uc6d4",
+      "10": "11\uc6d4",
+      "11": "12\uc6d4"
     },
     "SHORTDAY": {
-      "0": "일",
-      "1": "월",
-      "2": "화",
-      "3": "수",
-      "4": "목",
-      "5": "금",
-      "6": "토"
+      "0": "\uc77c",
+      "1": "\uc6d4",
+      "2": "\ud654",
+      "3": "\uc218",
+      "4": "\ubaa9",
+      "5": "\uae08",
+      "6": "\ud1a0"
     },
     "SHORTMONTH": {
-      "0": "1월",
-      "1": "2월",
-      "2": "3월",
-      "3": "4월",
-      "4": "5월",
-      "5": "6월",
-      "6": "7월",
-      "7": "8월",
-      "8": "9월",
-      "9": "10월",
-      "10": "11월",
-      "11": "12월"
+      "0": "1\uc6d4",
+      "1": "2\uc6d4",
+      "2": "3\uc6d4",
+      "3": "4\uc6d4",
+      "4": "5\uc6d4",
+      "5": "6\uc6d4",
+      "6": "7\uc6d4",
+      "7": "8\uc6d4",
+      "8": "9\uc6d4",
+      "9": "10\uc6d4",
+      "10": "11\uc6d4",
+      "11": "12\uc6d4"
     },
-    "fullDate": "y년 M월 d일 EEEE",
-    "longDate": "y년 M월 d일",
+    "fullDate": "y\ub144 M\uc6d4 d\uc77c EEEE",
+    "longDate": "y\ub144 M\uc6d4 d\uc77c",
     "medium": "yyyy. M. d. a h:mm:ss",
     "mediumDate": "yyyy. M. d.",
     "mediumTime": "a h:mm:ss",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "a h:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "₩",
+    "CURRENCY_SYM": "\u20a9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

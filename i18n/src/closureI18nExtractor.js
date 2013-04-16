@@ -168,7 +168,7 @@ function outputLocale(localeInfo, localeID) {
   };
 
   var content = JSON.stringify(localeInfo[localeID], canonicalizeForJsonStringify, '  ')
-      .replace(/\¤/g, '\\u00A4')
+      .replace(new RegExp('[\\u007f-\\uffff]', 'g'), function(c) { return '\\u'+('0000'+c.charCodeAt(0).toString(16)).slice(-4); })
       .replace(/"@@|@@"/g, '');
 
   return prefix + content + suffix;

@@ -7,50 +7,50 @@ $provide.value("$locale", {
       "1": "pm"
     },
     "DAY": {
-      "0": "ഞായറാഴ്ച",
-      "1": "തിങ്കളാഴ്ച",
-      "2": "ചൊവ്വാഴ്ച",
-      "3": "ബുധനാഴ്ച",
-      "4": "വ്യാഴാഴ്ച",
-      "5": "വെള്ളിയാഴ്ച",
-      "6": "ശനിയാഴ്ച"
+      "0": "\u0d1e\u0d3e\u0d2f\u0d31\u0d3e\u0d34\u0d4d\u0d1a",
+      "1": "\u0d24\u0d3f\u0d19\u0d4d\u0d15\u0d33\u0d3e\u0d34\u0d4d\u0d1a",
+      "2": "\u0d1a\u0d4a\u0d35\u0d4d\u0d35\u0d3e\u0d34\u0d4d\u0d1a",
+      "3": "\u0d2c\u0d41\u0d27\u0d28\u0d3e\u0d34\u0d4d\u0d1a",
+      "4": "\u0d35\u0d4d\u0d2f\u0d3e\u0d34\u0d3e\u0d34\u0d4d\u0d1a",
+      "5": "\u0d35\u0d46\u0d33\u0d4d\u0d33\u0d3f\u0d2f\u0d3e\u0d34\u0d4d\u0d1a",
+      "6": "\u0d36\u0d28\u0d3f\u0d2f\u0d3e\u0d34\u0d4d\u0d1a"
     },
     "MONTH": {
-      "0": "ജനുവരി",
-      "1": "ഫെബ്രുവരി",
-      "2": "മാര്‍ച്ച്",
-      "3": "ഏപ്രില്‍",
-      "4": "മേയ്",
-      "5": "ജൂണ്‍",
-      "6": "ജൂലൈ",
-      "7": "ആഗസ്റ്റ്",
-      "8": "സെപ്റ്റംബര്‍",
-      "9": "ഒക്ടോബര്‍",
-      "10": "നവംബര്‍",
-      "11": "ഡിസംബര്‍"
+      "0": "\u0d1c\u0d28\u0d41\u0d35\u0d30\u0d3f",
+      "1": "\u0d2b\u0d46\u0d2c\u0d4d\u0d30\u0d41\u0d35\u0d30\u0d3f",
+      "2": "\u0d2e\u0d3e\u0d30\u0d4d\u200d\u0d1a\u0d4d\u0d1a\u0d4d",
+      "3": "\u0d0f\u0d2a\u0d4d\u0d30\u0d3f\u0d32\u0d4d\u200d",
+      "4": "\u0d2e\u0d47\u0d2f\u0d4d",
+      "5": "\u0d1c\u0d42\u0d23\u0d4d\u200d",
+      "6": "\u0d1c\u0d42\u0d32\u0d48",
+      "7": "\u0d06\u0d17\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d",
+      "8": "\u0d38\u0d46\u0d2a\u0d4d\u0d31\u0d4d\u0d31\u0d02\u0d2c\u0d30\u0d4d\u200d",
+      "9": "\u0d12\u0d15\u0d4d\u0d1f\u0d4b\u0d2c\u0d30\u0d4d\u200d",
+      "10": "\u0d28\u0d35\u0d02\u0d2c\u0d30\u0d4d\u200d",
+      "11": "\u0d21\u0d3f\u0d38\u0d02\u0d2c\u0d30\u0d4d\u200d"
     },
     "SHORTDAY": {
-      "0": "ഞായര്‍",
-      "1": "തിങ്കള്‍",
-      "2": "ചൊവ്വ",
-      "3": "ബുധന്‍",
-      "4": "വ്യാഴം",
-      "5": "വെള്ളി",
-      "6": "ശനി"
+      "0": "\u0d1e\u0d3e\u0d2f\u0d30\u0d4d\u200d",
+      "1": "\u0d24\u0d3f\u0d19\u0d4d\u0d15\u0d33\u0d4d\u200d",
+      "2": "\u0d1a\u0d4a\u0d35\u0d4d\u0d35",
+      "3": "\u0d2c\u0d41\u0d27\u0d28\u0d4d\u200d",
+      "4": "\u0d35\u0d4d\u0d2f\u0d3e\u0d34\u0d02",
+      "5": "\u0d35\u0d46\u0d33\u0d4d\u0d33\u0d3f",
+      "6": "\u0d36\u0d28\u0d3f"
     },
     "SHORTMONTH": {
-      "0": "ജനു",
-      "1": "ഫെബ്രു",
-      "2": "മാര്‍",
-      "3": "ഏപ്രി",
-      "4": "മേയ്",
-      "5": "ജൂണ്‍",
-      "6": "ജൂലൈ",
-      "7": "ഓഗ",
-      "8": "സെപ്റ്റം",
-      "9": "ഒക്ടോ",
-      "10": "നവം",
-      "11": "ഡിസം"
+      "0": "\u0d1c\u0d28\u0d41",
+      "1": "\u0d2b\u0d46\u0d2c\u0d4d\u0d30\u0d41",
+      "2": "\u0d2e\u0d3e\u0d30\u0d4d\u200d",
+      "3": "\u0d0f\u0d2a\u0d4d\u0d30\u0d3f",
+      "4": "\u0d2e\u0d47\u0d2f\u0d4d",
+      "5": "\u0d1c\u0d42\u0d23\u0d4d\u200d",
+      "6": "\u0d1c\u0d42\u0d32\u0d48",
+      "7": "\u0d13\u0d17",
+      "8": "\u0d38\u0d46\u0d2a\u0d4d\u0d31\u0d4d\u0d31\u0d02",
+      "9": "\u0d12\u0d15\u0d4d\u0d1f\u0d4b",
+      "10": "\u0d28\u0d35\u0d02",
+      "11": "\u0d21\u0d3f\u0d38\u0d02"
     },
     "fullDate": "y, MMMM d, EEEE",
     "longDate": "y, MMMM d",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "₹",
+    "CURRENCY_SYM": "\u20b9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": "\u00A4",
+        "negSuf": "\u00a4",
         "posPre": "",
-        "posSuf": "\u00A4"
+        "posSuf": "\u00a4"
       }
     }
   },

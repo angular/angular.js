@@ -18,7 +18,7 @@ $provide.value("$locale", {
     "MONTH": {
       "0": "Januar",
       "1": "Februar",
-      "2": "März",
+      "2": "M\u00e4rz",
       "3": "April",
       "4": "Mai",
       "5": "Juni",
@@ -41,7 +41,7 @@ $provide.value("$locale", {
     "SHORTMONTH": {
       "0": "Jan",
       "1": "Feb",
-      "2": "Mär",
+      "2": "M\u00e4r",
       "3": "Apr",
       "4": "Mai",
       "5": "Jun",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": {
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },
