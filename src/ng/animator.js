@@ -130,14 +130,6 @@ var $AnimatorProvider = function() {
   this.$get = ['$animation', '$window', '$sniffer', '$rootElement', '$rootScope',
       function($animation, $window, $sniffer, $rootElement, $rootScope) {
     $rootElement.data(NG_ANIMATE_CONTROLLER, rootAnimateController);
-    var unregister = $rootScope.$watch(function() {
-      unregister();
-      if (rootAnimateController.running) {
-        $window.setTimeout(function() {
-          rootAnimateController.running = false;
-        }, 0);
-      }
-    });
 
     /**
      * @ngdoc function
