@@ -1,0 +1,58 @@
+@ngdoc overview
+@name Cookbook
+@description
+
+Welcome to the Angular cookbook. Here we will show you typical uses of Angular by example.
+
+
+# Hello World
+
+{@link helloworld Hello World}: The simplest possible application that demonstrates the
+classic Hello World!
+
+
+# Basic Form
+
+{@link form Basic Form}: Displaying forms to the user for editing is the bread and butter
+of web applications. Angular makes forms easy through bidirectional data binding.
+
+
+# Advanced Form
+
+{@link advancedform Advanced Form}: Taking the form example to the next level and
+providing advanced features such as  dirty detection, form reverting and submit disabling if
+validation errors exist.
+
+
+# Model View Controller
+
+{@link mvc MVC}: Tic-Tac-Toe: Model View Controller (MVC) is a time-tested design pattern
+to separate the behavior (JavaScript controller) from the presentation (HTML view). This
+separation aids in maintainability and testability of your project.
+
+
+# Multi-page App and Deep Linking
+
+{@link deeplinking Deep Linking}: An AJAX application never navigates away from the
+first page it loads. Instead, it changes the DOM of its single page. Eliminating full-page reloads
+is what makes AJAX apps responsive, but it creates a problem in that apps with a single URL
+prevent you from emailing links to a particular screen within your application.
+
+Deep linking tries to solve this by changing the URL anchor without reloading a page, thus
+allowing you to send links to specific screens in your app.
+
+
+# Services
+
+{@link api/ng Services}: Services are long lived objects in your applications that are
+available across controllers. A collection of useful services are pre-bundled with Angular but you
+will likely add your own. Services are initialized using dependency injection, which resolves the
+order of initialization. This safeguards you from the perils of global state (a common way to
+implement long lived objects).
+
+
+# External Resources
+
+{@link buzz Resources}: Web applications must be able to communicate with the external
+services to get and update data. Resources are the abstractions of external URLs which are
+specially tailored to Angular data binding.
