@@ -7,13 +7,13 @@ $provide.value("$locale", {
       "1": "e.m."
     },
     "DAY": {
-      "0": "søndag",
+      "0": "s\u00f8ndag",
       "1": "mandag",
       "2": "tirsdag",
       "3": "onsdag",
       "4": "torsdag",
       "5": "fredag",
-      "6": "lørdag"
+      "6": "l\u00f8rdag"
     },
     "MONTH": {
       "0": "januar",
@@ -30,13 +30,13 @@ $provide.value("$locale", {
       "11": "december"
     },
     "SHORTDAY": {
-      "0": "søn",
+      "0": "s\u00f8n",
       "1": "man",
       "2": "tir",
       "3": "ons",
       "4": "tor",
       "5": "fre",
-      "6": "lør"
+      "6": "l\u00f8r"
     },
     "SHORTMONTH": {
       "0": "jan.",
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

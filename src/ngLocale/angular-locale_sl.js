@@ -11,7 +11,7 @@ $provide.value("$locale", {
       "1": "ponedeljek",
       "2": "torek",
       "3": "sreda",
-      "4": "četrtek",
+      "4": "\u010detrtek",
       "5": "petek",
       "6": "sobota"
     },
@@ -34,7 +34,7 @@ $provide.value("$locale", {
       "1": "pon.",
       "2": "tor.",
       "3": "sre.",
-      "4": "čet.",
+      "4": "\u010det.",
       "5": "pet.",
       "6": "sob."
     },
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }
