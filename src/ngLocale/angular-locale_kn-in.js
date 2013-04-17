@@ -7,50 +7,50 @@ $provide.value("$locale", {
       "1": "pm"
     },
     "DAY": {
-      "0": "ರವಿವಾರ",
-      "1": "ಸೋಮವಾರ",
-      "2": "ಮಂಗಳವಾರ",
-      "3": "ಬುಧವಾರ",
-      "4": "ಗುರುವಾರ",
-      "5": "ಶುಕ್ರವಾರ",
-      "6": "ಶನಿವಾರ"
+      "0": "\u0cb0\u0cb5\u0cbf\u0cb5\u0cbe\u0cb0",
+      "1": "\u0cb8\u0ccb\u0cae\u0cb5\u0cbe\u0cb0",
+      "2": "\u0cae\u0c82\u0c97\u0cb3\u0cb5\u0cbe\u0cb0",
+      "3": "\u0cac\u0cc1\u0ca7\u0cb5\u0cbe\u0cb0",
+      "4": "\u0c97\u0cc1\u0cb0\u0cc1\u0cb5\u0cbe\u0cb0",
+      "5": "\u0cb6\u0cc1\u0c95\u0ccd\u0cb0\u0cb5\u0cbe\u0cb0",
+      "6": "\u0cb6\u0ca8\u0cbf\u0cb5\u0cbe\u0cb0"
     },
     "MONTH": {
-      "0": "ಜನವರೀ",
-      "1": "ಫೆಬ್ರವರೀ",
-      "2": "ಮಾರ್ಚ್",
-      "3": "ಎಪ್ರಿಲ್",
-      "4": "ಮೆ",
-      "5": "ಜೂನ್",
-      "6": "ಜುಲೈ",
-      "7": "ಆಗಸ್ಟ್",
-      "8": "ಸಪ್ಟೆಂಬರ್",
-      "9": "ಅಕ್ಟೋಬರ್",
-      "10": "ನವೆಂಬರ್",
-      "11": "ಡಿಸೆಂಬರ್"
+      "0": "\u0c9c\u0ca8\u0cb5\u0cb0\u0cc0",
+      "1": "\u0cab\u0cc6\u0cac\u0ccd\u0cb0\u0cb5\u0cb0\u0cc0",
+      "2": "\u0cae\u0cbe\u0cb0\u0ccd\u0c9a\u0ccd",
+      "3": "\u0c8e\u0caa\u0ccd\u0cb0\u0cbf\u0cb2\u0ccd",
+      "4": "\u0cae\u0cc6",
+      "5": "\u0c9c\u0cc2\u0ca8\u0ccd",
+      "6": "\u0c9c\u0cc1\u0cb2\u0cc8",
+      "7": "\u0c86\u0c97\u0cb8\u0ccd\u0c9f\u0ccd",
+      "8": "\u0cb8\u0caa\u0ccd\u0c9f\u0cc6\u0c82\u0cac\u0cb0\u0ccd",
+      "9": "\u0c85\u0c95\u0ccd\u0c9f\u0ccb\u0cac\u0cb0\u0ccd",
+      "10": "\u0ca8\u0cb5\u0cc6\u0c82\u0cac\u0cb0\u0ccd",
+      "11": "\u0ca1\u0cbf\u0cb8\u0cc6\u0c82\u0cac\u0cb0\u0ccd"
     },
     "SHORTDAY": {
-      "0": "ರ.",
-      "1": "ಸೋ.",
-      "2": "ಮಂ.",
-      "3": "ಬು.",
-      "4": "ಗು.",
-      "5": "ಶು.",
-      "6": "ಶನಿ."
+      "0": "\u0cb0.",
+      "1": "\u0cb8\u0ccb.",
+      "2": "\u0cae\u0c82.",
+      "3": "\u0cac\u0cc1.",
+      "4": "\u0c97\u0cc1.",
+      "5": "\u0cb6\u0cc1.",
+      "6": "\u0cb6\u0ca8\u0cbf."
     },
     "SHORTMONTH": {
-      "0": "ಜನವರೀ",
-      "1": "ಫೆಬ್ರವರೀ",
-      "2": "ಮಾರ್ಚ್",
-      "3": "ಎಪ್ರಿಲ್",
-      "4": "ಮೆ",
-      "5": "ಜೂನ್",
-      "6": "ಜುಲೈ",
-      "7": "ಆಗಸ್ಟ್",
-      "8": "ಸಪ್ಟೆಂಬರ್",
-      "9": "ಅಕ್ಟೋಬರ್",
-      "10": "ನವೆಂಬರ್",
-      "11": "ಡಿಸೆಂಬರ್"
+      "0": "\u0c9c\u0ca8\u0cb5\u0cb0\u0cc0",
+      "1": "\u0cab\u0cc6\u0cac\u0ccd\u0cb0\u0cb5\u0cb0\u0cc0",
+      "2": "\u0cae\u0cbe\u0cb0\u0ccd\u0c9a\u0ccd",
+      "3": "\u0c8e\u0caa\u0ccd\u0cb0\u0cbf\u0cb2\u0ccd",
+      "4": "\u0cae\u0cc6",
+      "5": "\u0c9c\u0cc2\u0ca8\u0ccd",
+      "6": "\u0c9c\u0cc1\u0cb2\u0cc8",
+      "7": "\u0c86\u0c97\u0cb8\u0ccd\u0c9f\u0ccd",
+      "8": "\u0cb8\u0caa\u0ccd\u0c9f\u0cc6\u0c82\u0cac\u0cb0\u0ccd",
+      "9": "\u0c85\u0c95\u0ccd\u0c9f\u0ccb\u0cac\u0cb0\u0ccd",
+      "10": "\u0ca8\u0cb5\u0cc6\u0c82\u0cac\u0cb0\u0ccd",
+      "11": "\u0ca1\u0cbf\u0cb8\u0cc6\u0c82\u0cac\u0cb0\u0ccd"
     },
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "hh:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "₹",
+    "CURRENCY_SYM": "\u20b9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

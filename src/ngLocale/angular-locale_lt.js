@@ -3,28 +3,28 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": {
-      "0": "priešpiet",
+      "0": "prie\u0161piet",
       "1": "popiet"
     },
     "DAY": {
       "0": "sekmadienis",
       "1": "pirmadienis",
       "2": "antradienis",
-      "3": "trečiadienis",
+      "3": "tre\u010diadienis",
       "4": "ketvirtadienis",
       "5": "penktadienis",
-      "6": "šeštadienis"
+      "6": "\u0161e\u0161tadienis"
     },
     "MONTH": {
       "0": "sausio",
       "1": "vasaris",
       "2": "kovas",
       "3": "balandis",
-      "4": "gegužė",
-      "5": "birželis",
+      "4": "gegu\u017e\u0117",
+      "5": "bir\u017eelis",
       "6": "liepa",
-      "7": "rugpjūtis",
-      "8": "rugsėjis",
+      "7": "rugpj\u016btis",
+      "8": "rugs\u0117jis",
       "9": "spalis",
       "10": "lapkritis",
       "11": "gruodis"
@@ -36,7 +36,7 @@ $provide.value("$locale", {
       "3": "Tr",
       "4": "Kt",
       "5": "Pn",
-      "6": "Št"
+      "6": "\u0160t"
     },
     "SHORTMONTH": {
       "0": "Saus.",
@@ -64,7 +64,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Lt",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

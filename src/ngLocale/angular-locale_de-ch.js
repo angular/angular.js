@@ -18,7 +18,7 @@ $provide.value("$locale", {
     "MONTH": {
       "0": "Januar",
       "1": "Februar",
-      "2": "März",
+      "2": "M\u00e4rz",
       "3": "April",
       "4": "Mai",
       "5": "Juni",
@@ -41,7 +41,7 @@ $provide.value("$locale", {
     "SHORTMONTH": {
       "0": "Jan",
       "1": "Feb",
-      "2": "Mär",
+      "2": "M\u00e4r",
       "3": "Apr",
       "4": "Mai",
       "5": "Jun",
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4-",
+        "negPre": "\u00a4-",
         "negSuf": "",
-        "posPre": "\u00A4 ",
+        "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }
     }

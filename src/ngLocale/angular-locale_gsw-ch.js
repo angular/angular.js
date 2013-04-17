@@ -8,7 +8,7 @@ $provide.value("$locale", {
     },
     "DAY": {
       "0": "Sunntig",
-      "1": "Määntig",
+      "1": "M\u00e4\u00e4ntig",
       "2": "Ziischtig",
       "3": "Mittwuch",
       "4": "Dunschtig",
@@ -18,20 +18,20 @@ $provide.value("$locale", {
     "MONTH": {
       "0": "Januar",
       "1": "Februar",
-      "2": "März",
+      "2": "M\u00e4rz",
       "3": "April",
       "4": "Mai",
       "5": "Juni",
       "6": "Juli",
       "7": "Auguscht",
-      "8": "Septämber",
+      "8": "Sept\u00e4mber",
       "9": "Oktoober",
-      "10": "Novämber",
-      "11": "Dezämber"
+      "10": "Nov\u00e4mber",
+      "11": "Dez\u00e4mber"
     },
     "SHORTDAY": {
       "0": "Su.",
-      "1": "Mä.",
+      "1": "M\u00e4.",
       "2": "Zi.",
       "3": "Mi.",
       "4": "Du.",
@@ -41,7 +41,7 @@ $provide.value("$locale", {
     "SHORTMONTH": {
       "0": "Jan",
       "1": "Feb",
-      "2": "Mär",
+      "2": "M\u00e4r",
       "3": "Apr",
       "4": "Mai",
       "5": "Jun",
@@ -64,7 +64,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "CHF",
     "DECIMAL_SEP": ".",
-    "GROUP_SEP": "’",
+    "GROUP_SEP": "\u2019",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

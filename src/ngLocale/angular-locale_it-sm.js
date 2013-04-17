@@ -8,11 +8,11 @@ $provide.value("$locale", {
     },
     "DAY": {
       "0": "domenica",
-      "1": "lunedì",
-      "2": "martedì",
-      "3": "mercoledì",
-      "4": "giovedì",
-      "5": "venerdì",
+      "1": "luned\u00ec",
+      "2": "marted\u00ec",
+      "3": "mercoled\u00ec",
+      "4": "gioved\u00ec",
+      "5": "venerd\u00ec",
       "6": "sabato"
     },
     "MONTH": {
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4 -",
+        "negPre": "\u00a4\u00a0-",
         "negSuf": "",
-        "posPre": "\u00A4 ",
+        "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }
     }
