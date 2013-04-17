@@ -9,6 +9,7 @@ exports.pluralExtractor = pluralExtractor;
 exports.outputLocale = outputLocale;
 exports.correctedLocaleId = correctedLocaleId;
 exports.findLocaleId = findLocaleId;
+exports.serializeContent = serializeContent;
 
 var goog = { provide: function() {},
   require: function() {},
@@ -125,6 +126,12 @@ function canonicalizeForJsonStringify(unused_key, object) {
   return result;
 }
 
+function serializeContent(localeObj) {
+  return JSON.stringify(localeObj, canonicalizeForJsonStringify, '  ')
+    .replace(new RegExp('[\\u007f-\\uffff]', 'g'), function(c) { return '\\u'+('0000'+c.charCodeAt(0).toString(16)).slice(-4); })
+    .replace(/"@@|@@"/g, '');
+}
+
 function outputLocale(localeInfo, localeID) {
   var fallBackID = localeID.match(/[A-Za-z]+/)[0],
       localeObj = localeInfo[localeID],
@@ -167,9 +174,7 @@ function outputLocale(localeInfo, localeID) {
     id: localeObj.id
   };
 
-  var content = JSON.stringify(localeInfo[localeID], canonicalizeForJsonStringify, '  ')
-      .replace(/\¤/g, '\\u00A4')
-      .replace(/"@@|@@"/g, '');
+  var content = serializeContent(localeInfo[localeID]);
 
   return prefix + content + suffix;
 }

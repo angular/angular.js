@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "2": "maaliskuuta",
       "3": "huhtikuuta",
       "4": "toukokuuta",
-      "5": "kesäkuuta",
-      "6": "heinäkuuta",
+      "5": "kes\u00e4kuuta",
+      "6": "hein\u00e4kuuta",
       "7": "elokuuta",
       "8": "syyskuuta",
       "9": "lokakuuta",
@@ -44,8 +44,8 @@ $provide.value("$locale", {
       "2": "maaliskuuta",
       "3": "huhtikuuta",
       "4": "toukokuuta",
-      "5": "kesäkuuta",
-      "6": "heinäkuuta",
+      "5": "kes\u00e4kuuta",
+      "6": "hein\u00e4kuuta",
       "7": "elokuuta",
       "8": "syyskuuta",
       "9": "lokakuuta",
@@ -62,9 +62,9 @@ $provide.value("$locale", {
     "shortTime": "H.mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

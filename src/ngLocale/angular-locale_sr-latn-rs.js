@@ -11,7 +11,7 @@ $provide.value("$locale", {
       "1": "ponedeljak",
       "2": "utorak",
       "3": "sreda",
-      "4": "četvrtak",
+      "4": "\u010detvrtak",
       "5": "petak",
       "6": "subota"
     },
@@ -34,7 +34,7 @@ $provide.value("$locale", {
       "1": "pon",
       "2": "uto",
       "3": "sre",
-      "4": "čet",
+      "4": "\u010det",
       "5": "pet",
       "6": "sub"
     },
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

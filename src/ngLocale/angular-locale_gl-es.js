@@ -10,10 +10,10 @@ $provide.value("$locale", {
       "0": "Domingo",
       "1": "Luns",
       "2": "Martes",
-      "3": "Mércores",
+      "3": "M\u00e9rcores",
       "4": "Xoves",
       "5": "Venres",
-      "6": "Sábado"
+      "6": "S\u00e1bado"
     },
     "MONTH": {
       "0": "Xaneiro",
@@ -21,7 +21,7 @@ $provide.value("$locale", {
       "2": "Marzo",
       "3": "Abril",
       "4": "Maio",
-      "5": "Xuño",
+      "5": "Xu\u00f1o",
       "6": "Xullo",
       "7": "Agosto",
       "8": "Setembro",
@@ -33,10 +33,10 @@ $provide.value("$locale", {
       "0": "Dom",
       "1": "Lun",
       "2": "Mar",
-      "3": "Mér",
+      "3": "M\u00e9r",
       "4": "Xov",
       "5": "Ven",
-      "6": "Sáb"
+      "6": "S\u00e1b"
     },
     "SHORTMONTH": {
       "0": "Xan",
@@ -44,7 +44,7 @@ $provide.value("$locale", {
       "2": "Mar",
       "3": "Abr",
       "4": "Mai",
-      "5": "Xuñ",
+      "5": "Xu\u00f1",
       "6": "Xul",
       "7": "Ago",
       "8": "Set",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }
