@@ -111,8 +111,7 @@ describe('form', function() {
     expect(scope.formB.$error.required).toBe(false);
   });
 
-
-  it('should publish widgets', function() {
+  it('should publish widgets with static names', function() {
     doc = jqLite('<form name="form"><input type="text" name="w1" ng-model="some" /></form>');
     $compile(doc)(scope);
 
@@ -124,6 +123,21 @@ describe('form', function() {
     expect(widget.$invalid).toBe(false);
   });
 
+  it('should publish widgets with dynamic names', function() {
+    doc = jqLite('<form name="form"><input type="text" name="{{name}}" ng-model="some" /></form>');
+    $compile(doc)(scope);
+
+    scope.name = 'w1';
+    scope.$digest();
+    var widget = scope.form.w1;
+    expect(widget).toBeDefined();
+
+    scope.name = 'w2';
+    scope.$digest();
+    expect(scope.form.w1).toBeUndefined();
+    expect(scope.form.w2).toBeDefined();
+    expect(scope.form.w2).toBe(widget);
+  });
 
   describe('preventing default submission', function() {
 
