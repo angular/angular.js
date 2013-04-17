@@ -160,7 +160,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
  * @name ng.directive:ngClassEven
  *
  * @description
- * The `ngClassOdd` and `ngClassEven` works exactly as
+ * The `ngClassOdd` and `ngClassEven` directives work exactly as
  * {@link ng.directive:ngClass ngClass}, except it works in
  * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
  *
