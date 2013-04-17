@@ -98,6 +98,63 @@ describe('angular', function() {
       src = dst = [2, 4];
       expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
     });
+
+    it('should not copy the private $$hashKey', function() {
+      var src,dst;
+      src = {};
+      hashKey(src);
+      dst = copy(src);
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+    });
+
+    it('should retain the previous $$hashKey', function() {
+      var src,dst,h;
+      src = {};
+      dst = {};
+      // force creation of a hashkey
+      h = hashKey(dst);
+      hashKey(src);
+      dst = copy(src,dst);
+
+      // make sure we don't copy the key
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
+    });
+  });
+
+  describe("extend", function() {
+
+    it('should not copy the private $$hashKey', function() {
+      var src,dst;
+      src = {};
+      dst = {};
+      hashKey(src);
+      dst = extend(dst,src);
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+    });
+
+    it('should retain the previous $$hashKey', function() {
+      var src,dst,h;
+      src = {};
+      dst = {};
+      h = hashKey(dst);
+      hashKey(src);
+      dst = extend(dst,src);
+      // make sure we don't copy the key
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
+    });
+
+    it('should work when extending with itself', function() {
+      var src,dst,h;
+      dst = src = {};
+      h = hashKey(dst);
+      dst = extend(dst,src);
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
+    });
   });
 
   describe('shallow copy', function() {
