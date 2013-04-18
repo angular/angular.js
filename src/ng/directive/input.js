@@ -1119,7 +1119,21 @@ var ngModelDirective = function() {
       var modelCtrl = ctrls[0],
           formCtrl = ctrls[1] || nullFormCtrl;
 
-      formCtrl.$addControl(modelCtrl);
+      // Support of the interpolation in the name attribute,
+      // when the name changes, the control is republished in the form.
+      // We rely on the behaviour of the attribute interpolation directive,
+      // which sets the value to undefined during compilation.
+      if (attr.name) {
+        formCtrl.$addControl(modelCtrl);
+      } else {
+        attr.$observe('name', function(name) {
+          if (modelCtrl.$name) {
+            formCtrl.$removeControl(modelCtrl);
+          }
+          modelCtrl.$name = name;
+          formCtrl.$addControl(modelCtrl);
+        });
+      }
 
       element.bind('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
