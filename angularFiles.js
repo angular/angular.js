@@ -80,6 +80,7 @@ angularFiles = {
 
   'angularScenario': [
     'src/ngScenario/Scenario.js',
+    'src/ngScenario/browserTrigger.js',
     'src/ngScenario/Application.js',
     'src/ngScenario/Describe.js',
     'src/ngScenario/Future.js',
@@ -147,7 +148,6 @@ angularFiles = {
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
-    'build/angular-scenario.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
@@ -157,7 +157,9 @@ angularFiles = {
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
+    'src/ngScenario/browserTrigger.js',
     'test/matchers.js',
+    'test/testabilityPatch.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
