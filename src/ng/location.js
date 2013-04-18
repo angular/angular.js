@@ -65,7 +65,7 @@ function convertToHtml5Url(url, basePath, hashPrefix) {
 
   // already html5 url
   if (decodeURIComponent(match.path) != basePath || isUndefined(match.hash) ||
-      match.hash.indexOf(hashPrefix) !== 0) {
+      match.hash.indexOf(hashPrefix) !== 0 || match.hash.indexOf('javascript:') !== -1) {
     return url;
   // convert hashbang url -> html5 url
   } else {
