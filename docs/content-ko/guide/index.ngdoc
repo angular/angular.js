@@ -1,14 +1,10 @@
 @ngdoc overview
-@name Developer Guide
+@name 개발자 가이드
 @description
 
-angular 개발자 문서에 오신것을 환영합니다.
-여기에 
- If you are here to learn the details of how to use angular
-to develop web apps, you've come to the right place.
+angular 개발자 문서에 오신것을 환영합니다. angular를 이용하여 웹앱을 개발한 법을 배우기 위해 오셨다면 제대로 찾아 오셨습니다.
 
-If you are completely or relatively unfamiliar with angular, you may want to check out one or both
-of the following documents before returning here to the Developer Guide:
+angular를 전혀 모르거나 잘 모르면 아래의 문서들을 확인하고나서 다시 개발자 문서를 보면 좋을 것입니다.
 
 * {@link misc/started Getting Started}
 * {@link tutorial/index Angular Tutorial}
