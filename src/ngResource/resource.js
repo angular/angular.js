@@ -499,7 +499,7 @@ angular.module('ngResource', ['ng']).
               arguments.length + " arguments.";
           }
           var data = hasBody ? this : undefined;
-          Resource[name].call(this, params, data, success, error);
+          return Resource[name].call(this, params, data, success, error);
         };
       });
 
