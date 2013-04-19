@@ -443,7 +443,7 @@ Doc.prototype = {
 
       if (restrict.match(/E/)) {
         dom.html('<p>');
-        dom.text('This directive can be used as custom element, but we aware of ');
+        dom.text('This directive can be used as custom element, but be aware of ');
         dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
         dom.text('.');
         dom.html('</p>');
