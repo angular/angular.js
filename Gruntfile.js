@@ -133,10 +133,6 @@ module.exports = function(grunt) {
 
 
     docs: {
-      options: {
-        locale : "ko",
-        groupName : "KAUG"  
-      },
       process: ['build/docs/*.html', 'build/docs/.htaccess']
     },
 
