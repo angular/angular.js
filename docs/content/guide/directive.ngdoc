@@ -322,6 +322,7 @@ perform any initialization work here. The method is invoked using the {@link
 api/AUTO.$injector#invoke $injector.invoke} which
 makes it injectable following all of the rules of injection annotation.
 
+<a name="Definition"></a>
 ## Directive Definition Object
 
 The directive definition object provides instructions to the {@link api/ng.$compile
