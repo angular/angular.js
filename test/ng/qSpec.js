@@ -350,6 +350,94 @@ describe('q', function() {
         expect(typeof promise.always).toBe('function');
       });
 
+      it('should not have a cancel method if no canceler is provided', function() {
+        expect(promise.cancel).not.toBeDefined();
+      });
+
+      it('should have a cancel method if a canceler is provided', function() {
+        deferred = defer(noop);
+        promise = deferred.promise;
+        expect(promise.cancel).toBeDefined();
+        promise = promise.always(noop);
+        expect(promise.cancel).toBeDefined();
+      });
+
+
+      describe('cancel', function() {
+        var canceler;
+
+        beforeEach(function() {
+          canceler = jasmine.createSpy();
+          deferred =  defer(canceler);
+          promise = deferred.promise;
+        });
+
+        it('should cancel a pending task and reject the promise', function() {
+          promise.then(success(), error());
+          expect(promise.cancel('foo')).toBe(true);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error(foo)');
+        });
+
+        it('should reject the promise with a reason returned from the canceler', function() {
+          canceler.andReturn('bar');
+          promise.then(success(), error());
+          expect(promise.cancel('foo')).toBe(true);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error(bar)');
+        });
+
+        it('should log exceptions thrown in the canceler', function() {
+          canceler.andThrow(Error('oops'));
+          promise.then(success(), error());
+          expect(promise.cancel('foo')).toBe(false);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error(Error: oops)');
+        });
+
+        it('should not cancel a resolved promise', function() {
+          promise.then(success(), error());
+          syncResolve(deferred, 'foo');
+          expect(promise.cancel('bar')).toBe(false);
+          expect(canceler).not.toHaveBeenCalled();
+          expect(logStr()).toBe('success(foo)');
+        });
+
+        it('should propagate the cancel method and reasons', function() {
+          promise = promise.then(success(1), error(1)).then(success(2), error(2));
+          expect(promise.cancel).toBeDefined();
+          expect(promise.cancel('foo')).toBe(true);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('error1(foo); error2(foo)');
+        });
+
+        it('should reject all derived promises', function() {
+          var promiseA = promise.then(success('A'), error('A'));
+          var promiseB = promise.then(success('B'), error('B'));
+          var promiseC = promiseB.then(success('C'), error('C'));
+          var promiseD = promiseB.then(success('D'), error('D'));
+          var promiseE = promiseD.always(error('E'));
+          expect(promiseC.cancel('foo')).toBe(true);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          mockNextTick.flush();
+          expect(logStr()).toBe('errorA(foo); errorB(foo); errorC(foo); errorD(foo); errorE()');
+        });
+
+        it('should resolve promises returned by the canceler', function() {
+          var deferred2 = defer();
+          canceler.andReturn(deferred2.promise.then(success('A')));
+          promise.then(success('B'), error('B'));
+          expect(promise.cancel('foo')).toBe(true);
+          expect(canceler).toHaveBeenCalledWith('foo');
+          syncResolve(deferred2, 'bar');
+          expect(logStr()).toBe('successA(bar); errorB(bar)');
+        })
+      });
+
 
       describe('then', function() {
         it('should allow registration of a success callback without an errback and resolve',
