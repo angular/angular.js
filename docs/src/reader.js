@@ -12,7 +12,7 @@ var ngdoc = require('./ngdoc.js'),
 
 var NEW_LINE = /\n\r?/;
 
-function collect() {
+function collect(locale) {
   var allDocs = [];
 
   //collect docs in JS Files
@@ -37,7 +37,7 @@ function collect() {
   });
 
    //collect all ng Docs in Content Folder
-   var path2 = 'docs/content';
+   var path2 = (locale === 'en') ? 'docs/content':'docs/content-'+locale;
    var promiseB = Q.when(qfs.listTree(path2), function(files){
      var done2;
      files.forEach(function(file) {

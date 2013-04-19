@@ -7,12 +7,14 @@ var reader = require('./reader.js'),
 
 var start = now();
 var docs;
+var locale = process.argv[2];
+var groupName = process.argv[3];
 
 writer.makeDir('build/docs/', true).then(function() {
   return writer.makeDir('build/docs/partials/');
 }).then(function() {
-  console.log('Generating AngularJS Reference Documentation...');
-  return reader.collect();
+  console.log('Generating AngularJS('+locale+') Reference Documentation...');
+  return reader.collect(locale);
 }).then(function generateHtmlDocPartials(docs_) {
   docs = docs_;
   ngdoc.merge(docs);
@@ -20,7 +22,7 @@ writer.makeDir('build/docs/', true).then(function() {
   docs.forEach(function(doc){
     // this hack is here because on OSX angular.module and angular.Module map to the same file.
     var id = doc.id.replace('angular.Module', 'angular.IModule');
-    fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
+    fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html(groupName)));
   });
 
   writeTheRest(fileFutures);
