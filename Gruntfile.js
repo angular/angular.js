@@ -137,7 +137,7 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       sanitize: 'build/angular-sanitize.js',
       bootstrap: 'build/angular-bootstrap.js',
-      bootstrapPrettify: 'build/angular-bootstrap-prettify.js',
+      bootstrapPrettify: 'build/angular-bootstrap-prettify.js'
     },
 
 

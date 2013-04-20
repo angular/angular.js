@@ -245,7 +245,6 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   var lastCookies = {};
   var lastCookieString = '';
-  var cookiePath = self.baseHref();
 
   /**
    * @name ng.$browser#cookies
@@ -253,7 +252,12 @@ function Browser(window, document, $log, $sniffer) {
    *
    * @param {string=} name Cookie name
    * @param {string=} value Cookie value
-   *
+   * @param {object} options Object allowing additional control on how a cookie is created
+   *    - **expires** - `{date}` - date for cookie to expire.
+   *      If not passed, the object is not a date or the date is in the past, the cookie expiration
+   *      date will not be set, so that the cookie will expire at the end of the session.
+   *    - **path** - `{string}` - the path to set the cookie on.
+   *      Defaults to {@link #baseHref baseHref}   
    * @description
    * The cookies method provides a 'private' low level access to browser cookies.
    * It is not meant to be used directly, use the $cookie service instead.
@@ -262,49 +266,113 @@ function Browser(window, document, $log, $sniffer) {
    * <ul>
    *   <li>cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify it</li>
    *   <li>cookies(name, value) -> set name to value, if value is undefined delete the cookie</li>
+   *   <li>cookies(name, value,options) -> same as (name, value), but allows more granular control of the cookie</li>
+   *   <li>cookies(name,undefined,options) -> deletes a cookie. allows passing path in options to delete only 
+   *                                          cookie under that path</li>
    *   <li>cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)</li>
    * </ul>
    *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function(name, value) {
-    var cookieLength, cookieArray, cookie, i, index;
+  self.cookies = (function () {
+      var cookies = function (name, value, options) {
+          if (!angular.isDefined(options) || options == null) options = {};
+          if (name) {
+              if (value === undefined) {
+                  deleteCookie(name, options);
+              } else {
+                  if (isString(value)) {
+                      setCookie(name, value, options);
+                  }
+              }
+          } else {
+              return getAllCookies();
+          }
+      }
 
-    if (name) {
-      if (value === undefined) {
-        rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      } else {
-        if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath).length + 1;
+      var defaultPath = self.baseHref;
+
+      function deleteCookie(name, options) {
+          if (options.path) {
+              cookies._setCookie(escape(name) + "=;path=" + options.path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+          } else {
+              cookies._setCookie(escape(name) + "=;path=" + defaultPath() + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+              var path = location.pathname;
+              //delete cookies under different paths
+              while (rawDocument.cookie.indexOf(name + "=") >= 0 && path && path != '') {
+                  cookies._setCookie(escape(name) + "=;path=" + path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+                  path = path.replace(/\/$|[^\/]*[^\/]$/, "");
+              }
+          }
+      }
+      function setCookie(name, value, options) {
+          var newCookie = escape(name) + '=' + escape(value)
+                + resolvePathString(name, options)
+                + resolveExpirationString(name, options);
+
+          cookies._setCookie(newCookie);
+          alertOnLength(name, newCookie);
+      }
+      function resolvePathString(name, options) {
+          var path = defaultPath();
+          if (options.path) {
+              if (angular.isString(options.path) && location.pathname.indexOf(options.path) >= 0) {
+                  path = options.path;
+              } else {
+                  $log.warn("Cookie '" + name + "' was not set with requested path '" + options.path +
+                "' since path is not a String or not partial to window.location, which is " + location.pathname)
+              }
+          }
+          return ";path=" + path;
+      }
+      function resolveExpirationString(name, options) {
+          if (options.expires) {
+              if (angular.isDate(options.expires) && options.expires > new Date()) {
+                  return ";expires=" + options.expires.toUTCString();
+              } else {
+                  $log.warn("Cookie '" + name + "' was not set with requested expiration '" + options.expires +
+                "' since date is in the past or object is not a date")
+              }
+          }
+          return "";
+      }
+      function alertOnLength(name, cookieString) {
+          var cookieLength = (cookieString).length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
           // - 20 cookies per unique domain
           // - 4096 bytes per cookie
           if (cookieLength > 4096) {
-            $log.warn("Cookie '"+ name +"' possibly not set or overflowed because it was too large ("+
-              cookieLength + " > 4096 bytes)!");
+              $log.warn("Cookie '" + name + "' possibly not set or overflowed because it was too large (" +
+            cookieLength + " > 4096 bytes)!");
           }
-        }
       }
-    } else {
-      if (rawDocument.cookie !== lastCookieString) {
-        lastCookieString = rawDocument.cookie;
-        cookieArray = lastCookieString.split("; ");
-        lastCookies = {};
-
-        for (i = 0; i < cookieArray.length; i++) {
-          cookie = cookieArray[i];
-          index = cookie.indexOf('=');
-          if (index > 0) { //ignore nameless cookies
-            lastCookies[unescape(cookie.substring(0, index))] = unescape(cookie.substring(index + 1));
+      function getAllCookies() {
+          if (rawDocument.cookie !== lastCookieString) {
+              lastCookieString = rawDocument.cookie;
+              var cookieArray = lastCookieString.split("; ");
+              lastCookies = {};
+              var cookie, i, index;
+              for (i = 0; i < cookieArray.length; i++) {
+                  cookie = cookieArray[i];
+                  index = cookie.indexOf('=');
+                  if (index > 0) { //ignore nameless cookies
+                      lastCookies[unescape(cookie.substring(0, index))] = unescape(cookie.substring(index + 1));
+                  }
+              }
           }
-        }
+          return lastCookies;
       }
-      return lastCookies;
-    }
-  };
 
+      //shameless plug for unit testing, since there's no way to access a cookie's path and expiration date
+      //and mocking the document.cookie object is too troublesome.
+      //Always use this function to set a cookie.
+      cookies._setCookie = function (value) {
+          rawDocument.cookie = value;
+      }
+      return cookies;
+  })();
 
   /**
    * @name ng.$browser#defer
