@@ -135,6 +135,17 @@ describe('$cookieStore', function() {
     $rootScope.$digest();
     expect($browser.cookies()).toEqual({});
   }));
+  it('should handle empty string value cookies', inject(function ($cookieStore, $browser, $rootScope) {
+    $cookieStore.put("emptyCookie",'');
+    $rootScope.$digest();
+    expect($browser.cookies()).
+        toEqual({ 'emptyCookie': '""' });
+    expect($cookieStore.get("emptyCookie")).toEqual('');
+        
+    $browser.cookieHash['blankCookie'] = '';
+    $browser.poll();
+    expect($cookieStore.get("blankCookie")).toEqual('');
+  }))
   it('should send options to cookies on put',
     inject(function ($cookieStore, $browser, $rootScope) {
         $cookieStore.put("optionCookie","someVal","the option")
