@@ -302,14 +302,12 @@ This directive is represented by the tag "<a-great-eye></a-great-eye>". It repla
 <pre>
 describe('Unit testing great quotes', function() {
     
-    //load up angular and make angular's $rootScope and $compile available to all tests
+    //load up angular and inject angular's $rootScope and $compile so they are available to all tests
     beforeEach(module('myApp'));
-    beforeEach(inject(
-        ['$compile','$rootScope', function($c, $r) {
-            $compile = $c;
-            $rootScope = $r;
-        }]
-    ));
+    beforeEach(inject(function(_$compile_, _$rootScope_){
+      $compile = _$compile_;
+      $rootScope = _$rootScope_;
+    }));
     
     it('Replaces the element with the appropriate content', function() {
         var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
@@ -318,7 +316,7 @@ describe('Unit testing great quotes', function() {
 });
 </pre>
 
-Our jasmine unit test loads in the $compile functionality and $rootScope before each test. The $compile functionality is used to render the aGreatEye directive. After rendering the directive we ensure that the directive has replaced the content and "lidless, wreathed in flame" is present.
+We inject the $compile service and $rootScope before each jasmine test. The $compile service is used to render the aGreatEye directive. After rendering the directive we ensure that the directive has replaced the content and "lidless, wreathed in flame" is present.
 
 ## Mocks
 oue
