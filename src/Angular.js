@@ -438,7 +438,12 @@ function isBoolean(value) {
 
 
 function trim(value) {
-  return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+  if (!isString(value)) return value;
+
+  if (!String.prototype.trim)
+    return value.replace(/^\s*/, '').replace(/\s*$/, '');
+  
+  return String.prototype.trim.apply(value);
 }
 
 /**
