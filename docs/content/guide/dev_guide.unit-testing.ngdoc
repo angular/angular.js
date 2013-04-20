@@ -301,7 +301,9 @@ This directive is represented by the tag "<a-great-eye></a-great-eye>". It repla
 
 <pre>
 describe('Unit testing great quotes', function() {
-    
+    var $compile;
+    var $rootScope;
+
     //load up angular and inject angular's $rootScope and $compile so they are available to all tests
     beforeEach(module('myApp'));
     beforeEach(inject(function(_$compile_, _$rootScope_){
