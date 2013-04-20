@@ -386,7 +386,17 @@ function isEmpty(value) {
   return isUndefined(value) || value === '' || value === null || value !== value;
 }
 
-
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngUpdateOn
+ *
+ * @description
+ * The `ngUpdateOn` directive postpones model updates until the given event has occurred.
+ *
+ * @example
+ * This example keeps validation messages from showing up while a user is still typing.
+   <input type="email" ng-model="user.email" ng-update-on="blur" />
+*/
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   var listener = function() {
