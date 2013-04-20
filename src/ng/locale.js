@@ -11,12 +11,77 @@
  * * `id` – `{string}` – locale id formatted as `languageId-countryId` (e.g. `en-us`)
  */
 function $LocaleProvider(){
-  this.$get = function() {
+  var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js';
+
+  function loadScript(url, callback) {
+    var script = document.createElement('script'),
+      head = document.getElementsByTagName('head')[0];
+
+    script.type = 'text/javascript';
+    if (script.readyState) { // IE
+      script.onreadystatechange = function () {
+        if (script.readyState === 'loaded' ||
+            script.readyState === 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { // Others
+      script.onload = function () {
+        callback();
+      };
+    }
+    script.src = url;
+    script.async = false;
+    head.insertBefore(script, head.firstChild);
+  }
+
+  function loadLocale(localeUrl, $locale) {
+    loadScript(localeUrl, function () {
+      // Force a start to the new module
+      var injector = bootstrap('<div></div>', ['ngLocale']),
+        externalLocale = injector.get('$locale'),
+        $rootScope = injector.get('$rootScope'),
+        $rootElement = injector.get('$rootElement');
+
+      forEach(externalLocale, function (value, key) {
+        $locale[key] = externalLocale[key];
+      });
+
+      // release the injector
+      dealoc($rootScope);
+      dealoc($rootElement);
+    });
+  }
+
+  /**
+   * @ngdoc method
+   * @name ng.$localeProvider#localeLocationPattern
+   * @methodOf ng.$localeProvider
+   * @description
+   * Expression to denote the location from where to retrieve the locale.
+   * Defaults to `angular/i18n/angular-locale_{{locale}}.js`.
+   *
+   * @param {string=} value new expression to set the retrieve path.
+   * @returns {string|self} Returns the expression when used as getter and self if used as setter.
+   */
+  this.localeLocationPattern = function(value) {
+    if (value) {
+      localeLocationPattern = value;
+      return this;
+    } else {
+      return localeLocationPattern;
+    }
+  };
+
+  this.$get = ['$interpolate', function($interpolate) {
+    var localeLocation = $interpolate(localeLocationPattern);
+
     return {
       id: 'en-us',
 
       NUMBER_FORMATS: {
-        DECIMAL_SEP: '.',
+      DECIMAL_SEP: '.',
         GROUP_SEP: ',',
         PATTERNS: [
           { // Decimal Pattern
@@ -66,7 +131,11 @@ function $LocaleProvider(){
           return 'one';
         }
         return 'other';
+      },
+
+      set: function(value) {
+        loadLocale(localeLocation({locale: value}), this);
       }
     };
-  };
+  }];
 }
