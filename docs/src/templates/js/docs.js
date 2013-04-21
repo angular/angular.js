@@ -191,7 +191,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -300,6 +300,8 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         type: 'guide/types'
       };
 
+  var rootHost = 'http://localhost:8000/build/docs';
+  $scope.rootHost = rootHost;
 
   /**********************************
    Publish methods
