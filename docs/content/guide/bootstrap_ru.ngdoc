@@ -1,0 +1,111 @@
+@ngdoc overview
+@name Developer Guide: Bootstrap
+@description
+
+# Overview
+
+This page explains the Angular initialization process and how you can manually initialize Angular
+if necessary.
+
+
+# Angular `<script>` Tag
+
+This example shows the recommended path for integrating Angular with what we call automatic
+initialization.
+
+
+<pre>
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" ng-app>
+  <body>
+    ...
+    <script src="angular.js">
+  </body>
+</html>
+</pre>
+
+  * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
+    improves app load time because the HTML loading is not blocked by loading of the `angular.js`
+    script. You can get the latest bits from {@link http://code.angularjs.org}. Please don't link
+    your production code to this URL, as it will expose a security hole on your site. For
+    experimental development linking to our site is fine.
+    * Choose: `angular-[version].js` for a human-readable file, suitable for development and
+      debugging.
+    * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
+      production.
+  * Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
+    angular to auto-bootstrap your application.
+
+        <html ng-app>
+
+  * If IE7 support is required add `id="ng-app"`
+
+        <html ng-app id="ng-app">
+
+  * If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
+    to make IE happy. (This is here for historical reasons, and we no longer recommend use of
+    `ng:`.)
+
+        <html xmlns:ng="http://angularjs.org">
+
+
+
+# Automatic Initialization
+
+Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
+evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
+for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.
+If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular will:
+
+  * load the {@link guide/module module} associated with the directive.
+  * create the application {@link api/AUTO.$injector injector}
+  * compile the DOM treating the {@link api/ng.directive:ngApp
+    `ng-app`} directive as the root of the compilation. This allows you to tell it to treat only a
+    portion of the DOM as an Angular application.
+
+
+<pre>
+<!doctype html>
+<html ng-app="optionalModuleName">
+  <body>
+    I can add: {{ 1+2 }}.
+    <script src="angular.js"></script>
+  </body>
+</html>
+</pre>
+
+
+
+# Manual Initialization
+
+
+If you need to have more control over the initialization process, you can use a manual
+bootstrapping method instead. Examples of when you'd need to do this include using script loaders
+or the need to perform an operation before Angular compiles a page.
+
+
+Here is an example of manually initializing Angular. The example is equivalent to using the {@link
+api/ng.directive:ngApp ng-app} directive.
+
+<pre>
+<!doctype html>
+<html xmlns:ng="http://angularjs.org">
+  <body>
+    Hello {{'World'}}!
+    <script src="http://code.angularjs.org/angular.js"></script>
+    <script>
+       angular.element(document).ready(function() {
+         angular.bootstrap(document);
+       });
+    </script>
+  </body>
+</html>
+</pre>
+
+This is the sequence that your code should follow:
+
+  1. After the page and all of the code is loaded, find the root of the HTML template, which is
+  typically the root of the document.
+
+  2. Call {@link api/angular.bootstrap} to {@link compiler compile} the template into an
+  executable, bi-directionally bound application.

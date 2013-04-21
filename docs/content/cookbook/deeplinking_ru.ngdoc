@@ -1,0 +1,151 @@
+@ngdoc overview
+@name Cookbook: Deep Linking
+@description
+
+Deep linking allows you to encode the state of the application in the URL so that it can be
+bookmarked and the application can be restored from the URL to the same state.
+
+While Angular does not force you to deal with bookmarks in any particular way, it has services
+which make the common case described here very easy to implement.
+
+# Assumptions
+
+Your application consists of a single HTML page which bootstraps the application. We will refer
+to this page as the chrome.
+Your application is divided into several screens (or views) which the user can visit. For example,
+the home screen, settings screen, details screen, etc. For each of these screens, we would like to
+assign a URL so that it can be bookmarked and later restored. Each of these screens will be
+associated with a controller which define the screen's behavior. The most common case is that the
+screen will be constructed from an HTML snippet, which we will refer to as the partial. Screens can
+have multiple partials, but a single partial is the most common construct. This example makes the
+partial boundary visible using a blue line.
+
+You can make a routing table which shows which URL maps to which partial view template and which
+controller.
+
+# Example
+
+In this example we have a simple app which consist of two screens:
+
+* Welcome: url `welcome` Show the user contact information.
+* Settings: url `settings` Show an edit screen for user contact information.
+
+<example module="deepLinking" deps="angular-sanitize.js">
+ <file name="script.js">
+   angular.module('deepLinking', ['ngSanitize'])
+     .config(function($routeProvider) {
+        $routeProvider.
+          when("/welcome",  {templateUrl:'welcome.html',  controller:WelcomeCntl}).
+          when("/settings", {templateUrl:'settings.html', controller:SettingsCntl});
+     });
+
+   AppCntl.$inject = ['$scope', '$route']
+   function AppCntl($scope, $route) {
+    $scope.$route = $route;
+
+    // initialize the model to something useful
+    $scope.person = {
+     name:'anonymous',
+     contacts:[{type:'email', url:'anonymous@example.com'}]
+    };
+   }
+
+   function WelcomeCntl($scope) {
+    $scope.greet = function() {
+     alert("Hello " + $scope.person.name);
+    };
+   }
+
+   function SettingsCntl($scope, $location) {
+    $scope.cancel = function() {
+     $scope.form = angular.copy($scope.person);
+    };
+
+    $scope.save = function() {
+     angular.copy($scope.form, $scope.person);
+     $location.path('/welcome');
+    };
+
+    $scope.cancel();
+   }
+ </file>
+ <file name="style.css">
+   [ng-view] {
+     border: 1px solid blue;
+     margin: 0;
+     padding:1em;
+   }
+
+   .partial-info {
+      background-color: blue;
+      color: white;
+      padding: 3px;
+    }
+ </file>
+ <file name="index.html">
+    <div ng-controller="AppCntl">
+      <h1>Your App Chrome</h1>
+      [ <a href="welcome">Welcome</a> | <a href="settings">Settings</a> ]
+      <hr/>
+      <span class="partial-info">
+        Partial: {{$route.current.template}}
+      </span>
+      <div ng-view></div>
+      <small>Your app footer </small>
+    </div>
+ </file>
+ <file name="settings.html">
+   <label>Name:</label>
+   <input type="text" ng:model="form.name" required>
+
+   <div ng:repeat="contact in form.contacts">
+     <select ng:model="contact.type">
+       <option>url</option>
+       <option>email</option>
+       <option>phone</option>
+     </select>
+     <input type="text" ng:model="contact.url">
+     [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
+   </div>
+   <div>
+     [ <a href="" ng:click="form.contacts.$add()">add</a> ]
+   </div>
+
+   <button ng:click="cancel()">Cancel</button>
+   <button ng:click="save()">Save</button>
+ </file>
+ <file name="welcome.html">
+   Hello {{person.name}},
+   <div>
+     Your contact information:
+     <div ng:repeat="contact in person.contacts">{{contact.type}}:
+       <span ng-bind-html="contact.url|linky"></span>
+     </div>
+   </div>
+ </file>
+ <file name="scenario.js">
+   it('should navigate to URL', function() {
+     element('a:contains(Welcome)').click();
+     expect(element('[ng-view]').text()).toMatch(/Hello anonymous/);
+     element('a:contains(Settings)').click();
+     input('form.name').enter('yourname');
+     element(':button:contains(Save)').click();
+     element('a:contains(Welcome)').click();
+     expect(element('[ng-view]').text()).toMatch(/Hello yourname/);
+   });
+ </file>
+</example>
+
+
+
+# Things to notice
+
+* Routes are defined in the `AppCntl` class. The initialization of the controller causes the
+  initialization of the {@link api/ng.$route $route} service with the proper URL
+  routes.
+* The  {@link api/ng.$route $route} service then watches the URL and instantiates the
+  appropriate controller when the URL changes.
+* The  {@link api/ng.directive:ngView ngView} widget loads the
+  view when the URL changes. It also sets the view scope to the newly instantiated controller.
+* Changing the URL is sufficient to change the controller and view. It makes no difference whether
+  the URL is changed programatically or by the user.

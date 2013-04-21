@@ -8,6 +8,7 @@ regression/temp*.html
 performance/temp*.html
 .idea/workspace.xml
 *~
+*.swp
 angular.js.tmproj
 node_modules
 angular.xcodeproj

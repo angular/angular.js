@@ -1,0 +1,75 @@
+@ngdoc overview
+@name Downloading
+@description
+
+# Including angular scripts from the Google CDN
+The quickest way to get started is to point your html `<script>` tag to a Google CDN URL.
+This way, you don't have to download anything or maintain a local copy.
+
+There are two types of angular script URLs you can point to, one for development and one for
+production:
+
+* __angular-<version>.js__ — This is the human-readable, non-minified version, suitable for web
+development.
+* __angular-<version>.min.js__ — This is the minified version, which we strongly suggest you use in
+production.
+
+To point your code to an angular script on the Google CDN server, use the following template.  This
+example points to the minified version 1.0.2:
+
+<pre>
+  <!doctype html>
+  <html ng-app>
+    <head>
+      <title>My Angular App</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+    </head>
+    <body>
+    </body>
+  </html>
+</pre>
+
+Note that only versions 1.0.1 and above are available on the CDN, if you need an earlier version
+you can use the <http://code.angularjs.org/> URL which was the previous recommended location for
+hosted code source. If you're still using the angular server you should switch to the CDN version
+for even faster loading times.
+
+# Downloading and hosting angular files locally
+This option is for those who want to work with angular offline, or those who want to host the
+angular files on their own servers.
+
+If you navigate to <http://code.angularjs.org/>, you'll see a directory listing with all of the
+angular versions since we started releasing versioned build artifacts (quite late in the project
+lifetime).  Each directory contains all artifacts that we released for a particular version.
+Download the version you want and have fun.
+
+Each directory under <http://code.angularjs.org/> includes the following set of files:
+
+* __`angular.js`__ — This file is non-obfuscated, non-minified, and human-readable by
+opening it it any editor or browser. In order to get better error messages during development, you
+should always use this non-minified angular script.
+
+* __`angular.min.js`__ — This is a minified and obfuscated version of
+`angular.js` created with the Closure compiler. Use this version for production in order
+to minimize the size of the application that is downloaded by your user's browser.
+
+* __`angular.zip`__ — This is a zip archive that contains all of the files released
+for this angular version. Use this file to get everything in a single download.
+
+* __`angular-mocks.js`__ — This file contains an implementation of mocks that makes
+testing angular apps even easier. Your unit/integration test harness should load this file after
+`angular-<version>.js` is loaded.
+
+* __`angular-scenario.js`__ — This file is a very nifty JavaScript file that allows you
+to write and execute end-to-end tests for angular applications.
+
+* __`angular-loader.min.js`__ — Module loader for Angular modules. If you are loading multiple script files containing
+ Angular modules, you can load them asynchronously and in any order as long as you load this file first. Often the
+ contents of this file are copy&pasted into the `index.html` to avoid even the initial request to `angular-loader.min.js`.
+ See [angular-seed](https://github.com/angular/angular-seed/blob/master/app/index-async.html) for an example of usage.
+
+* __`angular-resource.js`__, __`angular-cookies.js`__, etc - extra Angular modules with additional functionality.
+
+* __`docs`__ — this directory contains all the files that compose the
+<http://docs.angularjs.org/> documentation app. These files are handy to see the older version of
+our docs, or even more importantly, view the docs offline.

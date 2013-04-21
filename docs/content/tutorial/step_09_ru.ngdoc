@@ -1,0 +1,139 @@
+@ngdoc overview
+@name Tutorial: 9 - Filters
+@description
+
+<ul doc-tutorial-nav="9"></ul>
+
+
+In this step you will learn how to create your own custom display filter.
+
+
+<div doc-tutorial-reset="9"></div>
+
+
+Navigate to one of the detail pages.
+
+In the previous step, the details page displayed either "true" or "false" to indicate whether
+certain phone features were present or not. We have used a custom filter to convert those text
+strings into glyphs: ✓ for "true", and ✘ for "false". Let's see what the filter code looks like.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-8...step-9
+GitHub}:
+
+
+## Custom Filter
+
+In order to create a new filter, you are going to create a `phonecatFilters` module and register
+your custom filter with this module:
+
+__`app/js/filters.js`:__
+<pre>
+angular.module('phonecatFilters', []).filter('checkmark', function() {
+  return function(input) {
+    return input ? '\u2713' : '\u2718';
+  };
+});
+</pre>
+
+The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
+return one of two unicode characters we have chosen to represent true or false (`\u2713` and
+`\u2718`).
+
+Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
+our main `phonecat` module.
+
+__`app/js/app.js`:__
+<pre>
+...
+angular.module('phonecat', ['phonecatFilters']).
+...
+</pre>
+
+
+## Template
+
+Since the filter code lives in the `app/js/filters.js` file, we need to include this file in our
+layout template.
+
+__`app/index.html`:__
+<pre>
+...
+ <script src="js/controllers.js"></script>
+ <script src="js/filters.js"></script>
+...
+</pre>
+
+The syntax for using filters in Angular templates is as follows:
+
+    {{ expression | filter }}
+
+Let's employ the filter in the phone details template:
+
+
+
+__`app/partials/phone-detail.html`:__
+<pre>
+...
+    <dl>
+      <dt>Infrared</dt>
+      <dd>{{phone.connectivity.infrared | checkmark}}</dd>
+      <dt>GPS</dt>
+      <dd>{{phone.connectivity.gps | checkmark}}</dd>
+    </dl>
+...
+</pre>
+
+
+## Test
+
+Filters, like any other component, should be tested and these tests are very easy to write.
+
+__`test/unit/filtersSpec.js`:__
+<pre>
+describe('filter', function() {
+
+  beforeEach(module('phonecatFilters'));
+
+
+  describe('checkmark', function() {
+
+    it('should convert boolean values to unicode checkmark or cross',
+        inject(function(checkmarkFilter) {
+      expect(checkmarkFilter(true)).toBe('\u2713');
+      expect(checkmarkFilter(false)).toBe('\u2718');
+    }));
+  });
+});
+</pre>
+
+Note that you need to configure our test injector with the `phonecatFilters` module before any of
+our filter tests execute.
+
+You should now see the following output in the Karma tab:
+
+        Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)
+
+
+# Experiments
+
+* Let's experiment with some of the {@link api/ng.$filter built-in Angular filters} and add the
+following bindings to `index.html`:
+  * `{{ "lower cap string" | uppercase }}`
+  * `{{ {foo: "bar", baz: 23} | json }}`
+  * `{{ 1304375948024 | date }}`
+  * `{{ 1304375948024 | date:"MM/dd/yyyy @ h:mma" }}`
+
+*  We can also create a model with an input element, and combine it with a filtered binding. Add
+the following to index.html:
+
+        <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+
+
+# Summary
+
+Now that you have learned how to write and test a custom filter, go to {@link step_10 step 10} to
+learn how we can use Angular to enhance the phone details page further.
+
+
+<ul doc-tutorial-nav="9"></ul>

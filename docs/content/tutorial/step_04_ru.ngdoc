@@ -1,0 +1,187 @@
+@ngdoc overview
+@name Tutorial: 4 - Two-way Data Binding
+@description
+
+<ul doc-tutorial-nav="4"></ul>
+
+
+In this step, you will add a feature to let your users control the order of the items in the phone
+list. The dynamic ordering is implemented by creating a new model property, wiring it together with
+the repeater, and letting the data binding magic do the rest of the work.
+
+
+<div doc-tutorial-reset="4"></div>
+
+
+You should see that in addition to the search box, the app displays a drop down menu that allows
+users to control the order in which the phones are listed.
+
+The most important differences between Steps 3 and 4 are listed below. You can see the full diff on
+{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 GitHub}:
+
+
+## Template
+
+__`app/index.html`:__
+<pre>
+  Search: <input ng-model="query">
+  Sort by:
+  <select ng-model="orderProp">
+    <option value="name">Alphabetical</option>
+    <option value="age">Newest</option>
+  </select>
+
+
+  <ul class="phones">
+    <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
+      {{phone.name}}
+      <p>{{phone.snippet}}</p>
+    </li>
+  </ul>
+</pre>
+
+We made the following changes to the `index.html` template:
+
+* First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
+two provided sorting options.
+
+      <img  class="diagram" src="img/tutorial/tutorial_04.png">
+
+* We then chained the `filter` filter with {@link api/ng.filter:orderBy `orderBy`}
+filter to further process the input into the repeater. `orderBy` is a filter that takes an input
+array, copies it and reorders the copy which is then returned.
+
+Angular creates a two way data-binding between the select element and the `orderProp` model.
+`orderProp` is then used as the input for the `orderBy` filter.
+
+As we discussed in the section about data-binding and the repeater in step 3, whenever the model
+changes (for example because a user changes the order with the select drop down menu), Angular's
+data-binding will cause the view to automatically update. No bloated DOM manipulation code is
+necessary!
+
+
+
+## Controller
+
+__`app/js/controllers.js`:__
+<pre>
+function PhoneListCtrl($scope) {
+  $scope.phones = [
+    {"name": "Nexus S",
+     "snippet": "Fast just got faster with Nexus S.",
+     "age": 0},
+    {"name": "Motorola XOOM™ with Wi-Fi",
+     "snippet": "The Next, Next Generation tablet.",
+     "age": 1},
+    {"name": "MOTOROLA XOOM™",
+     "snippet": "The Next, Next Generation tablet.",
+     "age": 2}
+  ];
+
+  $scope.orderProp = 'age';
+}
+</pre>
+
+* We modified the `phones` model - the array of phones - and added an `age` property to each phone
+record. This property is used to order phones by age.
+
+* We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
+not set the default value here, the model would stay uninitialized until our user would pick an
+option from the drop down menu.
+
+  This is a good time to talk about two-way data-binding. Notice that when the app is loaded in the
+browser, "Newest" is selected in the drop down menu. This is because we set `orderProp` to `'age'`
+in the controller. So the binding works in the direction from our model to the UI. Now if you
+select "Alphabetically" in the drop down menu, the model will be updated as well and the phones
+will be reordered. That is the data-binding doing its job in the opposite direction — from the UI
+to the model.
+
+
+
+## Test
+
+The changes we made should be verified with both a unit test and an end-to-end test. Let's look at
+the unit test first.
+
+__`test/unit/controllersSpec.js`:__
+<pre>
+describe('PhoneCat controllers', function() {
+
+  describe('PhoneListCtrl', function(){
+    var scope, ctrl;
+
+    beforeEach(function() {
+      scope = {},
+      ctrl = new PhoneListCtrl(scope);
+    });
+
+
+    it('should create "phones" model with 3 phones', function() {
+      expect(scope.phones.length).toBe(3);
+    });
+
+
+    it('should set the default value of orderProp model', function() {
+      expect(scope.orderProp).toBe('age');
+    });
+  });
+});
+</pre>
+
+
+The unit test now verifies that the default ordering property is set.
+
+We used Jasmine's API to extract the controller construction into a `beforeEach` block, which is
+shared by all tests in the parent `describe` block.
+
+You should now see the following output in the Karma tab:
+
+        Chrome 22.0: Executed 2 of 2 SUCCESS (0.021 secs / 0.001 secs)
+
+
+Let's turn our attention to the end-to-end test.
+
+__`test/e2e/scenarios.js`:__
+<pre>
+...
+    it('should be possible to control phone order via the drop down select box',
+        function() {
+      //let's narrow the dataset to make the test assertions shorter
+      input('query').enter('tablet');
+
+      expect(repeater('.phones li', 'Phone List').column('phone.name')).
+          toEqual(["Motorola XOOM\u2122 with Wi-Fi",
+                   "MOTOROLA XOOM\u2122"]);
+
+      select('orderProp').option('Alphabetical');
+
+      expect(repeater('.phones li', 'Phone List').column('phone.name')).
+          toEqual(["MOTOROLA XOOM\u2122",
+                   "Motorola XOOM\u2122 with Wi-Fi"]);
+    });
+...
+</pre>
+
+The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
+
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+`runner.html` to see the tests run, or you can see them running on {@link
+http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
+Angular's server}.
+
+# Experiments
+
+* In the `PhoneListCtrl` controller, remove the statement that sets the `orderProp` value and
+you'll see that Angular will temporarily add a new "unknown" option to the drop-down list and the
+ordering will default to unordered/natural order.
+
+* Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
+text.
+
+# Summary
+
+Now that you have added list sorting and tested the app, go to {@link step_05 step 5} to learn
+about Angular services and how Angular uses dependency injection.
+
+
+<ul doc-tutorial-nav="4"></ul>
