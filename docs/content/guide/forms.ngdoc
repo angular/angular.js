@@ -93,10 +93,10 @@ This ensures that the user is not distracted with an error until after interacti
 
 <script>
   function Controller($scope) {
-    $scope.master= {};
+    $scope.master = {};
 
     $scope.update = function(user) {
-      $scope.master= angular.copy(user);
+      $scope.master = angular.copy(user);
     };
 
     $scope.reset = function() {
