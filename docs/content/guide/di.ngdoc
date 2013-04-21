@@ -23,7 +23,7 @@ There are only three ways how an object or a function can get a hold of its depe
   3. The dependency can be passed in to where it is needed.
 
 
-The first two option of creating or looking up dependencies are not optimal, because they hard
+The first two options of creating or looking up dependencies are not optimal, because they hard
 code the dependency, making it difficult, if not impossible, to modify the dependencies.
 This is especially problematic in tests, where it is often desirable to provide mock dependencies
 for test isolation.
