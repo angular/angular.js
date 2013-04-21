@@ -2,7 +2,7 @@
 @name Developer Guide: Bootstrap
 @description
 
-# Overview
+# Обзор
 
 На этой странице показан процесс инициализации Angular и то, как провести инициализацию вручную, если возникнет такая необходимость.
 
@@ -45,11 +45,10 @@ Angular автоматически инициализируется во вре�
 в это время Angular ищет {@link api/ng.directive:ngApp `ng-app`} директиву, обозначающую корень вашего приложения.
 Если {@link api/ng.directive:ngApp `ng-app`} найдена то Angular выполнит следующие действия:
 
-  * load the {@link guide/module module} associated with the directive.
-  * create the application {@link api/AUTO.$injector injector}
-  * compile the DOM treating the {@link api/ng.directive:ngApp
-    `ng-app`} directive as the root of the compilation. This allows you to tell it to treat only a
-    portion of the DOM as an Angular application.
+  * загрузит {@link guide/module модуль} связанный с директивой.
+  * создаст {@link api/AUTO.$injector injector} для приложения
+  * скомпилирует DOM-дерево, корнем которого будет являться элемент, содержащий директиву {@link api/ng.directive:ngApp
+    `ng-app`}. Это позволяет задействовать только часть DOM для приложения Angular.
 
 
 <pre>
@@ -64,16 +63,15 @@ Angular автоматически инициализируется во вре�
 
 
 
-# Manual Initialization
+# Ручная инициализация
 
 
-If you need to have more control over the initialization process, you can use a manual
-bootstrapping method instead. Examples of when you'd need to do this include using script loaders
-or the need to perform an operation before Angular compiles a page.
+Чтобы лучше контролировать процесс инициализации, можно использовать загрузку вручную.
+Например, когда необходимо включить загрузчик скриптов или выполнить какие-то действия
+перед компиляцией страницы Angular'ом.
 
-
-Here is an example of manually initializing Angular. The example is equivalent to using the {@link
-api/ng.directive:ngApp ng-app} directive.
+Ниже пример инициализации Angular вручную.
+Пример эквивалентен использованию {@link api/ng.directive:ngApp ng-app} директивы.
 
 <pre>
 <!doctype html>
@@ -90,10 +88,10 @@ api/ng.directive:ngApp ng-app} directive.
 </html>
 </pre>
 
-This is the sequence that your code should follow:
+Необходимо соблюдать следующую последовательность:
 
-  1. After the page and all of the code is loaded, find the root of the HTML template, which is
-  typically the root of the document.
+  1. После загрузки страницы и всех скриптов,
+  найдите корень HTML шаблона, который как правило совпадает с корнем документа.
 
-  2. Call {@link api/angular.bootstrap} to {@link compiler compile} the template into an
-  executable, bi-directionally bound application.
+  2. Вызовите {@link api/angular.bootstrap} для того что бы {@link compiler скомпилировать}
+  шаблон в исполняемое двунаправленное приложение.
