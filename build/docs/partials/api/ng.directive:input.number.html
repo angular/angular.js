@@ -49,10 +49,10 @@ interaction with the input element.</p></li>
 </div>
 <h2 id="Example">Example</h2>
 <div class="example"><h4>Source</h4>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-229" source-edit-css="" source-edit-js="script.js-228" source-edit-unit="" source-edit-scenario="scenario.js-230"></div>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-232" source-edit-css="" source-edit-js="script.js-231" source-edit-unit="" source-edit-scenario="scenario.js-233"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-229" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-229">
+<pre class="prettyprint linenums" ng-set-text="index.html-232" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-232">
  
  <form name="myForm" ng-controller="Ctrl">
    Number: <input type="number" name="input" ng-model="value"
@@ -70,16 +70,16 @@ interaction with the input element.</p></li>
 </script>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-228"></pre>
-<script type="text/ng-template" id="script.js-228">
+<pre class="prettyprint linenums" ng-set-text="script.js-231"></pre>
+<script type="text/ng-template" id="script.js-231">
    function Ctrl($scope) {
      $scope.value = 12;
    }
  </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-230"></pre>
-<script type="text/ng-template" id="scenario.js-230">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-233"></pre>
+<script type="text/ng-template" id="scenario.js-233">
   it('should initialize to model', function() {
    expect(binding('value')).toEqual('12');
    expect(binding('myForm.input.$valid')).toEqual('true');
@@ -99,5 +99,5 @@ interaction with the input element.</p></li>
 </script>
 </div>
 </div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-229" ng-eval-javascript="script.js-228"></div></div>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-232" ng-eval-javascript="script.js-231"></div></div>
 </div>

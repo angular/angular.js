@@ -14,10 +14,10 @@ data-binding. Notice how different directives (<code>contenteditable</code>, <co
 collaborate together to achieve the desired result.</p>
 
 <h4>Source</h4>
-<div source-edit="customControl" source-edit-deps="angular.js script.js" source-edit-html="index.html-248" source-edit-css="style.css-246" source-edit-js="script.js-247" source-edit-unit="" source-edit-scenario="scenario.js-249"></div>
+<div source-edit="customControl" source-edit-deps="angular.js script.js" source-edit-html="index.html-251" source-edit-css="style.css-249" source-edit-js="script.js-250" source-edit-unit="" source-edit-scenario="scenario.js-252"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-248" ng-html-wrap="customControl angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-248">
+<pre class="prettyprint linenums" ng-set-text="index.html-251" ng-html-wrap="customControl angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-251">
       <form name="myForm">
        <div contenteditable
             name="myWidget" ng-model="userContent"
@@ -29,8 +29,8 @@ collaborate together to achieve the desired result.</p>
     </script>
 </div>
 <div class="tab-pane" title="style.css">
-<pre class="prettyprint linenums" ng-set-text="style.css-246"></pre>
-<style type="text/css" id="style.css-246">
+<pre class="prettyprint linenums" ng-set-text="style.css-249"></pre>
+<style type="text/css" id="style.css-249">
       [contenteditable] {
         border: 1px solid black;
         background-color: white;
@@ -44,8 +44,8 @@ collaborate together to achieve the desired result.</p>
     </style>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-247"></pre>
-<script type="text/ng-template" id="script.js-247">
+<pre class="prettyprint linenums" ng-set-text="script.js-250"></pre>
+<script type="text/ng-template" id="script.js-250">
       angular.module('customControl', []).
         directive('contenteditable', function() {
           return {
@@ -75,8 +75,8 @@ collaborate together to achieve the desired result.</p>
     </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-249"></pre>
-<script type="text/ng-template" id="scenario.js-249">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-252"></pre>
+<script type="text/ng-template" id="scenario.js-252">
       it('should data-bind and become invalid', function() {
         var contentEditable = element('[contenteditable]');
 
@@ -88,7 +88,7 @@ collaborate together to achieve the desired result.</p>
     </script>
 </div>
 </div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-embed-app="customControl" ng-set-html="index.html-248" ng-eval-javascript="script.js-247"></div></div>
+<div class="well doc-example-live animator-container" ng-embed-app="customControl" ng-set-html="index.html-251" ng-eval-javascript="script.js-250"></div></div>
 <div class="member method"><h2 id="Methods">Methods</h2>
 <ul class="methods"><li><h3 id="$render">$render()</h3>
 <div class="$render"><p>Called when the view needs to be updated. It is expected that the user of the ng-model

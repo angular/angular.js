@@ -19,10 +19,10 @@ specified in form <code>/something/</code> then the value will be converted into
 </div>
 <h2 id="Example">Example</h2>
 <div class="example"><h4>Source</h4>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-254" source-edit-css="" source-edit-js="script.js-253" source-edit-unit="" source-edit-scenario="scenario.js-255"></div>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-257" source-edit-css="" source-edit-js="script.js-256" source-edit-unit="" source-edit-scenario="scenario.js-258"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-254" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-254">
+<pre class="prettyprint linenums" ng-set-text="index.html-257" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-257">
  
  <form name="myForm" ng-controller="Ctrl">
    List: <input name="namesInput" ng-model="names" ng-list required>
@@ -37,16 +37,16 @@ specified in form <code>/something/</code> then the value will be converted into
 </script>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-253"></pre>
-<script type="text/ng-template" id="script.js-253">
+<pre class="prettyprint linenums" ng-set-text="script.js-256"></pre>
+<script type="text/ng-template" id="script.js-256">
    function Ctrl($scope) {
      $scope.names = ['igor', 'misko', 'vojta'];
    }
  </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-255"></pre>
-<script type="text/ng-template" id="scenario.js-255">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-258"></pre>
+<script type="text/ng-template" id="scenario.js-258">
   it('should initialize to model', function() {
     expect(binding('names')).toEqual('["igor","misko","vojta"]');
     expect(binding('myForm.namesInput.$valid')).toEqual('true');
@@ -60,5 +60,5 @@ specified in form <code>/something/</code> then the value will be converted into
 </script>
 </div>
 </div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-254" ng-eval-javascript="script.js-253"></div></div>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-257" ng-eval-javascript="script.js-256"></div></div>
 </div>

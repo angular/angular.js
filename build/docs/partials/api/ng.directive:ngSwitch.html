@@ -38,10 +38,10 @@ and <strong>leave</strong> effects.</p></div>
 </div>
 <h2 id="Example">Example</h2>
 <div class="example"><h4>Source</h4>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-256" source-edit-css="animations.css" source-edit-js="script.js-257" source-edit-unit="" source-edit-scenario="scenario.js-258"></div>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-225" source-edit-css="animations.css" source-edit-js="script.js-226" source-edit-unit="" source-edit-scenario="scenario.js-227"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-256" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-256">
+<pre class="prettyprint linenums" ng-set-text="index.html-225" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-225">
   <div ng-controller="Ctrl">
     <select ng-model="selection" ng-options="item for item in items">
     </select>
@@ -96,8 +96,8 @@ and <strong>leave</strong> effects.</p></div>
 </style>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-257"></pre>
-<script type="text/ng-template" id="script.js-257">
+<pre class="prettyprint linenums" ng-set-text="script.js-226"></pre>
+<script type="text/ng-template" id="script.js-226">
   function Ctrl($scope) {
     $scope.items = ['settings', 'home', 'other'];
     $scope.selection = $scope.items[0];
@@ -105,8 +105,8 @@ and <strong>leave</strong> effects.</p></div>
 </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-258"></pre>
-<script type="text/ng-template" id="scenario.js-258">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-227"></pre>
+<script type="text/ng-template" id="scenario.js-227">
   it('should start in settings', function() {
     expect(element('.doc-example-live [ng-switch]').text()).toMatch(/Settings Div/);
   });
@@ -121,5 +121,5 @@ and <strong>leave</strong> effects.</p></div>
 </script>
 </div>
 </div><div class="pull-right"> <button class="btn btn-primary" ng-click="animationsOff=true" ng-hide="animationsOff">Animations on</button> <button class="btn btn-primary disabled" ng-click="animationsOff=false" ng-show="animationsOff">Animations off</button></div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-class="{'animations-off':animationsOff == true}" ng-embed-app="" ng-set-html="index.html-256" ng-eval-javascript="script.js-257"></div></div>
+<div class="well doc-example-live animator-container" ng-class="{'animations-off':animationsOff == true}" ng-embed-app="" ng-set-html="index.html-225" ng-eval-javascript="script.js-226"></div></div>
 </div>

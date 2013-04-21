@@ -4,14 +4,12 @@
 
 # Overview
 
-This page explains the Angular initialization process and how you can manually initialize Angular
-if necessary.
+На этой странице показан процесс инициализации Angular и то, как провести инициализацию вручную, если возникнет такая необходимость.
 
 
-# Angular `<script>` Tag
+# Тег `<script>` в Angular
 
-This example shows the recommended path for integrating Angular with what we call automatic
-initialization.
+Этот пример показывает рекомендованный способ интеграции Angular, используя, то что мы называем, автоматической инициализацией.
 
 
 <pre>
@@ -24,38 +22,28 @@ initialization.
 </html>
 </pre>
 
-  * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
-    improves app load time because the HTML loading is not blocked by loading of the `angular.js`
-    script. You can get the latest bits from {@link http://code.angularjs.org}. Please don't link
-    your production code to this URL, as it will expose a security hole on your site. For
-    experimental development linking to our site is fine.
-    * Choose: `angular-[version].js` for a human-readable file, suitable for development and
-      debugging.
-    * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
-      production.
-  * Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
-    angular to auto-bootstrap your application.
+  * Размещайте тэг `<script>` в конце страницы. Располагая его подобным образом вы уменьшаете время загрузки вашего приложения, потому что загрузка HTML не будет заблокирована загрузкой  angular.js. Последнюю версию можно найти на http://code.angularjs.org. Пожалуйста, не используйте эту ссылку в вашем боевом коде, т.к. это создаст брешь в безопасности сайта. Для экспериментов использование этой ссылки вполне подходит.
+    * `angular-[version].js` содержит удобный для восприятия код и подходит для разработки и отладки.
+    * `angular-[version].min.js` содержит минифицированный и обсуфицированный код, и подходит для применения в продакшене.
+  * Поместите `ng-app` в корень вашего приложения, обычно это тэг `<html>`, если хотите чтобы angular загрузил приложение автоматически.
 
         <html ng-app>
 
-  * If IE7 support is required add `id="ng-app"`
+  * Если нужна поддержка IE7, то необходимо добавить `id="ng-app"`
 
         <html ng-app id="ng-app">
 
-  * If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
-    to make IE happy. (This is here for historical reasons, and we no longer recommend use of
-    `ng:`.)
+  * Если хотите использовать старый синтаксис директив ng: необходимо включить xml-пространство имен чтобы IE не выдал ошибку. (Эта возможность оставлена по историческим причинам и мы не рекомендуем её использовать.)
 
         <html xmlns:ng="http://angularjs.org">
 
 
 
-# Automatic Initialization
+# Автоматическая инициализация
 
-Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
-evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
-for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.
-If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular will:
+Angular автоматически инициализируется во время события `DOMContentLoaded`,
+в это время Angular ищет {@link api/ng.directive:ngApp `ng-app`} директиву, обозначающую корень вашего приложения.
+Если {@link api/ng.directive:ngApp `ng-app`} найдена то Angular выполнит следующие действия:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link api/AUTO.$injector injector}

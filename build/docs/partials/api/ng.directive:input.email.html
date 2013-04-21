@@ -39,10 +39,10 @@ patterns defined as scope expressions.</p></li>
 </div>
 <h2 id="Example">Example</h2>
 <div class="example"><h4>Source</h4>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-235" source-edit-css="" source-edit-js="script.js-234" source-edit-unit="" source-edit-scenario="scenario.js-236"></div>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-238" source-edit-css="" source-edit-js="script.js-237" source-edit-unit="" source-edit-scenario="scenario.js-239"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-235" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-235">
+<pre class="prettyprint linenums" ng-set-text="index.html-238" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-238">
  
    <form name="myForm" ng-controller="Ctrl">
      Email: <input type="email" name="input" ng-model="text" required>
@@ -60,16 +60,16 @@ patterns defined as scope expressions.</p></li>
 </script>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-234"></pre>
-<script type="text/ng-template" id="script.js-234">
+<pre class="prettyprint linenums" ng-set-text="script.js-237"></pre>
+<script type="text/ng-template" id="script.js-237">
    function Ctrl($scope) {
      $scope.text = 'me@example.com';
    }
  </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-236"></pre>
-<script type="text/ng-template" id="scenario.js-236">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-239"></pre>
+<script type="text/ng-template" id="scenario.js-239">
   it('should initialize to model', function() {
     expect(binding('text')).toEqual('me@example.com');
     expect(binding('myForm.input.$valid')).toEqual('true');
@@ -88,5 +88,5 @@ patterns defined as scope expressions.</p></li>
 </script>
 </div>
 </div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-235" ng-eval-javascript="script.js-234"></div></div>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-238" ng-eval-javascript="script.js-237"></div></div>
 </div>

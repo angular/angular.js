@@ -3,13 +3,11 @@
 </h1>
 <div><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/bootstrap_ru.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><h2>Overview</h2>
 
-<p>This page explains the Angular initialization process and how you can manually initialize Angular
-if necessary.</p>
+<p>На этой странице показан процесс инициализации Angular и то, как провести инициализацию вручную, если возникнет такая необходимость.</p>
 
-<h2>Angular <code>&lt;script&gt;</code> Tag</h2>
+<h2>Тег <code>&lt;script&gt;</code> в Angular</h2>
 
-<p>This example shows the recommended path for integrating Angular with what we call automatic
-initialization.</p>
+<p>Этот пример показывает рекомендованный способ интеграции Angular, используя, то что мы называем, автоматической инициализацией.</p>
 
 <pre class="prettyprint linenums">
 &lt;!doctype html&gt;
@@ -22,38 +20,28 @@ initialization.</p>
 </pre>
 
 <ul>
-<li>Place the <code>script</code> tag at the bottom of the page. Placing script tags at the end of the page
-improves app load time because the HTML loading is not blocked by loading of the <code>angular.js</code>
-script. You can get the latest bits from <a href="http://code.angularjs.org">http://code.angularjs.org</a>. Please don't link
-your production code to this URL, as it will expose a security hole on your site. For
-experimental development linking to our site is fine.
-<ul><li>Choose: <code>angular-[version].js</code> for a human-readable file, suitable for development and
-debugging.</li>
-<li>Choose: <code>angular-[version].min.js</code> for a compressed and obfuscated file, suitable for use in
-production.</li></ul></li>
-<li><p>Place <code>ng-app</code> to the root of your application, typically on the <code>&lt;html&gt;</code> tag if you want
-angular to auto-bootstrap your application.</p>
+<li>Размещайте тэг <code>&lt;script&gt;</code> в конце страницы. Располагая его подобным образом вы уменьшаете время загрузки вашего приложения, потому что загрузка HTML не будет заблокирована загрузкой  angular.js. Последнюю версию можно найти на http://code.angularjs.org. Пожалуйста, не используйте эту ссылку в вашем боевом коде, т.к. это создаст брешь в безопасности сайта. Для экспериментов использование этой ссылки вполне подходит.
+<ul><li><code>angular-[version].js</code> содержит удобный для восприятия код и подходит для разработки и отладки.</li>
+<li><code>angular-[version].min.js</code> содержит минифицированный и обсуфицированный код, и подходит для применения в продакшене.</li></ul></li>
+<li><p>Поместите <code>ng-app</code> в корень вашего приложения, обычно это тэг <code>&lt;html&gt;</code>, если хотите чтобы angular загрузил приложение автоматически.</p>
 
 <pre><code>&lt;html ng-app&gt;
 </code></pre></li>
-<li><p>If IE7 support is required add <code>id="ng-app"</code></p>
+<li><p>Если нужна поддержка IE7, то необходимо добавить <code>id="ng-app"</code></p>
 
 <pre><code>&lt;html ng-app id="ng-app"&gt;
 </code></pre></li>
-<li><p>If you choose to use the old style directive syntax <code>ng:</code> then include xml-namespace in <code>html</code>
-to make IE happy. (This is here for historical reasons, and we no longer recommend use of
-<code>ng:</code>.)</p>
+<li><p>Если хотите использовать старый синтаксис директив ng: необходимо включить xml-пространство имен чтобы IE не выдал ошибку. (Эта возможность оставлена по историческим причинам и мы не рекомендуем её использовать.)</p>
 
 <pre><code>&lt;html xmlns:ng="http://angularjs.org"&gt;
 </code></pre></li>
 </ul>
 
-<h2>Automatic Initialization</h2>
+<h2>Автоматическая инициализация</h2>
 
-<p>Angular initializes automatically upon <code>DOMContentLoaded</code> event or when the <code>angular.js</code> script is
-evaluated if at that time <code>document.readyState</code> is set to <code>'complete'</code>. At this point Angular looks
-for the <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> directive which designates your application root.
-If the <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> directive is found then Angular will:</p>
+<p>Angular автоматически инициализируется во время события <code>DOMContentLoaded</code>,
+в это время Angular ищет <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> директиву, обозначающую корень вашего приложения.
+Если <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> найдена то Angular выполнит следующие действия:</p>
 
 <ul>
 <li>load the <a href="guide/module">module</a> associated with the directive.</li>

@@ -9441,7 +9441,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 })( window );
 
 /**
- * @license AngularJS v1.1.5-7c8df4e
+ * @license AngularJS v1.1.5-efd4135
  * (c) 2010-2012 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -10787,7 +10787,7 @@ function setupModuleLoader(window) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.1.5-7c8df4e',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.1.5-efd4135',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 1,
   dot: 5,
