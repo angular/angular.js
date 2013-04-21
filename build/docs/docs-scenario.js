@@ -1007,6 +1007,13 @@ describe("angular+jqlite", function() {
   
 });
 
+  describe("guide/dev_guide.services.understanding_services", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-nocache.html#!/guide/dev_guide.services.understanding_services");
+    });
+  
+});
+
   describe("guide/directive_ru", function() {
     beforeEach(function() {
       browser().navigateTo("index-nocache.html#!/guide/directive_ru");
@@ -1027,13 +1034,6 @@ describe("angular+jqlite", function() {
         expect(element('.zippy').prop('className')).toMatch(/opened/);
       });
 
-});
-
-  describe("guide/dev_guide.services.understanding_services", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-nocache.html#!/guide/dev_guide.services.understanding_services");
-    });
-  
 });
 
   describe("guide/i18n_ru", function() {
@@ -1476,6 +1476,13 @@ describe("angular+jqlite", function() {
   
 });
 
+  describe("api/angular.version", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-nocache.html#!/api/angular.version");
+    });
+  
+});
+
   describe("api/angular.mock", function() {
     beforeEach(function() {
       browser().navigateTo("index-nocache.html#!/api/angular.mock");
@@ -1570,13 +1577,6 @@ describe("angular+jqlite", function() {
   describe("api/angular.mock.inject", function() {
     beforeEach(function() {
       browser().navigateTo("index-nocache.html#!/api/angular.mock.inject");
-    });
-  
-});
-
-  describe("api/angular.version", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-nocache.html#!/api/angular.version");
     });
   
 });
@@ -2805,6 +2805,20 @@ describe("angular+jqlite", function() {
   
 });
 
+  describe("api/ng.$log", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-nocache.html#!/api/ng.$log");
+    });
+  
+});
+
+  describe("api/ng.$logProvider", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-nocache.html#!/api/ng.$logProvider");
+    });
+  
+});
+
   describe("api/ng.$rootScopeProvider", function() {
     beforeEach(function() {
       browser().navigateTo("index-nocache.html#!/api/ng.$rootScopeProvider");
@@ -2822,20 +2836,6 @@ describe("angular+jqlite", function() {
   describe("api/ng.$rootScope.Scope", function() {
     beforeEach(function() {
       browser().navigateTo("index-nocache.html#!/api/ng.$rootScope.Scope");
-    });
-  
-});
-
-  describe("api/ng.$log", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-nocache.html#!/api/ng.$log");
-    });
-  
-});
-
-  describe("api/ng.$logProvider", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-nocache.html#!/api/ng.$logProvider");
     });
   
 });
@@ -3987,6 +3987,13 @@ describe("angular+jquery", function() {
   
 });
 
+  describe("guide/dev_guide.services.understanding_services", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-jq-nocache.html#!/guide/dev_guide.services.understanding_services");
+    });
+  
+});
+
   describe("guide/directive_ru", function() {
     beforeEach(function() {
       browser().navigateTo("index-jq-nocache.html#!/guide/directive_ru");
@@ -4007,13 +4014,6 @@ describe("angular+jquery", function() {
         expect(element('.zippy').prop('className')).toMatch(/opened/);
       });
 
-});
-
-  describe("guide/dev_guide.services.understanding_services", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-jq-nocache.html#!/guide/dev_guide.services.understanding_services");
-    });
-  
 });
 
   describe("guide/i18n_ru", function() {
@@ -4456,6 +4456,13 @@ describe("angular+jquery", function() {
   
 });
 
+  describe("api/angular.version", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-jq-nocache.html#!/api/angular.version");
+    });
+  
+});
+
   describe("api/angular.mock", function() {
     beforeEach(function() {
       browser().navigateTo("index-jq-nocache.html#!/api/angular.mock");
@@ -4550,13 +4557,6 @@ describe("angular+jquery", function() {
   describe("api/angular.mock.inject", function() {
     beforeEach(function() {
       browser().navigateTo("index-jq-nocache.html#!/api/angular.mock.inject");
-    });
-  
-});
-
-  describe("api/angular.version", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-jq-nocache.html#!/api/angular.version");
     });
   
 });
@@ -5785,6 +5785,20 @@ describe("angular+jquery", function() {
   
 });
 
+  describe("api/ng.$log", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-jq-nocache.html#!/api/ng.$log");
+    });
+  
+});
+
+  describe("api/ng.$logProvider", function() {
+    beforeEach(function() {
+      browser().navigateTo("index-jq-nocache.html#!/api/ng.$logProvider");
+    });
+  
+});
+
   describe("api/ng.$rootScopeProvider", function() {
     beforeEach(function() {
       browser().navigateTo("index-jq-nocache.html#!/api/ng.$rootScopeProvider");
@@ -5802,20 +5816,6 @@ describe("angular+jquery", function() {
   describe("api/ng.$rootScope.Scope", function() {
     beforeEach(function() {
       browser().navigateTo("index-jq-nocache.html#!/api/ng.$rootScope.Scope");
-    });
-  
-});
-
-  describe("api/ng.$log", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-jq-nocache.html#!/api/ng.$log");
-    });
-  
-});
-
-  describe("api/ng.$logProvider", function() {
-    beforeEach(function() {
-      browser().navigateTo("index-jq-nocache.html#!/api/ng.$logProvider");
     });
   
 });

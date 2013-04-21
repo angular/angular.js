@@ -3,31 +3,31 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": {
-      "0": "ntɔ́ngɔ́",
-      "1": "mpókwa"
+      "0": "nt\u0254\u0301ng\u0254\u0301",
+      "1": "mp\u00f3kwa"
     },
     "DAY": {
       "0": "eyenga",
-      "1": "mokɔlɔ mwa yambo",
-      "2": "mokɔlɔ mwa míbalé",
-      "3": "mokɔlɔ mwa mísáto",
-      "4": "mokɔlɔ ya mínéi",
-      "5": "mokɔlɔ ya mítáno",
-      "6": "mpɔ́sɔ"
+      "1": "mok\u0254l\u0254 mwa yambo",
+      "2": "mok\u0254l\u0254 mwa m\u00edbal\u00e9",
+      "3": "mok\u0254l\u0254 mwa m\u00eds\u00e1to",
+      "4": "mok\u0254l\u0254 ya m\u00edn\u00e9i",
+      "5": "mok\u0254l\u0254 ya m\u00edt\u00e1no",
+      "6": "mp\u0254\u0301s\u0254"
     },
     "MONTH": {
-      "0": "sánzá ya yambo",
-      "1": "sánzá ya míbalé",
-      "2": "sánzá ya mísáto",
-      "3": "sánzá ya mínei",
-      "4": "sánzá ya mítáno",
-      "5": "sánzá ya motóbá",
-      "6": "sánzá ya nsambo",
-      "7": "sánzá ya mwambe",
-      "8": "sánzá ya libwa",
-      "9": "sánzá ya zómi",
-      "10": "sánzá ya zómi na mɔ̌kɔ́",
-      "11": "sánzá ya zómi na míbalé"
+      "0": "s\u00e1nz\u00e1 ya yambo",
+      "1": "s\u00e1nz\u00e1 ya m\u00edbal\u00e9",
+      "2": "s\u00e1nz\u00e1 ya m\u00eds\u00e1to",
+      "3": "s\u00e1nz\u00e1 ya m\u00ednei",
+      "4": "s\u00e1nz\u00e1 ya m\u00edt\u00e1no",
+      "5": "s\u00e1nz\u00e1 ya mot\u00f3b\u00e1",
+      "6": "s\u00e1nz\u00e1 ya nsambo",
+      "7": "s\u00e1nz\u00e1 ya mwambe",
+      "8": "s\u00e1nz\u00e1 ya libwa",
+      "9": "s\u00e1nz\u00e1 ya z\u00f3mi",
+      "10": "s\u00e1nz\u00e1 ya z\u00f3mi na m\u0254\u030ck\u0254\u0301",
+      "11": "s\u00e1nz\u00e1 ya z\u00f3mi na m\u00edbal\u00e9"
     },
     "SHORTDAY": {
       "0": "eye",
@@ -48,7 +48,7 @@ $provide.value("$locale", {
       "6": "yul",
       "7": "agt",
       "8": "stb",
-      "9": "ɔtb",
+      "9": "\u0254tb",
       "10": "nvb",
       "11": "dsb"
     },
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

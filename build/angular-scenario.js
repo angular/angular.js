@@ -9441,7 +9441,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 })( window );
 
 /**
- * @license AngularJS v1.1.5-c746d65
+ * @license AngularJS v1.1.5-7c8df4e
  * (c) 2010-2012 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -10087,7 +10087,7 @@ function shallowCopy(src, dst) {
  * During a property comparison, properties of `function` type and properties with names
  * that begin with `$` are ignored.
  *
- * Scope and DOMWindow objects are being compared only be identify (`===`).
+ * Scope and DOMWindow objects are being compared only by identify (`===`).
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -10787,7 +10787,7 @@ function setupModuleLoader(window) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.1.5-c746d65',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.1.5-7c8df4e',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 1,
   dot: 5,
@@ -10855,6 +10855,7 @@ function publishExternalAPI(angular){
             ngController: ngControllerDirective,
             ngForm: ngFormDirective,
             ngHide: ngHideDirective,
+            ngIf: ngIfDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
             ngNonBindable: ngNonBindableDirective,
@@ -11966,7 +11967,7 @@ function annotate(fn) {
  *     // ...
  *   };
  *   tmpFn.$inject = ['$compile', '$rootScope'];
- *   injector.invoke(tempFn);
+ *   injector.invoke(tmpFn);
  *
  *   // To better support inline function the inline annotation is supported
  *   injector.invoke(['$compile', '$rootScope', function(obfCompile, obfRootScope) {
@@ -14894,9 +14895,8 @@ function $InterpolateProvider() {
   }];
 }
 
-var URL_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    PATH_MATCH = /^([^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    HASH_MATCH = PATH_MATCH,
+var SERVER_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
+    PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 
 
@@ -14917,30 +14917,23 @@ function encodePath(path) {
   return segments.join('/');
 }
 
-function stripHash(url) {
-  return url.split('#')[0];
+function matchUrl(url, obj) {
+  var match = SERVER_MATCH.exec(url);
+
+  obj.$$protocol = match[1];
+  obj.$$host = match[3];
+  obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
 }
 
+function matchAppUrl(url, obj) {
+  var match = PATH_MATCH.exec(url);
 
-function matchUrl(url, obj) {
-  var match = URL_MATCH.exec(url);
+  obj.$$path = decodeURIComponent(match[1]);
+  obj.$$search = parseKeyValue(match[3]);
+  obj.$$hash = decodeURIComponent(match[5] || '');
 
-  match = {
-      protocol: match[1],
-      host: match[3],
-      port: int(match[5]) || DEFAULT_PORTS[match[1]] || null,
-      path: match[6] || '/',
-      search: match[8],
-      hash: match[10]
-    };
-
-  if (obj) {
-    obj.$$protocol = match.protocol;
-    obj.$$host = match.host;
-    obj.$$port = match.port;
-  }
-
-  return match;
+  // make sure path starts with '/';
+  if (obj.$$path && obj.$$path.charAt(0) != '/') obj.$$path = '/' + obj.$$path;
 }
 
 
@@ -14948,77 +14941,62 @@ function composeProtocolHostPort(protocol, host, port) {
   return protocol + '://' + host + (port == DEFAULT_PORTS[protocol] ? '' : ':' + port);
 }
 
-
-function pathPrefixFromBase(basePath) {
-  return basePath.substr(0, basePath.lastIndexOf('/'));
+/**
+ *
+ * @param {string} begin
+ * @param {string} whole
+ * @param {string} otherwise
+ * @returns {string} returns text from whole after begin or otherwise if it does not begin with expected string.
+ */
+function beginsWith(begin, whole, otherwise) {
+  return whole.indexOf(begin) == 0 ? whole.substr(begin.length) : otherwise;
 }
 
 
-function convertToHtml5Url(url, basePath, hashPrefix) {
-  var match = matchUrl(url);
-
-  // already html5 url
-  if (decodeURIComponent(match.path) != basePath || isUndefined(match.hash) ||
-      match.hash.indexOf(hashPrefix) !== 0) {
-    return url;
-  // convert hashbang url -> html5 url
-  } else {
-    return composeProtocolHostPort(match.protocol, match.host, match.port) +
-           pathPrefixFromBase(basePath) + match.hash.substr(hashPrefix.length);
-  }
+function stripHash(url) {
+  var index = url.indexOf('#');
+  return index == -1 ? url : url.substr(0, index);
 }
 
 
-function convertToHashbangUrl(url, basePath, hashPrefix) {
-  var match = matchUrl(url);
+function stripFile(url) {
+  return url.substr(0, stripHash(url).lastIndexOf('/') + 1);
+}
 
-  // already hashbang url
-  if (decodeURIComponent(match.path) == basePath && !isUndefined(match.hash) &&
-      match.hash.indexOf(hashPrefix) === 0) {
-    return url;
-  // convert html5 url -> hashbang url
-  } else {
-    var search = match.search && '?' + match.search || '',
-        hash = match.hash && '#' + match.hash || '',
-        pathPrefix = pathPrefixFromBase(basePath),
-        path = match.path.substr(pathPrefix.length);
-
-    if (match.path.indexOf(pathPrefix) !== 0) {
-      throw Error('Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !');
-    }
-
-    return composeProtocolHostPort(match.protocol, match.host, match.port) + basePath +
-           '#' + hashPrefix + path + search + hash;
-  }
+/* return the server only */
+function serverBase(url) {
+  return url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
 }
 
 
 /**
- * LocationUrl represents an url
+ * LocationHtml5Url represents an url
  * This object is exposed as $location service when HTML5 mode is enabled and supported
  *
  * @constructor
- * @param {string} url HTML5 url
- * @param {string} pathPrefix
+ * @param {string} appBase application base URL
+ * @param {string} basePrefix url path prefix
  */
-function LocationUrl(url, pathPrefix, appBaseUrl) {
-  pathPrefix = pathPrefix || '';
-
+function LocationHtml5Url(appBase, basePrefix) {
+  basePrefix = basePrefix || '';
+  var appBaseNoFile = stripFile(appBase);
   /**
    * Parse given html5 (regular) url string into properties
    * @param {string} newAbsoluteUrl HTML5 url
    * @private
    */
-  this.$$parse = function(newAbsoluteUrl) {
-    var match = matchUrl(newAbsoluteUrl, this);
-
-    if (match.path.indexOf(pathPrefix) !== 0) {
-      throw Error('Invalid url "' + newAbsoluteUrl + '", missing path prefix "' + pathPrefix + '" !');
+  this.$$parse = function(url) {
+    var parsed = {}
+    matchUrl(url, parsed);
+    var pathUrl = beginsWith(appBaseNoFile, url);
+    if (!isString(pathUrl)) {
+      throw Error('Invalid url "' + url + '", missing path prefix "' + appBaseNoFile + '".');
     }
-
-    this.$$path = decodeURIComponent(match.path.substr(pathPrefix.length));
-    this.$$search = parseKeyValue(match.search);
-    this.$$hash = match.hash && decodeURIComponent(match.hash) || '';
+    matchAppUrl(pathUrl, parsed);
+    extend(this, parsed);
+    if (!this.$$path) {
+      this.$$path = '/';
+    }
 
     this.$$compose();
   };
@@ -15032,19 +15010,24 @@ function LocationUrl(url, pathPrefix, appBaseUrl) {
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
-    this.$$absUrl = composeProtocolHostPort(this.$$protocol, this.$$host, this.$$port) +
-                    pathPrefix + this.$$url;
+    this.$$absUrl = appBaseNoFile + this.$$url.substr(1); // first char is always '/'
   };
 
+  this.$$rewrite = function(url) {
+    var appUrl;
 
-  this.$$rewriteAppUrl = function(absoluteLinkUrl) {
-    if(absoluteLinkUrl.indexOf(appBaseUrl) == 0) {
-      return absoluteLinkUrl;
+    if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
+      if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
+        return appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
+      } else {
+        return appBase;
+      }
+    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
+      return appBaseNoFile + appUrl;
+    } else if (appBaseNoFile == url + '/') {
+      return appBaseNoFile;
     }
   }
-
-
-  this.$$parse(url);
 }
 
 
@@ -15053,11 +15036,11 @@ function LocationUrl(url, pathPrefix, appBaseUrl) {
  * This object is exposed as $location service when html5 history api is disabled or not supported
  *
  * @constructor
- * @param {string} url Legacy url
- * @param {string} hashPrefix Prefix for hash part (containing path and search)
+ * @param {string} appBase application base URL
+ * @param {string} hashPrefix hashbang prefix
  */
-function LocationHashbangUrl(url, hashPrefix, appBaseUrl) {
-  var basePath;
+function LocationHashbangUrl(appBase, hashPrefix) {
+  var appBaseNoFile = stripFile(appBase);
 
   /**
    * Parse given hashbang url into properties
@@ -15065,24 +15048,16 @@ function LocationHashbangUrl(url, hashPrefix, appBaseUrl) {
    * @private
    */
   this.$$parse = function(url) {
-    var match = matchUrl(url, this);
-
-
-    if (match.hash && match.hash.indexOf(hashPrefix) !== 0) {
-      throw Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !');
+    matchUrl(url, this);
+    var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
+    if (!isString(withoutBaseUrl)) {
+      throw new Error('Invalid url "' + url + '", does not start with "' + appBase +  '".');
     }
-
-    basePath = match.path + (match.search ? '?' + match.search : '');
-    match = HASH_MATCH.exec((match.hash || '').substr(hashPrefix.length));
-    if (match[1]) {
-      this.$$path = (match[1].charAt(0) == '/' ? '' : '/') + decodeURIComponent(match[1]);
-    } else {
-      this.$$path = '';
+    var withoutHashUrl = withoutBaseUrl.charAt(0) == '#' ? beginsWith(hashPrefix, withoutBaseUrl) : withoutBaseUrl;
+    if (!isString(withoutHashUrl)) {
+      throw new Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '".');
     }
-
-    this.$$search = parseKeyValue(match[3]);
-    this.$$hash = match[5] && decodeURIComponent(match[5]) || '';
-
+    matchAppUrl(withoutHashUrl, this);
     this.$$compose();
   };
 
@@ -15095,22 +15070,48 @@ function LocationHashbangUrl(url, hashPrefix, appBaseUrl) {
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
-    this.$$absUrl = composeProtocolHostPort(this.$$protocol, this.$$host, this.$$port) +
-                    basePath + (this.$$url ? '#' + hashPrefix + this.$$url : '');
+    this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : '');
   };
 
-  this.$$rewriteAppUrl = function(absoluteLinkUrl) {
-    if(absoluteLinkUrl.indexOf(appBaseUrl) == 0) {
-      return absoluteLinkUrl;
+  this.$$rewrite = function(url) {
+    if(stripHash(appBase) == stripHash(url)) {
+      return url;
     }
   }
-
-
-  this.$$parse(url);
 }
 
 
-LocationUrl.prototype = {
+/**
+ * LocationHashbangUrl represents url
+ * This object is exposed as $location service when html5 history api is enabled but the browser
+ * does not support it.
+ *
+ * @constructor
+ * @param {string} appBase application base URL
+ * @param {string} hashPrefix hashbang prefix
+ */
+function LocationHashbangInHtml5Url(appBase, hashPrefix) {
+  LocationHashbangUrl.apply(this, arguments);
+
+  var appBaseNoFile = stripFile(appBase);
+
+  this.$$rewrite = function(url) {
+    var appUrl;
+
+    if ( appBase == stripHash(url) ) {
+      return url;
+    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
+      return appBase + hashPrefix + appUrl;
+    } else if ( appBaseNoFile === url + '/') {
+      return appBaseNoFile;
+    }
+  }
+}
+
+
+LocationHashbangInHtml5Url.prototype =
+  LocationHashbangUrl.prototype =
+  LocationHtml5Url.prototype = {
 
   /**
    * Has any change been replacing ?
@@ -15292,21 +15293,6 @@ LocationUrl.prototype = {
   }
 };
 
-LocationHashbangUrl.prototype = inherit(LocationUrl.prototype);
-
-function LocationHashbangInHtml5Url(url, hashPrefix, appBaseUrl, baseExtra) {
-  LocationHashbangUrl.apply(this, arguments);
-
-
-  this.$$rewriteAppUrl = function(absoluteLinkUrl) {
-    if (absoluteLinkUrl.indexOf(appBaseUrl) == 0) {
-      return appBaseUrl + baseExtra + '#' + hashPrefix  + absoluteLinkUrl.substr(appBaseUrl.length);
-    }
-  }
-}
-
-LocationHashbangInHtml5Url.prototype = inherit(LocationHashbangUrl.prototype);
-
 function locationGetter(property) {
   return function() {
     return this[property];
@@ -15403,37 +15389,20 @@ function $LocationProvider(){
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
-        basePath,
-        pathPrefix,
-        initUrl = $browser.url(),
-        initUrlParts = matchUrl(initUrl),
-        appBaseUrl;
+        LocationMode,
+        baseHref = $browser.baseHref(),
+        initialUrl = $browser.url(),
+        appBase;
 
     if (html5Mode) {
-      basePath = $browser.baseHref() || '/';
-      pathPrefix = pathPrefixFromBase(basePath);
-      appBaseUrl =
-          composeProtocolHostPort(initUrlParts.protocol, initUrlParts.host, initUrlParts.port) +
-          pathPrefix + '/';
-
-      if ($sniffer.history) {
-        $location = new LocationUrl(
-          convertToHtml5Url(initUrl, basePath, hashPrefix),
-          pathPrefix, appBaseUrl);
-      } else {
-        $location = new LocationHashbangInHtml5Url(
-          convertToHashbangUrl(initUrl, basePath, hashPrefix),
-          hashPrefix, appBaseUrl, basePath.substr(pathPrefix.length + 1));
-      }
+      appBase = baseHref ? serverBase(initialUrl) + baseHref : initialUrl;
+      LocationMode = $sniffer.history ? LocationHtml5Url : LocationHashbangInHtml5Url;
     } else {
-      appBaseUrl =
-          composeProtocolHostPort(initUrlParts.protocol, initUrlParts.host, initUrlParts.port) +
-          (initUrlParts.path || '') +
-          (initUrlParts.search ? ('?' + initUrlParts.search) : '') +
-          '#' + hashPrefix + '/';
-
-      $location = new LocationHashbangUrl(initUrl, hashPrefix, appBaseUrl);
+      appBase = stripHash(initialUrl);
+      LocationMode = LocationHashbangUrl;
     }
+    $location = new LocationMode(appBase, '#' + hashPrefix);
+    $location.$$parse($location.$$rewrite(initialUrl));
 
     $rootElement.bind('click', function(event) {
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
@@ -15450,7 +15419,7 @@ function $LocationProvider(){
       }
 
       var absHref = elm.prop('href'),
-          rewrittenUrl = $location.$$rewriteAppUrl(absHref);
+          rewrittenUrl = $location.$$rewrite(absHref);
 
       if (absHref && !elm.attr('target') && rewrittenUrl) {
         // update location manually
@@ -15464,7 +15433,7 @@ function $LocationProvider(){
 
 
     // rewrite hashbang url <> html5 url
-    if ($location.absUrl() != initUrl) {
+    if ($location.absUrl() != initialUrl) {
       $browser.url($location.absUrl(), true);
     }
 
@@ -16889,10 +16858,7 @@ function qFactory(nextTick, exceptionHandler) {
    * the promise comes from a source that can't be trusted.
    *
    * @param {*} value Value or a promise
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
-   *   each value corresponding to the promise at the same index in the `promises` array. If any of
-   *   the promises is resolved with a rejection, this resulting promise will be resolved with the
-   *   same rejection.
+   * @returns {Promise} Returns a promise of the passed value or promise
    */
   var when = function(value, callback, errback) {
     var result = defer(),
@@ -17525,22 +17491,22 @@ function $RouteParamsProvider() {
 /**
  * DESIGN NOTES
  *
- * The design decisions behind the scope ware heavily favored for speed and memory consumption.
+ * The design decisions behind the scope are heavily favored for speed and memory consumption.
  *
  * The typical use of scope is to watch the expressions, which most of the time return the same
  * value as last time so we optimize the operation.
  *
- * Closures construction is expensive from speed as well as memory:
- *   - no closures, instead ups prototypical inheritance for API
+ * Closures construction is expensive in terms of speed as well as memory:
+ *   - No closures, instead use prototypical inheritance for API
  *   - Internal state needs to be stored on scope directly, which means that private state is
  *     exposed as $$____ properties
  *
  * Loop operations are optimized by using while(count--) { ... }
  *   - this means that in order to keep the same order of execution as addition we have to add
- *     items to the array at the begging (shift) instead of at the end (push)
+ *     items to the array at the beginning (shift) instead of at the end (push)
  *
  * Child scopes are created and removed often
- *   - Using array would be slow since inserts in meddle are expensive so we use linked list
+ *   - Using an array would be slow since inserts in middle are expensive so we use linked list
  *
  * There are few watches then a lot of observers. This is why you don't want the observer to be
  * implemented in the same way as watch. Watch requires return of initialization function which
@@ -17562,7 +17528,7 @@ function $RouteParamsProvider() {
  * @methodOf ng.$rootScopeProvider
  * @description
  *
- * Sets the number of digest iteration the scope should attempt to execute before giving up and
+ * Sets the number of digest iterations the scope should attempt to execute before giving up and
  * assuming that the model is unstable.
  *
  * The current default is 10 iterations.
@@ -17972,7 +17938,7 @@ function $RootScopeProvider(){
        * @function
        *
        * @description
-       * Process all of the {@link ng.$rootScope.Scope#$watch watchers} of the current scope and its children.
+       * Processes all of the {@link ng.$rootScope.Scope#$watch watchers} of the current scope and its children.
        * Because a {@link ng.$rootScope.Scope#$watch watcher}'s listener can change the model, the
        * `$digest()` keeps calling the {@link ng.$rootScope.Scope#$watch watchers} until no more listeners are
        * firing. This means that it is possible to get into an infinite loop. This function will throw
@@ -18315,7 +18281,7 @@ function $RootScopeProvider(){
        * Afterwards, the event traverses upwards toward the root scope and calls all registered
        * listeners along the way. The event will stop propagating if one of the listeners cancels it.
        *
-       * Any exception emmited from the {@link ng.$rootScope.Scope#$on listeners} will be passed
+       * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to emit.
@@ -18614,7 +18580,7 @@ function isSameDomain(requestUrl, locationUrl) {
       relativeProtocol: match[2] === undefined || match[2] === ''
     };
 
-  match = URL_MATCH.exec(locationUrl);
+  match = SERVER_MATCH.exec(locationUrl);
   var domain2 = {
       protocol: match[1],
       host: match[3],
@@ -19655,7 +19621,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
-      var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];
+      var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
 
       // fix status code for file protocol (it's always 0)
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
@@ -21673,8 +21639,8 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -21993,6 +21959,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   } else {
     var timeout;
 
+    var deferListener = function() {
+      if (!timeout) {
+        timeout = $browser.defer(function() {
+          listener();
+          timeout = null;
+        });
+      }
+    };
+
     element.bind('keydown', function(event) {
       var key = event.keyCode;
 
@@ -22000,16 +21975,16 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       //    command            modifiers                   arrows
       if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
 
-      if (!timeout) {
-        timeout = $browser.defer(function() {
-          listener();
-          timeout = null;
-        });
-      }
+      deferListener();
     });
 
     // if user paste into input using mouse, we need "change" event to catch it
     element.bind('change', listener);
+
+    // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
+    if ($sniffer.hasEvent('paste')) {
+      element.bind('paste cut', deferListener);
+    }
   }
 
 
@@ -22019,7 +21994,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // pattern validator
   var pattern = attr.ngPattern,
-      patternValidator;
+      patternValidator,
+      match;
 
   var validate = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
@@ -22032,8 +22008,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 
   if (pattern) {
-    if (pattern.match(/^\/(.*)\/$/)) {
-      pattern = new RegExp(pattern.substr(1, pattern.length - 2));
+    match = pattern.match(/^\/(.*)\/([gim]*)$/);
+    if (match) {
+      pattern = new RegExp(match[1], match[2]);
       patternValidator = function(value) {
         return validate(pattern, value)
       };
@@ -22893,7 +22870,7 @@ var ngValueDirective = function() {
  * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
  * `{{ expression }}` which is similar but less verbose.
  *
- * Once scenario in which the use of `ngBind` is preferred over `{{ expression }}` binding is when
+ * One scenario in which the use of `ngBind` is preferred over `{{ expression }}` binding is when
  * it's desirable to put bindings into template that is momentarily displayed by the browser in its
  * raw state before Angular compiles it. Since `ngBind` is an element attribute, it makes the
  * bindings invisible to the user while the page is loading.
@@ -23048,12 +23025,12 @@ function classDirective(name, selector) {
 
     function ngClassWatchAction(newVal) {
       if (selector === true || scope.$index % 2 === selector) {
-        if (oldVal && (newVal !== oldVal)) {
+        if (oldVal && !equals(newVal,oldVal)) {
           removeClass(oldVal);
         }
         addClass(newVal);
       }
-      oldVal = newVal;
+      oldVal = copy(newVal);
     }
 
 
@@ -23179,7 +23156,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
  * @name ng.directive:ngClassEven
  *
  * @description
- * The `ngClassOdd` and `ngClassEven` works exactly as
+ * The `ngClassOdd` and `ngClassEven` directives work exactly as
  * {@link ng.directive:ngClass ngClass}, except it works in
  * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
  *
@@ -23676,6 +23653,88 @@ var ngSubmitDirective = ngDirective(function(scope, element, attrs) {
     scope.$apply(attrs.ngSubmit);
   });
 });
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngIf
+ * @restrict A
+ *
+ * @description
+ * The `ngIf` directive removes and recreates a portion of the DOM tree (HTML)
+ * conditionally based on **"falsy"** and **"truthy"** values, respectively, evaluated within
+ * an {expression}. In other words, if the expression assigned to **ngIf evaluates to a false
+ * value** then **the element is removed from the DOM** and **if true** then **a clone of the
+ * element is reinserted into the DOM**.
+ *
+ * `ngIf` differs from `ngShow` and `ngHide` in that `ngIf` completely removes and recreates the
+ * element in the DOM rather than changing its visibility via the `display` css property.  A common
+ * case when this difference is significant is when using css selectors that rely on an element's
+ * position within the DOM (HTML), such as the `:first-child` or `:last-child` pseudo-classes.
+ *
+ * Note that **when an element is removed using ngIf its scope is destroyed** and **a new scope
+ * is created when the element is restored**.  The scope created within `ngIf` inherits from 
+ * its parent scope using
+ * {@link https://github.com/angular/angular.js/wiki/The-Nuances-of-Scope-Prototypal-Inheritance prototypal inheritance}.
+ * An important implication of this is if `ngModel` is used within `ngIf` to bind to
+ * a javascript primitive defined in the parent scope. In this case any modifications made to the
+ * variable within the child scope will override (hide) the value in the parent scope.
+ *
+ * Also, `ngIf` recreates elements using their compiled state. An example scenario of this behavior
+ * is if an element's class attribute is directly modified after it's compiled, using something like 
+ * jQuery's `.addClass()` method, and the element is later removed. When `ngIf` recreates the element
+ * the added class will be lost because the original compiled state is used to regenerate the element.
+ *
+ * Additionally, you can provide animations via the ngAnimate attribute to animate the **enter**
+ * and **leave** effects.
+ *
+ * @animations
+ * enter - happens just after the ngIf contents change and a new DOM element is created and injected into the ngIf container
+ * leave - happens just before the ngIf contents are removed from the DOM
+ *
+ * @element ANY
+ * @scope
+ * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
+ *     the element is removed from the DOM tree (HTML).
+ *
+ * @example
+   <doc:example>
+     <doc:source>
+        Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
+        Show when checked: <span ng-if="checked">I'm removed when the checkbox is unchecked</span>
+     </doc:source>
+   </doc:example>
+ */
+var ngIfDirective = ['$animator', function($animator) {
+  return {
+    transclude: 'element',
+    priority: 1000,
+    terminal: true,
+    restrict: 'A',
+    compile: function (element, attr, transclude) {
+      return function ($scope, $element, $attr) {
+        var animate = $animator($scope, $attr);
+        var childElement, childScope;
+        $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
+          if (childElement) {
+            animate.leave(childElement);
+            childElement = undefined;
+          }
+          if (childScope) {
+            childScope.$destroy();
+            childScope = undefined;
+          }
+          if (toBoolean(value)) {
+            childScope = $scope.$new();
+            transclude(childScope, function (clone) {
+              childElement = clone;
+              animate.enter(clone, $element.parent(), $element);
+            });
+          }
+        });
+      }
+    }
+  }
+}];
 
 /**
  * @ngdoc directive
@@ -25243,7 +25302,8 @@ var scriptDirective = ['$templateCache', function($templateCache) {
  * `select` model to be bound to a non-string value. This is because an option element can currently
  * be bound to string values only.
  *
- * @param {string} name assignable expression to data-bind to.
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required The control is considered valid only if value is entered.
  * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
  *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -26010,102 +26070,6 @@ function callerFile(offset) {
   };
 }
 
-/**
- * Triggers a browser event. Attempts to choose the right event if one is
- * not specified.
- *
- * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
- * @param {string} type Optional event type.
- * @param {Array.<string>=} keys Optional list of pressed keys
- *        (valid values: 'alt', 'meta', 'shift', 'ctrl')
- * @param {number} x Optional x-coordinate for mouse/touch events.
- * @param {number} y Optional y-coordinate for mouse/touch events.
- */
-function browserTrigger(element, type, keys, x, y) {
-  if (element && !element.nodeName) element = element[0];
-  if (!element) return;
-  if (!type) {
-    type = {
-        'text':            'change',
-        'textarea':        'change',
-        'hidden':          'change',
-        'password':        'change',
-        'button':          'click',
-        'submit':          'click',
-        'reset':           'click',
-        'image':           'click',
-        'checkbox':        'click',
-        'radio':           'click',
-        'select-one':      'change',
-        'select-multiple': 'change'
-    }[lowercase(element.type)] || 'click';
-  }
-  if (lowercase(nodeName_(element)) == 'option') {
-    element.parentNode.value = element.value;
-    element = element.parentNode;
-    type = 'change';
-  }
-
-  keys = keys || [];
-  function pressed(key) {
-    return indexOf(keys, key) !== -1;
-  }
-
-  if (msie < 9) {
-    switch(element.type) {
-      case 'radio':
-      case 'checkbox':
-        element.checked = !element.checked;
-        break;
-    }
-    // WTF!!! Error: Unspecified error.
-    // Don't know why, but some elements when detached seem to be in inconsistent state and
-    // calling .fireEvent() on them will result in very unhelpful error (Error: Unspecified error)
-    // forcing the browser to compute the element position (by reading its CSS)
-    // puts the element in consistent state.
-    element.style.posLeft;
-
-    // TODO(vojta): create event objects with pressed keys to get it working on IE<9
-    var ret = element.fireEvent('on' + type);
-    if (lowercase(element.type) == 'submit') {
-      while(element) {
-        if (lowercase(element.nodeName) == 'form') {
-          element.fireEvent('onsubmit');
-          break;
-        }
-        element = element.parentNode;
-      }
-    }
-    return ret;
-  } else {
-    var evnt = document.createEvent('MouseEvents'),
-        originalPreventDefault = evnt.preventDefault,
-        iframe = _jQuery('#application iframe')[0],
-        appWindow = iframe ? iframe.contentWindow : window,
-        fakeProcessDefault = true,
-        finalProcessDefault,
-        angular = appWindow.angular || {};
-
-    // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
-    angular['ff-684208-preventDefault'] = false;
-    evnt.preventDefault = function() {
-      fakeProcessDefault = false;
-      return originalPreventDefault.apply(evnt, arguments);
-    };
-
-    x = x || 0;
-    y = y || 0;
-    evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
-                        pressed('shift'), pressed('meta'), 0, element);
-
-    element.dispatchEvent(evnt);
-    finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);
-
-    delete angular['ff-684208-preventDefault'];
-
-    return finalProcessDefault;
-  }
-}
 
 /**
  * Don't use the jQuery trigger method since it works incorrectly.
@@ -26207,6 +26171,121 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   });
   return result;
 };
+
+(function() {
+  var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
+
+  function indexOf(array, obj) {
+    if (array.indexOf) return array.indexOf(obj);
+
+    for ( var i = 0; i < array.length; i++) {
+      if (obj === array[i]) return i;
+    }
+    return -1;
+  }
+
+
+
+  /**
+   * Triggers a browser event. Attempts to choose the right event if one is
+   * not specified.
+   *
+   * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
+   * @param {string} eventType Optional event type.
+   * @param {Array.<string>=} keys Optional list of pressed keys
+   *        (valid values: 'alt', 'meta', 'shift', 'ctrl')
+   * @param {number} x Optional x-coordinate for mouse/touch events.
+   * @param {number} y Optional y-coordinate for mouse/touch events.
+   */
+  window.browserTrigger = function browserTrigger(element, eventType, keys, x, y) {
+    if (element && !element.nodeName) element = element[0];
+    if (!element) return;
+
+    var inputType = (element.type) ? element.type.toLowerCase() : null,
+        nodeName = element.nodeName.toLowerCase();
+
+    if (!eventType) {
+      eventType = {
+        'text':            'change',
+        'textarea':        'change',
+        'hidden':          'change',
+        'password':        'change',
+        'button':          'click',
+        'submit':          'click',
+        'reset':           'click',
+        'image':           'click',
+        'checkbox':        'click',
+        'radio':           'click',
+        'select-one':      'change',
+        'select-multiple': 'change',
+        '_default_':       'click'
+      }[inputType || '_default_'];
+    }
+
+    if (nodeName == 'option') {
+      element.parentNode.value = element.value;
+      element = element.parentNode;
+      eventType = 'change';
+    }
+
+    keys = keys || [];
+    function pressed(key) {
+      return indexOf(keys, key) !== -1;
+    }
+
+    if (msie < 9) {
+      if (inputType == 'radio' || inputType == 'checkbox') {
+          element.checked = !element.checked;
+      }
+
+      // WTF!!! Error: Unspecified error.
+      // Don't know why, but some elements when detached seem to be in inconsistent state and
+      // calling .fireEvent() on them will result in very unhelpful error (Error: Unspecified error)
+      // forcing the browser to compute the element position (by reading its CSS)
+      // puts the element in consistent state.
+      element.style.posLeft;
+
+      // TODO(vojta): create event objects with pressed keys to get it working on IE<9
+      var ret = element.fireEvent('on' + eventType);
+      if (inputType == 'submit') {
+        while(element) {
+          if (element.nodeName.toLowerCase() == 'form') {
+            element.fireEvent('onsubmit');
+            break;
+          }
+          element = element.parentNode;
+        }
+      }
+      return ret;
+    } else {
+      var evnt = document.createEvent('MouseEvents'),
+          originalPreventDefault = evnt.preventDefault,
+          appWindow = element.ownerDocument.defaultView,
+          fakeProcessDefault = true,
+          finalProcessDefault,
+          angular = appWindow.angular || {};
+
+      // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
+      angular['ff-684208-preventDefault'] = false;
+      evnt.preventDefault = function() {
+        fakeProcessDefault = false;
+        return originalPreventDefault.apply(evnt, arguments);
+      };
+
+      x = x || 0;
+      y = y || 0;
+      evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
+          pressed('shift'), pressed('meta'), 0, element);
+
+      element.dispatchEvent(evnt);
+      finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);
+
+      delete angular['ff-684208-preventDefault'];
+
+      return finalProcessDefault;
+    }
+  }
+}());
 
 /**
  * Represents the application currently being tested and abstracts usage

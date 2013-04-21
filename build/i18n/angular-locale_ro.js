@@ -7,13 +7,13 @@ $provide.value("$locale", {
       "1": "PM"
     },
     "DAY": {
-      "0": "duminică",
+      "0": "duminic\u0103",
       "1": "luni",
-      "2": "marți",
+      "2": "mar\u021bi",
       "3": "miercuri",
       "4": "joi",
       "5": "vineri",
-      "6": "sâmbătă"
+      "6": "s\u00e2mb\u0103t\u0103"
     },
     "MONTH": {
       "0": "ianuarie",
@@ -36,7 +36,7 @@ $provide.value("$locale", {
       "3": "Mi",
       "4": "Jo",
       "5": "Vi",
-      "6": "Sâ"
+      "6": "S\u00e2"
     },
     "SHORTMONTH": {
       "0": "ian.",
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

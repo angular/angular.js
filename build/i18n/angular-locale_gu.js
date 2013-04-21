@@ -7,50 +7,50 @@ $provide.value("$locale", {
       "1": "pm"
     },
     "DAY": {
-      "0": "રવિવાર",
-      "1": "સોમવાર",
-      "2": "મંગળવાર",
-      "3": "બુધવાર",
-      "4": "ગુરુવાર",
-      "5": "શુક્રવાર",
-      "6": "શનિવાર"
+      "0": "\u0ab0\u0ab5\u0abf\u0ab5\u0abe\u0ab0",
+      "1": "\u0ab8\u0acb\u0aae\u0ab5\u0abe\u0ab0",
+      "2": "\u0aae\u0a82\u0a97\u0ab3\u0ab5\u0abe\u0ab0",
+      "3": "\u0aac\u0ac1\u0aa7\u0ab5\u0abe\u0ab0",
+      "4": "\u0a97\u0ac1\u0ab0\u0ac1\u0ab5\u0abe\u0ab0",
+      "5": "\u0ab6\u0ac1\u0a95\u0acd\u0ab0\u0ab5\u0abe\u0ab0",
+      "6": "\u0ab6\u0aa8\u0abf\u0ab5\u0abe\u0ab0"
     },
     "MONTH": {
-      "0": "જાન્યુઆરી",
-      "1": "ફેબ્રુઆરી",
-      "2": "માર્ચ",
-      "3": "એપ્રિલ",
-      "4": "મે",
-      "5": "જૂન",
-      "6": "જુલાઈ",
-      "7": "ઑગસ્ટ",
-      "8": "સપ્ટેમ્બર",
-      "9": "ઑક્ટોબર",
-      "10": "નવેમ્બર",
-      "11": "ડિસેમ્બર"
+      "0": "\u0a9c\u0abe\u0aa8\u0acd\u0aaf\u0ac1\u0a86\u0ab0\u0ac0",
+      "1": "\u0aab\u0ac7\u0aac\u0acd\u0ab0\u0ac1\u0a86\u0ab0\u0ac0",
+      "2": "\u0aae\u0abe\u0ab0\u0acd\u0a9a",
+      "3": "\u0a8f\u0aaa\u0acd\u0ab0\u0abf\u0ab2",
+      "4": "\u0aae\u0ac7",
+      "5": "\u0a9c\u0ac2\u0aa8",
+      "6": "\u0a9c\u0ac1\u0ab2\u0abe\u0a88",
+      "7": "\u0a91\u0a97\u0ab8\u0acd\u0a9f",
+      "8": "\u0ab8\u0aaa\u0acd\u0a9f\u0ac7\u0aae\u0acd\u0aac\u0ab0",
+      "9": "\u0a91\u0a95\u0acd\u0a9f\u0acb\u0aac\u0ab0",
+      "10": "\u0aa8\u0ab5\u0ac7\u0aae\u0acd\u0aac\u0ab0",
+      "11": "\u0aa1\u0abf\u0ab8\u0ac7\u0aae\u0acd\u0aac\u0ab0"
     },
     "SHORTDAY": {
-      "0": "રવિ",
-      "1": "સોમ",
-      "2": "મંગળ",
-      "3": "બુધ",
-      "4": "ગુરુ",
-      "5": "શુક્ર",
-      "6": "શનિ"
+      "0": "\u0ab0\u0ab5\u0abf",
+      "1": "\u0ab8\u0acb\u0aae",
+      "2": "\u0aae\u0a82\u0a97\u0ab3",
+      "3": "\u0aac\u0ac1\u0aa7",
+      "4": "\u0a97\u0ac1\u0ab0\u0ac1",
+      "5": "\u0ab6\u0ac1\u0a95\u0acd\u0ab0",
+      "6": "\u0ab6\u0aa8\u0abf"
     },
     "SHORTMONTH": {
-      "0": "જાન્યુ",
-      "1": "ફેબ્રુ",
-      "2": "માર્ચ",
-      "3": "એપ્રિલ",
-      "4": "મે",
-      "5": "જૂન",
-      "6": "જુલાઈ",
-      "7": "ઑગસ્ટ",
-      "8": "સપ્ટે",
-      "9": "ઑક્ટો",
-      "10": "નવે",
-      "11": "ડિસે"
+      "0": "\u0a9c\u0abe\u0aa8\u0acd\u0aaf\u0ac1",
+      "1": "\u0aab\u0ac7\u0aac\u0acd\u0ab0\u0ac1",
+      "2": "\u0aae\u0abe\u0ab0\u0acd\u0a9a",
+      "3": "\u0a8f\u0aaa\u0acd\u0ab0\u0abf\u0ab2",
+      "4": "\u0aae\u0ac7",
+      "5": "\u0a9c\u0ac2\u0aa8",
+      "6": "\u0a9c\u0ac1\u0ab2\u0abe\u0a88",
+      "7": "\u0a91\u0a97\u0ab8\u0acd\u0a9f",
+      "8": "\u0ab8\u0aaa\u0acd\u0a9f\u0ac7",
+      "9": "\u0a91\u0a95\u0acd\u0a9f\u0acb",
+      "10": "\u0aa8\u0ab5\u0ac7",
+      "11": "\u0aa1\u0abf\u0ab8\u0ac7"
     },
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "hh:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "₹",
+    "CURRENCY_SYM": "\u20b9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

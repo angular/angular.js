@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2013-04-21T13:42:33.125Z
+# 2013-04-21T19:12:23.309Z
 
 # cache all of these
 CACHE:
@@ -9,16 +9,13 @@ css/bootstrap.min.css
 css/doc_widgets.css
 css/font-awesome.css
 css/animations.css
-appcache-offline.manifest
 index-debug.html
 index-jq-nocache.html
 favicon.ico
 index-jq.html
-js/.docs.js.swp
 js/jquery.min.js
 js/docs.js
 js/jquery.js
-js/.swp
 index.html
 img/glyphicons-halflings.png
 img/One_Way_Data_Binding.png
