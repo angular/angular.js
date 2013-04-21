@@ -1,0 +1,211 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/dev_guide.e2e-testing.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><p>As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
+verify the correctness of new features, catch bugs and notice regressions.</p>
+
+<p>To solve this problem, we have built an Angular Scenario Runner which simulates user interactions
+that will help you verify the health of your Angular application.</p>
+
+<h2>Overview</h2>
+
+<p>You will write scenario tests in JavaScript, which describe how your application should behave,
+given a certain interaction in a specific state. A scenario is comprised of one or more <code>it</code> blocks
+(you can think of these as the requirements of your application), which in turn are made of
+<strong>commands</strong> and <strong>expectations</strong>. Commands tell the Runner to do something with the application
+(such as navigate to a page or click on a button), and expectations tell the Runner to assert
+something about the state (such as the value of a field or the current URL). If any expectation
+fails, the runner marks the <code>it</code>  as "failed" and continues on to the next one. Scenarios may also
+have <strong>beforeEach</strong> and <strong>afterEach</strong> blocks, which will be run before (or after) each <code>it</code>  block,
+regardless of whether they pass or fail.</p>
+
+<p><img src="img/guide/scenario_runner.png"></p>
+
+<p>In addition to the above elements, scenarios may also contain helper functions to avoid duplicating
+code in the <code>it</code> blocks.</p>
+
+<p>Here is an example of a simple scenario:
+<pre class="prettyprint linenums">
+describe('Buzz Client', function() {
+it('should filter results', function() {
+  input('user').enter('jacksparrow');
+  element(':button').click();
+  expect(repeater('ul li').count()).toEqual(10);
+  input('filterText').enter('Bees');
+  expect(repeater('ul li').count()).toEqual(1);
+});
+});
+</pre>
+This scenario describes the requirements of a Buzz Client, specifically, that it should be able to
+filter the stream of the user. It starts by entering a value in the 'user' input field, clicking
+the only button on the page, and then it verifies that there are 10 items listed. It then enters
+'Bees' in the 'filterText' input field and verifies that the list is reduced to a single item.</p>
+
+<p>The API section below lists the available commands and expectations for the Runner.</p>
+
+<h2>API</h2>
+
+<p>Source: <a href="https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js">https://github.com/angular/angular.js/blob/master/src/ngScenario/dsl.js</a></p>
+
+<h3>pause()</h3>
+
+<p>Pauses the execution of the tests until you call <code>resume()</code> in the console (or click the resume
+link in the Runner UI).</p>
+
+<h3>sleep(seconds)</h3>
+
+<p>Pauses the execution of the tests for the specified number of <code>seconds</code>.</p>
+
+<h3>browser().navigateTo(url)</h3>
+
+<p>Loads the <code>url</code> into the test frame.</p>
+
+<h3>browser().navigateTo(url, fn)</h3>
+
+<p>Loads the URL returned by <code>fn</code> into the testing frame. The given <code>url</code> is only used for the test
+output. Use this when the destination URL is dynamic (that is, the destination is unknown when you
+write the test).</p>
+
+<h3>browser().reload()</h3>
+
+<p>Refreshes the currently loaded page in the test frame.</p>
+
+<h3>browser().window().href()</h3>
+
+<p>Returns the window.location.href of the currently loaded page in the test frame.</p>
+
+<h3>browser().window().path()</h3>
+
+<p>Returns the window.location.pathname of the currently loaded page in the test frame.</p>
+
+<h3>browser().window().search()</h3>
+
+<p>Returns the window.location.search of the currently loaded page in the test frame.</p>
+
+<h3>browser().window().hash()</h3>
+
+<p>Returns the window.location.hash (without <code>#</code>) of the currently loaded page in the test frame.</p>
+
+<h3>browser().location().url()</h3>
+
+<p>Returns the <a href="api/ng.$location"><code>$location.url()</code></a> of the currently loaded page in
+the test frame.</p>
+
+<h3>browser().location().path()</h3>
+
+<p>Returns the <a href="api/ng.$location"><code>$location.path()</code></a> of the currently loaded page in
+the test frame.</p>
+
+<h3>browser().location().search()</h3>
+
+<p>Returns the <a href="api/ng.$location"><code>$location.search()</code></a> of the currently loaded page
+in the test frame.</p>
+
+<h3>browser().location().hash()</h3>
+
+<p>Returns the <a href="api/ng.$location"><code>$location.hash()</code></a> of the currently loaded page in
+the test frame.</p>
+
+<h3>expect(future).{matcher}</h3>
+
+<p>Asserts the value of the given <code>future</code> satisfies the <code>matcher</code>. All API statements return a
+<code>future</code> object, which get a <code>value</code> assigned after they are executed. Matchers are defined using
+<code>angular.scenario.matcher</code>, and they use the value of futures to run the expectation. For example:
+<code>expect(browser().location().href()).toEqual('http://www.google.com')</code></p>
+
+<h3>expect(future).not().{matcher}</h3>
+
+<p>Asserts the value of the given <code>future</code> satisfies the negation of the <code>matcher</code>.</p>
+
+<h3>using(selector, label)</h3>
+
+<p>Scopes the next DSL element selection.</p>
+
+<h3>binding(name)</h3>
+
+<p>Returns the value of the first binding matching the given <code>name</code>.</p>
+
+<h3>input(name).enter(value)</h3>
+
+<p>Enters the given <code>value</code> in the text field with the given <code>name</code>.</p>
+
+<h3>input(name).check()</h3>
+
+<p>Checks/unchecks the checkbox with the given <code>name</code>.</p>
+
+<h3>input(name).select(value)</h3>
+
+<p>Selects the given <code>value</code> in the radio button with the given <code>name</code>.</p>
+
+<h3>input(name).val()</h3>
+
+<p>Returns the current value of an input field with the given <code>name</code>.</p>
+
+<h3>repeater(selector, label).count()</h3>
+
+<p>Returns the number of rows in the repeater matching the given jQuery <code>selector</code>. The <code>label</code> is
+used for test output.</p>
+
+<h3>repeater(selector, label).row(index)</h3>
+
+<p>Returns an array with the bindings in the row at the given <code>index</code> in the repeater matching the
+given jQuery <code>selector</code>. The <code>label</code> is used for test output.</p>
+
+<h3>repeater(selector, label).column(binding)</h3>
+
+<p>Returns an array with the values in the column with the given <code>binding</code> in the repeater matching
+the given jQuery <code>selector</code>. The <code>label</code> is used for test output.</p>
+
+<h3>select(name).option(value)</h3>
+
+<p>Picks the option with the given <code>value</code> on the select with the given <code>name</code>.</p>
+
+<h3>select(name).option(value1, value2...)</h3>
+
+<p>Picks the options with the given <code>values</code> on the multi select with the given <code>name</code>.</p>
+
+<h3>element(selector, label).count()</h3>
+
+<p>Returns the number of elements that match the given jQuery <code>selector</code>. The <code>label</code> is used for test
+output.</p>
+
+<h3>element(selector, label).click()</h3>
+
+<p>Clicks on the element matching the given jQuery <code>selector</code>. The <code>label</code> is used for test output.</p>
+
+<h3>element(selector, label).query(fn)</h3>
+
+<p>Executes the function <code>fn(selectedElements, done)</code>, where selectedElements are the elements that
+match the given jQuery <code>selector</code> and <code>done</code> is a function that is called at the end of the <code>fn</code>
+function.  The <code>label</code> is used for test output.</p>
+
+<h3>element(selector, label).{method}()</h3>
+
+<p>Returns the result of calling <code>method</code> on the element matching the given jQuery <code>selector</code>, where
+<code>method</code> can be any of the following jQuery methods: <code>val</code>, <code>text</code>, <code>html</code>, <code>height</code>,
+<code>innerHeight</code>, <code>outerHeight</code>, <code>width</code>, <code>innerWidth</code>, <code>outerWidth</code>, <code>position</code>, <code>scrollLeft</code>,
+<code>scrollTop</code>, <code>offset</code>. The <code>label</code> is used for test output.</p>
+
+<h3>element(selector, label).{method}(value)</h3>
+
+<p>Executes the <code>method</code> passing in <code>value</code> on the element matching the given jQuery <code>selector</code>, where
+<code>method</code> can be any of the following jQuery methods: <code>val</code>, <code>text</code>, <code>html</code>, <code>height</code>,
+<code>innerHeight</code>, <code>outerHeight</code>, <code>width</code>, <code>innerWidth</code>, <code>outerWidth</code>, <code>position</code>, <code>scrollLeft</code>,
+<code>scrollTop</code>, <code>offset</code>.  The <code>label</code> is used for test output.</p>
+
+<h3>element(selector, label).{method}(key)</h3>
+
+<p>Returns the result of calling <code>method</code> passing in <code>key</code> on the element matching the given jQuery
+<code>selector</code>, where <code>method</code> can be any of the following jQuery methods: <code>attr</code>, <code>prop</code>, <code>css</code>. The
+<code>label</code> is used for test output.</p>
+
+<h3>element(selector, label).{method}(key, value)</h3>
+
+<p>Executes the <code>method</code> passing in <code>key</code> and <code>value</code> on the element matching the given jQuery
+<code>selector</code>, where <code>method</code> can be any of the following jQuery methods: <code>attr</code>,  <code>prop</code>, <code>css</code>.  The
+<code>label</code> is used for test output.</p>
+
+<p>JavaScript is a dynamically typed language which comes with great power of expression, but it also
+come with almost no-help from the compiler. For this reason we feel very strongly that any code
+written in JavaScript needs to come with a strong set of tests. We have built many features into
+angular which makes testing your angular applications easy. So there is no excuse for not testing.</p></div>

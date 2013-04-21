@@ -1,0 +1,167 @@
+<h1><code ng:non-bindable="">ngRepeat</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/ngRepeat.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngRepeat</code> directive instantiates a template once per item from a collection. Each template
+instance gets its own scope, where the given loop variable is set to the current collection item,
+and <code>$index</code> is set to the item index or key.</p>
+
+<p>Special properties are exposed on the local scope of each template instance, including:</p>
+
+<ul>
+<li><code>$index</code> – <code>{number}</code> – iterator offset of the repeated element (0..length-1)</li>
+<li><code>$first</code> – <code>{boolean}</code> – true if the repeated element is first in the iterator.</li>
+<li><code>$middle</code> – <code>{boolean}</code> – true if the repeated element is between the first and last in the iterator.</li>
+<li><code>$last</code> – <code>{boolean}</code> – true if the repeated element is last in the iterator.</li>
+</ul>
+
+<p>Additionally, you can also provide animations via the ngAnimate attribute to animate the <strong>enter</strong>,
+<strong>leave</strong> and <strong>move</strong> effects.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-repeat="{repeat_expression}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-repeat: {repeat_expression};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+with <span id="animations">animations</span><pre class="prettyprint linenums">//The enter, leave and move animations are supported
+&lt;ANY ng-repeat="{repeat_expression}" ng-animate="{enter: 'enter-animation', leave: 'leave-animation', move: 'move-animation'}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<a href="api/ng.$animator#Methods">Click here</a> to learn more about the steps involved in the animation.<h3 id="Directive.info">Directive info</h3>
+<div class="directive-info"><ul><li>This directive creates new scope.</li>
+<li>This directive executes at priority level 1000.</li>
+</ul>
+</div>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngRepeat – {repeat_expression} – </code>
+<p>The expression indicating how to enumerate a collection. These
+formats are currently supported:</p>
+
+<ul>
+<li><p><code>variable in expression</code> – where variable is the user defined loop variable and <code>expression</code>
+is a scope expression giving the collection to enumerate.</p>
+
+<p>For example: <code>track in cd.tracks</code>.</p></li>
+<li><p><code>(key, value) in expression</code> – where <code>key</code> and <code>value</code> can be any user defined identifiers,
+and <code>expression</code> is the scope expression giving the collection to enumerate.</p>
+
+<p>For example: <code>(name, age) in {'adam':10, 'amalie':12}</code>.</p></li>
+<li><p><code>variable in expression track by tracking_expression</code> – You can also provide an optional tracking function
+which can be used to associate the objects in the collection with the DOM elements. If no tractking function
+is specified the ng-repeat associates elements by identity in the collection. It is an error to have
+more then one tractking function to  resolve to the same key. (This would mean that two distinct objects are
+mapped to the same DOM element, which is not possible.)</p>
+
+<p>For example: <code>item in items</code> is equivalent to `item in items track by $id(item)'. This implies that the DOM elements
+will be associated by item identity in the array.</p>
+
+<p>For example: <code>item in items track by $id(item)</code>. A built in <code>$id()</code> function can be used to assign a unique
+<code>$$hashKey</code> property to each item in the array. This property is then used as a key to associated DOM elements
+with the corresponding item in the array by identity. Moving the same object in array would move the DOM
+element in the same way ian the DOM.</p>
+
+<p>For example: <code>item in items track by item.id</code> Is a typical pattern when the items come from the database. In this
+case the object identity does not matter. Two objects are considered equivalent as long as their <code>id</code>
+property is same.</p></li>
+</ul></li>
+</ul>
+<h3 id="Animations">Animations</h3>
+<div class="animations"><ul><li>enter - when a new item is added to the list or when an item is revealed after a filter</li><li>leave - when an item is removed from the list or when an item is filtered out</li><li>move - when an adjacent item is filtered out causing a reorder or when the item contents are reordered</li></ul></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>This example initializes the scope to a list of names and
+then uses <code>ngRepeat</code> to display every person:
+  <h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-262" source-edit-css="animations.css" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-263"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-262" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-262">
+      <div ng-init="friends = [
+        {name:'John', age:25, gender:'boy'},
+        {name:'Jessie', age:30, gender:'girl'},
+        {name:'Johanna', age:28, gender:'girl'},
+        {name:'Joy', age:15, gender:'girl'},
+        {name:'Mary', age:28, gender:'girl'},
+        {name:'Peter', age:95, gender:'boy'},
+        {name:'Sebastian', age:50, gender:'boy'},
+        {name:'Erika', age:27, gender:'girl'},
+        {name:'Patrick', age:40, gender:'boy'},
+        {name:'Samantha', age:60, gender:'girl'}
+      ]">
+        I have {{friends.length}} friends. They are:
+        <input type="search" ng-model="q" placeholder="filter friends..." />
+        <ul>
+          <li ng-repeat="friend in friends | filter:q"
+              ng-animate="{enter: 'example-repeat-enter',
+                          leave: 'example-repeat-leave',
+                          move: 'example-repeat-move'}">
+            [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+          </li>
+        </ul>
+      </div>
+    </script>
+</div>
+<div class="tab-pane" title="animations.css">
+<pre class="prettyprint linenums" ng-set-text="animations.css"></pre>
+<style type="text/css" id="animations.css">
+      .example-repeat-enter-setup,
+      .example-repeat-leave-setup,
+      .example-repeat-move-setup {
+        -webkit-transition:all linear 0.5s;
+        -moz-transition:all linear 0.5s;
+        -ms-transition:all linear 0.5s;
+        -o-transition:all linear 0.5s;
+        transition:all linear 0.5s;
+      }
+
+      .example-repeat-enter-setup {
+        line-height:0;
+        opacity:0;
+      }
+      .example-repeat-enter-setup.example-repeat-enter-start {
+        line-height:20px;
+        opacity:1;
+      }
+
+      .example-repeat-leave-setup {
+        opacity:1;
+        line-height:20px;
+      }
+      .example-repeat-leave-setup.example-repeat-leave-start {
+        opacity:0;
+        line-height:0;
+      }
+
+      .example-repeat-move-setup { }
+      .example-repeat-move-setup.example-repeat-move-start { }
+    </style>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-263"></pre>
+<script type="text/ng-template" id="scenario.js-263">
+       it('should render initial data set', function() {
+         var r = using('.doc-example-live').repeater('ul li');
+         expect(r.count()).toBe(10);
+         expect(r.row(0)).toEqual(["1","John","25"]);
+         expect(r.row(1)).toEqual(["2","Jessie","30"]);
+         expect(r.row(9)).toEqual(["10","Samantha","60"]);
+         expect(binding('friends.length')).toBe("10");
+       });
+
+       it('should update repeater when filter predicate changes', function() {
+         var r = using('.doc-example-live').repeater('ul li');
+         expect(r.count()).toBe(10);
+
+         input('q').enter('ma');
+
+         expect(r.count()).toBe(2);
+         expect(r.row(0)).toEqual(["1","Mary","28"]);
+         expect(r.row(1)).toEqual(["2","Samantha","60"]);
+       });
+      </script>
+</div>
+</div><div class="pull-right"> <button class="btn btn-primary" ng-click="animationsOff=true" ng-hide="animationsOff">Animations on</button> <button class="btn btn-primary disabled" ng-click="animationsOff=false" ng-show="animationsOff">Animations off</button></div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-class="{'animations-off':animationsOff == true}" ng-embed-app="" ng-set-html="index.html-262" ng-eval-javascript=""></div></div>
+</div>

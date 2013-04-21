@@ -1,0 +1,96 @@
+<h1><code ng:non-bindable="">input [url]</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/input.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Text input with URL validation. Sets the <code>url</code> validation error key if the content is not a
+valid URL.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">&lt;input type="url"
+       ng-model="{string}"
+       [name="{string}"]
+       [required]
+       [ng-required="{string}"]
+       [ng-minlength="{number}"]
+       [ng-maxlength="{number}"]
+       [ng-pattern="{string}"]
+       [ng-change="{string}"]&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngModel – {string} – </code>
+<p>Assignable angular expression to data-bind to.</p></li>
+<li><code ng:non-bindable="">name<i>(optional)</i> – {string=} – </code>
+<p>Property name of the form under which the control is published.</p></li>
+<li><code ng:non-bindable="">required<i>(optional)</i> – {string=} – </code>
+<p>Sets <code>required</code> validation error key if the value is not entered.</p></li>
+<li><code ng:non-bindable="">ngRequired<i>(optional)</i> – {string=} – </code>
+<p>Adds <code>required</code> attribute and <code>required</code> validation constraint to
+the element when the ngRequired expression evaluates to true. Use <code>ngRequired</code> instead of
+<code>required</code> when you want to data-bind to the <code>required</code> attribute.</p></li>
+<li><code ng:non-bindable="">ngMinlength<i>(optional)</i> – {number=} – </code>
+<p>Sets <code>minlength</code> validation error key if the value is shorter than
+minlength.</p></li>
+<li><code ng:non-bindable="">ngMaxlength<i>(optional)</i> – {number=} – </code>
+<p>Sets <code>maxlength</code> validation error key if the value is longer than
+maxlength.</p></li>
+<li><code ng:non-bindable="">ngPattern<i>(optional)</i> – {string=} – </code>
+<p>Sets <code>pattern</code> validation error key if the value does not match the
+RegExp pattern expression. Expected value is <code>/regexp/</code> for inline patterns or <code>regexp</code> for
+patterns defined as scope expressions.</p></li>
+<li><code ng:non-bindable="">ngChange<i>(optional)</i> – {string=} – </code>
+<p>Angular expression to be executed when input changes due to user
+interaction with the input element.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-232" source-edit-css="" source-edit-js="script.js-231" source-edit-unit="" source-edit-scenario="scenario.js-233"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-232" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-232">
+ 
+ <form name="myForm" ng-controller="Ctrl">
+   URL: <input type="url" name="input" ng-model="text" required>
+   <span class="error" ng-show="myForm.input.$error.required">
+     Required!</span>
+   <span class="error" ng-show="myForm.input.$error.url">
+     Not valid url!</span>
+   <tt>text = {{text}}</tt><br/>
+   <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+   <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+   <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+   <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+   <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
+  </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-231"></pre>
+<script type="text/ng-template" id="script.js-231">
+   function Ctrl($scope) {
+     $scope.text = 'http://google.com';
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-233"></pre>
+<script type="text/ng-template" id="scenario.js-233">
+  it('should initialize to model', function() {
+    expect(binding('text')).toEqual('http://google.com');
+    expect(binding('myForm.input.$valid')).toEqual('true');
+  });
+
+  it('should be invalid if empty', function() {
+    input('text').enter('');
+    expect(binding('text')).toEqual('');
+    expect(binding('myForm.input.$valid')).toEqual('false');
+  });
+
+  it('should be invalid if not url', function() {
+    input('text').enter('xxx');
+    expect(binding('myForm.input.$valid')).toEqual('false');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-232" ng-eval-javascript="script.js-231"></div></div>
+</div>

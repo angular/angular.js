@@ -1,0 +1,27 @@
+<h1><code ng:non-bindable="">$routeParams</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/routeParams.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Current set of route parameters. The route parameters are a combination of the
+<a href="api/ng.$location"><code>$location</code></a> <code>search()</code>, and <code>path()</code>. The <code>path</code> parameters
+are extracted when the <a href="api/ng.$route"><code>$route</code></a> path is matched.</p>
+
+<p>In case of parameter name collision, <code>path</code> params take precedence over <code>search</code> params.</p>
+
+<p>The service guarantees that the identity of the <code>$routeParams</code> object will remain unchanged
+(but its properties will likely change) even when a route change occurs.</p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$route">$route</a></code>
+</li>
+</ul>
+<h2 id="Example">Example</h2>
+<div class="example"><pre class="prettyprint linenums">
+// Given:
+// URL: http://server.com/index.html#/Chapter/1/Section/2?search=moby
+// Route: /Chapter/:chapterId/Section/:sectionId
+//
+// Then
+$routeParams ==&gt; {chapterId:1, sectionId:2, search:'moby'}
+</pre></div>
+</div>

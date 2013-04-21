@@ -1,0 +1,32 @@
+<h1><code ng:non-bindable="">angular.injector</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/auto/injector.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Creates an injector function that can be used for retrieving services as well as for
+dependency injection (see <a href="guide/di">dependency injection</a>).</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">angular.injector(modules);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">modules – {Array.&lt;string|Function&gt;} – </code>
+<p>A list of module functions or their aliases. See
+<a href="api/angular.module"><code>angular.module</code></a>. The <code>ng</code> module must be explicitly added.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{function()}</code>
+– <p>Injector function. See <a href="api/AUTO.$injector"><code>$injector</code></a>.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>Typical usage
+<pre class="prettyprint linenums">
+  // create an injector
+  var $injector = angular.injector(['ng']);
+
+  // use the injector to kick off your application
+  // use the type inference to auto inject arguments, or use implicit injection
+  $injector.invoke(function($rootScope, $compile, $document){
+    $compile($document)($rootScope);
+    $rootScope.$digest();
+  });
+</pre></div>
+</div>

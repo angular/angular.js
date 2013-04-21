@@ -1,0 +1,277 @@
+<h1><code ng:non-bindable="">$resource</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngResource</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngResource/resource.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>A factory which creates a resource object that lets you interact with
+<a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> server-side data sources.</p>
+
+<p>The returned resource object has action methods which provide high-level behaviors without
+the need to interact with the low level <a href="api/ng.$http"><code>$http</code></a> service.</p>
+
+<h3>Installation</h3>
+
+<p>To use $resource make sure you have included the <code>angular-resource.js</code> that comes in Angular 
+package. You can also find this file on Google CDN, bower as well as at
+<a href="http://code.angularjs.org/">code.angularjs.org</a>.</p>
+
+<p>Finally load the module in your application:</p>
+
+<pre><code>   angular.module('app', ['ngResource']);
+</code></pre>
+
+<p>and you are ready to get started!</p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$http">$http</a></code>
+</li>
+</ul>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$resource(url[, paramDefaults][, actions]);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string} – </code>
+<p>A parametrized URL template with parameters prefixed by <code>:</code> as in
+<code>/user/:username</code>. If you are using a URL with a port number (e.g.
+<code>http://example.com:8080/api</code>), you'll need to escape the colon character before the port
+number, like this: <code>$resource('http://example.com\\:8080/api')</code>.</p></li>
+<li><code ng:non-bindable="">paramDefaults<i>(optional)</i> – {Object=} – </code>
+<p>Default values for <code>url</code> parameters. These can be overridden in
+<code>actions</code> methods. If any of the parameter value is a function, it will be executed every time
+when a param value needs to be obtained for a request (unless the param was overridden).</p>
+
+<p>Each key value in the parameter object is first bound to url template if present and then any
+excess keys are appended to the url search query after the <code>?</code>.</p>
+
+<p>Given a template <code>/path/:verb</code> and parameter <code>{verb:'greet', salutation:'Hello'}</code> results in
+URL <code>/path/greet?salutation=Hello</code>.</p>
+
+<p>If the parameter value is prefixed with <code>@</code> then the value of that parameter is extracted from
+the data object (useful for non-GET operations).</p></li>
+<li><code ng:non-bindable="">actions<i>(optional)</i> – {Object.&lt;Object&gt;=} – </code>
+<p>Hash with declaration of custom action that should extend the
+default set of resource actions. The declaration should be created in the format of <a href="api/ng.$http#Parameters"><code>$http.config</code></a>:</p>
+
+<pre><code>{action1: {method:?, params:?, isArray:?, headers:?, ...},
+ action2: {method:?, params:?, isArray:?, headers:?, ...},
+ ...}
+</code></pre>
+
+<p>Where:</p>
+
+<ul>
+<li><strong><code>action</code></strong> – {string} – The name of action. This name becomes the name of the method on your
+resource object.</li>
+<li><strong><code>method</code></strong> – {string} – HTTP request method. Valid methods are: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>,
+and <code>JSONP</code>.</li>
+<li><strong><code>params</code></strong> – {Object=} – Optional set of pre-bound parameters for this action. If any of the
+parameter value is a function, it will be executed every time when a param value needs to be
+obtained for a request (unless the param was overridden).</li>
+<li><strong><code>url</code></strong> – {string} – action specific <code>url</code> override. The url templating is supported just like
+for the resource-level urls.</li>
+<li><strong><code>isArray</code></strong> – {boolean=} – If true then the returned object for this action is an array, see
+<code>returns</code> section.</li>
+<li><strong><code>transformRequest</code></strong> – <code>{function(data, headersGetter)|Array.&lt;function(data, headersGetter)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+request body and headers and returns its transformed (typically serialized) version.</li>
+<li><strong><code>transformResponse</code></strong> – <code>{function(data, headersGetter)|Array.&lt;function(data, headersGetter)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+response body and headers and returns its transformed (typically deserialized) version.</li>
+<li><strong><code>cache</code></strong> – <code>{boolean|Cache}</code> – If true, a default $http cache will be used to cache the
+GET request, otherwise if a cache instance built with
+<a href="api/ng.$cacheFactory"><code>$cacheFactory</code></a>, this cache will be used for
+caching.</li>
+<li><strong><code>timeout</code></strong> – <code>{number}</code> – timeout in milliseconds.</li>
+<li><strong><code>withCredentials</code></strong> - <code>{boolean}</code> - whether to to set the <code>withCredentials</code> flag on the
+XHR object. See <a href="https://developer.mozilla.org/en/http_access_control#section_5">requests with credentials</a> for more information.</li>
+<li><strong><code>responseType</code></strong> - <code>{string}</code> - see <a href="https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType">requestType</a>.</li>
+</ul></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>A resource "class" object with methods for the default set of resource actions
+optionally extended with custom <code>actions</code>. The default set contains these actions:</p>
+
+<pre><code>{ 'get':    {method:'GET'},
+  'save':   {method:'POST'},
+  'query':  {method:'GET', isArray:true},
+  'remove': {method:'DELETE'},
+  'delete': {method:'DELETE'} };
+</code></pre>
+
+<p>Calling these methods invoke an <a href="api/ng.$http"><code>ng.$http</code></a> with the specified http method,
+destination and parameters. When the data is returned from the server then the object is an
+instance of the resource class. The actions <code>save</code>, <code>remove</code> and <code>delete</code> are available on it
+as  methods with the <code>$</code> prefix. This allows you to easily perform CRUD operations (create,
+read, update, delete) on server-side data like this:
+<pre class="prettyprint linenums">
+      var User = $resource('/user/:userId', {userId:'@id'});
+      var user = User.get({userId:123}, function() {
+        user.abc = true;
+        user.$save();
+      });
+   </pre>
+
+<p>It is important to realize that invoking a $resource object method immediately returns an
+empty reference (object or array depending on <code>isArray</code>). Once the data is returned from the
+server the existing reference is populated with the actual data. This is a useful trick since
+usually the resource is assigned to a model which is then rendered by the view. Having an empty
+object results in no rendering, once the data arrives from the server then the object is
+populated with the data and the view automatically re-renders itself showing the new data. This
+means that in most case one never has to write a callback function for the action methods.</p>
+
+<p>The action methods on the class object or instance object can be invoked with the following
+parameters:</p>
+
+<ul>
+<li>HTTP GET "class" actions: <code>Resource.action([parameters], [success], [error])</code></li>
+<li>non-GET "class" actions: <code>Resource.action([parameters], postData, [success], [error])</code></li>
+<li>non-GET instance actions:  <code>instance.$action([parameters], [success], [error])</code></li>
+</ul>
+
+<p>The Resource instances and collection have these additional properties:</p>
+
+<ul>
+<li><p><code>$then</code>: the <code>then</code> method of a <a href="api/ng.$q"><code>promise</code></a> derived from the underlying
+<a href="api/ng.$http"><code>$http</code></a> call.</p>
+
+<p>The success callback for the <code>$then</code> method will be resolved if the underlying <code>$http</code> requests
+succeeds.</p>
+
+<p>The success callback is called with a single object which is the <a href="api/ng.$http"><code>http response</code></a>
+object extended with a new property <code>resource</code>. This <code>resource</code> property is a reference to the
+result of the resource action — resource object or array of resources.</p>
+
+<p>The error callback is called with the <a href="api/ng.$http"><code>http response</code></a> object when an http
+error occurs.</p></li>
+<li><p><code>$resolved</code>: true if the promise has been resolved (either with success or rejection);
+Knowing if the Resource has been resolved is useful in data-binding.</p></li>
+</ul></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h3>Credit card resource</h3>
+
+<pre class="prettyprint linenums">
+     // Define CreditCard class
+     var CreditCard = $resource('/user/:userId/card/:cardId',
+      {userId:123, cardId:'@id'}, {
+       charge: {method:'POST', params:{charge:true}}
+      });
+
+     // We can retrieve a collection from the server
+     var cards = CreditCard.query(function() {
+       // GET: /user/123/card
+       // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+
+       var card = cards[0];
+       // each item is an instance of CreditCard
+       expect(card instanceof CreditCard).toEqual(true);
+       card.name = "J. Smith";
+       // non GET methods are mapped onto the instances
+       card.$save();
+       // POST: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
+       // server returns: {id:456, number:'1234', name: 'J. Smith'};
+
+       // our custom method is mapped as well.
+       card.$charge({amount:9.99});
+       // POST: /user/123/card/456?amount=9.99&charge=true {id:456, number:'1234', name:'J. Smith'}
+     });
+
+     // we can create an instance as well
+     var newCard = new CreditCard({number:'0123'});
+     newCard.name = "Mike Smith";
+     newCard.$save();
+     // POST: /user/123/card {number:'0123', name:'Mike Smith'}
+     // server returns: {id:789, number:'01234', name: 'Mike Smith'};
+     expect(newCard.id).toEqual(789);
+</pre>
+
+<p>The object returned from this function execution is a resource "class" which has "static" method
+for each action in the definition.</p>
+
+<p>Calling these methods invoke <code>$http</code> on the <code>url</code> template with the given <code>method</code>, <code>params</code> and <code>headers</code>.
+When the data is returned from the server then the object is an instance of the resource type and
+all of the non-GET methods are available with <code>$</code> prefix. This allows you to easily support CRUD
+operations (create, read, update, delete) on server-side data.</p>
+
+<pre class="prettyprint linenums">
+     var User = $resource('/user/:userId', {userId:'@id'});
+     var user = User.get({userId:123}, function() {
+       user.abc = true;
+       user.$save();
+     });
+   </pre>
+
+<p>It's worth noting that the success callback for <code>get</code>, <code>query</code> and other method gets passed
+in the response that came from the server as well as $http header getter function, so one
+could rewrite the above example and get access to http headers as:</p>
+
+<pre class="prettyprint linenums">
+     var User = $resource('/user/:userId', {userId:'@id'});
+     User.get({userId:123}, function(u, getResponseHeaders){
+       u.abc = true;
+       u.$save(function(u, putResponseHeaders) {
+         //u =&gt; saved user object
+         //putResponseHeaders =&gt; $http header getter
+       });
+     });
+   </pre>
+
+<h3>Buzz client</h3>
+
+<p>Let's look at what a buzz client created with the <code>$resource</code> service looks like:
+    <h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-177" source-edit-css="" source-edit-js="script.js-176" source-edit-unit="" source-edit-scenario="scenario.js-178"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-177" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-177">
+       
+
+       <div ng-controller="BuzzController">
+         <input ng-model="userId"/>
+         <button ng-click="fetch()">fetch</button>
+         <hr/>
+         <div ng-repeat="item in activities.data.items">
+           <h1 style="font-size: 15px;">
+             <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+             <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+             <a href ng-click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+           </h3>
+           {{item.object.content | html}}
+           <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+             <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+             <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
+           </div>
+         </div>
+       </div>
+      </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-176"></pre>
+<script type="text/ng-template" id="script.js-176">
+         function BuzzController($resource) {
+           this.userId = 'googlebuzz';
+           this.Activity = $resource(
+             'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+             {alt:'json', callback:'JSON_CALLBACK'},
+             {get:{method:'JSONP', params:{visibility:'@self'}}, replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}}
+           );
+         }
+
+         BuzzController.prototype = {
+           fetch: function() {
+             this.activities = this.Activity.get({userId:this.userId});
+           },
+           expandReplies: function(activity) {
+             activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
+           }
+         };
+         BuzzController.$inject = ['$resource'];
+       </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-178"></pre>
+<script type="text/ng-template" id="scenario.js-178">
+      </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-177" ng-eval-javascript="script.js-176"></div></div>
+</div>

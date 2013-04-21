@@ -1,0 +1,20 @@
+<h1><code ng:non-bindable="">$animation</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/animation.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The $animation service is used to retrieve any defined animation functions. When executed, the $animation service
+will return a object that contains the setup and start functions that were defined for the animation.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$animation(name);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">name – {String} – </code>
+<p>Name of the animation function to retrieve. Animation functions are registered and stored
+inside of the AngularJS DI so a call to $animate('custom') is the same as injecting <code>customAnimation</code>
+via dependency injection.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>the animation object which contains the <code>setup</code> and <code>start</code> functions that perform the animation.</p></div>
+</div>
+</div>

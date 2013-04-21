@@ -1,0 +1,29 @@
+<h1><code ng:non-bindable="">$animationProvider</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/animation.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The $AnimationProvider provider allows developers to register and access custom JavaScript animations directly inside
+of a module.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="register">register(name, factory)</h3>
+<div class="register"><p>Registers a new injectable animation factory function. The factory function produces the animation object which
+has these two properties:</p>
+
+<ul>
+<li><code>setup</code>: <code>function(Element):*</code> A function which receives the starting state of the element. The purpose
+of this function is to get the element ready for animation. Optionally the function returns an memento which
+is passed to the <code>start</code> function.</li>
+<li><code>start</code>: <code>function(Element, doneFunction, *)</code> The element to animate, the <code>doneFunction</code> to be called on
+element animation completion, and an optional memento from the <code>setup</code> function.</li>
+</ul><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the animation.</p></li>
+<li><code ng:non-bindable="">factory – {function} – </code>
+<p>The factory function that will be executed to return the animation object.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>

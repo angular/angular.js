@@ -1,0 +1,43 @@
+<h1><code ng:non-bindable="">$compileProvider</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/compile.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="directive">directive(name, directiveFactory)</h3>
+<div class="directive"><p>Register a new directives with the compiler.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>Name of the directive in camel-case. (ie <code>ngBind</code> which will match as
+<code>ng-bind</code>).</p></li>
+<li><code ng:non-bindable="">directiveFactory – {function} – </code>
+<p>An injectable directive factory function. See <a href="guide/directive">guide/directive</a> for more
+info.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{ng.$compileProvider}</code>
+– <p>Self for chaining.</p></div>
+</div>
+</li>
+<li><h3 id="urlSanitizationWhitelist">urlSanitizationWhitelist(regexp)</h3>
+<div class="urlsanitizationwhitelist"><p>Retrieves or overrides the default regular expression that is used for whitelisting of safe
+urls during a[href] sanitization.</p>
+
+<p>The sanitization is a security measure aimed at prevent XSS attacks via html links.</p>
+
+<p>Any url about to be assigned to a[href] via data-binding is first normalized and turned into an
+absolute url. Afterwards the url is matched against the <code>urlSanitizationWhitelist</code> regular
+expression. If a match is found the original url is written into the dom. Otherwise the
+absolute url is prefixed with <code>'unsafe:'</code> string and only then it is written into the DOM.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">regexp<i>(optional)</i> – {RegExp=} – </code>
+<p>New regexp to whitelist urls with.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{RegExp|ng.$compileProvider}</code>
+– <p>Current RegExp if called without value or self for
+chaining otherwise.</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

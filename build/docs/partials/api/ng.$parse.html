@@ -1,0 +1,45 @@
+<h1><code ng:non-bindable="">$parse</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/parse.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Converts Angular <a href="guide/expression">expression</a> into a function.</p>
+
+<pre class="prettyprint linenums">
+  var getter = $parse('user.name');
+  var setter = getter.assign;
+  var context = {user:{name:'angular'}};
+  var locals = {user:{name:'local'}};
+
+  expect(getter(context)).toEqual('angular');
+  setter(context, 'newValue');
+  expect(context.user.name).toEqual('newValue');
+  expect(getter(context, locals)).toEqual('local');
+</pre></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$parse(expression);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">expression – {string} – </code>
+<p>String expression to compile.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{function(context, locals)}</code>
+– <p>a function which represents the compiled expression:</p>
+
+<ul>
+<li><code>context</code> – <code>{object}</code> – an object against which any expressions embedded in the strings
+ are evaluated against (typically a scope object).</li>
+<li><p><code>locals</code> – <code>{object=}</code> – local variables context object, useful for overriding values in
+ <code>context</code>.</p>
+
+<p>The returned function also has the following properties:</p>
+
+<ul><li><code>literal</code> – <code>{boolean}</code> – whether the expression's top-level node is a JavaScript
+literal.</li>
+<li><code>constant</code> – <code>{boolean}</code> – whether the expression is made entirely of JavaScript
+constant literals.</li>
+<li><code>assign</code> – <code>{?function(context, value)}</code> – if the expression is assignable, this will be
+set to a function to change its value on the given context.</li></ul></li>
+</ul></div>
+</div>
+</div>

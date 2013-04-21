@@ -1,0 +1,135 @@
+<h1><code ng:non-bindable="">$location</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/location.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The $location service parses the URL in the browser address bar (based on the
+<a href="https://developer.mozilla.org/en/window.location">window.location</a>) and makes the URL
+available to your application. Changes to the URL in the address bar are reflected into
+$location service and changes to $location are reflected into the browser address bar.</p>
+
+<p><strong>The $location service:</strong></p>
+
+<ul>
+<li>Exposes the current URL in the browser address bar, so you can
+<ul><li>Watch and observe the URL.</li>
+<li>Change the URL.</li></ul></li>
+<li>Synchronizes the URL with the browser when the user
+<ul><li>Changes the address bar.</li>
+<li>Clicks the back or forward button (or clicks a History link).</li>
+<li>Clicks on a link.</li></ul></li>
+<li>Represents the URL object as a set of methods (protocol, host, port, path, search, hash).</li>
+</ul>
+
+<p>For more information see <a href="guide/dev_guide.services.$location">Developer Guide: Angular Services: Using $location</a></p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$browser">$browser</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$sniffer">$sniffer</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$rootElement">$rootElement</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="absUrl">absUrl()</h3>
+<div class="absurl"><p>This method is getter only.</p>
+
+<p>Return full url representation with all segments encoded according to rules specified in
+<a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>full url</p></div>
+</div>
+</li>
+<li><h3 id="hash">hash(hash)</h3>
+<div class="hash"><p>This method is getter / setter.</p>
+
+<p>Return hash fragment when called without any parameter.</p>
+
+<p>Change hash fragment when called with parameter and return <code>$location</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">hash<i>(optional)</i> – {string=} – </code>
+<p>New hash fragment</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>hash</p></div>
+</div>
+</li>
+<li><h3 id="host">host()</h3>
+<div class="host"><p>This method is getter only.</p>
+
+<p>Return host of current url.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>host of current url.</p></div>
+</div>
+</li>
+<li><h3 id="path">path(path)</h3>
+<div class="path"><p>This method is getter / setter.</p>
+
+<p>Return path of current url when called without any parameter.</p>
+
+<p>Change path when called with parameter and return <code>$location</code>.</p>
+
+<p>Note: Path should always begin with forward slash (/), this method will add the forward slash
+if it is missing.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">path<i>(optional)</i> – {string=} – </code>
+<p>New path</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>path</p></div>
+</div>
+</li>
+<li><h3 id="port">port()</h3>
+<div class="port"><p>This method is getter only.</p>
+
+<p>Return port of current url.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Number}</code>
+– <p>port</p></div>
+</div>
+</li>
+<li><h3 id="protocol">protocol()</h3>
+<div class="protocol"><p>This method is getter only.</p>
+
+<p>Return protocol of current url.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>protocol of current url</p></div>
+</div>
+</li>
+<li><h3 id="replace">replace()</h3>
+<div class="replace"><p>If called, all changes to $location during current <code>$digest</code> will be replacing current history
+record, instead of adding new one.</p></div>
+</li>
+<li><h3 id="search">search(search, paramValue)</h3>
+<div class="search"><p>This method is getter / setter.</p>
+
+<p>Return search part (as object) of current url when called without any parameter.</p>
+
+<p>Change search part when called with parameter and return <code>$location</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">search<i>(optional)</i> – {string|object&lt;string,string&gt;=} – </code>
+<p>New search params - string or hash object</p></li>
+<li><code ng:non-bindable="">paramValue<i>(optional)</i> – {string=} – </code>
+<p>If <code>search</code> is a string, then <code>paramValue</code> will override only a
+single search parameter. If the value is <code>null</code>, the parameter will be deleted.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>search</p></div>
+</div>
+</li>
+<li><h3 id="url">url(url)</h3>
+<div class="url"><p>This method is getter / setter.</p>
+
+<p>Return url (e.g. <code>/path?a=b#hash</code>) when called without any parameter.</p>
+
+<p>Change path, search and hash, when called with parameter and return <code>$location</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url<i>(optional)</i> – {string=} – </code>
+<p>New url without base prefix (e.g. <code>/path?a=b#hash</code>)</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>url</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

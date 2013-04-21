@@ -1,0 +1,65 @@
+<h1><code ng:non-bindable="">ngCloak</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/ngCloak.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngCloak</code> directive is used to prevent the Angular html template from being briefly
+displayed by the browser in its raw (uncompiled) form while your application is loading. Use this
+directive to avoid the undesirable flicker effect caused by the html template display.</p>
+
+<p>The directive can be applied to the <code>&lt;body&gt;</code> element, but typically a fine-grained application is
+preferred in order to benefit from progressive rendering of the browser view.</p>
+
+<p><code>ngCloak</code> works in cooperation with a css rule that is embedded within <code>angular.js</code> and
+ <code>angular.min.js</code> files. Following is the css rule:</p>
+
+<pre class="prettyprint linenums">
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none;
+}
+</pre>
+
+<p>When this css rule is loaded by the browser, all html elements (including their children) that
+are tagged with the <code>ng-cloak</code> directive are hidden. When Angular comes across this directive
+during the compilation of the template it deletes the <code>ngCloak</code> element attribute, which
+makes the compiled element visible.</p>
+
+<p>For the best result, <code>angular.js</code> script must be loaded in the head section of the html file;
+alternatively, the css rule (above) must be included in the external stylesheet of the
+application.</p>
+
+<p>Legacy browsers, like IE7, do not provide attribute selector support (added in CSS 2.1) so they
+cannot match the <code>[ng\:cloak]</code> selector. To work around this limitation, you must add the css
+class <code>ngCloak</code> in addition to <code>ngCloak</code> directive as shown in the example below.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-cloak&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-cloak"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-188" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-189"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-188" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-188">
+   <div id="template1" ng-cloak>{{ 'hello' }}</div>
+   <div id="template2" ng-cloak class="ng-cloak">{{ 'hello IE7' }}</div>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-189"></pre>
+<script type="text/ng-template" id="scenario.js-189">
+  it('should remove the template directive and css class', function() {
+    expect(element('.doc-example-live #template1').attr('ng-cloak')).
+      not().toBeDefined();
+    expect(element('.doc-example-live #template2').attr('ng-cloak')).
+      not().toBeDefined();
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-188" ng-eval-javascript=""></div></div>
+</div>

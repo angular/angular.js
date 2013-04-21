@@ -1,0 +1,29 @@
+<h1><code ng:non-bindable="">ngSrc</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/booleanAttrs.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Using Angular markup like <code>{{hash}}</code> in a <code>src</code> attribute doesn't
+work right: The browser will fetch from the URL with the literal
+text <code>{{hash}}</code> until Angular replaces the expression inside
+<code>{{hash}}</code>. The <code>ngSrc</code> directive solves this problem.</p>
+
+<p>The buggy way to write it:
+<pre class="prettyprint linenums">
+&lt;img src="http://www.gravatar.com/avatar/{{hash}}"/&gt;
+</pre>
+
+<p>The correct way to write it:
+<pre class="prettyprint linenums">
+&lt;img ng-src="http://www.gravatar.com/avatar/{{hash}}"/&gt;
+</pre></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;IMG ng-src="{template}"&gt;
+   ...
+&lt;/IMG&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngSrc – {template} – </code>
+<p>any string which can contain <code>{{}}</code> markup.</p></li>
+</ul>
+</div>
+</div>

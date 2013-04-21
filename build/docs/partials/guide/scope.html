@@ -1,0 +1,328 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/scope.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><h2>What are Scopes?</h2>
+
+<p><a href="api/ng.$rootScope.Scope"><code>scope</code></a> is an object that refers to the application
+model. It is an execution context for <a href="guide/expression">expressions</a>. Scopes are
+arranged in hierarchical structure which mimic the DOM structure of the application. Scopes can
+watch <a href="guide/expression">expressions</a> and propagate events.</p>
+
+<h3>Scope characteristics</h3>
+
+<ul>
+<li><p>Scopes provide APIs (<a href="api/ng.$rootScope.Scope#$watch"><code>$watch</code></a>) to observe
+model mutations.</p></li>
+<li><p>Scopes provide APIs (<a href="api/ng.$rootScope.Scope#$apply"><code>$apply</code></a>) to
+propagate any model changes through the system into the view from outside of the "Angular
+realm" (controllers, services, Angular event handlers).</p></li>
+<li><p>Scopes can be nested to isolate application components while providing access to shared model
+properties. A scope (prototypically) inherits properties from its parent scope.</p></li>
+<li><p>Scopes provide context against which <a href="guide/expression">expressions</a> are evaluated. For
+example <code>{{username}}</code> expression is meaningless, unless it is evaluated against a specific
+scope which defines the <code>username</code> property.</p></li>
+</ul>
+
+<h3>Scope as Data-Model</h3>
+
+<p>Scope is the glue between application controller and the view. During the template <a href="guide/compiler">linking</a> phase the <a href="api/ng.$compileProvider#directive"><code>directives</code></a> set up
+<a href="api/ng.$rootScope.Scope#$watch"><code><code>$watch</code></code></a> expressions on the scope. The
+<code>$watch</code> allows the directives to be notified of property changes, which allows the directive to
+render the updated value to the DOM.</p>
+
+<p>Both controllers and directives have reference to the scope, but not to each other. This
+arrangement isolates the controller from the directive as well as from DOM. This is an important
+point since it makes the controllers view agnostic, which greatly improves the testing story of
+the applications.</p>
+
+<h3>Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-129" source-edit-css="" source-edit-js="script.js-128" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-129" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-129">
+    <div ng-controller="MyController">
+      Your name:
+        <input type="text" ng-model="username">
+        <button ng-click='sayHello()'>greet</button>
+      <hr>
+      {{greeting}}
+    </div>
+  </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-128"></pre>
+<script type="text/ng-template" id="script.js-128">
+    function MyController($scope) {
+      $scope.username = 'World';
+
+      $scope.sayHello = function() {
+        $scope.greeting = 'Hello ' + $scope.username + '!';
+      };
+    }
+  </script>
+</div>
+</div><h3>Demo</h3>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-129" ng-eval-javascript="script.js-128"></div>
+
+<p>In the above example notice that the <code>MyController</code> assigns <code>World</code> to the <code>username</code> property of
+the scope. The scope then notifies the <code>input</code> of the assignment, which then renders the input
+with username pre-filled. This demonstrates how a controller can write data into the scope.</p>
+
+<p>Similarly the controller can assign behavior to scope as seen by the <code>sayHello</code> method, which is
+invoked when the user clicks on the 'greet' button. The <code>sayHello</code> method can read the <code>username</code>
+property and create a <code>greeting</code> property. This demonstrates that the properties on scope update
+automatically when they are bound to HTML input widgets.</p>
+
+<p>Logically the rendering of <code>{{greeting}}</code> involves:</p>
+
+<ul>
+<li><p>retrieval of the scope associated with DOM node where <code>{{greeting}}</code> is defined in template.
+In this example this is the same scope as the scope which was passed into <code>MyController</code>. (We
+will discuss scope hierarchies later.)</p></li>
+<li><p>Evaluate the <code>greeting</code> <a href="guide/expression">expression</a> against the scope retrieved above,
+and assign the result to the text of the enclosing DOM element.</p></li>
+</ul>
+
+<p>You can think of the scope and its properties as the data which is used to render the view. The
+scope is the single source-of-truth for all things view related.</p>
+
+<p>From a testability point of view, the separation of the controller and the view is desirable, because it allows us
+to test the behavior without being distracted by the rendering details.</p>
+
+<pre class="prettyprint linenums">
+  it('should say hello', function() {
+    var scopeMock = {};
+    var cntl = new MyController(scopeMock);
+
+    // Assert that username is pre-filled
+    expect(scopeMock.username).toEqual('World');
+
+    // Assert that we read new username and greet
+    scopeMock.username = 'angular';
+    scopeMock.sayHello();
+    expect(scopeMock.greeting).toEqual('Hello angular!');
+  });
+</pre>
+
+<h3>Scope Hierarchies</h3>
+
+<p>Each Angular application has exactly one <a href="api/ng.$rootScope"><code>root scope</code></a>, but
+may have several child scopes.</p>
+
+<p>The application can have multiple scopes, because some <a href="guide/directive">directives</a> create
+new child scopes (refer to directive documentation to see which directives create new scopes).
+When new scopes are created, they are added as children of their parent scope. This creates a tree
+structure which parallels the DOM where they're attached</p>
+
+<p>When Angular evaluates <code>{{username}}</code>, it first looks at the scope associated with the given
+element for the <code>username</code> property. If no such property is found, it searches the parent scope
+and so on until the root scope is reached. In JavaScript this behavior is known as prototypical
+inheritance, and child scopes prototypically inherit from their parents.</p>
+
+<p>This example illustrates scopes in application, and prototypical inheritance of properties.</p>
+
+<h3>Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-132" source-edit-css="style.css-130" source-edit-js="script.js-131" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-132" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-132">
+    <div ng-controller="EmployeeController">
+      Manager: {{employee.name}} [ {{department}} ]<br>
+      Reports:
+        <ul>
+          <li ng-repeat="employee in employee.reports">
+            {{employee.name}} [ {{department}} ]
+          </li>
+        </ul>
+      <hr>
+      {{greeting}}
+    </div>
+  </script>
+</div>
+<div class="tab-pane" title="style.css">
+<pre class="prettyprint linenums" ng-set-text="style.css-130"></pre>
+<style type="text/css" id="style.css-130">
+    /* remove .doc-example-live in jsfiddle */
+    .doc-example-live .ng-scope {
+      border: 1px dashed red;
+    }
+  </style>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-131"></pre>
+<script type="text/ng-template" id="script.js-131">
+    function EmployeeController($scope) {
+      $scope.department = 'Engineering';
+      $scope.employee = {
+        name: 'Joe the Manager',
+        reports: [
+          {name: 'John Smith'},
+          {name: 'Mary Run'}
+        ]
+      };
+    }
+  </script>
+</div>
+</div><h3>Demo</h3>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-132" ng-eval-javascript="script.js-131"></div>
+
+<p>Notice that Angular automatically places <code>ng-scope</code> class on elements where scopes are
+attached. The <code>&lt;style&gt;</code> definition in this example highlights in red the new scope locations. The
+child scopes are necessary because the repeater evaluates <code>{{employee.name}}</code> expression, but
+depending on which scope the expression is evaluated it produces different result. Similarly the
+evaluation of <code>{{department}}</code> prototypically inherits from root scope, as it is the only place
+where the <code>department</code> property is defined.</p>
+
+<h3>Retrieving Scopes from the DOM.</h3>
+
+<p>Scopes are attached to the DOM as <code>$scope</code> data property, and can be retrieved for debugging
+purposes. (It is unlikely that one would need to retrieve scopes in this way inside the
+application.) The location where the root scope is attached to the DOM is defined by the location
+of <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> directive. Typically
+<code>ng-app</code> is placed an the <code>&lt;html&gt;</code> element, but it can be placed on other elements as well, if,
+for example, only a portion of the view needs to be controlled by Angular.</p>
+
+<p>To examine the scope in the debugger:</p>
+
+<ol>
+<li><p>right click on the element of interest in your browser and select 'inspect element'. You
+should see the browser debugger with the element you clicked on highlighted.</p></li>
+<li><p>The debugger allows you to access the currently selected element in the console as <code>$0</code>
+variable.</p></li>
+<li><p>To retrieve the associated scope in console execute: <code>angular.element($0).scope()</code></p></li>
+</ol>
+
+<h3>Scope Events Propagation</h3>
+
+<p>Scopes can propagate events in similar fashion to DOM events. The event can be <a href="api/ng.$rootScope.Scope#$broadcast"><code>broadcasted</code></a> to the scope children or <a href="api/ng.$rootScope.Scope#$emit"><code>emitted</code></a> to scope parents.</p>
+
+<h3>Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-134" source-edit-css="" source-edit-js="script.js-133" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-134" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-134">
+    <div ng-controller="EventController">
+      Root scope <tt>MyEvent</tt> count: {{count}}
+      <ul>
+        <li ng-repeat="i in [1]" ng-controller="EventController">
+          <button ng-click="$emit('MyEvent')">$emit('MyEvent')</button>
+          <button ng-click="$broadcast('MyEvent')">$broadcast('MyEvent')</button>
+          <br>
+          Middle scope <tt>MyEvent</tt> count: {{count}}
+          <ul>
+            <li ng-repeat="item in [1, 2]" ng-controller="EventController">
+              Leaf scope <tt>MyEvent</tt> count: {{count}}
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-133"></pre>
+<script type="text/ng-template" id="script.js-133">
+    function EventController($scope) {
+      $scope.count = 0;
+      $scope.$on('MyEvent', function() {
+        $scope.count++;
+      });
+    }
+  </script>
+</div>
+</div><h3>Demo</h3>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-134" ng-eval-javascript="script.js-133"></div>
+
+<h3>Scope Life Cycle</h3>
+
+<p>The normal flow of a browser receiving an event is that it executes a corresponding JavaScript
+callback. Once the callback completes the browser re-renders the DOM and returns to waiting for
+more events.</p>
+
+<p>When the browser calls into JavaScript the code executes outside the Angular execution context,
+which means that Angular is unaware of model modifications. To properly process model
+modifications the execution has to enter the Angular execution context using the <a href="api/ng.$rootScope.Scope#$apply"><code><code>$apply</code></code></a> method. Only model modifications which
+execute inside the <code>$apply</code> method will be properly accounted for by Angular. For example if a
+directive listens on DOM events, such as <a href="api/ng.directive:ngClick"><code><code>ng-click</code></code></a> it must evaluate the
+expression inside the <code>$apply</code> method.</p>
+
+<p>After evaluating the expression, the <code>$apply</code> method performs a <a href="api/ng.$rootScope.Scope#$digest"><code><code>$digest</code></code></a>. In the $digest phase the scope examines all
+of the <code>$watch</code> expressions and compares them with the previous value. This dirty checking is done
+asynchronously. This means that assignment such as <code>$scope.username="angular"</code> will not
+immediately cause a <code>$watch</code> to be notified, instead the <code>$watch</code> notification is delayed until
+the <code>$digest</code> phase. This delay is desirable, since it coalesces multiple model updates into one
+<code>$watch</code> notification as well as it guarantees that during the <code>$watch</code> notification no other
+<code>$watch</code>es are running. If a <code>$watch</code> changes the value of the model, it will force additional
+<code>$digest</code> cycle.</p>
+
+<ol>
+<li><p><strong>Creation</strong></p>
+
+<p>The <a href="api/ng.$rootScope"><code>root scope</code></a> is created during the application
+ bootstrap by the <a href="api/AUTO.$injector"><code>$injector</code></a>. During template
+ linking, some directives create new child scopes.</p></li>
+<li><p><strong>Watcher registration</strong></p>
+
+<p>During template linking directives register <a href="api/ng.$rootScope.Scope#$watch"><code>watches</code></a> on the scope. These watches will be
+ used to propagate model values to the DOM.</p></li>
+<li><p><strong>Model mutation</strong></p>
+
+<p>For mutations to be properly observed, you should make them only within the <a href="api/ng.$rootScope.Scope#$apply"><code>scope.$apply()</code></a>. (Angular APIs do this
+ implicitly, so no extra <code>$apply</code> call is needed when doing synchronous work in controllers,
+ or asynchronous work with <a href="api/ng.$http"><code>$http</code></a> or <a href="api/ng.$timeout"><code>$timeout</code></a> services.</p></li>
+<li><p><strong>Mutation observation</strong></p>
+
+<p>At the end <code>$apply</code>, Angular performs a <a href="api/ng.$rootScope.Scope#$digest"><code>$digest</code></a> cycle on the root scope, which then propagates throughout all child scopes. During
+ the <code>$digest</code> cycle, all <code>$watch</code>ed expressions or functions are checked for model mutation
+ and if a mutation is detected, the <code>$watch</code> listener is called.</p></li>
+<li><p><strong>Scope destruction</strong></p>
+
+<p>When child scopes are no longer needed, it is the responsibility of the child scope creator
+ to destroy them via <a href="api/ng.$rootScope.Scope#$destroy"><code>scope.$destroy()</code></a>
+ API. This will stop propagation of <code>$digest</code> calls into the child scope and allow for memory
+ used by the child scope models to be reclaimed by the garbage collector.</p></li>
+</ol>
+
+<h4>Scopes and Directives</h4>
+
+<p>During the compilation phase, the <a href="guide/compiler">compiler</a> matches <a href="api/ng.$compileProvider#directive"><code>directives</code></a> against the DOM template. The directives
+usually fall into one of two categories:</p>
+
+<ul>
+<li><p>Observing <a href="api/ng.$compileProvider#directive"><code>directives</code></a>, such as
+double-curly expressions <code>{{expression}}</code>, register listeners using the <a href="api/ng.$rootScope.Scope#$watch"><code>$watch()</code></a> method. This type of directive needs
+to be notified whenever the expression changes so that it can update the view.</p></li>
+<li><p>Listener directives, such as <a href="api/ng.directive:ngClick"><code>ng-click</code></a>, register a listener with the DOM. When the DOM listener fires, the directive
+executes the associated expression and updates the view using the <a href="api/ng.$rootScope.Scope#$apply"><code>$apply()</code></a> method.</p></li>
+</ul>
+
+<p>When an external event (such as a user action, timer or XHR) is received, the associated <a href="guide/expression">expression</a> must be applied to the scope through the <a href="api/ng.$rootScope.Scope#$apply"><code>$apply()</code></a> method so that all listeners are updated
+correctly.</p>
+
+<h4>Directives that Create Scopes</h4>
+
+<p>In most cases, <a href="api/ng.$compileProvider#directive"><code>directives</code></a> and scopes interact
+but do not create new instances of scope. However, some directives, such as <a href="api/ng.directive:ngController"><code>ng-controller</code></a> and <a href="api/ng.directive:ngRepeat"><code>ng-repeat</code></a>, create new child scopes
+and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
+element by using an <code>angular.element(aDomElement).scope()</code> method call.</p>
+
+<h4>Controllers and Scopes</h4>
+
+<p>Scopes and controllers interact with each other in the following situations:</p>
+
+<ul>
+<li><p>Controllers use scopes to expose controller methods to templates (see <a href="api/ng.directive:ngController"><code>ng-controller</code></a>).</p></li>
+<li><p>Controllers define methods (behavior) that can mutate the model (properties on the scope).</p></li>
+<li><p>Controllers may register <a href="api/ng.$rootScope.Scope#$watch"><code>watches</code></a> on
+ the model. These watches execute immediately after the controller behavior executes.</p></li>
+</ul>
+
+<p>See the <a href="api/ng.directive:ngController"><code>ng-controller</code></a> for more
+information.</p>
+
+<h4>Scope <code>$watch</code> Performance Considerations</h4>
+
+<p>Dirty checking the scope for property changes is a common operation in Angular and for this reason
+the dirty checking function must be efficient. Care should be taken that the dirty checking
+function does not do any DOM access, as DOM access is orders of magnitude slower then property
+access on JavaScript object.</p></div>

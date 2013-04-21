@@ -1,0 +1,31 @@
+<h1><code ng:non-bindable="">angular.copy</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/Angular.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Creates a deep copy of <code>source</code>, which should be an object or an array.</p>
+
+<ul>
+<li>If no destination is supplied, a copy of the object or array is created.</li>
+<li>If a destination is provided, all of its elements (for array) or properties (for objects)
+are deleted and then all elements/properties from the source are copied to it.</li>
+<li>If  <code>source</code> is not an object or array, <code>source</code> is returned.</li>
+</ul>
+
+<p>Note: this function is used to augment the Object type in Angular expressions. See
+<a href="api/ng.$filter"><code>ng.$filter</code></a> for more information about Angular arrays.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">angular.copy(source[, destination]);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">source – {*} – </code>
+<p>The source that will be used to make a copy.
+Can be any type, including primitives, <code>null</code>, and <code>undefined</code>.</p></li>
+<li><code ng:non-bindable="">destination<i>(optional)</i> – {(Object|Array)=} – </code>
+<p>Destination into which the source is copied. If
+provided, must be of the same type as <code>source</code>.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{*}</code>
+– <p>The copy or updated <code>destination</code>, if <code>destination</code> was specified.</p></div>
+</div>
+</div>

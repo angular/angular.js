@@ -1,0 +1,73 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/docs/content/misc/downloading.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><h2>Including angular scripts from the Google CDN</h2>
+
+<p>The quickest way to get started is to point your html <code>&lt;script&gt;</code> tag to a Google CDN URL.
+This way, you don't have to download anything or maintain a local copy.</p>
+
+<p>There are two types of angular script URLs you can point to, one for development and one for
+production:</p>
+
+<ul>
+<li><strong>angular-<version>.js</strong> — This is the human-readable, non-minified version, suitable for web
+development.</li>
+<li><strong>angular-<version>.min.js</strong> — This is the minified version, which we strongly suggest you use in
+production.</li>
+</ul>
+
+<p>To point your code to an angular script on the Google CDN server, use the following template.  This
+example points to the minified version 1.0.2:</p>
+
+<pre class="prettyprint linenums">
+  &lt;!doctype html&gt;
+  &lt;html ng-app&gt;
+    &lt;head&gt;
+      &lt;title&gt;My Angular App&lt;/title&gt;
+      &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;/body&gt;
+  &lt;/html&gt;
+</pre>
+
+<p>Note that only versions 1.0.1 and above are available on the CDN, if you need an earlier version
+you can use the <a href="http://code.angularjs.org/">http://code.angularjs.org/</a> URL which was the previous recommended location for
+hosted code source. If you're still using the angular server you should switch to the CDN version
+for even faster loading times.</p>
+
+<h2>Downloading and hosting angular files locally</h2>
+
+<p>This option is for those who want to work with angular offline, or those who want to host the
+angular files on their own servers.</p>
+
+<p>If you navigate to <a href="http://code.angularjs.org/">http://code.angularjs.org/</a>, you'll see a directory listing with all of the
+angular versions since we started releasing versioned build artifacts (quite late in the project
+lifetime).  Each directory contains all artifacts that we released for a particular version.
+Download the version you want and have fun.</p>
+
+<p>Each directory under <a href="http://code.angularjs.org/">http://code.angularjs.org/</a> includes the following set of files:</p>
+
+<ul>
+<li><p><strong><code>angular.js</code></strong> — This file is non-obfuscated, non-minified, and human-readable by
+opening it it any editor or browser. In order to get better error messages during development, you
+should always use this non-minified angular script.</p></li>
+<li><p><strong><code>angular.min.js</code></strong> — This is a minified and obfuscated version of
+<code>angular.js</code> created with the Closure compiler. Use this version for production in order
+to minimize the size of the application that is downloaded by your user's browser.</p></li>
+<li><p><strong><code>angular.zip</code></strong> — This is a zip archive that contains all of the files released
+for this angular version. Use this file to get everything in a single download.</p></li>
+<li><p><strong><code>angular-mocks.js</code></strong> — This file contains an implementation of mocks that makes
+testing angular apps even easier. Your unit/integration test harness should load this file after
+<code>angular-&lt;version&gt;.js</code> is loaded.</p></li>
+<li><p><strong><code>angular-scenario.js</code></strong> — This file is a very nifty JavaScript file that allows you
+to write and execute end-to-end tests for angular applications.</p></li>
+<li><p><strong><code>angular-loader.min.js</code></strong> — Module loader for Angular modules. If you are loading multiple script files containing
+Angular modules, you can load them asynchronously and in any order as long as you load this file first. Often the
+contents of this file are copy&amp;pasted into the <code>index.html</code> to avoid even the initial request to <code>angular-loader.min.js</code>.
+See <a href="https://github.com/angular/angular-seed/blob/master/app/index-async.html">angular-seed</a> for an example of usage.</p></li>
+<li><p><strong><code>angular-resource.js</code></strong>, <strong><code>angular-cookies.js</code></strong>, etc - extra Angular modules with additional functionality.</p></li>
+<li><p><strong><code>docs</code></strong> — this directory contains all the files that compose the
+<a href="http://docs.angularjs.org/">http://docs.angularjs.org/</a> documentation app. These files are handy to see the older version of
+our docs, or even more importantly, view the docs offline.</p></li>
+</ul></div>

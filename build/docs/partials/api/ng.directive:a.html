@@ -1,0 +1,16 @@
+<h1><code ng:non-bindable="">a</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/a.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Modifies the default behavior of html A tag, so that the default action is prevented when href
+attribute is empty.</p>
+
+<p>The reasoning for this change is to allow easy creation of action links with <code>ngClick</code> directive
+without changing the location or causing page reloads, e.g.:
+<code>&lt;a href="" ng-click="model.$save()"&gt;Save&lt;/a&gt;</code></p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><p>This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>.</p>as element:<pre class="prettyprint linenums">&lt;a&gt;
+&lt;/a&gt;</pre>
+</div>
+</div>

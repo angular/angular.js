@@ -1,0 +1,41 @@
+<h1><code ng:non-bindable="">ngModel</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/input.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Is directive that tells Angular to do two-way data binding. It works together with <code>input</code>,
+<code>select</code>, <code>textarea</code>. You can easily write your own directives to use <code>ngModel</code> as well.</p>
+
+<p><code>ngModel</code> is responsible for:</p>
+
+<ul>
+<li>binding the view into the model, which other directives such as <code>input</code>, <code>textarea</code> or <code>select</code>
+require,</li>
+<li>providing validation behavior (i.e. required, number, email, url),</li>
+<li>keeping state of the control (valid/invalid, dirty/pristine, validation errors),</li>
+<li>setting related css class onto the element (<code>ng-valid</code>, <code>ng-invalid</code>, <code>ng-dirty</code>, <code>ng-pristine</code>),</li>
+<li>register the control with parent <a href="api/ng.directive:form"><code>form</code></a>.</li>
+</ul>
+
+<p>For basic examples, how to use <code>ngModel</code>, see:</p>
+
+<ul>
+<li><a href="api/ng.directive:input"><code>input</code></a>
+<ul><li><a href="api/ng.directive:input.text"><code>text</code></a></li>
+<li><a href="api/ng.directive:input.checkbox"><code>checkbox</code></a></li>
+<li><a href="api/ng.directive:input.radio"><code>radio</code></a></li>
+<li><a href="api/ng.directive:input.number"><code>number</code></a></li>
+<li><a href="api/ng.directive:input.email"><code>email</code></a></li>
+<li><a href="api/ng.directive:input.url"><code>url</code></a></li></ul></li>
+<li><a href="api/ng.directive:select"><code>select</code></a></li>
+<li><a href="api/ng.directive:textarea"><code>textarea</code></a></li>
+</ul></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;input ng-model&gt;
+   ...
+&lt;/input&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;input class="ng-model"&gt;
+   ...
+&lt;/input&gt;</pre>
+</div>
+</div>

@@ -1,0 +1,61 @@
+<h1><code ng:non-bindable="">input [radio]</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/input.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>HTML radio button.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">&lt;input type="radio"
+       ng-model="{string}"
+       value="{string}"
+       [name="{string}"]
+       [ng-change="{string}"]&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngModel – {string} – </code>
+<p>Assignable angular expression to data-bind to.</p></li>
+<li><code ng:non-bindable="">value – {string} – </code>
+<p>The value to which the expression should be set when selected.</p></li>
+<li><code ng:non-bindable="">name<i>(optional)</i> – {string=} – </code>
+<p>Property name of the form under which the control is published.</p></li>
+<li><code ng:non-bindable="">ngChange<i>(optional)</i> – {string=} – </code>
+<p>Angular expression to be executed when input changes due to user
+interaction with the input element.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-238" source-edit-css="" source-edit-js="script.js-237" source-edit-unit="" source-edit-scenario="scenario.js-239"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-238" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-238">
+ 
+ <form name="myForm" ng-controller="Ctrl">
+   <input type="radio" ng-model="color" value="red">  Red <br/>
+   <input type="radio" ng-model="color" value="green"> Green <br/>
+   <input type="radio" ng-model="color" value="blue"> Blue <br/>
+   <tt>color = {{color}}</tt><br/>
+  </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-237"></pre>
+<script type="text/ng-template" id="script.js-237">
+   function Ctrl($scope) {
+     $scope.color = 'blue';
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-239"></pre>
+<script type="text/ng-template" id="scenario.js-239">
+  it('should change state', function() {
+    expect(binding('color')).toEqual('blue');
+
+    input('color').select('red');
+    expect(binding('color')).toEqual('red');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-238" ng-eval-javascript="script.js-237"></div></div>
+</div>

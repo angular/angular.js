@@ -1,0 +1,104 @@
+<h1><code ng:non-bindable="">date</code>
+<span class="hint">(filter in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Formats <code>date</code> to a string based on the requested <code>format</code>.</p>
+
+<p><code>format</code> string can be composed of the following elements:</p>
+
+<ul>
+<li><code>'yyyy'</code>: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)</li>
+<li><code>'yy'</code>: 2 digit representation of year, padded (00-99). (e.g. AD 2001 => 01, AD 2010 => 10)</li>
+<li><code>'y'</code>: 1 digit representation of year, e.g. (AD 1 => 1, AD 199 => 199)</li>
+<li><code>'MMMM'</code>: Month in year (January-December)</li>
+<li><code>'MMM'</code>: Month in year (Jan-Dec)</li>
+<li><code>'MM'</code>: Month in year, padded (01-12)</li>
+<li><code>'M'</code>: Month in year (1-12)</li>
+<li><code>'dd'</code>: Day in month, padded (01-31)</li>
+<li><code>'d'</code>: Day in month (1-31)</li>
+<li><code>'EEEE'</code>: Day in Week,(Sunday-Saturday)</li>
+<li><code>'EEE'</code>: Day in Week, (Sun-Sat)</li>
+<li><code>'HH'</code>: Hour in day, padded (00-23)</li>
+<li><code>'H'</code>: Hour in day (0-23)</li>
+<li><code>'hh'</code>: Hour in am/pm, padded (01-12)</li>
+<li><code>'h'</code>: Hour in am/pm, (1-12)</li>
+<li><code>'mm'</code>: Minute in hour, padded (00-59)</li>
+<li><code>'m'</code>: Minute in hour (0-59)</li>
+<li><code>'ss'</code>: Second in minute, padded (00-59)</li>
+<li><code>'s'</code>: Second in minute (0-59)</li>
+<li><code>'.sss' or ',sss'</code>: Millisecond in second, padded (000-999)</li>
+<li><code>'a'</code>: am/pm marker</li>
+<li><code>'Z'</code>: 4 digit (+sign) representation of the timezone offset (-1200-+1200)</li>
+</ul>
+
+<p><code>format</code> string can also be one of the following predefined
+<a href="guide/i18n">localizable formats</a>:</p>
+
+<ul>
+<li><code>'medium'</code>: equivalent to <code>'MMM d, y h:mm:ss a'</code> for en_US locale
+(e.g. Sep 3, 2010 12:05:08 pm)</li>
+<li><code>'short'</code>: equivalent to <code>'M/d/yy h:mm a'</code> for en_US  locale (e.g. 9/3/10 12:05 pm)</li>
+<li><code>'fullDate'</code>: equivalent to <code>'EEEE, MMMM d,y'</code> for en_US  locale
+(e.g. Friday, September 3, 2010)</li>
+<li><code>'longDate'</code>: equivalent to <code>'MMMM d, y'</code> for en_US  locale (e.g. September 3, 2010</li>
+<li><code>'mediumDate'</code>: equivalent to <code>'MMM d, y'</code> for en_US  locale (e.g. Sep 3, 2010)</li>
+<li><code>'shortDate'</code>: equivalent to <code>'M/d/yy'</code> for en_US locale (e.g. 9/3/10)</li>
+<li><code>'mediumTime'</code>: equivalent to <code>'h:mm:ss a'</code> for en_US locale (e.g. 12:05:08 pm)</li>
+<li><code>'shortTime'</code>: equivalent to <code>'h:mm a'</code> for en_US locale (e.g. 12:05 pm)</li>
+</ul>
+
+<p><code>format</code> string can contain literal values. These need to be quoted with single quotes (e.g.
+<code>"h 'in the morning'"</code>). In order to output single quote, use two single quotes in a sequence
+(e.g. <code>"h o''clock"</code>).</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><h3 id="In.HTML.Template.Binding">In HTML Template Binding</h3>
+<div class="in-html-template-binding"><code ng:non-bindable="">{{ date_expression | date[:format] }}</code>
+</div>
+<h3 id="In.JavaScript">In JavaScript</h3>
+<div class="in-javascript"><code ng:non-bindable="">$filter('date')(date[, format])</code>
+</div>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">date – {(Date|number|string)} – </code>
+<p>Date to format either as Date object, milliseconds (string or
+number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.SSSZ and it's
+shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is
+specified in the string input, the time is considered to be in the local timezone.</p></li>
+<li><code ng:non-bindable="">format<i>(optional)</i> – {string=} – </code>
+<p>Formatting rules (see Description). If not specified,
+<code>mediumDate</code> is used.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>Formatted string or the input if input is not recognized as date/millis.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-299" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-300"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-299" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-299">
+  <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
+      {{1288323623006 | date:'medium'}}<br>
+  <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
+     {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br>
+  <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
+     {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-300"></pre>
+<script type="text/ng-template" id="scenario.js-300">
+  it('should format date', function() {
+    expect(binding("1288323623006 | date:'medium'")).
+       toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
+    expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
+       toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
+    expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
+       toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-299" ng-eval-javascript=""></div></div>
+</div>

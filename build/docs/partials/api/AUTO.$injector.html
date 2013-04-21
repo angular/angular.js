@@ -1,0 +1,169 @@
+<h1><code ng:non-bindable="">$injector</code>
+<span class="hint">(service in module <code ng:non-bindable="">AUTO</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/auto/injector.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p><code>$injector</code> is used to retrieve object instances as defined by
+<a href="api/AUTO.$provide"><code>provider</code></a>, instantiate types, invoke methods,
+and load modules.</p>
+
+<p>The following always holds true:</p>
+
+<pre class="prettyprint linenums">
+  var $injector = angular.injector();
+  expect($injector.get('$injector')).toBe($injector);
+  expect($injector.invoke(function($injector){
+    return $injector;
+  }).toBe($injector);
+</pre>
+
+<h3>Injection Function Annotation</h3>
+
+<p>JavaScript does not have annotations, and annotations are needed for dependency injection. The
+following are all valid ways of annotating function with injection arguments and are equivalent.</p>
+
+<pre class="prettyprint linenums">
+  // inferred (only works if code not minified/obfuscated)
+  $injector.invoke(function(serviceA){});
+
+  // annotated
+  function explicit(serviceA) {};
+  explicit.$inject = ['serviceA'];
+  $injector.invoke(explicit);
+
+  // inline
+  $injector.invoke(['serviceA', function(serviceA){}]);
+</pre>
+
+<h4>Inference</h4>
+
+<p>In JavaScript calling <code>toString()</code> on a function returns the function definition. The definition can then be
+parsed and the function arguments can be extracted. <em>NOTE:</em> This does not work with minification, and obfuscation
+tools since these tools change the argument names.</p>
+
+<h4><code>$inject</code> Annotation</h4>
+
+<p>By adding a <code>$inject</code> property onto a function the injection parameters can be specified.</p>
+
+<h4>Inline</h4>
+
+<p>As an array of injection names, where the last item in the array is the function to call.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="annotate">annotate(fn)</h3>
+<div class="annotate"><p>Returns an array of service names which the function is requesting for injection. This API is used by the injector
+to determine which services need to be injected into the function when the function is invoked. There are three
+ways in which the function can be annotated with the needed dependencies.</p>
+
+<h4>Argument names</h4>
+
+<p>The simplest form is to extract the dependencies from the arguments of the function. This is done by converting
+the function into a string using <code>toString()</code> method and extracting the argument names.
+<pre class="prettyprint linenums">
+  // Given
+  function MyController($scope, $route) {
+    // ...
+  }
+
+  // Then
+  expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+</pre>
+
+<p>This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
+are supported.</p>
+
+<h4>The <code>$inject</code> property</h4>
+
+<p>If a function has an <code>$inject</code> property and its value is an array of strings, then the strings represent names of
+services to be injected into the function.
+<pre class="prettyprint linenums">
+  // Given
+  var MyController = function(obfuscatedScope, obfuscatedRoute) {
+    // ...
+  }
+  // Define function dependencies
+  MyController.$inject = ['$scope', '$route'];
+
+  // Then
+  expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
+</pre>
+
+<h4>The array notation</h4>
+
+<p>It is often desirable to inline Injected functions and that's when setting the <code>$inject</code> property is very
+inconvenient. In these situations using the array notation to specify the dependencies in a way that survives
+minification is a better choice:</p>
+
+<pre class="prettyprint linenums">
+  // We wish to write this (not minification / obfuscation safe)
+  injector.invoke(function($compile, $rootScope) {
+    // ...
+  });
+
+  // We are forced to write break inlining
+  var tmpFn = function(obfuscatedCompile, obfuscatedRootScope) {
+    // ...
+  };
+  tmpFn.$inject = ['$compile', '$rootScope'];
+  injector.invoke(tmpFn);
+
+  // To better support inline function the inline annotation is supported
+  injector.invoke(['$compile', '$rootScope', function(obfCompile, obfRootScope) {
+    // ...
+  }]);
+
+  // Therefore
+  expect(injector.annotate(
+     ['$compile', '$rootScope', function(obfus_$compile, obfus_$rootScope) {}])
+   ).toEqual(['$compile', '$rootScope']);
+</pre><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">fn – {function|Array.&lt;string|Function&gt;} – </code>
+<p>Function for which dependent service names need to be retrieved as described
+above.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Array.&lt;string&gt;}</code>
+– <p>The names of the services which the function requires.</p></div>
+</div>
+</li>
+<li><h3 id="get">get(name)</h3>
+<div class="get"><p>Return an instance of the service.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the instance to retrieve.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{*}</code>
+– <p>The instance.</p></div>
+</div>
+</li>
+<li><h3 id="instantiate">instantiate(Type, locals)</h3>
+<div class="instantiate"><p>Create a new instance of JS type. The method takes a constructor function invokes the new operator and supplies
+all of the arguments to the constructor function as specified by the constructor annotation.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">Type – {function} – </code>
+<p>Annotated constructor function.</p></li>
+<li><code ng:non-bindable="">locals<i>(optional)</i> – {Object=} – </code>
+<p>Optional object. If preset then any argument names are read from this object first, before
+the <code>$injector</code> is consulted.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>new instance of <code>Type</code>.</p></div>
+</div>
+</li>
+<li><h3 id="invoke">invoke(fn, self, locals)</h3>
+<div class="invoke"><p>Invoke the method and supply the method arguments from the <code>$injector</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">fn – {!function} – </code>
+<p>The function to invoke. The function arguments come form the function annotation.</p></li>
+<li><code ng:non-bindable="">self<i>(optional)</i> – {Object=} – </code>
+<p>The <code>this</code> for the invoked method.</p></li>
+<li><code ng:non-bindable="">locals<i>(optional)</i> – {Object=} – </code>
+<p>Optional object. If preset then any argument names are read from this object first, before
+the <code>$injector</code> is consulted.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{*}</code>
+– <p>the value returned by the invoked <code>fn</code> function.</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

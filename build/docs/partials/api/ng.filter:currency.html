@@ -1,0 +1,63 @@
+<h1><code ng:non-bindable="">currency</code>
+<span class="hint">(filter in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
+symbol for current locale is used.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><h3 id="In.HTML.Template.Binding">In HTML Template Binding</h3>
+<div class="in-html-template-binding"><code ng:non-bindable="">{{ currency_expression | currency[:symbol] }}</code>
+</div>
+<h3 id="In.JavaScript">In JavaScript</h3>
+<div class="in-javascript"><code ng:non-bindable="">$filter('currency')(amount[, symbol])</code>
+</div>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">amount – {number} – </code>
+<p>Input to filter.</p></li>
+<li><code ng:non-bindable="">symbol<i>(optional)</i> – {string=} – </code>
+<p>Currency symbol or identifier to be displayed.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>Formatted number.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-294" source-edit-css="" source-edit-js="script.js-293" source-edit-unit="" source-edit-scenario="scenario.js-295"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-294" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-294">
+  
+  <div ng-controller="Ctrl">
+    <input type="number" ng-model="amount"> <br>
+    default currency symbol ($): {{amount | currency}}<br>
+    custom currency identifier (USD$): {{amount | currency:"USD$"}}
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-293"></pre>
+<script type="text/ng-template" id="script.js-293">
+    function Ctrl($scope) {
+      $scope.amount = 1234.56;
+    }
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-295"></pre>
+<script type="text/ng-template" id="scenario.js-295">
+  it('should init with 1234.56', function() {
+    expect(binding('amount | currency')).toBe('$1,234.56');
+    expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
+  });
+  it('should update', function() {
+    input('amount').enter('-1234');
+    expect(binding('amount | currency')).toBe('($1,234.00)');
+    expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-294" ng-eval-javascript="script.js-293"></div></div>
+</div>

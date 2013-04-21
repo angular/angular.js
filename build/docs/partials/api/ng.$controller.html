@@ -1,0 +1,34 @@
+<h1><code ng:non-bindable="">$controller</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/controller.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p><code>$controller</code> service is responsible for instantiating controllers.</p>
+
+<p>It's just a simple call to <a href="api/AUTO.$injector"><code>$injector</code></a>, but extracted into
+a service, so that one can override this service with <a href="https://gist.github.com/1649788">BC version</a>.</p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$injector">$injector</a></code>
+</li>
+</ul>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$controller(constructor, locals);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">constructor – {Function|string} – </code>
+<p>If called with a function then it's considered to be the
+controller constructor function. Otherwise it's considered to be a string which is used
+to retrieve the controller constructor using the following steps:</p>
+
+<ul>
+<li>check if a controller with given name is registered via <code>$controllerProvider</code></li>
+<li>check if evaluating the string on the current scope returns a constructor</li>
+<li>check <code>window[constructor]</code> on the global <code>window</code> object</li>
+</ul></li>
+<li><code ng:non-bindable="">locals – {Object} – </code>
+<p>Injection locals for Controller.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>Instance of given controller.</p></div>
+</div>
+</div>

@@ -1,0 +1,68 @@
+<h1><code ng:non-bindable="">ngClass</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/ngClass.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngClass</code> allows you to set CSS class on HTML element dynamically by databinding an
+expression that represents all classes to be added.</p>
+
+<p>The directive won't add duplicate classes if a particular class was already set.</p>
+
+<p>When the expression changes, the previously added classes are removed and only then the
+new classes are added.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-class="{expression}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-class: {expression};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngClass – {expression} – </code>
+<p><a href="guide/expression">Expression</a> to eval. The result
+of the evaluation can be a string representing space delimited class
+names, an array, or a map of class names to boolean values.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-216" source-edit-css="style.css-217" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-218"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-216" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-216">
+ <input type="button" value="set" ng-click="myVar='my-class'">
+ <input type="button" value="clear" ng-click="myVar=''">
+ <br>
+ <span ng-class="myVar">Sample Text</span>
+</script>
+</div>
+<div class="tab-pane" title="style.css">
+<pre class="prettyprint linenums" ng-set-text="style.css-217"></pre>
+<style type="text/css" id="style.css-217">
+  .my-class {
+    color: red;
+  }
+</style>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-218"></pre>
+<script type="text/ng-template" id="scenario.js-218">
+  it('should check ng-class', function() {
+    expect(element('.doc-example-live span').prop('className')).not().
+      toMatch(/my-class/);
+
+    using('.doc-example-live').element(':button:first').click();
+
+    expect(element('.doc-example-live span').prop('className')).
+      toMatch(/my-class/);
+
+    using('.doc-example-live').element(':button:last').click();
+
+    expect(element('.doc-example-live span').prop('className')).not().
+      toMatch(/my-class/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-216" ng-eval-javascript=""></div></div>
+</div>

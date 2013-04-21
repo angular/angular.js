@@ -1,0 +1,48 @@
+<h1><code ng:non-bindable="">FormController</code>
+<span class="hint">(type in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/form.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p><code>FormController</code> keeps track of all its controls and nested forms as well as state of them,
+such as being valid/invalid or dirty/pristine.</p>
+
+<p>Each <a href="api/ng.directive:form"><code>form</code></a> directive creates an instance
+of <code>FormController</code>.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="$setPristine">$setPristine()</h3>
+<div class="$setpristine"><p>Sets the form to its pristine state.</p>
+
+<p>This method can be called to remove the 'ng-dirty' class and set the form to its pristine
+state (ng-pristine class). This method will also propagate to all the controls contained
+in this form.</p>
+
+<p>Setting a form back to a pristine state is often useful when we want to 'reuse' a form after
+saving or resetting it.</p></div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="Properties">Properties</h2>
+<ul class="properties"><li><h3 id="$pristine">$pristine</h3>
+<div class="$pristine"><p>True if user has not interacted with the form yet.</p></div>
+</li>
+<li><h3 id="$dirty">$dirty</h3>
+<div class="$dirty"><p>True if user has already interacted with the form.</p></div>
+</li>
+<li><h3 id="$valid">$valid</h3>
+<div class="$valid"><p>True if all of the containing forms and controls are valid.</p></div>
+</li>
+<li><h3 id="$invalid">$invalid</h3>
+<div class="$invalid"><p>True if at least one containing control or form is invalid.</p></div>
+</li>
+<li><h3 id="$error">$error</h3>
+<div class="$error"><p>Is an object hash, containing references to all invalid controls or
+forms, where:</p>
+
+<ul>
+<li>keys are validation tokens (error names) — such as <code>required</code>, <code>url</code> or <code>email</code>),</li>
+<li>values are arrays of controls or forms that are invalid with given error.</li>
+</ul></div>
+</li>
+</ul>
+</div>
+</div>

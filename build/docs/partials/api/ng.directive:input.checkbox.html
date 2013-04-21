@@ -1,0 +1,69 @@
+<h1><code ng:non-bindable="">input [checkbox]</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/input.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>HTML checkbox.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">&lt;input type="checkbox"
+       ng-model="{string}"
+       [name="{string}"]
+       [ng-true-value="{string}"]
+       [ng-false-value="{string}"]
+       [ng-change="{string}"]&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngModel – {string} – </code>
+<p>Assignable angular expression to data-bind to.</p></li>
+<li><code ng:non-bindable="">name<i>(optional)</i> – {string=} – </code>
+<p>Property name of the form under which the control is published.</p></li>
+<li><code ng:non-bindable="">ngTrueValue<i>(optional)</i> – {string=} – </code>
+<p>The value to which the expression should be set when selected.</p></li>
+<li><code ng:non-bindable="">ngFalseValue<i>(optional)</i> – {string=} – </code>
+<p>The value to which the expression should be set when not selected.</p></li>
+<li><code ng:non-bindable="">ngChange<i>(optional)</i> – {string=} – </code>
+<p>Angular expression to be executed when input changes due to user
+interaction with the input element.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-241" source-edit-css="" source-edit-js="script.js-240" source-edit-unit="" source-edit-scenario="scenario.js-242"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-241" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-241">
+ 
+ <form name="myForm" ng-controller="Ctrl">
+   Value1: <input type="checkbox" ng-model="value1"> <br/>
+   Value2: <input type="checkbox" ng-model="value2"
+                  ng-true-value="YES" ng-false-value="NO"> <br/>
+   <tt>value1 = {{value1}}</tt><br/>
+   <tt>value2 = {{value2}}</tt><br/>
+  </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-240"></pre>
+<script type="text/ng-template" id="script.js-240">
+   function Ctrl($scope) {
+     $scope.value1 = true;
+     $scope.value2 = 'YES'
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-242"></pre>
+<script type="text/ng-template" id="scenario.js-242">
+  it('should change state', function() {
+    expect(binding('value1')).toEqual('true');
+    expect(binding('value2')).toEqual('YES');
+
+    input('value1').check();
+    input('value2').check();
+    expect(binding('value1')).toEqual('false');
+    expect(binding('value2')).toEqual('NO');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-241" ng-eval-javascript="script.js-240"></div></div>
+</div>

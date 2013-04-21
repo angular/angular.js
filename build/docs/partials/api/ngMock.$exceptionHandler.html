@@ -1,0 +1,32 @@
+<h1><code ng:non-bindable="">$exceptionHandler</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngMock</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Mock implementation of <a href="api/ng.$exceptionHandler"><code>ng.$exceptionHandler</code></a> that rethrows or logs errors passed
+into it. See <a href="api/ngMock.$exceptionHandlerProvider">$exceptionHandlerProvider</a> for configuration
+information.</p>
+
+<pre class="prettyprint linenums">
+  describe('$exceptionHandlerProvider', function() {
+
+    it('should capture log messages and exceptions', function() {
+
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($log, $exceptionHandler, $timeout) {
+        $timeout(function() { $log.log(1); });
+        $timeout(function() { $log.log(2); throw 'banana peel'; });
+        $timeout(function() { $log.log(3); });
+        expect($exceptionHandler.errors).toEqual([]);
+        expect($log.assertEmpty());
+        $timeout.flush();
+        expect($exceptionHandler.errors).toEqual(['banana peel']);
+        expect($log.log.logs).toEqual([[1], [2], [3]]);
+      });
+    });
+  });
+</pre></div>
+</div>

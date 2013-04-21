@@ -1,0 +1,39 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/dev_guide.services.understanding_services.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><p>Angular services are singletons that carry out specific tasks common to web apps, such as the
+<a href="api/ng.$http"><code>$http service</code></a> that provides low level access to the browser's
+<code>XMLHttpRequest</code> object.</p>
+
+<p>To use an Angular service, you identify it as a dependency for the dependent (a controller, or
+another service) that depends on the service.  Angular's dependency injection subsystem takes care
+of the rest. The Angular injector subsystem is in charge of service instantiation, resolution of
+dependencies, and provision of dependencies to factory functions as requested.</p>
+
+<p>Angular injects dependencies using "constructor" injection (the service is passed in via a factory
+function). Because JavaScript is a dynamically typed language, Angular's dependency injection
+subsystem cannot use static types to identify service dependencies. For this reason a dependent
+must explicitly define its dependencies by using the <code>$inject</code> property.  For example:</p>
+
+<pre><code>    myController.$inject = ['$location'];
+</code></pre>
+
+<p>The Angular web framework provides a set of services for common operations. Like other core Angular
+variables and identifiers, the built-in services always start with <code>$</code> (such as <code>$http</code> mentioned
+above). You can also create your own custom services.</p>
+
+<h3>Related Topics</h3>
+
+<ul>
+<li><a href="guide/di">About Angular Dependency Injection</a></li>
+<li><a href="guide/dev_guide.services.creating_services">Creating Angular Services</a></li>
+<li><a href="guide/dev_guide.services.managing_dependencies">Managing Service Dependencies</a></li>
+<li><a href="guide/dev_guide.services.testing_services">Testing Angular Services</a></li>
+</ul>
+
+<h3>Related API</h3>
+
+<ul>
+<li><a href="api/ng">Angular Service API</a></li>
+<li><a href="api/angular.injector"><code>Injector API</code></a></li>
+</ul></div>

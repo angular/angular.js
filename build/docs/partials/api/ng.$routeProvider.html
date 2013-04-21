@@ -1,0 +1,108 @@
+<h1><code ng:non-bindable="">$routeProvider</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/route.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Used for configuring routes. See <a href="api/ng.$route"><code>$route</code></a> for an example.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="otherwise">otherwise(params)</h3>
+<div class="otherwise"><p>Sets route definition that will be used on route change when no other route definition
+is matched.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">params – {Object} – </code>
+<p>Mapping information to be assigned to <code>$route.current</code>.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>self</p></div>
+</div>
+</li>
+<li><h3 id="when">when(path, route)</h3>
+<div class="when"><p>Adds a new route definition to the <code>$route</code> service.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">path – {string} – </code>
+<p>Route path (matched against <code>$location.path</code>). If <code>$location.path</code>
+contains redundant trailing slash or is missing one, the route will still match and the
+<code>$location.path</code> will be updated to add or drop the trailing slash to exactly match the
+route definition.</p>
+
+<ul>
+<li><code>path</code> can contain named groups starting with a colon (<code>:name</code>). All characters up
+to the next slash are matched and stored in <code>$routeParams</code> under the given <code>name</code>
+when the route matches.</li>
+<li><code>path</code> can contain named groups starting with a star (<code>*name</code>). All characters are
+eagerly stored in <code>$routeParams</code> under the given <code>name</code> when the route matches.</li>
+</ul>
+
+<p>For example, routes like <code>/color/:color/largecode/*largecode/edit</code> will match
+<code>/color/brown/largecode/code/with/slashs/edit</code> and extract:</p>
+
+<ul>
+<li><code>color: brown</code></li>
+<li><code>largecode: code/with/slashs</code>.</li>
+</ul></li>
+<li><code ng:non-bindable="">route – {Object} – </code>
+<p>Mapping information to be assigned to <code>$route.current</code> on route
+match.</p>
+
+<p>Object properties:</p>
+
+<ul>
+<li><code>controller</code> – <code>{(string|function()=}</code> – Controller fn that should be associated with newly
+created scope or the name of a <a href="api/angular.Module#controller"><code>registered controller</code></a>
+if passed as a string.</li>
+<li><p><code>template</code> – <code>{string=|function()=}</code> – html template as a string or function that returns
+an html template as a string which should be used by <a href="api/ng.directive:ngView"><code>ngView</code></a> or
+<a href="api/ng.directive:ngInclude"><code>ngInclude</code></a> directives.
+This property takes precedence over <code>templateUrl</code>.</p>
+
+<p>If <code>template</code> is a function, it will be called with the following parameters:</p>
+
+<ul><li><code>{Array.&lt;Object&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route</li></ul></li>
+<li><p><code>templateUrl</code> – <code>{string=|function()=}</code> – path or function that returns a path to an html
+template that should be used by <a href="api/ng.directive:ngView"><code>ngView</code></a>.</p>
+
+<p>If <code>templateUrl</code> is a function, it will be called with the following parameters:</p>
+
+<ul><li><code>{Array.&lt;Object&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route</li></ul></li>
+<li><p><code>resolve</code> - <code>{Object.&lt;string, function&gt;=}</code> - An optional map of dependencies which should
+be injected into the controller. If any of these dependencies are promises, they will be
+resolved and converted to a value before the controller is instantiated and the
+<code>$routeChangeSuccess</code> event is fired. The map object is:</p>
+
+<ul><li><code>key</code> – <code>{string}</code>: a name of a dependency to be injected into the controller.</li>
+<li><code>factory</code> - <code>{string|function}</code>: If <code>string</code> then it is an alias for a service.
+Otherwise if function, then it is <a href="api/AUTO.$injector#invoke"><code>injected</code></a>
+and the return value is treated as the dependency. If the result is a promise, it is resolved
+before its value is injected into the controller.</li></ul></li>
+<li><p><code>redirectTo</code> – {(string|function())=} – value to update
+<a href="api/ng.$location"><code>$location</code></a> path with and trigger route redirection.</p>
+
+<p>If <code>redirectTo</code> is a function, it will be called with the following parameters:</p>
+
+<ul><li><code>{Object.&lt;string&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route templateUrl.</li>
+<li><code>{string}</code> - current <code>$location.path()</code></li>
+<li><code>{Object}</code> - current <code>$location.search()</code></li></ul>
+
+<p>The custom <code>redirectTo</code> function is expected to return a string which will be used
+to update <code>$location.path()</code> and <code>$location.search()</code>.</p></li>
+<li><p><code>[reloadOnSearch=true]</code> - {boolean=} - reload route when only $location.search()
+changes.</p>
+
+<p>If the option is set to <code>false</code> and url in the browser changes, then
+<code>$routeUpdate</code> event is broadcasted on the root scope.</p></li>
+<li><p><code>[caseInsensitiveMatch=false]</code> - {boolean=} - match routes without being case sensitive</p>
+
+<p>If the option is set to <code>true</code>, then the particular route can be matched without being
+case sensitive</p></li>
+</ul></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>self</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

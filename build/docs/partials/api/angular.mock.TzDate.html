@@ -1,0 +1,41 @@
+<h1><code ng:non-bindable="">angular.mock.TzDate</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p><em>NOTE</em>: this is not an injectable instance, just a globally available mock class of <code>Date</code>.</p>
+
+<p>Mock of the Date type which has its timezone specified via constructor arg.</p>
+
+<p>The main purpose is to create Date-like instances with timezone fixed to the specified timezone
+offset, so that we can test code that depends on local timezone settings without dependency on
+the time zone settings of the machine where the code is running.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">TzDate(offset, timestamp);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">offset – {number} – </code>
+<p>Offset of the <em>desired</em> timezone in hours (fractions will be honored)</p></li>
+<li><code ng:non-bindable="">timestamp – {(number|string)} – </code>
+<p>Timestamp representing the desired time in <em>UTC</em></p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>!!!! WARNING !!!!!
+This is not a complete Date object so only methods that were implemented can be called safely.
+To make matters worse, TzDate instances inherit stuff from Date via a prototype.</p>
+
+<p>We do our best to intercept calls to "unimplemented" methods, but since the list of methods is
+incomplete we might be missing some non-standard methods. This can result in errors like:
+"Date.prototype.foo called on incompatible Object".</p>
+
+<pre class="prettyprint linenums">
+var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
+newYearInBratislava.getTimezoneOffset() =&gt; -60;
+newYearInBratislava.getFullYear() =&gt; 2010;
+newYearInBratislava.getMonth() =&gt; 0;
+newYearInBratislava.getDate() =&gt; 1;
+newYearInBratislava.getHours() =&gt; 0;
+newYearInBratislava.getMinutes() =&gt; 0;
+newYearInBratislava.getSeconds() =&gt; 0;
+</pre></div>
+</div>

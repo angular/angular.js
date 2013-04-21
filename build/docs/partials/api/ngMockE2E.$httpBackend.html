@@ -1,0 +1,174 @@
+<h1><code ng:non-bindable="">$httpBackend</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngMockE2E</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Fake HTTP backend implementation suitable for end-to-end testing or backend-less development of
+applications that use the <a href="api/ng.$http"><code>$http service</code></a>.</p>
+
+<p><em>Note</em>: For fake http backend implementation suitable for unit testing please see
+<a href="api/ngMock.$httpBackend">unit-testing $httpBackend mock</a>.</p>
+
+<p>This implementation can be used to respond with static or dynamic responses via the <code>when</code> api
+and its shortcuts (<code>whenGET</code>, <code>whenPOST</code>, etc) and optionally pass through requests to the
+real $httpBackend for specific requests (e.g. to interact with certain remote apis or to fetch
+templates from a webserver).</p>
+
+<p>As opposed to unit-testing, in an end-to-end testing scenario or in scenario when an application
+is being developed with the real backend api replaced with a mock, it is often desirable for
+certain category of requests to bypass the mock and issue a real http request (e.g. to fetch
+templates or static files from the webserver). To configure the backend with this behavior
+use the <code>passThrough</code> request handler of <code>when</code> instead of <code>respond</code>.</p>
+
+<p>Additionally, we don't want to manually have to flush mocked out requests like we do during unit
+testing. For this reason the e2e $httpBackend automatically flushes mocked out requests
+automatically, closely simulating the behavior of the XMLHttpRequest object.</p>
+
+<p>To setup the application to run with this http backend, you have to create a module that depends
+on the <code>ngMockE2E</code> and your application modules and defines the fake backend:</p>
+
+<pre class="prettyprint linenums">
+  myAppDev = angular.module('myAppDev', ['myApp', 'ngMockE2E']);
+  myAppDev.run(function($httpBackend) {
+    phones = [{name: 'phone1'}, {name: 'phone2'}];
+
+    // returns the current list of phones
+    $httpBackend.whenGET('/phones').respond(phones);
+
+    // adds a new phone to the phones array
+    $httpBackend.whenPOST('/phones').respond(function(method, url, data) {
+      phones.push(angular.fromJSON(data));
+    });
+    $httpBackend.whenGET(/^\/templates\//).passThrough();
+    //...
+  });
+</pre>
+
+<p>Afterwards, bootstrap your app with this new module.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="when">when(method, url, data, headers)</h3>
+<div class="when"><p>Creates a new backend definition.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">method – {string} – </code>
+<p>HTTP method.</p></li>
+<li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers or function that receives http header
+object and returns true if the headers match the current definition.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p>
+
+<ul>
+<li>respond – <code>{function([status,] data[, headers])|function(function(method, url, data, headers)}</code>
+– The respond method takes a set of static data to be returned or a function that can return
+an array containing response status (number), response data (string) and response headers
+(Object).</li>
+<li>passThrough – <code>{function()}</code> – Any request matching a backend definition with <code>passThrough</code>
+handler, will be pass through to the real backend (an XHR request will be made to the
+server.</li>
+</ul></div>
+</div>
+</li>
+<li><h3 id="whenDELETE">whenDELETE(url, headers)</h3>
+<div class="whendelete"><p>Creates a new backend definition for DELETE requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenGET">whenGET(url, headers)</h3>
+<div class="whenget"><p>Creates a new backend definition for GET requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenHEAD">whenHEAD(url, headers)</h3>
+<div class="whenhead"><p>Creates a new backend definition for HEAD requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenJSONP">whenJSONP(url)</h3>
+<div class="whenjsonp"><p>Creates a new backend definition for JSONP requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenPATCH">whenPATCH(url, data, headers)</h3>
+<div class="whenpatch"><p>Creates a new backend definition for PATCH requests.  For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenPOST">whenPOST(url, data, headers)</h3>
+<div class="whenpost"><p>Creates a new backend definition for POST requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenPUT">whenPUT(url, data, headers)</h3>
+<div class="whenput"><p>Creates a new backend definition for PUT requests.  For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+control how a matched request is handled.</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

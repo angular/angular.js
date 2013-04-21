@@ -1,0 +1,138 @@
+<h1><code ng:non-bindable="">$provide</code>
+<span class="hint">(service in module <code ng:non-bindable="">AUTO</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/auto/injector.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Use <code>$provide</code> to register new providers with the <code>$injector</code>. The providers are the factories for the instance.
+The providers share the same name as the instance they create with <code>Provider</code> suffixed to them.</p>
+
+<p>A provider is an object with a <code>$get()</code> method. The injector calls the <code>$get</code> method to create a new instance of
+a service. The Provider can have additional methods which would allow for configuration of the provider.</p>
+
+<pre class="prettyprint linenums">
+  function GreetProvider() {
+    var salutation = 'Hello';
+
+    this.salutation = function(text) {
+      salutation = text;
+    };
+
+    this.$get = function() {
+      return function (name) {
+        return salutation + ' ' + name + '!';
+      };
+    };
+  }
+
+  describe('Greeter', function(){
+
+    beforeEach(module(function($provide) {
+      $provide.provider('greet', GreetProvider);
+    });
+
+    it('should greet', inject(function(greet) {
+      expect(greet('angular')).toEqual('Hello angular!');
+    }));
+
+    it('should allow configuration of salutation', function() {
+      module(function(greetProvider) {
+        greetProvider.salutation('Ahoj');
+      });
+      inject(function(greet) {
+        expect(greet('angular')).toEqual('Ahoj angular!');
+      });
+    )};
+
+  });
+</pre></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="constant">constant(name, value)</h3>
+<div class="constant"><p>A constant value, but unlike <a href="api/AUTO.$provide#value"><code>value</code></a> it can be injected
+into configuration function (other modules) and it is not interceptable by
+<a href="api/AUTO.$provide#decorator"><code>decorator</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the constant.</p></li>
+<li><code ng:non-bindable="">value – {*} – </code>
+<p>The constant value.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>registered instance</p></div>
+</div>
+</li>
+<li><h3 id="decorator">decorator(name, decorator)</h3>
+<div class="decorator"><p>Decoration of service, allows the decorator to intercept the service instance creation. The
+returned instance may be the original instance, or a new instance which delegates to the
+original instance.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the service to decorate.</p></li>
+<li><code ng:non-bindable="">decorator – {function()} – </code>
+<p>This function will be invoked when the service needs to be
+instanciated. The function is called using the <a href="api/AUTO.$injector#invoke"><code>injector.invoke</code></a> method and is therefore fully injectable. Local injection arguments:</p>
+
+<ul>
+<li><code>$delegate</code> - The original service instance, which can be monkey patched, configured,
+decorated or delegated to.</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><h3 id="factory">factory(name, $getFn)</h3>
+<div class="factory"><p>A short hand for configuring services if only <code>$get</code> method is required.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the instance.</p></li>
+<li><code ng:non-bindable="">$getFn – {function()} – </code>
+<p>The $getFn for the instance creation. Internally this is a short hand for
+<code>$provide.provider(name, {$get: $getFn})</code>.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>registered provider instance</p></div>
+</div>
+</li>
+<li><h3 id="provider">provider(name, provider)</h3>
+<div class="provider"><p>Register a provider for a service. The providers can be retrieved and can have additional configuration methods.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the instance. NOTE: the provider will be available under <code>name + 'Provider'</code> key.</p></li>
+<li><code ng:non-bindable="">provider – {(Object|function())} – </code>
+<p>If the provider is:</p>
+
+<ul>
+<li><code>Object</code>: then it should have a <code>$get</code> method. The <code>$get</code> method will be invoked using
+          <a href="api/AUTO.$injector#invoke"><code>$injector.invoke()</code></a> when an instance needs to be created.</li>
+<li><code>Constructor</code>: a new instance of the provider will be created using
+          <a href="api/AUTO.$injector#instantiate"><code>$injector.instantiate()</code></a>, then treated as <code>object</code>.</li>
+</ul></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>registered provider instance</p></div>
+</div>
+</li>
+<li><h3 id="service">service(name, constructor)</h3>
+<div class="service"><p>A short hand for registering service of given class.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the instance.</p></li>
+<li><code ng:non-bindable="">constructor – {Function} – </code>
+<p>A class (constructor function) that will be instantiated.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>registered provider instance</p></div>
+</div>
+</li>
+<li><h3 id="value">value(name, value)</h3>
+<div class="value"><p>A short hand for configuring services if the <code>$get</code> method is a constant.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>The name of the instance.</p></li>
+<li><code ng:non-bindable="">value – {*} – </code>
+<p>The value.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>registered provider instance</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

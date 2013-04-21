@@ -1,0 +1,25 @@
+<h1><code ng:non-bindable="">angular.mock.createMockWindow</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>This function creates a mock window object useful for controlling access ot setTimeout, but mocking out
+sufficient window's properties to allow Angular to execute.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">angular.mock.createMockWindow();</pre>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><pre class="prettyprint linenums">
+beforeEach(module(function($provide) {
+  $provide.value('$window', window = angular.mock.createMockWindow());
+}));
+
+it('should do something', inject(function($window) {
+  var val = null;
+  $window.setTimeout(function() { val = 123; }, 10);
+  expect(val).toEqual(null);
+  window.setTimeout.expect(10).process();
+  expect(val).toEqual(123);
+});
+</pre></div>
+</div>

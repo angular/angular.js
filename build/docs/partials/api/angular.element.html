@@ -1,0 +1,80 @@
+<h1><code ng:non-bindable="">angular.element</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/jqLite.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Wraps a raw DOM element or HTML string as a <a href="http://jquery.com">jQuery</a> element.
+<code>angular.element</code> can be either an alias for <a href="http://api.jquery.com/jQuery/">jQuery</a> function, if
+jQuery is available, or a function that wraps the element or string in Angular's jQuery lite
+implementation (commonly referred to as jqLite).</p>
+
+<p>Real jQuery always takes precedence over jqLite, provided it was loaded before <code>DOMContentLoaded</code>
+event fired.</p>
+
+<p>jqLite is a tiny, API-compatible subset of jQuery that allows
+Angular to manipulate the DOM. jqLite implements only the most commonly needed functionality
+within a very small footprint, so only a subset of the jQuery API - methods, arguments and
+invocation styles - are supported.</p>
+
+<p>Note: All element references in Angular are always wrapped with jQuery or jqLite; they are never
+raw DOM references.</p>
+
+<h4>Angular's jQuery lite provides the following methods:</h4>
+
+<ul>
+<li><a href="http://api.jquery.com/addClass/">addClass()</a></li>
+<li><a href="http://api.jquery.com/after/">after()</a></li>
+<li><a href="http://api.jquery.com/append/">append()</a></li>
+<li><a href="http://api.jquery.com/attr/">attr()</a></li>
+<li><a href="http://api.jquery.com/bind/">bind()</a> - Does not support namespaces</li>
+<li><a href="http://api.jquery.com/children/">children()</a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/clone/">clone()</a></li>
+<li><a href="http://api.jquery.com/contents/">contents()</a></li>
+<li><a href="http://api.jquery.com/css/">css()</a></li>
+<li><a href="http://api.jquery.com/data/">data()</a></li>
+<li><a href="http://api.jquery.com/eq/">eq()</a></li>
+<li><a href="http://api.jquery.com/find/">find()</a> - Limited to lookups by tag name</li>
+<li><a href="http://api.jquery.com/hasClass/">hasClass()</a></li>
+<li><a href="http://api.jquery.com/html/">html()</a></li>
+<li><a href="http://api.jquery.com/next/">next()</a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/parent/">parent()</a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/prepend/">prepend()</a></li>
+<li><a href="http://api.jquery.com/prop/">prop()</a></li>
+<li><a href="http://api.jquery.com/ready/">ready()</a></li>
+<li><a href="http://api.jquery.com/remove/">remove()</a></li>
+<li><a href="http://api.jquery.com/removeAttr/">removeAttr()</a></li>
+<li><a href="http://api.jquery.com/removeClass/">removeClass()</a></li>
+<li><a href="http://api.jquery.com/removeData/">removeData()</a></li>
+<li><a href="http://api.jquery.com/replaceWith/">replaceWith()</a></li>
+<li><a href="http://api.jquery.com/text/">text()</a></li>
+<li><a href="http://api.jquery.com/toggleClass/">toggleClass()</a></li>
+<li><a href="http://api.jquery.com/triggerHandler/">triggerHandler()</a> - Doesn't pass native event objects to handlers.</li>
+<li><a href="http://api.jquery.com/unbind/">unbind()</a> - Does not support namespaces</li>
+<li><a href="http://api.jquery.com/val/">val()</a></li>
+<li><a href="http://api.jquery.com/wrap/">wrap()</a></li>
+</ul>
+
+<h4>In addition to the above, Angular provides additional methods to both jQuery and jQuery lite:</h4>
+
+<ul>
+<li><code>controller(name)</code> - retrieves the controller of the current element or its parent. By default
+retrieves controller associated with the <code>ngController</code> directive. If <code>name</code> is provided as
+camelCase directive name, then the controller for this directive will be retrieved (e.g.
+<code>'ngModel'</code>).</li>
+<li><code>injector()</code> - retrieves the injector of the current element or its parent.</li>
+<li><code>scope()</code> - retrieves the <a href="api/ng.$rootScope.Scope"><code>scope</code></a> of the current
+element or its parent.</li>
+<li><code>inheritedData()</code> - same as <code>data()</code>, but walks up the DOM until a value is found or the top
+parent element is reached.</li>
+</ul></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">angular.element(element);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">element – {string|DOMElement} – </code>
+<p>HTML string or DOMElement to be wrapped into jQuery.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{Object}</code>
+– <p>jQuery object.</p></div>
+</div>
+</div>

@@ -1,0 +1,91 @@
+<h1><code ng:non-bindable="">ngHref</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/booleanAttrs.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Using Angular markup like {{hash}} in an href attribute makes
+the page open to a wrong URL, if the user clicks that link before
+angular has a chance to replace the {{hash}} with actual URL, the
+link will be broken and will most likely return a 404 error.
+The <code>ngHref</code> directive solves this problem.</p>
+
+<p>The buggy way to write it:
+<pre class="prettyprint linenums">
+&lt;a href="http://www.gravatar.com/avatar/{{hash}}"/&gt;
+</pre>
+
+<p>The correct way to write it:
+<pre class="prettyprint linenums">
+&lt;a ng-href="http://www.gravatar.com/avatar/{{hash}}"/&gt;
+</pre></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;A ng-href="{template}"&gt;
+   ...
+&lt;/A&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngHref – {template} – </code>
+<p>any string which can contain <code>{{}}</code> markup.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>This example uses <code>link</code> variable inside <code>href</code> attribute:
+<h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-200" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-201"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-200" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-200">
+    <input ng-model="value" /><br />
+    <a id="link-1" href ng-click="value = 1">link 1</a> (link, don't reload)<br />
+    <a id="link-2" href="" ng-click="value = 2">link 2</a> (link, don't reload)<br />
+    <a id="link-3" ng-href="/{{'123'}}">link 3</a> (link, reload!)<br />
+    <a id="link-4" href="" name="xx" ng-click="value = 4">anchor</a> (link, don't reload)<br />
+    <a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
+    <a id="link-6" ng-href="{{value}}">link</a> (link, change location)
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-201"></pre>
+<script type="text/ng-template" id="scenario.js-201">
+    it('should execute ng-click but not reload when href without value', function() {
+      element('#link-1').click();
+      expect(input('value').val()).toEqual('1');
+      expect(element('#link-1').attr('href')).toBe("");
+    });
+
+    it('should execute ng-click but not reload when href empty string', function() {
+      element('#link-2').click();
+      expect(input('value').val()).toEqual('2');
+      expect(element('#link-2').attr('href')).toBe("");
+    });
+
+    it('should execute ng-click and change url when ng-href specified', function() {
+      expect(element('#link-3').attr('href')).toBe("/123");
+
+      element('#link-3').click();
+      expect(browser().window().path()).toEqual('/123');
+    });
+
+    it('should execute ng-click but not reload when href empty string and name specified', function() {
+      element('#link-4').click();
+      expect(input('value').val()).toEqual('4');
+      expect(element('#link-4').attr('href')).toBe('');
+    });
+
+    it('should execute ng-click but not reload when no href but name specified', function() {
+      element('#link-5').click();
+      expect(input('value').val()).toEqual('5');
+      expect(element('#link-5').attr('href')).toBe(undefined);
+    });
+
+    it('should only change url when only ng-href', function() {
+      input('value').enter('6');
+      expect(element('#link-6').attr('href')).toBe('6');
+
+      element('#link-6').click();
+      expect(browser().location().url()).toEqual('/6');
+    });
+  </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-200" ng-eval-javascript=""></div></div>
+</div>

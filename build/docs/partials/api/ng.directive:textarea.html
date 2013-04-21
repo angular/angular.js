@@ -1,0 +1,46 @@
+<h1><code ng:non-bindable="">textarea</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/input.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>HTML textarea element control with angular data-binding. The data-binding and validation
+properties of this element are exactly the same as those of the
+<a href="api/ng.directive:input"><code>input element</code></a>.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><p>This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>.</p>as element:<pre class="prettyprint linenums">&lt;textarea
+       ngModel="{string}"
+       [name="{string}"]
+       [required]
+       [ngRequired="{string}"]
+       [ngMinlength="{number}"]
+       [ngMaxlength="{number}"]
+       [ngPattern="{string}"]
+       [ngChange="{string}"]&gt;
+&lt;/textarea&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngModel – {string} – </code>
+<p>Assignable angular expression to data-bind to.</p></li>
+<li><code ng:non-bindable="">name<i>(optional)</i> – {string=} – </code>
+<p>Property name of the form under which the control is published.</p></li>
+<li><code ng:non-bindable="">required<i>(optional)</i> – {string=} – </code>
+<p>Sets <code>required</code> validation error key if the value is not entered.</p></li>
+<li><code ng:non-bindable="">ngRequired<i>(optional)</i> – {string=} – </code>
+<p>Adds <code>required</code> attribute and <code>required</code> validation constraint to
+the element when the ngRequired expression evaluates to true. Use <code>ngRequired</code> instead of
+<code>required</code> when you want to data-bind to the <code>required</code> attribute.</p></li>
+<li><code ng:non-bindable="">ngMinlength<i>(optional)</i> – {number=} – </code>
+<p>Sets <code>minlength</code> validation error key if the value is shorter than
+minlength.</p></li>
+<li><code ng:non-bindable="">ngMaxlength<i>(optional)</i> – {number=} – </code>
+<p>Sets <code>maxlength</code> validation error key if the value is longer than
+maxlength.</p></li>
+<li><code ng:non-bindable="">ngPattern<i>(optional)</i> – {string=} – </code>
+<p>Sets <code>pattern</code> validation error key if the value does not match the
+RegExp pattern expression. Expected value is <code>/regexp/</code> for inline patterns or <code>regexp</code> for
+patterns defined as scope expressions.</p></li>
+<li><code ng:non-bindable="">ngChange<i>(optional)</i> – {string=} – </code>
+<p>Angular expression to be executed when input changes due to user
+interaction with the input element.</p></li>
+</ul>
+</div>
+</div>

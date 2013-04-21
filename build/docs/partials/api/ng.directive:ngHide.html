@@ -1,0 +1,119 @@
+<h1><code ng:non-bindable="">ngHide</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ng/directive/ngShowHide.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngShow</code> and <code>ngHide</code> directives show or hide a portion of the DOM tree (HTML)
+conditionally based on <strong>"truthy"</strong> values evaluated within an {expression}. In other
+words, if the expression assigned to <strong>ngShow evaluates to a true value</strong> then <strong>the element is set to visible</strong>
+(via <code>display:block</code> in css) and <strong>if false</strong> then <strong>the element is set to hidden</strong> (so display:none).
+With ngHide this is the reverse whereas true values cause the element itself to become
+hidden.</p>
+
+<p>Additionally, you can also provide animations via the ngAnimate attribute to animate the <strong>show</strong>
+and <strong>hide</strong> effects.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-hide="{expression}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-hide: {expression};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+with <span id="animations">animations</span><pre class="prettyprint linenums">//The show and hide animations are supported
+&lt;ANY ng-hide="{expression}" ng-animate="{show: 'show-animation', hide: 'hide-animation'}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<a href="api/ng.$animator#Methods">Click here</a> to learn more about the steps involved in the animation.<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngHide – {expression} – </code>
+<p>If the <a href="guide/expression">expression</a> is truthy then
+the element is shown or hidden respectively.</p></li>
+</ul>
+<h3 id="Animations">Animations</h3>
+<div class="animations"><ul><li>show - happens after the ngHide expression evaluates to a non truthy value and the contents are set to visible</li><li>hide - happens after the ngHide expression evaluates to a truthy value and just before the contents are set to hidden</li></ul></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-192" source-edit-css="animations.css" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-193"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-192" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-192">
+  Click me: <input type="checkbox" ng-model="checked"><br/>
+  <div>
+    Show:
+    <span class="check-element"
+          ng-show="checked"
+          ng-animate="{show: 'example-show', hide: 'example-hide'}">
+      <span class="icon-thumbs-up"></span> I show up when your checkbox is checked.
+    </span>
+  </div>
+  <div>
+    Hide:
+    <span class="check-element"
+          ng-hide="checked"
+          ng-animate="{show: 'example-show', hide: 'example-hide'}">
+      <span class="icon-thumbs-down"></span> I hide when your checkbox is checked.
+    </span>
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="animations.css">
+<pre class="prettyprint linenums" ng-set-text="animations.css"></pre>
+<style type="text/css" id="animations.css">
+  .example-show-setup, .example-hide-setup {
+    -webkit-transition:all linear 0.5s;
+    -moz-transition:all linear 0.5s;
+    -ms-transition:all linear 0.5s;
+    -o-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+  }
+
+  .example-show-setup {
+    line-height:0;
+    opacity:0;
+    padding:0 10px;
+  }
+  .example-show-start.example-show-start {
+    line-height:20px;
+    opacity:1;
+    padding:10px;
+    border:1px solid black;
+    background:white;
+  }
+
+  .example-hide-setup {
+    line-height:20px;
+    opacity:1;
+    padding:10px;
+    border:1px solid black;
+    background:white;
+  }
+  .example-hide-start.example-hide-start {
+    line-height:0;
+    opacity:0;
+    padding:0 10px;
+  }
+
+  .check-element {
+    padding:10px;
+    border:1px solid black;
+    background:white;
+  }
+</style>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-193"></pre>
+<script type="text/ng-template" id="scenario.js-193">
+   it('should check ng-show / ng-hide', function() {
+     expect(element('.doc-example-live .check-element:first:hidden').count()).toEqual(1);
+     expect(element('.doc-example-live .check-element:last:visible').count()).toEqual(1);
+
+     input('checked').check();
+
+     expect(element('.doc-example-live .check-element:first:visible').count()).toEqual(1);
+     expect(element('.doc-example-live .check-element:last:hidden').count()).toEqual(1);
+   });
+</script>
+</div>
+</div><div class="pull-right"> <button class="btn btn-primary" ng-click="animationsOff=true" ng-hide="animationsOff">Animations on</button> <button class="btn btn-primary disabled" ng-click="animationsOff=false" ng-show="animationsOff">Animations off</button></div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-class="{'animations-off':animationsOff == true}" ng-embed-app="" ng-set-html="index.html-192" ng-eval-javascript=""></div></div>
+</div>

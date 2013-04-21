@@ -1,0 +1,140 @@
+<h1><code ng:non-bindable="">Module</code>
+<span class="hint">(Type in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/loader.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Interface for configuring angular <a href="api/angular.module"><code>modules</code></a>.</p></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="animation">animation(name, animationFactory)</h3>
+<div class="animation"><p>Defines an animation hook that can be later used with <a href="api/ng.directive:ngAnimate"><code>ngAnimate</code></a>
+alongside <a href="api/ng.directive:ngAnimate#Description"><code>common ng directives</code></a> as well as custom directives.
+<pre class="prettyprint linenums">
+module.animation('animation-name', function($inject1, $inject2) {
+  return {
+    //this gets called in preparation to setup an animation
+    setup : function(element) { ... },
+
+    //this gets called once the animation is run
+    start : function(element, done, memo) { ... }
+  }
+})
+</pre>
+
+<p>See <a href="api/ng.$animationProvider#register"><code>$animationProvider.register()</code></a> and
+<a href="api/ng.directive:ngAnimate"><code>ngAnimate</code></a> for more information.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>animation name</p></li>
+<li><code ng:non-bindable="">animationFactory – {Function} – </code>
+<p>Factory function for creating new instance of an animation.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="config">config(configFn)</h3>
+<div class="config"><p>Use this method to register work which needs to be performed on module loading.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">configFn – {Function} – </code>
+<p>Execute this function on module load. Useful for service
+configuration.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="constant">constant(name, object)</h3>
+<div class="constant"><p>Because the constant are fixed, they get applied before other provide methods.
+See <a href="api/AUTO.$provide#constant"><code>$provide.constant()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>constant name</p></li>
+<li><code ng:non-bindable="">object – {*} – </code>
+<p>Constant value.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="controller">controller(name, constructor)</h3>
+<div class="controller"><p>See <a href="api/ng.$controllerProvider#register"><code>$controllerProvider.register()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>Controller name.</p></li>
+<li><code ng:non-bindable="">constructor – {Function} – </code>
+<p>Controller constructor function.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="directive">directive(name, directiveFactory)</h3>
+<div class="directive"><p>See <a href="api/ng.$compileProvider#directive"><code>$compileProvider.directive()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>directive name</p></li>
+<li><code ng:non-bindable="">directiveFactory – {Function} – </code>
+<p>Factory function for creating new instance of
+directives.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="factory">factory(name, providerFunction)</h3>
+<div class="factory"><p>See <a href="api/AUTO.$provide#factory"><code>$provide.factory()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>service name</p></li>
+<li><code ng:non-bindable="">providerFunction – {Function} – </code>
+<p>Function for creating new instance of the service.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="filter">filter(name, filterFactory)</h3>
+<div class="filter"><p>See <a href="api/ng.$filterProvider#register"><code>$filterProvider.register()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>Filter name.</p></li>
+<li><code ng:non-bindable="">filterFactory – {Function} – </code>
+<p>Factory function for creating new instance of filter.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="provider">provider(name, providerType)</h3>
+<div class="provider"><p>See <a href="api/AUTO.$provide#provider"><code>$provide.provider()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>service name</p></li>
+<li><code ng:non-bindable="">providerType – {Function} – </code>
+<p>Construction function for creating new instance of the service.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="run">run(initializationFn)</h3>
+<div class="run"><p>Use this method to register work which should be performed when the injector is done
+loading all modules.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">initializationFn – {Function} – </code>
+<p>Execute this function after injector creation.
+Useful for application initialization.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="service">service(name, constructor)</h3>
+<div class="service"><p>See <a href="api/AUTO.$provide#service"><code>$provide.service()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>service name</p></li>
+<li><code ng:non-bindable="">constructor – {Function} – </code>
+<p>A constructor function that will be instantiated.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="value">value(name, object)</h3>
+<div class="value"><p>See <a href="api/AUTO.$provide#value"><code>$provide.value()</code></a>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">name – {string} – </code>
+<p>service name</p></li>
+<li><code ng:non-bindable="">object – {*} – </code>
+<p>Service instance object.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="Properties">Properties</h2>
+<ul class="properties"><li><h3 id="name">name</h3>
+<div class="name"><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>Name of the module.</p></div>
+</div>
+</li>
+<li><h3 id="requires">requires</h3>
+<div class="requires"><p>Holds the list of modules which the injector will load before the current module is loaded.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Array.&lt;string&gt;}</code>
+– <p>List of module names which must be loaded before this module.</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

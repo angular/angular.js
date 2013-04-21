@@ -1,0 +1,33 @@
+<h1><code ng:non-bindable="">angular.equals</code>
+<span class="hint">(API in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/Angular.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>Determines if two objects or two values are equivalent. Supports value types, arrays and
+objects.</p>
+
+<p>Two objects or values are considered equivalent if at least one of the following is true:</p>
+
+<ul>
+<li>Both objects or values pass <code>===</code> comparison.</li>
+<li>Both objects or values are of the same type and all of their properties pass <code>===</code> comparison.</li>
+<li>Both values are NaN. (In JavasScript, NaN == NaN => false. But we consider two NaN as equal)</li>
+</ul>
+
+<p>During a property comparison, properties of <code>function</code> type and properties with names
+that begin with <code>$</code> are ignored.</p>
+
+<p>Scope and DOMWindow objects are being compared only by identify (<code>===</code>).</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">angular.equals(o1, o2);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">o1 – {*} – </code>
+<p>Object or value to compare.</p></li>
+<li><code ng:non-bindable="">o2 – {*} – </code>
+<p>Object or value to compare.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{boolean}</code>
+– <p>True if arguments are equal.</p></div>
+</div>
+</div>

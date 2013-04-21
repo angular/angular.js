@@ -1,0 +1,102 @@
+<h1><code ng:non-bindable="">$sanitize</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngSanitize</code>
+)</span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js" class="improve-docs btn btn-primary">Improve this doc</a><h2 id="Description">Description</h2>
+<div class="description"><p>The input is sanitized by parsing the html into tokens. All safe tokens (from a whitelist) are
+then serialized back to properly escaped html string. This means that no unsafe input can make
+it into the returned string, however, since our parser is more strict than a typical browser
+parser, it's possible that some obscure input, which would be recognized as valid HTML by a
+browser, won't make it through the sanitizer.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$sanitize(html);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">html – {string} – </code>
+<p>Html input.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>Sanitized html.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="ngSanitize" source-edit-deps="angular.js script.js" source-edit-html="index.html-172" source-edit-css="" source-edit-js="script.js-171" source-edit-unit="" source-edit-scenario="scenario.js-173"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-172" ng-html-wrap="ngSanitize angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-172">
+  
+  <div ng-controller="Ctrl">
+     Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
+      <table>
+        <tr>
+          <td>Filter</td>
+          <td>Source</td>
+          <td>Rendered</td>
+        </tr>
+        <tr id="html-filter">
+          <td>html filter</td>
+          <td>
+            <pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre>
+          </td>
+          <td>
+            <div ng-bind-html="snippet"></div>
+          </td>
+        </tr>
+        <tr id="escaped-html">
+          <td>no filter</td>
+          <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+          <td><div ng-bind="snippet"></div></td>
+        </tr>
+        <tr id="html-unsafe-filter">
+          <td>unsafe html filter</td>
+          <td><pre>&lt;div ng-bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+          <td><div ng-bind-html-unsafe="snippet"></div></td>
+        </tr>
+      </table>
+    </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-171"></pre>
+<script type="text/ng-template" id="script.js-171">
+    function Ctrl($scope) {
+      $scope.snippet =
+        '<p style="color:blue">an html\n' +
+        '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+        'snippet</p>';
+    }
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-173"></pre>
+<script type="text/ng-template" id="scenario.js-173">
+  it('should sanitize the html snippet ', function() {
+    expect(using('#html-filter').element('div').html()).
+      toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
+  });
+
+  it('should escape snippet without any filter', function() {
+    expect(using('#escaped-html').element('div').html()).
+      toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+           "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+           "snippet&lt;/p&gt;");
+  });
+
+  it('should inline raw snippet if filtered as unsafe', function() {
+    expect(using('#html-unsafe-filter').element("div").html()).
+      toBe("<p style=\"color:blue\">an html\n" +
+           "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
+           "snippet</p>");
+  });
+
+  it('should update', function() {
+    input('snippet').enter('new <b>text</b>');
+    expect(using('#html-filter').binding('snippet')).toBe('new <b>text</b>');
+    expect(using('#escaped-html').element('div').html()).toBe("new &lt;b&gt;text&lt;/b&gt;");
+    expect(using('#html-unsafe-filter').binding("snippet")).toBe('new <b>text</b>');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="ngSanitize" ng-set-html="index.html-172" ng-eval-javascript="script.js-171"></div></div>
+</div>

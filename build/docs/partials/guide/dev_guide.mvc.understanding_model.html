@@ -1,0 +1,77 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/dev_guide.mvc.understanding_model.ngdoc" class="improve-docs btn btn-primary">Improve this doc</a><p>Depending on the context of the discussion in the Angular documentation, the term <em>model</em> can refer to
+either a single object representing one entity (for example, a model called "phones" with its value
+being an array of phones) or the entire data model for the application (all entities).</p>
+
+<p>In Angular, a model is any data that is reachable as a property of an angular <a href="guide/scope">Scope</a> object. The name of the property is the model identifier and the value is
+any JavaScript object (including arrays and primitives).</p>
+
+<p>The only requirement for a JavaScript object to be a model in Angular is that the object must be
+referenced by an Angular scope as a property of that scope object. This property reference can be
+created explicitly or implicitly.</p>
+
+<p>You can create models by explicitly creating scope properties referencing JavaScript objects in the
+following ways:</p>
+
+<ul>
+<li><p>Make a direct property assignment to the scope object in JavaScript code; this most commonly
+occurs in controllers:</p>
+
+<pre><code> function MyCtrl($scope) {
+     // create property 'foo' on the MyCtrl's scope
+     // and assign it an initial value 'bar'
+     $scope.foo = 'bar';
+ }
+</code></pre></li>
+<li><p>Use an <a href="guide/expression">angular expression</a> with an assignment operator in templates:</p>
+
+<pre><code> &lt;button ng-click="{{foos='ball'}}"&gt;Click me&lt;/button&gt;
+</code></pre></li>
+<li><p>Use <a href="api/ng.directive:ngInit"><code>ngInit directive</code></a> in templates (for toy/example apps
+only, not recommended for real applications):</p>
+
+<pre><code> &lt;body ng-init=" foo = 'bar' "&gt;
+</code></pre></li>
+</ul>
+
+<p>Angular creates models implicitly (by creating a scope property and assigning it a suitable value)
+when processing the following template constructs:</p>
+
+<ul>
+<li><p>Form input, select, textarea and other form elements:</p>
+
+<pre><code> &lt;input ng-model="query" value="fluffy cloud"&gt;
+</code></pre>
+
+<p>The code above creates a model called "query" on the current scope with the value set to "fluffy
+cloud".</p></li>
+<li><p>An iterator declaration in <a href="api/ng.directive:ngRepeat"><code>ngRepeater</code></a>:</p>
+
+<pre><code> &lt;p ng-repeat="phone in phones"&gt;&lt;/p&gt;
+</code></pre>
+
+<p>The code above creates one child scope for each item in the "phones" array and creates a "phone"
+object (model) on each of these scopes with its value set to the value of "phone" in the array.</p></li>
+</ul>
+
+<p>In Angular, a JavaScript object stops being a model when:</p>
+
+<ul>
+<li><p>No Angular scope contains a property that references the object.</p></li>
+<li><p>All Angular scopes that contain a property referencing the object become stale and eligible for
+garbage collection.</p></li>
+</ul>
+
+<p>The following illustration shows a simple data model created implicitly from a simple template:</p>
+
+<p><img src="img/guide/about_model_final.png"></p>
+
+<h3>Related Topics</h3>
+
+<ul>
+<li><a href="guide/dev_guide.mvc">About MVC in Angular</a></li>
+<li><a href="guide/dev_guide.mvc.understanding_controller">Understanding the Controller Component</a></li>
+<li><a href="guide/dev_guide.mvc.understanding_view">Understanding the View Component</a></li>
+</ul></div>
