@@ -301,6 +301,10 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       };
 
   var rootHost = location.origin + '/angular.js/build/docs';
+  if (location.hostname === 'maksimr.github.io') {
+      rootHost += '/angular.js';
+  }
+  rootHost += '/build/docs';
   $scope.rootHost = rootHost;
 
   /**********************************
