@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2013-04-21T19:38:20.462Z
+# 2013-04-21T19:46:33.592Z
 
 # cache all of these
 CACHE:
@@ -9,6 +9,7 @@ css/bootstrap.min.css
 css/doc_widgets.css
 css/font-awesome.css
 css/animations.css
+appcache-offline.manifest
 index-debug.html
 index-jq-nocache.html
 favicon.ico

@@ -27,10 +27,10 @@ interaction with the input element.</p></li>
 </div>
 <h2 id="Example">Example</h2>
 <div class="example"><h4>Source</h4>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-244" source-edit-css="" source-edit-js="script.js-243" source-edit-unit="" source-edit-scenario="scenario.js-245"></div>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-241" source-edit-css="" source-edit-js="script.js-240" source-edit-unit="" source-edit-scenario="scenario.js-242"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-244" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-244">
+<pre class="prettyprint linenums" ng-set-text="index.html-241" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-241">
  
  <form name="myForm" ng-controller="Ctrl">
    Value1: <input type="checkbox" ng-model="value1"> <br/>
@@ -42,8 +42,8 @@ interaction with the input element.</p></li>
 </script>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-243"></pre>
-<script type="text/ng-template" id="script.js-243">
+<pre class="prettyprint linenums" ng-set-text="script.js-240"></pre>
+<script type="text/ng-template" id="script.js-240">
    function Ctrl($scope) {
      $scope.value1 = true;
      $scope.value2 = 'YES'
@@ -51,8 +51,8 @@ interaction with the input element.</p></li>
  </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-245"></pre>
-<script type="text/ng-template" id="scenario.js-245">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-242"></pre>
+<script type="text/ng-template" id="scenario.js-242">
   it('should change state', function() {
     expect(binding('value1')).toEqual('true');
     expect(binding('value2')).toEqual('YES');
@@ -65,5 +65,5 @@ interaction with the input element.</p></li>
 </script>
 </div>
 </div><h4>Demo</h4>
-<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-244" ng-eval-javascript="script.js-243"></div></div>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-241" ng-eval-javascript="script.js-240"></div></div>
 </div>

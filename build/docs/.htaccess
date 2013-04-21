@@ -8,7 +8,7 @@
 
 Options -Indexes
 RewriteEngine on
-RewriteCond %{HTTP_COOKIE}      ng-offline=1.1.5-efd4135
+RewriteCond %{HTTP_COOKIE}      ng-offline=1.1.5-cfed77f
 RewriteRule appcache.manifest   appcache-offline.manifest
 
 ## Redirect to the latest manifest
