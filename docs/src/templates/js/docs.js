@@ -300,7 +300,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         type: 'guide/types'
       };
 
-  var rootHost = location.origin + '/angular.js/build/docs';
+  var rootHost = location.origin;
   if (location.hostname === 'maksimr.github.io') {
       rootHost += '/angular.js';
   }
@@ -468,7 +468,9 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       if (page.id == 'index') {
         //skip
       } else if (page.section != 'api') {
-        otherPages.push(page);
+        if (page.id.indexOf('_ru') > -1) {
+            otherPages.push(page);
+        }
       } else if (id == 'angular.Module') {
         module('ng').types.push(page);
       } else if (match = id.match(GLOBALS)) {
