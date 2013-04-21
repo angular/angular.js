@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2013-04-21T20:12:31.437Z
+# 2013-04-21T20:57:15.391Z
 
 # cache all of these
 CACHE:
@@ -23,6 +23,7 @@ img/One_Way_Data_Binding.png
 img/bullet.png
 img/angular_parts.png
 img/glyphicons-halflings-white.png
+img/stamp.png
 img/tutorial/tutorial_08-09_final.png
 img/tutorial/tutorial_04.png
 img/tutorial/catalog_screen.png
