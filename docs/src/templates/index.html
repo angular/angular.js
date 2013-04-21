@@ -31,11 +31,11 @@
           };
 
       addTag('base', {href: baseUrl});
-      addTag('link', {rel: 'stylesheet', href: 'css/bootstrap.min.css', type: 'text/css'});
-      addTag('link', {rel: 'stylesheet', href: 'css/font-awesome.css', type: 'text/css'});
-      addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
-      addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
-      if (jQuery) addTag('script', {src: debug ? 'js/jquery.js' : 'js/jquery.min.js'});
+      addTag('link', {rel: 'stylesheet', href: locPath('css/bootstrap.min.css'), type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: locPath('css/font-awesome.css'), type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: locPath('css/docs.css'), type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: locPath('css/animations.css'), type: 'text/css'});
+      if (jQuery) addTag('script', {src: debug ? locPath('js/jquery.js') : locPath('js/jquery.min.js')});
       addTag('script', {src: path('angular.js')}, sync);
       addTag('script', {src: path('angular-resource.js') }, sync);
       addTag('script', {src: path('angular-cookies.js') }, sync);
@@ -43,8 +43,16 @@
       addTag('script', {src: path('angular-mobile.js') }, sync);
       addTag('script', {src: path('angular-bootstrap.js') }, sync);
       addTag('script', {src: path('angular-bootstrap-prettify.js') }, sync);
-      addTag('script', {src: 'js/docs.js'}, sync);
+      addTag('script', {src: locPath('js/docs.js')}, sync);
       addTag('script', {src: 'docs-keywords.js'}, sync);
+
+      function locPath(name) {
+          var rootHost = 'angular.js/docs/src/templates/';
+          if (production) {
+              name = rootHost + name;
+          }
+          return name;
+      }
 
       function path(name) {
         if (production) {
