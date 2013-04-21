@@ -300,7 +300,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         type: 'guide/types'
       };
 
-  var rootHost = 'http://localhost:8000/build/docs';
+  var rootHost = location.origin + '/build/docs';
   $scope.rootHost = rootHost;
 
   /**********************************
