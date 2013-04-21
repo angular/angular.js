@@ -423,7 +423,7 @@ describe('browser', function () {
             it('should set expiration if passed', function () {
                 browser.cookies('cookie', 'bender', { expires: new Date(2050, 1, 1) });
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/;expires=Mon, 31 Jan 2050 22:00:00 GMT")
+                expect(lastCookieSet).toEqual("cookie=bender;path=/;expires=" + new Date(2050, 1, 1).toUTCString())
             })
             it('should ignore if not a date object', function () {
                 browser.cookies('cookie', 'bender', { expires: [] });
