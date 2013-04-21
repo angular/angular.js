@@ -316,7 +316,7 @@ Doc.prototype = {
     dom.h(title(this.name), function() {
 
       notice('deprecated', 'Deprecated API', self.deprecated);
-      dom.tag('a', {href: 'http://github.com/maksimrv/angular.js/edit/gh-pages/' + self.file, class: 'improve-docs btn btn-primary'}, 'Улучшить перевод');
+      dom.tag('a', {href: 'http://github.com/maksimr/angular.js/edit/gh-pages/' + self.file, class: 'improve-docs btn btn-primary'}, 'Улучшить перевод');
       if (self.ngdoc != 'overview') {
         dom.h('Description', self.description, dom.html);
       }
