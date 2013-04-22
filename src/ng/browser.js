@@ -274,8 +274,8 @@ function Browser(window, document, $log, $sniffer) {
    *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = (function () {
-      var cookies = function (name, value, options) {
+  self.cookies = (function() {
+      var cookies = function(name, value, options) {
           if (!angular.isDefined(options) || options == null) options = {};
           if (name) {
               if (value === undefined) {
@@ -299,8 +299,9 @@ function Browser(window, document, $log, $sniffer) {
               cookies._setCookie(escape(name) + "=;path=" + defaultPath() + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
               var path = location.pathname;
               //delete cookies under different paths
-              while (rawDocument.cookie.indexOf(name + "=") >= 0 && path && path != '') {
+              while (rawDocument.cookie.indexOf(name + "=") >= 0 && angular.isDefined(path)) {
                   cookies._setCookie(escape(name) + "=;path=" + path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+				  if (path == '') break;
                   path = path.replace(/\/$|[^\/]*[^\/]$/, "");
               }
           }
@@ -357,9 +358,11 @@ function Browser(window, document, $log, $sniffer) {
               for (i = 0; i < cookieArray.length; i++) {
                   cookie = cookieArray[i];
                   index = cookie.indexOf('=');
-                  if (index > 0) { //ignore nameless cookies
+                  if (index > 0) { 
                       lastCookies[unescape(cookie.substring(0, index))] = unescape(cookie.substring(index + 1));
-                  }
+                  } else if (index <0) {
+					  lastCookies[unescape(cookie)] = ''; // IE saves cookie= as cookie, which require special care
+				  } //ignore nameless cookies where index ==0
               }
           }
           return lastCookies;
@@ -368,7 +371,7 @@ function Browser(window, document, $log, $sniffer) {
       //shameless plug for unit testing, since there's no way to access a cookie's path and expiration date
       //and mocking the document.cookie object is too troublesome.
       //Always use this function to set a cookie.
-      cookies._setCookie = function (value) {
+      cookies._setCookie = function(value) {
           rawDocument.cookie = value;
       }
       return cookies;

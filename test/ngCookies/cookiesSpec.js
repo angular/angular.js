@@ -1,15 +1,15 @@
 'use strict';
 
-describe('$cookies', function () {
-    beforeEach(module('ngCookies', function ($provide) {
-        $provide.factory('$browser', function () {
+describe('$cookies', function() {
+    beforeEach(module('ngCookies', function($provide) {
+        $provide.factory('$browser', function() {
             return angular.extend(new angular.mock.$Browser(), { cookieHash: { preexisting: 'oldCookie'} });
         });
     }));
 
 
     it('should provide access to existing cookies via object properties and keep them in sync',
-      inject(function ($cookies, $browser, $rootScope) {
+      inject(function($cookies, $browser, $rootScope) {
           expect($cookies).toEqual({ 'preexisting': 'oldCookie' });
 
           // access internal cookie storage of the browser mock directly to simulate behavior of
@@ -30,7 +30,7 @@ describe('$cookies', function () {
 
 
     it('should create or update a cookie when a value is assigned to a property',
-      inject(function ($cookies, $browser, $rootScope) {
+      inject(function($cookies, $browser, $rootScope) {
           $cookies.oatmealCookie = 'nom nom';
           $rootScope.$digest();
 
@@ -46,16 +46,16 @@ describe('$cookies', function () {
 
 
     it('should drop or reset any cookie that was set to a non-string value',
-      inject(function ($cookies, $browser, $rootScope) {
+      inject(function($cookies, $browser, $rootScope) {
           $cookies.nonString = [1, 2, 3];
           $cookies.nullVal = null;
           $cookies.undefVal = undefined;
-          $cookies.preexisting = function () { };
+          $cookies.preexisting = function() { };
           $rootScope.$digest();
           expect($browser.cookies()).toEqual({ 'preexisting': 'oldCookie' });
           expect($cookies).toEqual({ 'preexisting': 'oldCookie' });
       }));
-    it('should handle empty string value cookies', inject(function ($cookies, $browser, $rootScope) {
+    it('should handle empty string value cookies', inject(function($cookies, $browser, $rootScope) {
         $cookies.emptyCookie = '';
         $rootScope.$digest();
         expect($browser.cookies()).
@@ -68,7 +68,7 @@ describe('$cookies', function () {
     }))
 
     it('should remove a cookie when a $cookies property is deleted',
-      inject(function ($cookies, $browser, $rootScope) {
+      inject(function($cookies, $browser, $rootScope) {
           $cookies.oatmealCookie = 'nom nom';
           $rootScope.$digest();
           $browser.poll();
@@ -83,7 +83,7 @@ describe('$cookies', function () {
 
 
     it('should drop or reset cookies that browser refused to store',
-      inject(function ($cookies, $browser, $rootScope) {
+      inject(function($cookies, $browser, $rootScope) {
           var i, longVal;
 
           for (i = 0; i < 5000; i++) {
@@ -135,7 +135,7 @@ describe('$cookieStore', function() {
     $rootScope.$digest();
     expect($browser.cookies()).toEqual({});
   }));
-  it('should handle empty string value cookies', inject(function ($cookieStore, $browser, $rootScope) {
+  it('should handle empty string value cookies', inject(function($cookieStore, $browser, $rootScope) {
     $cookieStore.put("emptyCookie",'');
     $rootScope.$digest();
     expect($browser.cookies()).
@@ -147,14 +147,14 @@ describe('$cookieStore', function() {
     expect($cookieStore.get("blankCookie")).toEqual('');
   }))
   it('should send options to cookies on put',
-    inject(function ($cookieStore, $browser, $rootScope) {
+    inject(function($cookieStore, $browser, $rootScope) {
         $cookieStore.put("optionCookie","someVal","the option")
         $rootScope.$digest();
         expect($browser.cookieOptionHash["optionCookie"]).toEqual("the option");
         expect($browser.cookies()).toEqual({'optionCookie': '"someVal"' })
   }))
   it('should send options to cookies on delete',
-    inject(function ($cookieStore, $browser, $rootScope) {
+    inject(function($cookieStore, $browser, $rootScope) {
         $cookieStore.put("optionCookie","someValue")
         $rootScope.$digest();
         $browser.poll();

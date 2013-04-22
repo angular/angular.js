@@ -71,7 +71,7 @@ angular.module('ngCookies', ['ng']).
    * Also note that changes made directly to the cookie will only appear in the $cookie cache after 100ms and not at
    * the end of the current $eval (as opposed to changes made through the $cookie service) 
    */
-   factory('$cookies', ['$rootScope', '$browser', function ($rootScope, $browser) {
+   factory('$cookies', ['$rootScope', '$browser', function($rootScope, $browser) {
       var cookies = {},
           lastCookies = {},
           lastBrowserCookies,
