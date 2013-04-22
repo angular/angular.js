@@ -1,0 +1,112 @@
+<h1><code ng:non-bindable="">form</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/form.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Directive that instantiates
+<a href="api/ng.directive:form.FormController"><code>FormController</code></a>.</p>
+
+<p>If <code>name</code> attribute is specified, the form controller is published onto the current scope under
+this name.</p>
+
+<h3>Alias: <a href="api/ng.directive:ngForm"><code><code>ngForm</code></code></a></h3>
+
+<p>In angular forms can be nested. This means that the outer form is valid when all of the child
+forms are valid as well. However browsers do not allow nesting of <code>&lt;form&gt;</code> elements, for this
+reason angular provides <a href="api/ng.directive:ngForm"><code><code>ngForm</code></code></a> alias
+which behaves identical to <code>&lt;form&gt;</code> but allows form nesting.</p>
+
+<h3>CSS classes</h3>
+
+<ul>
+<li><code>ng-valid</code> Is set if the form is valid.</li>
+<li><code>ng-invalid</code> Is set if the form is invalid.</li>
+<li><code>ng-pristine</code> Is set if the form is pristine.</li>
+<li><code>ng-dirty</code> Is set if the form is dirty.</li>
+</ul>
+
+<h3>Submitting a form and preventing default action</h3>
+
+<p>Since the role of forms in client-side Angular applications is different than in classical
+roundtrip apps, it is desirable for the browser not to translate the form submission into a full
+page reload that sends the data to the server. Instead some javascript logic should be triggered
+to handle the form submission in application specific way.</p>
+
+<p>For this reason, Angular prevents the default action (form submission to the server) unless the
+<code>&lt;form&gt;</code> element has an <code>action</code> attribute specified.</p>
+
+<p>You can use one of the following two ways to specify what javascript method should be called when
+a form is submitted:</p>
+
+<ul>
+<li><a href="api/ng.directive:ngSubmit"><code>ngSubmit</code></a> directive on the form element</li>
+<li><a href="api/ng.directive:ngClick"><code>ngClick</code></a> directive on the first
+button or input field of type submit (input[type=submit])</li>
+</ul>
+
+<p>To prevent double execution of the handler, use only one of ngSubmit or ngClick directives. This
+is because of the following form submission rules coming from the html spec:</p>
+
+<ul>
+<li>If a form has only one input field then hitting enter in this field triggers form submit
+(<code>ngSubmit</code>)</li>
+<li>if a form has has 2+ input fields and no buttons or input[type=submit] then hitting enter
+doesn't trigger submit</li>
+<li>if a form has one or more input fields and one or more buttons or input[type=submit] then
+hitting enter in any of the input fields will trigger the click handler on the <em>first</em> button or
+input[type=submit] (<code>ngClick</code>) <em>and</em> a submit handler on the enclosing form (<code>ngSubmit</code>)</li>
+</ul></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><p>This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>.</p>as element:<pre class="prettyprint linenums">&lt;form
+       [name="{string}"]&gt;
+&lt;/form&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">name<i>(optional)</i> – {string=} – </code>
+<p>Name of the form. If specified, the form controller will be published into
+related scope, under this name.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-265" source-edit-css="" source-edit-js="script.js-264" source-edit-unit="" source-edit-scenario="scenario.js-266"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-265" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-265">
+ 
+ <form name="myForm" ng-controller="Ctrl">
+   userType: <input name="input" ng-model="userType" required>
+   <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
+   <tt>userType = {{userType}}</tt><br>
+   <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br>
+   <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br>
+   <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+   <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
+  </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-264"></pre>
+<script type="text/ng-template" id="script.js-264">
+   function Ctrl($scope) {
+     $scope.userType = 'guest';
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-266"></pre>
+<script type="text/ng-template" id="scenario.js-266">
+  it('should initialize to model', function() {
+   expect(binding('userType')).toEqual('guest');
+   expect(binding('myForm.input.$valid')).toEqual('true');
+  });
+
+  it('should be invalid if empty', function() {
+   input('userType').enter('');
+   expect(binding('userType')).toEqual('');
+   expect(binding('myForm.input.$valid')).toEqual('false');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-265" ng-eval-javascript="script.js-264"></div></div>
+</div>

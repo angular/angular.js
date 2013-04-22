@@ -1,0 +1,38 @@
+@ngdoc overview
+@name Getting Started
+@description
+
+We want you to have an easy time while starting to use Angular.  We've put together the following steps on your path to
+becoming an Angular expert.
+
+1. Read the {@link guide/concepts conceptual overview}.<br/>Understand Angular's vocabulary and how all the Angular
+   components work together.
+1. Do the {@link tutorial/ AngularJS Tutorial}.<br/>Walk end-to-end through building and application complete with tests
+   on top of a node.js web server.  Covers every major AngularJS feature and show you how to set up your development
+   environment.
+1. Download or clone the {@link https://github.com/angular/angular-seed Seed App project template}.<br/>Gives you a
+   starter app with a directory layout, test harness, and scripts to begin building your application.
+
+
+#Further Steps
+
+##Watch Videos
+
+If you haven’t had a chance to watch the videos from the homepage, please check out:
+* {@link http://www.youtube.com/watch?v=WuiHuZq_cg4&list=PL173F1A311439C05D&context=C48ac877ADvjVQa1PpcFONnl4Q5x8hqvT6tRBTE-m0-Ym47jO3PEE%3D Introduction to AngularJS}
+* {@link http://www.youtube.com/watch?v=Yg-R1gchccg&list=PL173F1A311439C05D&context=C48ac877ADvjVQa1PpcFONnl4Q5x8hqvT6tRBTE-m0-Ym47jO3PEE%3D Creating Directives}
+* {@link http://www.youtube.com/watch?v=IRelx4-ISbs&list=PL173F1A311439C05D&context=C48ac877ADvjVQa1PpcFONnl4Q5x8hqvT6tRBTE-m0-Ym47jO3PEE%3D Communicating with Servers}
+
+And visit our {@link http://www.youtube.com/user/angularjs YouTube channel} for more AngularJS video presentations and
+tutorials.
+
+##Subscribe
+
+* Subscribe to the {@link http://groups.google.com/forum/?fromgroups#!forum/angular mailing list}.  Ask questions here!
+* Follow us on {@link https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fangularjs.org%2F&region=follow_link&screen_name=angularjs&source=followbutton&variant=2.0 Twitter}
+* Add us to your circles on {@link https://plus.google.com/110323587230527980117/posts Google+}
+
+##Read more
+
+The AngularJS documentation includes the {@link guide/index Developer Guide} covering concepts and the
+{@link api/ API Reference} for syntax and usage.

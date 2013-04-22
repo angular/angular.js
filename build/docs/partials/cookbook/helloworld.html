@@ -1,0 +1,52 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/cookbook/helloworld.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><h3>Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-23" source-edit-css="" source-edit-js="script.js-22" source-edit-unit="" source-edit-scenario="scenario.js-24"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-23" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-23">
+ 
+ <div ng-controller="HelloCntl">
+   Your name: <input type="text" ng-model="name" value="World"/>
+   <hr/>
+   Hello {{name}}!
+ </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-22"></pre>
+<script type="text/ng-template" id="script.js-22">
+   function HelloCntl($scope) {
+     $scope.name = 'World';
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-24"></pre>
+<script type="text/ng-template" id="scenario.js-24">
+  it('should change the binding when user enters text', function() {
+    expect(binding('name')).toEqual('World');
+    input('name').enter('angular');
+    expect(binding('name')).toEqual('angular');
+  });
+</script>
+</div>
+</div><h3>Demo</h3>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-23" ng-eval-javascript="script.js-22"></div>
+
+<h2>Things to notice</h2>
+
+<p>Take a look through the source and note:</p>
+
+<ul>
+<li>The script tag that <a href="guide/bootstrap">bootstraps</a> the Angular environment.</li>
+<li>The text <a href="api/ng.directive:input"><code>input form control</code></a> which is
+bound to the greeting name text.</li>
+<li>There is no need for listener registration and event firing on change events.</li>
+<li>The implicit presence of the <code>name</code> variable which is in the root <a href="api/ng.$rootScope.Scope"><code>scope</code></a>.</li>
+<li>The double curly brace <code>{{markup}}</code>, which binds the name variable to the greeting text.</li>
+<li>The concept of <a href="guide/dev_guide.templates.databinding">data binding</a>, which reflects any
+changes to the
+input field in the greeting text.</li>
+</ul></div>

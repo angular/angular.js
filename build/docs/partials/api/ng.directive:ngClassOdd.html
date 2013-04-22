@@ -1,0 +1,64 @@
+<h1><code ng:non-bindable="">ngClassOdd</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngClass.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngClassOdd</code> and <code>ngClassEven</code> directives work exactly as
+<a href="api/ng.directive:ngClass"><code>ngClass</code></a>, except it works in
+conjunction with <code>ngRepeat</code> and takes affect only on odd (even) rows.</p>
+
+<p>This directive can be applied only within a scope of an
+<a href="api/ng.directive:ngRepeat"><code>ngRepeat</code></a>.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-class-odd="{expression}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-class-odd: {expression};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngClassOdd – {expression} – </code>
+<p><a href="guide/expression">Expression</a> to eval. The result
+of the evaluation can be a string representing space delimited class names or an array.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-219" source-edit-css="style.css-220" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-221"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-219" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-219">
+   <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
+     <li ng-repeat="name in names">
+      <span ng-class-odd="'odd'" ng-class-even="'even'">
+        {{name}}
+      </span>
+     </li>
+   </ol>
+</script>
+</div>
+<div class="tab-pane" title="style.css">
+<pre class="prettyprint linenums" ng-set-text="style.css-220"></pre>
+<style type="text/css" id="style.css-220">
+  .odd {
+    color: red;
+  }
+  .even {
+    color: blue;
+  }
+</style>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-221"></pre>
+<script type="text/ng-template" id="scenario.js-221">
+  it('should check ng-class-odd and ng-class-even', function() {
+    expect(element('.doc-example-live li:first span').prop('className')).
+      toMatch(/odd/);
+    expect(element('.doc-example-live li:last span').prop('className')).
+      toMatch(/even/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-219" ng-eval-javascript=""></div></div>
+</div>

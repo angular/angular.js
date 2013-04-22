@@ -1,0 +1,73 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/cookbook/buzz.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><p>External resources are URLs that provide JSON data, which are then rendered with the help of
+templates. Angular has a resource factory that can be used to give names to the URLs and then
+attach behavior to them. For example you can use the
+<a href="http://code.google.com/apis/buzz/v1/getting_started.html#background-operations|">Google Buzz API</a>
+to retrieve Buzz activity and comments.</p>
+
+<h3>Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-20" source-edit-css="" source-edit-js="script.js-19" source-edit-unit="" source-edit-scenario="scenario.js-21"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-20" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-20">
+    
+    <div ng-controller="BuzzController">
+     <input ng-model="userId"/>
+     <button ng-click="fetch()">fetch</button>
+     <hr/>
+     <div class="buzz" ng-repeat="item in activities.data.items">
+      <h1 style="font-size: 15px;">
+       <img ng-src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+       <a href ng-click="expandReplies(item)" style="float: right;">
+        Expand replies: {{item.links.replies[0].count}}
+       </a>
+      </h2>
+      {{item.object.content | html}}
+      <div class="reply" ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+       <img ng-src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
+       {{reply.content | html}}
+      </div>
+     </div>
+    </div>
+ </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-19"></pre>
+<script type="text/ng-template" id="script.js-19">
+    BuzzController.$inject = ['$scope', '$resource'];
+    function BuzzController($scope, $resource) {
+     $scope.userId = 'googlebuzz';
+     $scope.Activity = $resource(
+      'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+      {alt: 'json', callback: 'JSON_CALLBACK'},
+      { get:     {method: 'JSONP', params: {visibility: '@self'}},
+        replies: {method: 'JSONP', params: {visibility: '@self', comments: '@comments'}}
+      });
+
+     $scope.fetch = function() {
+      $scope.activities = $scope.Activity.get({userId:this.userId});
+     }
+
+     $scope.expandReplies = function(activity) {
+      activity.replies = $scope.Activity.replies({userId: this.userId, activityId: activity.id});
+     }
+    };
+    </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-21"></pre>
+<script type="text/ng-template" id="scenario.js-21">
+  xit('fetch buzz and expand', function() {
+    element(':button:contains(fetch)').click();
+    expect(repeater('div.buzz').count()).toBeGreaterThan(0);
+    element('.buzz a:contains(Expand replies):first').click();
+    expect(repeater('div.reply').count()).toBeGreaterThan(0);
+  });
+ </script>
+</div>
+</div><h3>Demo</h3>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-20" ng-eval-javascript="script.js-19"></div></div>

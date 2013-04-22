@@ -1,0 +1,139 @@
+<h1><code ng:non-bindable="">$compile</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/compile.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Compiles a piece of HTML string or DOM into a template and produces a template function, which
+can then be used to link <a href="api/ng.$rootScope.Scope"><code>scope</code></a> and the template together.</p>
+
+<p>The compilation is a process of walking the DOM tree and trying to match DOM elements to
+<a href="api/ng.$compileProvider#directive"><code>directives</code></a>. For each match it
+executes corresponding template function and collects the
+instance functions into a single template function which is then returned.</p>
+
+<p>The template function can then be used once to produce the view or as it is the case with
+<a href="api/ng.directive:ngRepeat"><code>repeater</code></a> many-times, in which
+case each call results in a view that is a DOM clone of the original template.</p>
+
+<h4>Source</h4>
+<div source-edit="compile" source-edit-deps="angular.js script.js" source-edit-html="index.html-291" source-edit-css="" source-edit-js="script.js-290" source-edit-unit="" source-edit-scenario="scenario.js-292"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-291" ng-html-wrap="compile angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-291">
+    
+    <div ng-controller="Ctrl">
+      <input ng-model="name"> <br>
+      <textarea ng-model="html"></textarea> <br>
+      <div compile="html"></div>
+    </div>
+   </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-290"></pre>
+<script type="text/ng-template" id="script.js-290">
+      // declare a new module, and inject the $compileProvider
+      angular.module('compile', [], function($compileProvider) {
+        // configure new 'compile' directive by passing a directive
+        // factory function. The factory function injects the '$compile'
+        $compileProvider.directive('compile', function($compile) {
+          // directive factory creates a link function
+          return function(scope, element, attrs) {
+            scope.$watch(
+              function(scope) {
+                 // watch the 'compile' expression for changes
+                return scope.$eval(attrs.compile);
+              },
+              function(value) {
+                // when the 'compile' expression changes
+                // assign it into the current DOM
+                element.html(value);
+
+                // compile the new DOM and link it to the current
+                // scope.
+                // NOTE: we only compile .childNodes so that
+                // we don't get into infinite loop compiling ourselves
+                $compile(element.contents())(scope);
+              }
+            );
+          };
+        })
+      });
+
+      function Ctrl($scope) {
+        $scope.name = 'Angular';
+        $scope.html = 'Hello {{name}}';
+      }
+    </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-292"></pre>
+<script type="text/ng-template" id="scenario.js-292">
+     it('should auto compile', function() {
+       expect(element('div[compile]').text()).toBe('Hello Angular');
+       input('html').enter('{{name}}!');
+       expect(element('div[compile]').text()).toBe('Angular!');
+     });
+   </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="compile" ng-set-html="index.html-291" ng-eval-javascript="script.js-290"></div></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$compile(element, transclude, maxPriority);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">element – {string|DOMElement} – </code>
+<p>Element or HTML string to compile into a template function.</p></li>
+<li><code ng:non-bindable="">transclude – {function(angular.Scope[, cloneAttachFn]} – </code>
+<p>function available to directives.</p></li>
+<li><code ng:non-bindable="">maxPriority – {number} – </code>
+<p>only apply directives lower then given priority (Only effects the
+root element(s), not their children)</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{function(scope[, cloneAttachFn])}</code>
+– <p>a link function which is used to bind template
+(a DOM element/tree) to a scope. Where:</p>
+
+<ul>
+<li><code>scope</code> - A <a href="api/ng.$rootScope.Scope"><code>Scope</code></a> to bind to.</li>
+<li><p><code>cloneAttachFn</code> - If <code>cloneAttachFn</code> is provided, then the link function will clone the
+          <code>template</code> and call the <code>cloneAttachFn</code> function allowing the caller to attach the
+          cloned elements to the DOM document at the appropriate place. The <code>cloneAttachFn</code> is
+          called as: <br> <code>cloneAttachFn(clonedElement, scope)</code> where:</p>
+
+<ul><li><code>clonedElement</code> - is a clone of the original <code>element</code> passed into the compiler.</li>
+<li><code>scope</code> - is the current scope with which the linking function is working with.</li></ul></li>
+</ul>
+
+<p>Calling the linking function returns the element of the template. It is either the original element
+passed in, or the clone of the element if the <code>cloneAttachFn</code> is provided.</p>
+
+<p>After linking the view is not updated until after a call to $digest which typically is done by
+Angular automatically.</p>
+
+<p>If you need access to the bound view, there are two ways to do it:</p>
+
+<ul>
+<li><p>If you are not asking the linking function to clone the template, create the DOM element(s)
+before you send them to the compiler and keep this reference around.
+<pre class="prettyprint linenums">
+    var element = $compile('&lt;p&gt;{{total}}&lt;/p&gt;')(scope);
+  </pre></li>
+<li><p>if on the other hand, you need the element to be cloned, the view reference from the original
+example would not point to the clone, but rather to the original template that was cloned. In
+this case, you can access the clone via the cloneAttachFn:
+<pre class="prettyprint linenums">
+    var templateHTML = angular.element('&lt;p&gt;{{total}}&lt;/p&gt;'),
+        scope = ....;
+
+    var clonedElement = $compile(templateHTML)(scope, function(clonedElement, scope) {
+      //attach the clone to DOM document at the right place
+    });
+
+    //now we have reference to the cloned DOM via `clone`
+  </pre></li>
+</ul>
+
+<p>For information on how the compiler works, see the
+<a href="guide/compiler">Angular HTML Compiler</a> section of the Developer Guide.</p></div>
+</div>
+</div>

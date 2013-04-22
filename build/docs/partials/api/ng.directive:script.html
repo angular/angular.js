@@ -1,0 +1,42 @@
+<h1><code ng:non-bindable="">script</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/script.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Load content of a script tag, with type <code>text/ng-template</code>, into <code>$templateCache</code>, so that the
+template can be used by <code>ngInclude</code>, <code>ngView</code> or directive templates.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><p>This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>.</p>as element:<pre class="prettyprint linenums">&lt;script
+       type="text/ng-template"&gt;
+&lt;/script&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">type – {'text/ng-template'} – </code>
+<p>must be set to <code>'text/ng-template'</code></p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-267" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-268"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-267" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-267">
+  <script type="text/ng-template" id="/tpl.html">
+    Content of the template.
+  </script>
+
+  <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
+  <div id="tpl-content" ng-include src="currentTpl"></div>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-268"></pre>
+<script type="text/ng-template" id="scenario.js-268">
+  it('should load template defined inside script tag', function() {
+    element('#tpl-link').click();
+    expect(element('#tpl-content').text()).toMatch(/Content of the template/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-267" ng-eval-javascript=""></div></div>
+</div>

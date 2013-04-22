@@ -1,0 +1,127 @@
+@ngdoc overview
+@name Cookbook: Advanced Form
+@description
+
+Here we extend the basic form example to include common features such as reverting, dirty state
+detection, and preventing invalid form submission.
+
+<doc:example>
+<doc:source>
+   <script>
+   function UserForm($scope) {
+     var master = {
+       name: 'John Smith',
+       address:{
+         line1: '123 Main St.',
+         city:'Anytown',
+         state:'AA',
+         zip:'12345'
+       },
+       contacts:[
+         {type:'phone', value:'1(234) 555-1212'}
+       ]
+     };
+
+     $scope.state = /^\w\w$/;
+     $scope.zip = /^\d\d\d\d\d$/;
+
+     $scope.cancel = function() {
+       $scope.form = angular.copy(master);
+     };
+
+     $scope.save = function() {
+       master = $scope.form;
+       $scope.cancel();
+     };
+
+     $scope.addContact = function() {
+       $scope.form.contacts.push({type:'', value:''});
+     };
+
+     $scope.removeContact = function(contact) {
+       var contacts = $scope.form.contacts;
+       for (var i = 0, ii = contacts.length; i < ii; i++) {
+         if (contact === contacts[i]) {
+           contacts.splice(i, 1);
+         }
+       }
+     };
+
+     $scope.isCancelDisabled = function() {
+       return angular.equals(master, $scope.form);
+     };
+
+     $scope.isSaveDisabled = function() {
+       return $scope.myForm.$invalid || angular.equals(master, $scope.form);
+     };
+
+     $scope.cancel();
+   }
+   </script>
+   <div ng-controller="UserForm">
+
+     <form name="myForm">
+
+       <label>Name:</label><br/>
+       <input type="text" ng-model="form.name" required/> <br/><br/>
+
+       <label>Address:</label> <br/>
+       <input type="text" ng-model="form.address.line1" size="33" required/> <br/>
+       <input type="text" ng-model="form.address.city" size="12" required/>,
+       <input type="text" ng-model="form.address.state" size="2"
+              ng-pattern="state" required/>
+       <input type="text" ng-model="form.address.zip" size="5"
+              ng-pattern="zip" required/><br/><br/>
+
+       <label>Contacts:</label>
+       [ <a href="" ng-click="addContact()">add</a> ]
+       <div ng-repeat="contact in form.contacts">
+         <select ng-model="contact.type">
+           <option>email</option>
+           <option>phone</option>
+           <option>pager</option>
+           <option>IM</option>
+         </select>
+         <input type="text" ng-model="contact.value" required/>
+          [ <a href="" ng-click="removeContact(contact)">X</a> ]
+       </div>
+     <button ng-click="cancel()" ng-disabled="isCancelDisabled()">Cancel</button>
+     <button ng-click="save()" ng-disabled="isSaveDisabled()">Save</button>
+   </form>
+
+   <hr/>
+   Debug View:
+   <pre>form={{form}}</pre>
+   </div>
+</doc:source>
+<doc:scenario>
+  it('should enable save button', function() {
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+    input('form.name').enter('');
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+    input('form.name').enter('change');
+    expect(element(':button:contains(Save)').attr('disabled')).toBeFalsy();
+    element(':button:contains(Save)').click();
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+  });
+  it('should enable cancel button', function() {
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
+    input('form.name').enter('change');
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeFalsy();
+    element(':button:contains(Cancel)').click();
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
+    expect(element(':input[ng\\:model="form.name"]').val()).toEqual('John Smith');
+  });
+</doc:scenario>
+</doc:example>
+
+
+#Things to notice
+
+* Cancel & save buttons are only enabled if the form is dirty — there is something to cancel or
+save.
+* Save button is only enabled if there are no validation errors on the form.
+* Cancel reverts the form changes back to original state.
+* Save updates the internal model of the form.
+* Debug view shows the two models. One presented to the user form and the other being the pristine
+copy master.

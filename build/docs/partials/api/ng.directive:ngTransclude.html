@@ -1,0 +1,65 @@
+<h1><code ng:non-bindable="">ngTransclude</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngTransclude.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Insert the transcluded DOM here.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-transclude&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-transclude"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="transclude" source-edit-deps="angular.js script.js" source-edit-html="index.html-260" source-edit-css="" source-edit-js="script.js-259" source-edit-unit="" source-edit-scenario="scenario.js-261"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-260" ng-html-wrap="transclude angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-260">
+  
+  <div ng-controller="Ctrl">
+    <input ng-model="title"><br>
+    <textarea ng-model="text"></textarea> <br/>
+    <pane title="{{title}}">{{text}}</pane>
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-259"></pre>
+<script type="text/ng-template" id="script.js-259">
+    function Ctrl($scope) {
+      $scope.title = 'Lorem Ipsum';
+      $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
+    }
+
+    angular.module('transclude', [])
+     .directive('pane', function(){
+        return {
+          restrict: 'E',
+          transclude: true,
+          scope: 'isolate',
+          locals: { title:'bind' },
+          template: '<div style="border: 1px solid black;">' +
+                      '<div style="background-color: gray">{{title}}</div>' +
+                      '<div ng-transclude></div>' +
+                    '</div>'
+        };
+    });
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-261"></pre>
+<script type="text/ng-template" id="scenario.js-261">
+   it('should have transcluded', function() {
+     input('title').enter('TITLE');
+     input('text').enter('TEXT');
+     expect(binding('title')).toEqual('TITLE');
+     expect(binding('text')).toEqual('TEXT');
+   });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="transclude" ng-set-html="index.html-260" ng-eval-javascript="script.js-259"></div></div>
+</div>

@@ -1,0 +1,39 @@
+@ngdoc overview
+@name Cookbook: Hello World
+@description
+
+<doc:example>
+ <doc:source>
+  <script>
+    function HelloCntl($scope) {
+      $scope.name = 'World';
+    }
+  </script>
+  <div ng-controller="HelloCntl">
+    Your name: <input type="text" ng-model="name" value="World"/>
+    <hr/>
+    Hello {{name}}!
+  </div>
+ </doc:source>
+ <doc:scenario>
+   it('should change the binding when user enters text', function() {
+     expect(binding('name')).toEqual('World');
+     input('name').enter('angular');
+     expect(binding('name')).toEqual('angular');
+   });
+ </doc:scenario>
+</doc:example>
+
+# Things to notice
+
+Take a look through the source and note:
+
+* The script tag that {@link guide/bootstrap bootstraps} the Angular environment.
+* The text {@link api/ng.directive:input input form control} which is
+  bound to the greeting name text.
+* There is no need for listener registration and event firing on change events.
+* The implicit presence of the `name` variable which is in the root {@link api/ng.$rootScope.Scope scope}.
+* The double curly brace `{{markup}}`, which binds the name variable to the greeting text.
+* The concept of {@link guide/dev_guide.templates.databinding data binding}, which reflects any
+changes to the
+  input field in the greeting text.

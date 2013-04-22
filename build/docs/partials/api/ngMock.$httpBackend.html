@@ -1,0 +1,433 @@
+<h1><code ng:non-bindable="">$httpBackend</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngMock</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ngMock/angular-mocks.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Fake HTTP backend implementation suitable for unit testing applications that use the
+<a href="api/ng.$http"><code>$http service</code></a>.</p>
+
+<p><em>Note</em>: For fake HTTP backend implementation suitable for end-to-end testing or backend-less
+development please see <a href="api/ngMockE2E.$httpBackend">e2e $httpBackend mock</a>.</p>
+
+<p>During unit testing, we want our unit tests to run quickly and have no external dependencies so
+we don’t want to send <a href="https://developer.mozilla.org/en/xmlhttprequest">XHR</a> or
+<a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a> requests to a real server. All we really need is
+to verify whether a certain request has been sent or not, or alternatively just let the
+application make requests, respond with pre-trained responses and assert that the end result is
+what we expect it to be.</p>
+
+<p>This mock implementation can be used to respond with static or dynamic responses via the
+<code>expect</code> and <code>when</code> apis and their shortcuts (<code>expectGET</code>, <code>whenPOST</code>, etc).</p>
+
+<p>When an Angular application needs some data from a server, it calls the $http service, which
+sends the request to a real server using $httpBackend service. With dependency injection, it is
+easy to inject $httpBackend mock (which has the same API as $httpBackend) and use it to verify
+the requests and respond with some testing data without sending a request to real server.</p>
+
+<p>There are two ways to specify what test data should be returned as http responses by the mock
+backend when the code under test makes http requests:</p>
+
+<ul>
+<li><code>$httpBackend.expect</code> - specifies a request expectation</li>
+<li><code>$httpBackend.when</code> - specifies a backend definition</li>
+</ul>
+
+<h3>Request Expectations vs Backend Definitions</h3>
+
+<p>Request expectations provide a way to make assertions about requests made by the application and
+to define responses for those requests. The test will fail if the expected requests are not made
+or they are made in the wrong order.</p>
+
+<p>Backend definitions allow you to define a fake backend for your application which doesn't assert
+if a particular request was made or not, it just returns a trained response if a request is made.
+The test will pass whether or not the request gets made during testing.</p>
+
+<table class="table">
+  <tr><th width="220px"></th><th>Request expectations</th><th>Backend definitions</th></tr>
+  <tr>
+    <th>Syntax</th>
+    <td>.expect(...).respond(...)</td>
+    <td>.when(...).respond(...)</td>
+  </tr>
+  <tr>
+    <th>Typical usage</th>
+    <td>strict unit tests</td>
+    <td>loose (black-box) unit testing</td>
+  </tr>
+  <tr>
+    <th>Fulfills multiple requests</th>
+    <td>NO</td>
+    <td>YES</td>
+  </tr>
+  <tr>
+    <th>Order of requests matters</th>
+    <td>YES</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <th>Request required</th>
+    <td>YES</td>
+    <td>NO</td>
+  </tr>
+  <tr>
+    <th>Response required</th>
+    <td>optional (see below)</td>
+    <td>YES</td>
+  </tr>
+</table>
+
+<p>In cases where both backend definitions and request expectations are specified during unit
+testing, the request expectations are evaluated first.</p>
+
+<p>If a request expectation has no response specified, the algorithm will search your backend
+definitions for an appropriate response.</p>
+
+<p>If a request didn't match any expectation or if the expectation doesn't have the response
+defined, the backend definitions are evaluated in sequential order to see if any of them match
+the request. The response from the first matched definition is returned.</p>
+
+<h3>Flushing HTTP requests</h3>
+
+<p>The $httpBackend used in production, always responds to requests with responses asynchronously.
+If we preserved this behavior in unit testing, we'd have to create async unit tests, which are
+hard to write, follow and maintain. At the same time the testing mock, can't respond
+synchronously because that would change the execution of the code under test. For this reason the
+mock $httpBackend has a <code>flush()</code> method, which allows the test to explicitly flush pending
+requests and thus preserving the async api of the backend, while allowing the test to execute
+synchronously.</p>
+
+<h3>Unit testing with mock $httpBackend</h3>
+
+<pre class="prettyprint linenums">
+   // controller
+   function MyController($scope, $http) {
+     $http.get('/auth.py').success(function(data) {
+       $scope.user = data;
+     });
+
+     this.saveMessage = function(message) {
+       $scope.status = 'Saving...';
+       $http.post('/add-msg.py', message).success(function(response) {
+         $scope.status = '';
+       }).error(function() {
+         $scope.status = 'ERROR!';
+       });
+     };
+   }
+
+   // testing controller
+   var $httpBackend;
+
+   beforeEach(inject(function($injector) {
+     $httpBackend = $injector.get('$httpBackend');
+
+     // backend definition common for all tests
+     $httpBackend.when('GET', '/auth.py').respond({userId: 'userX'}, {'A-Token': 'xxx'});
+   }));
+
+
+   afterEach(function() {
+     $httpBackend.verifyNoOutstandingExpectation();
+     $httpBackend.verifyNoOutstandingRequest();
+   });
+
+
+   it('should fetch authentication token', function() {
+     $httpBackend.expectGET('/auth.py');
+     var controller = scope.$new(MyController);
+     $httpBackend.flush();
+   });
+
+
+   it('should send msg to server', function() {
+     // now you don’t care about the authentication, but
+     // the controller will still send the request and
+     // $httpBackend will respond without you having to
+     // specify the expectation and response for this request
+     $httpBackend.expectPOST('/add-msg.py', 'message content').respond(201, '');
+
+     var controller = scope.$new(MyController);
+     $httpBackend.flush();
+     controller.saveMessage('message content');
+     expect(controller.status).toBe('Saving...');
+     $httpBackend.flush();
+     expect(controller.status).toBe('');
+   });
+
+
+   it('should send auth header', function() {
+     $httpBackend.expectPOST('/add-msg.py', undefined, function(headers) {
+       // check if the header was send, if it wasn't the expectation won't
+       // match the request and the test will fail
+       return headers['Authorization'] == 'xxx';
+     }).respond(201, '');
+
+     var controller = scope.$new(MyController);
+     controller.saveMessage('whatever');
+     $httpBackend.flush();
+   });
+   </pre></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="expect">expect(method, url, data, headers)</h3>
+<div class="expect"><p>Creates a new request expectation.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">method – {string} – </code>
+<p>HTTP method.</p></li>
+<li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers or function that receives http header
+object and returns true if the headers match the current expectation.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p>
+
+<ul>
+<li>respond – <code>{function([status,] data[, headers])|function(function(method, url, data, headers)}</code>
+– The respond method takes a set of static data to be returned or a function that can return
+an array containing response status (number), response data (string) and response headers
+(Object).</li>
+</ul></div>
+</div>
+</li>
+<li><h3 id="expectDELETE">expectDELETE(url, headers)</h3>
+<div class="expectdelete"><p>Creates a new request expectation for DELETE requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="expectGET">expectGET(url, headers)</h3>
+<div class="expectget"><p>Creates a new request expectation for GET requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled. See #expect for more info.</p></div>
+</div>
+</li>
+<li><h3 id="expectHEAD">expectHEAD(url, headers)</h3>
+<div class="expecthead"><p>Creates a new request expectation for HEAD requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="expectJSONP">expectJSONP(url)</h3>
+<div class="expectjsonp"><p>Creates a new request expectation for JSONP requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="expectPATCH">expectPATCH(url, data, headers)</h3>
+<div class="expectpatch"><p>Creates a new request expectation for PATCH requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="expectPOST">expectPOST(url, data, headers)</h3>
+<div class="expectpost"><p>Creates a new request expectation for POST requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="expectPUT">expectPUT(url, data, headers)</h3>
+<div class="expectput"><p>Creates a new request expectation for PUT requests. For more info see <code>expect()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {Object=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="flush">flush(count)</h3>
+<div class="flush"><p>Flushes all pending requests using the trained responses.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">count<i>(optional)</i> – {number=} – </code>
+<p>Number of responses to flush (in the order they arrived). If undefined,
+all pending requests will be flushed. If there are no pending requests when the flush method
+is called an exception is thrown (as this typically a sign of programming error).</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="resetExpectations">resetExpectations()</h3>
+<div class="resetexpectations"><p>Resets all request expectations, but preserves all backend definitions. Typically, you would
+call resetExpectations during a multiple-phase test when you want to reuse the same instance of
+$httpBackend mock.</p></div>
+</li>
+<li><h3 id="verifyNoOutstandingExpectation">verifyNoOutstandingExpectation()</h3>
+<div class="verifynooutstandingexpectation"><p>Verifies that all of the requests defined via the <code>expect</code> api were made. If any of the
+requests were not made, verifyNoOutstandingExpectation throws an exception.</p>
+
+<p>Typically, you would call this method following each test case that asserts requests using an
+"afterEach" clause.</p>
+
+<pre class="prettyprint linenums">
+  afterEach($httpBackend.verifyExpectations);
+</pre></div>
+</li>
+<li><h3 id="verifyNoOutstandingRequest">verifyNoOutstandingRequest()</h3>
+<div class="verifynooutstandingrequest"><p>Verifies that there are no outstanding requests that need to be flushed.</p>
+
+<p>Typically, you would call this method following each test case that asserts requests using an
+"afterEach" clause.</p>
+
+<pre class="prettyprint linenums">
+  afterEach($httpBackend.verifyNoOutstandingRequest);
+</pre></div>
+</li>
+<li><h3 id="when">when(method, url, data, headers)</h3>
+<div class="when"><p>Creates a new backend definition.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">method – {string} – </code>
+<p>HTTP method.</p></li>
+<li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers or function that receives http header
+object and returns true if the headers match the current definition.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p>
+
+<ul>
+<li>respond – <code>{function([status,] data[, headers])|function(function(method, url, data, headers)}</code>
+– The respond method takes a set of static data to be returned or a function that can return
+an array containing response status (number), response data (string) and response headers
+(Object).</li>
+</ul></div>
+</div>
+</li>
+<li><h3 id="whenDELETE">whenDELETE(url, headers)</h3>
+<div class="whendelete"><p>Creates a new backend definition for DELETE requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenGET">whenGET(url, headers)</h3>
+<div class="whenget"><p>Creates a new backend definition for GET requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenHEAD">whenHEAD(url, headers)</h3>
+<div class="whenhead"><p>Creates a new backend definition for HEAD requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenJSONP">whenJSONP(url)</h3>
+<div class="whenjsonp"><p>Creates a new backend definition for JSONP requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenPOST">whenPOST(url, data, headers)</h3>
+<div class="whenpost"><p>Creates a new backend definition for POST requests. For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+<li><h3 id="whenPUT">whenPUT(url, data, headers)</h3>
+<div class="whenput"><p>Creates a new backend definition for PUT requests.  For more info see <code>when()</code>.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">url – {string|RegExp} – </code>
+<p>HTTP url.</p></li>
+<li><code ng:non-bindable="">data<i>(optional)</i> – {(string|RegExp)=} – </code>
+<p>HTTP request body.</p></li>
+<li><code ng:non-bindable="">headers<i>(optional)</i> – {(Object|function(Object))=} – </code>
+<p>HTTP headers.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{requestHandler}</code>
+– <p>Returns an object with <code>respond</code> method that control how a matched
+request is handled.</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

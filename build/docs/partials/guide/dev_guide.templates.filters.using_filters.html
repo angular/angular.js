@@ -1,0 +1,52 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/guide/dev_guide.templates.filters.using_filters.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><p>Filters can be part of any <a href="api/ng.$rootScope.Scope"><code>api/ng.$rootScope.Scope</code></a> evaluation but are typically used to format
+expressions in bindings in your templates:</p>
+
+<pre><code>    {{ expression | filter }}
+</code></pre>
+
+<p>Filters typically transform the data to a new data type, formatting the data in the process.
+Filters can also be chained, and can take optional arguments.</p>
+
+<p>You can chain filters using this syntax:</p>
+
+<pre><code>    {{ expression | filter1 | filter2 }}
+</code></pre>
+
+<p>You can also pass colon-delimited arguments to filters, for example, to display the number 123 with
+2 decimal points:</p>
+
+<pre><code>    123 | number:2
+</code></pre>
+
+<p>Use the same syntax for multiple arguments:</p>
+
+<pre><code>    myArray | orderBy:'timestamp':true
+</code></pre>
+
+<p>Here are some examples that show values before and after applying different filters to an
+expression in a binding:</p>
+
+<ul>
+<li>No filter: <code>{{1234.5678}}</code> => <code>1234.5678</code></li>
+<li>Number filter: <code>{{1234.5678|number}}</code> => <code>1,234.57</code>. Notice the "," and rounding to two
+significant digits.</li>
+<li>Filter with arguments: <code>{{1234.5678|number:5}}</code> => <code>1,234.56780</code>. Filters can take optional
+arguments, separated by colons in a binding. For example, the "number" filter takes a number
+argument that specifies how many digits to display to the right of the decimal point.</li>
+</ul>
+
+<h3>Related Topics</h3>
+
+<ul>
+<li><a href="guide/dev_guide.templates.filters">Understanding Angular Filters</a></li>
+<li><a href="guide/dev_guide.templates.filters.creating_filters">Creating Angular Filters</a></li>
+</ul>
+
+<h3>Related API</h3>
+
+<ul>
+<li><a href="api/ng.$filter"><code>Angular Filter API</code></a></li>
+</ul></div>

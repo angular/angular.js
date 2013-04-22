@@ -1,0 +1,115 @@
+@ngdoc overview
+@name Tutorial
+@description
+
+A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
+the construction of an AngularJS web app. The app you will build is a catalog that displays a list
+of Android devices, lets you filter the list to see only devices that interest you, and then view
+details for any device.
+
+<img class="diagram" src="img/tutorial/catalog_screen.png" width="488" height="413">
+
+Work through the tutorial to see how Angular makes browsers smarter — without the use of extensions
+or plug-ins. As you work through the tutorial, you will:
+
+* See examples of how to use client-side data binding and dependency injection to build dynamic
+views of data that change immediately in response to user actions.
+* See how Angular creates listeners on your data without the need for DOM manipulation.
+* Learn a better, easier way to test your web apps.
+* Learn how to use Angular services to make common web tasks, such as getting data into your app,
+easier.
+
+And all of this works in any browser without modification to the browser!
+
+When you finish the tutorial you will be able to:
+
+* Create a dynamic application that works in any browser.
+* Define the differences between Angular and common JavaScript frameworks.
+* Understand how data binding works in AngularJS.
+* Use the angular-seed project to quickly boot-strap your own projects.
+* Create and run tests.
+* Identify resources for learning more about AngularJS.
+
+The tutorial guides you through the entire process of building a simple application, including
+writing and running unit and end-to-end tests. Experiments at the end of each step provide
+suggestions for you to learn more about AngularJS and the application you are building.
+
+You can go through the whole tutorial in a couple of hours or you may want to spend a pleasant day
+really digging into it. If you're looking for a shorter introduction to AngularJS, check out the
+{@link misc/started Getting Started} document.
+
+
+
+
+
+
+
+# Working with the code
+
+You can follow this tutorial and hack on the code in either the Mac/Linux or the Windows
+environment. The tutorial relies on the use of Git versioning system for source code management.
+You don't need to know anything about Git to follow the tutorial. Select one of the tabs below
+and follow the instructions for setting up your computer.
+
+<div class="tabbable" show="true">
+  <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux">
+    <ol>
+      <li><p>You will need Node.js and Karma to run unit tests, so please verify that you have
+      <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+      and that the <code>node</code> executable is on your <code>PATH</code> by running the following
+      command in a terminal window:</p>
+      <pre>node --version</pre>
+      <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> if you
+      don't have it already:</p>
+      <pre>npm install -g karma</pre>
+      <li><p>You'll also need Git, which you can get from
+         <a href="http://git-scm.com/download">the Git site</a>.</p></li>
+      <li><p>Clone the angular-phonecat repository located at <a
+href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
+      <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
+      <p>This command creates the <code>angular-phonecat</code> directory in your current
+directory.</p></li>
+      <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
+      <pre>cd angular-phonecat</pre>
+      <p>The tutorial instructions assume you are running all commands from the angular-phonecat
+directory.</p></li>
+      <li><p>You will need an http server running on your system. Mac and Linux machines typically
+have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
+to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></li>
+    </ol>
+  </div>
+
+  <div class="tab-pane well" id="git-win" title="Git on Windows">
+    <ol>
+      <li><p>You will need Node.js and Karma to run unit tests, so please verify that you have
+        <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+        and that the <code>node</code> executable is on your <code>PATH</code> by running the following
+        command in a terminal window:</p>
+        <pre>node --version</pre>
+        <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> if you
+           don't have it already:</p>
+        <pre>npm install -g karma</pre>
+      </li>
+      <li><p>You'll also need Git, which you can get from
+               <a href="http://git-scm.com/download">the Git site</a>.</p></li>
+      <li><p>Clone the angular-phonecat repository located at <a
+      href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
+      <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
+      <p>This command creates the angular-phonecat directory in your current directory.</p></li>
+      <li><p>Change your current directory to angular-phonecat.</p>
+      <pre>cd angular-phonecat</pre>
+      <p>The tutorial instructions assume you are running all commands from the angular-phonecat
+directory.</p>
+      <p>You should run all <code>git</code> commands from Git bash.</p>
+      <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be
+executed from the Windows command line.</li>
+      <li><p>You need an http server running on your system, but if you don't already have one
+already installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple
+bundled http server.</p></li>
+    </ol>
+  </div>
+
+The last thing to do is to make sure your computer has a web browser and a good text editor
+installed. Now, let's get some cool stuff done!
+
+{@link step_00 <span class="btn btn-primary">Get Started!</span>}

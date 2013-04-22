@@ -1,0 +1,36 @@
+<h1><code ng:non-bindable="">$cookies</code>
+<span class="hint">(service in module <code ng:non-bindable="">ngCookies</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ngCookies/cookies.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Provides read/write access to browser's cookies.</p>
+
+<p>Only a simple Object is exposed and by adding or removing properties to/from
+this object, new cookies are created/deleted at the end of current $eval.</p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$browser">$browser</a></code>
+</li>
+</ul>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-175" source-edit-css="" source-edit-js="script.js-174" source-edit-unit="" source-edit-scenario=""></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-175" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-175">
+  
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-174"></pre>
+<script type="text/ng-template" id="script.js-174">
+    function ExampleController($cookies) {
+      // Retrieving a cookie
+      var favoriteCookie = $cookies.myFavorite;
+      // Setting a cookie
+      $cookies.myFavorite = 'oatmeal';
+    }
+  </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-175" ng-eval-javascript="script.js-174"></div></div>
+</div>
