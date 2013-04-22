@@ -79,6 +79,8 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
            cursor: 'pointer'
           });
           element.bind('mousedown', function(event) {
+            // Prevent default dragging of selected content
+            event.preventDefault();
             startX = event.screenX - x;
             startY = event.screenY - y;
             $document.bind('mousemove', mousemove);
