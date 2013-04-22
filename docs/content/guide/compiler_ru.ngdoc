@@ -2,7 +2,7 @@
 @name Developer Guide: HTML Compiler
 @description
 
-# Overview
+# Обзор
 
 Angular's {@link api/ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
@@ -27,7 +27,7 @@ All of this compilation takes place in the web browser; no server side or pre-co
 involved.
 
 
-# Compiler
+# Компилятор
 
 Compiler is an angular service which traverses the DOM looking for attributes. The compilation
 process happens into two phases.
