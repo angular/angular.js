@@ -975,12 +975,13 @@ function bootstrap(element, modules) {
     }]);
     modules.unshift('ng');
     var injector = createInjector(modules);
-    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector',
-       function(scope, element, compile, injector) {
+    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animator',
+       function(scope, element, compile, injector, animator) {
         scope.$apply(function() {
           element.data('$injector', injector);
           compile(element)(scope);
         });
+        animator.enabled(true);
       }]
     );
     return injector;

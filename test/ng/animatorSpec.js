@@ -28,20 +28,27 @@ describe("$animator", function() {
       });
     });
 
-    it("should disable and enable the animations", inject(function($animator, $rootScope, $window) {
-      expect($animator.enabled()).toBe(false);
+    it("should disable and enable the animations", function() {
+      var initialState = null;
+      var animator;
 
-      $rootScope.$digest();
-      $window.setTimeout.expect(0).process();
+      angular.bootstrap(body, [function() {
+        return function($animator) {
+          animator = $animator;
+          initialState = $animator.enabled();
+        }
+      }]);
 
-      expect($animator.enabled()).toBe(true);
+      expect(initialState).toBe(false);
 
-      expect($animator.enabled(0)).toBe(false);
-      expect($animator.enabled()).toBe(false);
+      expect(animator.enabled()).toBe(true);
 
-      expect($animator.enabled(1)).toBe(true);
-      expect($animator.enabled()).toBe(true);
-    }));
+      expect(animator.enabled(0)).toBe(false);
+      expect(animator.enabled()).toBe(false);
+
+      expect(animator.enabled(1)).toBe(true);
+      expect(animator.enabled()).toBe(true);
+    });
 
   });
 
@@ -145,9 +152,6 @@ describe("$animator", function() {
         ngAnimate : '{enter: \'custom\'}'
       });
 
-      $rootScope.$digest(); // re-enable the animations;
-      window.setTimeout.expect(0).process();
-
       expect(element.contents().length).toBe(0);
       animator.enter(child, element);
       window.setTimeout.expect(1).process();
@@ -157,9 +161,6 @@ describe("$animator", function() {
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
-
-      $rootScope.$digest(); // re-enable the animations;
-      window.setTimeout.expect(0).process();
 
       element.append(child);
       expect(element.contents().length).toBe(1);
