@@ -741,7 +741,8 @@ forEach({
 
   clone: JQLiteClone,
 
-  triggerHandler: function(element, eventName) {
+  triggerHandler: function(element, event) {
+    var eventName = event.type || event;
     var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
 
     forEach(eventFns, function(fn) {

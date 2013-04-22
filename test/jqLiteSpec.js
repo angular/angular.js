@@ -1128,6 +1128,18 @@ describe('jqLite', function() {
       expect(clickSpy1).toHaveBeenCalledOnce();
       expect(clickSpy2).toHaveBeenCalledOnce();
     });
+
+
+    it('should support ui-event objects a-la {type: "type"}', function() {
+      var element = jqLite('<span>poke</span>'),
+          pokeSpy = jasmine.createSpy('poke');
+
+      element.bind('poke', pokeSpy);
+      expect(pokeSpy).not.toHaveBeenCalled();
+
+      element.triggerHandler({type: 'poke'});
+      expect(pokeSpy).toHaveBeenCalledOnce();
+    });
   });
 
 
