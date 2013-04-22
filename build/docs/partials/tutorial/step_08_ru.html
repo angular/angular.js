@@ -1,0 +1,181 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/tutorial/step_08_ru.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><ul doc-tutorial-nav="8"></ul>
+
+<p>In this step, you will implement the phone details view, which is displayed when a user clicks on a
+phone in the phone list.</p>
+
+<div doc-tutorial-reset="8">
+</div>
+
+<p>Now when you click on a phone on the list, the phone details page with phone-specific information
+is displayed.</p>
+
+<p>To implement the phone details view we will use <a href="api/ng.$http"><code>$http</code></a> to fetch
+our data, and we'll flesh out the <code>phone-detail.html</code> view template.</p>
+
+<p>The most important changes are listed below. You can see the full diff on <a href="https://github.com/angular/angular-phonecat/compare/step-7...step-8">GitHub</a>:</p>
+
+<h3>Data</h3>
+
+<p>In addition to <code>phones.json</code>, the <code>app/phones/</code> directory also contains one json file for each
+phone:</p>
+
+<p><strong><code>app/phones/nexus-s.json</code>:</strong> (sample snippet)
+<pre class="prettyprint linenums">
+{
+  "additionalFeatures": "Contour Display, Near Field Communications (NFC),...",
+  "android": {
+      "os": "Android 2.3",
+      "ui": "Android"
+  },
+  ...
+  "images": [
+      "img/phones/nexus-s.0.jpg",
+      "img/phones/nexus-s.1.jpg",
+      "img/phones/nexus-s.2.jpg",
+      "img/phones/nexus-s.3.jpg"
+  ],
+  "storage": {
+      "flash": "16384MB",
+      "ram": "512MB"
+  }
+}
+</pre>
+
+<p>Each of these files describes various properties of the phone using the same data structure. We'll
+show this data in the phone detail view.</p>
+
+<h3>Controller</h3>
+
+<p>We'll expand the <code>PhoneDetailCtrl</code> by using the <code>$http</code> service to fetch the json files. This works
+the same way as the phone list controller.</p>
+
+<p><strong><code>app/js/controllers.js</code>:</strong>
+<pre class="prettyprint linenums">
+function PhoneDetailCtrl($scope, $routeParams, $http) {
+  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+    $scope.phone = data;
+  });
+}
+
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
+</pre>
+
+<p>To construct the URL for the HTTP request, we use <code>$routeParams.phoneId</code> extracted from the current
+route by the <code>$route</code> service.</p>
+
+<h3>Template</h3>
+
+<p>The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
+Note where we use the angular <code>{{expression}}</code> markup and <code>ngRepeat</code> to project phone data from
+our model into the view.</p>
+
+<p><strong><code>app/partials/phone-detail.html</code>:</strong>
+<pre class="prettyprint linenums">
+&lt;img ng-src="{{phone.images[0]}}" class="phone"&gt;
+
+&lt;h1&gt;{{phone.name}}&lt;/h1&gt;
+
+&lt;p&gt;{{phone.description}}&lt;/p&gt;
+
+&lt;ul class="phone-thumbs"&gt;
+  &lt;li ng-repeat="img in phone.images"&gt;
+    &lt;img ng-src="{{img}}"&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ul class="specs"&gt;
+  &lt;li&gt;
+    &lt;span&gt;Availability and Networks&lt;/span&gt;
+    &lt;dl&gt;
+      &lt;dt&gt;Availability&lt;/dt&gt;
+      &lt;dd ng-repeat="availability in phone.availability"&gt;{{availability}}&lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/li&gt;
+    ...
+  &lt;/li&gt;
+    &lt;span&gt;Additional Features&lt;/span&gt;
+    &lt;dd&gt;{{phone.additionalFeatures}}&lt;/dd&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+
+<div style="display: none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_08-09_final.png">
+</div>
+
+<h3>Test</h3>
+
+<p>We wrote a new unit test that is similar to the one we wrote for the <code>PhoneListCtrl</code> controller in
+step 5.</p>
+
+<p><strong><code>test/unit/controllersSpec.js</code>:</strong>
+<pre class="prettyprint linenums">
+...
+  describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl;
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond({name:'phone xyz'});
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+    }));
+
+
+    it('should fetch phone detail', function() {
+      expect(scope.phone).toBeUndefined();
+      $httpBackend.flush();
+
+      expect(scope.phone).toEqual({name:'phone xyz'});
+    });
+  });
+...
+</pre>
+
+<p>You should now see the following output in the Karma tab:</p>
+
+<pre><code>Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)
+</code></pre>
+
+<p>We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
+heading on the page is "Nexus S".</p>
+
+<p><strong><code>test/e2e/scenarios.js</code>:</strong>
+<pre class="prettyprint linenums">
+...
+  describe('Phone detail view', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+    });
+
+
+    it('should display nexus-s page', function() {
+      expect(binding('phone.name')).toBe('Nexus S');
+    });
+  });
+...
+</pre>
+
+<p>You can now rerun <code>./scripts/e2e-test.sh</code> or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on <a href="http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html">Angular's server</a>.</p>
+
+<h2>Experiments</h2>
+
+<ul>
+<li>Using the <a href="guide/dev_guide.e2e-testing">Angular's end-to-end test runner API</a>, write a test
+that verifies that we display 4 thumbnail images on the Nexus S details page.</li>
+</ul>
+
+<h2>Summary</h2>
+
+<p>Now that the phone details view is in place, proceed to <a href="tutorial/step_09">step 9</a> to learn how to
+write your own custom display filter.</p>
+
+<ul doc-tutorial-nav="8"></ul></div>

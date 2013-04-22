@@ -1,0 +1,30 @@
+<h1><code ng:non-bindable="">$window</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/window.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>A reference to the browser's <code>window</code> object. While <code>window</code>
+is globally available in JavaScript, it causes testability problems, because
+it is a global variable. In angular we always refer to it through the
+<code>$window</code> service, so it may be overridden, removed or mocked for testing.</p>
+
+<p>All expressions are evaluated with respect to current scope so they don't
+suffer from window globality.</p></div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-316" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-317"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-316" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-316">
+  <input ng-init="$window = $service('$window'); greeting='Hello World!'" type="text" ng-model="greeting" />
+  <button ng-click="$window.alert(greeting)">ALERT</button>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-317"></pre>
+<script type="text/ng-template" id="scenario.js-317">
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-316" ng-eval-javascript=""></div></div>
+</div>

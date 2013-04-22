@@ -1,0 +1,282 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/misc/contribute.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><ul>
+<li><a href="#H1_1">License</a></li>
+<li><a href="#H1_2">Contributing to Source Code</a></li>
+<li><a href="#H1_3">Applying Code Standards</a></li>
+<li><a href="#H1_4">Checking Out and Building <code>Angular</code></a></li>
+<li><a href="#H1_5">Submitting Your Changes</a></li>
+</ul>
+
+<p><a name="H1_1"></a></p>
+
+<h2>License</h2>
+
+<p>AngularJS is an open source project licensed under the <a href="http://github.com/angular/angular.js/blob/master/LICENSE">MIT license</a>. Your contributions are
+always welcome. When working with AngularJS code base, please follow the guidelines provided on
+this page.</p>
+
+<p><a name="H1_2"></a></p>
+
+<h2>Contributing to Source Code</h2>
+
+<p>We'd love for you to contribute to our source code and to make AngularJS even better than it is
+today! Here are the guidelines we'd like you to follow:</p>
+
+<ul>
+<li><p>Major changes that you intend to contribute to the project should be discussed first on our <a href="https://groups.google.com/forum/?hl=en#!forum/angular">mailing list</a> so that we can better
+coordinate our efforts, prevent  duplication of work, and help you to craft the change so that it
+is successfully accepted upstream.</p></li>
+<li><p>Small changes and bug fixes can be crafted and submitted to Github as a <a href="#H1_5">pull
+request</a>.</p></li>
+</ul>
+
+<p><a name="H1_3"></a></p>
+
+<h2>Applying Code Standards</h2>
+
+<p>To ensure consistency throughout the source code, keep these rules in mind as you are working:</p>
+
+<ul>
+<li><p>All features or bug fixes must be tested by one or more <a href="#unit-tests">specs</a>.</p></li>
+<li><p>All public API methods must be documented with ngdoc, an extended version of jsdoc (we added
+support for markdown and templating via <code>@ngdoc</code> tag). To see how we document our APIs, please
+check out the existing ngdocs.</p></li>
+<li><p>With the exceptions listed below, we follow the rules contained in <a href="http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml">Google's JavaScript Style Guide</a>:</p>
+
+<ul><li><p>Do not use namespaces: Instead, we wrap the entire <code>angular</code> code base in an anonymous closure
+and export our API explicitly rather than implicitly.</p></li>
+<li><p>Wrap all code at 100 characters.</p></li>
+<li><p>Instead of complex inheritance hierarchies, we prefer simple objects. We use prototypical
+inheritance only when absolutely necessary.</p></li>
+<li><p>We love functions and closures and, whenever possible, prefer them over objects.</p></li>
+<li><p>To write concise code that can be better minified, internally we use aliases that map to the
+external API. See our existing code to see what we mean.</p></li>
+<li><p>We don't go crazy with type annotations for private internal APIs unless it's an internal API
+that is used throughout AngularJS. The best guidance is to do what makes the most sense.</p></li></ul></li>
+</ul>
+
+<p><a name="H1_4"></a></p>
+
+<h2>Checking Out and Building Angular</h2>
+
+<p>The AngularJS source code is hosted at <a href="http://github.com">Github</a>, which we also use to
+accept code contributions. The AngularJS repository can be found at <strong><a href="https://github.com/angular/angular.js">https://github.com/angular/angular.js</a></strong>.</p>
+
+<p>Several steps are needed to check out and build AngularJS:</p>
+
+<h3>Installation Dependencies</h3>
+
+<p>Before you can build AngularJS, you must install or configure the following dependencies on your
+machine:</p>
+
+<ul>
+<li><p>Git: The <a href="http://help.github.com/mac-git-installation">Github Guide to Installing Git</a> is
+quite a good source for information on Git.</p></li>
+<li><p><a href="http://nodejs.org">Node.js</a>: We use Node to generate the documentation, run a
+development web server, run tests, and generate a build. Depending on your system, you can install Node either from source or as a
+pre-packaged bundle.</p>
+
+<p>Once installed, you'll also need several npms (node packages), which you can install once you checked out a local copy
+of the Angular repository (see below) with:</p>
+
+<ul><li><code>cd angular.js</code></li>
+<li><code>npm install</code></li></ul></li>
+<li><p><a href="http://gruntjs.com">Grunt</a>: We use Grunt as our build system. Install the grunt command-line tool globally with:</p>
+
+<ul><li><code>sudo npm install -g grunt-cli</code></li></ul></li>
+</ul>
+
+<h3>Creating a Github Account and Forking Angular</h3>
+
+<p>To create a Github account, follow the instructions <a href="https://github.com/signup/free">here</a>.
+Afterwards, go ahead and <a href="http://help.github.com/forking">fork</a> the <a href="https://github.com/angular/angular.js">main angular repository</a>.</p>
+
+<h3>Building AngularJS</h3>
+
+<p>To build AngularJS, you check out the source code and use Grunt to generate the non-minified and
+minified AngularJS files:</p>
+
+<ol>
+<li><p>To clone your Github repository, run:</p>
+
+<pre><code>git clone git@github.com:&lt;github username&gt;/angular.js.git
+</code></pre></li>
+<li><p>To go to the AngularJS directory, run:</p>
+
+<pre><code>cd angular.js
+</code></pre></li>
+<li><p>To add the main AngularJS repository as an upstream remote to your repository, run:</p>
+
+<pre><code>git remote add upstream https://github.com/angular/angular.js.git
+</code></pre></li>
+<li><p>To add node.js dependencies</p>
+
+<pre><code>npm install
+</code></pre></li>
+<li><p>To build AngularJS, run:</p>
+
+<pre><code>grunt package
+</code></pre></li>
+</ol>
+
+<p>NOTE: If you're using Windows you must run your command line with administrative privileges (right click, run as
+Administrator).</p>
+
+<p>The build output can be located under the <code>build</code> directory. It consists of the following files and
+directories:</p>
+
+<ul>
+<li><p><code>angular-&lt;version&gt;.zip</code> — This is the complete zip file, which  contains all of the release build
+artifacts.</p></li>
+<li><p><code>angular.js</code> — The non-minified <code>angular</code> script.</p></li>
+<li><p><code>angular.min.js</code> —  The minified <code>angular</code> script.</p></li>
+<li><p><code>angular-scenario.js</code> — The <code>angular</code> End2End test runner.</p></li>
+<li><p><code>docs/</code> — A directory that contains all of the files needed to run <code>docs.angularjs.org</code>.</p></li>
+<li><p><code>docs/index.html</code> — The main page for the documentation.</p></li>
+<li><p><code>docs/docs-scenario.html</code> — The End2End test runner for the documentation application.</p></li>
+</ul>
+
+<p><a name="webserver"></a></p>
+
+<h3>Running a Local Development Web Server</h3>
+
+<p>To debug code and run end-to-end tests, it is often useful to have a local HTTP server. For this purpose, we have
+made available a local web server based on Node.js.</p>
+
+<ol>
+<li><p>To start the web server, run:</p>
+
+<pre><code>grunt webserver
+</code></pre></li>
+<li><p>To access the local server, go to this website:</p>
+
+<pre><code>http://localhost:8000/
+</code></pre>
+
+<p>By default, it serves the contents of the AngularJS project directory.</p></li>
+</ol>
+
+<p><a name="unit-tests"></a></p>
+
+<h3>Running the Unit Test Suite</h3>
+
+<p>Our unit and integration tests are written with Jasmine and executed with Karma.  To run all of the
+tests once on Chrome run:</p>
+
+<pre><code>grunt test:unit
+</code></pre>
+
+<p>To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:</p>
+
+<pre><code>grunt test:unit --browsers Opera,Firefox
+</code></pre>
+
+<p>Note there should be <em>no spaces between browsers</em>. <code>Opera, Firefox</code> is INVALID.</p>
+
+<p>During development it's however more productive to continuously run unit tests every time the source or test files
+change. To execute tests in this mode run:</p>
+
+<ol>
+<li><p>To start the Karma server, capture Chrome browser and run unit tests, run:</p>
+
+<pre><code>grunt autotest:jqlite
+</code></pre></li>
+<li><p>To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
+of Karma running, read Karma's console output for the correct url):</p>
+
+<pre><code>http://localhost:9876/
+</code></pre></li>
+<li><p>To re-run tests just change any source or test file.</p></li>
+</ol>
+
+<p>To learn more about all of the preconfigured Grunt tasks run:</p>
+
+<pre><code>grunt --help
+</code></pre>
+
+<h3>Running the end-to-end Test Suite</h3>
+
+<p>To run the E2E test suite:</p>
+
+<ol>
+<li><p>Start the local web server if it's not running already.</p>
+
+<pre><code>grunt webserver
+</code></pre></li>
+<li><p>In a browser, go to:</p>
+
+<pre><code>http://localhost:8000/build/docs/docs-scenario.html
+</code></pre>
+
+<p>or in terminal run:</p>
+
+<pre><code>grunt test:end2end
+</code></pre></li>
+</ol>
+
+<p>For convenience you can also simply run:</p>
+
+<pre><code>    grunt test:e2e
+</code></pre>
+
+<p>This will start the webserver for you and run the tests.</p>
+
+<p><a name="H1_5"></a></p>
+
+<h2>Submitting Your Changes</h2>
+
+<p>To create and submit a change:</p>
+
+<ol>
+<li><p><a name="CLA"></a>
+Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code changes to be
+accepted, the CLA must be signed. It's a quick process, we promise!</p>
+
+<p>For individuals we have a <a href="http://code.google.com/legal/individual-cla-v1.0.html">simple click-through form</a>. For
+corporations we'll need you to
+<a href="http://code.google.com/legal/corporate-cla-v1.0.html">print, sign and one of scan+email, fax or mail the form</a>.</p></li>
+<li><p>Create a new branch off the master for your changes:</p>
+
+<pre><code>git branch my-fix-branch
+</code></pre></li>
+<li><p>Check out the branch:</p>
+
+<pre><code>git checkout my-fix-branch
+</code></pre></li>
+<li><p>Create your patch, make sure to have plenty of tests (that pass).</p></li>
+<li><p>Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
+please check out our
+<a href="https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#">commit message conventions</a>
+and our commit message presubmit hook <code>validate-commit-msg.js</code>):</p>
+
+<pre><code>git commit -a
+</code></pre></li>
+<li><p>Push your branch to Github:</p>
+
+<pre><code>git push origin my-fix-branch
+</code></pre></li>
+<li><p>In Github, send a pull request to <code>angular:master</code>.</p></li>
+<li><p>When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
+from the main (upstream) repository:</p>
+
+<ol><li><p>To delete the branch in Github, run:</p>
+
+<pre><code>git push origin :my-fix-branch
+</code></pre></li>
+<li><p>To check out the master branch, run:</p>
+
+<pre><code>git checkout master
+</code></pre></li>
+<li><p>To delete a local branch, run:</p>
+
+<pre><code>git branch -D my-fix-branch
+</code></pre></li>
+<li><p>To update your master with the latest upstream version, run:</p>
+
+<pre><code>git pull --ff upstream master
+</code></pre></li></ol></li>
+</ol>
+
+<p>That's it! Thank you for your contribution!</p></div>

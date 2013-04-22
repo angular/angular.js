@@ -191,7 +191,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -300,6 +300,12 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         type: 'guide/types'
       };
 
+  var rootHost = location.origin;
+  if (location.hostname === 'maksimr.github.io') {
+      rootHost += '/angular.js';
+  }
+  rootHost += '/build/docs';
+  $scope.rootHost = rootHost;
 
   /**********************************
    Publish methods
@@ -462,7 +468,9 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       if (page.id == 'index') {
         //skip
       } else if (page.section != 'api') {
-        otherPages.push(page);
+        if (page.id.indexOf('_ru') > -1) {
+            otherPages.push(page);
+        }
       } else if (id == 'angular.Module') {
         module('ng').types.push(page);
       } else if (match = id.match(GLOBALS)) {

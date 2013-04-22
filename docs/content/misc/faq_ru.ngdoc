@@ -1,0 +1,221 @@
+@ngdoc overview
+@name FAQ
+@description
+
+#FAQ
+
+## Questions
+
+### Why is this project called "AngularJS"? Why is the namespace called "ng"?
+
+Because HTML has Angular brackets and "ng" sounds like "Angular".
+
+
+### Is AngularJS a library, framework, plugin or a browser extension?
+
+AngularJS fits the definition of a framework the best, even though it's much more lightweight than
+a typical framework and that's why many confuse it with a library.
+
+AngularJS is 100% JavaScript, 100% client side and compatible with both desktop and mobile browsers.
+So it's definitely not a plugin or some other native browser extension.
+
+
+### Is AngularJS a templating system?
+
+At the highest level, Angular does look like a just another templating system. But there is one
+important reason why the Angular templating system is different, that makes it very good fit for
+application development: bidirectional data binding. The template is compiled in the browser and
+the compilation step produces a live view. This means you, the developers, don't need to write
+code to constantly sync the view with the model and the model with the view as in other
+templating systems.
+
+
+### Do I need to worry about security holes in AngularJS?
+
+Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
+built-in protection from basic security holes including cross-site scripting and HTML injection
+attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
+for server-side communication.
+
+AngularJS was designed to be compatible with other security measures like Content Security Policy
+(CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
+possible attack vectors and we highly recommended their use.
+
+
+### Can I download the source, build, and host the AngularJS environment locally?
+
+Yes. See instructions in {@link downloading}.
+
+
+
+### What browsers does Angular work with?
+
+We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera,
+IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet 
+Explorer Compatibility} for more details in supporting legacy IE browsers.
+
+
+### What's Angular's performance like?
+
+The startup time heavily depends on your network connection, state of the cache, browser used and
+available hardware, but typically we measure bootstrap time in tens or hundreds of milliseconds.
+
+The runtime performance will vary depending on the number and complexity of bindings on the page
+as well as the speed of your backend (for apps that fetch data from the backend). Just for an
+illustration we typically build snappy apps with hundreds or thousands of active bindings.
+
+
+### How big is the angular.js file that I need to include?
+
+The size of the file is < 29KB compressed and minified.
+
+
+### Can I use the open-source Closure Library with Angular?
+
+Yes, you can use widgets from the {@link http://code.google.com/closure/library Closure Library}
+in Angular.
+
+### Does Angular use the jQuery library?
+
+Yes, Angular can use {@link http://jquery.com/ jQuery} if it's present in your app when the
+application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
+to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
+
+
+### What is testability like in Angular?
+
+Very testable and designed this way from ground up. It has an integrated dependency injection
+framework, provides mocks for many heavy dependencies (server-side communication). See
+{@link api/ng service} for details.
+
+
+### How can I learn more about Angular?
+
+Watch the July 17, 2012 talk
+"{@link http://www.youtube.com/watch?v=1CpiB3Wk25U AngularJS Intro + Dependency Injection}".
+
+
+### How is Angular licensed?
+
+The MIT License.
+
+### Can I download and use the Angular logo artwork?
+
+Yes! You can find design files in our github repository, under "{@link https://github.com/angular/angular.js/tree/master/images/logo 
+angular.js/images/logo}"
+The logo design is licensed under a "{@link http://creativecommons.org/licenses/by-sa/3.0/ 
+Creative Commons Attribution-ShareAlike 3.0 Unported License}". If you have some other use in mind, contact us.
+
+### How can I get some AngularJS schwag?
+
+We often bring a few t-shirts and stickers to events where we're presenting. If you want to order your own, the folks who
+make our schwag will be happy to do a custom run for you, based on our existing template. By using the design they have on file,
+they'll waive the setup costs, and you can order any quantity you need.
+
+**Stickers**
+Contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping. 
+
+As long as the design stays exactly the same, {@link http://www.stickergiant.com StickerGiant} will give you a reorder discount.
+
+**T-shirts**
+Contact sales at {@link http://www.customink.com www.customink.com} and tell them you want some shirts with design name "angularjs",
+just like past order #2106371. You'll have to give them your own info for billing and shipping.
+
+As long as the design stays exactly the same, CustomInk won't charge for any set up fees, and they'll give you a reorder discount.
+
+## Common Pitfalls
+
+The Angular support channel (#angularjs on Freenode) sees a number of recurring pitfalls that new users of Angular fall into.
+This document aims to point them out before you discover them the hard way.
+
+### DOM Manipulation
+
+Stop trying to use jQuery to modify the DOM in controllers. Really.
+That includes adding elements, removing elements, retrieving their contents, showing and hiding them.
+Use built-in directives, or write your own where necessary, to do your DOM manipulation.
+See below about duplicating functionality.
+
+If you're struggling to break the habit, consider removing jQuery from your app.
+Really. Angular has the $http service and powerful directives that make it almost always unnecessary.
+Angular's bundled jQLite has a handful of the features most commonly used in writing Angular directives, especially binding to events.
+
+### Trying to duplicate functionality that already exists
+
+There's a good chance that your app isn't the first to require certain functionality.
+There are a few pieces of Angular that are particularly likely to be reimplemented out of old habits.
+
+**ng-repeat**
+
+`ng-repeat` gets this a lot.
+People try to use jQuery (see above) to add more elements to some container as they're fetched from the server.
+No, bad dog.
+This is what `ng-repeat` is for, and it does its job very well.
+Store the data from the server in an array on your `$scope`, and bind it to the DOM with `ng-repeat`.
+
+**ng-show**
+
+`ng-show` gets this frequently too.
+Conditionally showing and hiding things using jQuery is a common pattern in other apps, but Angular has a better way.
+`ng-show` (and `ng-hide`) conditionally show and hide elements based on boolean expressions.
+Describe the conditions for showing and hiding an element in terms of `$scope` variables:
+
+    <div ng-show="!loggedIn">Click <a href="#/login">here</a> to log in</div>
+
+Note also the counterpart `ng-hide` and similar `ng-disabled`.
+Note especially the powerful `ng-switch` that should be used instead of several mutually exclusive `ng-show`s.
+
+**ng-class**
+
+`ng-class` is the last of the big three.
+Conditionally applying classes to elements is another thing commonly done manually using jQuery.
+Angular, of course, has a better way.
+You can give `ng-class` a whitespace-separated set of class names, and then it's identical to ordinary `class`.
+That's not very exciting, so there's a second syntax:
+
+    <div ng-class="{ errorClass: isError, warningClass: isWarning, okClass: !isError && !isWarning }">...</div>
+
+Where you give `ng-class` an object, whose keys are CSS class names and whose values are conditional expressions using `$scope` variables.
+The element will then have all the classes whose conditions are truthy, and none of those whose conditions are falsy.
+
+Note also the handy `ng-class-even` and `ng-class-odd`, and the related though somewhat different `ng-style`.
+
+
+### `$watch` and `$apply`
+
+Angular's two-way data binding is the root of all awesome in Angular.
+However, it's not magic, and there are some situations where you need to give it a nudge in the right direction.
+
+When you bind a value to an element in Angular using `ng-model`, `ng-repeat`, etc., Angular creates a `$watch` on that value.
+Then whenever a value on a scope changes, all `$watch`es observing that element are executed, and everything updates.
+
+Sometimes, usually when you're writing a custom directive, you will have to define your own `$watch` on a scope value to make the directive react to changes.
+
+On the flip side, sometimes you change a scope value in some code but the app doesn't react to it.
+Angular checks for scope variable changes after pieces of your code have finished running; for example, when `ng-click` calls a function on your scope, Angular will check for changes and react.
+However, some code is outside of Angular and you'll have to call `scope.$apply()` yourself to trigger the update.
+This is most commonly seen in event handlers in custom directives.
+
+### Combining `ng-repeat` with other directives
+
+`ng-repeat` is extremely useful, one of the most powerful directives in Angular.
+However the transformation it applies to the DOM is substantial.
+Therefore applying other directives (such as `ng-show`, `ng-controller` and others) to the same element as `ng-repeat` generally leads to problems.
+
+If you want to apply a directive to the whole repeat, wrap the repeat in a parent element and put it there.
+If you want to apply a directive to each inner piece of the repeat, put it on a child of the element with `ng-repeat`.
+
+### `$rootScope` exists, but it can be used for evil
+
+Scopes in Angular form a hierarchy, prototypically inheriting from a root scope at the top of the tree.
+Usually this can be ignored, since most views have a controller, and therefore a scope, of their own.
+
+Occasionally there are pieces of data that you want to make global to the whole app.
+For these, you can inject `$rootScope` and set values on it like any other scope.
+Since the scopes inherit from the root scope, these values will be available to the expressions attached to directives like `ng-show` just like values on your local `$scope`.
+
+Of course, global state sucks and you should use `$rootScope` sparingly, like you would (hopefully) use with global variables in any language.
+In particular, don't use it for code, only data.
+If you're tempted to put a function on `$rootScope`, it's almost always better to put it in a service that can be injected where it's needed, and more easily tested.
+
+Conversely, don't create a service whose only purpose in life is to store and return bits of data.

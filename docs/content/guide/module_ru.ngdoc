@@ -1,0 +1,257 @@
+@ngdoc overview
+@name Developer Guide: Modules
+@description
+
+# What is a Module?
+
+Most applications have a main method which instantiates, wires, and bootstraps the application.
+Angular apps don't have a main method. Instead modules declaratively specify how an application
+should be bootstrapped. There are several advantages to this approach:
+
+  * The process is more declarative which is easier to understand
+  * In unit-testing there is no need to load all modules, which may aid in writing unit-tests.
+  * Additional modules can be loaded in scenario tests, which can override some of the
+    configuration and help end-to-end test the application
+  * Third party code can be packaged as reusable modules.
+  * The modules can be loaded in any/parallel order (due to delayed nature of module execution).
+
+
+# The Basics
+
+Ok, I'm in a hurry. How do I get a Hello World module working?
+
+Important things to notice:
+
+  * {@link api/angular.Module Module} API
+  * Notice the reference to the `myApp` module in the `<html ng-app="myApp">`, it is what
+    bootstraps the app using your module.
+
+<doc:example module='myApp'>
+  <doc:source>
+    <script>
+      // declare a module
+      var myAppModule = angular.module('myApp', []);
+
+      // configure the module.
+      // in this example we will create a greeting filter
+      myAppModule.filter('greet', function() {
+       return function(name) {
+          return 'Hello, ' + name + '!';
+        };
+      });
+
+    </script>
+    <div>
+      {{ 'World' | greet }}
+    </div>
+  </doc:source>
+</doc:example>
+
+
+
+# Recommended Setup
+
+While the example above is simple, it will not scale to large applications. Instead we recommend
+that you break your application to multiple modules like this:
+
+  * A service module, for service declaration
+  * A directive module, for directive declaration
+  * A filter module, for filter declaration
+  * And an application level module which depends on the above modules, and which has
+    initialization code.
+
+The reason for this breakup is that in your tests, it is often necessary to ignore the
+initialization code, which tends to be difficult to test. By putting it into a separate module it
+can be easily ignored in tests. The tests can also be more focused by only loading the modules
+that are relevant to tests.
+
+The above is only a suggestion, so feel free to tailor it to your needs.
+
+<doc:example module='xmpl'>
+  <doc:source>
+    <script>
+      angular.module('xmpl.service', []).
+        value('greeter', {
+          salutation: 'Hello',
+          localize: function(localization) {
+            this.salutation = localization.salutation;
+          },
+          greet: function(name) {
+            return this.salutation + ' ' + name + '!';
+          }
+        }).
+        value('user', {
+          load: function(name) {
+            this.name = name;
+          }
+        });
+
+      angular.module('xmpl.directive', []);
+
+      angular.module('xmpl.filter', []);
+
+      angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter']).
+        run(function(greeter, user) {
+          // This is effectively part of the main method initialization code
+          greeter.localize({
+            salutation: 'Bonjour'
+          });
+          user.load('World');
+        })
+
+
+      // A Controller for your app
+      var XmplController = function($scope, greeter, user) {
+        $scope.greeting = greeter.greet(user.name);
+      }
+    </script>
+    <div ng-controller="XmplController">
+      {{ greeting }}!
+    </div>
+  </doc:source>
+ </doc:example>
+
+
+
+# Module Loading & Dependencies
+
+A module is a collection of configuration and run blocks which get applied to the application
+during the bootstrap process. In its simplest form the module consist of collection of two kinds
+of blocks:
+
+  1. **Configuration blocks** - get executed during the provider registrations and configuration
+    phase. Only providers and constants can be injected into configuration blocks. This is to
+    prevent accidental instantiation of services before they have been fully configured.
+  2. **Run blocks** - get executed after the injector is created and are used to kickstart the
+    application. Only instances and constants can be injected into run blocks. This is to prevent
+    further system configuration during application run time.
+
+<pre>
+angular.module('myModule', []).
+  config(function(injectables) { // provider-injector
+    // This is an example of config block.
+    // You can have as many of these as you want.
+    // You can only inject Providers (not instances)
+    // into the config blocks.
+  }).
+  run(function(injectables) { // instance-injector
+    // This is an example of a run block.
+    // You can have as many of these as you want.
+    // You can only inject instances (not Providers)
+    // into the run blocks
+  });
+</pre>
+
+## Configuration Blocks
+
+There are some convenience methods on the module which are equivalent to the config block. For
+example:
+
+<pre>
+angular.module('myModule', []).
+  value('a', 123).
+  factory('a', function() { return 123; }).
+  directive('directiveName', ...).
+  filter('filterName', ...);
+
+// is same as
+
+angular.module('myModule', []).
+  config(function($provide, $compileProvider, $filterProvider) {
+    $provide.value('a', 123);
+    $provide.factory('a', function() { return 123; });
+    $compileProvider.directive('directiveName', ...);
+    $filterProvider.register('filterName', ...);
+  });
+</pre>
+
+The configuration blocks get applied in the order in which they are registered. The only exception
+to it are constant definitions, which are placed at the beginning of all configuration blocks.
+
+## Run Blocks
+
+Run blocks are the closest thing in Angular to the main method. A run block is the code which
+needs to run to kickstart the application. It is executed after all of the service have been
+configured and the injector has been created. Run blocks typically contain code which is hard
+to unit-test, and for this reason should be declared in isolated modules, so that they can be
+ignored in the unit-tests.
+
+## Dependencies
+
+Modules can list other modules as their dependencies. Depending on a module implies that required
+module needs to be loaded before the requiring module is loaded. In other words the configuration
+blocks of the required modules execute before the configuration blocks of the requiring module.
+The same is true for the run blocks. Each module can only be loaded once, even if multiple other
+modules require it.
+
+## Asynchronous Loading
+
+Modules are a way of managing $injector configuration, and have nothing to do with loading of
+scripts into a VM. There are existing projects which deal with script loading, which may be used
+with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
+and thus script loaders can take advantage of this property and parallelize the loading process.
+
+
+# Unit Testing
+
+In its simplest form a unit test is a way of instantiating a subset of the application in test and
+then applying a stimulus to it. It is important to realize that each module can only be loaded
+once per injector. Typically an app has only one injector. But in tests, each test has its own
+injector, which means that the modules are loaded multiple times per VM. Properly structured
+modules can help with unit testing, as in this example:
+
+In all of these examples we are going to assume this module definition:
+<pre>
+  angular.module('greetMod', []).
+
+    factory('alert', function($window) {
+      return function(text) {
+        $window.alert(text);
+      }
+    }).
+
+    value('salutation', 'Hello').
+
+    factory('greet', function(alert, salutation) {
+      return function(name) {
+        alert(salutation + ' ' + name + '!');
+      }
+    });
+</pre>
+
+Let's write some tests:
+<pre>
+describe('myApp', function() {
+  // load the relevant application modules then load a special
+  // test module which overrides the $window with a mock version,
+  // so that calling window.alert() will not block the test
+  // runner with a real alert box. This is an example of overriding
+  // configuration information in tests.
+  beforeEach(module('greetMod', function($provide) {
+    $provide.value('$window', {
+      alert: jasmine.createSpy('alert')
+    });
+  }));
+
+  // The inject() will create the injector and inject the greet and
+  // $window into the tests. The test need not concern itself with
+  // wiring of the application, only with testing it.
+  it('should alert on $window', inject(function(greet, $window) {
+    greet('World');
+    expect($window.alert).toHaveBeenCalledWith('Hello World!');
+  }));
+
+  // this is another way of overriding configuration in the
+  // tests using an inline module and inject methods.
+  it('should alert using the alert service', function() {
+    var alertSpy = jasmine.createSpy('alert');
+    module(function($provide) {
+      $provide.value('alert', alertSpy);
+    });
+    inject(function(greet) {
+      greet('World');
+      expect(alertSpy).toHaveBeenCalledWith('Hello World!');
+    });
+  });
+});
+</pre>

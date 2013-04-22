@@ -1,0 +1,124 @@
+@ngdoc overview
+@name Developer Guide: i18n and l10n
+@description
+
+# I18n and L10n in AngularJS
+
+**What is i18n and l10n?**
+
+Internationalization, abbreviated i18n, is the process of developing products in such a way that
+they can be localized for languages and cultures easily. Localization, abbreviated l10n, is the
+process of adapting applications and text to enable their usability in a particular cultural or
+linguistic market. For application developers, internationalizing an application means abstracting
+all of the strings and other locale-specific bits (such as date or currency formats) out of the
+application. Localizing an application means providing translations and localized formats for the
+abstracted bits.
+
+**What level of support for i18n/l10n is currently in Angular?**
+
+Currently, Angular supports i18n/l10n for {@link
+http://docs.angularjs.org/#!/api/ng.filter:date datetime}, {@link
+http://docs.angularjs.org/#!/api/ng.filter:number number} and {@link
+http://docs.angularjs.org/#!/api/ng.filter:currency currency} filters.
+
+Additionally, Angular supports localizable pluralization support provided by the {@link
+api/ng.directive:ngPluralize ngPluralize directive}.
+
+All localizable Angular components depend on locale-specific rule sets managed by the {@link
+api/ng.$locale $locale service}.
+
+For readers who want to jump straight into examples, we have a few web pages that showcase how to
+use Angular filters with various locale rule sets. You can find these examples either on {@link
+https://github.com/angular/angular.js/tree/master/i18n/e2e Github} or in the i18n/e2e folder of
+Angular development package.
+
+**What is a locale id?**
+
+A locale is a specific geographical, political, or cultural region. The most commonly used locale
+ID consists of two parts: language code and country code. For example, en-US, en-AU, zh-CN are all
+valid locale IDs that have both language codes and country codes. Because specifying a country code
+in locale ID is optional,  locale IDs such as en, zh,  and sk are also valid. See the {@link
+http://userguide.icu-project.org/locale ICU } website for more information about using locale IDs.
+
+**Supported locales in Angular**
+Angular separates number and datetime format rule sets into different files, each file for a
+particular locale. You can find a list of currently supported locales {@link
+https://github.com/angular/angular.js/tree/master/i18n/locale here}
+# Providing locale rules to Angular
+
+There are two approaches to providing locale rules to Angular:
+
+**1. Pre-bundled rule sets**
+
+You can pre-bundle the desired locale file with Angular by concatenating the content of the
+locale-specific file to the end of `angular.js` or `angular.min.js` file.
+
+For example on *nix, to create an angular.js file that contains localization rules for german
+locale, you can do the following:
+
+`cat angular.js i18n/angular-locale_de-ge.js > angular_de-ge.js`
+
+When the application containing `angular_de-ge.js` script instead of the generic angular.js script
+starts, Angular is automatically pre-configured with localization rules for the german locale.
+
+**2. Including locale js script in index.html page**
+
+You can also include the locale specific js file in the index.html page. For example, if one client
+requires German locale, you would serve index_de-ge.html which will look something like this:
+
+<pre>
+<html ng-app>
+ <head>
+….
+   <script src="angular.js"></script>
+   <script src="i18n/angular-locale_de-ge.js"></script>
+….
+ </head>
+</html>
+</pre>
+
+**Comparison of the two approaches**
+Both approaches described above requires you to prepare different index.html pages or js files for
+each locale that your app may be localized into. You also need to configure your server to serve
+the correct file that correspond to the desired locale.
+
+However, the second approach (Including locale js script in index.html page) is likely to be slower
+because an extra script needs to be loaded.
+
+
+# "Gotchas"
+
+**Currency symbol "gotcha"**
+
+Angular's {@link http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} allows
+you to use the default currency symbol from the {@link api/ng.$locale locale service},
+or you can provide the filter with a custom currency symbol. If your app will be used only in one
+locale, it is fine to rely on the default currency symbol. However, if you anticipate that viewers
+in other locales might use your app, you should provide your own currency symbol to make sure the
+actual value is understood.
+
+For example, if you want to display account balance of 1000 dollars with the following binding
+containing currency filter: `{{ 1000 | currency }}`, and your app is currently in en-US locale.
+'$1000.00' will be shown. However, if someone in a different local (say, Japan) views your app, her
+browser will specify the locale as ja, and the balance of '¥1000.00' will be shown instead. This
+will really upset your client.
+
+In this case, you need to override the default currency symbol by providing the {@link
+http://docs.angularjs.org/#!/api/ng.filter:currency currency filter} with a currency symbol as
+a parameter when you configure the filter, for example, {{ 1000 | currency:"USD$"}}. This way,
+Angular will always show a balance of 'USD$1000' and disregard any locale changes.
+
+**Translation length "gotcha"**
+
+Keep in mind that translated strings/datetime formats can vary greatly in length. For example,
+`June 3, 1977` will be translated to Spanish as `3 de junio de 1977`. There are bound to be other
+more extreme cases. Hence, when internationalizing your apps, you need to apply CSS rules
+accordingly and do thorough testing to make sure UI components do not overlap.
+
+
+**Timezones**
+
+Keep in mind that Angular datetime filter uses the time zone settings of the browser. So the same
+application will show different time information depending on the time zone settings of the
+computer that the application is running on. Neither Javascript nor Angular currently supports
+displaying the date with a timezone specified by the developer.

@@ -1,0 +1,293 @@
+@ngdoc overview
+@name Developer Guide: About MVC in Angular: Understanding the Controller Component
+@description
+
+In Angular, a controller is a JavaScript function(type/class) that is used to augment instances of
+angular {@link scope Scope}, excluding the root scope. When you or Angular create a new
+child scope object via the {@link api/ng.$rootScope.Scope#$new scope.$new} API        , there is an
+option to pass in a controller as a method argument. This will tell Angular to associate the
+controller with the new scope and to augment its behavior.
+
+Use controllers to:
+
+- Set up the initial state of a scope object.
+- Add behavior to the scope object.
+
+# Setting up the initial state of a scope object
+
+Typically, when you create an application you need to set up an initial state for an Angular scope.
+
+Angular applies (in the sense of JavaScript's `Function#apply`) the controller constructor function
+to a new Angular scope object, which sets up an initial scope state. This means that Angular never
+creates instances of the controller type (by invoking the `new` operator on the controller
+constructor). Constructors are always applied to an existing scope object.
+
+You set up the initial state of a scope by creating model properties. For example:
+
+function GreetingCtrl($scope) {
+ $scope.greeting = 'Hola!';
+}
+
+The `GreetingCtrl` controller creates a `greeting` model which can be referred to in a template.
+
+**NOTE**: Many of the examples in the documentation show the creation of functions
+in the global scope. This is only for demonstration purposes - in a real
+application you should use the `.controller` method of your Angular module for
+your application as follows:
+
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('GreetingCtrl', ['$scope', function($scope) {
+  $scope.greeting = 'Hola!';
+}]);
+
+Note also that we use the array notation to explicitly specify the dependency
+of the controller on the `$scope` service provided by Angular.
+
+# Adding Behavior to a Scope Object
+
+Behavior on an Angular scope object is in the form of scope method properties available to the
+template/view. This behavior interacts with and modifies the application model.
+
+As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
+objects (or primitives) assigned to the scope become model properties. Any functions assigned to
+the scope are available in the template/view, and can be invoked via angular expressions
+and `ng` event handler directives (e.g. {@link api/ng.directive:ngClick ngClick}).
+
+# Using Controllers Correctly
+
+In general, a controller shouldn't try to do too much. It should contain only the business logic
+needed for a single view.
+
+The most common way to keep controllers slim is by encapsulating work that doesn't belong to
+controllers into services and then using these services in controllers via dependency injection.
+This is discussed in the {@link di Dependency Injection} {@link dev_guide.services
+Services} sections of this guide.
+
+Do not use controllers for:
+
+- Any kind of DOM manipulation — Controllers should contain only business logic. DOM
+manipulation—the presentation logic of an application—is well known for being hard to test.
+Putting any presentation logic into controllers significantly affects testability of the business
+logic. Angular offers {@link dev_guide.templates.databinding databinding} for automatic DOM manipulation. If
+you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
+{@link guide/directive directives}.
+- Input formatting — Use {@link forms angular form controls} instead.
+- Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
+- To run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
+services} instead.
+- To instantiate or manage the life-cycle of other components (for example, to create service
+instances).
+
+
+# Associating Controllers with Angular Scope Objects
+
+You can associate controllers with scope objects explicitly via the {@link api/ng.$rootScope.Scope#$new
+scope.$new} api or implicitly via the {@link api/ng.directive:ngController ngController
+directive} or {@link api/ng.$route $route service}.
+
+
+## Controller Constructor and Methods Example
+
+To illustrate how the controller component works in angular, let's create a little app with the
+following components:
+
+- A {@link dev_guide.templates template} with two buttons and a simple message
+- A model consisting of a string named `spice`
+- A controller with two functions that set the value of `spice`
+
+The message in our template contains a binding to the `spice` model, which by default is set to the
+string "very". Depending on which button is clicked, the `spice` model is set to `chili` or
+`jalapeño`, and the message is automatically updated by data-binding.
+
+
+## A Spicy Controller Example
+
+<pre>
+<body ng-controller="SpicyCtrl">
+ <button ng-click="chiliSpicy()">Chili</button>
+ <button ng-click="jalapenoSpicy()">Jalapeño</button>
+ <p>The food is {{spice}} spicy!</p>
+</body>
+
+function SpicyCtrl($scope) {
+ $scope.spice = 'very';
+ $scope.chiliSpicy = function() {
+   $scope.spice = 'chili';
+ }
+ $scope.jalapenoSpicy = function() {
+  $scope.spice = 'jalapeño';
+ }
+}
+
+
+</pre>
+
+Things to notice in the example above:
+
+- The `ngController` directive is used to (implicitly) create a scope for our template, and the
+scope is augmented (managed) by the `SpicyCtrl` controller.
+- `SpicyCtrl` is just a plain JavaScript function. As an (optional) naming convention the name
+starts with capital letter and ends with "Ctrl" or "Controller".
+- Assigning a property to `$scope` creates or updates the model.
+- Controller methods can be created through direct assignment to scope (the `chiliSpicy` method)
+- Both controller methods are available in the template (for the `body` element and and its
+children).
+- NB:  Previous versions of Angular (pre 1.0 RC) allowed you to use `this` interchangeably with
+the $scope method, but this is no longer the case.  Inside of methods defined on the scope
+`this` and $scope are interchangeable (angular sets `this` to $scope), but not otherwise
+inside your controller constructor.
+- NB:  Previous versions of Angular (pre 1.0 RC) added prototype methods into the scope
+automatically, but this is no longer the case; all methods need to be added manually to
+the scope.
+
+
+Controller methods can also take arguments, as demonstrated in the following variation of the
+previous example.
+
+## Controller Method Arguments Example
+
+<pre>
+<body ng-controller="SpicyCtrl">
+ <input ng-model="customSpice" value="wasabi">
+ <button ng-click="spicy('chili')">Chili</button>
+ <button ng-click="spicy(customSpice)">Custom spice</button>
+ <p>The food is {{spice}} spicy!</p>
+</body>
+
+function SpicyCtrl($scope) {
+ $scope.spice = 'very';
+ $scope.spicy = function(spice) {
+   $scope.spice = spice;
+ }
+}
+</pre>
+
+Notice that the `SpicyCtrl` controller now defines just one method called `spicy`, which takes one
+argument called `spice`. The template then refers to this controller method and passes in a string
+constant `'chili'` in the binding for the first button and a model property `spice` (bound to an
+input box) in the second button.
+
+
+## Controller Inheritance Example
+
+Controller inheritance in Angular is based on {@link api/ng.$rootScope.Scope Scope} inheritance. Let's
+have a look at an example:
+
+<pre>
+<body ng-controller="MainCtrl">
+ <p>Good {{timeOfDay}}, {{name}}!</p>
+ <div ng-controller="ChildCtrl">
+  <p>Good {{timeOfDay}}, {{name}}!</p>
+  <p ng-controller="BabyCtrl">Good {{timeOfDay}}, {{name}}!</p>
+ </div>
+</body>
+
+function MainCtrl($scope) {
+ $scope.timeOfDay = 'morning';
+ $scope.name = 'Nikki';
+}
+
+function ChildCtrl($scope) {
+ $scope.name = 'Mattie';
+}
+
+function BabyCtrl($scope) {
+ $scope.timeOfDay = 'evening';
+ $scope.name = 'Gingerbreak Baby';
+}
+</pre>
+
+Notice how we nested three `ngController` directives in our template. This template construct will
+result in 4 scopes being created for our view:
+
+- The root scope
+- The `MainCtrl` scope, which contains `timeOfDay` and `name` models
+- The `ChildCtrl` scope, which shadows the `name` model from the previous scope and inherits the
+`timeOfDay` model
+- The `BabyCtrl` scope, which shadows both the `timeOfDay` model defined in `MainCtrl` and `name`
+model defined in the ChildCtrl
+
+Inheritance works between controllers in the same way as it does with models. So in our previous
+examples, all of the models could be replaced with controller methods that return string values.
+
+Note: Standard prototypical inheritance between two controllers doesn't work as one might expect,
+because as we mentioned earlier, controllers are not instantiated directly by Angular, but rather
+are applied to the scope object.
+
+
+## Testing Controllers
+
+Although there are many ways to test a controller, one of the best conventions, shown below,
+involves injecting the `$rootScope` and `$controller`
+
+Controller Function:
+<pre>
+function myController($scope) {
+   $scope.spices = [{"name":"pasilla", "spiciness":"mild"},
+                  {"name":"jalapeno", "spiceiness":"hot hot hot!"},
+                  {"name":"habanero", "spiceness":"LAVA HOT!!"}];
+
+   $scope.spice = "habanero";
+}
+</pre>
+
+Controller Test:
+<pre>
+describe('myController function', function() {
+
+  describe('myController', function() {
+    var scope;
+
+    beforeEach(inject(function($rootScope, $controller) {
+      scope = $rootScope.$new();
+      var ctrl = $controller(myController, {$scope: scope});
+    }));
+
+    it('should create "spices" model with 3 spices', function() {
+      expect(scope.spices.length).toBe(3);
+    });
+
+    it('should set the default value of spice', function() {
+      expect(scope.spice).toBe('habanero');
+    });
+  });
+});
+</pre>
+
+
+If you need to test a nested controller you need to create the same scope hierarchy
+in your test that exists in the DOM.
+
+<pre>
+describe('state', function() {
+    var mainScope, childScope, babyScope;
+
+    beforeEach(inject(function($rootScope, $controller) {
+        mainScope = $rootScope.$new();
+        var mainCtrl = $controller(MainCtrl, {$scope: mainScope});
+        childScope = mainScope.$new();
+        var childCtrl = $controller(ChildCtrl, {$scope: childScope});
+        babyScope = childCtrl.$new();
+        var babyCtrl = $controller(BabyCtrl, {$scope: babyScope});
+    }));
+
+    it('should have over and selected', function() {
+        expect(mainScope.timeOfDay).toBe('morning');
+        expect(mainScope.name).toBe('Nikki');
+        expect(childScope.timeOfDay).toBe('morning');
+        expect(childScope.name).toBe('Mattie');
+        expect(babyScope.timeOfDay).toBe('evening');
+        expect(babyScope.name).toBe('Gingerbreak Baby');
+    });
+});
+</pre>
+
+
+## Related Topics
+
+* {@link dev_guide.mvc About MVC in Angular}
+* {@link dev_guide.mvc.understanding_model Understanding the Model Component}
+* {@link dev_guide.mvc.understanding_view Understanding the View Component}
+
+

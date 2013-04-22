@@ -1,0 +1,56 @@
+<h1><code ng:non-bindable="">ngStyle</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngStyle.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngStyle</code> directive allows you to set CSS style on an HTML element conditionally.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-style="{expression}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-style: {expression};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngStyle – {expression} – </code>
+<p><a href="guide/expression">Expression</a> which evals to an
+object whose keys are CSS style names and values are corresponding values for those CSS
+keys.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-278" source-edit-css="style.css-279" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-280"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-278" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-278">
+   <input type="button" value="set" ng-click="myStyle={color:'red'}">
+   <input type="button" value="clear" ng-click="myStyle={}">
+   <br/>
+   <span ng-style="myStyle">Sample Text</span>
+   <pre>myStyle={{myStyle}}</pre>
+</script>
+</div>
+<div class="tab-pane" title="style.css">
+<pre class="prettyprint linenums" ng-set-text="style.css-279"></pre>
+<style type="text/css" id="style.css-279">
+  span {
+    color: black;
+  }
+</style>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-280"></pre>
+<script type="text/ng-template" id="scenario.js-280">
+  it('should check ng-style', function() {
+    expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
+    element('.doc-example-live :button[value=set]').click();
+    expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');
+    element('.doc-example-live :button[value=clear]').click();
+    expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-278" ng-eval-javascript=""></div></div>
+</div>

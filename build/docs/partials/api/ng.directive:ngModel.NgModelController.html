@@ -1,0 +1,167 @@
+<h1><code ng:non-bindable="">NgModelController</code>
+<span class="hint">(type in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/input.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p><code>NgModelController</code> provides API for the <code>ng-model</code> directive. The controller contains
+services for data-binding, validation, CSS update, value formatting and parsing. It
+specifically does not contain any logic which deals with DOM rendering or listening to
+DOM events. The <code>NgModelController</code> is meant to be extended by other directives where, the
+directive provides DOM manipulation and the <code>NgModelController</code> provides the data-binding.</p>
+
+<p>This example shows how to use <code>NgModelController</code> with a custom control to achieve
+data-binding. Notice how different directives (<code>contenteditable</code>, <code>ng-model</code>, and <code>required</code>)
+collaborate together to achieve the desired result.</p>
+
+<h4>Source</h4>
+<div source-edit="customControl" source-edit-deps="angular.js script.js" source-edit-html="index.html-248" source-edit-css="style.css-246" source-edit-js="script.js-247" source-edit-unit="" source-edit-scenario="scenario.js-249"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-248" ng-html-wrap="customControl angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-248">
+      <form name="myForm">
+       <div contenteditable
+            name="myWidget" ng-model="userContent"
+            required>Change me!</div>
+        <span ng-show="myForm.myWidget.$error.required">Required!</span>
+       <hr>
+       <textarea ng-model="userContent"></textarea>
+      </form>
+    </script>
+</div>
+<div class="tab-pane" title="style.css">
+<pre class="prettyprint linenums" ng-set-text="style.css-246"></pre>
+<style type="text/css" id="style.css-246">
+      [contenteditable] {
+        border: 1px solid black;
+        background-color: white;
+        min-height: 20px;
+      }
+
+      .ng-invalid {
+        border: 1px solid red;
+      }
+
+    </style>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-247"></pre>
+<script type="text/ng-template" id="script.js-247">
+      angular.module('customControl', []).
+        directive('contenteditable', function() {
+          return {
+            restrict: 'A', // only activate on element attribute
+            require: '?ngModel', // get a hold of NgModelController
+            link: function(scope, element, attrs, ngModel) {
+              if(!ngModel) return; // do nothing if no ng-model
+
+              // Specify how UI should be updated
+              ngModel.$render = function() {
+                element.html(ngModel.$viewValue || '');
+              };
+
+              // Listen for change events to enable binding
+              element.bind('blur keyup change', function() {
+                scope.$apply(read);
+              });
+              read(); // initialize
+
+              // Write data to the model
+              function read() {
+                ngModel.$setViewValue(element.html());
+              }
+            }
+          };
+        });
+    </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-249"></pre>
+<script type="text/ng-template" id="scenario.js-249">
+      it('should data-bind and become invalid', function() {
+        var contentEditable = element('[contenteditable]');
+
+        expect(contentEditable.text()).toEqual('Change me!');
+        input('userContent').enter('');
+        expect(contentEditable.text()).toEqual('');
+        expect(contentEditable.prop('className')).toMatch(/ng-invalid-required/);
+      });
+    </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="customControl" ng-set-html="index.html-248" ng-eval-javascript="script.js-247"></div></div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="$render">$render()</h3>
+<div class="$render"><p>Called when the view needs to be updated. It is expected that the user of the ng-model
+directive will implement this method.</p></div>
+</li>
+<li><h3 id="$setPristine">$setPristine()</h3>
+<div class="$setpristine"><p>Sets the control to its pristine state.</p>
+
+<p>This method can be called to remove the 'ng-dirty' class and set the control to its pristine
+state (ng-pristine class).</p></div>
+</li>
+<li><h3 id="$setValidity">$setValidity(validationErrorKey, isValid)</h3>
+<div class="$setvalidity"><p>Change the validity state, and notifies the form when the control changes validity. (i.e. it
+does not notify form if given validator is already marked as invalid).</p>
+
+<p>This method should be called by validators - i.e. the parser or formatter functions.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">validationErrorKey – {string} – </code>
+<p>Name of the validator. the <code>validationErrorKey</code> will assign
+to <code>$error[validationErrorKey]=isValid</code> so that it is available for data-binding.
+The <code>validationErrorKey</code> should be in camelCase and will get converted into dash-case
+for class name. Example: <code>myError</code> will result in <code>ng-valid-my-error</code> and <code>ng-invalid-my-error</code>
+class and can be bound to as  <code>{{someForm.someControl.$error.myError}}</code> .</p></li>
+<li><code ng:non-bindable="">isValid – {boolean} – </code>
+<p>Whether the current state is valid (true) or invalid (false).</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="$setViewValue">$setViewValue(value)</h3>
+<div class="$setviewvalue"><p>Read a value from view.</p>
+
+<p>This method should be called from within a DOM event handler.
+For example <a href="api/ng.directive:input"><code>input</code></a> or
+<a href="api/ng.directive:select"><code>select</code></a> directives call it.</p>
+
+<p>It internally calls all <code>formatters</code> and if resulted value is valid, updates the model and
+calls all registered change listeners.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">value – {string} – </code>
+<p>Value from the view.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="Properties">Properties</h2>
+<ul class="properties"><li><h3 id="$viewValue">$viewValue</h3>
+<div class="$viewvalue"><p>Actual string value in the view.</p></div>
+</li>
+<li><h3 id="$modelValue">$modelValue</h3>
+<div class="$modelvalue"><p>The value in the model, that the control is bound to.</p></div>
+</li>
+<li><h3 id="$parsers">$parsers</h3>
+<div class="$parsers"><p>Whenever the control reads value from the DOM, it executes
+all of these functions to sanitize / convert the value as well as validate.</p></div>
+</li>
+<li><h3 id="$formatters">$formatters</h3>
+<div class="$formatters"><p>Whenever the model value changes, it executes all of
+these functions to convert the value as well as validate.</p></div>
+</li>
+<li><h3 id="$error">$error</h3>
+<div class="$error"><p>An object hash with all errors as keys.</p></div>
+</li>
+<li><h3 id="$pristine">$pristine</h3>
+<div class="$pristine"><p>True if user has not interacted with the control yet.</p></div>
+</li>
+<li><h3 id="$dirty">$dirty</h3>
+<div class="$dirty"><p>True if user has already interacted with the control.</p></div>
+</li>
+<li><h3 id="$valid">$valid</h3>
+<div class="$valid"><p>True if there is no error.</p></div>
+</li>
+<li><h3 id="$invalid">$invalid</h3>
+<div class="$invalid"><p>True if at least one error on the control.</p></div>
+</li>
+</ul>
+</div>
+</div>

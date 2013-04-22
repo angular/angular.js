@@ -1,0 +1,55 @@
+@ngdoc overview
+@name Tutorial: 1 - Static Template
+@description
+
+<ul doc-tutorial-nav="1"></ul>
+
+
+In order to illustrate how Angular enhances standard HTML, you will create a purely *static* HTML
+page and then examine how we can turn this HTML code into a template that Angular will use to
+dynamically display the same result with any set of data.
+
+In this step you will add some basic information about two cell phones to an HTML page.
+
+
+<div doc-tutorial-reset="1"></div>
+
+
+The page now contains a list with information about two phones.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
+
+__`app/index.html`:__
+<pre>
+  <ul>
+    <li>
+      <span>Nexus S</span>
+      <p>
+        Fast just got faster with Nexus S.
+      </p>
+    </li>
+    <li>
+      <span>Motorola XOOM™ with Wi-Fi</span>
+      <p>
+        The Next, Next Generation tablet.
+      </p>
+    </li>
+  </ul>
+</pre>
+
+
+# Experiments
+
+* Try adding more static HTML to `index.html`. For example:
+
+          <p>Total number of phones: 2</p>
+
+
+# Summary
+
+This addition to your app uses static HTML to display the list. Now, let's go to {@link step_02
+step 2} to learn how to use AngularJS to dynamically generate the same list.
+
+
+<ul doc-tutorial-nav="1"></ul>

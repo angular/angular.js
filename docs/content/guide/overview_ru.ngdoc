@@ -1,0 +1,207 @@
+@ngdoc overview
+@name Developer Guide: Overview
+@description
+
+
+# What Is Angular?
+
+AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template
+language and lets you extend HTML's syntax to express your application's components clearly and
+succinctly. Out of the box, it eliminates much of the code you currently write through data
+binding and dependency injection. And it all happens in JavaScript within the browser making it an
+ideal partner with any server technology.
+
+Angular is what HTML would have been had it been designed for applications. HTML is a great
+declarative language for static documents. It does not contain much in the way of creating
+applications, and as a result building web applications is an exercise in *what do I have to do, so
+that I trick the browser in to doing what I want.*
+
+The impedance mismatch between dynamic applications and static documents is often solved as:
+
+  * **library** - a collection of functions which are useful when writing web apps. Your code is
+    in charge and it calls into the library when it sees fit. E.g., `jQuery`.
+  * **frameworks** - a particular implementation of a web application, where your code fills in
+    the details. The framework is in charge and it calls into your code when it needs something
+    app specific. E.g., `knockout`, `sproutcore`, etc.
+
+
+Angular takes another approach. It attempts to minimize the impedance mismatch between document
+centric HTML and what an application needs by creating new HTML constructs. Angular teaches the
+browser new syntax through a construct we call directives. Examples include:
+
+  * Data binding as in `{{}}`.
+  * DOM control structures for repeating/hiding DOM fragments.
+  * Support for forms and form validation.
+  * Attaching code-behind to DOM elements.
+  * Grouping of HTML into reusable components.
+
+
+
+## End-to-end solution
+
+Angular tries to be an end-to-end solution, when building a web application. This means it is
+not a single piece in an overall puzzle of building a web application, but an end-to-end solution.
+This makes Angular opinionated about how a CRUD application should be built. But while it is
+opinionated, it also tries to make sure that its opinion is just a starting point, which you can
+easily change. Angular comes with the following out-of-the-box:
+
+  * Everything you need to build a CRUD app in a cohesive set: data-binding, basic templating
+    directives, form validation, routing, deep-linking, reusable components, dependency injection.
+  * Testability story: unit-testing, end-to-end testing, mocks, test harnesses.
+  * Seed application with directory layout and test scripts as a starting point.
+
+
+## Angular Sweet Spot
+
+Angular simplifies application development by presenting a higher level of abstraction to the
+developer. Like any abstraction, it comes at a cost of flexibility. In other words not every app
+is a good fit for Angular. Angular was built for the CRUD application in mind. Luckily CRUD
+applications represent at least 90% of the web applications. But to understand what Angular is
+good at one also has to understand when an app is not a good fit for Angular.
+
+Games, and GUI editors are examples of very intensive and tricky DOM manipulation. These kinds of
+apps are different from CRUD apps, and as a result are not a good fit for Angular. In these cases
+using something closer to bare metal such as `jQuery` may be a better fit.
+
+
+# An Introductory Angular Example
+
+Below is a typical CRUD application which contains a form. The form values are validated, and
+are used to compute the total, which is formatted to a particular locale. These are some common
+concepts which the application developer may face:
+
+  * attaching data-model to the UI.
+  * writing, reading and validating user input.
+  * computing new values based on the model.
+  * formatting output in a user specific locale.
+
+<example>
+  <file name="script.js">
+    function InvoiceCntl($scope) {
+      $scope.qty = 1;
+      $scope.cost = 19.95;
+    }
+  </file>
+  <file name="index.html">
+    <div ng-controller="InvoiceCntl">
+      <b>Invoice:</b>
+      <br>
+      <br>
+      <table>
+       <tr><td>Quantity</td><td>Cost</td></tr>
+       <tr>
+         <td><input type="number" ng-pattern="/\d+/" step="1" min="0" ng-model="qty" required ></td>
+         <td><input type="number" ng-model="cost" required ></td>
+       </tr>
+      </table>
+      <hr>
+      <b>Total:</b> {{qty * cost | currency}}
+    </div>
+  </file>
+  <file name="scenario.js">
+    it('should show of angular binding', function() {
+      expect(binding('qty * cost')).toEqual('$19.95');
+      input('qty').enter('2');
+      input('cost').enter('5.00');
+      expect(binding('qty * cost')).toEqual('$10.00');
+    });
+  </file>
+</example>
+
+Try out the Live Preview above, and then let's walk through the example and describe what's going
+on.
+
+In the `<html>` tag, we specify that it is an Angular
+application with the `ng-app` directive. The `ng-app` will cause Angular to {@link
+bootstrap auto initialize} your application.
+
+    <html ng-app>
+
+We load Angular using the  `<script>` tag:
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/?.?.?/angular.min.js"></script>
+
+From the `ng-model` attribute of the `<input>` tags, Angular automatically sets up two-way data
+binding, and we also demonstrate some easy input validation:
+
+    Quantity: <input type="number" ng-pattern="/\d+/" step="1" min="0" ng-model="qty" required >
+    Cost: <input type="number" ng-model="cost" required >
+
+These input widgets look normal enough, but consider these points:
+
+  * When this page loaded, Angular bound the names of the input widgets (`qty` and `cost`) to
+    variables of the same name. Think of those variables as the "Model" component of the
+    Model-View-Controller design pattern.
+  * Note that the HTML widget {@link api/ng.directive:input input}
+    has special powers. The input invalidates itself by turning red when you enter invalid data or
+    leave the the input fields blank. These new widget behaviors make it easier to implement field
+    validation common in CRUD applications.
+
+And finally, the mysterious `{{ double curly braces }}`:
+
+         Total: {{qty * cost | currency}}
+
+This notation, `{{ _expression_ }}`, is Angular markup for data-binding. The expression itself can
+be a combination of both an expression and a {@link dev_guide.templates.filters filter}: `{{
+expression | filter }}`. Angular provides filters for formatting display data.
+
+In the example above, the expression in double-curly braces directs Angular to "bind the data we
+got from the input widgets to the display, multiply them together, and format the resulting number
+into output that looks like money."
+
+Notice that we achieved this application behavior not by calling Angular methods, nor by
+implementing application specific behavior as a framework. We achieved the behavior because the
+browser behaved more in line with what is needed for a dynamic web application rather then what is
+needed for a static document. Angular has lowered the impedance mismatch to the point where no
+library/framework calls are needed.
+
+
+# The Zen of Angular
+
+Angular is built around the belief that declarative code is better than imperative when it comes
+to building UIs and wiring software components together, while imperative code is excellent for
+expressing business logic.
+
+
+  * It is a very good idea to decouple DOM manipulation from app logic. This dramatically improves
+    the testability of the code.
+  * It is a really, _really_ good idea to regard app testing as equal in importance to app
+    writing. Testing difficulty is dramatically affected by the way the code is structured.
+  * It is an excellent idea to decouple the client side of an app from the server side. This
+    allows development work to progress in parallel, and allows for reuse of both sides.
+  * It is very helpful indeed if the framework guides developers through the entire journey of
+    building an app: from designing the UI, through writing the business logic, to testing.
+  * It is always good to make common tasks trivial and difficult tasks possible.
+
+
+
+Angular frees you from the following pain:
+
+  * **Registering callbacks:** Registering callbacks clutters your code, making it hard to see the
+    forest for the trees. Removing common boilerplate code such as callbacks is a good thing. It
+    vastly reduces the amount of JavaScript coding _you_ have to do, and it makes it easier to see
+    what your application does.
+  * **Manipulating HTML DOM programmatically:** Manipulating HTML DOM is a cornerstone of AJAX
+    applications, but it's cumbersome and error-prone. By declaratively describing how the UI
+    should change as your application state changes, you are freed from low level DOM manipulation
+    tasks. Most applications written with Angular never have to programmatically manipulate the
+    DOM, although you can if you want to.
+  * **Marshaling data to and from the UI:** CRUD operations make up the majority of AJAX
+    applications. The flow of marshaling data from the server to an internal object to an HTML
+    form, allowing users to modify the form, validating the form, displaying validation errors,
+    returning to an internal model, and then back to the server, creates a lot of boilerplate
+    code. Angular eliminates almost all of this boilerplate, leaving code that describes the
+    overall flow of the application rather than all of the implementation details.
+  * **Writing tons of initialization code just to get started:** Typically you need to write a lot
+    of plumbing just to get a basic "Hello World" AJAX app working. With Angular you can bootstrap
+    your app easily using services, which are auto-injected into your application in a {@link
+    http://code.google.com/p/google-guice/ Guice}-like dependency-injection style. This allows you
+    to get started developing features quickly. As a bonus, you get full control over the
+    initialization process in automated tests.
+
+
+# Watch a Presentation About Angular
+
+Here is a presentation on Angular from May 2012. The {@link http://mhevery.github.io/angular-demo-slides/index.html#/list corresponding slides} are also available.
+
+<iframe width="560" height="315" src="http://www.youtube.com/embed/bfrn5VNpwsg" frameborder="0" allowfullscreen></iframe>

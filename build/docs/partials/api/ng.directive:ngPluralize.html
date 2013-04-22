@@ -1,0 +1,197 @@
+<h1><code ng:non-bindable="">ngPluralize</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngPluralize.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><h3>Overview</h3>
+
+<p><code>ngPluralize</code> is a directive that displays messages according to en-US localization rules.
+These rules are bundled with angular.js and the rules can be overridden
+(see <a href="guide/i18n">Angular i18n</a> dev guide). You configure ngPluralize directive
+by specifying the mappings between
+<a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">plural categories</a> and the strings to be displayed.</p>
+
+<h3>Plural categories and explicit number rules</h3>
+
+<p>There are two
+<a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">plural categories</a> in Angular's default en-US locale: "one" and "other".</p>
+
+<p>While a plural category may match many numbers (for example, in en-US locale, "other" can match
+any number that is not 1), an explicit number rule can only match one number. For example, the
+explicit number rule for "3" matches the number 3. You will see the use of plural categories
+and explicit number rules throughout later parts of this documentation.</p>
+
+<h3>Configuring ngPluralize</h3>
+
+<p>You configure ngPluralize by providing 2 attributes: <code>count</code> and <code>when</code>.
+You can also provide an optional attribute, <code>offset</code>.</p>
+
+<p>The value of the <code>count</code> attribute can be either a string or an <a href="guide/expression">Angular expression</a>; these are evaluated on the current scope for its bound value.</p>
+
+<p>The <code>when</code> attribute specifies the mappings between plural categories and the actual
+string to be displayed. The value of the attribute should be a JSON object so that Angular
+can interpret it correctly.</p>
+
+<p>The following example shows how to configure ngPluralize:</p>
+
+<pre class="prettyprint linenums">
+&lt;ng-pluralize count="personCount"
+                 when="{'0': 'Nobody is viewing.',
+                     'one': '1 person is viewing.',
+                     'other': '{} people are viewing.'}"&gt;
+&lt;/ng-pluralize&gt;
+</pre>
+
+<p>In the example, <code>"0: Nobody is viewing."</code> is an explicit number rule. If you did not
+specify this rule, 0 would be matched to the "other" category and "0 people are viewing"
+would be shown instead of "Nobody is viewing". You can specify an explicit number rule for
+other numbers, for example 12, so that instead of showing "12 people are viewing", you can
+show "a dozen people are viewing".</p>
+
+<p>You can use a set of closed braces(<code>{}</code>) as a placeholder for the number that you want substituted
+into pluralized strings. In the previous example, Angular will replace <code>{}</code> with
+<span ng-non-bindable><code>{{personCount}}</code></span>. The closed braces <code>{}</code> is a placeholder
+for <span ng-non-bindable>{{numberExpression}}</span>.</p>
+
+<h3>Configuring ngPluralize with offset</h3>
+
+<p>The <code>offset</code> attribute allows further customization of pluralized text, which can result in
+a better user experience. For example, instead of the message "4 people are viewing this document",
+you might display "John, Kate and 2 others are viewing this document".
+The offset attribute allows you to offset a number by any desired value.
+Let's take a look at an example:</p>
+
+<pre class="prettyprint linenums">
+&lt;ng-pluralize count="personCount" offset=2
+              when="{'0': 'Nobody is viewing.',
+                     '1': '{{person1}} is viewing.',
+                     '2': '{{person1}} and {{person2}} are viewing.',
+                     'one': '{{person1}}, {{person2}} and one other person are viewing.',
+                     'other': '{{person1}}, {{person2}} and {} other people are viewing.'}"&gt;
+&lt;/ng-pluralize&gt;
+</pre>
+
+<p>Notice that we are still using two plural categories(one, other), but we added
+three explicit number rules 0, 1 and 2.
+When one person, perhaps John, views the document, "John is viewing" will be shown.
+When three people view the document, no explicit number rule is found, so
+an offset of 2 is taken off 3, and Angular uses 1 to decide the plural category.
+In this case, plural category 'one' is matched and "John, Marry and one other person are viewing"
+is shown.</p>
+
+<p>Note that when you specify offsets, you must provide explicit number rules for
+numbers from 0 up to and including the offset. If you use an offset of 3, for example,
+you must provide explicit number rules for 0, 1, 2 and 3. You must also provide plural strings for
+plural categories "one" and "other".</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><p>This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>.</p>as element:<pre class="prettyprint linenums">&lt;ng-pluralize
+       count="{string|expression}"
+       when="{string}"
+       [offset="{number}"]&gt;
+&lt;/ng-pluralize&gt;</pre>
+as attribute<pre class="prettyprint linenums">&lt;ANY ng-pluralize
+     count="{string|expression}"
+     when="{string}"
+     [offset="{number}"]&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">count – {string|expression} – </code>
+<p>The variable to be bounded to.</p></li>
+<li><code ng:non-bindable="">when – {string} – </code>
+<p>The mapping between plural category to its corresponding strings.</p></li>
+<li><code ng:non-bindable="">offset<i>(optional)</i> – {number=} – </code>
+<p>Offset to deduct from the total number.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-195" source-edit-css="" source-edit-js="script.js-194" source-edit-unit="" source-edit-scenario="scenario.js-196"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-195" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-195">
+  
+  <div ng-controller="Ctrl">
+    Person 1:<input type="text" ng-model="person1" value="Igor" /><br/>
+    Person 2:<input type="text" ng-model="person2" value="Misko" /><br/>
+    Number of People:<input type="text" ng-model="personCount" value="1" /><br/>
+
+    <!--- Example with simple pluralization rules for en locale --->
+    Without Offset:
+    <ng-pluralize count="personCount"
+                  when="{'0': 'Nobody is viewing.',
+                         'one': '1 person is viewing.',
+                         'other': '{} people are viewing.'}">
+    </ng-pluralize><br>
+
+    <!--- Example with offset --->
+    With Offset(2):
+    <ng-pluralize count="personCount" offset=2
+                  when="{'0': 'Nobody is viewing.',
+                         '1': '{{person1}} is viewing.',
+                         '2': '{{person1}} and {{person2}} are viewing.',
+                         'one': '{{person1}}, {{person2}} and one other person are viewing.',
+                         'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
+    </ng-pluralize>
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-194"></pre>
+<script type="text/ng-template" id="script.js-194">
+    function Ctrl($scope) {
+      $scope.person1 = 'Igor';
+      $scope.person2 = 'Misko';
+      $scope.personCount = 1;
+    }
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-196"></pre>
+<script type="text/ng-template" id="scenario.js-196">
+  it('should show correct pluralized string', function() {
+    expect(element('.doc-example-live ng-pluralize:first').text()).
+                                       toBe('1 person is viewing.');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+                                          toBe('Igor is viewing.');
+
+    using('.doc-example-live').input('personCount').enter('0');
+    expect(element('.doc-example-live ng-pluralize:first').text()).
+                                         toBe('Nobody is viewing.');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+                                        toBe('Nobody is viewing.');
+
+    using('.doc-example-live').input('personCount').enter('2');
+    expect(element('.doc-example-live ng-pluralize:first').text()).
+                                      toBe('2 people are viewing.');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+                        toBe('Igor and Misko are viewing.');
+
+    using('.doc-example-live').input('personCount').enter('3');
+    expect(element('.doc-example-live ng-pluralize:first').text()).
+                                      toBe('3 people are viewing.');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+                        toBe('Igor, Misko and one other person are viewing.');
+
+    using('.doc-example-live').input('personCount').enter('4');
+    expect(element('.doc-example-live ng-pluralize:first').text()).
+                                      toBe('4 people are viewing.');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+                        toBe('Igor, Misko and 2 other people are viewing.');
+  });
+
+  it('should show data-binded names', function() {
+    using('.doc-example-live').input('personCount').enter('4');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+        toBe('Igor, Misko and 2 other people are viewing.');
+
+    using('.doc-example-live').input('person1').enter('Di');
+    using('.doc-example-live').input('person2').enter('Vojta');
+    expect(element('.doc-example-live ng-pluralize:last').text()).
+        toBe('Di, Vojta and 2 other people are viewing.');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-195" ng-eval-javascript="script.js-194"></div></div>
+</div>
