@@ -1,0 +1,41 @@
+<h1><code ng:non-bindable="">ngChecked</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/booleanAttrs.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The HTML specs do not require browsers to preserve the special attributes such as checked.
+(The presence of them means true and absence means false)
+This prevents the angular compiler from correctly retrieving the binding expression.
+To solve this problem, we introduce the <code>ngChecked</code> directive.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;INPUT ng-checked="{expression}"&gt;
+   ...
+&lt;/INPUT&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngChecked – {expression} – </code>
+<p>Angular expression that will be evaluated.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-204" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-205"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-204" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-204">
+  Check me to check both: <input type="checkbox" ng-model="master"><br/>
+  <input id="checkSlave" type="checkbox" ng-checked="master">
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-205"></pre>
+<script type="text/ng-template" id="scenario.js-205">
+  it('should check both checkBoxes', function() {
+    expect(element('.doc-example-live #checkSlave').prop('checked')).toBeFalsy();
+    input('master').check();
+    expect(element('.doc-example-live #checkSlave').prop('checked')).toBeTruthy();
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-204" ng-eval-javascript=""></div></div>
+</div>

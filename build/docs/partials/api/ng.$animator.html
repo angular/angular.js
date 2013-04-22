@@ -1,0 +1,79 @@
+<h1><code ng:non-bindable="">$animator</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/animator.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The $animator.create service provides the DOM manipulation API which is decorated with animations.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$animator(scope, attr);</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">scope – {Scope} – </code>
+<p>the scope for the ng-animate.</p></li>
+<li><code ng:non-bindable="">attr – {Attributes} – </code>
+<p>the attributes object which contains the ngAnimate key / value pair. (The attributes are
+passed into the linking function of the directive using the <code>$animator</code>.)</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{object}</code>
+– <p>the animator object which contains the enter, leave, move, show, hide and animate methods.</p></div>
+</div>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="enabled">enabled(If)</h3>
+<div class="enabled"><p>Globally enables/disables animations.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">If<i>(optional)</i> – {Boolean=} – </code>
+<p>provided then set the animation on or off.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Boolean}</code>
+– <p>Current animation state.</p></div>
+</div>
+</li>
+<li><h3 id="enter">enter(element, parent, after)</h3>
+<div class="enter"><p>Injects the element object into the DOM (inside of the parent element) and then runs the enter animation.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">element – {jQuery/jqLite element} – </code>
+<p>the element that will be the focus of the enter animation</p></li>
+<li><code ng:non-bindable="">parent – {jQuery/jqLite element} – </code>
+<p>the parent element of the element that will be the focus of the enter animation</p></li>
+<li><code ng:non-bindable="">after – {jQuery/jqLite element} – </code>
+<p>the sibling element (which is the previous element) of the element that will be the focus of the enter animation</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="hide">hide(element)</h3>
+<div class=""><p>Starts the hide animation first and sets the CSS <code>display</code> property to <code>none</code> upon completion.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">element – {jQuery/jqLite element} – </code>
+<p>the element that will be rendered visible or hidden</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="leave">leave(element, parent)</h3>
+<div class="leave"><p>Runs the leave animation operation and, upon completion, removes the element from the DOM.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">element – {jQuery/jqLite element} – </code>
+<p>the element that will be the focus of the leave animation</p></li>
+<li><code ng:non-bindable="">parent – {jQuery/jqLite element} – </code>
+<p>the parent element of the element that will be the focus of the leave animation</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="move">move(element, parent, after)</h3>
+<div class="move"><p>Fires the move DOM operation. Just before the animation starts, the animator will either append it into the parent container or
+add the element directly after the after element if present. Then the move animation will be run.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">element – {jQuery/jqLite element} – </code>
+<p>the element that will be the focus of the move animation</p></li>
+<li><code ng:non-bindable="">parent – {jQuery/jqLite element} – </code>
+<p>the parent element of the element that will be the focus of the move animation</p></li>
+<li><code ng:non-bindable="">after – {jQuery/jqLite element} – </code>
+<p>the sibling element (which is the previous element) of the element that will be the focus of the move animation</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="show">show(element)</h3>
+<div class="show"><p>Reveals the element by setting the CSS property <code>display</code> to <code>block</code> and then starts the show animation directly after.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">element – {jQuery/jqLite element} – </code>
+<p>the element that will be rendered visible or hidden</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>

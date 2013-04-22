@@ -1,0 +1,93 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/guide/bootstrap_ru.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><h2>Overview</h2>
+
+<p>На этой странице показан процесс инициализации Angular и то, как провести инициализацию вручную, если возникнет такая необходимость.</p>
+
+<h2>Тег <code>&lt;script&gt;</code> в Angular</h2>
+
+<p>Этот пример показывает рекомендованный способ интеграции Angular, используя, то что мы называем, автоматической инициализацией.</p>
+
+<pre class="prettyprint linenums">
+&lt;!doctype html&gt;
+&lt;html xmlns:ng="http://angularjs.org" ng-app&gt;
+  &lt;body&gt;
+    ...
+    &lt;script src="angular.js"&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<ul>
+<li>Размещайте тэг <code>&lt;script&gt;</code> в конце страницы. Располагая его подобным образом вы уменьшаете время загрузки вашего приложения, потому что загрузка HTML не будет заблокирована загрузкой  angular.js. Последнюю версию можно найти на http://code.angularjs.org. Пожалуйста, не используйте эту ссылку в вашем боевом коде, т.к. это создаст брешь в безопасности сайта. Для экспериментов использование этой ссылки вполне подходит.
+<ul><li><code>angular-[version].js</code> содержит удобный для восприятия код и подходит для разработки и отладки.</li>
+<li><code>angular-[version].min.js</code> содержит минифицированный и обсуфицированный код, и подходит для применения в продакшене.</li></ul></li>
+<li><p>Поместите <code>ng-app</code> в корень вашего приложения, обычно это тэг <code>&lt;html&gt;</code>, если хотите чтобы angular загрузил приложение автоматически.</p>
+
+<pre><code>&lt;html ng-app&gt;
+</code></pre></li>
+<li><p>Если нужна поддержка IE7, то необходимо добавить <code>id="ng-app"</code></p>
+
+<pre><code>&lt;html ng-app id="ng-app"&gt;
+</code></pre></li>
+<li><p>Если хотите использовать старый синтаксис директив ng: необходимо включить xml-пространство имен чтобы IE не выдал ошибку. (Эта возможность оставлена по историческим причинам и мы не рекомендуем её использовать.)</p>
+
+<pre><code>&lt;html xmlns:ng="http://angularjs.org"&gt;
+</code></pre></li>
+</ul>
+
+<h2>Автоматическая инициализация</h2>
+
+<p>Angular автоматически инициализируется во время события <code>DOMContentLoaded</code>,
+в это время Angular ищет <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> директиву, обозначающую корень вашего приложения.
+Если <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> найдена то Angular выполнит следующие действия:</p>
+
+<ul>
+<li>load the <a href="guide/module">module</a> associated with the directive.</li>
+<li>create the application <a href="api/AUTO.$injector"><code>injector</code></a></li>
+<li>compile the DOM treating the <a href="api/ng.directive:ngApp"><code><code>ng-app</code></code></a> directive as the root of the compilation. This allows you to tell it to treat only a
+portion of the DOM as an Angular application.</li>
+</ul>
+
+<pre class="prettyprint linenums">
+&lt;!doctype html&gt;
+&lt;html ng-app="optionalModuleName"&gt;
+  &lt;body&gt;
+    I can add: {{ 1+2 }}.
+    &lt;script src="angular.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<h2>Manual Initialization</h2>
+
+<p>If you need to have more control over the initialization process, you can use a manual
+bootstrapping method instead. Examples of when you'd need to do this include using script loaders
+or the need to perform an operation before Angular compiles a page.</p>
+
+<p>Here is an example of manually initializing Angular. The example is equivalent to using the <a href="api/ng.directive:ngApp"><code>ng-app</code></a> directive.</p>
+
+<pre class="prettyprint linenums">
+&lt;!doctype html&gt;
+&lt;html xmlns:ng="http://angularjs.org"&gt;
+  &lt;body&gt;
+    Hello {{'World'}}!
+    &lt;script src="http://code.angularjs.org/angular.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+       angular.element(document).ready(function() {
+         angular.bootstrap(document);
+       });
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>This is the sequence that your code should follow:</p>
+
+<ol>
+<li><p>After the page and all of the code is loaded, find the root of the HTML template, which is
+typically the root of the document.</p></li>
+<li><p>Call <a href="api/angular.bootstrap"><code>api/angular.bootstrap</code></a> to <a href="guide/compiler">compile</a> the template into an
+executable, bi-directionally bound application.</p></li>
+</ol></div>

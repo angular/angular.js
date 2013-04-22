@@ -1,0 +1,141 @@
+@ngdoc overview
+@name Tutorial: 10 - Event Handlers
+@description
+
+<ul doc-tutorial-nav="10"></ul>
+
+
+In this step, you will add a clickable phone image swapper to the phone details page.
+
+
+<div doc-tutorial-reset="10"></div>
+
+
+The phone details view displays one large image of the current phone and several smaller thumbnail
+images. It would be great if we could replace the large image with any of the thumbnails just by
+clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-9...step-10
+GitHub}:
+
+
+## Controller
+
+__`app/js/controllers.js`:__
+<pre>
+...
+function PhoneDetailCtrl($scope, $routeParams, $http) {
+  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+    $scope.phone = data;
+    $scope.mainImageUrl = data.images[0];
+  });
+
+  $scope.setImage = function(imageUrl) {
+    $scope.mainImageUrl = imageUrl;
+  }
+}
+
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
+</pre>
+
+In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
+default value to the first phone image URL.
+
+We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
+
+
+## Template
+
+__`app/partials/phone-detail.html`:__
+<pre>
+<img ng-src="{{mainImageUrl}}" class="phone">
+
+...
+
+<ul class="phone-thumbs">
+  <li ng-repeat="img in phone.images">
+    <img ng-src="{{img}}" ng-click="setImage(img)">
+  </li>
+</ul>
+...
+</pre>
+
+We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
+
+We also registered an {@link api/ng.directive:ngClick `ngClick`}
+handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
+use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
+URL of the thumbnail image.
+
+<div style="display: none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_10-11_final.png">
+</div>
+
+## Test
+
+To verify this new feature, we added two end-to-end tests. One verifies that the main image is set
+to the first phone image by default. The second test clicks on several thumbnail images and
+verifies that the main image changed appropriately.
+
+__`test/e2e/scenarios.js`:__
+<pre>
+...
+  describe('Phone detail view', function() {
+
+...
+
+    it('should display the first phone image as the main phone image', function() {
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+    });
+
+
+    it('should swap main image if a thumbnail image is clicked on', function() {
+      element('.phone-thumbs li:nth-child(3) img').click();
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.2.jpg');
+
+      element('.phone-thumbs li:nth-child(1) img').click();
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+    });
+  });
+});
+</pre>
+
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
+http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
+Angular's server}.
+
+# Experiments
+
+* Let's add a new controller method to `PhoneDetailCtrl`:
+
+          $scope.hello = function(name) {
+              alert('Hello ' + (name || 'world') + '!');
+          }
+
+  and add:
+
+          <button ng-click="hello('Elmo')">Hello</button>
+
+  to the `phone-details.html` template.
+
+<div style="display: none">
+TODO!
+  The controller methods are inherited between controllers/scopes, so you can use the same snippet
+in the `phone-list.html` template as well.
+
+* Move the `hello` method from `PhoneCatCtrl` to `PhoneListCtrl` and you'll see that the button
+declared in `index.html` will stop working, while the one declared in the `phone-list.html`
+template remains operational.
+</div>
+
+
+# Summary
+
+With the phone image swapper in place, we're ready for {@link step_11 step 11} (the last step!) to
+learn an even better way to fetch data.
+
+
+<ul doc-tutorial-nav="10"></ul>

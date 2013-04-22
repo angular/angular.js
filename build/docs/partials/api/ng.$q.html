@@ -1,0 +1,225 @@
+<h1><code ng:non-bindable="">$q</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/q.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>A promise/deferred implementation inspired by <a href="https://github.com/kriskowal/q">Kris Kowal's Q</a>.</p>
+
+<p><a href="http://wiki.commonjs.org/wiki/Promises">The CommonJS Promise proposal</a> describes a promise as an
+interface for interacting with an object that represents the result of an action that is
+performed asynchronously, and may or may not be finished at any given point in time.</p>
+
+<p>From the perspective of dealing with error handling, deferred and promise APIs are to
+asynchronous programming what <code>try</code>, <code>catch</code> and <code>throw</code> keywords are to synchronous programming.</p>
+
+<pre class="prettyprint linenums">
+  // for the purpose of this example let's assume that variables `$q` and `scope` are
+  // available in the current lexical scope (they could have been injected or passed in).
+
+  function asyncGreet(name) {
+    var deferred = $q.defer();
+
+    setTimeout(function() {
+      // since this fn executes async in a future turn of the event loop, we need to wrap
+      // our code into an $apply call so that the model changes are properly observed.
+      scope.$apply(function() {
+        if (okToGreet(name)) {
+          deferred.resolve('Hello, ' + name + '!');
+        } else {
+          deferred.reject('Greeting ' + name + ' is not allowed.');
+        }
+      });
+    }, 1000);
+
+    return deferred.promise;
+  }
+
+  var promise = asyncGreet('Robin Hood');
+  promise.then(function(greeting) {
+    alert('Success: ' + greeting);
+  }, function(reason) {
+    alert('Failed: ' + reason);
+  });
+</pre>
+
+<p>At first it might not be obvious why this extra complexity is worth the trouble. The payoff
+comes in the way of
+<a href="https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md">guarantees that promise and deferred APIs make</a>.</p>
+
+<p>Additionally the promise api allows for composition that is very hard to do with the
+traditional callback (<a href="http://en.wikipedia.org/wiki/Continuation-passing_style">CPS</a>) approach.
+For more on this please see the <a href="https://github.com/kriskowal/q">Q documentation</a> especially the
+section on serial or parallel joining of promises.</p>
+
+<h3>The Deferred API</h3>
+
+<p>A new instance of deferred is constructed by calling <code>$q.defer()</code>.</p>
+
+<p>The purpose of the deferred object is to expose the associated Promise instance as well as APIs
+that can be used for signaling the successful or unsuccessful completion of the task.</p>
+
+<p><strong>Methods</strong></p>
+
+<ul>
+<li><code>resolve(value)</code> – resolves the derived promise with the <code>value</code>. If the value is a rejection
+constructed via <code>$q.reject</code>, the promise will be rejected instead.</li>
+<li><code>reject(reason)</code> – rejects the derived promise with the <code>reason</code>. This is equivalent to
+resolving it with a rejection constructed via <code>$q.reject</code>.</li>
+</ul>
+
+<p><strong>Properties</strong></p>
+
+<ul>
+<li>promise – <code>{Promise}</code> – promise object associated with this deferred.</li>
+</ul>
+
+<h3>The Promise API</h3>
+
+<p>A new promise instance is created when a deferred instance is created and can be retrieved by
+calling <code>deferred.promise</code>.</p>
+
+<p>The purpose of the promise object is to allow for interested parties to get access to the result
+of the deferred task when it completes.</p>
+
+<p><strong>Methods</strong></p>
+
+<ul>
+<li><p><code>then(successCallback, errorCallback)</code> – regardless of when the promise was or will be resolved
+or rejected calls one of the success or error callbacks asynchronously as soon as the result
+is available. The callbacks are called with a single argument the result or rejection reason.</p>
+
+<p>This method <em>returns a new promise</em> which is resolved or rejected via the return value of the
+<code>successCallback</code> or <code>errorCallback</code>.</p></li>
+</ul>
+
+<h3>Chaining promises</h3>
+
+<p>Because calling <code>then</code> api of a promise returns a new derived promise, it is easily possible
+to create a chain of promises:</p>
+
+<pre class="prettyprint linenums">
+  promiseB = promiseA.then(function(result) {
+    return result + 1;
+  });
+
+  // promiseB will be resolved immediately after promiseA is resolved and its value will be
+  // the result of promiseA incremented by 1
+</pre>
+
+<p>It is possible to create chains of any length and since a promise can be resolved with another
+promise (which will defer its resolution further), it is possible to pause/defer resolution of
+the promises at any point in the chain. This makes it possible to implement powerful apis like
+$http's response interceptors.</p>
+
+<h3>Differences between Kris Kowal's Q and $q</h3>
+
+<p>There are three main differences:</p>
+
+<ul>
+<li>$q is integrated with the <a href="api/ng.$rootScope.Scope"><code>ng.$rootScope.Scope</code></a> Scope model observation
+mechanism in angular, which means faster propagation of resolution or rejection into your
+models and avoiding unnecessary browser repaints, which would result in flickering UI.</li>
+<li>$q promises are recognized by the templating engine in angular, which means that in templates
+you can treat promises attached to a scope as if they were the resulting values.</li>
+<li><p>Q has many more features that $q, but that comes at a cost of bytes. $q is tiny, but contains
+all the important functionality needed for common async tasks.</p>
+
+<h3>Testing</h3>
+
+<pre class="prettyprint linenums">
+   it('should simulate promise', inject(function($q, $rootScope) {
+     var deferred = $q.defer();
+     var promise = deferred.promise;
+     var resolvedValue;
+
+     promise.then(function(value) { resolvedValue = value; });
+     expect(resolvedValue).toBeUndefined();
+
+     // Simulate resolving of promise
+     deferred.resolve(123);
+     // Note that the 'then' function does not get called synchronously.
+     // This is because we want the promise API to always be async, whether or not
+     // it got called synchronously or asynchronously.
+     expect(resolvedValue).toBeUndefined();
+
+     // Propagate promise resolution to 'then' functions using $apply().
+     $rootScope.$apply();
+     expect(resolvedValue).toEqual(123);
+   });
+ </pre></li>
+</ul></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$rootScope">$rootScope</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="all">all(promises)</h3>
+<div class="all"><p>Combines multiple promises into a single promise that is resolved when all of the input
+promises are resolved.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">promises – {Array.&lt;Promise&gt;|Object.&lt;Promise&gt;} – </code>
+<p>An array or hash of promises.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Promise}</code>
+– <p>Returns a single promise that will be resolved with an array/hash of values,
+each value corresponding to the promise at the same index/key in the <code>promises</code> array/hash. If any of
+the promises is resolved with a rejection, this resulting promise will be resolved with the
+same rejection.</p></div>
+</div>
+</li>
+<li><h3 id="defer">defer()</h3>
+<div class="defer"><p>Creates a <code>Deferred</code> object which represents a task which will finish in the future.</p><h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Deferred}</code>
+– <p>Returns a new instance of deferred.</p></div>
+</div>
+</li>
+<li><h3 id="reject">reject(reason)</h3>
+<div class="reject"><p>Creates a promise that is resolved as rejected with the specified <code>reason</code>. This api should be
+used to forward rejection in a chain of promises. If you are dealing with the last promise in
+a promise chain, you don't need to worry about it.</p>
+
+<p>When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of
+<code>reject</code> as the <code>throw</code> keyword in JavaScript. This also means that if you "catch" an error via
+a promise error callback and you want to forward the error to the promise derived from the
+current promise, you have to "rethrow" the error by returning a rejection constructed via
+<code>reject</code>.</p>
+
+<pre class="prettyprint linenums">
+  promiseB = promiseA.then(function(result) {
+    // success: do something and resolve promiseB
+    //          with the old or a new result
+    return result;
+  }, function(reason) {
+    // error: handle the error if possible and
+    //        resolve promiseB with newPromiseOrValue,
+    //        otherwise forward the rejection to promiseB
+    if (canHandle(reason)) {
+     // handle the error and recover
+     return newPromiseOrValue;
+    }
+    return $q.reject(reason);
+  });
+</pre><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">reason – {*} – </code>
+<p>Constant, message, exception or an object representing the rejection reason.</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Promise}</code>
+– <p>Returns a promise that was already resolved as rejected with the <code>reason</code>.</p></div>
+</div>
+</li>
+<li><h3 id="when">when(value)</h3>
+<div class="when"><p>Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
+This is useful when you are dealing with an object that might or might not be a promise, or if
+the promise comes from a source that can't be trusted.</p><h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">value – {*} – </code>
+<p>Value or a promise</p></li>
+</ul>
+<h4 id="Returns">Returns</h4>
+<div class="returns"><code ng:non-bindable="">{Promise}</code>
+– <p>Returns a promise of the passed value or promise</p></div>
+</div>
+</li>
+</ul>
+</div>
+</div>

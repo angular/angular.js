@@ -1,0 +1,48 @@
+<h1><code ng:non-bindable="">ngDisabled</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/booleanAttrs.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
+<pre class="prettyprint linenums">
+&lt;div ng-init="scope = { isDisabled: false }"&gt;
+ &lt;button disabled="{{scope.isDisabled}}"&gt;Disabled&lt;/button&gt;
+&lt;/div&gt;
+</pre>
+
+<p>The HTML specs do not require browsers to preserve the special attributes such as disabled.
+(The presence of them means true and absence means false)
+This prevents the angular compiler from correctly retrieving the binding expression.
+To solve this problem, we introduce the <code>ngDisabled</code> directive.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;INPUT ng-disabled="{expression}"&gt;
+   ...
+&lt;/INPUT&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngDisabled – {expression} – </code>
+<p>Angular expression that will be evaluated.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-202" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-203"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-202" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-202">
+  Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
+  <button ng-model="button" ng-disabled="checked">Button</button>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-203"></pre>
+<script type="text/ng-template" id="scenario.js-203">
+  it('should toggle button', function() {
+    expect(element('.doc-example-live :button').prop('disabled')).toBeFalsy();
+    input('checked').check();
+    expect(element('.doc-example-live :button').prop('disabled')).toBeTruthy();
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-202" ng-eval-javascript=""></div></div>
+</div>

@@ -1,0 +1,215 @@
+<h1><code ng:non-bindable=""></code>
+<span class="hint"></span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/docs/content/tutorial/step_11_ru.ngdoc" class="improve-docs btn btn-primary">Улучшить перевод</a><ul doc-tutorial-nav="11"></ul>
+
+<p>In this step, you will improve the way our app fetches data.</p>
+
+<div doc-tutorial-reset="11">
+</div>
+
+<p>The last improvement we will make to our app is to define a custom service that represents a <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> client. Using this client we
+can make XHR requests for data in an easier way, without having to deal with the lower-level <a href="api/ng.$http"><code>$http</code></a> API, HTTP methods and URLs.</p>
+
+<p>The most important changes are listed below. You can see the full diff on <a href="https://github.com/angular/angular-phonecat/compare/step-10...step-11">GitHub</a>:</p>
+
+<h3>Template</h3>
+
+<p>The custom service is defined in <code>app/js/services.js</code> so we need to include this file in our layout
+template. Additionally, we also need to load the <code>angular-resource.js</code> file, which contains the
+<code>ngResource</code> module and in it the <code>$resource</code> service, that we'll soon use:</p>
+
+<p><strong><code>app/index.html</code>.</strong>
+<pre class="prettyprint linenums">
+...
+  &lt;script src="js/services.js"&gt;&lt;/script&gt;
+  &lt;script src="lib/angular/angular-resource.js"&gt;&lt;/script&gt;
+...
+</pre>
+
+<h3>Service</h3>
+
+<p><strong><code>app/js/services.js</code>.</strong>
+<pre class="prettyprint linenums">
+angular.module('phonecatServices', ['ngResource']).
+    factory('Phone', function($resource){
+  return $resource('phones/:phoneId.json', {}, {
+    query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
+  });
+});
+</pre>
+
+<p>We used the module API to register a custom service using a factory function. We passed in the name
+of the service - 'Phone' - and the factory function. The factory function is similar to a
+controller's constructor in that both can declare dependencies via function arguments. The Phone
+service declared a dependency on the <code>$resource</code> service.</p>
+
+<p>The <a href="api/ngResource.$resource"><code>$resource</code></a> service makes it easy to create a
+<a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> client with just a few
+lines of code. This client can then be used in our application, instead of the lower-level <a href="api/ng.$http"><code>$http</code></a> service.</p>
+
+<p><strong><code>app/js/app.js</code>.</strong>
+<pre class="prettyprint linenums">
+...
+angular.module('phonecat', ['phonecatFilters', 'phonecatServices']).
+...
+</pre>
+
+<p>We need to add 'phonecatServices' to 'phonecat' application's requires array.</p>
+
+<h3>Controller</h3>
+
+<p>We simplified our sub-controllers (<code>PhoneListCtrl</code> and <code>PhoneDetailCtrl</code>) by factoring out the
+lower-level <a href="api/ng.$http"><code>$http</code></a> service, replacing it with a new service called
+<code>Phone</code>. Angular's <a href="api/ngResource.$resource"><code>$resource</code></a> service is easier to
+use than <code>$http</code> for interacting with data sources exposed as RESTful resources. It is also easier
+now to understand what the code in our controllers is doing.</p>
+
+<p><strong><code>app/js/controllers.js</code>.</strong>
+<pre class="prettyprint linenums">
+...
+
+function PhoneListCtrl($scope, Phone) {
+  $scope.phones = Phone.query();
+  $scope.orderProp = 'age';
+}
+
+//PhoneListCtrl.$inject = ['$scope', 'Phone'];
+
+
+
+function PhoneDetailCtrl($scope, $routeParams, Phone) {
+  $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+    $scope.mainImageUrl = phone.images[0];
+  });
+
+  $scope.setImage = function(imageUrl) {
+    $scope.mainImageUrl = imageUrl;
+  }
+}
+
+//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', 'Phone'];
+</pre>
+
+<p>Notice how in <code>PhoneListCtrl</code> we replaced:</p>
+
+<pre><code>$http.get('phones/phones.json').success(function(data) {
+  $scope.phones = data;
+});
+</code></pre>
+
+<p>with:</p>
+
+<pre><code>$scope.phones = Phone.query();
+</code></pre>
+
+<p>This is a simple statement that we want to query for all phones.</p>
+
+<p>An important thing to notice in the code above is that we don't pass any callback functions when
+invoking methods of our Phone service. Although it looks as if the result were returned
+synchronously, that is not the case at all. What is returned synchronously is a "future" — an
+object, which will be filled with data when the XHR response returns. Because of the data-binding
+in Angular, we can use this future and bind it to our template. Then, when the data arrives, the
+view will automatically update.</p>
+
+<p>Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
+we require, so in these cases, we can add a callback to process the server response. The
+<code>PhoneDetailCtrl</code> controller illustrates this by setting the <code>mainImageUrl</code> in a callback.</p>
+
+<h3>Test</h3>
+
+<p>We have modified our unit tests to verify that our new service is issuing HTTP requests and
+processing them as expected. The tests also check that our controllers are interacting with the
+service correctly.</p>
+
+<p>The <a href="api/ngResource.$resource">$resource</a> service augments the response object
+with methods for updating and deleting the resource. If we were to use the standard <code>toEqual</code>
+matcher, our tests would fail because the test values would not match the responses exactly. To
+solve the problem, we use a newly-defined <code>toEqualData</code> <a href="http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html">Jasmine matcher</a>. When the
+<code>toEqualData</code> matcher compares two objects, it takes only object properties into account and
+ignores methods.</p>
+
+<p><strong><code>test/unit/controllersSpec.js</code>:</strong>
+<pre class="prettyprint linenums">
+describe('PhoneCat controllers', function() {
+
+  beforeEach(function(){
+    this.addMatchers({
+      toEqualData: function(expected) {
+        return angular.equals(this.actual, expected);
+      }
+    });
+  });
+
+
+  beforeEach(module('phonecatServices'));
+
+
+  describe('PhoneListCtrl', function(){
+    var scope, ctrl, $httpBackend;
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/phones.json').
+          respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneListCtrl, {$scope: scope});
+    }));
+
+
+    it('should create "phones" model with 2 phones fetched from xhr', function() {
+      expect(scope.phones).toEqual([]);
+      $httpBackend.flush();
+
+      expect(scope.phones).toEqualData(
+          [{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+    });
+
+
+    it('should set the default value of orderProp model', function() {
+      expect(scope.orderProp).toBe('age');
+    });
+  });
+
+
+  describe('PhoneDetailCtrl', function(){
+    var scope, $httpBackend, ctrl,
+        xyzPhoneData = function() {
+          return {
+            name: 'phone xyz',
+                images: ['image/url1.png', 'image/url2.png']
+          }
+        };
+
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+
+      $routeParams.phoneId = 'xyz';
+      scope = $rootScope.$new();
+      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+    }));
+
+
+    it('should fetch phone detail', function() {
+      expect(scope.phone).toEqualData({});
+      $httpBackend.flush();
+
+      expect(scope.phone).toEqualData(xyzPhoneData());
+    });
+  });
+});
+</pre>
+
+<p>You should now see the following output in the Karma tab:</p>
+
+<pre><code>Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)
+</code></pre>
+
+<h2>Summary</h2>
+
+<p>There you have it!  We have created a web app in a relatively short amount of time. In the <a href="tutorial/the_end">closing notes</a> we'll cover where to go from here.</p>
+
+<ul doc-tutorial-nav="11"></ul></div>

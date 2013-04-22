@@ -1,0 +1,67 @@
+<h1><code ng:non-bindable="">ngBindTemplate</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngBind.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>The <code>ngBindTemplate</code> directive specifies that the element
+text should be replaced with the template in ngBindTemplate.
+Unlike ngBind the ngBindTemplate can contain multiple <code>{{</code> <code>}}</code>
+expressions. (This is required since some HTML elements
+can not have SPAN elements such as TITLE, or OPTION to name a few.)</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY ng-bind-template="{string}"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="ng-bind-template: {string};"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngBindTemplate – {string} – </code>
+<p>template of form
+<tt>{{</tt> <tt>expression</tt> <tt>}}</tt> to eval.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>Try it here: enter text in text box and watch the greeting change.
+<h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-276" source-edit-css="" source-edit-js="script.js-275" source-edit-unit="" source-edit-scenario="scenario.js-277"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-276" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-276">
+    
+    <div ng-controller="Ctrl">
+     Salutation: <input type="text" ng-model="salutation"><br>
+     Name: <input type="text" ng-model="name"><br>
+     <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
+    </div>
+  </script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-275"></pre>
+<script type="text/ng-template" id="script.js-275">
+      function Ctrl($scope) {
+        $scope.salutation = 'Hello';
+        $scope.name = 'World';
+      }
+    </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-277"></pre>
+<script type="text/ng-template" id="scenario.js-277">
+    it('should check ng-bind', function() {
+      expect(using('.doc-example-live').binding('salutation')).
+        toBe('Hello');
+      expect(using('.doc-example-live').binding('name')).
+        toBe('World');
+      using('.doc-example-live').input('salutation').enter('Greetings');
+      using('.doc-example-live').input('name').enter('user');
+      expect(using('.doc-example-live').binding('salutation')).
+        toBe('Greetings');
+      expect(using('.doc-example-live').binding('name')).
+        toBe('user');
+    });
+  </script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-276" ng-eval-javascript="script.js-275"></div></div>
+</div>

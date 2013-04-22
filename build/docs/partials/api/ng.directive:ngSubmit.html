@@ -1,0 +1,71 @@
+<h1><code ng:non-bindable="">ngSubmit</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/ngEventDirs.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Enables binding angular expressions to onsubmit events.</p>
+
+<p>Additionally it prevents the default action (which for form means sending the request to the
+server and reloading the current page).</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;form ng-submit="{expression}"&gt;
+   ...
+&lt;/form&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;form class="ng-submit: {expression};"&gt;
+   ...
+&lt;/form&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngSubmit – {expression} – </code>
+<p><a href="guide/expression">Expression</a> to eval.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-186" source-edit-css="" source-edit-js="script.js-185" source-edit-unit="" source-edit-scenario="scenario.js-187"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-186" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-186">
+ 
+ <form ng-submit="submit()" ng-controller="Ctrl">
+   Enter text and hit enter:
+   <input type="text" ng-model="text" name="text" />
+   <input type="submit" id="submit" value="Submit" />
+   <pre>list={{list}}</pre>
+ </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-185"></pre>
+<script type="text/ng-template" id="script.js-185">
+   function Ctrl($scope) {
+     $scope.list = [];
+     $scope.text = 'hello';
+     $scope.submit = function() {
+       if (this.text) {
+         this.list.push(this.text);
+         this.text = '';
+       }
+     };
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-187"></pre>
+<script type="text/ng-template" id="scenario.js-187">
+  it('should check ng-submit', function() {
+    expect(binding('list')).toBe('[]');
+    element('.doc-example-live #submit').click();
+    expect(binding('list')).toBe('["hello"]');
+    expect(input('text').val()).toBe('');
+  });
+  it('should ignore empty strings', function() {
+    expect(binding('list')).toBe('[]');
+    element('.doc-example-live #submit').click();
+    element('.doc-example-live #submit').click();
+    expect(binding('list')).toBe('["hello"]');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-186" ng-eval-javascript="script.js-185"></div></div>
+</div>

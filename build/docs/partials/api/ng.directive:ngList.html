@@ -1,0 +1,64 @@
+<h1><code ng:non-bindable="">ngList</code>
+<span class="hint">(directive in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/directive/input.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Text input that converts between comma-separated string into an array of strings.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;input ng-list="{string}"&gt;
+   ...
+&lt;/input&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;input class="ng-list: {string};"&gt;
+   ...
+&lt;/input&gt;</pre>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">ngList<i>(optional)</i> – {string=} – </code>
+<p>optional delimiter that should be used to split the value. If
+specified in form <code>/something/</code> then the value will be converted into a regular expression.</p></li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-254" source-edit-css="" source-edit-js="script.js-253" source-edit-unit="" source-edit-scenario="scenario.js-255"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-254" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-254">
+ 
+ <form name="myForm" ng-controller="Ctrl">
+   List: <input name="namesInput" ng-model="names" ng-list required>
+   <span class="error" ng-show="myForm.list.$error.required">
+     Required!</span>
+   <tt>names = {{names}}</tt><br/>
+   <tt>myForm.namesInput.$valid = {{myForm.namesInput.$valid}}</tt><br/>
+   <tt>myForm.namesInput.$error = {{myForm.namesInput.$error}}</tt><br/>
+   <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+   <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+  </form>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-253"></pre>
+<script type="text/ng-template" id="script.js-253">
+   function Ctrl($scope) {
+     $scope.names = ['igor', 'misko', 'vojta'];
+   }
+ </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-255"></pre>
+<script type="text/ng-template" id="scenario.js-255">
+  it('should initialize to model', function() {
+    expect(binding('names')).toEqual('["igor","misko","vojta"]');
+    expect(binding('myForm.namesInput.$valid')).toEqual('true');
+  });
+
+  it('should be invalid if empty', function() {
+    input('names').enter('');
+    expect(binding('names')).toEqual('[]');
+    expect(binding('myForm.namesInput.$valid')).toEqual('false');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-254" ng-eval-javascript="script.js-253"></div></div>
+</div>

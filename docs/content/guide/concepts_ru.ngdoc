@@ -1,0 +1,467 @@
+@ngdoc overview
+@name Conceptual Overview
+@description
+
+# Overview
+
+This document gives a quick overview of the main angular components and how they work together.
+These are:
+
+  * {@link concepts#startup startup} - bring up hello world
+  * {@link concepts#runtime runtime} - overview of angular runtime
+  * {@link concepts#scope scope} - the glue between the view and the controller
+  * {@link concepts#controller controller} - application behavior
+  * {@link concepts#model model} - your application data
+  * {@link concepts#view view} - what the user sees
+  * {@link concepts#directives directives} - extend HTML vocabulary
+  * {@link concepts#filters filters} - format the data in user locale
+  * {@link concepts#injector injector} - assembles your application
+  * {@link concepts#module module} - configures the injector
+  * {@link concepts#angular_namespace `$`} - angular namespace
+
+<a name="startup"></a>
+# Startup
+
+This is how we get the ball rolling (refer to the diagram and example below):
+
+<img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
+
+  1. The browser loads the HTML and parses it into a DOM
+  2. The browser loads `angular.js` script
+  3. Angular waits for `DOMContentLoaded` event
+  4. Angular looks for {@link api/ng.directive:ngApp ng-app}
+    {@link guide/directive directive}, which designates the application boundary
+  5. The {@link guide/module Module} specified in {@link
+     api/ng.directive:ngApp ng-app} (if any) is used to configure
+     the {@link api/AUTO.$injector $injector}
+  6. The {@link api/AUTO.$injector $injector} is used to create the {@link
+     api/ng.$compile $compile} service as well as {@link
+     api/ng.$rootScope $rootScope}
+  7. The {@link api/ng.$compile $compile} service is used to compile the DOM and link
+     it   with {@link api/ng.$rootScope $rootScope}
+  8. The {@link api/ng.directive:ngInit ng-init} {@link
+     guide/directive directive} assigns `World` to the `name` property on the {@link guide/scope
+     scope}
+  9. The `{{name}}` {@link api/ng.$interpolate interpolates} the expression to
+     `Hello World!`
+
+<div class="clear">
+</div>
+<example>
+  <file name="index.html">
+    <p ng-init=" name='World' ">Hello {{name}}!</p>
+  </file>
+</example>
+
+
+<a name="runtime"></a>
+# Runtime
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-runtime.png">
+
+The diagram and the example below describe how Angular interacts with the browser's event loop.
+
+  1. The browser's event-loop waits for an event to arrive. An event is a user interaction, timer event,
+     or network event (response from a server).
+  2. The event's callback gets executed. This enters the JavaScript context. The callback can
+      modify the DOM structure.
+  3. Once the callback executes, the browser leaves the JavaScript context and
+     re-renders the view based on DOM changes.
+
+Angular modifies the normal JavaScript flow by providing its own event processing loop. This
+splits the JavaScript into classical and Angular execution context. Only operations which are
+applied in Angular execution context will benefit from Angular data-binding, exception handling,
+property watching, etc... You can also use $apply() to enter Angular execution context from JavaScript. Keep in
+mind that in most places (controllers, services) $apply has already been called for you by the
+directive which is handling the event. An explicit call to $apply is needed only when
+implementing custom event callbacks, or when working with third-party library callbacks.
+
+  1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
+     api/ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
+     the work you wish to do in Angular execution context.
+  2. Angular executes the `stimulusFn()`, which typically modifies application state.
+  3. Angular enters the {@link api/ng.$rootScope.Scope#$digest $digest} loop. The
+     loop is made up of two smaller loops which process {@link
+     api/ng.$rootScope.Scope#$evalAsync $evalAsync} queue and the {@link
+     api/ng.$rootScope.Scope#$watch $watch} list. The {@link
+     api/ng.$rootScope.Scope#$digest $digest} loop keeps iterating until the model
+     stabilizes, which means that the {@link api/ng.$rootScope.Scope#$evalAsync
+     $evalAsync} queue is empty and the {@link api/ng.$rootScope.Scope#$watch
+     $watch} list does not detect any changes.
+  4. The {@link api/ng.$rootScope.Scope#$evalAsync $evalAsync} queue is used to
+     schedule work which needs to occur outside of current stack frame, but before the browser's
+     view render. This is usually done with `setTimeout(0)`, but the `setTimeout(0)` approach
+     suffers from slowness and may cause view flickering since the browser renders the view after
+     each event.
+  5. The {@link api/ng.$rootScope.Scope#$watch $watch} list is a set of expressions
+     which may have changed since last iteration. If a change is detected then the `$watch`
+     function is called which typically updates the DOM with the new value.
+  6. Once the Angular {@link api/ng.$rootScope.Scope#$digest $digest} loop finishes
+     the execution leaves the Angular and JavaScript context. This is followed by the browser
+     re-rendering the DOM to reflect any changes.
+
+
+Here is the explanation of how the `Hello world` example achieves the data-binding effect when the
+user enters text into the text field.
+
+  1. During the compilation phase:
+     1. the {@link api/ng.directive:ngModel ng-model} and {@link
+        api/ng.directive:input input} {@link guide/directive
+        directive} set up a `keydown` listener on the `<input>` control.
+     2. the {@link api/ng.$interpolate &#123;&#123;name&#125;&#125; } interpolation
+        sets up a {@link api/ng.$rootScope.Scope#$watch $watch} to be notified of
+        `name` changes.
+  2. During the runtime phase:
+     1. Pressing an '`X`' key causes the browser to emit a `keydown` event on the input control.
+     2. The {@link api/ng.directive:input input} directive
+        captures the change to the input's value and calls {@link
+        api/ng.$rootScope.Scope#$apply $apply}`("name = 'X';")` to update the
+        application model inside the Angular execution context.
+     3. Angular applies the `name = 'X';` to the model.
+     4. The {@link api/ng.$rootScope.Scope#$digest $digest} loop begins
+     5. The {@link api/ng.$rootScope.Scope#$watch $watch} list detects a change
+        on the `name` property and notifies the {@link api/ng.$interpolate
+        &#123;&#123;name&#125;&#125; } interpolation, which in turn updates the DOM.
+     6. Angular exits the execution context, which in turn exits the `keydown` event and with it
+        the JavaScript execution context.
+     7. The browser re-renders the view with update text.
+
+<div class="clear">
+</div>
+<example>
+  <file name="index.html">
+    <input ng-model="name">
+    <p>Hello {{name}}!</p>
+  </file>
+</example>
+
+<a name="scope"></a>
+#Scope
+
+The {@link guide/scope scope} is responsible for detecting changes to the model section and
+provides the execution context for expressions. The scopes are nested in a hierarchical structure
+which closely follow the DOM structure. (See individual directive documentation to see which
+directives cause a creation of new scopes.)
+
+The following example demonstrates how the `name` {@link guide/expression expression} will evaluate
+into a different value depending on which scope it is evaluated in. The example is followed by
+a diagram depicting the scope boundaries.
+
+<div class="clear">
+</div>
+<div class="show-scope">
+<example>
+  <file name="index.html">
+    <div ng-controller="GreetCtrl">
+      Hello {{name}}!
+    </div>
+    <div ng-controller="ListCtrl">
+      <ol>
+        <li ng-repeat="name in names">{{name}}</li>
+      </ol>
+    </div>
+  </file>
+  <file name="script.js">
+    function GreetCtrl($scope) {
+      $scope.name = 'World';
+    }
+
+    function ListCtrl($scope) {
+      $scope.names = ['Igor', 'Misko', 'Vojta'];
+    }
+  </file>
+  <file name="style.css">
+    .show-scope .doc-example-live.ng-scope,
+    .show-scope .doc-example-live .ng-scope  {
+      border: 1px solid red;
+      margin: 3px;
+    }
+  </file>
+</example>
+</div>
+
+<img class="center" src="img/guide/concepts-scope.png">
+
+
+<a name="controller"></a>
+# Controller
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-controller.png">
+
+A controller is the code behind the view. Its job is to construct the model and publish it to the
+view along with callback methods. The view is a projection of the scope onto the template (the
+HTML). The scope is the glue which marshals the model to the view and forwards the events to the
+controller.
+
+The separation of the controller and the view is important because:
+
+  * The controller is written in JavaScript. JavaScript is imperative. Imperative is a good fit
+    for specifying application behavior. The controller should not contain any rendering
+    information (DOM references or HTML fragments).
+  * The view template is written in HTML. HTML is declarative. Declarative is a good fit for
+    specifying UI. The View should not contain any behavior.
+  * Since the controller is unaware of the view, there could be many views for the same
+    controller. This is important for re-skinning, device specific views (i.e. mobile vs desktop),
+    and testability.
+
+<div class="clear">
+</div>
+<example>
+  <file name="index.html">
+    <div ng-controller="MyCtrl">
+      Hello {{name}}!
+      <button ng-click="action()">
+        OK
+      </button>
+    </div>
+  </file>
+  <file name="script.js">
+    function MyCtrl($scope) {
+      $scope.action = function() {
+        $scope.name = 'OK';
+      }
+
+      $scope.name = 'World';
+    }
+  </file>
+</example>
+
+
+<a name="model"></a>
+# Model
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-model.png">
+
+The model is the data which is merged with the template to produce the view. To be able to
+render the model into the view, the model has to be able to be referenced from the scope. Unlike many
+other frameworks Angular makes no restrictions or requirements on the model. There are no classes
+to inherit from or special accessor methods for accessing or changing the model. The model can be
+primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
+
+
+<div class="clear">
+</div>
+
+
+<a name="view"></a>
+# View
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-view.png">
+
+The view is what the user sees. The view begins its life as a template, is merged with the
+model and finally rendered into the browser DOM. Angular takes a very different approach to
+rendering the view compared to most other templating systems.
+
+  * **Others** - Most templating systems begin as an HTML string with special templating markup.
+    Often the template markup breaks the HTML syntax which means that the template can not be
+    edited by an HTML editor. The template string is then parsed by the template engine, and
+    merged with the data. The result of the merge is an HTML string. The HTML string is then
+    written to the browser using the `.innerHTML`, which causes the browser to render the HTML.
+    When the model changes the whole process needs to be repeated. The granularity of the template
+    is the granularity of the DOM updates. The key here is that the templating system manipulates
+    strings.
+  * **Angular** - Angular is different, since its templating system works on DOM objects not on
+    strings. The template is still written in an HTML string, but it is HTML (not HTML with
+    template sprinkled in.) The browser parses the HTML into the DOM, and the DOM becomes the input to
+    the template engine known as the {@link api/ng.$compile compiler}. The compiler
+    looks for {@link guide/directive directives} which in turn set up {@link
+    api/ng.$rootScope.Scope#$watch watches} on the model. The result is a
+    continuously updating view which does not need template model re-merging. Your model becomes
+    the single source-of-truth for your view.
+
+<div class="clear">
+</div>
+
+<example>
+  <file name="index.html">
+    <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
+      <input ng-model="list" ng-list> <br>
+      <input ng-model="list" ng-list> <br>
+      <pre>list={{list}}</pre> <br>
+      <ol>
+        <li ng-repeat="item in list">
+          {{item}}
+        </li>
+      </ol>
+    </div>
+  </file>
+</example>
+
+
+<a name="directives"></a>
+# Directives
+
+A directive is a behavior or DOM transformation which is triggered by the presence of a custom attribute,
+element name, or a class name. A directive allows you to extend the HTML vocabulary in a
+declarative fashion. Following is an example which enables data-binding for the `contenteditable`
+in HTML.
+
+<example module="directive">
+  <file name="script.js">
+    angular.module('directive', []).directive('contenteditable', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+          // view -> model
+          elm.bind('blur', function() {
+            scope.$apply(function() {
+              ctrl.$setViewValue(elm.html());
+            });
+          });
+
+          // model -> view
+          ctrl.$render = function(value) {
+            elm.html(value);
+          };
+
+          // load init value from DOM
+          ctrl.$setViewValue(elm.html());
+        }
+      };
+    });
+  </file>
+  <file name="index.html">
+    <div contentEditable="true" ng-model="content">Edit Me</div>
+    <pre>model = {{content}}</pre>
+  </file>
+  <file name="style.css">
+    div[contentEditable] {
+      cursor: pointer;
+      background-color: #D0D0D0;
+      margin-bottom: 1em;
+      padding: 1em;
+    }
+  </file>
+</example>
+
+<a name="filters"></a>
+# Filters
+
+{@link api/ng.$filter Filters} perform data transformation. Typically
+they are used in conjunction with the locale to format the data in locale specific output.
+They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
+
+<example>
+  <file name="index.html">
+    <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
+      Number formatting: {{ 1234567890 | number }} <br>
+      array filtering <input ng-model="predicate">
+      {{ list | filter:predicate | json }}
+    </div>
+  </file>
+</example>
+
+
+<a name="module"></a>
+<a name="injector"></a>
+# Modules and the Injector
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png">
+
+The {@link api/AUTO.$injector injector} is a service locator. There is a single
+{@link api/AUTO.$injector injector} per Angular {@link
+api/ng.directive:ngApp application}. The {@link
+api/AUTO.$injector injector} provides a way to look up an object instance by its
+name. The injector keeps an internal cache of all objects so that repeated calls to get the same
+object name result in the same instance. If the object does not exist, then the {@link
+api/AUTO.$injector injector} asks the instance factory to create a new instance.
+
+A {@link api/angular.Module module} is a way to configure the injector's instance factory, known
+as a {@link api/AUTO.$provide provider}.
+
+<div class='clear'></div>
+<pre>
+  // Create a module
+  var myModule = angular.module('myModule', [])
+
+  // Configure the injector
+  myModule.factory('serviceA', function() {
+    return {
+      // instead of {}, put your object creation here
+    };
+  });
+
+  // create an injector and configure it from 'myModule'
+  var $injector = angular.injector(['myModule']);
+
+  // retrieve an object from the injector by name
+  var serviceA = $injector.get('serviceA');
+
+  // always true because of instance cache
+  $injector.get('serviceA') === $injector.get('serviceA');
+</pre>
+
+
+But the real magic of the {@link api/AUTO.$injector injector} is that it can be
+used to {@link api/AUTO.$injector#invoke call} methods and {@link
+api/AUTO.$injector#instantiate instantiate} types. This subtle feature is what
+allows the methods and types to ask for their dependencies instead of having to look for them.
+
+<pre>
+  // You write functions such as this one.
+  function doSomething(serviceA, serviceB) {
+    // do something here.
+  }
+
+  // Angular provides the injector for your application
+  var $injector = ...;
+
+  ///////////////////////////////////////////////
+  // the old-school way of getting dependencies.
+  var serviceA = $injector.get('serviceA');
+  var serviceB = $injector.get('serviceB');
+
+  // now call the function
+  doSomething(serviceA, serviceB);
+
+  ///////////////////////////////////////////////
+  // the cool way of getting dependencies.
+  // the $injector will supply the arguments to the function automatically
+  $injector.invoke(doSomething); // This is how the framework calls your functions
+</pre>
+
+Notice that the only thing you needed to write was the function, and list the dependencies in the
+function arguments. When angular calls the function, it will use the {@link
+api/AUTO.$injector#invoke call} which will automatically fill the function
+arguments.
+
+Examine the `ClockCtrl` below, and notice how it lists the dependencies in the constructor. When the
+{@link api/ng.directive:ngController ng-controller} instantiates
+the controller it automatically provides the dependencies. There is no need to create
+dependencies, look for dependencies, or even get a reference to the injector.
+
+<example module="timeExampleModule">
+  <file name="index.html">
+    <div ng-controller="ClockCtrl">
+      Current time is: {{ time.now }}
+    </div>
+  </file>
+  <file name="script.js">
+    angular.module('timeExampleModule', []).
+      // Declare new object called time,
+      // which will be available for injection
+      factory('time', function($timeout) {
+        var time = {};
+
+        (function tick() {
+          time.now = new Date().toString();
+          $timeout(tick, 1000);
+        })();
+        return time;
+      });
+
+    // Notice that you can simply ask for time
+    // and it will be provided. No need to look for it.
+    function ClockCtrl($scope, time) {
+      $scope.time = time;
+    }
+  </file>
+</example>
+
+
+<a name="angular_namespace"></a>
+# Angular Namespace
+
+To prevent accidental name collision, Angular prefixes names of objects which could potentially
+collide with `$`. Please do not use the `$` prefix in your code as it may accidentally collide
+with Angular code.

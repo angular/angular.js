@@ -1,0 +1,186 @@
+@ngdoc overview
+@name Developer Guide: Expressions
+@description
+
+Expressions are JavaScript-like code snippets that are usually placed in bindings such as `{{
+expression }}`. Expressions are processed by the {@link api/ng.$parse $parse}
+service.
+
+For example, these are all valid expressions in angular:
+
+  * `1+2`
+  * `3*10 | currency`
+  * `user.name`
+
+
+## Angular Expressions vs. JS Expressions
+
+It might be tempting to think of Angular view expressions as JavaScript expressions, but that is
+not entirely correct, since Angular does not use a JavaScript `eval()` to evaluate expressions.
+You can think of Angular expressions as JavaScript expressions with following differences:
+
+  * **Attribute Evaluation:** evaluation of all properties are against the scope, doing the
+    evaluation, unlike in JavaScript where the expressions are evaluated against the global
+    `window`.
+
+  * **Forgiving:** expression evaluation is forgiving to undefined and null, unlike in JavaScript,
+    where such evaluations generate `NullPointerExceptions`.
+
+  * **No Control Flow Statements:** you cannot do any of the following in angular expression:
+    conditionals, loops, or throw.
+
+  * **Filters:** you can pass result of expression evaluations through filter chains. For example
+    to convert date object into a local specific human-readable format.
+
+If, on the other hand, you do want to run arbitrary JavaScript code, you should make it a
+controller method and call the method. If you want to `eval()` an angular expression from
+JavaScript, use the {@link api/ng.$rootScope.Scope#$eval `$eval()`} method.
+
+## Example
+<doc:example>
+<doc:source>
+ 1+2={{1+2}}
+</doc:source>
+<doc:scenario>
+ it('should calculate expression in binding', function() {
+   expect(binding('1+2')).toEqual('3');
+ });
+</doc:scenario>
+</doc:example>
+
+You can try evaluating different expressions here:
+
+<doc:example>
+<doc:source>
+ <script>
+   function Cntl2($scope) {
+     var exprs = $scope.exprs = [];
+     $scope.expr = '3*10|currency';
+     $scope.addExp = function(expr) {
+        exprs.push(expr);
+     };
+
+     $scope.removeExp = function(index) {
+       exprs.splice(index, 1);
+     };
+   }
+ </script>
+ <div ng-controller="Cntl2" class="expressions">
+   Expression:
+   <input type='text' ng-model="expr" size="80"/>
+   <button ng-click="addExp(expr)">Evaluate</button>
+   <ul>
+    <li ng-repeat="expr in exprs">
+      [ <a href="" ng-click="removeExp($index)">X</a> ]
+      <tt>{{expr}}</tt> => <span ng-bind="$parent.$eval(expr)"></span>
+     </li>
+   </ul>
+ </div>
+</doc:source>
+<doc:scenario>
+ it('should allow user expression testing', function() {
+    element('.expressions :button').click();
+    var li = using('.expressions ul').repeater('li');
+    expect(li.count()).toBe(1);
+    expect(li.row(0)).toEqual(["3*10|currency", "$30.00"]);
+ });
+</doc:scenario>
+</doc:example>
+
+
+# Property Evaluation
+
+Evaluation of all properties takes place against a scope. Unlike JavaScript, where names default
+to global window properties, Angular expressions have to use {@link api/ng.$window
+`$window`} to refer to the global `window` object. For example, if you want to call `alert()`, which is
+defined on `window`, in an expression you must use `$window.alert()`. This is done intentionally to
+prevent accidental access to the global state (a common source of subtle bugs).
+
+<doc:example>
+<doc:source>
+ <script>
+   function Cntl1($window, $scope){
+     $scope.name = 'World';
+
+     $scope.greet = function() {
+       ($window.mockWindow || $window).alert('Hello ' + $scope.name);
+     }
+   }
+ </script>
+ <div class="example2" ng-controller="Cntl1">
+   Name: <input ng-model="name" type="text"/>
+   <button ng-click="greet()">Greet</button>
+ </div>
+</doc:source>
+<doc:scenario>
+ it('should calculate expression in binding', function() {
+   var alertText;
+   this.addFutureAction('set mock', function($window, $document, done) {
+     $window.mockWindow = {
+       alert: function(text){ alertText = text; }
+     };
+     done();
+   });
+   element(':button:contains(Greet)').click();
+   expect(this.addFuture('alert text', function(done) {
+     done(null, alertText);
+   })).toBe('Hello World');
+ });
+</doc:scenario>
+</doc:example>
+
+## Forgiving
+
+Expression evaluation is forgiving to undefined and null. In JavaScript, evaluating `a.b.c` throws
+an exception if `a` is not an object. While this makes sense for a general purpose language, the
+expression evaluations are primarily used for data binding, which often look like this:
+
+        {{a.b.c}}
+
+It makes more sense to show nothing than to throw an exception if `a` is undefined (perhaps we are
+waiting for the server response, and it will become defined soon). If expression evaluation wasn't
+forgiving we'd have to write bindings that clutter the code, for example: `{{((a||{}).b||{}).c}}`
+
+Similarly, invoking a function `a.b.c()` on undefined or null simply returns undefined.
+
+
+## No Control Flow Statements
+
+You cannot write a control flow statement in an expression. The reason behind this is core to the
+Angular philosophy that application logic should be in controllers, not in the view. If you need a
+conditional, loop, or to throw from a view expression, delegate to a JavaScript method instead.
+
+
+## Filters
+
+When presenting data to the user, you might need to convert the data from its raw format to a
+user-friendly format. For example, you might have a data object that needs to be formatted
+according to the locale before displaying it to the user. You can pass expressions through a chain
+of filters like this:
+
+       name | uppercase
+
+The expression evaluator simply passes the value of name to {@link
+api/ng.filter:uppercase `uppercase`} filter.
+
+Chain filters using this syntax:
+
+       value | filter1 | filter2
+
+You can also pass colon-delimited arguments to filters, for example, to display the number 123
+with 2 decimal points:
+
+       123 | number:2
+
+# The $
+
+You might be wondering, what is the significance of the $ prefix? It is simply a prefix that
+angular uses, to differentiate its API names from others. If angular didn't use $, then evaluating
+`a.length()` would return undefined because neither a nor angular define such a property.
+
+Consider that in a future version of Angular we might choose to add a length method, in which case
+the behavior of the expression would change. Worse yet, you, the developer, could create a length
+property and then we would have a collision. This problem exists because Angular augments existing
+objects with additional behavior. By prefixing its additions with $ we are reserving our namespace
+so that angular developers and developers who use Angular can develop in harmony without collisions.
+

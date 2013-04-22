@@ -1,0 +1,68 @@
+<h1><code ng:non-bindable="">number</code>
+<span class="hint">(filter in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/filter/filters.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Formats a number as text.</p>
+
+<p>If the input is not a number an empty string is returned.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><h3 id="In.HTML.Template.Binding">In HTML Template Binding</h3>
+<div class="in-html-template-binding"><code ng:non-bindable="">{{ number_expression | number[:fractionSize] }}</code>
+</div>
+<h3 id="In.JavaScript">In JavaScript</h3>
+<div class="in-javascript"><code ng:non-bindable="">$filter('number')(number[, fractionSize])</code>
+</div>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">number – {number|string} – </code>
+<p>Number to format.</p></li>
+<li><code ng:non-bindable="">fractionSize<i>(optional=2)</i> – {(number|string)=} – </code>
+<p>Number of decimal places to round the number to.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>Number rounded to decimalPlaces and places a “,” after each third digit.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-297" source-edit-css="" source-edit-js="script.js-296" source-edit-unit="" source-edit-scenario="scenario.js-298"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-297" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-297">
+  
+  <div ng-controller="Ctrl">
+    Enter number: <input ng-model='val'><br>
+    Default formatting: {{val | number}}<br>
+    No fractions: {{val | number:0}}<br>
+    Negative number: {{-val | number:4}}
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-296"></pre>
+<script type="text/ng-template" id="script.js-296">
+    function Ctrl($scope) {
+      $scope.val = 1234.56789;
+    }
+  </script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-298"></pre>
+<script type="text/ng-template" id="scenario.js-298">
+  it('should format numbers', function() {
+    expect(binding('val | number')).toBe('1,234.568');
+    expect(binding('val | number:0')).toBe('1,235');
+    expect(binding('-val | number:4')).toBe('-1,234.5679');
+  });
+
+  it('should update', function() {
+    input('val').enter('3374.333');
+    expect(binding('val | number')).toBe('3,374.333');
+    expect(binding('val | number:0')).toBe('3,374');
+    expect(binding('-val | number:4')).toBe('-3,374.3330');
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-297" ng-eval-javascript="script.js-296"></div></div>
+</div>

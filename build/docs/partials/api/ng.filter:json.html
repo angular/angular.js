@@ -1,0 +1,44 @@
+<h1><code ng:non-bindable="">json</code>
+<span class="hint">(filter in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/filter/filters.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Allows you to convert a JavaScript object into JSON string.</p>
+
+<p>This filter is mostly useful for debugging. When using the double curly {{value}} notation
+the binding is automatically converted to JSON.</p></div>
+<h2 id="Usage">Usage</h2>
+<div class="usage"><h3 id="In.HTML.Template.Binding">In HTML Template Binding</h3>
+<div class="in-html-template-binding"><code ng:non-bindable="">{{ json_expression | json }}</code>
+</div>
+<h3 id="In.JavaScript">In JavaScript</h3>
+<div class="in-javascript"><code ng:non-bindable="">$filter('json')(object)</code>
+</div>
+<h3 id="Parameters">Parameters</h3>
+<ul class="parameters"><li><code ng:non-bindable="">object – {*} – </code>
+<p>Any JavaScript object (including arrays and primitive types) to filter.</p></li>
+</ul>
+<h3 id="Returns">Returns</h3>
+<div class="returns"><code ng:non-bindable="">{string}</code>
+– <p>JSON string.</p></div>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><h4>Source</h4>
+<div source-edit="" source-edit-deps="angular.js" source-edit-html="index.html-301" source-edit-css="" source-edit-js="" source-edit-unit="" source-edit-scenario="scenario.js-302"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-301" ng-html-wrap=" angular.js"></pre>
+<script type="text/ng-template" id="index.html-301">
+  <pre>{{ {'name':'value'} | json }}</pre>
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-302"></pre>
+<script type="text/ng-template" id="scenario.js-302">
+  it('should jsonify filtered objects', function() {
+    expect(binding("{'name':'value'}")).toMatch(/\{\n  "name": ?"value"\n}/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="" ng-set-html="index.html-301" ng-eval-javascript=""></div></div>
+</div>

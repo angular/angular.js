@@ -1,0 +1,225 @@
+<h1><code ng:non-bindable="">$route</code>
+<span class="hint">(service in module <code ng:non-bindable="">ng</code>
+)</span>
+</h1>
+<div><a href="http://github.com/maksimr/angular.js/edit/gh-pages/src/ng/route.js" class="improve-docs btn btn-primary">Улучшить перевод</a><h2 id="Description">Description</h2>
+<div class="description"><p>Is used for deep-linking URLs to controllers and views (HTML partials).
+It watches <code>$location.url()</code> and tries to map the path to an existing route definition.</p>
+
+<p>You can define routes through <a href="api/ng.$routeProvider"><code>$routeProvider</code></a>'s API.</p>
+
+<p>The <code>$route</code> service is typically used in conjunction with <a href="api/ng.directive:ngView"><code>ngView</code></a>
+directive and the <a href="api/ng.$routeParams"><code>$routeParams</code></a> service.</p></div>
+<h2 id="Dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$location">$location</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$routeParams">$routeParams</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="Methods">Methods</h2>
+<ul class="methods"><li><h3 id="reload">reload()</h3>
+<div class="reload"><p>Causes <code>$route</code> service to reload the current route even if
+<a href="api/ng.$location"><code>$location</code></a> hasn't changed.</p>
+
+<p>As a result of that, <a href="api/ng.directive:ngView"><code>ngView</code></a>
+creates new scope, reinstantiates the controller.</p></div>
+</li>
+</ul>
+</div>
+<div class="member property"><h2 id="Properties">Properties</h2>
+<ul class="properties"><li><h3 id="current">current</h3>
+<div class="current"><p>Reference to the current route definition.
+The route definition contains:</p>
+
+<ul>
+<li><code>controller</code>: The controller constructor as define in route definition.</li>
+<li><p><code>locals</code>: A map of locals which is used by <a href="api/ng.$controller"><code>$controller</code></a> service for
+controller instantiation. The <code>locals</code> contain
+the resolved values of the <code>resolve</code> map. Additionally the <code>locals</code> also contain:</p>
+
+<ul><li><code>$scope</code> - The current route scope.</li>
+<li><code>$template</code> - The current route template HTML.</li></ul></li>
+</ul></div>
+</li>
+<li><h3 id="routes">routes</h3>
+<div class="routes"><p>Array of all configured routes.</p></div>
+</li>
+</ul>
+</div>
+<div class="member event"><h2 id="Events">Events</h2>
+<ul class="events"><li><h3 id="$routeChangeError">$routeChangeError</h3>
+<div class="$routechangeerror"><p>Broadcasted if any of the resolve promises are rejected.</p><div class="inline"><h4 id="Type.">Type:</h4>
+<div class="type-">broadcast</div>
+</div>
+<div class="inline"><h4 id="Target.">Target:</h4>
+<div class="target-">root scope</div>
+</div>
+<h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">current – {Route} – </code>
+<p>Current route information.</p></li>
+<li><code ng:non-bindable="">previous – {Route} – </code>
+<p>Previous route information.</p></li>
+<li><code ng:non-bindable="">rejection – {Route} – </code>
+<p>Rejection of the promise. Usually the error of the failed promise.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="$routeChangeStart">$routeChangeStart</h3>
+<div class="$routechangestart"><p>Broadcasted before a route change. At this  point the route services starts
+resolving all of the dependencies needed for the route change to occurs.
+Typically this involves fetching the view template as well as any dependencies
+defined in <code>resolve</code> route property. Once  all of the dependencies are resolved
+<code>$routeChangeSuccess</code> is fired.</p><div class="inline"><h4 id="Type.">Type:</h4>
+<div class="type-">broadcast</div>
+</div>
+<div class="inline"><h4 id="Target.">Target:</h4>
+<div class="target-">root scope</div>
+</div>
+<h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">next – {Route} – </code>
+<p>Future route information.</p></li>
+<li><code ng:non-bindable="">current – {Route} – </code>
+<p>Current route information.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="$routeChangeSuccess">$routeChangeSuccess</h3>
+<div class="$routechangesuccess"><p>Broadcasted after a route dependencies are resolved.
+<a href="api/ng.directive:ngView"><code>ngView</code></a> listens for the directive
+to instantiate the controller and render the view.</p><div class="inline"><h4 id="Type.">Type:</h4>
+<div class="type-">broadcast</div>
+</div>
+<div class="inline"><h4 id="Target.">Target:</h4>
+<div class="target-">root scope</div>
+</div>
+<h4 id="Parameters">Parameters</h4>
+<ul class="parameters"><li><code ng:non-bindable="">angularEvent – {Object} – </code>
+<p>Synthetic event object.</p></li>
+<li><code ng:non-bindable="">current – {Route} – </code>
+<p>Current route information.</p></li>
+<li><code ng:non-bindable="">previous – {Route|Undefined} – </code>
+<p>Previous route information, or undefined if current is first route entered.</p></li>
+</ul>
+</div>
+</li>
+<li><h3 id="$routeUpdate">$routeUpdate</h3>
+<div class="$routeupdate"><p>The <code>reloadOnSearch</code> property has been set to false, and we are reusing the same
+instance of the Controller.</p><div class="inline"><h4 id="Type.">Type:</h4>
+<div class="type-">broadcast</div>
+</div>
+<div class="inline"><h4 id="Target.">Target:</h4>
+<div class="target-">root scope</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<h2 id="Example">Example</h2>
+<div class="example"><p>This example shows how changing the URL hash causes the <code>$route</code> to match a route against the
+URL, and the <code>ngView</code> pulls in the partial.</p>
+
+<p>Note that this example is using <a href="api/ng.directive:script"><code>inlined templates</code></a>
+to get it working on jsfiddle as well.</p>
+
+<h4>Source</h4>
+<div source-edit="ngView" source-edit-deps="angular.js script.js" source-edit-html="index.html-313 book.html chapter.html" source-edit-css="" source-edit-js="script.js-314" source-edit-unit="" source-edit-scenario="scenario.js-315"></div>
+<div class="tabbable"><div class="tab-pane" title="index.html">
+<pre class="prettyprint linenums" ng-set-text="index.html-313" ng-html-wrap="ngView angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-313">
+  <div ng-controller="MainCntl">
+    Choose:
+    <a href="Book/Moby">Moby</a> |
+    <a href="Book/Moby/ch/1">Moby: Ch1</a> |
+    <a href="Book/Gatsby">Gatsby</a> |
+    <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
+    <a href="Book/Scarlet">Scarlet Letter</a><br/>
+
+    <div ng-view></div>
+    <hr />
+
+    <pre>$location.path() = {{$location.path()}}</pre>
+    <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>
+    <pre>$route.current.params = {{$route.current.params}}</pre>
+    <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+    <pre>$routeParams = {{$routeParams}}</pre>
+  </div>
+</script>
+</div>
+<div class="tab-pane" title="book.html">
+<pre class="prettyprint linenums" ng-set-text="book.html"></pre>
+<script type="text/ng-template" id="book.html">
+  controller: {{name}}<br />
+  Book Id: {{params.bookId}}<br />
+</script>
+</div>
+<div class="tab-pane" title="chapter.html">
+<pre class="prettyprint linenums" ng-set-text="chapter.html"></pre>
+<script type="text/ng-template" id="chapter.html">
+  controller: {{name}}<br />
+  Book Id: {{params.bookId}}<br />
+  Chapter Id: {{params.chapterId}}
+</script>
+</div>
+<div class="tab-pane" title="script.js">
+<pre class="prettyprint linenums" ng-set-text="script.js-314"></pre>
+<script type="text/ng-template" id="script.js-314">
+  angular.module('ngView', [], function($routeProvider, $locationProvider) {
+    $routeProvider.when('/Book/:bookId', {
+      templateUrl: 'book.html',
+      controller: BookCntl,
+      resolve: {
+        // I will cause a 1 second delay
+        delay: function($q, $timeout) {
+          var delay = $q.defer();
+          $timeout(delay.resolve, 1000);
+          return delay.promise;
+        }
+      }
+    });
+    $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+      templateUrl: 'chapter.html',
+      controller: ChapterCntl
+    });
+
+    // configure html5 to get links working on jsfiddle
+    $locationProvider.html5Mode(true);
+  });
+
+  function MainCntl($scope, $route, $routeParams, $location) {
+    $scope.$route = $route;
+    $scope.$location = $location;
+    $scope.$routeParams = $routeParams;
+  }
+
+  function BookCntl($scope, $routeParams) {
+    $scope.name = "BookCntl";
+    $scope.params = $routeParams;
+  }
+
+  function ChapterCntl($scope, $routeParams) {
+    $scope.name = "ChapterCntl";
+    $scope.params = $routeParams;
+  }
+</script>
+</div>
+<div class="tab-pane" title="End to end test">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-315"></pre>
+<script type="text/ng-template" id="scenario.js-315">
+  it('should load and compile correct template', function() {
+    element('a:contains("Moby: Ch1")').click();
+    var content = element('.doc-example-live [ng-view]').text();
+    expect(content).toMatch(/controller\: ChapterCntl/);
+    expect(content).toMatch(/Book Id\: Moby/);
+    expect(content).toMatch(/Chapter Id\: 1/);
+
+    element('a:contains("Scarlet")').click();
+    sleep(2); // promises are not part of scenario waiting
+    content = element('.doc-example-live [ng-view]').text();
+    expect(content).toMatch(/controller\: BookCntl/);
+    expect(content).toMatch(/Book Id\: Scarlet/);
+  });
+</script>
+</div>
+</div><h4>Demo</h4>
+<div class="well doc-example-live animator-container" ng-embed-app="ngView" ng-set-html="index.html-313" ng-eval-javascript="script.js-314"></div></div>
+</div>
