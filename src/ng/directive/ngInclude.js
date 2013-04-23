@@ -165,11 +165,12 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                 $anchorScroll();
               }
 
-              childScope.$emit('$includeContentLoaded');
+              childScope.$emit('$includeContentLoaded', {element: element});
               scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
+              childScope.$emit('$includeContentRequested', {element: element});
           } else {
             clearContent();
           }
