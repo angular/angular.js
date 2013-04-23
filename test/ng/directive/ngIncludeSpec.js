@@ -291,6 +291,11 @@ describe('ngInclude ngAnimate', function() {
     return element;
   }
 
+  function applyCSS(element, cssProp, cssValue) {
+    element.css(cssProp, cssValue);    
+    element.css(vendorPrefix + cssProp, cssValue);
+  }
+
   beforeEach(function() {
     // we need to run animation on attached elements;
     body = jqLite(document.body);
@@ -328,9 +333,7 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '1s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '1s linear all');
 
       if ($sniffer.supportsTransitions) {
         expect(child.attr('class')).toContain('custom-enter-setup');
@@ -360,9 +363,7 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '1s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '1s linear all');
 
       $rootScope.tpl = '';
       $rootScope.$digest();
@@ -395,9 +396,7 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '0.5s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '0.5s linear all');
 
       $rootScope.tpl = 'enter';
       $rootScope.$digest();
