@@ -1,0 +1,53 @@
+<!DOCTYPE html> 
+<html ng-app>
+  <head>
+    <title>CSS3 Animations Demo</title>
+<style>
+main {
+  background:green;
+}
+@-webkit-keyframes custom_animation {
+  0% { opacity:0; background:black; }
+  20% { opacity:1; }
+  50% { background:red; font-size:100px; }
+  100% { background:white; font-size:inherit; }
+}
+
+@keyframes custom_animation {
+  0% { opacity:0; background:black; }
+  20% { opacity:1; }
+  50% { background:red; font-size:100px; }
+  100% { background:white; font-size:inherit; }
+}
+
+.animate-single-show-setup {
+  animation: custom_animation 2s;
+  -webkit-animation: custom_animation 2s;
+}
+
+.animate-triple-show-setup {
+  animation: custom_animation 2s;
+  animation-iteration-count: 3;
+  -webkit-animation: custom_animation 2s;
+  -webkit-animation-iteration-count: 3;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="wrapper" ng-init="single=false; triple=false;">
+      <button ng-click="single=true">Turn on (single)</button>
+      <main ng-show="single" ng-animate="'animate-single'">
+        123123
+      </main>
+
+      <button ng-click="triple=true">Turn on (triple)</button>
+      <main ng-show="triple" ng-animate="'animate-triple'">
+        123123
+      </main>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../build/angular.js"></script> 
+  <body>
+</html>
