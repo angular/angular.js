@@ -177,6 +177,15 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/a');
     });
 
+    it('should not rewrite when hashbang url is not given', function() {
+      initService(true, '!', true);
+      inject(
+        initBrowser('http://domain.com/base/a/b', '/base'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/a/b');
+        }
+      );
+    });
 
     it('should prepend path with basePath', function() {
       url = new LocationHtml5Url('http://server/base/');
