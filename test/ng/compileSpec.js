@@ -541,7 +541,7 @@ describe('$compile', function() {
         it('should prevent multiple templates per element', inject(function($compile) {
           try {
             $compile('<div><span replace class="replace"></span></div>')
-            fail();
+            this.fail(Error());
           } catch(e) {
             expect(e.message).toMatch(/Multiple directives .* asking for template/);
           }
