@@ -302,7 +302,7 @@ describe("$animator", function() {
       module(function($animationProvider, $provide) {
         $provide.value('$window', window = angular.mock.createMockWindow());
         return function($sniffer, _$rootElement_, $animator) {
-          vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+          vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
           $rootElement = _$rootElement_;
           $animator.enabled(true);
         };
@@ -334,6 +334,25 @@ describe("$animator", function() {
       }
       expect(element[0].style.display).toBe('');
     }));
+
+    it("should consider a CSS3 delay if set within the setup class",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      var style = vendorPrefix + 'transition: 1s linear all;' +
+                  vendorPrefix + 'transition-delay: 8s;';
+
+      element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom-show\'}'
+      });
+
+      animator.show(element);
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(9000).process();
+      }
+    }));
+
   });
 
   it("should throw an error when an invalid ng-animate syntax is provided", inject(function($compile, $rootScope) {
