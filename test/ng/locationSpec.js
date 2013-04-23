@@ -132,6 +132,15 @@ describe('$location', function() {
     });
 
 
+    it('notify should set $$notify flag and return itself', function() {
+      expect(url.$$notify).toBe(true);
+
+      url.notify(false);
+      expect(url.$$notify).toBe(false);
+      expect(url.notify(true)).toBe(url);
+    });
+
+
     it('should parse new url', function() {
       url = new LocationHtml5Url('http://host.com/');
       url.$$parse('http://host.com/base');
@@ -480,6 +489,32 @@ describe('$location', function() {
     }));
 
 
+    it('should skip location change notifications when notify is set to false', inject(
+      function($log, $location, $browser, $rootScope) {
+
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('before', newUrl, oldUrl, $browser.url());
+        });
+        $rootScope.$apply(); // initial $locationChangeStart
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://new.com/a/b', 'http://new.com/a/b', 'http://new.com/a/b']);
+
+        // Setting notify to false shouldn't trigger $locationChangeStart
+        $location.path('/any').notify(false);
+        $rootScope.$apply();
+        expect($log.info.logs).toEqual([]);
+        expect($browser.url()).toEqual('http://new.com/a/b#!/any');
+        
+        // Setting notify to true should trigger $locationChangeStart
+        $location.path('/anyother').notify(true);
+        $rootScope.$apply();
+        expect($browser.url()).toEqual('http://new.com/a/b#!/anyother');
+        expect($log.info.logs.shift()).
+          toEqual(['before', 'http://new.com/a/b#!/anyother', 'http://new.com/a/b#!/any', 'http://new.com/a/b#!/any']);
+      })
+    );
+
+
     it('should always reset replace flag after running watch', inject(function($rootScope, $location) {
       // init watches
       $location.url('/initUrl');
@@ -501,6 +536,18 @@ describe('$location', function() {
       expect($location.$$replace).toBe(false);
     }));
 
+
+    it('should always reset notify flag after running watch', inject(function($rootScope, $location) {
+      // flag gets reset after digest
+      $location.url('/newUrl').notify(false);
+      $rootScope.$apply();
+      expect($location.$$notify).toBe(true);
+
+      // even if no changes on location are stated
+      $location.notify(false);
+      $rootScope.$apply();
+      expect($location.$$notify).toBe(true);
+    }));
 
     it('should update the browser if changed from within a watcher', inject(function($rootScope, $location, $browser) {
       $rootScope.$watch(function() { return true; }, function() {
