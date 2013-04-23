@@ -275,7 +275,50 @@ expect(length('abc')).toEqual(3);
 </pre>
 
 ## Directives
-Directives in angular are responsible for updating the DOM when the state of the model changes.
+Directives in angular are responsible for encapsulating complex functionality within custom HTML tags, attributes, classes or comments. Unit tests are very important for direvtives because the componants you create with directives may be used all throughout your application and in many different contexts.
+
+### Simple HTML Element Directive
+
+Lets start with a simple angular app with no dependencies.
+
+<pre>
+var app = angular.module('myApp', []);
+</pre>
+
+Now we can add a simple directive to our app.
+
+<pre>
+app.directive('aGreatEye', function () {
+    return {
+        restrict: 'E',
+        replace:  true,
+        template: '<h1>lidless, wreathed in flame</h1>'
+    };
+});
+</pre>
+
+This directive is represented by the tag "<a-great-eye></a-great-eye>". It replaces the entire tag with the contents "<h1>lidless, wreathed in flame</h1>". Now we are going to write a jasmine test to verify this functionality.
+
+<pre>
+describe('Unit testing great quotes', function() {
+    var $compile;
+    var $rootScope;
+
+    //load up angular and inject angular's $rootScope and $compile so they are available to all tests
+    beforeEach(module('myApp'));
+    beforeEach(inject(function(_$compile_, _$rootScope_){
+      $compile = _$compile_;
+      $rootScope = _$rootScope_;
+    }));
+    
+    it('Replaces the element with the appropriate content', function() {
+        var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
+        expect(element.html()).toContain("lidless, wreathed in flame");
+    });
+});
+</pre>
+
+We inject the $compile service and $rootScope before each jasmine test. The $compile service is used to render the aGreatEye directive. After rendering the directive we ensure that the directive has replaced the content and "lidless, wreathed in flame" is present.
 
 ## Mocks
 oue
