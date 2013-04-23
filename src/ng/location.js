@@ -119,13 +119,14 @@ function LocationHtml5Url(appBase, basePrefix) {
   };
 
   this.$$rewrite = function(url) {
-    var appUrl;
+    var appUrl, prevAppUrl;
 
     if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
+      prevAppUrl = appUrl;
       if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
         return appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
       } else {
-        return appBase;
+        return appBase + prevAppUrl;
       }
     } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
       return appBaseNoFile + appUrl;
