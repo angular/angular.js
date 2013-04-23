@@ -268,8 +268,11 @@ var $AnimatorProvider = function() {
                   var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
                   var w3cTransitionProp = 'transition'; //one day all browsers will have this
   
-                  var durationKey = 'Duration';
-                  var duration = 0;
+                  var durationKey = 'Duration',
+                      delayKey = 'Delay',
+                      duration = 0,
+                      delay = 0;
+                  
                   //we want all the styles defined before and after
                   forEach(element, function(element) {
                     var globalStyles = $window.getComputedStyle(element) || {};
@@ -278,8 +281,14 @@ var $AnimatorProvider = function() {
                         parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
                         0,
                         duration);
+                    delay = Math.max(
+                        parseFloat(globalStyles[w3cTransitionProp    + delayKey]) ||
+                        parseFloat(globalStyles[vendorTransitionProp + delayKey]) ||
+                        0,
+                        delay);
+                    
                   });
-                  $window.setTimeout(done, duration * 1000);
+                  $window.setTimeout(done, (duration + delay) * 1000);
                 } else {
                   done();
                 }
