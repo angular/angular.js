@@ -73,6 +73,7 @@ angularFiles = {
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
     'src/ngMobile/mobile.js',
+    'src/ngMobile/swipe.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
 
@@ -113,6 +114,7 @@ angularFiles = {
     'test/ngSanitize/directive/*.js',
     'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js',
+    'test/ngMobile/*.js',
     'test/ngMobile/directive/*.js',
     'docs/component-spec/bootstrap/*.js',
     'docs/component-spec/*.js'
@@ -154,6 +156,7 @@ angularFiles = {
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngMobile/mobile.js',
+    'src/ngMobile/swipe.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
     'src/ngSanitize/sanitize.js',
@@ -168,7 +171,7 @@ angularFiles = {
     'test/ngSanitize/*.js',
     'test/ngSanitize/directive/*.js',
     'test/ngSanitize/filter/*.js',
-    'test/ngMobile/directive/*.js'
+    'test/ngMobile/**/*.js'
   ],
 
   'jstdPerf': [
