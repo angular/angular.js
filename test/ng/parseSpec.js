@@ -103,6 +103,14 @@ describe('parser', function() {
       expect(tokens[7].text).toEqual('===');
       expect(tokens[8].text).toEqual('!==');
     });
+    
+    it('should tokenize logical and ternary', function() {
+      var tokens = lex("&& || ? :");
+      expect(tokens[0].text).toEqual('&&');
+      expect(tokens[1].text).toEqual('||');
+      expect(tokens[2].text).toEqual('?');
+      expect(tokens[3].text).toEqual(':');
+    });
 
     it('should tokenize statements', function() {
       var tokens = lex("a;b;");
@@ -219,6 +227,52 @@ describe('parser', function() {
         expect(scope.$eval("0&&2")).toEqual(0&&2);
         expect(scope.$eval("0||2")).toEqual(0||2);
         expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
+      });
+      
+      it('should parse ternary', function(){
+        var f = scope.f = function(){ return true; };
+        var g = scope.g = function(){ return false; };
+        var h = scope.h = function(){ return 'asd'; };
+        var i = scope.i = function(){ return 123; };
+        var id = scope.id = function(x){ return x; };
+
+        // Simple.
+        expect(scope.$eval('0?0:2')).toEqual(0?0:2);
+        expect(scope.$eval('1?0:2')).toEqual(1?0:2);
+        
+        // Nested on the left.
+        expect(scope.$eval('0?0?0:0:2')).toEqual(0?0?0:0:2);
+        expect(scope.$eval('1?0?0:0:2')).toEqual(1?0?0:0:2);
+        expect(scope.$eval('0?1?0:0:2')).toEqual(0?1?0:0:2);
+        expect(scope.$eval('0?0?1:0:2')).toEqual(0?0?1:0:2);
+        expect(scope.$eval('0?0?0:2:3')).toEqual(0?0?0:2:3);
+        expect(scope.$eval('1?1?0:0:2')).toEqual(1?1?0:0:2);
+        expect(scope.$eval('1?1?1:0:2')).toEqual(1?1?1:0:2);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
+        
+        // Nested on the right.
+        expect(scope.$eval('0?0:0?0:2')).toEqual(0?0:0?0:2);
+        expect(scope.$eval('1?0:0?0:2')).toEqual(1?0:0?0:2);
+        expect(scope.$eval('0?1:0?0:2')).toEqual(0?1:0?0:2);
+        expect(scope.$eval('0?0:1?0:2')).toEqual(0?0:1?0:2);
+        expect(scope.$eval('0?0:0?2:3')).toEqual(0?0:0?2:3);
+        expect(scope.$eval('1?1:0?0:2')).toEqual(1?1:0?0:2);
+        expect(scope.$eval('1?1:1?0:2')).toEqual(1?1:1?0:2);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
+        
+        // Precedence with respect to logical operators.
+        expect(scope.$eval('0&&1?0:1')).toEqual(0&&1?0:1);
+        expect(scope.$eval('0&&1?0:1')).toEqual((0&&1)?0:1);
+        expect(scope.$eval('1||0?0:0')).toEqual(1||0?0:0);
+        expect(scope.$eval('1||0?0:0')).toEqual((1||0)?0:0);
+        
+        // Function calls.
+        expect(scope.$eval('f() ? h() : i()')).toEqual(f() ? h() : i());
+        expect(scope.$eval('g() ? h() : i()')).toEqual(g() ? h() : i());
+        expect(scope.$eval('f() ? h() : i()')).toEqual(f() ? h() : i());
+        expect(scope.$eval('id(g() ? h() : i())')).toEqual(id(g() ? h() : i()));
       });
 
       it('should parse string', function() {
