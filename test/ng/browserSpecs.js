@@ -271,8 +271,8 @@ describe('browser', function() {
         browser.cookies('x', longVal + longVal + longVal); //should be too long for all browsers
 
         if (document.cookie !== cookieStr) {
-          fail("browser didn't drop long cookie when it was expected. make the cookie in this " +
-              "test longer");
+          this.fail(new Error("browser didn't drop long cookie when it was expected. make the " +
+              "cookie in this test longer"));
         }
 
         expect(browser.cookies().x).toEqual('shortVal');
