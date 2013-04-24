@@ -14,7 +14,7 @@ book.
 
 ## DI in a nutshell
 
-There are only three ways how an object or a function can get a hold of its dependencies:
+There are only three ways an object or a function can get a hold of its dependencies:
 
   1. The dependency can be created, typically using the `new` operator.
 
@@ -23,8 +23,8 @@ There are only three ways how an object or a function can get a hold of its depe
   3. The dependency can be passed in to where it is needed.
 
 
-The first two options of creating or looking up dependencies are not optimal, because they hard
-code the dependency, making it difficult, if not impossible, to modify the dependencies.
+The first two options of creating or looking up dependencies are not optimal because they hard
+code the dependency. This make it difficult, if not impossible, to modify the dependencies.
 This is especially problematic in tests, where it is often desirable to provide mock dependencies
 for test isolation.
 
@@ -33,7 +33,7 @@ dependency from the component. The dependency is simply handed to the component.
 
 <pre>
   function SomeClass(greeter) {
-    this.greeter = greeter
+    this.greeter = greeter;
   }
   
   SomeClass.prototype.doSomething = function(name) {
@@ -41,18 +41,18 @@ dependency from the component. The dependency is simply handed to the component.
   }
 </pre>
 
-In the above example the `SomeClass` is not concerned with locating the `greeter` dependency, it
+In the above example `SomeClass` is not concerned with locating the `greeter` dependency, it
 is simply handed the `greeter` at runtime.
 
-This is desirable, but it puts the responsibility of getting hold of the dependency onto the
-code responsible for the construction of `SomeClass`.
+This is desirable, but it puts the responsibility of getting hold of the dependency on the
+code that constructs `SomeClass`.
 
 To manage the responsibility of dependency creation, each Angular application has an {@link
 api/angular.injector injector}. The injector is a service locator that is responsible for
 construction and lookup of dependencies.
 
+Here is an example of using the injector service:
 
-Here is an example of using  the injector service. 
 <pre>
   // Provide the wiring information in a module
   angular.module('myModule', []).
@@ -101,7 +101,7 @@ dependency lookup responsibility to the injector by declaring the dependencies a
 </pre>
 
 Notice that by having the `ng-controller` instantiate the class, it can satisfy all of the
-dependencies of the `MyController` without the controller ever knowing about the injector. This is
+dependencies of `MyController` without the controller ever knowing about the injector. This is
 the best outcome. The application code simply ask for the dependencies it needs, without having to
 deal with the injector. This setup does not break the Law of Demeter.
 
@@ -159,16 +159,18 @@ Sometimes using the `$inject` annotation style is not convenient such as when an
 directives.
 
 For example:
+
 <pre>
   someModule.factory('greeter', function($window) {
-    ...;
+    ...
   });
 </pre>
 
-Results in code bloat due to the need of temporary variable:
+Results in code bloat due to needing a temporary variable:
+
 <pre>
   var greeterFactory = function(renamed$window) {
-    ...;
+    ...
   };
   
   greeterFactory.$inject = ['$window'];
@@ -177,9 +179,10 @@ Results in code bloat due to the need of temporary variable:
 </pre>
 
 For this reason the third annotation style is provided as well.
+
 <pre>
   someModule.factory('greeter', ['$window', function(renamed$window) {
-    ...;
+    ...
   }]);
 </pre>
 
