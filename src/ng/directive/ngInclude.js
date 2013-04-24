@@ -116,6 +116,16 @@
 
 /**
  * @ngdoc event
+ * @name ng.directive:ngInclude#$includeContentRequested
+ * @eventOf ng.directive:ngInclude
+ * @eventType emit on the current ngInclude scope
+ * @description
+ * Emitted every time the ngInclude content is requested.
+ */
+
+
+/**
+ * @ngdoc event
  * @name ng.directive:ngInclude#$includeContentLoaded
  * @eventOf ng.directive:ngInclude
  * @eventType emit on the current ngInclude scope
@@ -170,7 +180,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
-              childScope.$emit('$includeContentRequested', {element: element});
+            scope.$emit('$includeContentRequested', {element: element});
           } else {
             clearContent();
           }
