@@ -483,6 +483,17 @@ describe('parser', function() {
       });
 
 
+      it('should call the function once when it is part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+        };
+        scope.fn.anotherFn = function() { return ''; };
+        expect(scope.$eval('fn().anotherFn()')).toBe('');
+        expect(count).toBe(1);
+      });
+
+
       describe('promises', function() {
         var deferred, promise, q;
 
