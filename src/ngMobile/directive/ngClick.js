@@ -11,7 +11,8 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
   var CLICKBUSTER_THRESHOLD = 25,  // 25 pixels in any dimension is the limit for busting clicks.
     PREVENT_DURATION = 2500,     // 2.5 seconds maximum from preventGhostClick call to click
     lastPreventedTime,
-    touchCoordinates,
+    touchCoordinatesMD,     // Touch coordinates for mouse down
+    touchCoordinatesC,      // Touch coordinates for click
 
 
     // TAP EVENTS AND GHOST CLICKS
@@ -63,9 +64,9 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
     // Returns true if the click should be allowed.
     // Splices out the allowable region from the list after it has been used.
     checkAllowableRegions = function(touchCoordinates, x, y) {
-      for (var i = 0; i < touchCoordinates.length; i += 2) {
-        if (hit(touchCoordinates[i], touchCoordinates[i+1], x, y)) {
-          touchCoordinates.splice(i, i + 2);
+      for (var i = 0; i < touchCoordinates.length; i += 1) {
+        if (hit(touchCoordinates[i][0], touchCoordinates[i][1], x, y)) {
+          touchCoordinates.splice(i, i + 1);
           return true; // allowable region
         }
       }
@@ -92,7 +93,7 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
       // Look for an allowable region containing this click.
       // If we find one, that means it was created by touchstart and not removed by
       // preventGhostClick, so we don't bust it.
-      if (checkAllowableRegions(touchCoordinates, x, y)) {
+      if (checkAllowableRegions(event.type == 'mousedown' ? touchCoordinatesMD : touchCoordinatesC, x, y)) {
         return;
       }
 
@@ -106,15 +107,24 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
     onTouchStart = function(event) {
       var touches = event.touches && event.touches.length ? event.touches : [event],
         x = touches[0].clientX,
-        y = touches[0].clientY;
+        y = touches[0].clientY,
+        identifier = touches[0].identifier;
 
-      touchCoordinates.push(x, y);
+      touchCoordinatesMD.push([x, y, identifier]);
+      touchCoordinatesC.push([x, y, identifier]);
 
       setTimeout(function() {
         // Remove the allowable region.
-        for (var i = 0; i < touchCoordinates.length; i += 2) {
-          if (touchCoordinates[i] == x && touchCoordinates[i+1] == y) {
-            touchCoordinates.splice(i, i + 2);
+        var i;
+        for (var i = 0; i < touchCoordinatesMD.length; i += 1) {
+          if (touchCoordinatesMD[i][2] == identifier) {
+            touchCoordinatesMD.splice(i, i + 1);
+            return;
+          }
+        }
+        for (var i = 0; i < touchCoordinatesC.length; i += 1) {
+          if (touchCoordinatesC[i][2] == identifier) {
+            touchCoordinatesC.splice(i, i + 1);
             return;
           }
         }
@@ -124,14 +134,18 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
     // On the first call, attaches some event handlers. Then whenever it gets called, it creates a
     // zone around the touchstart where clicks will get busted.
     preventGhostClick = function(x, y) {
-      if (!touchCoordinates) {
-        angular.element(document).bind('click', onClick, true)
-          .bind('touchstart', onTouchStart, true);
-        touchCoordinates = [];
+      if (!touchCoordinatesC) {
+        touchCoordinatesC = [];
+        touchCoordinatesMD = [];
+        document.addEventListener('touchstart', onTouchStart, true);
+        document.addEventListener('mousedown', onClick, true);
+        // Leave mouse up in case a mousedown gets through
+        document.addEventListener('click', onClick, true);
       }
       lastPreventedTime = Date.now();
 
-      checkAllowableRegions(touchCoordinates, x, y);
+      checkAllowableRegions(touchCoordinatesMD, x, y);
+      checkAllowableRegions(touchCoordinatesC, x, y);
     };
 
   $mobile.register({
@@ -172,20 +186,24 @@ ngMobile.config(['$provide', '$mobileProvider', function($provide, $mobile) {
         }
 
         if (ev.srcEvent.type == 'touchend' && inst.options.prevent_ghost_clicks) {
-          preventGhostClick(ev.srcEvent.clientX, ev.srcEvent.clientY);
+          preventGhostClick(ev.touches[0].clientX, ev.touches[0].clientY);
         }
+
+        inst.current.name = 'tap';
 
         // check if double tap
-        if(prev && prev.name == 'tap' &&
+        if(prev && prev.name == 'tap' && !this.did_doubletap &&
             (ev.timeStamp - prev.lastEvent.timeStamp) < inst.options.doubletap_interval &&
-            ev.distance < inst.options.doubletap_tolerance) {
-          inst.trigger('doubletap', ev);
-          did_doubletap = true;
-        }
+            $mobile.utils.getDistance(prev.lastEvent.center, ev.center) < inst.options.doubletap_tolerance) {
 
-        // do a single tap
-        if(!did_doubletap || inst.options.tap_always) {
-          inst.current.name = 'tap';
+          if(inst.options.tap_always) {
+            inst.trigger(inst.current.name, ev);
+          }
+          inst.trigger('doubletap', ev);
+          this.did_doubletap = true;
+        } else {
+          // do a single tap
+          this.did_doubletap = false;
           inst.trigger(inst.current.name, ev);
         }
       }
