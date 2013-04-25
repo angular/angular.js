@@ -253,6 +253,16 @@ describe('angular', function() {
       expect(parseKeyValue('flag1&key=value&flag2')).
       toEqual({flag1: true, key: 'value', flag2: true});
     });
+
+    it('should parse a string into key-value pairs even duplicates', function() {
+      expect(parseKeyValue('')).toEqual({});
+      expect(parseKeyValue('duplicate=pair')).toEqual({duplicate: 'pair'});
+      expect(parseKeyValue('first=1&first=2')).toEqual({first: ['1','2']});
+      expect(parseKeyValue('escaped%20key=escaped%20value&&escaped%20key=escaped%20value2')).
+      toEqual({'escaped key': ['escaped value','escaped value2']});
+      expect(parseKeyValue('flag1&key=value&flag1')).
+      toEqual({flag1: [true,true], key: 'value'});
+    });
   });
 
   describe('toKeyValue', function() {
@@ -267,6 +277,10 @@ describe('angular', function() {
 
     it('should parse true values into flags', function() {
       expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
+    });
+
+    it('should parse duplicates into duplicate param strings', function() {
+      expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
     });
   });
 
