@@ -61,7 +61,7 @@ describe('ngInclude', function() {
 
   it('should fire $includeContentRequested event on scope after making the xhr call', inject(
       function ($rootScope, $compile, $templateCache) {
-    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event, data) {
+    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
         expect(event.targetScope).toBe($rootScope);
     });
 
@@ -76,7 +76,7 @@ describe('ngInclude', function() {
 
   it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
-    var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function(event, data) {
+    var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function(event) {
       expect(event.targetScope.$parent).toBe($rootScope);
       expect(element.text()).toBe('partial content');
     });
