@@ -194,7 +194,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         //   - element: previous element.
         //   - index: position
         var lastBlockMap = {};
-
+        
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection){
           var index, length,
@@ -233,33 +233,35 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
            key = (collection === collectionKeys) ? index : collectionKeys[index];
            value = collection[key];
            trackById = trackByIdFn(key, value, index);
+           // FIXME: should we check that two objects with the same trackById are the same objects
+           if (!nextBlockMap.hasOwnProperty(trackById)) {
+               nextBlockMap[trackById] = [];
+           }
            if(lastBlockMap.hasOwnProperty(trackById)) {
-             block = lastBlockMap[trackById]
-             delete lastBlockMap[trackById];
-             nextBlockMap[trackById] = block;
+             if (lastBlockMap[trackById].length===1) {
+                 block = lastBlockMap[trackById][0];
+                 delete lastBlockMap[trackById];
+             }
+             else {
+                 block = lastBlockMap[trackById].splice(0,1)[0];
+             }
+             nextBlockMap[trackById].push(block);
              nextBlockOrder[index] = block;
-           } else if (nextBlockMap.hasOwnProperty(trackById)) {
-             // restore lastBlockMap
-             forEach(nextBlockOrder, function(block) {
-               if (block && block.element) lastBlockMap[block.id] = block;
-             });
-             // This is a duplicate and we need to throw an error
-             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression +
-                 ' key: ' + trackById);
            } else {
              // new never before seen block
              nextBlockOrder[index] = { id: trackById };
-             nextBlockMap[trackById] = false;
            }
          }
 
           // remove existing items
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
-              block = lastBlockMap[key];
-              animate.leave(block.element);
-              block.element[0][NG_REMOVED] = true;
-              block.scope.$destroy();
+                for (index =0;index<lastBlockMap[key].length;++index) {
+                    block = lastBlockMap[key][index];
+                    animate.leave(block.element);
+                    block.element[0][NG_REMOVED] = true;
+                    block.scope.$destroy();
+                }
             }
           }
 
@@ -305,7 +307,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 cursor = clone;
                 block.scope = childScope;
                 block.element = clone;
-                nextBlockMap[block.id] = block;
+                nextBlockMap[block.id].push(block);
               });
             }
           }

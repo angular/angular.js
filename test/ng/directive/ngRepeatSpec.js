@@ -457,44 +457,45 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should throw error on adding existing duplicates and recover', function() {
-      scope.items = [a, a, a];
-      scope.$digest();
-      expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
+    it('should not throw error on adding existing duplicates', function() {
+        scope.items = [a, a, a];
+        scope.$digest();
+        expect($exceptionHandler.errors.shift()).toBeUndefined();
+        var newElements = element.find('li');
+        expect(newElements.length).toEqual(3);
 
-      // recover
-      scope.items = [a];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements.length).toEqual(1);
-      expect(newElements[0]).toEqual(lis[0]);
+        scope.items.push(a);
+        scope.$digest();
+        newElements = element.find('li');
+        expect(newElements.length).toEqual(4);
+     });
 
-      scope.items = [];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements.length).toEqual(0);
-    });
+    it('should not throw error on removing a duplicate', function() {
+        scope.items = [a, a, a];
+        scope.$digest();
+        expect($exceptionHandler.errors.shift()).toBeUndefined();
+        var newElements = element.find('li');
+        expect(newElements.length).toEqual(3);
 
+        scope.items.splice(1,1);
+        scope.$digest();
+        newElements = element.find('li');
+        expect(newElements.length).toEqual(2);
+     });
 
-    it('should throw error on new duplicates and recover', function() {
-      scope.items = [d, d, d];
-      scope.$digest();
-      expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
+    it('should not throw error on moving a duplicate', function() {
+        scope.items = [a,a,a,c];
+        scope.$digest();
+        expect($exceptionHandler.errors.shift()).toBeUndefined();
+        var newElements = element.find('li');
+        expect(newElements.length).toEqual(4);
 
-      // recover
-      scope.items = [a];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements.length).toEqual(1);
-      expect(newElements[0]).toEqual(lis[0]);
-
-      scope.items = [];
-      scope.$digest();
-      var newElements = element.find('li');
-      expect(newElements.length).toEqual(0);
-    });
+        scope.items[2] = c;
+        scope.items[3] = a;
+        scope.$digest();
+        newElements = element.find('li');
+        expect(newElements.length).toEqual(4);
+     });
 
 
     it('should reverse items when the collection is reversed', function() {
