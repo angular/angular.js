@@ -63,7 +63,6 @@ describe('ngInclude', function() {
       function ($rootScope, $compile, $templateCache) {
     var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event, data) {
         expect(event.targetScope).toBe($rootScope);
-        expect(data.element[0]).toBe(element[0]);
     });
 
     $templateCache.put('url', [200, 'partial content', {}]);
@@ -80,7 +79,6 @@ describe('ngInclude', function() {
     var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function(event, data) {
       expect(event.targetScope.$parent).toBe($rootScope);
       expect(element.text()).toBe('partial content');
-      expect(data.element[0]).toBe(element[0]);
     });
 
     $templateCache.put('url', [200, 'partial content', {}]);

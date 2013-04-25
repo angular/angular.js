@@ -118,7 +118,7 @@
  * @ngdoc event
  * @name ng.directive:ngInclude#$includeContentRequested
  * @eventOf ng.directive:ngInclude
- * @eventType emit on the current ngInclude scope
+ * @eventType emit on the scope ngInclude was declared in
  * @description
  * Emitted every time the ngInclude content is requested.
  */
@@ -175,12 +175,12 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                 $anchorScroll();
               }
 
-              childScope.$emit('$includeContentLoaded', {element: element});
+              childScope.$emit('$includeContentLoaded');
               scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
-            scope.$emit('$includeContentRequested', {element: element});
+            scope.$emit('$includeContentRequested');
           } else {
             clearContent();
           }
