@@ -368,6 +368,29 @@ describe('$location', function() {
         locationUrl.search('q', '1/2 3');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
       });
+
+      it('should return an array for duplicate params', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search('q', ['1/2 3','4/5 6']);
+        expect(locationUrl.search()).toEqual({'q': ['1/2 3','4/5 6']});
+      });
+
+      it('should encode an array correctly from search and add to url', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': ['1/2 3','4/5 6']});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
+      });
+
+      it('should rewrite params when specifing a single param in search', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': '1/2 3'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
+        locationUrl.search({'q': '4/5 6'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=4%2F5%206');
+      });
     });
   });
 
