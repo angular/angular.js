@@ -818,8 +818,46 @@ describe('ngMock', function() {
       hb.when('JSONP', '/url1').respond(200);
       hb.expect('JSONP', '/url2').respond(200);
 
-      expect(hb('JSONP', '/url1')).toBeUndefined();
-      expect(hb('JSONP', '/url2')).toBeUndefined();
+      hb('JSONP', '/url1', null, callback);
+      hb('JSONP', '/url2', null, callback);
+
+      hb.flush();
+      expect(callback).toHaveBeenCalledWith(200, undefined, '');
+      hb.verifyNoOutstandingRequest();
+    });
+
+
+    it('should return a cancel function', function() {
+      hb.when('GET', '/url').respond(200, '', {});
+
+      var cancel = hb('GET', '/url', null, callback);
+      expect(typeof cancel).toBe('function');
+
+      cancel();
+      cancel();
+
+      expect(function() {
+        hb.flush();
+      }).toThrow('No pending request to flush !');
+      expect(callback).toHaveBeenCalledOnceWith(-1, null, null);
+      hb.verifyNoOutstandingRequest();
+    });
+
+
+    it('should not cancel a completed request', function() {
+      hb.when('GET', '/url').respond(200, '', {});
+
+      var cancel = hb('GET', '/url', null, callback);
+      expect(typeof cancel).toBe('function');
+
+      hb.flush();
+      cancel();
+
+      expect(function() {
+        hb.flush();
+      }).toThrow('No pending request to flush !');
+      expect(callback).toHaveBeenCalledOnceWith(200, '', '');
+      hb.verifyNoOutstandingRequest();
     });
 
 

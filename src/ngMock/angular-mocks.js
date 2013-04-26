@@ -916,7 +916,9 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
   function $httpBackend(method, url, data, callback, headers) {
     var xhr = new MockXhr(),
         expectation = expectations[0],
-        wasExpected = false;
+        wasExpected = false,
+        complete,
+        timeoutId;
 
     function prettyPrint(data) {
       return (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
@@ -937,12 +939,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
       expectations.shift();
 
       if (expectation.response) {
-        responses.push(function() {
-          var response = expectation.response(method, url, data, headers);
-          xhr.$$respHeaders = response[2];
-          callback(response[0], response[1], xhr.getAllResponseHeaders());
-        });
-        return;
+        responses.push(completeRequest(expectation));
+        return cancelRequest;
       }
       wasExpected = true;
     }
@@ -952,21 +950,40 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
       if (definition.match(method, url, data, headers || {})) {
         if (definition.response) {
           // if $browser specified, we do auto flush all requests
-          ($browser ? $browser.defer : responsesPush)(function() {
-            var response = definition.response(method, url, data, headers);
-            xhr.$$respHeaders = response[2];
-            callback(response[0], response[1], xhr.getAllResponseHeaders());
-          });
+          timeoutId = ($browser ? $browser.defer : responsesPush)(completeRequest(definition));
+          return cancelRequest;
         } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers);
+          return $delegate(method, url, data, callback, headers);
         } else throw Error('No response defined !');
-        return;
       }
     }
     throw wasExpected ?
         Error('No response defined !') :
         Error('Unexpected request: ' + method + ' ' + url + '\n' +
               (expectation ? 'Expected ' + expectation : 'No more request expected'));
+
+    function cancelRequest() {
+      if (complete) {
+        if ($browser && timeoutId) {
+          $browser.defer.cancel(timeoutId);
+        } else {
+          for (var i = 0, l = responses.length; i < l; i++) {
+            if (complete === responses[i]) responses.splice(i, 1);
+          }
+        }
+        callback(-1, null, null);
+        complete = null;
+      }
+    }
+
+    function completeRequest(request) {
+      return complete = function() {
+        var response = request.response(method, url, data, headers);
+        xhr.$$respHeaders = response[2];
+        callback(response[0], response[1], xhr.getAllResponseHeaders());
+        complete = null;
+      };
+    }
   }
 
   /**

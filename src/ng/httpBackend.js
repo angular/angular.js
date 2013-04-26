@@ -33,6 +33,7 @@ function $HttpBackendProvider() {
 function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+    var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -42,13 +43,11 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         callbacks[callbackId].data = data;
       };
 
-      jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+      var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
           function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
-        } else {
-          completeRequest(callback, -2);
-        }
+        var data = callbacks[callbackId].data || undefined;
+        status = status || (data ? 200 : -2);
+        completeRequest(callback, status, data);
         delete callbacks[callbackId];
       });
     } else {
@@ -57,8 +56,6 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       forEach(headers, function(value, key) {
         if (value) xhr.setRequestHeader(key, value);
       });
-
-      var status;
 
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
       // response is in the cache. the promise api will ensure that to the app code the api is
@@ -90,7 +87,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response and responseType properties were introduced in XHR Level2 spec (supported by IE10)
           completeRequest(callback,
-              status || xhr.status,
+              status = status || xhr.status,
               (xhr.responseType ? xhr.response : xhr.responseText),
               responseHeaders);
         }
@@ -105,19 +102,29 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       }
 
       xhr.send(post || '');
-
-      if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
-      }
     }
 
+    if (timeout > 0) {
+      var timeoutId = $browserDefer(cancelRequest, timeout);
+    }
+
+    return cancelRequest;
+
+
+    function cancelRequest() {
+      if (!status) {
+        status = -1;
+        jsonpDone && jsonpDone();
+        xhr && xhr.abort();
+      }
+    }
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
       var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
+
+      // cancel timeout
+      timeoutId && $browserDefer.cancel(timeoutId);
 
       // fix status code for file protocol (it's always 0)
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
@@ -152,5 +159,6 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
     rawDocument.body.appendChild(script);
+    return doneWrapper;
   }
 }
