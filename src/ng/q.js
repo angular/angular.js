@@ -126,7 +126,7 @@
  *   models and avoiding unnecessary browser repaints, which would result in flickering UI.
  * - $q promises are recognized by the templating engine in angular, which means that in templates
  *   you can treat promises attached to a scope as if they were the resulting values.
- * - Q has many more features that $q, but that comes at a cost of bytes. $q is tiny, but contains
+ * - Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
  * 
  *  # Testing
