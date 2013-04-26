@@ -294,13 +294,13 @@ function Browser(window, document, $log, $sniffer) {
 
       function deleteCookie(name, options) {
           if (options.path) {
-              cookies._setCookie(escape(name) + "=;path=" + options.path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+              rawDocument.cookie = escape(name) + "=;path=" + options.path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
           } else {
-              cookies._setCookie(escape(name) + "=;path=" + defaultPath() + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+              rawDocument.cookie = escape(name) + "=;path=" + defaultPath() + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
               var path = location.pathname;
               //delete cookies under different paths
               while (rawDocument.cookie.indexOf(name + "=") >= 0 && angular.isDefined(path)) {
-                  cookies._setCookie(escape(name) + "=;path=" + path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT");
+                  rawDocument.cookie = escape(name) + "=;path=" + path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
 				  if (path == '') break;
                   path = path.replace(/\/$|[^\/]*[^\/]$/, "");
               }
@@ -311,7 +311,7 @@ function Browser(window, document, $log, $sniffer) {
                 + resolvePathString(name, options)
                 + resolveExpirationString(name, options);
 
-          cookies._setCookie(newCookie);
+          rawDocument.cookie = newCookie;
           alertOnLength(name, newCookie);
       }
       function resolvePathString(name, options) {
@@ -366,13 +366,6 @@ function Browser(window, document, $log, $sniffer) {
               }
           }
           return lastCookies;
-      }
-
-      //shameless plug for unit testing, since there's no way to access a cookie's path and expiration date
-      //and mocking the document.cookie object is too troublesome.
-      //Always use this function to set a cookie.
-      cookies._setCookie = function(value) {
-          rawDocument.cookie = value;
       }
       return cookies;
   })();

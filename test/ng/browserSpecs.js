@@ -50,7 +50,19 @@ function MockWindow() {
 function MockDocument() {
   var self = this;
 
-  this[0] = window.document
+  //IE8 allows defineProperty only on dom elements
+  var fakeDocument = document.createElement('br'); 
+  Object.defineProperty(fakeDocument,"cookie",{
+	set: function(value) {
+		self.lastCookieSet = value;
+		window.document.cookie = value;
+	},
+	get: function() {
+		return window.document.cookie;
+	}
+  });
+  
+  this[0] = fakeDocument
   this.basePath = '/';
 
   this.find = function(name) {
@@ -160,8 +172,6 @@ describe('browser', function() {
 
 
     describe('cookies', function() {
-
-        var lastCookieSet = null;
         function deleteAllCookies() {
             var cookies = document.cookie.split(";");
             for (var i = 0; i < cookies.length; i++) {
@@ -177,18 +187,9 @@ describe('browser', function() {
 				document.cookie = name + "=;path=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
             }
         }
-        function spyOnCookies() {
-            lastCookieSet = null;
-            var originalSetCookie = browser.cookies._setCookie;
-            browser.cookies._setCookie = function(value) {
-                lastCookieSet = value;
-                originalSetCookie(value);
-            }
-        }
 
         beforeEach(function() {
             deleteAllCookies();
-            spyOnCookies();
             expect(document.cookie).toEqual('');
         });
 
@@ -305,7 +306,7 @@ describe('browser', function() {
                 browser.cookies('cookieName', 'cookie=Value');
                 expect(document.cookie).toMatch(/cookieName=cookie%3DValue;? ?/);
                 expect(browser.cookies()).toEqual({ 'cookieName': 'cookie=Value' });
-                expect(lastCookieSet).toEqual("cookieName=cookie%3DValue;path=/")
+                expect(fakeDocument.lastCookieSet).toEqual("cookieName=cookie%3DValue;path=/")
             });
 
 
@@ -375,7 +376,7 @@ describe('browser', function() {
             it('should default path in cookie to "" (empty string)', function() {
                 browser.cookies('cookie', 'bender');   
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=")
             });
         });
         describe('put via cookies(cookieName, string), with complex <base href> ', function() {
@@ -388,30 +389,30 @@ describe('browser', function() {
                 //TODO: change test to run in URI /inner/path, so that the cookies will be saved
                 // and we can query them.                
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/karma/")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/karma/")
             });
         });
         describe('put via cookies(cookieName,string,options) with no options', function() {
             it('should not throw exception when passing null', function() {
                 browser.cookies('cookie', 'bender', null);
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/");
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/");
             })
             it('should not throw exception when passing array', function() {
                 browser.cookies('cookie', 'bender', []);
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/");
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/");
             })
         })
         describe('put via cookies(cookieName, string,options) with different path', function() {
             it('should set path in cookie to desired path', function() {
                 browser.cookies('cookie', 'bender', { path: "/karma/tests" });
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/karma/tests")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/karma/tests")
             })
             it('shuld ignore path if path is not part of location', function() {
                 browser.cookies('cookie', 'bender', { path: "/something" });
-                expect(lastCookieSet).toEqual("cookie=bender;path=/")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/")
                 expect(document.cookie).toEqual('cookie=bender');
                 expect(logs.warn).toEqual(
                     [["Cookie 'cookie' was not set with requested path '/something'" +
@@ -422,12 +423,12 @@ describe('browser', function() {
             it('should set expiration if passed', function() {
                 browser.cookies('cookie', 'bender', { expires: new Date(2050, 1, 1) });
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/;expires=" + new Date(2050, 1, 1).toUTCString())
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/;expires=" + new Date(2050, 1, 1).toUTCString())
             })
             it('should ignore if not a date object', function() {
                 browser.cookies('cookie', 'bender', { expires: [] });
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/")
                 expect(logs.warn).toEqual(
                     [["Cookie 'cookie' was not set with requested expiration ''" +
                           " since date is in the past or object is not a date"]]);
@@ -435,7 +436,7 @@ describe('browser', function() {
             it('should ignore if date in the past', function() {
                 browser.cookies('cookie', 'bender', { expires: new Date(1999, 1, 1) });
                 expect(document.cookie).toEqual('cookie=bender');
-                expect(lastCookieSet).toEqual("cookie=bender;path=/")
+                expect(fakeDocument.lastCookieSet).toEqual("cookie=bender;path=/")
                 expect(logs.warn).toEqual(
                     [["Cookie 'cookie' was not set with requested expiration '" + (new Date(1999, 1, 1)) +
                           "' since date is in the past or object is not a date"]]);
