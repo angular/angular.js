@@ -96,6 +96,51 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should return a cancel function', function() {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    var cancel = $backend('GET', '/url', null, callback);
+    expect(typeof cancel).toBe('function');
+
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    cancel();
+    cancel();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+
+  it('should not cancel a completed request', function() {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    var cancel = $backend('GET', '/url', null, callback);
+    expect(typeof cancel).toBe('function');
+
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+
+    cancel();
+    expect(xhr.abort).not.toHaveBeenCalled();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(-1);

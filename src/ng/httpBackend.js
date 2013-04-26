@@ -45,11 +45,9 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
       var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
           function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
-        } else {
-          completeRequest(callback, status || -2);
-        }
+        var data = callbacks[callbackId].data || undefined;
+        status = status || (data ? 200 : -2);
+        completeRequest(callback, status, data);
         delete callbacks[callbackId];
       });
     } else {
@@ -89,7 +87,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response and responseType properties were introduced in XHR Level2 spec (supported by IE10)
           completeRequest(callback,
-              status || xhr.status,
+              status = status || xhr.status,
               (xhr.responseType ? xhr.response : xhr.responseText),
               responseHeaders);
         }
@@ -106,15 +104,20 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr.send(post || '');
     }
 
-
     if (timeout > 0) {
-      var timeoutId = $browserDefer(function() {
+      var timeoutId = $browserDefer(cancelRequest, timeout);
+    }
+
+    return cancelRequest;
+
+
+    function cancelRequest() {
+      if (!status) {
         status = -1;
         jsonpDone && jsonpDone();
         xhr && xhr.abort();
-      }, timeout);
+      }
     }
-
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js

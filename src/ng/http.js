@@ -664,7 +664,7 @@ function $HttpProvider() {
         headers[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
       }
 
-
+      var requestPromise;
       var serverRequest = function(config) {
         var reqData = transformData(config.data, headersGetter(headers), config.transformRequest);
 
@@ -678,11 +678,15 @@ function $HttpProvider() {
         }
 
         // send request
-        return sendReq(config, reqData, headers).then(transformResponse, transformResponse);
+        requestPromise = sendReq(config, reqData, headers);
+        return requestPromise.then(transformResponse, transformResponse);
       };
 
       var chain = [serverRequest, undefined];
-      var promise = $q.when(config);
+      var canceled, promise = $q.when(config).then(function(request) {
+        // handle case where canceled before next digest cycle
+        return canceled ? $q.reject(request) : request;
+      });
 
       // apply interceptors
       forEach(reversedInterceptors, function(interceptor) {
@@ -699,7 +703,26 @@ function $HttpProvider() {
         var rejectFn = chain.shift();
 
         promise = promise.then(thenFn, rejectFn);
-      };
+      }
+
+      var defer = $q.defer(function() {
+        canceled = true;
+        if (!requestPromise) return {
+          data: null,
+          status: 0,
+          headers: headersGetter({}),
+          config: config
+        };
+        requestPromise.cancel();
+      });
+
+      promise.then(function(response) {
+        defer.resolve(response);
+      }, function(response) {
+        defer.reject(response);
+      });
+
+      promise = defer.promise;
 
       promise.success = function(fn) {
         promise.then(function(response) {
@@ -862,7 +885,12 @@ function $HttpProvider() {
      * $httpBackend, defaults, $log, $rootScope, defaultCache, $http.pendingRequests
      */
     function sendReq(config, reqData, reqHeaders) {
-      var deferred = $q.defer(),
+      var deferred = $q.defer(function() {
+            canceled = true;
+            cancelReq && cancelReq();
+          }),
+          canceled,
+          cancelReq,
           promise = deferred.promise,
           cache,
           cachedResp,
@@ -901,7 +929,7 @@ function $HttpProvider() {
 
       // if we won't have the response in cache, send the request to the backend
       if (!cachedResp) {
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+        cancelReq = $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
             config.withCredentials, config.responseType);
       }
 
@@ -925,7 +953,7 @@ function $HttpProvider() {
         }
 
         resolvePromise(response, status, headersString);
-        $rootScope.$apply();
+        !canceled && $rootScope.$apply();
       }
 
 

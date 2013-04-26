@@ -646,7 +646,7 @@ describe('$http', function() {
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
-          'Custom': 'header',
+          'Custom': 'header'
         }});
 
         $httpBackend.flush();
@@ -1325,6 +1325,119 @@ describe('$http', function() {
 
         $http.get('/url');
         $httpBackend.flush();
+      });
+    });
+
+
+    describe('canceler', function() {
+      var cache, successFn, errorFn;
+
+      beforeEach(inject(function($cacheFactory) {
+        cache = $cacheFactory();
+        successFn = jasmine.createSpy('success');
+        errorFn = jasmine.createSpy('error');
+      }));
+
+      it('should cancel pending requests in the same tick', function() {
+        var promise = $http({method: 'GET', url: 'some.html'});
+        promise.success(successFn);
+        promise.error(function(data, status, headers) {
+          expect(data).toBeNull();
+          expect(status).toBe(0);
+          expect(headers()).toEqual({});
+          errorFn();
+        });
+        expect(promise.cancel('ignored')).toBe(true);
+        expect(function() {
+          $httpBackend.flush();
+        }).toThrow('No pending request to flush !');
+        expect(successFn).not.toHaveBeenCalled();
+        expect(errorFn).toHaveBeenCalledOnce();
+        expect(promise.cancel()).toBe(false);
+      });
+
+      it('should cancel pending requests in the next tick', function() {
+        $httpBackend.expect('GET', 'some.html').respond(200);
+        var promise = $http({method: 'GET', url: 'some.html'});
+        promise.success(successFn);
+        promise.error(function(data, status, headers) {
+          expect(data).toBeNull();
+          expect(status).toBe(0);
+          expect(headers()).toEqual({});
+          errorFn();
+        });
+        $rootScope.$digest();
+        expect(promise.cancel('ignored')).toBe(true);
+        expect(function() {
+          $httpBackend.flush();
+        }).toThrow('No pending request to flush !');
+        expect(successFn).not.toHaveBeenCalled();
+        expect(errorFn).toHaveBeenCalledOnce();
+        expect(promise.cancel()).toBe(false);
+      });
+
+      it('should not cancel resolved requests', function() {
+        $httpBackend.expect('GET', 'some.html').respond(200);
+        var promise = $http({method: 'GET', url: 'some.html'});
+        promise.error(errorFn);
+        promise.success(function(data, status, headers) {
+          expect(data).toBeUndefined();
+          expect(status).toBe(200);
+          expect(headers()).toEqual({});
+          successFn();
+        });
+        $httpBackend.flush();
+        expect(promise.cancel('ignored')).toBe(false);
+        expect(function() {
+          $httpBackend.flush();
+        }).toThrow('No pending request to flush !');
+        expect(errorFn).not.toHaveBeenCalled();
+        expect(successFn).toHaveBeenCalledOnce();
+        expect(promise.cancel()).toBe(false);
+      });
+
+      it('should cancel cache requests', function() {
+        cache.put('/alreadyCachedURL', 'content');
+        var promise = $http.get('/alreadyCachedURL', {cache: cache});
+        promise.success(successFn);
+        promise.error(function(data, status, headers) {
+          expect(data).toBeNull();
+          expect(status).toBe(0);
+          expect(headers()).toEqual({});
+          errorFn();
+        });
+        expect(promise.cancel('ignored')).toBe(true);
+        expect(function() {
+          $httpBackend.flush();
+        }).toThrow('No pending request to flush !');
+        expect(successFn).not.toHaveBeenCalled();
+        expect(errorFn).toHaveBeenCalledOnce();
+        expect(promise.cancel()).toBe(false);
+      });
+
+      it('should not cancel resolved cache requests', function() {
+        cache.put('/alreadyCachedURL', 'content');
+        var promise = $http.get('/alreadyCachedURL', {cache: cache});
+        promise.error(errorFn);
+        promise.success(function(data, status, headers) {
+          expect(data).toBe('content');
+          expect(status).toBe(200);
+          expect(headers()).toEqual({});
+          successFn();
+        });
+        $rootScope.$digest();
+        expect(promise.cancel('ignored')).toBe(false);
+        expect(errorFn).not.toHaveBeenCalled();
+        expect(successFn).toHaveBeenCalledOnce();
+        expect(promise.cancel()).toBe(false);
+      });
+
+      it('should not $apply if canceled', function() {
+        $httpBackend.expect('GET', 'some.html').respond(200);
+        var promise = $http({method: 'GET', url: 'some.html'});
+        $rootScope.$digest();
+        expect(promise.cancel()).toBe(true);
+        expect($rootScope.$apply).not.toHaveBeenCalled();
       });
     });
   });
