@@ -831,7 +831,7 @@ function parseKeyValue(/**string*/keyValue) {
       if(!obj[key]){
         obj[key] = val;
       }else if(isArray(obj[key])){
-        obj[key].push[val];
+        obj[key].push(val);
       }else{
         obj[key] = [obj[key],val];
       }
