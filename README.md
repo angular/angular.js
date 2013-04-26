@@ -37,3 +37,5 @@ To execute end-to-end (e2e) tests, use:
 
 To learn more about the grunt tasks, run `grunt --help` and also read our
 [contribution guidelines](http://docs.angularjs.org/misc/contribute).
+
+<a href="https://runnable.com/angularjs" target="_blank"><img src="https://runnable.com/external/styles/assets/runnablebtn.png" style="width:67px;height:30px;"></a>
