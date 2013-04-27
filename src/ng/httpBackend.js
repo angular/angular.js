@@ -107,20 +107,25 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
     if (timeout > 0) {
-      var timeoutId = $browserDefer(function() {
-        status = -1;
-        jsonpDone && jsonpDone();
-        xhr && xhr.abort();
-      }, timeout);
+      var timeoutId = $browserDefer(timeoutRequest, timeout);
+    } else if (timeout && timeout.then) {
+      timeout.then(timeoutRequest);
     }
 
+
+    function timeoutRequest() {
+      status = -1;
+      jsonpDone && jsonpDone();
+      xhr && xhr.abort();
+    }
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
       var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
 
-      // cancel timeout
+      // cancel timeout and subsequent timeout promise resolution
       timeoutId && $browserDefer.cancel(timeoutId);
+      jsonpDone = xhr = null;
 
       // fix status code for file protocol (it's always 0)
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
