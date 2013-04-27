@@ -145,7 +145,7 @@
 var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
   var NG_REMOVED = '$$NG_REMOVED';
   return {
-    transclude: 'element',
+    transclude: 'multi-element',
     priority: 1000,
     terminal: true,
     compile: function(element, attr, linker) {
@@ -258,7 +258,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
               animate.leave(block.element);
-              block.element[0][NG_REMOVED] = true;
+              forEach(block.element, function(leavingElement) { leavingElement[NG_REMOVED] = true; });
               block.scope.$destroy();
             }
           }
@@ -274,7 +274,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
               // associated scope/element
               childScope = block.scope;
 
-              nextCursor = cursor[0];
+              nextCursor = cursor[cursor.length - 1];
               do {
                 nextCursor = nextCursor.nextSibling;
               } while(nextCursor && nextCursor[NG_REMOVED]);
@@ -284,7 +284,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 cursor = block.element;
               } else {
                 // existing item which got moved
-                animate.move(block.element, null, cursor);
+                animate.move(block.element, null, cursor.eq(-1));
                 cursor = block.element;
               }
             } else {
@@ -301,7 +301,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
             if (!block.element) {
               linker(childScope, function(clone) {
-                animate.enter(clone, null, cursor);
+                animate.enter(clone, null, cursor.eq(-1));
                 cursor = clone;
                 block.scope = childScope;
                 block.element = clone;

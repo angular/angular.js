@@ -645,6 +645,14 @@ function $CompileProvider($provide) {
             compileNode = $compileNode[0];
             replaceWith($rootElement, jqLite($template[0]), compileNode);
             childTranscludeFn = compile($template, transcludeFn, terminalPriority);
+	  } else if (directiveValue == 'multi-element') {
+            childTranscludeFn = compile(jqLite(extractMultiElementTransclude(compileNode, directiveName)),
+                transcludeFn, terminalPriority);
+            $template = jqLite(compileNode);
+            $compileNode = templateAttrs.$$element =
+                jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
+            compileNode = $compileNode[0];
+            replaceWith($rootElement, $template, compileNode);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -730,6 +738,61 @@ function $CompileProvider($provide) {
       return nodeLinkFn;
 
       ////////////////////
+
+
+      function extractMultiElementTransclude(cursor, directiveName) {
+        var transcludeContent = [],
+          c, count = 0,
+          transcludeStart = directiveName + 'Start',
+          transcludeEnd = directiveName + 'End';
+
+        do {
+          if (containsAttr(cursor, transcludeStart)) count++;
+          if (containsAttr(cursor, transcludeEnd)) count--;
+          transcludeContent.push(cursor);
+          cursor = cursor.nextSibling;
+        } while(count > 0 && cursor);
+        if (count > 0) throw Error('Unmatched ' + transcludeStart + '.');
+        if (count < 0) throw Error('Unexpected ' + transcludeEnd + '.');
+        for (var j = 0; j < transcludeContent.length; ++j) {
+          c = transcludeContent[j];
+          transcludeContent[j] = JQLiteClone(transcludeContent[j]);
+          // The first element will be replaced by a comment
+          if (j != 0) jqLite(c).remove();
+        }
+        return transcludeContent;
+      }
+
+
+      function containsAttr(node, attributeName) {
+        var nodeType = node.nodeType,
+          result = false;
+
+        switch(nodeType) {
+          case 1:
+          // iterate over the attributes
+          for (var attr, name, nName, ngAttrName, nAttrs = node.attributes,
+                   j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
+            attr = nAttrs[j];
+            if (attr.specified) {
+              name = attr.name;
+              // support ngAttr attribute binding
+              ngAttrName = directiveNormalize(name);
+              if (NG_ATTR_BINDING.test(ngAttrName)) {
+                name = ngAttrName.substr(6).toLowerCase();
+              }
+              nName = directiveNormalize(name.toLowerCase());
+              if (nName == attributeName) {
+                result = true;
+                break;
+              }
+            }
+          }
+          break;
+        }
+        return result;
+      }
+
 
       function addLinkFns(pre, post) {
         if (pre) {
