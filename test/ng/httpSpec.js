@@ -1273,6 +1273,33 @@ describe('$http', function() {
     });
 
 
+    describe('timeout', function() {
+
+      it('should abort requests when timeout promise resolves', inject(function($q) {
+        var canceler = $q.defer();
+
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({method: 'GET', url: '/some', timeout: canceler.promise}).error(
+            function(data, status, headers, config) {
+              expect(data).toBeUndefined();
+              expect(status).toBe(0);
+              expect(headers()).toEqual({});
+              expect(config.url).toBe('/some');
+              callback();
+            });
+
+        $rootScope.$apply(function() {
+          canceler.resolve();
+        });
+
+        expect(callback).toHaveBeenCalled();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+    });
+
+
     describe('pendingRequests', function() {
 
       it('should be an array of pending requests', function() {

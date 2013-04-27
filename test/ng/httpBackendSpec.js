@@ -117,6 +117,44 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should abort request on timeout promise resolution', inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    $backend('GET', '/url', null, callback, {}, $timeout(noop, 2000));
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    $timeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
+  it('should not abort resolved request on timeout promise resolution', inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    $backend('GET', '/url', null, callback, {}, $timeout(noop, 2000));
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+
+    $timeout.flush();
+    expect(xhr.abort).not.toHaveBeenCalled();
+  }));
+
+
   it('should cancel timeout on completion', function() {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(200);
