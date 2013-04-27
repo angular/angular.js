@@ -645,7 +645,7 @@ function $CompileProvider($provide) {
             compileNode = $compileNode[0];
             replaceWith($rootElement, jqLite($template[0]), compileNode);
             childTranscludeFn = compile($template, transcludeFn, terminalPriority);
-	  } else if (directiveValue == 'multi-element') {
+          } else if (directiveValue == 'multi-element') {
             childTranscludeFn = compile(jqLite(extractMultiElementTransclude(compileNode, directiveName)),
                 transcludeFn, terminalPriority);
             $template = jqLite(compileNode);
