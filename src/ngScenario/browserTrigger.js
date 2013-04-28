@@ -88,7 +88,7 @@
     } else {
       var evnt = document.createEvent('MouseEvents'),
           originalPreventDefault = evnt.preventDefault,
-          appWindow = element.ownerDocument.defaultView,
+          appWindow = element.defaultView || element.ownerDocument.defaultView,
           fakeProcessDefault = true,
           finalProcessDefault,
           angular = appWindow.angular || {};
