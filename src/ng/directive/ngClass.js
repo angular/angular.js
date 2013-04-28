@@ -15,9 +15,9 @@ function classDirective(name, selector) {
 
     if (name !== 'ngClass') {
       scope.$watch('$index', function($index, old$index) {
-        var mod = $index % 2;
-        if (mod !== old$index % 2) {
-          if (mod == selector) {
+        var mod = $index & 1;
+        if (mod !== old$index & 1) {
+          if (mod === selector) {
             addClass(scope.$eval(attr[name]));
           } else {
             removeClass(scope.$eval(attr[name]));
