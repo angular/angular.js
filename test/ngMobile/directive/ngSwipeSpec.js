@@ -1,7 +1,7 @@
 'use strict';
 
 // Wrapper to abstract over using touch events or mouse events.
-var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, endEvent) {
+var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, endEvent, altElement) {
   describe('ngSwipe with ' + description + ' events', function() {
     var element;
 
@@ -36,7 +36,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, [], 100, 20);
-      browserTrigger(element, endEvent, [], 20, 20);
+      browserTrigger(altElement || element, endEvent, [], 20, 20);
       expect($rootScope.swiped).toBe(true);
     }));
 
@@ -46,7 +46,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, [], 20, 20);
-      browserTrigger(element, endEvent, [], 90, 20);
+      browserTrigger(altElement || element, endEvent, [], 90, 20);
       expect($rootScope.swiped).toBe(true);
     }));
 
@@ -58,8 +58,8 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, [], 90, 20);
-      browserTrigger(element, moveEvent, [], 70, 200);
-      browserTrigger(element, endEvent, [], 20, 20);
+      browserTrigger(altElement || element, moveEvent, [], 70, 200);
+      browserTrigger(altElement || element, endEvent, [], 20, 20);
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -72,7 +72,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, [], 90, 20);
-      browserTrigger(element, endEvent, [], 80, 20);
+      browserTrigger(altElement || element, endEvent, [], 80, 20);
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -85,7 +85,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, startEvent, [], 20, 20);
-      browserTrigger(element, moveEvent, [], 40, 20);
+      browserTrigger(altElement || element, moveEvent, [], 40, 20);
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -98,7 +98,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBeUndefined();
 
       browserTrigger(element, moveEvent, [], 10, 20);
-      browserTrigger(element, endEvent, [], 90, 20);
+      browserTrigger(altElement || element, endEvent, [], 90, 20);
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -106,5 +106,5 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 }
 
 swipeTests('touch', true  /* restrictBrowers */, 'touchstart', 'touchmove', 'touchend');
-swipeTests('mouse', false /* restrictBrowers */, 'mousedown',  'mousemove', 'mouseup');
+swipeTests('mouse', false /* restrictBrowers */, 'mousedown',  'mousemove', 'mouseup', angular.element(window.document));
 
