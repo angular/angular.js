@@ -428,6 +428,22 @@ describe('ngRepeatStart', function() {
   });
 
 
+  it('should repeat over nested repeats at the same level', function() {
+    element = $compile(
+      '<dl>' +
+        '<dt ng-repeat="item1 in array"  ng-repeat-start>{{item1}}|</dt>' +
+        '<dt ng-repeat="item2 in array2" ng-repeat-start>{{item2}}</dt>' +
+        '<dt ng-repeat-end>X</dt>' +
+        '<dt ng-repeat-end>Y</dt>' +
+      '</dl>')(scope);
+    scope.array = ['a', 'b'];
+    scope.array2 = ['d', 'e'];
+    scope.$digest();
+
+    expect(element.text()).toEqual('a|dXeXYb|dXeXY');
+  });
+
+
   it('should ignore non-array element properties when iterating over an array', function() {
     element = $compile('<ul><li ng-repeat-start ng-repeat="item in array">{{item}}</li><li ng-repeat-end>|</li></ul>')(scope);
     scope.array = ['a', 'b', 'c'];
