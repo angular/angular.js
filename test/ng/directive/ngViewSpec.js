@@ -63,7 +63,7 @@ describe('ngView', function() {
         };
 
     module(function($compileProvider, $routeProvider) {
-      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl, controllerAlias: 'ctrl'});
+      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl, controllerAs: 'ctrl'});
     });
 
     inject(function($route, $rootScope, $templateCache, $location) {
