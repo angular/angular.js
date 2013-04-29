@@ -15,11 +15,13 @@
  *
  * Below is a more detailed breakdown of the supported callback events provided by pre-exisitng ng directives:
  *
- * * {@link ng.directive:ngRepeat#animations ngRepeat} — enter, leave and move
- * * {@link ng.directive:ngView#animations ngView} — enter and leave
- * * {@link ng.directive:ngInclude#animations ngInclude} — enter and leave
- * * {@link ng.directive:ngSwitch#animations ngSwitch} — enter and leave
- * * {@link ng.directive:ngShow#animations ngShow & ngHide} - show and hide respectively
+ * | Directive                                                 | Supported Animations                               |
+ * |========================================================== |====================================================|
+ * | {@link ng.directive:ngRepeat#animations ngRepeat}         | enter, leave and move                              |
+ * | {@link ng.directive:ngView#animations ngView}             | enter and leave                                    |
+ * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |
+ * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
+ * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | show and hide                                      |
  *
  * You can find out more information about animations upon visiting each directive page.
  *
