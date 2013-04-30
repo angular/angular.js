@@ -12,7 +12,7 @@
  */
 function $ControllerProvider() {
   var controllers = {},
-      CNTRL_REG = /^(\w+)(\s+as\s+(\w+))?$/;
+      CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
 
 
   /**
