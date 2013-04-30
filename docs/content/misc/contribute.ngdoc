@@ -88,6 +88,10 @@ quite a good source for information on Git.
 development web server, run tests, and generate a build. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
+* {@link http://www.java.com Java}: JavaScript is minified using
+{@link https://developers.google.com/closure/ Closure Tools} jar. Make sure you have Java (version 6 or higher) installed
+and included in your {@link http://docs.oracle.com/javase/tutorial/essential/environment/paths.html PATH} variable.
+
   Once installed, you'll also need several npms (node packages), which you can install once you checked out a local copy
   of the Angular repository (see below) with:
 

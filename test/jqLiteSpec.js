@@ -775,13 +775,9 @@ describe('jqLite', function() {
 
         parent.bind('mouseenter', function() { log += 'parentEnter;'; });
         parent.bind('mouseleave', function() { log += 'parentLeave;'; });
-        parent.mouseover = function() { browserTrigger(parent, 'mouseover'); };
-        parent.mouseout = function() { browserTrigger(parent, 'mouseout'); };
 
         child.bind('mouseenter', function() { log += 'childEnter;'; });
         child.bind('mouseleave', function() { log += 'childLeave;'; });
-        child.mouseover = function() { browserTrigger(child, 'mouseover'); };
-        child.mouseout = function() { browserTrigger(child, 'mouseout'); };
       });
 
       afterEach(function() {
@@ -790,20 +786,49 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        parent.mouseover();
+        var browserMoveTrigger = function(from, to){
+          var fireEvent = function(type, element, relatedTarget){
+            var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            if (msie < 9){
+              var evnt = document.createEventObject();
+              evnt.srcElement = element;
+              evnt.relatedTarget = relatedTarget;		
+              element.fireEvent('on' + type, evnt);
+              return;
+            };
+            var evnt = document.createEvent('MouseEvents'),
+            originalPreventDefault = evnt.preventDefault,
+            appWindow = window,
+            fakeProcessDefault = true,
+            finalProcessDefault;
+
+            evnt.preventDefault = function() {
+              fakeProcessDefault = false;
+              return originalPreventDefault.apply(evnt, arguments);
+            };
+
+            var x = 0, y = 0;
+            evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
+            false, false, 0, relatedTarget);
+
+            element.dispatchEvent(evnt);
+          };
+          fireEvent('mouseout', from[0], to[0]);
+          fireEvent('mouseover', to[0], from[0]);
+        };
+
+        browserMoveTrigger(root, parent);
         expect(log).toEqual('parentEnter;');
 
-        child.mouseover();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseover();
+        browserMoveTrigger(parent, child);
         expect(log).toEqual('parentEnter;childEnter;');
 
-        child.mouseout();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseout();
+        browserMoveTrigger(child, parent);
         expect(log).toEqual('parentEnter;childEnter;childLeave;');
-        parent.mouseout();
+
+        browserMoveTrigger(parent, root);
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
+
       });
     });
   });
