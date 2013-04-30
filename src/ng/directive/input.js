@@ -1006,6 +1006,29 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     $element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
   };
 
+  var ctrl = this;
+
+  function outOfSyncWithModel(value) {
+    if (ctrl.$modelValue !== value) {
+      return true;
+    }
+    if (isArray(value)) {
+      return !equals(ctrl.$modelArrayValues, value);
+    }
+    return false;
+  }
+
+  function storeArrayValues(value) {
+    ctrl.$modelArrayValues = [].concat(value);
+  }
+
+  function storeValue(value) {
+    ctrl.$modelValue = value;
+    if (isArray(value)) {
+      storeArrayValues(value);
+    }
+  }
+
   /**
    * @ngdoc function
    * @name ng.directive:ngModel.NgModelController#$setViewValue
@@ -1039,7 +1062,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     });
 
     if (this.$modelValue !== value) {
-      this.$modelValue = value;
+      storeValue(value);
       ngModelSet($scope, value);
       forEach(this.$viewChangeListeners, function(listener) {
         try {
@@ -1052,18 +1075,17 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   // model -> value
-  var ctrl = this;
 
   $scope.$watch(function ngModelWatch() {
     var value = ngModelGet($scope);
 
-    // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+    if (outOfSyncWithModel(value)) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
-      ctrl.$modelValue = value;
+      storeValue(value);
+
       while(idx--) {
         value = formatters[idx](value);
       }

@@ -990,6 +990,20 @@ describe('input', function() {
     });
 
 
+    it("should detect changes in the values of an array", function () {
+      var list = ['x', 'y', 'z'];
+      compileInput('<input type="text" ng-model="list" ng-list />');
+      scope.$apply(function() {
+        scope.list = list;
+      });
+      expect(inputElm.val()).toBe('x, y, z');
+      scope.$apply(function() {
+        list.unshift('w');
+      });
+      expect(inputElm.val()).toBe('w, x, y, z');
+    });
+
+
     xit('should require at least one item', function() {
       compileInput('<input type="text" ng-model="list" ng-list required />');
 
