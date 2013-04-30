@@ -18,7 +18,7 @@ describe('ngClick (mobile)', function() {
   beforeEach(function() {
     module('ngMobile');
     orig_now = Date.now;
-    time = 0;
+    time = 1000;
     Date.now = mockTime;
   });
 
@@ -28,28 +28,28 @@ describe('ngClick (mobile)', function() {
   });
 
 
-  it('should get called on a tap', inject(function($rootScope, $compile) {
+  it('should get called on a tap', inject(function($rootScope, $compile, $document) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootScope.$digest();
     expect($rootScope.tapped).toBeUndefined();
 
     browserTrigger(element, 'touchstart');
-    browserTrigger(element, 'touchend');
+    browserTrigger($document, 'touchend');
     expect($rootScope.tapped).toEqual(true);
   }));
 
 
-  it('should pass event object', inject(function($rootScope, $compile) {
+  it('should pass event object', inject(function($rootScope, $compile, $document) {
     element = $compile('<div ng-click="event = $event"></div>')($rootScope);
     $rootScope.$digest();
 
     browserTrigger(element, 'touchstart');
-    browserTrigger(element, 'touchend');
+    browserTrigger($document, 'touchend');
     expect($rootScope.event).toBeDefined();
   }));
 
 
-  it('should not click if the touch is held too long', inject(function($rootScope, $compile, $rootElement) {
+  it('should not click if the touch is held too long', inject(function($rootScope, $compile, $document, $rootElement) {
     element = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.count = 0;
@@ -61,13 +61,13 @@ describe('ngClick (mobile)', function() {
     browserTrigger(element, 'touchstart', [], 10, 10);
 
     time = 900;
-    browserTrigger(element, 'touchend', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 10, 10);
 
     expect($rootScope.count).toBe(0);
   }));
 
 
-  it('should not click if the touchend is too far away', inject(function($rootScope, $compile, $rootElement) {
+  it('should not click if the touchend is too far away', inject(function($rootScope, $compile, $document, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
@@ -75,22 +75,80 @@ describe('ngClick (mobile)', function() {
     expect($rootScope.tapped).toBeUndefined();
 
     browserTrigger(element, 'touchstart', [], 10, 10);
-    browserTrigger(element, 'touchend', [], 400, 400);
+    browserTrigger($document, 'touchend', [], 400, 400);
 
     expect($rootScope.tapped).toBeUndefined();
   }));
 
 
-  it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
-    element = $compile('<div ng-tap="tapped = true"></div>')($rootScope);
+  it('should not click if move tolerance is exceeded', inject(function($rootScope, $compile, $document, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
 
     expect($rootScope.tapped).toBeUndefined();
 
     browserTrigger(element, 'touchstart', [], 10, 10);
-    browserTrigger(element, 'touchmove');
-    browserTrigger(element, 'touchend', [], 400, 400);
+    browserTrigger($document, 'touchmove', [], 21, 21);
+    browserTrigger($document, 'touchend', [], 10, 10);
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 21, 21);
+
+    expect($rootScope.tapped).toBeUndefined();
+  }));
+
+
+  it('should not click if move tolerance is exceeded', inject(function($rootScope, $compile, $document, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchmove', [], 21, 21);
+    browserTrigger($document, 'touchend', [], 10, 10);
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 21, 21);
+
+    expect($rootScope.tapped).toBeUndefined();
+  }));
+
+
+  it('should double click', inject(function($rootScope, $compile, $document, $rootElement) {
+    element = $compile('<div ng-dbl-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    time = 0
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 10, 10);
+
+    time = 200
+    browserTrigger(element, 'touchstart', [], 15, 15);
+    browserTrigger($document, 'touchend', [], 17, 17);
+
+    expect($rootScope.tapped).toEqual(true);
+  }));
+
+
+  it('should not double tap if tap interval exceeded', inject(function($rootScope, $compile, $document, $rootElement) {
+    element = $compile('<div ng-dbl-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    time = 0
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 10, 10);
+    time = 500
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger($document, 'touchend', [], 10, 10);
 
     expect($rootScope.tapped).toBeUndefined();
   }));
@@ -117,12 +175,12 @@ describe('ngClick (mobile)', function() {
 
       expect($rootScope.count).toBe(0);
 
-      // Fire touchstart at 10ms, touchend at 50ms, the click at 300ms.
+      // Fire touchstart at 10ms, touchend at 50ms, the click at 100ms.
       time = 10;
       browserTrigger(element, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
 
       expect($rootScope.count).toBe(1);
 
@@ -134,7 +192,7 @@ describe('ngClick (mobile)', function() {
 
 
     it('should cancel the following click event even when the element has changed', inject(
-        function($rootScope, $compile, $rootElement) {
+        function($rootScope, $compile, $document, $rootElement) {
       $rootElement.append(
           '<div ng-show="!tapped" ng-click="count1 = count1 + 1; tapped = true">x</div>' +
           '<div ng-show="tapped" ng-click="count2 = count2 + 1">y</div>'
@@ -156,7 +214,7 @@ describe('ngClick (mobile)', function() {
       browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(1);
 
@@ -168,7 +226,7 @@ describe('ngClick (mobile)', function() {
     }));
 
 
-    it('should not cancel clicks on distant elements', inject(function($rootScope, $compile, $rootElement) {
+    it('should not cancel clicks on distant elements', inject(function($rootScope, $compile, $document, $rootElement) {
       $rootElement.append(
           '<div ng-click="count1 = count1 + 1">x</div>' +
           '<div ng-click="count2 = count2 + 1">y</div>'
@@ -190,7 +248,7 @@ describe('ngClick (mobile)', function() {
       browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(1);
 
@@ -203,7 +261,7 @@ describe('ngClick (mobile)', function() {
       browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 130;
-      browserTrigger(element1, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(2);
 
@@ -224,7 +282,7 @@ describe('ngClick (mobile)', function() {
     }));
 
 
-    it('should not cancel clicks that come long after', inject(function($rootScope, $compile) {
+    it('should not cancel clicks that come long after', inject(function($rootScope, $compile, $document, $timeout) {
       element1 = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
 
       $rootScope.count = 0;
@@ -237,17 +295,19 @@ describe('ngClick (mobile)', function() {
       browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
       expect($rootScope.count).toBe(1);
 
+
       time = 2700;
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       browserTrigger(element1, 'click', [], 10, 10);
 
       expect($rootScope.count).toBe(2);
     }));
 
 
-    it('should not cancel clicks that come long after', inject(function($rootScope, $compile) {
+    it('should not cancel clicks that come long after', inject(function($rootScope, $compile, $document, $timeout) {
       element1 = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
 
       $rootScope.count = 0;
@@ -260,11 +320,12 @@ describe('ngClick (mobile)', function() {
       browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend', [], 10, 10);
+      browserTrigger($document, 'touchend', [], 10, 10);
 
       expect($rootScope.count).toBe(1);
 
       time = 2700;
+      $timeout.flush(); // Desktop fall-back clicks are prevented if click has already fired
       browserTrigger(element1, 'click', [], 10, 10);
 
       expect($rootScope.count).toBe(2);
@@ -274,7 +335,7 @@ describe('ngClick (mobile)', function() {
 
   describe('click fallback', function() {
 
-    it('should treat a click as a tap on desktop', inject(function($rootScope, $compile) {
+    it('should treat a click as a tap on desktop', inject(function($rootScope, $compile, $document) {
       element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
       $rootScope.$digest();
       expect($rootScope.tapped).toBeFalsy();
@@ -284,7 +345,7 @@ describe('ngClick (mobile)', function() {
     }));
 
 
-    it('should pass event object', inject(function($rootScope, $compile) {
+    it('should pass event object', inject(function($rootScope, $compile, $document) {
       element = $compile('<div ng-click="event = $event"></div>')($rootScope);
       $rootScope.$digest();
 
