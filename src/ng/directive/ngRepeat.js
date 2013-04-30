@@ -212,7 +212,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
               nextBlockOrder = [];
 
 
-          if (isArray(collection)) {
+          if (isArrayLike(collection)) {
             collectionKeys = collection;
           } else {
             // if object, extract keys, sort them and use to determine order of iteration over obj props
