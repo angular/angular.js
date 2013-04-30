@@ -90,6 +90,18 @@ describe('$controller', function() {
   });
 
 
+  it('should instantiate controller defined on window', inject(function($window) {
+    var scope = {};
+    var Foo = function() {};
+
+    $window.a = {Foo: Foo};
+
+    var foo = $controller('a.Foo', {$scope: scope});
+    expect(foo).toBeDefined();
+    expect(foo instanceof Foo).toBe(true);
+  }));
+
+
   describe('ctrl as syntax', function() {
 
     it('should publish controller instance into scope', function() {
