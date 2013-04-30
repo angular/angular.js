@@ -1040,9 +1040,10 @@ function bindJQuery() {
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
-    JQLitePatchJQueryRemove('remove', true);
-    JQLitePatchJQueryRemove('empty');
-    JQLitePatchJQueryRemove('html');
+    // Method signature: JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
+    JQLitePatchJQueryRemove('remove', true, true, false);
+    JQLitePatchJQueryRemove('empty', false, false, false);
+    JQLitePatchJQueryRemove('html', false, false, true);
   } else {
     jqLite = JQLite;
   }
