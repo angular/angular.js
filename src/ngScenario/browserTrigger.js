@@ -25,7 +25,7 @@
    * @param {number} x Optional x-coordinate for mouse/touch events.
    * @param {number} y Optional y-coordinate for mouse/touch events.
    */
-  window.browserTrigger = function browserTrigger(element, eventType, keys, x, y) {
+  window.browserTrigger = function browserTrigger(element, eventType, keys, x, y, button) {
     if (element && !element.nodeName) element = element[0];
     if (!element) return;
 
@@ -102,8 +102,9 @@
 
       x = x || 0;
       y = y || 0;
+      button = button || 0;
       evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
-          pressed('shift'), pressed('meta'), 0, element);
+          pressed('shift'), pressed('meta'), button, element);
 
       element.dispatchEvent(evnt);
       finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);

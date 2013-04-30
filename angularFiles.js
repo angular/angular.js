@@ -73,6 +73,7 @@ angularFiles = {
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
     'src/ngMobile/mobile.js',
+    'src/ngMobile/directive/ngHold.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
 
