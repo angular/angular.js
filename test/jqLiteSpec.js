@@ -123,6 +123,14 @@ describe('jqLite', function() {
         dealoc(doc);
       }
     );
+
+    it('should find data on originalNode if a clone', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('myData', 'abc');
+      var clone = element.clone()
+      expect(clone.inheritedData('myData')).toBe('abc');
+      dealoc(element);
+    })
   });
 
 

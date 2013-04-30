@@ -171,7 +171,10 @@ function JQLite(element) {
 }
 
 function JQLiteClone(element) {
-  return element.cloneNode(true);
+  var clone = element.cloneNode(true);
+  clone.originalNode = element
+  clone.isClone = true
+  return clone
 }
 
 function JQLiteDealoc(element){
@@ -310,6 +313,9 @@ function JQLiteInheritedData(element, name, value) {
 
   while (element.length) {
     if (value = element.data(name)) return value;
+    if (element[0].isClone) {
+      if (value = jqLite(element[0].originalNode).inheritedData(name)) return value
+    }
     element = element.parent();
   }
 }
