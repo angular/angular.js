@@ -90,13 +90,27 @@ describe('$controller', function() {
   });
 
 
-  it('should publish controller instance into scope', function() {
-    var scope = {};
+  describe('ctrl as syntax', function() {
 
-    $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+    it('should publish controller instance into scope', function() {
+      var scope = {};
 
-    var foo = $controller('FooCtrl as foo', {$scope: scope});
-    expect(scope.foo).toBe(foo);
-    expect(scope.foo.mark).toBe('foo');
+      $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
+
+
+    it('should allow controllers with dots', function() {
+      var scope = {};
+
+      $controllerProvider.register('a.b.FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('a.b.FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
   });
 });
