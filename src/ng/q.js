@@ -57,10 +57,16 @@
  *
  * # The Deferred API
  *
- * A new instance of deferred is constructed by calling `$q.defer()`.
+ * A new instance of deferred is constructed by calling `$q.defer(canceler)`.
  *
  * The purpose of the deferred object is to expose the associated Promise instance as well as APIs
  * that can be used for signaling the successful or unsuccessful completion of the task.
+ *
+ * `$q.defer` can optionally take a canceler function. This function will cause resulting promises,
+ * and any derived promises, to have a `cancel()` method, and will be invoked if the promise is
+ * canceled. The canceler receives the reason the promise was canceled as its argument. The promise
+ * is rejected with the canceler's return value or the original cancel reason if nothing is
+ * returned.
  *
  * **Methods**
  *
@@ -96,6 +102,11 @@
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
  *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
  *   more information.
+ *
+ * - `cancel(reason)` - optionally available if a canceler was provided to `$q.defer`. The canceler
+ *   is invoked and the promise rejected. A reason may be sent to the canceler explaining why it's
+ *   being canceled. Returns true if the promise has not been resolved and was successfully
+ *   canceled.
  *
  * # Chaining promises
  *
@@ -180,9 +191,10 @@ function qFactory(nextTick, exceptionHandler) {
    * @description
    * Creates a `Deferred` object which represents a task which will finish in the future.
    *
+   * @param {function(*)=} canceler Function which will be called if the task is canceled.
    * @returns {Deferred} Returns a new instance of deferred.
    */
-  var defer = function() {
+  var defer = function(canceler) {
     var pending = [],
         value, deferred;
 
@@ -214,7 +226,7 @@ function qFactory(nextTick, exceptionHandler) {
 
       promise: {
         then: function(callback, errback) {
-          var result = defer();
+          var result = defer(wrappedCanceler);
 
           var wrappedCallback = function(value) {
             try {
@@ -280,6 +292,27 @@ function qFactory(nextTick, exceptionHandler) {
         }
       }
     };
+
+    if (isFunction(canceler)) {
+      var wrappedCanceler = function(reason) {
+        try {
+          var value = canceler(reason);
+          if (isDefined(value)) reason = value;
+        } catch(e) {
+          exceptionHandler(e);
+          reason = e;
+        }
+        when(reason).then(deferred.reject, deferred.reject);
+        return reason;
+      };
+
+      deferred.promise.cancel = function(reason) {
+        if (pending) {
+          return !(wrappedCanceler(reason) instanceof Error);
+        }
+        return false;
+      };
+    }
 
     return deferred;
   };
