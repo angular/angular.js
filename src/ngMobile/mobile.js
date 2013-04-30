@@ -53,7 +53,180 @@ var ngMobile = angular.module('ngMobile', []);
  *   Holds helper functions and constants useful for detecting mobile events
  */
 ngMobile.factory('$mobileUtils', ['$window', function($window) {
+  var CLICKBUSTER_THRESHOLD = 25,  // 25 pixels in any dimension is the limit for busting clicks.
+    PREVENT_DURATION = 2500,     // 2.5 seconds maximum from preventGhostClick call to click
+    lastPreventedTime,
+    regionCount,
+    touchCoordinatesMD,     // Touch coordinates for mouse down
+    touchCoordinatesC,      // Touch coordinates for click
+
+
+    // TAP EVENTS AND GHOST CLICKS
+    //
+    // Why tap events?
+    // Mobile browsers detect a tap, then wait a moment (usually ~300ms) to see if you're
+    // double-tapping, and then fire a click event.
+    //
+    // This delay sucks and makes mobile apps feel unresponsive.
+    // So we detect touchstart, touchmove, touchcancel and touchend ourselves and determine when
+    // the user has tapped on something.
+    //
+    // What happens when the browser then generates a click event?
+    // The browser, of course, also detects the tap and fires a click after a delay. This results in
+    // tapping/clicking twice. So we do "clickbusting" to prevent it.
+    //
+    // How does it work?
+    // We attach global touchstart and click handlers, that run during the capture (early) phase.
+    // So the sequence for a tap is:
+    // - global touchstart: Sets an "allowable region" at the point touched.
+    // - element's touchstart: Starts a touch
+    // (- touchmove or touchcancel ends the touch, no click follows)
+    // - element's touchend: Determines if the tap is valid (didn't move too far away, didn't hold
+    //   too long) and fires the user's tap handler. The touchend also calls preventGhostClick().
+    // - preventGhostClick() removes the allowable region the global touchstart created.
+    // - The browser generates a click event.
+    // - The global click handler catches the click, and checks whether it was in an allowable region.
+    //     - If preventGhostClick was called, the region will have been removed, the click is busted.
+    //     - If the region is still there, the click proceeds normally. Therefore clicks on links and
+    //       other elements without ngTap on them work normally.
+    //
+    // This is an ugly, terrible hack!
+    // Yeah, tell me about it. The alternatives are using the slow click events, or making our users
+    // deal with the ghost clicks, so I consider this the least of evils. Fortunately Angular
+    // encapsulates this ugly logic away from the user.
+    //
+    // Why not just put click handlers on the element?
+    // We do that too, just to be sure. The problem is that the tap event might have caused the DOM
+    // to change, so that the click fires in the same position but something else is there now. So
+    // the handlers are global and care only about coordinates and not elements.
+
+
+    // Checks if the coordinates are close enough to be within the region.
+    hit = function(x1, y1, x2, y2) {
+      return Math.abs(x1 - x2) < CLICKBUSTER_THRESHOLD && Math.abs(y1 - y2) < CLICKBUSTER_THRESHOLD;
+    },
+
+    // Checks a list of allowable regions against a click location.
+    // Returns true if the click should be allowed.
+    // Splices out the allowable region from the list after it has been used.
+    checkAllowableRegions = function(touchCoordinates, x, y) {
+      for (var i = 0; i < touchCoordinates.length; i += 1) {
+        if (hit(touchCoordinates[i][0], touchCoordinates[i][1], x, y)) {
+          touchCoordinates.splice(i, i + 1);
+          return true; // allowable region
+        }
+      }
+      return false; // No allowable region; bust it.
+    },
+
+    // Global click handler that prevents the click if it's in a bustable zone and preventGhostClick
+    // was called recently.
+    onClick = function(event) {
+      if (Date.now() - lastPreventedTime > PREVENT_DURATION) {
+        return; // Too old.
+      }
+
+      var touches = event.touches && event.touches.length ? event.touches : [event],
+        x = touches[0].clientX,
+        y = touches[0].clientY;
+      // Work around desktop Webkit quirk where clicking a label will fire two clicks (on the label
+      // and on the input element). Depending on the exact browser, this second click we don't want
+      // to bust has either (0,0) or negative coordinates.
+      if (x < 1 && y < 1) {
+        return; // offscreen
+      }
+
+      // Look for an allowable region containing this click.
+      // If we find one, that means it was created by touchstart and not removed by
+      // preventGhostClick, so we don't bust it.
+      if (checkAllowableRegions(event.type == 'mousedown' ? touchCoordinatesMD : touchCoordinatesC, x, y)) {
+        return;
+      }
+
+      // If we didn't find an allowable region, bust the click.
+      event.stopPropagation();
+      event.preventDefault();
+    },
+
+    // Global touchstart handler that creates an allowable region for a click event.
+    // This allowable region can be removed by preventGhostClick if we want to bust it.
+    onTouchStart = function(event) {
+      var touches = event.touches && event.touches.length ? event.touches : [event],
+        x = touches[0].clientX,
+        y = touches[0].clientY,
+        identifier = touches[0].identifier;
+
+      touchCoordinatesMD.push([x, y, identifier]);
+      touchCoordinatesC.push([x, y, identifier]);
+
+      if (regionCount == 0) {
+        $window.document.addEventListener('mousedown', onClick, true);
+      }
+      regionCount += 1;
+
+      setTimeout(function() {
+        // Remove the allowable region.
+        var i;
+
+        regionCount -= 1;
+        if (regionCount == 0) {
+          // Limits user to either touch events or mice on non-pointer event browsers
+          // whilst allowing the user to switch input device at any time.
+          // There is no delay moving from a mouse to touch, however there is a
+          // PREVENT_DURATION (2.5 second) delay moving from touch to a mouse
+          $window.document.removeEventListener('mousedown', onClick, true);
+        }
+
+        for (var i = 0; i < touchCoordinatesMD.length; i += 1) {
+          if (touchCoordinatesMD[i][2] == identifier) {
+            touchCoordinatesMD.splice(i, i + 1);
+            break;
+          }
+        }
+        for (var i = 0; i < touchCoordinatesC.length; i += 1) {
+          if (touchCoordinatesC[i][2] == identifier) {
+            touchCoordinatesC.splice(i, i + 1);
+            break;
+          }
+        }
+      }, PREVENT_DURATION);
+    };
+
+
   return {
+    /**
+    * On the first call, attaches some event handlers. Then whenever it gets called, it creates a
+    * zone around the touchstart where clicks will get busted.
+    * @param   {HTMLElement}   node
+    * @param   {HTMLElement}   parent
+    * @returns {boolean}     has_parent
+    */
+    preventGhostClick: function(x, y) {
+      if (!touchCoordinatesC) {
+        touchCoordinatesC = [];
+        touchCoordinatesMD = [];
+        regionCount = 1;
+        $window.document.addEventListener('touchstart', onTouchStart, true);
+
+        // Since mouse down binds the pointer to an element and iOS emulates
+        // these events we block them temporarily 
+        $window.document.addEventListener('mousedown', onClick, true);
+        setTimeout(function() {
+          regionCount -= 1;
+          if (regionCount == 0) {
+            $window.document.removeEventListener('mousedown', onClick, true);
+          }
+        }, PREVENT_DURATION);
+
+        $window.document.addEventListener('click', onClick, true);
+      }
+      lastPreventedTime = Date.now();
+
+      checkAllowableRegions(touchCoordinatesMD, x, y);
+      checkAllowableRegions(touchCoordinatesC, x, y);
+    },
+
+
     // direction defines
     DIRECTION_DOWN: 'down',
     DIRECTION_LEFT: 'left',
@@ -300,55 +473,6 @@ ngMobile.provider('$mobile', function() {
 
       pointer_allocation = {},  // PointerId => Instances (capture mapping)
       event_pointers = {},      // Instance => Pointers (similar to touches list on iOS)
-
-      /**
-       * extend eventData for gestures
-       * @param   {Object}   inst
-       * @param   {Object}   ev
-       * @returns {Object}   ev
-       */
-      extendEventData = function(inst, ev) {
-        var startEv = inst.current.startEvent,
-          i = 0, len;
-
-        // if the touches change, set the new touches over the startEvent touches
-        // this because touchevents don't have all the touches on touchstart, or the
-        // user must place his fingers at the EXACT same time on the screen, which is not realistic
-        // but, sometimes it happens that both fingers are touching at the EXACT same time
-        if(startEv && (event_pointers[inst].length != startEv.touches.length || ev.touches === startEv.touches)) {
-          // extend 1 level deep to get the touchlist with the touch objects
-          startEv.touches = [];
-          for(len = ev.touches.length; i < len; i++) {
-            startEv.touches.push(ev.touches[i]);
-          }
-        }
-
-        var delta_time = ev.timeStamp - startEv.timeStamp,
-          delta_x = ev.center.pageX - startEv.center.pageX,
-          delta_y = ev.center.pageY - startEv.center.pageY,
-          velocity = $mobileUtils.getVelocity(delta_time, delta_x, delta_y);
-
-        angular.extend(ev, {
-          deltaTime   : delta_time,
-
-          deltaX    : delta_x,
-          deltaY    : delta_y,
-
-          velocityX   : velocity.x,
-          velocityY   : velocity.y,
-
-          distance  : $mobileUtils.getDistance(startEv.center, ev.center),
-          angle     : $mobileUtils.getAngle(startEv.center, ev.center),
-          direction   : $mobileUtils.getDirection(startEv.center, ev.center),
-
-          scale     : $mobileUtils.getScale(startEv.touches, ev.touches),
-          rotation  : $mobileUtils.getRotation(startEv.touches, ev.touches),
-
-          startEvent  : startEv
-        });
-
-        return ev;
-      },
 
 
       /*
@@ -597,6 +721,7 @@ ngMobile.provider('$mobile', function() {
             bind: function(event, handler) {
               instance.handlers[event] = instance.handlers[event] || [];
               instance.handlers[event].push(handler);
+              return instance;
             },
 
             /**
@@ -608,10 +733,59 @@ ngMobile.provider('$mobile', function() {
               } else {
                 angular.arrayRemove(instance.handlers[event], handler);
               }
+              return instance;
             },
 
             toString: function() {
               return instance.id;
+            },
+
+
+            /**
+             * extend eventData for gestures
+             * @param   {Object}   ev
+             * @returns {Object}   ev
+             */
+            extendEventData: function(ev) {
+              var i, len,
+                startEv = instance.current.startEvent,
+                delta_time = ev.timeStamp - startEv.timeStamp,
+                delta_x = ev.center.pageX - startEv.center.pageX,
+                delta_y = ev.center.pageY - startEv.center.pageY,
+                velocity = $mobileUtils.getVelocity(delta_time, delta_x, delta_y);
+
+              // if the touches change, add the new touches over the startEvent touches
+              // this because touchevents don't have all the touches on touchstart, or the
+              // user must place his fingers at the EXACT same time on the screen, which is not realistic
+              if(startEv && ev.touches.length != startEv.touches.length) {
+                // extend 1 level deep to get the touchlist with the touch objects
+                startEv.touches = [];
+                i = 0;
+                for(len = ev.touches.length; i < len; i++) {
+                  startEv.touches.push(ev.touches[i]);
+                }
+              }
+
+              angular.extend(ev, {
+                deltaTime   : delta_time,
+
+                deltaX    : delta_x,
+                deltaY    : delta_y,
+
+                velocityX   : velocity.x,
+                velocityY   : velocity.y,
+
+                distance  : $mobileUtils.getDistance(startEv.center, ev.center),
+                angle     : $mobileUtils.getAngle(startEv.center, ev.center),
+                direction   : $mobileUtils.getDirection(startEv.center, ev.center),
+
+                scale     : $mobileUtils.getScale(startEv.touches, ev.touches),
+                rotation  : $mobileUtils.getRotation(startEv.touches, ev.touches),
+
+                startEvent  : startEv
+              });
+
+              return ev;
             },
 
 
@@ -635,7 +809,7 @@ ngMobile.provider('$mobile', function() {
               }
 
               // extend event data with calculations about scale, distance etc
-              eventData = extendEventData(instance, eventData);
+              eventData = instance.extendEventData(eventData);
 
               var g = 0, len,
                 gesture;
@@ -705,6 +879,7 @@ ngMobile.provider('$mobile', function() {
                   handlers[i].call(element, eventData);
                 }
               }
+              return instance;
             },
 
             enabled: true,       // Can prevent elements triggering gestures
