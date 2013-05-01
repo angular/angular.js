@@ -15,11 +15,13 @@
  *
  * Below is a more detailed breakdown of the supported callback events provided by pre-exisitng ng directives:
  *
- * * {@link ng.directive:ngRepeat#animations ngRepeat} — enter, leave and move
- * * {@link ng.directive:ngView#animations ngView} — enter and leave
- * * {@link ng.directive:ngInclude#animations ngInclude} — enter and leave
- * * {@link ng.directive:ngSwitch#animations ngSwitch} — enter and leave
- * * {@link ng.directive:ngShow#animations ngShow & ngHide} - show and hide respectively
+ * | Directive                                                 | Supported Animations                               |
+ * |========================================================== |====================================================|
+ * | {@link ng.directive:ngRepeat#animations ngRepeat}         | enter, leave and move                              |
+ * | {@link ng.directive:ngView#animations ngView}             | enter and leave                                    |
+ * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |
+ * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
+ * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | show and hide                                      |
  *
  * You can find out more information about animations upon visiting each directive page.
  *
@@ -130,14 +132,6 @@ var $AnimatorProvider = function() {
   this.$get = ['$animation', '$window', '$sniffer', '$rootElement', '$rootScope',
       function($animation, $window, $sniffer, $rootElement, $rootScope) {
     $rootElement.data(NG_ANIMATE_CONTROLLER, rootAnimateController);
-    var unregister = $rootScope.$watch(function() {
-      unregister();
-      if (rootAnimateController.running) {
-        $window.setTimeout(function() {
-          rootAnimateController.running = false;
-        }, 0);
-      }
-    });
 
     /**
      * @ngdoc function

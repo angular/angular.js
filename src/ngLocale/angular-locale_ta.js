@@ -7,50 +7,50 @@ $provide.value("$locale", {
       "1": "pm"
     },
     "DAY": {
-      "0": "ஞாயிறு",
-      "1": "திங்கள்",
-      "2": "செவ்வாய்",
-      "3": "புதன்",
-      "4": "வியாழன்",
-      "5": "வெள்ளி",
-      "6": "சனி"
+      "0": "\u0b9e\u0bbe\u0baf\u0bbf\u0bb1\u0bc1",
+      "1": "\u0ba4\u0bbf\u0b99\u0bcd\u0b95\u0bb3\u0bcd",
+      "2": "\u0b9a\u0bc6\u0bb5\u0bcd\u0bb5\u0bbe\u0baf\u0bcd",
+      "3": "\u0baa\u0bc1\u0ba4\u0ba9\u0bcd",
+      "4": "\u0bb5\u0bbf\u0baf\u0bbe\u0bb4\u0ba9\u0bcd",
+      "5": "\u0bb5\u0bc6\u0bb3\u0bcd\u0bb3\u0bbf",
+      "6": "\u0b9a\u0ba9\u0bbf"
     },
     "MONTH": {
-      "0": "ஜனவரி",
-      "1": "பிப்ரவரி",
-      "2": "மார்ச்",
-      "3": "ஏப்ரல்",
-      "4": "மே",
-      "5": "ஜூன்",
-      "6": "ஜூலை",
-      "7": "ஆகஸ்ட்",
-      "8": "செப்டம்பர்",
-      "9": "அக்டோபர்",
-      "10": "நவம்பர்",
-      "11": "டிசம்பர்"
+      "0": "\u0b9c\u0ba9\u0bb5\u0bb0\u0bbf",
+      "1": "\u0baa\u0bbf\u0baa\u0bcd\u0bb0\u0bb5\u0bb0\u0bbf",
+      "2": "\u0bae\u0bbe\u0bb0\u0bcd\u0b9a\u0bcd",
+      "3": "\u0b8f\u0baa\u0bcd\u0bb0\u0bb2\u0bcd",
+      "4": "\u0bae\u0bc7",
+      "5": "\u0b9c\u0bc2\u0ba9\u0bcd",
+      "6": "\u0b9c\u0bc2\u0bb2\u0bc8",
+      "7": "\u0b86\u0b95\u0bb8\u0bcd\u0b9f\u0bcd",
+      "8": "\u0b9a\u0bc6\u0baa\u0bcd\u0b9f\u0bae\u0bcd\u0baa\u0bb0\u0bcd",
+      "9": "\u0b85\u0b95\u0bcd\u0b9f\u0bcb\u0baa\u0bb0\u0bcd",
+      "10": "\u0ba8\u0bb5\u0bae\u0bcd\u0baa\u0bb0\u0bcd",
+      "11": "\u0b9f\u0bbf\u0b9a\u0bae\u0bcd\u0baa\u0bb0\u0bcd"
     },
     "SHORTDAY": {
-      "0": "ஞா",
-      "1": "தி",
-      "2": "செ",
-      "3": "பு",
-      "4": "வி",
-      "5": "வெ",
-      "6": "ச"
+      "0": "\u0b9e\u0bbe",
+      "1": "\u0ba4\u0bbf",
+      "2": "\u0b9a\u0bc6",
+      "3": "\u0baa\u0bc1",
+      "4": "\u0bb5\u0bbf",
+      "5": "\u0bb5\u0bc6",
+      "6": "\u0b9a"
     },
     "SHORTMONTH": {
-      "0": "ஜன.",
-      "1": "பிப்.",
-      "2": "மார்.",
-      "3": "ஏப்.",
-      "4": "மே",
-      "5": "ஜூன்",
-      "6": "ஜூலை",
-      "7": "ஆக.",
-      "8": "செப்.",
-      "9": "அக்.",
-      "10": "நவ.",
-      "11": "டிச."
+      "0": "\u0b9c\u0ba9.",
+      "1": "\u0baa\u0bbf\u0baa\u0bcd.",
+      "2": "\u0bae\u0bbe\u0bb0\u0bcd.",
+      "3": "\u0b8f\u0baa\u0bcd.",
+      "4": "\u0bae\u0bc7",
+      "5": "\u0b9c\u0bc2\u0ba9\u0bcd",
+      "6": "\u0b9c\u0bc2\u0bb2\u0bc8",
+      "7": "\u0b86\u0b95.",
+      "8": "\u0b9a\u0bc6\u0baa\u0bcd.",
+      "9": "\u0b85\u0b95\u0bcd.",
+      "10": "\u0ba8\u0bb5.",
+      "11": "\u0b9f\u0bbf\u0b9a."
     },
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "₹",
+    "CURRENCY_SYM": "\u20b9",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4 -",
+        "negPre": "\u00a4\u00a0-",
         "negSuf": "",
-        "posPre": "\u00A4 ",
+        "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }
     }

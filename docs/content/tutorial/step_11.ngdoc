@@ -214,7 +214,7 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
-You should now see the following output in the Testacular tab:
+You should now see the following output in the Karma tab:
 
     Chrome 22.0: Executed 4 of 4 SUCCESS (0.038 secs / 0.01 secs)
 

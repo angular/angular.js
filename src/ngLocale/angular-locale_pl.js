@@ -8,11 +8,11 @@ $provide.value("$locale", {
     },
     "DAY": {
       "0": "niedziela",
-      "1": "poniedziałek",
+      "1": "poniedzia\u0142ek",
       "2": "wtorek",
-      "3": "środa",
+      "3": "\u015broda",
       "4": "czwartek",
-      "5": "piątek",
+      "5": "pi\u0105tek",
       "6": "sobota"
     },
     "MONTH": {
@@ -24,8 +24,8 @@ $provide.value("$locale", {
       "5": "czerwca",
       "6": "lipca",
       "7": "sierpnia",
-      "8": "września",
-      "9": "października",
+      "8": "wrze\u015bnia",
+      "9": "pa\u017adziernika",
       "10": "listopada",
       "11": "grudnia"
     },
@@ -33,7 +33,7 @@ $provide.value("$locale", {
       "0": "niedz.",
       "1": "pon.",
       "2": "wt.",
-      "3": "śr.",
+      "3": "\u015br.",
       "4": "czw.",
       "5": "pt.",
       "6": "sob."
@@ -48,7 +48,7 @@ $provide.value("$locale", {
       "6": "lip",
       "7": "sie",
       "8": "wrz",
-      "9": "paź",
+      "9": "pa\u017a",
       "10": "lis",
       "11": "gru"
     },
@@ -62,9 +62,9 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "zł",
+    "CURRENCY_SYM": "z\u0142",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "(",
-        "negSuf": " \u00A4)",
+        "negSuf": "\u00a0\u00a4)",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

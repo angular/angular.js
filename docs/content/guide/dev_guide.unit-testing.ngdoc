@@ -3,7 +3,7 @@
 @description
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
-come with almost no-help from the compiler. For this reason we feel very strongly that any code
+comes with almost no-help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
 Angular which makes testing your Angular applications easy. So there is no excuse for not testing.
 
@@ -275,7 +275,62 @@ expect(length('abc')).toEqual(3);
 </pre>
 
 ## Directives
-Directives in angular are responsible for updating the DOM when the state of the model changes.
+Directives in angular are responsible for encapsulating complex functionality within custom HTML tags,
+attributes, classes or comments. Unit tests are very important for directives because the components
+you create with directives may be used throughout your application and in many different contexts.
+
+### Simple HTML Element Directive
+
+Lets start with an angular app with no dependencies.
+
+<pre>
+var app = angular.module('myApp', []);
+</pre>
+
+Now we can add a directive to our app.
+
+<pre>
+app.directive('aGreatEye', function () {
+    return {
+        restrict: 'E',
+        replace:  true,
+        template: '<h1>lidless, wreathed in flame</h1>'
+    };
+});
+</pre>
+
+This directive is used as a tag `<a-great-eye></a-great-eye>`. It replaces the entire tag with the
+template `<h1>lidless, wreathed in flame</h1>`. Now we are going to write a jasmine unit test to
+verify this functionality.
+
+<pre>
+describe('Unit testing great quotes', function() {
+    var $compile;
+    var $rootScope;
+
+    // Load the myApp module, which contains the directive
+    beforeEach(module('myApp'));
+
+    // Store references to $rootScope and $compile
+    // so they are available to all tests in this describe block
+    beforeEach(inject(function(_$compile_, _$rootScope_){
+      // The injector unwraps the underscores (_) from around the parameter names when matching
+      $compile = _$compile_;
+      $rootScope = _$rootScope_;
+    }));
+    
+    it('Replaces the element with the appropriate content', function() {
+        // Compile a piece of HTML containing the directive
+        var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
+        // Check that the compiled element contains the templated content
+        expect(element.html()).toContain("lidless, wreathed in flame");
+    });
+});
+</pre>
+
+We inject the $compile service and $rootScope before each jasmine test. The $compile service is used
+to render the aGreatEye directive. After rendering the directive we ensure that the directive has
+replaced the content and "lidless, wreathed in flame" is present.
 
 ## Mocks
 oue

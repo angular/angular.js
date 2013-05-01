@@ -93,8 +93,8 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -413,6 +413,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   } else {
     var timeout;
 
+    var deferListener = function() {
+      if (!timeout) {
+        timeout = $browser.defer(function() {
+          listener();
+          timeout = null;
+        });
+      }
+    };
+
     element.bind('keydown', function(event) {
       var key = event.keyCode;
 
@@ -420,16 +429,16 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       //    command            modifiers                   arrows
       if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
 
-      if (!timeout) {
-        timeout = $browser.defer(function() {
-          listener();
-          timeout = null;
-        });
-      }
+      deferListener();
     });
 
     // if user paste into input using mouse, we need "change" event to catch it
     element.bind('change', listener);
+
+    // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
+    if ($sniffer.hasEvent('paste')) {
+      element.bind('paste cut', deferListener);
+    }
   }
 
 
@@ -439,7 +448,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // pattern validator
   var pattern = attr.ngPattern,
-      patternValidator;
+      patternValidator,
+      match;
 
   var validate = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
@@ -452,8 +462,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   };
 
   if (pattern) {
-    if (pattern.match(/^\/(.*)\/$/)) {
-      pattern = new RegExp(pattern.substr(1, pattern.length - 2));
+    match = pattern.match(/^\/(.*)\/([gim]*)$/);
+    if (match) {
+      pattern = new RegExp(match[1], match[2]);
       patternValidator = function(value) {
         return validate(pattern, value)
       };

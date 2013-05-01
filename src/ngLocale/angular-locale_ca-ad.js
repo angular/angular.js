@@ -18,14 +18,14 @@ $provide.value("$locale", {
     "MONTH": {
       "0": "de gener",
       "1": "de febrer",
-      "2": "de març",
-      "3": "d’abril",
+      "2": "de mar\u00e7",
+      "3": "d\u2019abril",
       "4": "de maig",
       "5": "de juny",
       "6": "de juliol",
-      "7": "d’agost",
+      "7": "d\u2019agost",
       "8": "de setembre",
-      "9": "d’octubre",
+      "9": "d\u2019octubre",
       "10": "de novembre",
       "11": "de desembre"
     },
@@ -41,14 +41,14 @@ $provide.value("$locale", {
     "SHORTMONTH": {
       "0": "de gen.",
       "1": "de febr.",
-      "2": "de març",
-      "3": "d’abr.",
+      "2": "de mar\u00e7",
+      "3": "d\u2019abr.",
       "4": "de maig",
       "5": "de juny",
       "6": "de jul.",
-      "7": "d’ag.",
+      "7": "d\u2019ag.",
       "8": "de set.",
-      "9": "d’oct.",
+      "9": "d\u2019oct.",
       "10": "de nov.",
       "11": "de des."
     },
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

@@ -3,22 +3,22 @@
 /**
  * DESIGN NOTES
  *
- * The design decisions behind the scope ware heavily favored for speed and memory consumption.
+ * The design decisions behind the scope are heavily favored for speed and memory consumption.
  *
  * The typical use of scope is to watch the expressions, which most of the time return the same
  * value as last time so we optimize the operation.
  *
- * Closures construction is expensive from speed as well as memory:
- *   - no closures, instead ups prototypical inheritance for API
+ * Closures construction is expensive in terms of speed as well as memory:
+ *   - No closures, instead use prototypical inheritance for API
  *   - Internal state needs to be stored on scope directly, which means that private state is
  *     exposed as $$____ properties
  *
  * Loop operations are optimized by using while(count--) { ... }
  *   - this means that in order to keep the same order of execution as addition we have to add
- *     items to the array at the begging (shift) instead of at the end (push)
+ *     items to the array at the beginning (shift) instead of at the end (push)
  *
  * Child scopes are created and removed often
- *   - Using array would be slow since inserts in meddle are expensive so we use linked list
+ *   - Using an array would be slow since inserts in middle are expensive so we use linked list
  *
  * There are few watches then a lot of observers. This is why you don't want the observer to be
  * implemented in the same way as watch. Watch requires return of initialization function which
@@ -40,7 +40,7 @@
  * @methodOf ng.$rootScopeProvider
  * @description
  *
- * Sets the number of digest iteration the scope should attempt to execute before giving up and
+ * Sets the number of digest iterations the scope should attempt to execute before giving up and
  * assuming that the model is unstable.
  *
  * The current default is 10 iterations.
@@ -450,7 +450,7 @@ function $RootScopeProvider(){
        * @function
        *
        * @description
-       * Process all of the {@link ng.$rootScope.Scope#$watch watchers} of the current scope and its children.
+       * Processes all of the {@link ng.$rootScope.Scope#$watch watchers} of the current scope and its children.
        * Because a {@link ng.$rootScope.Scope#$watch watcher}'s listener can change the model, the
        * `$digest()` keeps calling the {@link ng.$rootScope.Scope#$watch watchers} until no more listeners are
        * firing. This means that it is possible to get into an infinite loop. This function will throw
@@ -793,7 +793,7 @@ function $RootScopeProvider(){
        * Afterwards, the event traverses upwards toward the root scope and calls all registered
        * listeners along the way. The event will stop propagating if one of the listeners cancels it.
        *
-       * Any exception emmited from the {@link ng.$rootScope.Scope#$on listeners} will be passed
+       * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
        *
        * @param {string} name Event name to emit.

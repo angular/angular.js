@@ -82,6 +82,7 @@ function publishExternalAPI(angular){
             ngController: ngControllerDirective,
             ngForm: ngFormDirective,
             ngHide: ngHideDirective,
+            ngIf: ngIfDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
             ngNonBindable: ngNonBindableDirective,

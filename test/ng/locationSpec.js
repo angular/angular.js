@@ -25,7 +25,8 @@ describe('$location', function() {
 
   describe('NewUrl', function() {
     beforeEach(function() {
-      url = new LocationUrl('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
+      url = new LocationHtml5Url('http://www.domain.com:9877/');
+      url.$$parse('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
     });
 
 
@@ -132,16 +133,18 @@ describe('$location', function() {
 
 
     it('should parse new url', function() {
-      url = new LocationUrl('http://host.com/base');
+      url = new LocationHtml5Url('http://host.com/');
+      url.$$parse('http://host.com/base');
       expect(url.path()).toBe('/base');
 
-      url = new LocationUrl('http://host.com/base#');
+      url = new LocationHtml5Url('http://host.com/');
+      url.$$parse('http://host.com/base#');
       expect(url.path()).toBe('/base');
     });
 
 
     it('should prefix path with forward-slash', function() {
-      url = new LocationUrl('http://server/a');
+      url = new LocationHtml5Url('http://server/');
       url.path('b');
 
       expect(url.path()).toBe('/b');
@@ -150,7 +153,8 @@ describe('$location', function() {
 
 
     it('should set path to forward-slash when empty', function() {
-      url = new LocationUrl('http://server');
+      url = new LocationHtml5Url('http://server/');
+      url.$$parse('http://server/')
       expect(url.path()).toBe('/');
       expect(url.absUrl()).toBe('http://server/');
     });
@@ -173,9 +177,19 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/a');
     });
 
+    it('should not rewrite when hashbang url is not given', function() {
+      initService(true, '!', true);
+      inject(
+        initBrowser('http://domain.com/base/a/b', '/base'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/a/b');
+        }
+      );
+    });
 
     it('should prepend path with basePath', function() {
-      url = new LocationUrl('http://server/base/abc?a', '/base');
+      url = new LocationHtml5Url('http://server/base/');
+      url.$$parse('http://server/base/abc?a');
       expect(url.path()).toBe('/abc');
       expect(url.search()).toEqual({a: true});
 
@@ -184,12 +198,21 @@ describe('$location', function() {
     });
 
 
-    it('should throw error when invalid url given', function() {
-      url = new LocationUrl('http://server.org/base/abc', '/base');
+    it('should throw error when invalid server url given', function() {
+      url = new LocationHtml5Url('http://server.org/base/abc', '/base');
+
+      expect(function() {
+        url.$$parse('http://other.server.org/path#/path');
+      }).toThrow('Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+    });
+
+
+    it('should throw error when invalid base url given', function() {
+      url = new LocationHtml5Url('http://server.org/base/abc', '/base');
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing path prefix "/base" !');
+      }).toThrow('Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -217,7 +240,8 @@ describe('$location', function() {
 
 
       it('should decode special characters', function() {
-        url = new LocationUrl('http://host.com/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
+        url = new LocationHtml5Url('http://host.com/');
+        url.$$parse('http://host.com/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
         expect(url.path()).toBe('/a <>#');
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
@@ -229,7 +253,8 @@ describe('$location', function() {
   describe('HashbangUrl', function() {
 
     beforeEach(function() {
-      url = new LocationHashbangUrl('http://www.server.org:1234/base#!/path?a=b&c#hash', '!');
+      url = new LocationHashbangUrl('http://www.server.org:1234/base', '#!');
+      url.$$parse('http://www.server.org:1234/base#!/path?a=b&c#hash');
     });
 
 
@@ -254,7 +279,8 @@ describe('$location', function() {
 
 
     it('should preserve query params in base', function() {
-      url = new LocationHashbangUrl('http://www.server.org:1234/base?base=param#/path?a=b&c#hash', '');
+      url = new LocationHashbangUrl('http://www.server.org:1234/base?base=param', '#');
+      url.$$parse('http://www.server.org:1234/base?base=param#/path?a=b&c#hash');
       expect(url.absUrl()).toBe('http://www.server.org:1234/base?base=param#/path?a=b&c#hash');
 
       url.path('/new/path');
@@ -265,7 +291,8 @@ describe('$location', function() {
 
 
     it('should prefix path with forward-slash', function() {
-      url = new LocationHashbangUrl('http://host.com/base#path', '');
+      url = new LocationHashbangUrl('http://host.com/base', '#');
+      url.$$parse('http://host.com/base#path');
       expect(url.path()).toBe('/path');
       expect(url.absUrl()).toBe('http://host.com/base#/path');
 
@@ -276,7 +303,8 @@ describe('$location', function() {
 
 
     it('should set path to forward-slash when empty', function() {
-      url = new LocationHashbangUrl('http://server/base#!', '!');
+      url = new LocationHashbangUrl('http://server/base', '#!');
+      url.$$parse('http://server/base');
       url.path('aaa');
 
       expect(url.path()).toBe('/aaa');
@@ -294,10 +322,17 @@ describe('$location', function() {
     });
 
 
-    it('should throw error when invalid url given', function() {
+    it('should throw error when invalid server url given', function() {
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing hash prefix "!" !');
+      }).toThrow('Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
+    });
+
+
+    it('should throw error when invalid hashbang prefix given', function() {
+      expect(function() {
+        url.$$parse('http://www.server.org:1234/base#/path');
+      }).toThrow('Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
@@ -325,7 +360,8 @@ describe('$location', function() {
 
 
       it('should decode special characters', function() {
-        url = new LocationHashbangUrl('http://host.com/a#/%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23', '');
+        url = new LocationHashbangUrl('http://host.com/a', '#');
+        url.$$parse('http://host.com/a#/%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
         expect(url.path()).toBe('/ <>#');
         expect(url.search()).toEqual({'i j': '<>#'});
         expect(url.hash()).toBe('x <>#');
@@ -333,13 +369,15 @@ describe('$location', function() {
 
 
       it('should return decoded characters for search specified in URL', function() {
-        var locationUrl = new LocationUrl('http://host.com/?q=1%2F2%203');
+        var locationUrl = new LocationHtml5Url('http://host.com/');
+        locationUrl.$$parse('http://host.com/?q=1%2F2%203');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
       });
 
 
       it('should return decoded characters for search specified with setter', function() {
-        var locationUrl = new LocationUrl('http://host.com/');
+        var locationUrl = new LocationHtml5Url('http://host.com/');
+        locationUrl.$$parse('http://host.com/')
         locationUrl.search('q', '1/2 3');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
       });
@@ -364,7 +402,7 @@ describe('$location', function() {
   describe('wiring', function() {
 
     beforeEach(initService(false, '!', true));
-    beforeEach(inject(initBrowser('http://new.com/a/b#!', '/a/b')));
+    beforeEach(inject(initBrowser('http://new.com/a/b#!', 'http://new.com/a/b')));
 
 
     it('should update $location when browser url changes', inject(function($browser, $location) {
@@ -381,7 +419,7 @@ describe('$location', function() {
     it('should not $apply when browser url changed inside $apply', inject(
         function($rootScope, $browser, $location) {
       var OLD_URL = $browser.url(),
-          NEW_URL = 'http://updated.com/url';
+          NEW_URL = 'http://new.com/a/b#!/new';
 
 
       $rootScope.$apply(function() {
@@ -397,7 +435,7 @@ describe('$location', function() {
     it('should not $apply when browser url changed inside $digest', inject(
         function($rootScope, $browser, $location) {
       var OLD_URL = $browser.url(),
-          NEW_URL = 'http://updated.com/url',
+          NEW_URL = 'http://new.com/a/b#!/new',
           notRunYet = true;
 
       $rootScope.$watch(function() {
@@ -613,72 +651,55 @@ describe('$location', function() {
   });
 
 
-  describe('URL_MATCH', function() {
+  describe('SERVER_MATCH', function() {
 
     it('should parse basic url', function() {
-      var match = URL_MATCH.exec('http://www.angularjs.org/path?search#hash?x=x');
+      var match = SERVER_MATCH.exec('http://www.angularjs.org/path?search#hash?x=x');
 
       expect(match[1]).toBe('http');
       expect(match[3]).toBe('www.angularjs.org');
-      expect(match[6]).toBe('/path');
-      expect(match[8]).toBe('search');
-      expect(match[10]).toBe('hash?x=x');
     });
 
 
     it('should parse file://', function() {
-      var match = URL_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
+      var match = SERVER_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
 
       expect(match[1]).toBe('file');
       expect(match[3]).toBe('');
       expect(match[5]).toBeFalsy();
-      expect(match[6]).toBe('/Users/Shared/misko/work/angular.js/scenario/widgets.html');
-      expect(match[8]).toBeFalsy();
     });
 
 
     it('should parse url with "-" in host', function() {
-      var match = URL_MATCH.exec('http://a-b1.c-d.09/path');
+      var match = SERVER_MATCH.exec('http://a-b1.c-d.09/path');
 
       expect(match[1]).toBe('http');
       expect(match[3]).toBe('a-b1.c-d.09');
       expect(match[5]).toBeFalsy();
-      expect(match[6]).toBe('/path');
-      expect(match[8]).toBeFalsy();
     });
 
 
     it('should parse host without "/" at the end', function() {
-      var match = URL_MATCH.exec('http://host.org');
+      var match = SERVER_MATCH.exec('http://host.org');
       expect(match[3]).toBe('host.org');
 
-      match = URL_MATCH.exec('http://host.org#');
+      match = SERVER_MATCH.exec('http://host.org#');
       expect(match[3]).toBe('host.org');
 
-      match = URL_MATCH.exec('http://host.org?');
+      match = SERVER_MATCH.exec('http://host.org?');
       expect(match[3]).toBe('host.org');
-    });
-
-
-    it('should match with just "/" path', function() {
-      var match = URL_MATCH.exec('http://server/#?book=moby');
-
-      expect(match[10]).toBe('?book=moby');
     });
 
 
     it('should parse chrome extension urls', function() {
-      var match = URL_MATCH.exec('chrome-extension://jjcldkdmokihdaomalanmlohibnoplog/index.html?foo#bar');
+      var match = SERVER_MATCH.exec('chrome-extension://jjcldkdmokihdaomalanmlohibnoplog/index.html?foo#bar');
 
       expect(match[1]).toBe('chrome-extension');
       expect(match[3]).toBe('jjcldkdmokihdaomalanmlohibnoplog');
-      expect(match[6]).toBe('/index.html');
-      expect(match[8]).toBe('foo');
-      expect(match[10]).toBe('bar');
     });
 
     it('should parse FFOS app:// urls', function() {
-      var match = URL_MATCH.exec('app://{d0419af1-8b42-41c5-96f4-ef4179e52315}/path');
+      var match = SERVER_MATCH.exec('app://{d0419af1-8b42-41c5-96f4-ef4179e52315}/path');
 
       expect(match[1]).toBe('app');
       expect(match[3]).toBe('{d0419af1-8b42-41c5-96f4-ef4179e52315}');
@@ -686,7 +707,7 @@ describe('$location', function() {
       expect(match[6]).toBe('/path');
       expect(match[8]).toBeFalsy();
 
-      match = URL_MATCH.exec('app://}foo{')
+      match = SERVER_MATCH.exec('app://}foo{')
       expect(match).toBe(null);
     });
   });
@@ -1077,7 +1098,7 @@ describe('$location', function() {
     });
 
 
-    it('should not intercept link clicks outside the app base url space', function() {
+    it('should not intercept clicks outside the current hash prefix', function() {
       var base, clickHandler;
       module(function($provide) {
         $provide.value('$rootElement', {
@@ -1085,13 +1106,13 @@ describe('$location', function() {
             expect(event).toEqual('click');
             clickHandler = handler;
           },
-          unbind: angular.noop
+          unbind: noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
         }
       });
-      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+      inject(function($location) {
         // make IE happy
         jqLite(window.document.body).html('<a href="http://server/test.html">link</a>');
 

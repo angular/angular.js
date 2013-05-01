@@ -7,12 +7,12 @@ $provide.value("$locale", {
       "1": "WN"
     },
     "DAY": {
-      "0": "Il-Ħadd",
+      "0": "Il-\u0126add",
       "1": "It-Tnejn",
       "2": "It-Tlieta",
-      "3": "L-Erbgħa",
-      "4": "Il-Ħamis",
-      "5": "Il-Ġimgħa",
+      "3": "L-Erbg\u0127a",
+      "4": "Il-\u0126amis",
+      "5": "Il-\u0120img\u0127a",
       "6": "Is-Sibt"
     },
     "MONTH": {
@@ -21,21 +21,21 @@ $provide.value("$locale", {
       "2": "Marzu",
       "3": "April",
       "4": "Mejju",
-      "5": "Ġunju",
+      "5": "\u0120unju",
       "6": "Lulju",
       "7": "Awwissu",
       "8": "Settembru",
       "9": "Ottubru",
       "10": "Novembru",
-      "11": "Diċembru"
+      "11": "Di\u010bembru"
     },
     "SHORTDAY": {
-      "0": "Ħad",
+      "0": "\u0126ad",
       "1": "Tne",
       "2": "Tli",
       "3": "Erb",
-      "4": "Ħam",
-      "5": "Ġim",
+      "4": "\u0126am",
+      "5": "\u0120im",
       "6": "Sib"
     },
     "SHORTMONTH": {
@@ -44,16 +44,16 @@ $provide.value("$locale", {
       "2": "Mar",
       "3": "Apr",
       "4": "Mej",
-      "5": "Ġun",
+      "5": "\u0120un",
       "6": "Lul",
       "7": "Aww",
       "8": "Set",
       "9": "Ott",
       "10": "Nov",
-      "11": "Diċ"
+      "11": "Di\u010b"
     },
-    "fullDate": "EEEE, d 'ta'’ MMMM y",
-    "longDate": "d 'ta'’ MMMM y",
+    "fullDate": "EEEE, d 'ta'\u2019 MMMM y",
+    "longDate": "d 'ta'\u2019 MMMM y",
     "medium": "dd MMM y HH:mm:ss",
     "mediumDate": "dd MMM y",
     "mediumTime": "HH:mm:ss",
@@ -62,7 +62,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": {
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4-",
+        "negPre": "\u00a4-",
         "negSuf": "",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

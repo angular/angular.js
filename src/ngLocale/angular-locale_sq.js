@@ -8,12 +8,12 @@ $provide.value("$locale", {
     },
     "DAY": {
       "0": "e diel",
-      "1": "e hënë",
-      "2": "e martë",
-      "3": "e mërkurë",
+      "1": "e h\u00ebn\u00eb",
+      "2": "e mart\u00eb",
+      "3": "e m\u00ebrkur\u00eb",
       "4": "e enjte",
       "5": "e premte",
-      "6": "e shtunë"
+      "6": "e shtun\u00eb"
     },
     "MONTH": {
       "0": "janar",
@@ -26,14 +26,14 @@ $provide.value("$locale", {
       "7": "gusht",
       "8": "shtator",
       "9": "tetor",
-      "10": "nëntor",
+      "10": "n\u00ebntor",
       "11": "dhjetor"
     },
     "SHORTDAY": {
       "0": "Die",
-      "1": "Hën",
+      "1": "H\u00ebn",
       "2": "Mar",
-      "3": "Mër",
+      "3": "M\u00ebr",
       "4": "Enj",
       "5": "Pre",
       "6": "Sht"
@@ -49,7 +49,7 @@ $provide.value("$locale", {
       "7": "Gsh",
       "8": "Sht",
       "9": "Tet",
-      "10": "Nën",
+      "10": "N\u00ebn",
       "11": "Dhj"
     },
     "fullDate": "EEEE, dd MMMM y",
@@ -64,7 +64,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Lek",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4-",
+        "negPre": "\u00a4-",
         "negSuf": "",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

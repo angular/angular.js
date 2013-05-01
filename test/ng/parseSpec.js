@@ -483,6 +483,112 @@ describe('parser', function() {
       });
 
 
+      it('should call the function from the received instance and not from a new one', function() {
+        var n = 0;
+        scope.fn = function() {
+          var c = n++;
+          return { c: c, anotherFn: function() { return this.c == c; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe(true);
+      });
+
+
+      it('should call the function once when it is part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return { anotherFn: function() { return "lucas"; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on assignments', function() {
+        var count = 0;
+        var element = {};
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name = "lucas"')).toBe('lucas');
+        expect(element.name).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookups', function() {
+        var count = 0;
+        var element = [];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0] = "lucas"')).toBe('lucas');
+        expect(element[0]).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = [{anotherFn: function() { return 'lucas';} }];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0].anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = {name: {anotherFn: function() { return 'lucas';} } };
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name.anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of a sub-expression', function() {
+        var count = 0;
+        scope.element = [{}];
+        scope.fn = function() {
+          count++;
+          return 0;
+        };
+        expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
+        expect(scope.element[0].name).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
       describe('promises', function() {
         var deferred, promise, q;
 

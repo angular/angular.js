@@ -639,7 +639,7 @@ function shallowCopy(src, dst) {
  * During a property comparison, properties of `function` type and properties with names
  * that begin with `$` are ignored.
  *
- * Scope and DOMWindow objects are being compared only be identify (`===`).
+ * Scope and DOMWindow objects are being compared only by identify (`===`).
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -975,12 +975,13 @@ function bootstrap(element, modules) {
     }]);
     modules.unshift('ng');
     var injector = createInjector(modules);
-    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector',
-       function(scope, element, compile, injector) {
+    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animator',
+       function(scope, element, compile, injector, animator) {
         scope.$apply(function() {
           element.data('$injector', injector);
           compile(element)(scope);
         });
+        animator.enabled(true);
       }]
     );
     return injector;

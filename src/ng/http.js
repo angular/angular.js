@@ -52,7 +52,7 @@ function isSameDomain(requestUrl, locationUrl) {
       relativeProtocol: match[2] === undefined || match[2] === ''
     };
 
-  match = URL_MATCH.exec(locationUrl);
+  match = SERVER_MATCH.exec(locationUrl);
   var domain2 = {
       protocol: match[1],
       host: match[3],

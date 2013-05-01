@@ -3,54 +3,54 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": {
-      "0": "𐐈𐐣",
-      "1": "𐐑𐐣"
+      "0": "\ud801\udc08\ud801\udc23",
+      "1": "\ud801\udc11\ud801\udc23"
     },
     "DAY": {
-      "0": "𐐝𐐲𐑌𐐼𐐩",
-      "1": "𐐣𐐲𐑌𐐼𐐩",
-      "2": "𐐓𐐭𐑆𐐼𐐩",
-      "3": "𐐎𐐯𐑌𐑆𐐼𐐩",
-      "4": "𐐛𐐲𐑉𐑆𐐼𐐩",
-      "5": "𐐙𐑉𐐴𐐼𐐩",
-      "6": "𐐝𐐰𐐻𐐲𐑉𐐼𐐩"
+      "0": "\ud801\udc1d\ud801\udc32\ud801\udc4c\ud801\udc3c\ud801\udc29",
+      "1": "\ud801\udc23\ud801\udc32\ud801\udc4c\ud801\udc3c\ud801\udc29",
+      "2": "\ud801\udc13\ud801\udc2d\ud801\udc46\ud801\udc3c\ud801\udc29",
+      "3": "\ud801\udc0e\ud801\udc2f\ud801\udc4c\ud801\udc46\ud801\udc3c\ud801\udc29",
+      "4": "\ud801\udc1b\ud801\udc32\ud801\udc49\ud801\udc46\ud801\udc3c\ud801\udc29",
+      "5": "\ud801\udc19\ud801\udc49\ud801\udc34\ud801\udc3c\ud801\udc29",
+      "6": "\ud801\udc1d\ud801\udc30\ud801\udc3b\ud801\udc32\ud801\udc49\ud801\udc3c\ud801\udc29"
     },
     "MONTH": {
-      "0": "𐐖𐐰𐑌𐐷𐐭𐐯𐑉𐐨",
-      "1": "𐐙𐐯𐐺𐑉𐐭𐐯𐑉𐐨",
-      "2": "𐐣𐐪𐑉𐐽",
-      "3": "𐐁𐐹𐑉𐐮𐑊",
-      "4": "𐐣𐐩",
-      "5": "𐐖𐐭𐑌",
-      "6": "𐐖𐐭𐑊𐐴",
-      "7": "𐐂𐑀𐐲𐑅𐐻",
-      "8": "𐐝𐐯𐐹𐐻𐐯𐑋𐐺𐐲𐑉",
-      "9": "𐐉𐐿𐐻𐐬𐐺𐐲𐑉",
-      "10": "𐐤𐐬𐑂𐐯𐑋𐐺𐐲𐑉",
-      "11": "𐐔𐐨𐑅𐐯𐑋𐐺𐐲𐑉"
+      "0": "\ud801\udc16\ud801\udc30\ud801\udc4c\ud801\udc37\ud801\udc2d\ud801\udc2f\ud801\udc49\ud801\udc28",
+      "1": "\ud801\udc19\ud801\udc2f\ud801\udc3a\ud801\udc49\ud801\udc2d\ud801\udc2f\ud801\udc49\ud801\udc28",
+      "2": "\ud801\udc23\ud801\udc2a\ud801\udc49\ud801\udc3d",
+      "3": "\ud801\udc01\ud801\udc39\ud801\udc49\ud801\udc2e\ud801\udc4a",
+      "4": "\ud801\udc23\ud801\udc29",
+      "5": "\ud801\udc16\ud801\udc2d\ud801\udc4c",
+      "6": "\ud801\udc16\ud801\udc2d\ud801\udc4a\ud801\udc34",
+      "7": "\ud801\udc02\ud801\udc40\ud801\udc32\ud801\udc45\ud801\udc3b",
+      "8": "\ud801\udc1d\ud801\udc2f\ud801\udc39\ud801\udc3b\ud801\udc2f\ud801\udc4b\ud801\udc3a\ud801\udc32\ud801\udc49",
+      "9": "\ud801\udc09\ud801\udc3f\ud801\udc3b\ud801\udc2c\ud801\udc3a\ud801\udc32\ud801\udc49",
+      "10": "\ud801\udc24\ud801\udc2c\ud801\udc42\ud801\udc2f\ud801\udc4b\ud801\udc3a\ud801\udc32\ud801\udc49",
+      "11": "\ud801\udc14\ud801\udc28\ud801\udc45\ud801\udc2f\ud801\udc4b\ud801\udc3a\ud801\udc32\ud801\udc49"
     },
     "SHORTDAY": {
-      "0": "𐐝𐐲𐑌",
-      "1": "𐐣𐐲𐑌",
-      "2": "𐐓𐐭𐑆",
-      "3": "𐐎𐐯𐑌",
-      "4": "𐐛𐐲𐑉",
-      "5": "𐐙𐑉𐐴",
-      "6": "𐐝𐐰𐐻"
+      "0": "\ud801\udc1d\ud801\udc32\ud801\udc4c",
+      "1": "\ud801\udc23\ud801\udc32\ud801\udc4c",
+      "2": "\ud801\udc13\ud801\udc2d\ud801\udc46",
+      "3": "\ud801\udc0e\ud801\udc2f\ud801\udc4c",
+      "4": "\ud801\udc1b\ud801\udc32\ud801\udc49",
+      "5": "\ud801\udc19\ud801\udc49\ud801\udc34",
+      "6": "\ud801\udc1d\ud801\udc30\ud801\udc3b"
     },
     "SHORTMONTH": {
-      "0": "𐐖𐐰𐑌",
-      "1": "𐐙𐐯𐐺",
-      "2": "𐐣𐐪𐑉",
-      "3": "𐐁𐐹𐑉",
-      "4": "𐐣𐐩",
-      "5": "𐐖𐐭𐑌",
-      "6": "𐐖𐐭𐑊",
-      "7": "𐐂𐑀",
-      "8": "𐐝𐐯𐐹",
-      "9": "𐐉𐐿𐐻",
-      "10": "𐐤𐐬𐑂",
-      "11": "𐐔𐐨𐑅"
+      "0": "\ud801\udc16\ud801\udc30\ud801\udc4c",
+      "1": "\ud801\udc19\ud801\udc2f\ud801\udc3a",
+      "2": "\ud801\udc23\ud801\udc2a\ud801\udc49",
+      "3": "\ud801\udc01\ud801\udc39\ud801\udc49",
+      "4": "\ud801\udc23\ud801\udc29",
+      "5": "\ud801\udc16\ud801\udc2d\ud801\udc4c",
+      "6": "\ud801\udc16\ud801\udc2d\ud801\udc4a",
+      "7": "\ud801\udc02\ud801\udc40",
+      "8": "\ud801\udc1d\ud801\udc2f\ud801\udc39",
+      "9": "\ud801\udc09\ud801\udc3f\ud801\udc3b",
+      "10": "\ud801\udc24\ud801\udc2c\ud801\udc42",
+      "11": "\ud801\udc14\ud801\udc28\ud801\udc45"
     },
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

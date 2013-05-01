@@ -248,3 +248,14 @@ describe("pluralExtractor", function() {
   })
 });
 
+describe("serializeContent", function() {
+  it("should not make any modifications to the content of the locale", function() {
+    var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo());
+    expect(eval("(" + serializedContent + ")")).toEqual(newTestLocaleInfo());
+  });
+  it("should only have ascii characters", function() {
+    var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo());
+    expect((/[^\u0001-\u007f]/).test(serializedContent)).toBe(false);
+  });
+});
+

@@ -438,8 +438,8 @@ function parser(text, json, $filter, csp){
           text.substring(0, token.index) + "] can not be assigned to", token);
       }
       right = logicalOR();
-      return function(self, locals){
-        return left.assign(self, right(self, locals), locals);
+      return function(scope, locals){
+        return left.assign(scope, right(scope, locals), locals);
       };
     } else {
       return left;
@@ -559,12 +559,12 @@ function parser(text, json, $filter, csp){
     var field = expect().text;
     var getter = getterFn(field, csp);
     return extend(
-        function(self, locals) {
-          return getter(object(self, locals), locals);
+        function(scope, locals, self) {
+          return getter(self || object(scope, locals), locals);
         },
         {
-          assign:function(self, value, locals) {
-            return setter(object(self, locals), field, value);
+          assign:function(scope, value, locals) {
+            return setter(object(scope, locals), field, value);
           }
         }
     );
@@ -605,14 +605,14 @@ function parser(text, json, $filter, csp){
       } while (expect(','));
     }
     consume(')');
-    return function(self, locals){
+    return function(scope, locals){
       var args = [],
-          context = contextGetter ? contextGetter(self, locals) : self;
+          context = contextGetter ? contextGetter(scope, locals) : scope;
 
       for ( var i = 0; i < argsFn.length; i++) {
-        args.push(argsFn[i](self, locals));
+        args.push(argsFn[i](scope, locals));
       }
-      var fnPtr = fn(self, locals) || noop;
+      var fnPtr = fn(scope, locals, context) || noop;
       // IE stupidity!
       return fnPtr.apply
           ? fnPtr.apply(context, args)

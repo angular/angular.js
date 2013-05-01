@@ -55,6 +55,27 @@ describe('ngView', function() {
   });
 
 
+  it('should instantiate controller with an alias', function() {
+    var log = [], controllerScope,
+        Ctrl = function($scope) {
+          this.name = 'alias';
+          controllerScope = $scope;
+        };
+
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl, controllerAs: 'ctrl'});
+    });
+
+    inject(function($route, $rootScope, $templateCache, $location) {
+      $templateCache.put('/tpl.html', [200, '<div></div>', {}]);
+      $location.path('/some');
+      $rootScope.$digest();
+
+      expect(controllerScope.ctrl.name).toBe('alias');
+    });
+  });
+
+
   it('should support string controller declaration', function() {
     var MyCtrl = jasmine.createSpy('MyCtrl');
 

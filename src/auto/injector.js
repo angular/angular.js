@@ -62,7 +62,7 @@ function annotate(fn) {
     }
   } else if (isArray(fn)) {
     last = fn.length - 1;
-    assertArgFn(fn[last], 'fn')
+    assertArgFn(fn[last], 'fn');
     $inject = fn.slice(0, last);
   } else {
     assertArgFn(fn, 'fn', true);
@@ -225,7 +225,7 @@ function annotate(fn) {
  *     // ...
  *   };
  *   tmpFn.$inject = ['$compile', '$rootScope'];
- *   injector.invoke(tempFn);
+ *   injector.invoke(tmpFn);
  *
  *   // To better support inline function the inline annotation is supported
  *   injector.invoke(['$compile', '$rootScope', function(obfCompile, obfRootScope) {
@@ -278,7 +278,7 @@ function annotate(fn) {
  *
  *     beforeEach(module(function($provide) {
  *       $provide.provider('greet', GreetProvider);
- *     });
+ *     }));
  *
  *     it('should greet', inject(function(greet) {
  *       expect(greet('angular')).toEqual('Hello angular!');
@@ -291,9 +291,7 @@ function annotate(fn) {
  *       inject(function(greet) {
  *         expect(greet('angular')).toEqual('Ahoj angular!');
  *       });
- *     )};
- *
- *   });
+ *     });
  * </pre>
  */
 
@@ -586,6 +584,8 @@ function createInjector(modulesToLoad) {
       var Constructor = function() {},
           instance, returnedValue;
 
+      // Check if Type is annotated and use just the given function at n-1 as parameter
+      // e.g. someModule.factory('greeter', ['$window', function(renamed$window) {}]);
       Constructor.prototype = (isArray(Type) ? Type[Type.length - 1] : Type).prototype;
       instance = new Constructor();
       returnedValue = invoke(Type, instance, locals);

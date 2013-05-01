@@ -157,7 +157,7 @@ able to quickly stamp out new `li`s for every `action` in `user.actions`. This m
 to save a clean copy of the `li` element for cloning purposes and as new `action`s are inserted,
 the template `li` element needs to be cloned and inserted into `ul`. But cloning the `li` element
 is not enough. It also needs to compile the `li` so that its directives such as
-`{{action.descriptions}}` evaluate against the right {@link api/ng.$rootScope.Scope
+`{{action.description}}` evaluate against the right {@link api/ng.$rootScope.Scope
 scope}. A naive method would be to simply insert a copy of the `li` element and then compile it.
 But compiling on every `li` element clone would be slow, since the compilation requires that we
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
@@ -269,6 +269,7 @@ Here's an example directive declared with a Directive Definition Object:
       transclude: false,
       restrict: 'A',
       scope: false,
+      controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
@@ -391,6 +392,12 @@ compiler}. The attributes are:
     * `$attrs` - Current attributes object for the element
     * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
       `function(cloneLinkingFn)`.
+
+    To avoid errors after minification the bracket notation should be used:
+
+    <pre>
+    controller: ['$scope', '$element', '$attrs', '$transclude', function($scope, $element, $attrs, $transclude) { ... }]
+    </pre>
 
   * `require` - Require another controller be passed into current directive linking function. The
     `require` takes a name of the directive controller to pass in. If no such controller can be
