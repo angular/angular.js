@@ -1263,8 +1263,20 @@ var ngListDirective = function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
-      var match = /\/(.*)\//.exec(attr.ngList),
-          separator = match && new RegExp(match[1]) || attr.ngList || ',';
+      // Get the attribute values directly from the element rather than the
+      // attr map otherwise the attribute values will be trimmed of whitespace
+      var separatorAttribute = element[0].getAttribute("ng-list")
+      var joinedByAttribute = element[0].getAttribute("ng-list-joined-by")
+      var separator, joinedby;
+      var match = /\/(.*)\//.exec(separatorAttribute);
+      if (match) {
+        // This is a regex pattern - always use ', ' to join elements when ngListJoinedBy is undefined
+        separator = new RegExp(match[1])
+        joinedby = joinedByAttribute || ', ';
+      }else{
+        separator = separatorAttribute || ','
+        joinedby = joinedByAttribute || separatorAttribute || ', ';
+      }
 
       var parse = function(viewValue) {
         var list = [];
@@ -1281,7 +1293,7 @@ var ngListDirective = function() {
       ctrl.$parsers.push(parse);
       ctrl.$formatters.push(function(value) {
         if (isArray(value)) {
-          return value.join(', ');
+          return value.join(joinedby);
         }
 
         return undefined;
