@@ -692,7 +692,7 @@ function $CompileProvider($provide) {
 
             ii = directives.length;
           } else {
-            $compileNode.html(directiveValue);
+            $compileNode.append(directiveValue);
           }
         }
 
@@ -987,8 +987,6 @@ function $CompileProvider($provide) {
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
               : origAsyncDirective.templateUrl;
 
-      $compileNode.html('');
-
       $http.get(templateUrl, {cache: $templateCache}).
         success(function(content) {
           var compileNode, tempTemplateAttrs, $template;
@@ -1009,7 +1007,7 @@ function $CompileProvider($provide) {
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;
-            $compileNode.html(content);
+            $compileNode.append(content);
           }
 
           directives.unshift(derivedSyncDirective);
