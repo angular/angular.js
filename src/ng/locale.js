@@ -5,14 +5,24 @@
  * @name ng.$locale
  *
  * @description
- * $locale service provides localization rules for various Angular components. As of right now the
- * only public api is:
- *
- * * `id` – `{string}` – locale id formatted as `languageId-countryId` (e.g. `en-us`)
+ * $locale service provides localization rules for various Angular components.
+ */
+
+/**
+ * @ngdoc object
+ * @name ng.$localeProvider
+ * @description
+ * Use the `$localeProvider` to configure were to locate the path to locate the different locales.
  */
 function $LocaleProvider(){
   var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js';
 
+  /**
+   * Loads a script asynchronously
+   *
+   * @param {string} url The url for the script
+   @ @param {function) callback A function to be called once the script is loaded
+   */
   function loadScript(url, callback) {
     var script = document.createElement('script'),
       head = document.getElementsByTagName('head')[0];
@@ -36,6 +46,12 @@ function $LocaleProvider(){
     head.insertBefore(script, head.firstChild);
   }
 
+  /**
+   * Loads a locale and replaces the properties from the current locale with the new locale information
+   *
+   * @param localeUrl The path to the new locale
+   * @param $locale The locale at the curent scope
+   */
   function loadLocale(localeUrl, $locale) {
     loadScript(localeUrl, function () {
       // Force a start to the new module
@@ -78,6 +94,13 @@ function $LocaleProvider(){
     var localeLocation = $interpolate(localeLocationPattern);
 
     return {
+      /**
+       * @ngdoc property
+       * @name ng.$locle#id
+       * @methodOf ng.$locale
+       * @description
+       * locale id formatted as `languageId-countryId` (e.g. `en-us`)
+       */
       id: 'en-us',
 
       NUMBER_FORMATS: {
@@ -133,6 +156,15 @@ function $LocaleProvider(){
         return 'other';
       },
 
+      /**
+       * @ngdoc method
+       * @name ng.$locale#set
+       * @methodOf ng.$locale
+       * @description
+       * @param {string=} value Sets the locale to the new locale. Changing the locale will trigger
+       *    a background task that will retrieve the new locale and configure the current $locale
+       *    instance with the information from the new locale
+       */
       set: function(value) {
         loadLocale(localeLocation({locale: value}), this);
       }
