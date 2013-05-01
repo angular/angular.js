@@ -1017,6 +1017,14 @@ describe('input', function() {
     });
 
 
+    it('should allow custom separator with whitespace', function() {
+      compileInput('<input type="text" ng-model="list" ng-list=" or " />');
+
+      changeInputValueTo('House or Door or Chair');
+      expect(scope.list).toEqual(['House', 'Door', 'Chair']);
+    });
+
+
     it('should allow regexp as a separator', function() {
       compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
 
