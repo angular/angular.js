@@ -542,6 +542,11 @@ describe('ngRepeat ngAnimate', function() {
     return element;
   }
 
+  function applyCSS(element, cssProp, cssValue) {
+    element.css(cssProp, cssValue);    
+    element.css(vendorPrefix + cssProp, cssValue);
+  }
+
   beforeEach(function() {
     // we need to run animation on attached elements;
     body = jqLite(document.body);
@@ -577,12 +582,10 @@ describe('ngRepeat ngAnimate', function() {
     $rootScope.$digest();
 
     //if we add the custom css stuff here then it will get picked up before the animation takes place
-    var cssProp = vendorPrefix + 'transition';
-    var cssValue = '1s linear all';
     var kids = element.children();
     for(var i=0;i<kids.length;i++) {
       kids[i] = jqLite(kids[i]);
-      kids[i].css(cssProp, cssValue);
+      applyCSS(kids[i], 'transition', '1s linear all');
     }
 
     if ($sniffer.supportsTransitions) {
@@ -620,12 +623,10 @@ describe('ngRepeat ngAnimate', function() {
     $rootScope.$digest();
 
     //if we add the custom css stuff here then it will get picked up before the animation takes place
-    var cssProp = vendorPrefix + 'transition';
-    var cssValue = '1s linear all';
     var kids = element.children();
     for(var i=0;i<kids.length;i++) {
       kids[i] = jqLite(kids[i]);
-      kids[i].css(cssProp, cssValue);
+      applyCSS(kids[i], 'transition', '1s linear all');
     }
 
     $rootScope.items = ['1','3'];
@@ -660,12 +661,10 @@ describe('ngRepeat ngAnimate', function() {
       $rootScope.$digest();
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
-      var cssValue = '1s linear all';
       var kids = element.children();
       for(var i=0;i<kids.length;i++) {
         kids[i] = jqLite(kids[i]);
-        kids[i].css(cssProp, cssValue);
+        applyCSS(kids[i], 'transition', '1s linear all');
       }
 
       $rootScope.items = ['2','3','1'];
@@ -719,10 +718,10 @@ describe('ngRepeat ngAnimate', function() {
       var kids = element.children();
       var first = jqLite(kids[0]);
       var second = jqLite(kids[1]);
-      var cssProp = '-' + $sniffer.vendorPrefix + '-transition';
+      var cssProp = 'transition';
       var cssValue = '0.5s linear all';
-      first.css(cssProp, cssValue);
-      second.css(cssProp, cssValue);
+      applyCSS(first, cssProp, cssValue);
+      applyCSS(second, cssProp, cssValue);
 
       if ($sniffer.supportsTransitions) {
         window.setTimeout.expect(1).process();

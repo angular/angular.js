@@ -18,6 +18,7 @@ describe("$animator", function() {
 
   afterEach(function(){
     dealoc(body);
+    
   });
 
   describe("enable / disable", function() {
