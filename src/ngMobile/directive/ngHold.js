@@ -17,7 +17,8 @@ ngMobile.factory('$mobileHold', ['$window', '$timeout', '$mobile', function($win
       hold_max_pointers    : 1,
       hold_duration        : 751,    // 750ms, or less, is a tap
       hold_move_tolerance  : 10,     // Doesn't overlap with drags move tolerance and is equal to click
-      hold_or_right_click  : true    // Allow users with mice to right click instead of holding
+      hold_or_right_click  : true,    // Allow users with mice to right click instead of holding
+      touch_active_class  : 'ng-click-active'
     },
     setup: function(el, inst) {
       // Use the setup function to bind to clicks

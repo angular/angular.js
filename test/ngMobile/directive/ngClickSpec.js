@@ -154,6 +154,23 @@ describe('ngClick (mobile)', function() {
   }));
 
 
+  it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $document, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+    expect($rootScope.tapped).toBeUndefined();
+
+    var CSS_CLASS = 'ng-click-active';
+
+    expect(element.hasClass(CSS_CLASS)).toBe(false);
+    browserTrigger(element, 'touchstart', 10, 10);
+    expect(element.hasClass(CSS_CLASS)).toBe(true);
+    browserTrigger($document, 'touchend', 10, 10);
+    expect(element.hasClass(CSS_CLASS)).toBe(false);
+    expect($rootScope.tapped).toBe(true);
+  }));
+
+
   describe('the clickbuster', function() {
     var element1, element2;
 

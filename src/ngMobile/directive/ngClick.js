@@ -31,7 +31,8 @@ ngMobile.factory('$mobileClick', ['$window', '$timeout', '$mobile', function($wi
       tap_always          : true,   // tap on double tap (w3c way for click)
       prevent_ghost_clicks: true,   // ignore virtual click events if click already handled
       doubletap_tolerance : 20,     // allow for a bit of human error
-      doubletap_interval  : 400
+      doubletap_interval  : 400,
+      touch_active_class  : 'ng-click-active'
     },
     setup: function(el, inst) {
       var self = this;
@@ -136,8 +137,17 @@ ngMobile.factory('$mobileClick', ['$window', '$timeout', '$mobile', function($wi
  * @name ngMobile.directive:ngClick
  *
  * @description
- * Specify custom behavior when element is tapped on a touchscreen device.
- * A tap is a brief, down-and-up touch without much motion.
+ * A more powerful replacement for the default ngClick designed to be used on touchscreen
+ * devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
+ * the click event. This version handles them immediately, and then prevents the
+ * following click event from propagating.
+ *
+ * This directive can fall back to using an ordinary click event, and so works on desktop
+ * browsers as well as mobile.
+ *
+ * This directive also sets a CSS class, defaulting to `ng-click-active`, while the 
+ * element is being held down (by a mouse click or touch) so you can restyle the depressed
+ * element if you wish.
  *
  * @element ANY
  * @param {expression} ngClick {@link guide/expression Expression} to evaluate
