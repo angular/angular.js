@@ -528,12 +528,14 @@ function $LocationProvider(){
           rewrittenUrl = $location.$$rewrite(absHref);
 
       if (absHref && !elm.attr('target') && rewrittenUrl) {
-        // update location manually
-        $location.$$parse(rewrittenUrl);
-        $rootScope.$apply();
         event.preventDefault();
-        // hack to work around FF6 bug 684208 when scenario runner clicks on links
-        window.angular['ff-684208-preventDefault'] = true;
+        if (rewrittenUrl != initialUrl) {
+          // update location manually
+          $location.$$parse(rewrittenUrl);
+          $rootScope.$apply();
+          // hack to work around FF6 bug 684208 when scenario runner clicks on links
+          window.angular['ff-684208-preventDefault'] = true;
+        }
       }
     });
 
