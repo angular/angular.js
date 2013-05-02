@@ -58,6 +58,15 @@ describe('injector', function() {
   });
 
 
+  it('should allow query names', function() {
+    providers('abc', function () { return ''; });
+
+    expect(injector.has('abc')).toBe(true);
+    expect(injector.has('xyz')).toBe(false);
+    expect(injector.has('$injector')).toBe(true);
+  });
+
+
   it('should provide useful message if no provider', function() {
     expect(function() {
       injector.get('idontexist');
