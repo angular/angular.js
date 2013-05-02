@@ -826,7 +826,15 @@ describe('$location', function() {
         initLocation(),
         function($browser) {
           browserTrigger(link, 'click');
-          expectNoRewrite($browser, 'http://host.com/base/');
+          expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).attr('href', 'http://host.com/base/foo');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/foo');
+
+          jqLite(link).attr('href', 'http://host.com/base/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/');
         }
       );
     });
@@ -1330,6 +1338,60 @@ describe('$location', function() {
 
         dealoc($rootElement);
       });
+    });
+  });
+
+  describe('LocationHtml5Url', function() {
+    var location, locationIndex;
+
+    beforeEach(function() {
+      location = new LocationHtml5Url('http://server/pre/', 'http://server/pre/path');
+      locationIndex = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/path');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+    });
+  });
+
+
+  describe('LocationHashbangUrl', function() {
+    var location;
+
+    beforeEach(function() {
+      location = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/#/path');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
+    });
+  });
+
+
+  describe('LocationHashbangInHtml5Url', function() {
+    var location, locationIndex;
+
+    beforeEach(function() {
+      location = new LocationHashbangInHtml5Url('http://server/pre/', '#!');
+      locationIndex = new LocationHashbangInHtml5Url('http://server/pre/index.html', '#!');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/#!otherPath');
+      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual(undefined);
+      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!otherPath');
     });
   });
 });
