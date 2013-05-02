@@ -376,7 +376,7 @@ function $RootScopeProvider(){
               oldValue = newValue;
               changeDetected++;
             }
-          } else if (isArray(newValue)) {
+          } else if (isArrayLike(newValue)) {
             if (oldValue !== internalArray) {
               // we are transitioning from something which was not an array into array.
               oldValue = internalArray;
