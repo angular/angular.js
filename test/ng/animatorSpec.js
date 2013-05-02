@@ -336,10 +336,29 @@ describe("$animator", function() {
     }));
   });
 
-  it("should throw an error when an invalid ng-animate syntax is provided", inject(function($compile, $rootScope) {
+  describe('anmation evaluation', function () {
+    it('should re-evaluate the animation expression on each animation', inject(function($animator, $rootScope) {
+      var parent = jqLite('<div><span></span></div>');
+      var element = parent.find('span');
+
+      $rootScope.animationFn = function () { throw new Error('too early'); };
+      var animate = $animator($rootScope, { ngAnimate: 'animationFn()' });
+      var log = '';
+
+      $rootScope.animationFn = function () { log = 'abc' };
+      animate.enter(element, parent);
+      expect(log).toEqual('abc');
+
+      $rootScope.animationFn = function () { log = 'xyz' };
+      animate.enter(element, parent);
+      expect(log).toEqual('xyz');
+    }));
+  });
+
+  it("should throw an error when an invalid ng-animate syntax is provided", inject(function($animator, $rootScope) {
     expect(function() {
-      element = $compile('<div ng-repeat="i in is" ng-animate=":"></div>')($rootScope);
-      $rootScope.$digest();
+      var animate = $animator($rootScope, { ngAnimate: ':' });
+      animate.enter();
     }).toThrow("Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
 });

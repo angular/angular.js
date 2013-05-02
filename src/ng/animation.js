@@ -51,13 +51,9 @@ function $AnimationProvider($provide) {
      */
     return function $animation(name) {
       if (name) {
-        try {
-          return $injector.get(camelCase(name) + suffix);
-        } catch (e) {
-          //TODO(misko): this is a hack! we should have a better way to test if the injector has a given key.
-          // The issue is that the animations are optional, and if not present they should be silently ignored.
-          // The proper way to fix this is to add API onto the injector so that we can ask to see if a given
-          // animation is supported.
+        var animationName = camelCase(name) + suffix;
+        if ($injector.has(animationName)) {
+          return $injector.get(animationName);
         }
       }
     }

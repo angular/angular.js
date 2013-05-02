@@ -819,6 +819,19 @@ describe('$location', function() {
     });
 
 
+    it('should do nothing if already on the same URL', function() {
+      configureService('/base/', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser, 'http://host.com/base/');
+        }
+      );
+    });
+
+
     it('should rewrite abs link to new url when history enabled on new browser', function() {
       configureService('/base/link?a#b', true, true);
       inject(
