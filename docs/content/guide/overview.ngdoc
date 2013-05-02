@@ -11,7 +11,7 @@ succinctly. Out of the box, it eliminates much of the code you currently write t
 binding and dependency injection. And it all happens in JavaScript within the browser making it an
 ideal partner with any server technology.
 
-Angular is what HTML would have been had it been designed for applications. HTML is a great
+Angular is what HTML would have been were it designed for applications. HTML is a great
 declarative language for static documents. It does not contain much in the way of creating
 applications, and as a result building web applications is an exercise in *what do I have to do, so
 that I trick the browser in to doing what I want.*
