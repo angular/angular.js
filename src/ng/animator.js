@@ -147,8 +147,6 @@ var $AnimatorProvider = function() {
      * @return {object} the animator object which contains the enter, leave, move, show, hide and animate methods.
      */
      var AnimatorService = function(scope, attrs) {
-        var ngAnimateAttr = attrs.ngAnimate;
-        var ngAnimateValue = ngAnimateAttr && scope.$eval(ngAnimateAttr);
         var animator = {};
   
         /**
@@ -223,24 +221,22 @@ var $AnimatorProvider = function() {
         return animator;
   
         function animateActionFactory(type, beforeFn, afterFn) {
-          var className = ngAnimateAttr
-              ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
-              : '';
-          var animationPolyfill = $animation(className);
-  
-          var polyfillSetup = animationPolyfill && animationPolyfill.setup;
-          var polyfillStart = animationPolyfill && animationPolyfill.start;
-  
-          if (!className) {
-            return function(element, parent, after) {
+          return function(element, parent, after) {
+            var ngAnimateValue = scope.$eval(attrs.ngAnimate);
+            var className = ngAnimateValue
+                ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
+                : '';
+            var animationPolyfill = $animation(className);
+            var polyfillSetup = animationPolyfill && animationPolyfill.setup;
+            var polyfillStart = animationPolyfill && animationPolyfill.start;
+
+            if (!className) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
-            }
-          } else {
-            var setupClass = className + '-setup';
-            var startClass = className + '-start';
-  
-            return function(element, parent, after) {
+            } else {
+              var setupClass = className + '-setup';
+              var startClass = className + '-start';
+
               if (!parent) {
                 parent = after ? after.parent() : element.parent();
               }
@@ -255,47 +251,47 @@ var $AnimatorProvider = function() {
               element.addClass(setupClass);
               beforeFn(element, parent, after);
               if (element.length == 0) return done();
-  
+
               var memento = (polyfillSetup || noop)(element);
-  
+
               // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
               // keep at 1 for animation dom rerender
               $window.setTimeout(beginAnimation, 1);
-  
-              function beginAnimation() {
-                element.addClass(startClass);
-                if (polyfillStart) {
-                  polyfillStart(element, done, memento);
-                } else if (isFunction($window.getComputedStyle)) {
-                  var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-                  var w3cTransitionProp = 'transition'; //one day all browsers will have this
-  
-                  var durationKey = 'Duration';
-                  var duration = 0;
+            };
 
-                  //we want all the styles defined before and after
-                  forEach(element, function(element) {
-                    if (element.nodeType == 1) {
-                      var globalStyles = $window.getComputedStyle(element) || {};
-                      duration = Math.max(
-                          parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
-                          parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
-                          0,
-                          duration);
-                    }
-                  });
-                  $window.setTimeout(done, duration * 1000);
-                } else {
-                  done();
-                }
+            function beginAnimation() {
+              element.addClass(startClass);
+              if (polyfillStart) {
+                polyfillStart(element, done, memento);
+              } else if (isFunction($window.getComputedStyle)) {
+                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+                var w3cTransitionProp = 'transition'; //one day all browsers will have this
+
+                var durationKey = 'Duration';
+                var duration = 0;
+
+                //we want all the styles defined before and after
+                forEach(element, function(element) {
+                  if (element.nodeType == 1) {
+                    var globalStyles = $window.getComputedStyle(element) || {};
+                    duration = Math.max(
+                        parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
+                        parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
+                        0,
+                        duration);
+                  }
+                });
+                $window.setTimeout(done, duration * 1000);
+              } else {
+                done();
               }
-  
-              function done() {
-                afterFn(element, parent, after);
-                element.removeClass(setupClass);
-                element.removeClass(startClass);
-                element.removeData(NG_ANIMATE_CONTROLLER);
-              }
+            }
+
+            function done() {
+              afterFn(element, parent, after);
+              element.removeClass(setupClass);
+              element.removeClass(startClass);
+              element.removeData(NG_ANIMATE_CONTROLLER);
             }
           }
         }
