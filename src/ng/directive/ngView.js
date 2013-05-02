@@ -194,9 +194,10 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
 
         if (template) {
           clearContent();
-          animate.enter(jqLite('<div></div>').html(template).contents(), element);
+          var enterElements = jqLite('<div></div>').html(template).contents();
+          animate.enter(enterElements, element);
 
-          var link = $compile(element.contents()),
+          var link = $compile(enterElements),
               current = $route.current,
               controller;
 
