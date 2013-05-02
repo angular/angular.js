@@ -1048,6 +1048,25 @@ describe('input', function() {
         scope.list = ['x', 'y', 'z'];
       });
       expect(inputElm.val()).toBe('x and y and z');
+
+      // view -> model
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
+    });
+
+
+    it('should allow custom separator and custom join string in alternative attribute form', function() {
+      compileInput('<input type="text" ng-model="list" ng:list=":" data-ng-list-join=" and "/>');
+
+      // model -> view
+      scope.$apply(function() {
+          scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x and y and z');
+
+      // view -> model
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
     });
 
 
