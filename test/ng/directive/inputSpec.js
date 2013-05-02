@@ -1030,7 +1030,7 @@ describe('input', function() {
 
 
     it('should allow custom join string', function() {
-      compileInput('<input type="text" ng-model="list" ng-list ng-list-joined-by=" and "/>');
+      compileInput('<input type="text" ng-model="list" ng-list ng-list-join=" and "/>');
 
       // model -> view
       scope.$apply(function() {
@@ -1041,7 +1041,7 @@ describe('input', function() {
 
 
     it('should allow custom separator and custom join string', function() {
-      compileInput('<input type="text" ng-model="list" ng-list=":" ng-list-joined-by=" and "/>');
+      compileInput('<input type="text" ng-model="list" ng-list=":" ng-list-join=" and "/>');
 
       // model -> view
       scope.$apply(function() {
@@ -1070,7 +1070,7 @@ describe('input', function() {
 
 
     it('should allow regexp as a separator and custom join string', function() {
-      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" ng-list-joined-by="; " />');
+      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" ng-list-join="; " />');
 
       // model -> view
       scope.$apply(function() {
