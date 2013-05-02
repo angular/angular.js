@@ -1225,6 +1225,8 @@ var requiredDirective = function() {
  * @element input
  * @param {string=} ngList optional delimiter that should be used to split the value. If
  *   specified in form `/something/` then the value will be converted into a regular expression.
+ * @param {string=} ngListJoinedBy optional string to use when joining elements of the array.
+ * This is especially useful when the delimeter is a regular expression. The default value is ', '.
  *
  * @example
     <doc:example>
