@@ -59,6 +59,22 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('');
   }));
 
+  it('should fire $includeContentRequested event on scope after making the xhr call', inject(
+      function ($rootScope, $compile, $httpBackend) {
+    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
+        expect(event.targetScope).toBe($rootScope);
+    });
+
+    $httpBackend.whenGET('url').respond('my partial');
+    $rootScope.$on('$includeContentRequested', contentRequestedSpy);
+
+    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    $rootScope.$digest();
+
+    expect(contentRequestedSpy).toHaveBeenCalledOnce();
+
+    $httpBackend.flush();
+  }));
 
   it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
