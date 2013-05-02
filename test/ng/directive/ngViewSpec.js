@@ -3,7 +3,8 @@
 describe('ngView', function() {
   var element;
 
-  beforeEach(module(function() {
+  beforeEach(module(function($provide) {
+    $provide.value('$window', angular.mock.createMockWindow());
     return function($rootScope, $compile, $animator) {
       element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
       $animator.enabled(true);
@@ -621,5 +622,46 @@ describe('ngView', function() {
       }
     }));
 
+
+    it('should not double compile when route changes', function() {
+      module(function($routeProvider, $animationProvider, $provide) {
+        $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
+        $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
+        $animationProvider.register('my-animation-leave', function() {
+          return {
+            start: function(element, done) {
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer) {
+        element = $compile(html('<ng:view onload="load()" ng-animate="\'my-animation\'"></ng:view>'))($rootScope);
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        if ($sniffer.supportsTransitions) {
+          $window.setTimeout.expect(1).process();
+          $window.setTimeout.expect(0).process();
+        }
+        expect(element.text()).toEqual('12');
+
+        $location.path('/bar');
+        $rootScope.$digest();
+        expect(n(element.text())).toEqual('1234');
+        if ($sniffer.supportsTransitions) {
+          $window.setTimeout.expect(1).process();
+          $window.setTimeout.expect(1).process();
+        } else {
+          $window.setTimeout.expect(1).process();
+        }
+        expect(element.text()).toEqual('34');
+
+        function n(text) {
+          return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
+        }
+      });
+    });
   });
 });

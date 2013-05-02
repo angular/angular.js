@@ -272,14 +272,17 @@ var $AnimatorProvider = function() {
   
                   var durationKey = 'Duration';
                   var duration = 0;
+
                   //we want all the styles defined before and after
                   forEach(element, function(element) {
-                    var globalStyles = $window.getComputedStyle(element) || {};
-                    duration = Math.max(
-                        parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
-                        parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
-                        0,
-                        duration);
+                    if (element.nodeType == 1) {
+                      var globalStyles = $window.getComputedStyle(element) || {};
+                      duration = Math.max(
+                          parseFloat(globalStyles[w3cTransitionProp    + durationKey]) ||
+                          parseFloat(globalStyles[vendorTransitionProp + durationKey]) ||
+                          0,
+                          duration);
+                    }
                   });
                   $window.setTimeout(done, duration * 1000);
                 } else {
