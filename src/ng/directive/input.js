@@ -1267,8 +1267,8 @@ var ngListDirective = function() {
     link: function(scope, element, attr, ctrl) {
       // Get the attribute values directly from the element rather than the
       // attr map otherwise the attribute values will be trimmed of whitespace
-      var separatorAttribute = element[0].getAttribute("ng-list")
-      var joinAttribute = element[0].getAttribute("ng-list-join")
+      var separatorAttribute = element[0].getAttribute(attr.$attr['ngList'])
+      var joinAttribute = element[0].getAttribute(attr.$attr['ngListJoin'])
       var separator, joinedby;
       var match = /\/(.*)\//.exec(separatorAttribute);
       if (match) {
