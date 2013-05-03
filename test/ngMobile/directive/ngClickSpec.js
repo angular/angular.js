@@ -166,7 +166,7 @@ describe('ngClick (mobile)', function() {
     }));
 
 
-    it('should cancel the following click event', inject(function($rootScope, $compile, $rootElement, $document) {
+    it('should cancel the following click event', inject(function($rootScope, $compile, $rootElement, $document, $timeout) {
       element = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
       $rootElement.append(element);
 
@@ -181,7 +181,7 @@ describe('ngClick (mobile)', function() {
 
       time = 50;
       browserTrigger($document, 'touchend', [], 10, 10);
-
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       expect($rootScope.count).toBe(1);
 
       time = 100;
@@ -192,7 +192,7 @@ describe('ngClick (mobile)', function() {
 
 
     it('should cancel the following click event even when the element has changed', inject(
-        function($rootScope, $compile, $document, $rootElement) {
+        function($rootScope, $compile, $document, $rootElement, $timeout) {
       $rootElement.append(
           '<div ng-show="!tapped" ng-click="count1 = count1 + 1; tapped = true">x</div>' +
           '<div ng-show="tapped" ng-click="count2 = count2 + 1">y</div>'
@@ -215,7 +215,7 @@ describe('ngClick (mobile)', function() {
 
       time = 50;
       browserTrigger($document, 'touchend', [], 10, 10);
-
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       expect($rootScope.count1).toBe(1);
 
       time = 100;
@@ -226,7 +226,7 @@ describe('ngClick (mobile)', function() {
     }));
 
 
-    it('should not cancel clicks on distant elements', inject(function($rootScope, $compile, $document, $rootElement) {
+    it('should not cancel clicks on distant elements', inject(function($rootScope, $compile, $document, $rootElement, $timeout) {
       $rootElement.append(
           '<div ng-click="count1 = count1 + 1">x</div>' +
           '<div ng-click="count2 = count2 + 1">y</div>'
@@ -249,7 +249,7 @@ describe('ngClick (mobile)', function() {
 
       time = 50;
       browserTrigger($document, 'touchend', [], 10, 10);
-
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       expect($rootScope.count1).toBe(1);
 
       time = 90;
@@ -262,13 +262,14 @@ describe('ngClick (mobile)', function() {
 
       time = 130;
       browserTrigger($document, 'touchend', [], 10, 10);
-
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       expect($rootScope.count1).toBe(2);
 
       // Click on other element that should go through.
       time = 150;
       browserTrigger(element2, 'touchstart', [], 100, 120);
       browserTrigger(element2, 'touchend', [], 100, 120);
+      $timeout.flush(); // Desktop fall-back clicks are prevented after if click has already fired
       browserTrigger(element2, 'click', [], 100, 120);
 
       expect($rootScope.count2).toBe(1);
