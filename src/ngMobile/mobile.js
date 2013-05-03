@@ -522,6 +522,10 @@ ngMobile.provider('$mobile', function() {
 
               // Check if the element can capture another pointer and assign the pointer to that element
               if(instance && instance.enabled && instance.pointers_count < instance.pointers_max) {
+                if(instance.options.touch_active_class) {
+                  element.addClass(instance.options.touch_active_class);
+                }
+
                 pointer_allocation[pointerObj.identifier] = instance;
                 if (instance.pointers_count == 0) {
                   event_pointers[instance] = {};
@@ -844,6 +848,11 @@ ngMobile.provider('$mobile', function() {
              */
             stopDetect: function() {
               var pointers = event_pointers[instance];
+
+              if(instance.options.touch_active_class) {
+                element.removeClass(instance.options.touch_active_class);
+              }
+
               if (pointers) {
                 delete event_pointers[instance];
                 angular.forEach(pointers, function(pointer, key) {
