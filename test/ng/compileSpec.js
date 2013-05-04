@@ -381,6 +381,47 @@ describe('$compile', function() {
       })
     });
 
+    it("should complain when the multi-element end tag can't be found among one of the following siblings", inject(function($compile) {
+      forEach([
+        // no content, no end tag
+        '<div ng-repeat="item in items" ng-repeat-start></div>',
+
+        // content, no end tag
+        '<div ng-repeat="item in items" ng-repeat-start></div>' +
+        '<span>{{item.text}}></span>' +
+        '<span>{{item.done}}</span>',
+
+        // content, end tag too deep
+        '<div ng-repeat="item in items" ng-repeat-start></div>' +
+        '<div>' +
+          '<span>{{item.text}}></span>' +
+          '<span>{{item.done}}</span>' +
+          '<span ng-repeat-end></span>' +
+        '</div>',
+
+        // content, end tag too high
+        '<div>' +
+          '<div ng-repeat="item in items" ng-repeat-start></div>' +
+          '<span>{{item.text}}></span>' +
+          '<span>{{item.done}}</span>' +
+        '</div>' +
+        '<div ng-repeat-end></div>',
+
+        ], function(template) {
+          expect(function() {
+            $compile('<div>' + template + '</div>');
+          }).toThrow("Unmatched ngRepeatStart.");
+        });
+    }));
+
+
+    it("should complain when there is an end attribute at the start of a multi-element directive", inject(function($compile) {
+      expect(function() {
+        $compile('<div><li ng-repeat-end ng-repeat="i in items"></li><li></li></div>');
+      }).toThrow("Unexpected ngRepeatEnd.");
+    }));
+
+
     describe('compiler control', function() {
       describe('priority', function() {
         it('should honor priority', inject(function($compile, $rootScope, log){
@@ -2345,6 +2386,35 @@ describe('$compile', function() {
     });
 
 
+    it('should compile get templateFn on multi-element', function() {
+      module(function() {
+        directive('trans', function(log) {
+          return {
+            transclude: 'multi-element',
+            priority: 2,
+            controller: function($transclude) { this.$transclude = $transclude; },
+            compile: function(element, attrs, template) {
+              log('compile: ' + angular.mock.dump(element));
+              return function(scope, element, attrs, ctrl) {
+                log('link');
+                var cursor = element;
+                template(scope.$new(), function(clone) {cursor.after(clone); cursor = clone.eq(-1);});
+                ctrl.$transclude(function(clone) {cursor.after(clone)});
+              };
+            }
+          }
+        });
+      });
+      inject(function(log, $rootScope, $compile) {
+        element = $compile('<div><div high-log trans="text" trans-start log>{{$parent.$id}}-{{$id}};</div><div trans-end>{{$parent.$id}}-{{$id}};</div></div>')
+            ($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('compile: <!-- trans: text -->; HIGH; link; LOG; LOG');
+        expect(element.text()).toEqual('001-002;001-002;001-003;001-003;');
+      });
+    });
+
+
     it('should support transclude directive', function() {
       module(function() {
         directive('trans', function() {
@@ -2481,6 +2551,30 @@ describe('$compile', function() {
         $compile(element)($rootScope);
         expect(nodeName_(element[1])).toBe('#comment');
         expect(nodeName_(comment)).toBe('#comment');
+      });
+    });
+
+
+    it('should support transcluded multi-element on root content', function() {
+      var comment;
+      module(function() {
+        directive('transclude', valueFn({
+          transclude: 'multi-element',
+          compile: function(element, attr, linker) {
+            return function(scope, element, attr) {
+              comment = element;
+            };
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        var element = jqLite('<div>before<div transclude transclude-begin></div><div transclude-end></div>after</div>').contents();
+        expect(element.length).toEqual(4);
+        expect(nodeName_(element[1])).toBe('DIV');
+        $compile(element)($rootScope);
+        expect(nodeName_(element[1])).toBe('#comment');
+        expect(nodeName_(comment)).toBe('#comment');
+        expect(nodeName_(element[2])).toBe('DIV');
       });
     });
 

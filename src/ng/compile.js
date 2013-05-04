@@ -419,9 +419,10 @@ function $CompileProvider($provide) {
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
      * @param {number=} max directive priority
-     * @param {boolean=} if the max priority should only apply to the first element in the list.
-     *        A true value here will make the maxPriority only apply to the first element on the
-     *        list while the other elements on the list will not have a maxPriority set
+     * @param {boolean=} limitMaxPriorityToFirstElement if the max priority should only apply to
+     *        the first element in the list. A true value here will make the maxPriority only apply
+     *        to the first element on the list while the other elements on the list will not have
+     *        a maxPriority set
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, limitMaxPriorityToFirstElement) {
@@ -654,20 +655,20 @@ function $CompileProvider($provide) {
             // We need to compile a clone of the elements, but at the same time we have to be sure that these elements are siblings
             var nestedContent = extractMultiElementTransclude(compileNode, directiveName);
             var cloneContent = jqLite('<div></div>');
-            forEach(nestedContent, function(nestedElement) {
-              cloneContent.append(JQLiteClone(nestedElement));
-            });
-            childTranscludeFn = compile(cloneContent.contents(), transcludeFn, terminalPriority, true);
+            
             $template = jqLite(compileNode);
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
-            replaceWith($rootElement, $template, compileNode);
+            replaceWith($rootElement, jqLite($template[0]), compileNode);
+            cloneContent.append($template);
             forEach(nestedContent.splice(1),
               function(toRemove) {
-                replaceWith($rootElement, jqLite(toRemove), document.createComment(' placeholder '));
+                removeElement($rootElement, toRemove);
+                cloneContent.append(toRemove);
               }
             );
+            childTranscludeFn = compile(cloneContent.contents(), transcludeFn, terminalPriority, true);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -774,32 +775,16 @@ function $CompileProvider($provide) {
 
 
       function containsAttr(node, attributeName) {
-        var nodeType = node.nodeType,
-          result = false;
-
-        switch(nodeType) {
-          case 1:
-          // iterate over the attributes
-          for (var attr, name, nName, ngAttrName, nAttrs = node.attributes,
-                   j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
-            attr = nAttrs[j];
-            if (attr.specified) {
-              name = attr.name;
-              // support ngAttr attribute binding
-              ngAttrName = directiveNormalize(name);
-              if (NG_ATTR_BINDING.test(ngAttrName)) {
-                name = ngAttrName.substr(6).toLowerCase();
-              }
-              nName = directiveNormalize(name.toLowerCase());
-              if (nName == attributeName) {
-                result = true;
-                break;
-              }
+        var attr, attrs = node.attributes, length = attrs && attrs.length;
+        if ( length ) {
+          for (var j = 0; j < length; j++) {
+            attr = attrs[j];
+            if (attr.specified && directiveNormalize(attr.name) == attributeName) {
+              return true;
             }
           }
-          break;
         }
-        return result;
+        return false;
       }
 
 
@@ -1223,6 +1208,20 @@ function $CompileProvider($provide) {
 
       newNode[jqLite.expando] = oldNode[jqLite.expando];
       $element[0] = newNode;
+    }
+
+
+    function removeElement($rootElement, element) {
+      var i, ii;
+
+      if ($rootElement) {
+        for(i = 0, ii = $rootElement.length; i < ii; i++) {
+          if ($rootElement[i] == element) {
+            $rootElement.splice(i, 1);
+            break;
+          }
+        }
+      }
     }
   }];
 }

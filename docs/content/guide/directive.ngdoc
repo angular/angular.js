@@ -444,7 +444,11 @@ compiler}. The attributes are:
 
     * `true` - transclude the content of the directive.
     * `'element'` - transclude the whole element including any directives defined at lower priority.
-
+    * `'multi-element'` - if the node where this directive is present contains an attribute
+      named `${directiveName}-start` (were `${directiveName}` is the name of the directive) then
+      the entire block of elements is transcluded until a sibling node is found with and attribute
+      named `${directiveName}-end`. If and attribute name `${directiveName}-start` is not found
+      then it behaves like the `'element'` transclude.
 
   * `compile`: This is the compile function described in the section below.
 
