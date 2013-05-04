@@ -105,12 +105,12 @@
           $routeProvider.when('/Book/:bookId', {
             templateUrl: 'book.html',
             controller: BookCntl,
-            controllerAlias: 'book'
+            controllerAs: 'book'
           });
           $routeProvider.when('/Book/:bookId/ch/:chapterId', {
             templateUrl: 'chapter.html',
             controller: ChapterCntl,
-            controllerAlias: 'chapter'
+            controllerAs: 'chapter'
           });
 
           // configure html5 to get links working on jsfiddle
@@ -194,9 +194,10 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
 
         if (template) {
           clearContent();
-          animate.enter(jqLite('<div></div>').html(template).contents(), element);
+          var enterElements = jqLite('<div></div>').html(template).contents();
+          animate.enter(enterElements, element);
 
-          var link = $compile(element.contents()),
+          var link = $compile(enterElements),
               current = $route.current,
               controller;
 
@@ -204,8 +205,8 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           if (current.controller) {
             locals.$scope = lastScope;
             controller = $controller(current.controller, locals);
-            if (current.controllerAlias) {
-              lastScope[current.controllerAlias] = controller;
+            if (current.controllerAs) {
+              lastScope[current.controllerAs] = controller;
             }
             element.children().data('$ngControllerController', controller);
           }

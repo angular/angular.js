@@ -2,7 +2,7 @@
  * All parsing/transformation code goes here. All code here should be sync to ease testing.
  */
 
-var Showdown = require('../../lib/showdown').Showdown;
+var Showdown = require('showdown');
 var DOM = require('./dom.js').DOM;
 var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
@@ -216,7 +216,7 @@ Doc.prototype = {
         });
     });
     text = parts.join('');
-    text = new Showdown.converter().makeHtml(text);
+    text = new Showdown.converter({ extensions : ['table'] }).makeHtml(text);
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });

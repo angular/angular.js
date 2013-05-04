@@ -119,15 +119,16 @@ function LocationHtml5Url(appBase, basePrefix) {
   };
 
   this.$$rewrite = function(url) {
-    var appUrl;
+    var appUrl, prevAppUrl;
 
     if ( (appUrl = beginsWith(appBase, url)) !== undefined ) {
+      prevAppUrl = appUrl;
       if ( (appUrl = beginsWith(basePrefix, appUrl)) !== undefined ) {
         return appBaseNoFile + (beginsWith('/', appUrl) || appUrl);
       } else {
-        return appBase;
+        return appBase + prevAppUrl;
       }
-    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
+    } else if ( (appUrl = beginsWith(appBaseNoFile, url)) !== undefined ) {
       return appBaseNoFile + appUrl;
     } else if (appBaseNoFile == url + '/') {
       return appBaseNoFile;
@@ -523,16 +524,18 @@ function $LocationProvider(){
         if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) return;
       }
 
-      var absHref = elm.prop('href'),
-          rewrittenUrl = $location.$$rewrite(absHref);
+      var absHref = elm.prop('href');
+      var rewrittenUrl = $location.$$rewrite(absHref);
 
       if (absHref && !elm.attr('target') && rewrittenUrl) {
-        // update location manually
-        $location.$$parse(rewrittenUrl);
-        $rootScope.$apply();
         event.preventDefault();
-        // hack to work around FF6 bug 684208 when scenario runner clicks on links
-        window.angular['ff-684208-preventDefault'] = true;
+        if (rewrittenUrl != $browser.url()) {
+          // update location manually
+          $location.$$parse(rewrittenUrl);
+          $rootScope.$apply();
+          // hack to work around FF6 bug 684208 when scenario runner clicks on links
+          window.angular['ff-684208-preventDefault'] = true;
+        }
       }
     });
 
@@ -545,6 +548,10 @@ function $LocationProvider(){
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
+        if ($rootScope.$broadcast('$locationChangeStart', newUrl, $location.absUrl()).defaultPrevented) {
+          $browser.url($location.absUrl());
+          return;
+        }
         $rootScope.$evalAsync(function() {
           var oldUrl = $location.absUrl();
 
