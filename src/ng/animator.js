@@ -10,16 +10,17 @@
  * The `ngAnimate` directive works as an attribute that is attached alongside pre-existing directives.
  * It effects how the directive will perform DOM manipulation. This allows for complex animations to take place
  * without burdening the directive which uses the animation with animation details. The built in directives
- * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView` already accept `ngAnimate` directive.
- * Custom directives can take advantage of animation through {@link ng.$animator $animator service}.
+ * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngIf`, `ngShow`, `ngHide` and `ngView` already accept the `ngAnimate`
+ * directive. Custom directives can take advantage of animation through {@link ng.$animator $animator service}.
  *
- * Below is a more detailed breakdown of the supported callback events provided by pre-exisitng ng directives:
+ * Below is a more detailed breakdown of the supported callback events provided by pre-existing ng directives:
  *
  * | Directive                                                 | Supported Animations                               |
  * |========================================================== |====================================================|
  * | {@link ng.directive:ngRepeat#animations ngRepeat}         | enter, leave and move                              |
  * | {@link ng.directive:ngView#animations ngView}             | enter and leave                                    |
  * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |
+ * | {@link ng.directive:ngIf#animations ngIf}                 | enter and leave                                    |
  * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
  * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | show and hide                                      |
  *
