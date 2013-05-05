@@ -2,56 +2,56 @@ angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
-    "AMPMS": {
-      "0": "fm",
-      "1": "em"
-    },
-    "DAY": {
-      "0": "s\u00f6ndag",
-      "1": "m\u00e5ndag",
-      "2": "tisdag",
-      "3": "onsdag",
-      "4": "torsdag",
-      "5": "fredag",
-      "6": "l\u00f6rdag"
-    },
-    "MONTH": {
-      "0": "januari",
-      "1": "februari",
-      "2": "mars",
-      "3": "april",
-      "4": "maj",
-      "5": "juni",
-      "6": "juli",
-      "7": "augusti",
-      "8": "september",
-      "9": "oktober",
-      "10": "november",
-      "11": "december"
-    },
-    "SHORTDAY": {
-      "0": "s\u00f6n",
-      "1": "m\u00e5n",
-      "2": "tis",
-      "3": "ons",
-      "4": "tors",
-      "5": "fre",
-      "6": "l\u00f6r"
-    },
-    "SHORTMONTH": {
-      "0": "jan",
-      "1": "feb",
-      "2": "mar",
-      "3": "apr",
-      "4": "maj",
-      "5": "jun",
-      "6": "jul",
-      "7": "aug",
-      "8": "sep",
-      "9": "okt",
-      "10": "nov",
-      "11": "dec"
-    },
+    "AMPMS": [
+      "fm",
+      "em"
+    ],
+    "DAY": [
+      "s\u00f6ndag",
+      "m\u00e5ndag",
+      "tisdag",
+      "onsdag",
+      "torsdag",
+      "fredag",
+      "l\u00f6rdag"
+    ],
+    "MONTH": [
+      "januari",
+      "februari",
+      "mars",
+      "april",
+      "maj",
+      "juni",
+      "juli",
+      "augusti",
+      "september",
+      "oktober",
+      "november",
+      "december"
+    ],
+    "SHORTDAY": [
+      "s\u00f6n",
+      "m\u00e5n",
+      "tis",
+      "ons",
+      "tors",
+      "fre",
+      "l\u00f6r"
+    ],
+    "SHORTMONTH": [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "maj",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec"
+    ],
     "fullDate": "EEEE'en' 'den' d:'e' MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
@@ -65,8 +65,8 @@ $provide.value("$locale", {
     "CURRENCY_SYM": "kr",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
-    "PATTERNS": {
-      "0": {
+    "PATTERNS": [
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -78,7 +78,7 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": ""
       },
-      "1": {
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -90,7 +90,7 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": "\u00a0\u00a4"
       }
-    }
+    ]
   },
   "id": "sv",
   "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
