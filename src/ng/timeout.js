@@ -25,10 +25,32 @@ function $TimeoutProvider() {
       * In tests you can use {@link ngMock.$timeout `$timeout.flush()`} to
       * synchronously flush the queue of deferred functions.
       *
+      * You can also use `$timeout` to debounce the call of a function using the returned promise
+      * as the fourth parameter in the next call. See the following example:
+      * 
+      * <pre>
+      *   var debounce;
+      *   var doRealSave = function() {
+      *      // Save model to DB
+      *   }
+      *   $scope.save = function() {
+      *      // debounce call for 2 seconds
+      *      debounce = $timeout(doRealSave, 2000, false, debounce);
+      *   }
+      * </pre>
+      *
+      * And in the form:
+      *
+      * <pre>
+      *   <input type="text" ng-model="name" ng-change="save()">
+      * </pre>
+      *
       * @param {function()} fn A function, whose execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
       *   will invoke `fn` within the {@link ng.$rootScope.Scope#methods_$apply $apply} block.
+      * @param {Promise=} debounce If set to an outgoing promise, it will reject it before creating
+      *   the new one. This allows debouncing the execution of the function.
       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       * 
@@ -120,11 +142,17 @@ function $TimeoutProvider() {
         </doc:source>
       </doc:example>
       */
-    function timeout(fn, delay, invokeApply) {
+    function timeout(fn, delay, invokeApply, debounce) {
       var deferred = $q.defer(),
           promise = deferred.promise,
           skipApply = (isDefined(invokeApply) && !invokeApply),
           timeoutId;
+
+      // debouncing support
+      if (debounce && debounce.$$timeoutId in deferreds) {
+        deferreds[debounce.$$timeoutId].reject('debounced');
+        $browser.defer.cancel(debounce.$$timeoutId);
+      }
 
       timeoutId = $browser.defer(function() {
         try {
