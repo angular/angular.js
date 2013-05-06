@@ -236,7 +236,7 @@ function callerFile(offset) {
 (function(fn){
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
-    if (/(click|change|keydown|blur|input)/.test(type)) {
+    if (/(click|change|keydown|blur|input|mousedown|mouseup)/.test(type)) {
       var processDefaults = [];
       this.each(function(index, node) {
         processDefaults.push(browserTrigger(node, type));
