@@ -257,59 +257,52 @@ var $AnimatorProvider = function() {
               // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
               // keep at 1 for animation dom rerender
               $window.setTimeout(beginAnimation, 1);
+            }
 
-              function getMaxDuration(durationString, delayString) {
-                var durations = safelySplitByComma(durationString),
-                    delays = safelySplitByComma(delayString),
-                    overallTimeSpent = 0;
- 
-                  for (var i = 0, ii = Math.max(durations.length, delays.length); i < ii; i++) {
-                    var combinedDuration = (parseFloat(durations.shift() || 0) + parseFloat(delays.shift() || 0));
-                    if (combinedDuration > overallTimeSpent) {
-                      overallTimeSpent = combinedDuration;
-                    }
-                  }
- 
-                  return overallTimeSpent;
-              }
-  
-              function beginAnimation() {
-                element.addClass(startClass);
-                if (polyfillStart) {
-                  polyfillStart(element, done, memento);
-                } else if (isFunction($window.getComputedStyle)) {
-                  var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-                  var w3cTransitionProp = 'transition'; //one day all browsers will have this
-  
-                  var durationKey = 'Duration',
-                      delayKey = 'Delay',
-                      duration = 0;
-                  
-                  //we want all the styles defined before and after
-                  forEach(element, function(element) {
-                    if (element.nodeType == 1) {
-                      var globalStyles = $window.getComputedStyle(element) || {};
-                      duration = Math.max(
-                          getMaxDuration(globalStyles[w3cTransitionProp    + durationKey],
-                                         globalStyles[w3cTransitionProp    + delayKey]) ||
+            function filterMaxDuration(durationString, delayString) {
+              var durations = safelySplitByComma(durationString),
+                  delays    = safelySplitByComma(delayString),
+                  total = 0;
 
-                          getMaxDuration(globalStyles[vendorTransitionProp + durationKey],
-                                         globalStyles[vendorTransitionProp + delayKey]) ||
-                          0,
-                          duration);
-                    }
-                  });
-                  $window.setTimeout(done, duration * 1000);
-                } else {
-                  done();
+              for (var i = 0, ii = Math.max(durations.length, delays.length); i < ii; i++) {
+                var duration = (parseFloat(durations.shift() || 0) + parseFloat(delays.shift() || 0));
+                if (duration > total) {
+                  total = duration;
                 }
               }
-  
-              function done() {
-                afterFn(element, parent, after);
-                element.removeClass(setupClass);
-                element.removeClass(startClass);
-                element.removeData(NG_ANIMATE_CONTROLLER);
+
+              return total;
+            };
+
+            function beginAnimation() {
+              element.addClass(startClass);
+              if (polyfillStart) {
+                polyfillStart(element, done, memento);
+              } else if (isFunction($window.getComputedStyle)) {
+                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+                var w3cTransitionProp = 'transition'; //one day all browsers will have this
+
+                var ELEMENT_NODE = 1;
+                var durationKey = 'Duration',
+                    delayKey = 'Delay',
+                    duration = 0;
+                
+                //we want all the styles defined before and after
+                forEach(element, function(element) {
+                  if (element.nodeType == ELEMENT_NODE) {
+                    var globalStyles = $window.getComputedStyle(element) || {};
+                    duration = Math.max(
+                        filterMaxDuration(globalStyles[w3cTransitionProp    + durationKey],
+                                          globalStyles[w3cTransitionProp    + delayKey]),
+                        filterMaxDuration(globalStyles[vendorTransitionProp + durationKey],
+                                          globalStyles[vendorTransitionProp + delayKey]),
+                        0,
+                        duration);
+                  }
+                });
+                $window.setTimeout(done, duration * 1000);
+              } else {
+                done();
               }
             }
 
