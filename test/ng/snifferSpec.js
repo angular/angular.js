@@ -124,6 +124,63 @@ describe('$sniffer', function() {
 
   });
 
+  describe('supportsAnimations', function() {
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.supportsAnimations).not.toBe(undefined);
+      });
+    });
+
+    it('should be false when there is no animation style', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsAnimations).toBe(false);
+      });
+    });
+
+    it('should be true with vendor-specific animations', function() {
+      module(function($provide) {
+        var animationStyle = 'some_animation 2s linear';
+        var doc = {
+          body : {
+            style : {
+              WebkitAnimation : animationStyle,
+              MozAnimation : animationStyle,
+              OAnimation : animationStyle
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsAnimations).toBe(true);
+      });
+    });
+
+    it('should be true with w3c-style animations', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              animation : 'some_animation 2s linear'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsAnimations).toBe(true);
+      });
+    });
+  });
+
   describe('supportsTransitions', function() {
 
     it('should be either true or false', function() {
