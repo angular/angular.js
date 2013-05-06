@@ -1212,7 +1212,7 @@ function $CompileProvider($provide) {
 
 
     function removeElement($rootElement, element) {
-      var i, ii;
+      var i, ii, parent = element.parentNode;
 
       if ($rootElement) {
         for(i = 0, ii = $rootElement.length; i < ii; i++) {
@@ -1221,6 +1221,9 @@ function $CompileProvider($provide) {
             break;
           }
         }
+      }
+      if (parent) {
+        parent.removeChild(element);
       }
     }
   }];

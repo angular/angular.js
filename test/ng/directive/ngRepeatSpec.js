@@ -434,34 +434,34 @@ describe('ngRepeat', function() {
     element = $compile(
       '<ul>' +
         '<li ng-repeat-start ng-repeat="subgroup in groups">' +
-          '<div ng-repeat-start ng-repeat="group in subgroup">{{group}}|</div>' +
+          'A<div ng-repeat-start ng-repeat="group in subgroup">{{group}}|</div>' +
           '<div ng-repeat-end>{{group}}</div>X' +
         '</li>' +
         '<li ng-repeat-end>' +
-          '<div ng-repeat-start ng-repeat="group in subgroup">{{group}}|</div>' +
+          'B<div ng-repeat-start ng-repeat="group in subgroup">{{group}}|</div>' +
           '<div ng-repeat-end>{{group}}</div>Y' +
-        '</li>' +
+        '</li>Z' +
       '</ul>')(scope);
     scope.groups = [['a', 'b'], ['c','d']];
     scope.$digest();
 
-    expect(element.text()).toEqual('a|ab|bXa|ab|bYc|cd|dXc|cd|dY');
+    expect(element.text()).toEqual('Aa|ab|bXBa|ab|bYAc|cd|dXBc|cd|dYZ');
   });
 
 
   it('should repeat over nested repeats at the same level', function() {
     element = $compile(
       '<dl>' +
-        '<dt ng-repeat="item1 in array"  ng-repeat-start>{{item1}}|</dt>' +
-        '<dt ng-repeat="item2 in array2" ng-repeat-start>{{item2}}</dt>' +
-        '<dt ng-repeat-end>X</dt>' +
-        '<dt ng-repeat-end>Y</dt>' +
+        'A<dt ng-repeat="item1 in array"  ng-repeat-start>{{item1}}|</dt>' +
+        'B<dt ng-repeat="item2 in array2" ng-repeat-start>{{item2}}</dt>' +
+        '<dt ng-repeat-end>X</dt>Z' +
+        '<dt ng-repeat-end>Y</dt>W' +
       '</dl>')(scope);
     scope.array = ['a', 'b'];
     scope.array2 = ['d', 'e'];
     scope.$digest();
 
-    expect(element.text()).toEqual('a|dXeXYb|dXeXY');
+    expect(element.text()).toEqual('Aa|BdXeXZYb|BdXeXZYW');
   });
 
 
