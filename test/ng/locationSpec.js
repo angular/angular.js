@@ -835,6 +835,12 @@ describe('$location', function() {
           jqLite(link).attr('href', 'http://host.com/base/');
           browserTrigger(link, 'click');
           expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).
+              attr('href', 'http://host.com/base/foo').
+              bind('click', function(e) { e.preventDefault(); });
+          browserTrigger(link, 'click');
+          expect($browser.url()).toBe('http://host.com/base/');
         }
       );
     });
@@ -1372,6 +1378,7 @@ describe('$location', function() {
       expect(location.$$rewrite('http://other')).toEqual(undefined);
       expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
       expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
+      expect(location.$$rewrite('javascript:void(0)')).toEqual(undefined);
     });
   });
 
