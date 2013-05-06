@@ -527,7 +527,7 @@ function $LocationProvider(){
       var absHref = elm.prop('href');
       var rewrittenUrl = $location.$$rewrite(absHref);
 
-      if (absHref && !elm.attr('target') && rewrittenUrl) {
+      if (absHref && !elm.attr('target') && rewrittenUrl && !event.isDefaultPrevented()) {
         event.preventDefault();
         if (rewrittenUrl != $browser.url()) {
           // update location manually
