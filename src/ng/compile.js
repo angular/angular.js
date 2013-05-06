@@ -298,7 +298,7 @@ function $CompileProvider($provide) {
 
           // href property always returns normalized absolute url, so we can match against that
           normalizedVal = urlSanitizationNode.href;
-          if (!normalizedVal.match(urlSanitizationWhitelist)) {
+          if (normalizedVal !== '' && !normalizedVal.match(urlSanitizationWhitelist)) {
             this[key] = value = 'unsafe:' + normalizedVal;
           }
         }
