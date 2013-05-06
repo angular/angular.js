@@ -423,8 +423,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selected: selected                   // determine if we should be selected
             });
           }
-          if (!multiple && !selectedSet) {
-            // nothing was selected, we have to insert the undefined item
+          if (!multiple && !selectedSet && !(attr.size>1)) {
+            // nothing was selected or attribute size > 1, we have to insert the undefined item
             optionGroups[''].unshift({id:'?', label:'', selected:true});
           }
 
