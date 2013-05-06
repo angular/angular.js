@@ -46,7 +46,8 @@
  *
  * <h2>CSS-defined Animations</h2>
  * By default, ngAnimate attaches two CSS3 classes per animation event to the DOM element to achieve the animation.
- * It is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions.
+ * It is up to you, the developer, to ensure that the animations take place using cross-browser CSS3 transitions as
+ * well as CSS animations.
  * All that is required is the following CSS code:
  *
  * <pre>
@@ -83,9 +84,33 @@
  * Upon DOM mutation, the setup class is added first, then the browser is allowed to reflow the content and then,
  * the start class is added to trigger the animation. The ngAnimate directive will automatically extract the duration
  * of the animation to determine when the animation ends. Once the animation is over then both CSS classes will be
- * removed from the DOM. If a browser does not support CSS transitions then the animation will start and end
+ * removed from the DOM. If a browser does not support CSS transitions or CSS animations then the animation will start and end
  * immediately resulting in a DOM element that is at it's final state. This final state is when the DOM element
- * has no CSS animation classes surrounding it.
+ * has no CSS transition/animation classes surrounding it.
+ *
+ * You can also use CSS animations instead of CSS transitions. The only difference is that only one CSS class is required:
+ *
+ * <pre>
+ * <style type="text/css">
+ * /&#42;
+ *  Only the setup CSS class is required when performing CSS animations...
+ * &#42;/
+ * .animate-enter-setup {
+ *   -webkit-animation: some_animation 1s linear;
+ *   animation: some_animation 1s linear;
+ * }
+ * &#64keyframes some_animation {
+ *   from {
+ *     opacity:0;
+ *   }
+ *   to {
+ *     opacity:1;
+ *   }
+ * }
+ * </style>
+ *
+ * <div ng-directive ng-animate="{enter: 'animate-enter'}"></div>
+ * </pre>
  *
  * <h2>JavaScript-defined Animations</h2>
  * In the event that you do not want to use CSS3 animations or if you wish to offer animations to browsers that do not
@@ -117,7 +142,7 @@
  * As you can see, the JavaScript code follows a similar template to the CSS3 animations. Once defined, the animation
  * can be used in the same way with the ngAnimate attribute. Keep in mind that, when using JavaScript-enabled
  * animations, ngAnimate will also add in the same CSS classes that CSS-enabled animations do (even if you're using
- * JavaScript animations) to animated the element, but it will not attempt to find any CSS3 transition duration value.
+ * JavaScript animations) to animated the element, but it will not attempt to find any CSS3 transition or animation duration value.
  * It will instead close off the animation once the provided done function is executed. So it's important that you
  * make sure your animations remember to fire off the done function once the animations are complete.
  *
@@ -259,18 +284,11 @@ var $AnimatorProvider = function() {
               $window.setTimeout(beginAnimation, 1);
             }
 
-            function filterMaxDuration(durationString, delayString) {
-              var durations = safelySplitByComma(durationString),
-                  delays    = safelySplitByComma(delayString),
-                  total = 0;
-
-              for (var i = 0, ii = Math.max(durations.length, delays.length); i < ii; i++) {
-                var duration = (parseFloat(durations.shift() || 0) + parseFloat(delays.shift() || 0));
-                if (duration > total) {
-                  total = duration;
-                }
-              }
-
+            function parseMaxTime(str) {
+              var total = 0, values = safelySplitByComma(str);
+              forEach(values, function(value) {
+                total = Math.max(parseFloat(value) || 0, total);
+              });
               return total;
             };
 
@@ -279,25 +297,45 @@ var $AnimatorProvider = function() {
               if (polyfillStart) {
                 polyfillStart(element, done, memento);
               } else if (isFunction($window.getComputedStyle)) {
-                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-                var w3cTransitionProp = 'transition'; //one day all browsers will have this
+                //one day all browsers will have these properties
+                var w3cAnimationProp = 'animation'; 
+                var w3cTransitionProp = 'transition';
 
-                var ELEMENT_NODE = 1;
+                //but some still use vendor-prefixed styles 
+                var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
+                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+
                 var durationKey = 'Duration',
                     delayKey = 'Delay',
+                    animationIterationCountKey = 'IterationCount',
                     duration = 0;
                 
                 //we want all the styles defined before and after
+                var ELEMENT_NODE = 1;
                 forEach(element, function(element) {
                   if (element.nodeType == ELEMENT_NODE) {
-                    var globalStyles = $window.getComputedStyle(element) || {};
-                    duration = Math.max(
-                        filterMaxDuration(globalStyles[w3cTransitionProp    + durationKey],
-                                          globalStyles[w3cTransitionProp    + delayKey]),
-                        filterMaxDuration(globalStyles[vendorTransitionProp + durationKey],
-                                          globalStyles[vendorTransitionProp + delayKey]),
-                        0,
-                        duration);
+                    var w3cProp = w3cTransitionProp,
+                        vendorProp = vendorTransitionProp,
+                        iterations = 1,
+                        globalStyles = $window.getComputedStyle(element) || {};
+
+                    //use CSS Animations over CSS Transitions
+                    if(parseFloat(globalStyles[w3cAnimationProp + durationKey]) > 0 ||
+                       parseFloat(globalStyles[vendorAnimationProp + durationKey]) > 0) {
+                      w3cProp = w3cAnimationProp;
+                      vendorProp = vendorAnimationProp;
+                      iterations = Math.max(parseInt(globalStyles[w3cProp    + animationIterationCountKey]) || 0,
+                                            parseInt(globalStyles[vendorProp + animationIterationCountKey]) || 0,
+                                            iterations);
+                    }
+
+                    var parsedDelay     = Math.max(parseMaxTime(globalStyles[w3cProp     + delayKey]),
+                                                   parseMaxTime(globalStyles[vendorProp  + delayKey]));
+
+                    var parsedDuration  = Math.max(parseMaxTime(globalStyles[w3cProp     + durationKey]),
+                                                   parseMaxTime(globalStyles[vendorProp  + durationKey]));
+
+                    duration = Math.max(parsedDelay + (iterations * parsedDuration), duration);
                   }
                 });
                 $window.setTimeout(done, duration * 1000);
