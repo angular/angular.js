@@ -295,45 +295,200 @@ describe("$animator", function() {
     }));
   });
 
-  describe("with css3", function() {
+  describe("with CSS3", function() {
     var window, animator, prefix, vendorPrefix;
 
     beforeEach(function() {
       module(function($animationProvider, $provide) {
         $provide.value('$window', window = angular.mock.createMockWindow());
         return function($sniffer, _$rootElement_, $animator) {
-          vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+          vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
           $rootElement = _$rootElement_;
           $animator.enabled(true);
         };
       })
     });
 
-    it("should skip animations if disabled and run when enabled",
+    describe("Animations", function() {
+      it("should properly detect and make use of CSS Animations",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        var style = 'animation: some_animation 4s linear 0s 1 alternate;' +
+                    vendorPrefix + 'animation: some_animation 4s linear 0s 1 alternate;';
+        element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+
+        animator.show(element);
+        if ($sniffer.supportsAnimations) {
+          window.setTimeout.expect(1).process();
+          window.setTimeout.expect(4000).process();
+        }
+        expect(element[0].style.display).toBe('');
+      }));
+
+      it("should properly detect and make use of CSS Animations with multiple iterations",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        var style = 'animation-duration: 2s;' + 
+                    'animation-iteration-count: 3;' +
+                    vendorPrefix + 'animation-duration: 2s;' + 
+                    vendorPrefix + 'animation-iteration-count: 3;';
+        element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+
+        animator.show(element);
+        if ($sniffer.supportsAnimations) {
+          window.setTimeout.expect(1).process();
+          window.setTimeout.expect(6000).process();
+        }
+        expect(element[0].style.display).toBe('');
+      }));
+
+      it("should fallback to the animation duration if an infinite iteration is provided",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        var style = 'animation-duration: 2s;' + 
+                    'animation-iteration-count: infinite;' +
+                    vendorPrefix + 'animation-duration: 2s;' + 
+                    vendorPrefix + 'animation-iteration-count: infinite;';
+        element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+
+        animator.show(element);
+        if ($sniffer.supportsAnimations) {
+          window.setTimeout.expect(1).process();
+          window.setTimeout.expect(2000).process();
+        }
+        expect(element[0].style.display).toBe('');
+      }));
+
+      it("should consider the animation delay is provided",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        var style = 'animation-duration: 2s;' + 
+                    'animation-delay: 10s;' +
+                    'animation-iteration-count: 5;' +
+                    vendorPrefix + 'animation-duration: 2s;' + 
+                    vendorPrefix + 'animation-delay: 10s;' +
+                    vendorPrefix + 'animation-iteration-count: 5;';
+        element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+
+        animator.show(element);
+        if ($sniffer.supportsTransitions) {
+          window.setTimeout.expect(1).process();
+          window.setTimeout.expect(20000).process();
+        }
+        expect(element[0].style.display).toBe('');
+      }));
+
+      it("should skip animations if disabled and run when enabled",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        $animator.enabled(false);
+        var style = 'animation: some_animation 2s linear 0s 1 alternate;' +
+                    vendorPrefix + 'animation: some_animation 2s linear 0s 1 alternate;'
+
+        element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+        animator.show(element);
+        expect(element[0].style.display).toBe('');
+      }));
+    });
+
+    describe("Transitions", function() {
+      it("should skip transitions if disabled and run when enabled",
+          inject(function($animator, $rootScope, $compile, $sniffer) {
+        $animator.enabled(false);
+        element = $compile(html('<div style="' + vendorPrefix + 'transition: 1s linear all">1</div>'))($rootScope);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{show: \'inline-show\'}'
+        });
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+        animator.show(element);
+        expect(element[0].style.display).toBe('');
+
+        $animator.enabled(true);
+
+        element.css('display','none');
+        expect(element.css('display')).toBe('none');
+
+        animator.show(element);
+        if ($sniffer.supportsTransitions) {
+          window.setTimeout.expect(1).process();
+          window.setTimeout.expect(1000).process();
+        }
+        expect(element[0].style.display).toBe('');
+      }));
+
+      it("should skip animations if disabled and run when enabled picking the longest specified duration",
         inject(function($animator, $rootScope, $compile, $sniffer) {
-      $animator.enabled(false);
-      element = $compile(html('<div style="' + vendorPrefix + 'transition: 1s linear all">1</div>'))($rootScope);
-      var animator = $animator($rootScope, {
-        ngAnimate : '{show: \'inline-show\'}'
-      });
+          $animator.enabled(true);
+          element = $compile(html('<div style="' + vendorPrefix + 'transition-duration: 1s, 2000ms, 1s; ' + vendorPrefix + 'transition-property: height, left, opacity">foo</div>'))($rootScope);
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'inline-show\'}'
+          });
+          element.css('display','none');
+          animator.show(element);
+          if ($sniffer.supportsTransitions) {
+            window.setTimeout.expect(1).process();
+            window.setTimeout.expect(2000).process();
+          }
+          expect(element[0].style.display).toBe('');
+        }));
 
-      element.css('display','none');
-      expect(element.css('display')).toBe('none');
-      animator.show(element);
-      expect(element[0].style.display).toBe('');
+      it("should skip animations if disabled and run when enabled picking the longest specified duration/delay combination",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          $animator.enabled(false);
+          element = $compile(html('<div style="' + vendorPrefix + 
+            'transition-duration: 1s, 0s, 1s; ' + vendorPrefix +
+            'transition-delay: 2s, 1000ms, 2s; ' + vendorPrefix + 
+            'transition-property: height, left, opacity">foo</div>'))($rootScope);
 
-      $animator.enabled(true);
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'inline-show\'}'
+          });
 
-      element.css('display','none');
-      expect(element.css('display')).toBe('none');
+          element.css('display','none');
+          expect(element.css('display')).toBe('none');
+          animator.show(element);
+          expect(element[0].style.display).toBe('');
 
-      animator.show(element);
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(1000).process();
-      }
-      expect(element[0].style.display).toBe('');
-    }));
+          $animator.enabled(true);
+
+          element.css('display','none');
+          expect(element.css('display')).toBe('none');
+
+          animator.show(element);
+          if ($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+            window.setTimeout.expect(3000).process();
+          return;
+          }
+          expect(element[0].style.display).toBe('');
+      }));
+    });
   });
 
   describe('anmation evaluation', function () {
