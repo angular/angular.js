@@ -666,8 +666,7 @@ function parser(text, json, $filter, csp){
       var object = {};
       for ( var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
-        var value = keyValue.value(self, locals);
-        object[keyValue.key] = value;
+        object[keyValue.key] = keyValue.value(self, locals);
       }
       return object;
     }, {
@@ -792,7 +791,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4) {
     }
     return pathVal;
   };
-};
+}
 
 function getterFn(path, csp) {
   if (getterFnCache.hasOwnProperty(path)) {
@@ -807,7 +806,7 @@ function getterFn(path, csp) {
     fn = (pathKeysLength < 6)
         ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4])
         : function(scope, locals) {
-          var i = 0, val
+          var i = 0, val;
           do {
             val = cspSafeGetterFn(
                     pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++]

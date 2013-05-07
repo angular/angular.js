@@ -257,7 +257,7 @@ var $AnimatorProvider = function() {
               // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
               // keep at 1 for animation dom rerender
               $window.setTimeout(beginAnimation, 1);
-            };
+            }
 
             function beginAnimation() {
               element.addClass(startClass);
