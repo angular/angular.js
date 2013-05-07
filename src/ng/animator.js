@@ -300,7 +300,7 @@ var $AnimatorProvider = function() {
                 total = Math.max(parseFloat(value) || 0, total);
               });
               return total;
-            };
+            }
 
             function beginAnimation() {
               element.addClass(activeClassName);
@@ -360,7 +360,7 @@ var $AnimatorProvider = function() {
               element.removeClass(activeClassName);
               element.removeData(NG_ANIMATE_CONTROLLER);
             }
-          }
+          };
         }
   
         function show(element) {

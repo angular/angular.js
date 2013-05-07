@@ -56,6 +56,6 @@ function $AnimationProvider($provide) {
           return $injector.get(animationName);
         }
       }
-    }
+    };
   }];
-};
+}
