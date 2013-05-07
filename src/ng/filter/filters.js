@@ -192,6 +192,7 @@ function padNumber(num, digits, trim) {
 
 
 function dateGetter(name, size, offset, trim) {
+  offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
     if (offset > 0 || value > -offset)
