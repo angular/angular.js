@@ -88,31 +88,31 @@ describe('ngShow / ngHide - ngAnimate', function() {
       $scope.$digest();
 
       if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show-setup');
+        expect(element.attr('class')).toContain('custom-show');
         window.setTimeout.expect(1).process();
 
-        expect(element.attr('class')).toContain('custom-show-start');
+        expect(element.attr('class')).toContain('custom-show-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(element.attr('class')).not.toContain('custom-show-start');
-      expect(element.attr('class')).not.toContain('custom-show-setup');
+      expect(element.attr('class')).not.toContain('custom-show-active');
+      expect(element.attr('class')).not.toContain('custom-show');
 
       $scope.on = false;
       $scope.$digest();
       if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide-setup');
+        expect(element.attr('class')).toContain('custom-hide');
         window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-hide-start');
+        expect(element.attr('class')).toContain('custom-hide-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(element.attr('class')).not.toContain('custom-hide-start');
-      expect(element.attr('class')).not.toContain('custom-hide-setup');
+      expect(element.attr('class')).not.toContain('custom-hide-active');
+      expect(element.attr('class')).not.toContain('custom-hide');
     }));
 
     it('should skip animation if parent animation running', function() {
@@ -158,32 +158,32 @@ describe('ngShow / ngHide - ngAnimate', function() {
       $scope.$digest();
 
       if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide-setup');
+        expect(element.attr('class')).toContain('custom-hide');
         window.setTimeout.expect(1).process();
 
-        expect(element.attr('class')).toContain('custom-hide-start');
+        expect(element.attr('class')).toContain('custom-hide-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(element.attr('class')).not.toContain('custom-hide-start');
-      expect(element.attr('class')).not.toContain('custom-hide-setup');
+      expect(element.attr('class')).not.toContain('custom-hide-active');
+      expect(element.attr('class')).not.toContain('custom-hide');
 
       $scope.off = false;
       $scope.$digest();
 
       if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show-setup');
+        expect(element.attr('class')).toContain('custom-show');
         window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-show-start');
+        expect(element.attr('class')).toContain('custom-show-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(element.attr('class')).not.toContain('custom-show-start');
-      expect(element.attr('class')).not.toContain('custom-show-setup');
+      expect(element.attr('class')).not.toContain('custom-show-active');
+      expect(element.attr('class')).not.toContain('custom-show');
     }));
 
     it('should disable animation when parent animation is running', function() {
