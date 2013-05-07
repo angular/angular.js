@@ -222,6 +222,6 @@
     function isActuallyNaN(val) {
       return (typeof val === 'number') && isNaN(val);
     }
-  };
+  }
 })(window, document);
 
