@@ -88,7 +88,6 @@ describe('boolean attr directives', function() {
 
 
 describe('ngSrc', function() {
-
   it('should interpolate the expression and bind to src', inject(function($compile, $rootScope) {
     var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
 
@@ -123,6 +122,23 @@ describe('ngSrc', function() {
       dealoc(element);
     }));
   }
+});
+
+
+describe('ngSrcset', function() {
+  it('should interpolate the expression and bind to srcset', inject(function($compile, $rootScope) {
+    var element = $compile('<div ng-srcset="some/{{id}} 2x"></div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.attr('srcset')).toEqual('some/ 2x');
+
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('srcset')).toEqual('some/1 2x');
+
+    dealoc(element);
+  }));
 });
 
 
