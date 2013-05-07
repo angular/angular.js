@@ -351,7 +351,7 @@ describe('ngInclude ngAnimate', function() {
       var child = jqLite(element.children()[0]);
       applyCSS(child, 'transition', '1s linear all');
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(child.attr('class')).toContain('custom-enter-setup');
         window.setTimeout.expect(1).process();
 
@@ -384,7 +384,7 @@ describe('ngInclude ngAnimate', function() {
       $rootScope.tpl = '';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(child.attr('class')).toContain('custom-leave-setup');
         window.setTimeout.expect(1).process();
 
@@ -417,7 +417,7 @@ describe('ngInclude ngAnimate', function() {
       $rootScope.tpl = 'enter';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {

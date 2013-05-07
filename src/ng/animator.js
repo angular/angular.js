@@ -241,7 +241,7 @@ var $AnimatorProvider = function() {
               if (!parent) {
                 parent = after ? after.parent() : element.parent();
               }
-              if ((!$sniffer.supportsTransitions && !polyfillSetup && !polyfillStart) ||
+              if ((!$sniffer.transitions && !polyfillSetup && !polyfillStart) ||
                   (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
                 beforeFn(element, parent, after);
                 afterFn(element, parent, after);

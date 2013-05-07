@@ -261,7 +261,7 @@ describe('ngSwitch ngAnimate', function() {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.className).toContain('cool-enter-setup');
         window.setTimeout.expect(1).process();
 
@@ -292,7 +292,7 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1000).process();
       } else {
@@ -302,11 +302,11 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'three';
       $scope.$digest();
 
-      expect(element.children().length).toBe($sniffer.supportsTransitions ? 2 : 1);
+      expect(element.children().length).toBe($sniffer.transitions ? 2 : 1);
       var first = element.children()[0];
 
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.className).toContain('cool-leave-setup');
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1).process();
@@ -315,7 +315,7 @@ describe('ngSwitch ngAnimate', function() {
       }
 
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.className).toContain('cool-leave-start');
         window.setTimeout.expect(1000).process();
         window.setTimeout.expect(1000).process();
@@ -339,7 +339,7 @@ describe('ngSwitch ngAnimate', function() {
       $rootScope.val = 'one';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {
