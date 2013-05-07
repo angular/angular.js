@@ -480,7 +480,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
+          toEqual('[NgErr50] Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
 
       // recover
       scope.items = [a];
@@ -500,7 +500,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
+          toEqual('[NgErr50] Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
 
       // recover
       scope.items = [a];

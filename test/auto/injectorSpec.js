@@ -583,7 +583,7 @@ describe('injector', function() {
       it('should decorate the missing service error with module array function', function() {
         function myModule(xyzzy){}
         expect(function() {
-          createInjector([['$injector', myModule]]);
+          createInjector([['xyzzy', myModule]]);
         }).toThrow('[NgErr1] Unknown provider: xyzzy from ' + myModule);
       });
 

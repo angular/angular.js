@@ -95,7 +95,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     matchUrl(url, parsed);
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
-      throw NgError(21, 'Invalid url "{0}", missing path prefix "{1}."', url, appBaseNoFile);
+      throw NgError(21, 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
     }
     matchAppUrl(pathUrl, parsed);
     extend(this, parsed);

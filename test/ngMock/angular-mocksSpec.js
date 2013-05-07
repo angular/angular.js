@@ -340,7 +340,7 @@ describe('ngMock', function() {
     it('should throw an exception when not flushed', inject(function($timeout){
       $timeout(noop);
 
-      var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
+      var expectedError = '[NgErr51] Deferred tasks to flush (1): {id: 0, time: 0}';
       expect(function() {$timeout.verifyNoPendingTasks();}).toThrow(expectedError);
     }));
 

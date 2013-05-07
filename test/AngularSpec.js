@@ -523,7 +523,7 @@ describe('angular', function() {
 
       expect(function() {
         angularInit(appElement, bootstrap);
-      }).toThrow('No module: doesntexist');
+      }).toThrow('[NgErr47] No module: doesntexist');
     });
   });
 
@@ -667,7 +667,7 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
-      }).toThrow('No module: doesntexist');
+      }).toThrow('[NgErr47] No module: doesntexist');
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
@@ -726,7 +726,7 @@ describe('angular', function() {
 
         expect(function() {
           element.injector().get('foo');
-        }).toThrow('Unknown provider: fooProvider <- foo');
+        }).toThrow('[NgErr1] Unknown provider: fooProvider <- foo');
 
         expect(element.injector().get('$http')).toBeDefined();
       });
