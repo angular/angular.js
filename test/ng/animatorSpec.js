@@ -225,38 +225,38 @@ describe("$animator", function() {
 
       //enter
       animator.enter(child, element);
-      expect(child.attr('class')).toContain('custom-enter-setup');
+      expect(child.attr('class')).toContain('custom-enter');
       window.setTimeout.expect(1).process();
-      expect(child.attr('class')).toContain('custom-enter-start');
+      expect(child.attr('class')).toContain('custom-enter-active');
       window.setTimeout.expect(0).process();
 
       //leave
       element.append(after);
       animator.move(child, element, after);
-      expect(child.attr('class')).toContain('custom-move-setup');
+      expect(child.attr('class')).toContain('custom-move');
       window.setTimeout.expect(1).process();
-      expect(child.attr('class')).toContain('custom-move-start');
+      expect(child.attr('class')).toContain('custom-move-active');
       window.setTimeout.expect(0).process();
 
       //hide
       animator.hide(child);
-      expect(child.attr('class')).toContain('custom-hide-setup');
+      expect(child.attr('class')).toContain('custom-hide');
       window.setTimeout.expect(1).process();
-      expect(child.attr('class')).toContain('custom-hide-start');
+      expect(child.attr('class')).toContain('custom-hide-active');
       window.setTimeout.expect(0).process();
 
       //show
       animator.show(child);
-      expect(child.attr('class')).toContain('custom-show-setup');
+      expect(child.attr('class')).toContain('custom-show');
       window.setTimeout.expect(1).process();
-      expect(child.attr('class')).toContain('custom-show-start');
+      expect(child.attr('class')).toContain('custom-show-active');
       window.setTimeout.expect(0).process();
 
       //leave
       animator.leave(child);
-      expect(child.attr('class')).toContain('custom-leave-setup');
+      expect(child.attr('class')).toContain('custom-leave');
       window.setTimeout.expect(1).process();
-      expect(child.attr('class')).toContain('custom-leave-start');
+      expect(child.attr('class')).toContain('custom-leave-active');
       window.setTimeout.expect(0).process();
     }));
 
