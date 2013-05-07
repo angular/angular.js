@@ -15,6 +15,7 @@ describe('$interpolate', function() {
 
   it('should suppress falsy objects', inject(function($interpolate) {
     expect($interpolate('{{undefined}}')()).toEqual('');
+    expect($interpolate('{{undefined+undefined}}')()).toEqual('');
     expect($interpolate('{{null}}')()).toEqual('');
     expect($interpolate('{{a.b}}')()).toEqual('');
   }));
@@ -25,11 +26,46 @@ describe('$interpolate', function() {
     expect($interpolate('{{ false }}')()).toEqual('false');
   }));
 
+  it('should rethrow exceptions', inject(function($interpolate, $rootScope) {
+    $rootScope.err = function () {
+      throw new Error('oops');
+    };
+    expect(function () {
+      $interpolate('{{err()}}')($rootScope);
+    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+  }));
+
+  it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
+    $rootScope.err = function () {
+      throw new Error('oops');
+    };
+    var dom = jqLite('<div>{{1 + 1}}</div><div>{{err()}}</div><div>{{1 + 2}}</div>');
+    $compile(dom)($rootScope);
+    expect(function () {
+      $rootScope.$apply();
+    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+    expect(dom[0].innerHTML).toEqual('2');
+    expect(dom[1].innerHTML).toEqual('{{err()}}');
+    expect(dom[2].innerHTML).toEqual('{{1 + 2}}');
+  }));
+
 
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
     $rootScope.name = 'Misko';
     expect($interpolate('Hello {{name}}!')($rootScope)).toEqual('Hello Misko!');
   }));
+
+
+  it('should ignore undefined model', inject(function($interpolate) {
+    expect($interpolate("Hello {{'World' + foo}}")()).toEqual('Hello World');
+  }));
+
+
+  it('should ignore undefined return value', inject(function($interpolate, $rootScope) {
+    $rootScope.foo = function() {return undefined};
+    expect($interpolate("Hello {{'World' + foo()}}")($rootScope)).toEqual('Hello World');
+  }));
+
 
   describe('provider', function() {
     beforeEach(module(function($interpolateProvider) {
@@ -43,6 +79,7 @@ describe('$interpolate', function() {
       expect($interpolate('--1--')()).toEqual('1');
     }));
   });
+
 
   describe('parseBindings', function() {
     it('should Parse Text With No Bindings', inject(function($interpolate) {
@@ -108,6 +145,58 @@ describe('$interpolate', function() {
       expect(parts[0]).toEqual('"X\nY');
       expect(parts[1].exp).toEqual('A\n+B');
       expect(parts[2]).toEqual('C\nD"');
+    }));
+  });
+
+
+  describe('startSymbol', function() {
+
+    beforeEach(module(function($interpolateProvider) {
+      expect($interpolateProvider.startSymbol()).toBe('{{');
+      $interpolateProvider.startSymbol('((');
+    }));
+
+
+    it('should expose the startSymbol in config phase', module(function($interpolateProvider) {
+      expect($interpolateProvider.startSymbol()).toBe('((');
+    }));
+
+
+    it('should expose the startSymbol in run phase', inject(function($interpolate) {
+      expect($interpolate.startSymbol()).toBe('((');
+    }));
+
+
+    it('should not get confused by matching start and end symbols', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('--');
+        $interpolateProvider.endSymbol('--');
+      });
+
+      inject(function($interpolate) {
+        expect($interpolate('---').parts).toEqual(['---']);
+        expect($interpolate('----')()).toEqual('');
+        expect($interpolate('--1--')()).toEqual('1');
+      });
+    });
+  });
+
+
+  describe('endSymbol', function() {
+
+    beforeEach(module(function($interpolateProvider) {
+      expect($interpolateProvider.endSymbol()).toBe('}}');
+      $interpolateProvider.endSymbol('))');
+    }));
+
+
+    it('should expose the endSymbol in config phase', module(function($interpolateProvider) {
+      expect($interpolateProvider.endSymbol()).toBe('))');
+    }));
+
+
+    it('should expose the endSymbol in run phase', inject(function($interpolate) {
+      expect($interpolate.endSymbol()).toBe('))');
     }));
   });
 });

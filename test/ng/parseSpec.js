@@ -91,8 +91,8 @@ describe('parser', function() {
       expect(tokens[1].text).toEqual('b');
     });
 
-    it('should tokenize relation', function() {
-      var tokens = lex("! == != < > <= >=");
+    it('should tokenize relation and equality', function() {
+      var tokens = lex("! == != < > <= >= === !==");
       expect(tokens[0].text).toEqual('!');
       expect(tokens[1].text).toEqual('==');
       expect(tokens[2].text).toEqual('!=');
@@ -100,6 +100,8 @@ describe('parser', function() {
       expect(tokens[4].text).toEqual('>');
       expect(tokens[5].text).toEqual('<=');
       expect(tokens[6].text).toEqual('>=');
+      expect(tokens[7].text).toEqual('===');
+      expect(tokens[8].text).toEqual('!==');
     });
 
     it('should tokenize statements', function() {
@@ -197,12 +199,20 @@ describe('parser', function() {
         expect(scope.$eval("false")).toBeFalsy();
         expect(scope.$eval("!true")).toBeFalsy();
         expect(scope.$eval("1==1")).toBeTruthy();
+        expect(scope.$eval("1==true")).toBeTruthy();
+        expect(scope.$eval("1===1")).toBeTruthy();
+        expect(scope.$eval("1==='1'")).toBeFalsy();
+        expect(scope.$eval("1===true")).toBeFalsy();
+        expect(scope.$eval("'true'===true")).toBeFalsy();
+        expect(scope.$eval("1!==2")).toBeTruthy();
+        expect(scope.$eval("1!=='1'")).toBeTruthy();
         expect(scope.$eval("1!=2")).toBeTruthy();
         expect(scope.$eval("1<2")).toBeTruthy();
         expect(scope.$eval("1<=1")).toBeTruthy();
         expect(scope.$eval("1>2")).toEqual(1>2);
         expect(scope.$eval("2>=1")).toEqual(2>=1);
-        expect(scope.$eval("true==2<3")).toEqual(true === 2<3);
+        expect(scope.$eval("true==2<3")).toEqual(true == 2<3);
+        expect(scope.$eval("true===2<3")).toEqual(true === 2<3);
       });
 
       it('should parse logical', function() {
@@ -473,6 +483,112 @@ describe('parser', function() {
       });
 
 
+      it('should call the function from the received instance and not from a new one', function() {
+        var n = 0;
+        scope.fn = function() {
+          var c = n++;
+          return { c: c, anotherFn: function() { return this.c == c; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe(true);
+      });
+
+
+      it('should call the function once when it is part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return { anotherFn: function() { return "lucas"; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on assignments', function() {
+        var count = 0;
+        var element = {};
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name = "lucas"')).toBe('lucas');
+        expect(element.name).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookups', function() {
+        var count = 0;
+        var element = [];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0] = "lucas"')).toBe('lucas');
+        expect(element[0]).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = [{anotherFn: function() { return 'lucas';} }];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0].anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = {name: {anotherFn: function() { return 'lucas';} } };
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name.anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of a sub-expression', function() {
+        var count = 0;
+        scope.element = [{}];
+        scope.fn = function() {
+          count++;
+          return 0;
+        };
+        expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
+        expect(scope.element[0].name).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
       describe('promises', function() {
         var deferred, promise, q;
 
@@ -659,6 +775,74 @@ describe('parser', function() {
           expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
           expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
           expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+        }));
+      });
+
+      describe('literal', function() {
+        it('should mark scalar value expressions as literal', inject(function($parse) {
+          expect($parse('0').literal).toBe(true);
+          expect($parse('"hello"').literal).toBe(true);
+          expect($parse('true').literal).toBe(true);
+          expect($parse('false').literal).toBe(true);
+          expect($parse('null').literal).toBe(true);
+          expect($parse('undefined').literal).toBe(true);
+        }));
+
+        it('should mark array expressions as literal', inject(function($parse) {
+          expect($parse('[]').literal).toBe(true);
+          expect($parse('[1, 2, 3]').literal).toBe(true);
+          expect($parse('[1, identifier]').literal).toBe(true);
+        }));
+
+        it('should mark object expressions as literal', inject(function($parse) {
+          expect($parse('{}').literal).toBe(true);
+          expect($parse('{x: 1}').literal).toBe(true);
+          expect($parse('{foo: bar}').literal).toBe(true);
+        }));
+
+        it('should not mark function calls or operator expressions as literal', inject(function($parse) {
+          expect($parse('1 + 1').literal).toBe(false);
+          expect($parse('call()').literal).toBe(false);
+          expect($parse('[].length').literal).toBe(false);
+        }));
+      });
+
+      describe('constant', function() {
+        it('should mark scalar value expressions as constant', inject(function($parse) {
+          expect($parse('12.3').constant).toBe(true);
+          expect($parse('"string"').constant).toBe(true);
+          expect($parse('true').constant).toBe(true);
+          expect($parse('false').constant).toBe(true);
+          expect($parse('null').constant).toBe(true);
+          expect($parse('undefined').constant).toBe(true);
+        }));
+
+        it('should mark arrays as constant if they only contain constant elements', inject(function($parse) {
+          expect($parse('[]').constant).toBe(true);
+          expect($parse('[1, 2, 3]').constant).toBe(true);
+          expect($parse('["string", null]').constant).toBe(true);
+          expect($parse('[[]]').constant).toBe(true);
+          expect($parse('[1, [2, 3], {4: 5}]').constant).toBe(true);
+        }));
+
+        it('should not mark arrays as constant if they contain any non-constant elements', inject(function($parse) {
+          expect($parse('[foo]').constant).toBe(false);
+          expect($parse('[x + 1]').constant).toBe(false);
+          expect($parse('[bar[0]]').constant).toBe(false);
+        }));
+
+        it('should mark complex expressions involving constant values as constant', inject(function($parse) {
+          expect($parse('!true').constant).toBe(true);
+          expect($parse('1 - 1').constant).toBe(true);
+          expect($parse('"foo" + "bar"').constant).toBe(true);
+          expect($parse('5 != null').constant).toBe(true);
+          expect($parse('{standard: 4/3, wide: 16/9}').constant).toBe(true);
+        }));
+
+        it('should not mark any expression involving variables or function calls as constant', inject(function($parse) {
+          expect($parse('true.toString()').constant).toBe(false);
+          expect($parse('foo(1, 2, 3)').constant).toBe(false);
+          expect($parse('"name" + id').constant).toBe(false);
         }));
       });
     });

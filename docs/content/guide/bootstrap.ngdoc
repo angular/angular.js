@@ -24,8 +24,8 @@ initialization.
 </html>
 </pre>
 
-  * Place the `script` tag at the buttom of the page. Placing script tags at the end of the page
-    impreves app load time becouse the HTML loading is not blocked by loading of the `angular.js`
+  * Place the `script` tag at the bottom of the page. Placing script tags at the end of the page
+    improves app load time because the HTML loading is not blocked by loading of the `angular.js`
     script. You can get the latest bits from {@link http://code.angularjs.org}. Please don't link
     your production code to this URL, as it will expose a security hole on your site. For
     experimental development linking to our site is fine.
@@ -34,12 +34,16 @@ initialization.
     * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
       production.
   * Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
-    anugular to auto-bootstrap your application.
+    angular to auto-bootstrap your application.
 
         <html ng-app>
 
-  * If you chose to use the old style directive syntax `ng:` then include xml-namespace in `html`
-    to make IE happy. (This is here for historical resons, and we no longer recomend use of
+  * If IE7 support is required add `id="ng-app"`
+
+        <html ng-app id="ng-app">
+
+  * If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
+    to make IE happy. (This is here for historical reasons, and we no longer recommend use of
     `ng:`.)
 
         <html xmlns:ng="http://angularjs.org">
@@ -48,11 +52,10 @@ initialization.
 
 # Automatic Initialization
 
-Angular initializes automatically upon `DOMContentLoaded` event, at which point angular looks for
-the {@link api/ng.directive:ngApp `ng-app`} directive which
-designates your application root. If {@link
-api/ng.directive:ngApp `ng-app`} directive is found then Angular
-will:
+Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
+evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
+for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.
+If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular will:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link api/AUTO.$injector injector}
@@ -78,7 +81,7 @@ will:
 
 If you need to have more control over the initialization process, you can use a manual
 bootstrapping method instead. Examples of when you'd need to do this include using script loaders
-or the need to perform an operation before the Angular compiles a page.
+or the need to perform an operation before Angular compiles a page.
 
 
 Here is an example of manually initializing Angular. The example is equivalent to using the {@link
@@ -99,7 +102,7 @@ api/ng.directive:ngApp ng-app} directive.
 </html>
 </pre>
 
-This sequence that your code should follow:
+This is the sequence that your code should follow:
 
   1. After the page and all of the code is loaded, find the root of the HTML template, which is
   typically the root of the document.

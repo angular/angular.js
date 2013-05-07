@@ -55,12 +55,15 @@ describe('ngdoc', function() {
             '@name a\n' +
             '@param {*} a short\n' +
             '@param {Type} b med\n' +
-            '@param {Class=} [c=2] long\nline');
+            '@param {Class=} [c=2] long\nline\n' +
+            '@param {function(number, string=)} d fn with optional arguments');
         doc.parse();
         expect(doc.param).toEqual([
            {name:'a', description:'<p>short</p>', type:'*', optional:false, 'default':undefined},
            {name:'b', description:'<p>med</p>', type:'Type', optional:false, 'default':undefined},
-           {name:'c', description:'<p>long\nline</p>', type:'Class', optional:true, 'default':'2'}
+           {name:'c', description:'<p>long\nline</p>', type:'Class', optional:true, 'default':'2'},
+           {name:'d', description:'<p>fn with optional arguments</p>',
+             type: 'function(number, string=)', optional: false, 'default':undefined}
          ]);
       });
 
@@ -318,9 +321,9 @@ describe('ngdoc', function() {
       });
 
       it('should not parse @property without a type', function() {
-        var doc = new Doc("@property fake");
+        var doc = new Doc("@property fake", 'test.js', '44');
         expect(function() { doc.parse(); }).
-          toThrow(new Error("Not a valid 'property' format: fake"));
+          toThrow(new Error("Not a valid 'property' format: fake (found in: test.js:44)"));
       });
 
       it('should parse @property with type', function() {
@@ -350,13 +353,28 @@ describe('ngdoc', function() {
     describe('@returns', function() {
       it('should not parse @returns without type', function() {
         var doc = new Doc("@returns lala");
-        expect(doc.parse).toThrow();
+        expect(function() { doc.parse(); }).
+            toThrow();
       });
+
+
+      it('should not parse @returns with invalid type', function() {
+        var doc = new Doc("@returns {xx}x} lala", 'test.js', 34);
+        expect(function() { doc.parse(); }).
+            toThrow(new Error("Not a valid 'returns' format: {xx}x} lala (found in: test.js:34)"));
+      });
+
 
       it('should parse @returns with type and description', function() {
         var doc = new Doc("@name a\n@returns {string} descrip tion");
         doc.parse();
         expect(doc.returns).toEqual({type: 'string', description: '<p>descrip tion</p>'});
+      });
+
+      it('should parse @returns with complex type and description', function() {
+        var doc = new Doc("@name a\n@returns {function(string, number=)} description");
+        doc.parse();
+        expect(doc.returns).toEqual({type: 'function(string, number=)', description: '<p>description</p>'});
       });
 
       it('should transform description of @returns with markdown', function() {
@@ -455,6 +473,22 @@ describe('ngdoc', function() {
             '</div>\n');
         expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n' +
             '<div><p>I am self.</p></div>');
+      });
+    });
+
+    describe('@animations', function() {
+      it('should render @this', function() {
+        var doc = new Doc('@name a\n@animations\nenter - Add text\nleave - Remove text\n');
+        doc.ngdoc = 'filter';
+        doc.parse();
+        expect(doc.html()).toContain(
+            '<h3 id="Animations">Animations</h3>\n' +
+            '<div class="animations">' +
+              '<ul>' +
+                '<li>enter - Add text</li>' +
+                '<li>leave - Remove text</li>' +
+              '</ul>' +
+            '</div>');
       });
     });
   });

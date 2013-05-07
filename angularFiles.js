@@ -9,6 +9,8 @@ angularFiles = {
     'src/auto/injector.js',
 
     'src/ng/anchorScroll.js',
+    'src/ng/animation.js',
+    'src/ng/animator.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
@@ -47,6 +49,7 @@ angularFiles = {
     'src/ng/directive/ngController.js',
     'src/ng/directive/ngCsp.js',
     'src/ng/directive/ngEventDirs.js',
+    'src/ng/directive/ngIf.js',
     'src/ng/directive/ngInclude.js',
     'src/ng/directive/ngInit.js',
     'src/ng/directive/ngNonBindable.js',
@@ -69,17 +72,20 @@ angularFiles = {
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
+    'src/ngMobile/mobile.js',
+    'src/ngMobile/directive/ngClick.js',
+    'src/ngMobile/directive/ngSwipe.js',
 
     'src/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
     'src/ngScenario/Scenario.js',
+    'src/ngScenario/browserTrigger.js',
     'src/ngScenario/Application.js',
     'src/ngScenario/Describe.js',
     'src/ngScenario/Future.js',
     'src/ngScenario/ObjectModel.js',
-    'src/ngScenario/Describe.js',
     'src/ngScenario/Runner.js',
     'src/ngScenario/SpecRunner.js',
     'src/ngScenario/dsl.js',
@@ -107,7 +113,8 @@ angularFiles = {
     'test/ngSanitize/*.js',
     'test/ngSanitize/directive/*.js',
     'test/ngSanitize/filter/*.js',
-    'test/ngMock/*.js'
+    'test/ngMock/*.js',
+    'test/ngMobile/directive/*.js'
   ],
 
   'jstd': [
@@ -145,16 +152,22 @@ angularFiles = {
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
+    'src/ngMobile/mobile.js',
+    'src/ngMobile/directive/ngClick.js',
+    'src/ngMobile/directive/ngSwipe.js',
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
+    'src/ngScenario/browserTrigger.js',
     'test/matchers.js',
+    'test/testabilityPatch.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/*.js',
     'test/ngSanitize/directive/*.js',
-    'test/ngSanitize/filter/*.js'
+    'test/ngSanitize/filter/*.js',
+    'test/ngMobile/directive/*.js'
   ],
 
   'jstdPerf': [
@@ -196,36 +209,30 @@ angularFiles = {
   ]
 };
 
-// Execute only in slim-jim
-if (typeof JASMINE_ADAPTER !== 'undefined') {
-  // Testacular config
-  var mergedFiles = [];
-  angularFiles.jstd.forEach(function(file) {
-    // replace @ref
-    var match = file.match(/^\@(.*)/);
-    if (match) {
-      var deps = angularFiles[match[1]];
-      if (!deps) {
-        console.log('No dependency:' + file)
+if (exports) {
+  exports.files = angularFiles
+  exports.mergeFiles = function mergeFiles() {
+    var files = [];
+
+    [].splice.call(arguments, 0).forEach(function(file) {
+      if (file.match(/karma/)) {
+        files.push(file);
+      } else {
+        angularFiles[file].forEach(function(f) {
+          // replace @ref
+          var match = f.match(/^\@(.*)/);
+          if (match) {
+            var deps = angularFiles[match[1]];
+            files = files.concat(deps);
+          } else {
+            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
+              files.push(f);
+            }
+          }
+        });
       }
-      mergedFiles = mergedFiles.concat(deps);
-    } else {
-      mergedFiles.push(file);
-    }
-  });
+    });
 
-  files = [JASMINE, JASMINE_ADAPTER];
-
-  mergedFiles.forEach(function(file){
-    if (/jstd|jasmine/.test(file)) return;
-    files.push(file);
-  });
-
-
-  exclude = angularFiles.jstdExclude;
-
-  autoWatch = true;
-  autoWatchInterval = 1;
-  logLevel = LOG_INFO;
-  logColors = true;
+    return files;
+  }
 }

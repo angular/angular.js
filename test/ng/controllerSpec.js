@@ -88,4 +88,41 @@ describe('$controller', function() {
 
     expect(ctrl.$scope).toBe(scope);
   });
+
+
+  it('should instantiate controller defined on window', inject(function($window) {
+    var scope = {};
+    var Foo = function() {};
+
+    $window.a = {Foo: Foo};
+
+    var foo = $controller('a.Foo', {$scope: scope});
+    expect(foo).toBeDefined();
+    expect(foo instanceof Foo).toBe(true);
+  }));
+
+
+  describe('ctrl as syntax', function() {
+
+    it('should publish controller instance into scope', function() {
+      var scope = {};
+
+      $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
+
+
+    it('should allow controllers with dots', function() {
+      var scope = {};
+
+      $controllerProvider.register('a.b.FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('a.b.FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
+  });
 });

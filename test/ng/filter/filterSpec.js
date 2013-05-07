@@ -66,4 +66,57 @@ describe('Filter: filter', function() {
     expect(filter(items, '!isk').length).toBe(1);
     expect(filter(items, '!isk')[0]).toEqual(items[1]);
   });
+
+  describe('should support comparator', function() {
+
+    it('as equality when true', function() {
+      var items = ['misko', 'adam', 'adamson'];
+      var expr = 'adam';
+      expect(filter(items, expr, true)).toEqual([items[1]]);
+      expect(filter(items, expr, false)).toEqual([items[1], items[2]]);
+
+      var items = [
+        {key: 'value1', nonkey: 1},
+        {key: 'value2', nonkey: 2},
+        {key: 'value12', nonkey: 3},
+        {key: 'value1', nonkey:4},
+        {key: 'Value1', nonkey:5}
+      ];
+      var expr = {key: 'value1'};
+      expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
+
+      var items = [
+        {key: 1, nonkey: 1},
+        {key: 2, nonkey: 2},
+        {key: 12, nonkey: 3},
+        {key: 1, nonkey:4}
+      ];
+      var expr = { key: 1 };
+      expect(filter(items, expr, true)).toEqual([items[0], items[3]]);
+
+      var expr = 12;
+      expect(filter(items, expr, true)).toEqual([items[2]]);
+    });
+
+    it('and use the function given to compare values', function() {
+      var items = [
+        {key: 1, nonkey: 1},
+        {key: 2, nonkey: 2},
+        {key: 12, nonkey: 3},
+        {key: 1, nonkey:14}
+      ];
+      var expr = {key: 10};
+      var comparator = function (obj,value) {
+        return obj > value;
+      }
+      expect(filter(items, expr, comparator)).toEqual([items[2]]);
+
+      expr = 10;
+      expect(filter(items, expr, comparator)).toEqual([items[2], items[3]]);
+
+    });
+
+
+  });
+
 });

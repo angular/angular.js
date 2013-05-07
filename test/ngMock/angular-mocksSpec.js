@@ -109,6 +109,13 @@ describe('ngMock', function() {
     });
 
 
+    it('should fake getMilliseconds method', function() {
+      expect(new angular.mock.TzDate(0, '2010-09-03T23:05:08.003Z').getMilliseconds()).toBe(3);
+      expect(new angular.mock.TzDate(0, '2010-09-03T23:05:08.023Z').getMilliseconds()).toBe(23);
+      expect(new angular.mock.TzDate(0, '2010-09-03T23:05:08.123Z').getMilliseconds()).toBe(123);
+    });
+
+
     it('should create a date representing new year in Bratislava', function() {
       var newYearInBratislava = new angular.mock.TzDate(-1, '2009-12-31T23:00:00.000Z');
       expect(newYearInBratislava.getTimezoneOffset()).toBe(-60);
@@ -117,6 +124,7 @@ describe('ngMock', function() {
       expect(newYearInBratislava.getDate()).toBe(1);
       expect(newYearInBratislava.getHours()).toBe(0);
       expect(newYearInBratislava.getMinutes()).toBe(0);
+      expect(newYearInBratislava.getSeconds()).toBe(0);
     });
 
 
@@ -326,6 +334,22 @@ describe('ngMock', function() {
 
       $timeout.flush();
       expect(logger).toEqual(['t1', 't3', 't2']);
+    }));
+
+
+    it('should throw an exception when not flushed', inject(function($timeout){
+      $timeout(noop);
+
+      var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow(expectedError);
+    }));
+
+
+    it('should do nothing when all tasks have been flushed', inject(function($timeout) {
+      $timeout(noop);
+
+      $timeout.flush();
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
     }));
   });
 

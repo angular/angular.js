@@ -1,6 +1,8 @@
-
 describe('jqLite', function() {
   var scope, a, b, c;
+
+
+  beforeEach(module(provideLog));
 
   beforeEach(function() {
     a = jqLite('<div>A</div>')[0];
@@ -241,13 +243,25 @@ describe('jqLite', function() {
       expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
-    it('should call $destroy function if element removed', function() {
+    it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
       element.bind('$destroy', function() {log+= 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
     });
+
+
+    it('should emit $destroy event if an element is removed via html()', inject(function(log) {
+      var element = jqLite('<div><span>x</span></div>');
+      element.find('span').bind('$destroy', log.fn('destroyed'));
+
+      element.html('');
+
+      expect(element.html()).toBe('');
+      expect(log).toEqual('destroyed');
+    }));
+
 
     it('should retrieve all data if called without params', function() {
       var element = jqLite(a);
@@ -761,13 +775,9 @@ describe('jqLite', function() {
 
         parent.bind('mouseenter', function() { log += 'parentEnter;'; });
         parent.bind('mouseleave', function() { log += 'parentLeave;'; });
-        parent.mouseover = function() { browserTrigger(parent, 'mouseover'); };
-        parent.mouseout = function() { browserTrigger(parent, 'mouseout'); };
 
         child.bind('mouseenter', function() { log += 'childEnter;'; });
         child.bind('mouseleave', function() { log += 'childLeave;'; });
-        child.mouseover = function() { browserTrigger(child, 'mouseover'); };
-        child.mouseout = function() { browserTrigger(child, 'mouseout'); };
       });
 
       afterEach(function() {
@@ -776,20 +786,49 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        parent.mouseover();
+        var browserMoveTrigger = function(from, to){
+          var fireEvent = function(type, element, relatedTarget){
+            var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            if (msie < 9){
+              var evnt = document.createEventObject();
+              evnt.srcElement = element;
+              evnt.relatedTarget = relatedTarget;		
+              element.fireEvent('on' + type, evnt);
+              return;
+            };
+            var evnt = document.createEvent('MouseEvents'),
+            originalPreventDefault = evnt.preventDefault,
+            appWindow = window,
+            fakeProcessDefault = true,
+            finalProcessDefault;
+
+            evnt.preventDefault = function() {
+              fakeProcessDefault = false;
+              return originalPreventDefault.apply(evnt, arguments);
+            };
+
+            var x = 0, y = 0;
+            evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
+            false, false, 0, relatedTarget);
+
+            element.dispatchEvent(evnt);
+          };
+          fireEvent('mouseout', from[0], to[0]);
+          fireEvent('mouseover', to[0], from[0]);
+        };
+
+        browserMoveTrigger(root, parent);
         expect(log).toEqual('parentEnter;');
 
-        child.mouseover();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseover();
+        browserMoveTrigger(parent, child);
         expect(log).toEqual('parentEnter;childEnter;');
 
-        child.mouseout();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseout();
+        browserMoveTrigger(child, parent);
         expect(log).toEqual('parentEnter;childEnter;childLeave;');
-        parent.mouseout();
+
+        browserMoveTrigger(parent, root);
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
+
       });
     });
   });
@@ -910,8 +949,8 @@ describe('jqLite', function() {
 
 
   describe('children', function() {
-    it('should select non-text children', function() {
-      var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
+    it('should only select element nodes', function() {
+      var root = jqLite('<div><!-- some comment -->before-<div></div>after-<span></span>');
       var div = root.find('div');
       var span = root.find('span');
       expect(root.children()).toJqEqual([div, span]);
@@ -920,11 +959,12 @@ describe('jqLite', function() {
 
 
   describe('contents', function() {
-    it('should select all children nodes', function() {
-      var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
+    it('should select all types child nodes', function() {
+      var root = jqLite('<div><!-- some comment -->before-<div></div>after-<span></span></div>');
       var contents = root.contents();
-      expect(contents.length).toEqual(4);
-      expect(jqLite(contents[0]).text()).toEqual('before-');
+      expect(contents.length).toEqual(5);
+      expect(contents[0].data).toEqual(' some comment ');
+      expect(contents[1].data).toEqual('before-');
     });
   });
 
@@ -940,8 +980,13 @@ describe('jqLite', function() {
       expect(root.append('text')).toEqual(root);
       expect(root.html()).toEqual('text');
     });
-    it('should not append anything if parent node is not of type element', function() {
+    it('should append to document fragment', function() {
       var root = jqLite(document.createDocumentFragment());
+      expect(root.append('<p>foo</p>')).toBe(root);
+      expect(root.children().length).toBe(1);
+    });
+    it('should not append anything if parent node is not of type element or docfrag', function() {
+      var root = jqLite('<p>some text node</p>').contents();
       expect(root.append('<p>foo</p>')).toBe(root);
       expect(root.children().length).toBe(0);
     });
@@ -1053,6 +1098,14 @@ describe('jqLite', function() {
       var i = element.find('i');
       expect(b.next()).toJqEqual([i]);
     });
+
+
+    it('should ignore non-element siblings', function() {
+      var element = jqLite('<div><b>b</b>TextNode<!-- comment node --><i>i</i></div>');
+      var b = element.find('b');
+      var i = element.find('i');
+      expect(b.next()).toJqEqual([i]);
+    });
   });
 
 
@@ -1072,6 +1125,33 @@ describe('jqLite', function() {
       expect(element.find('span').eq(0).html()).toBe('aa');
       expect(element.find('span').eq(-1).html()).toBe('bb');
       expect(element.find('span').eq(20).length).toBe(0);
+    });
+  });
+
+
+  describe('triggerHandler', function() {
+    it('should trigger all registered handlers for an event', function() {
+      var element = jqLite('<span>poke</span>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          clickSpy1 = jasmine.createSpy('clickSpy1'),
+          clickSpy2 = jasmine.createSpy('clickSpy2');
+
+      element.bind('poke', pokeSpy);
+      element.bind('click', clickSpy1);
+      element.bind('click', clickSpy2);
+
+      expect(pokeSpy).not.toHaveBeenCalled();
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).not.toHaveBeenCalled();
+
+      element.triggerHandler('poke');
+      expect(pokeSpy).toHaveBeenCalledOnce();
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).not.toHaveBeenCalled();
+
+      element.triggerHandler('click');
+      expect(clickSpy1).toHaveBeenCalledOnce();
+      expect(clickSpy2).toHaveBeenCalledOnce();
     });
   });
 

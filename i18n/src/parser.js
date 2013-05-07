@@ -45,8 +45,8 @@ function parsePattern(pattern) {
   }
 
   var groups = integer.split(GROUP_SEP);
-  p.gSize = groups[1].length;
-  p.lgSize = (groups[2] || groups[1]).length;
+  p.gSize = groups[1] ? groups[1].length : 0;
+  p.lgSize = (groups[2] || groups[1]) ? (groups[2] || groups[1]).length : 0;
 
   if (negative) {
     var trunkLen = positive.length - p.posPre.length - p.posSuf.length,

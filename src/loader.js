@@ -30,7 +30,7 @@ function setupModuleLoader(window) {
      *
      * # Module
      *
-     * A module is a collocation of services, directives, filters, and configure information. Module
+     * A module is a collocation of services, directives, filters, and configuration information. Module
      * is used to configure the {@link AUTO.$injector $injector}.
      *
      * <pre>
@@ -60,7 +60,7 @@ function setupModuleLoader(window) {
      * @param {!string} name The name of the module to create or retrieve.
      * @param {Array.<string>=} requires If specified then new module is being created. If unspecified then the
      *        the module is being retrieved for further configuration.
-     * @param {Function} configFn Option configuration function for the module. Same as
+     * @param {Function} configFn Optional configuration function for the module. Same as
      *        {@link angular.Module#config Module#config()}.
      * @returns {module} new module with the {@link angular.Module} api.
      */
@@ -165,6 +165,33 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
+           * @name angular.Module#animation
+           * @methodOf angular.Module
+           * @param {string} name animation name
+           * @param {Function} animationFactory Factory function for creating new instance of an animation.
+           * @description
+           *
+           * Defines an animation hook that can be later used with {@link ng.directive:ngAnimate ngAnimate}
+           * alongside {@link ng.directive:ngAnimate#Description common ng directives} as well as custom directives.
+           * <pre>
+           * module.animation('animation-name', function($inject1, $inject2) {
+           *   return {
+           *     //this gets called in preparation to setup an animation
+           *     setup : function(element) { ... },
+           *
+           *     //this gets called once the animation is run
+           *     start : function(element, done, memo) { ... }
+           *   }
+           * })
+           * </pre>
+           *
+           * See {@link ng.$animationProvider#register $animationProvider.register()} and
+           * {@link ng.directive:ngAnimate ngAnimate} for more information.
+           */
+          animation: invokeLater('$animationProvider', 'register'),
+
+          /**
+           * @ngdoc method
            * @name angular.Module#filter
            * @methodOf angular.Module
            * @param {string} name Filter name.
@@ -193,7 +220,7 @@ function setupModuleLoader(window) {
            * @param {Function} directiveFactory Factory function for creating new instance of
            * directives.
            * @description
-           * See {@link ng.$compileProvider.directive $compileProvider.directive()}.
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
           directive: invokeLater('$compileProvider', 'directive'),
 
@@ -215,8 +242,8 @@ function setupModuleLoader(window) {
            * @param {Function} initializationFn Execute this function after injector creation.
            *    Useful for application initialization.
            * @description
-           * Use this method to register work which needs to be performed when the injector with
-           * with the current module is finished loading.
+           * Use this method to register work which should be performed when the injector is done
+           * loading all modules.
            */
           run: function(block) {
             runBlocks.push(block);

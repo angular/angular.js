@@ -34,10 +34,10 @@ describe('changelog.js', function() {
           '13f31602f396bc269076ab4d389cfd8ca94b20ba\n' +
           'feat(ng-list): Allow custom separator\n' +
           'bla bla bla\n\n' +
-          'Breaks first breaking change\nsomething else\n' +
-          'Breaks another breaking change\n');
+          'BREAKING CHANGE: first breaking change\nsomething else\n' +
+          'another line with more info\n');
 
-      expect(msg.breaks).toEqual(['first breaking change', 'another breaking change']);
+      expect(msg.breaking).toEqual(' first breaking change\nsomething else\nanother line with more info\n');
     });
   });
 });

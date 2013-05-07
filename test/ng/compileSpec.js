@@ -116,14 +116,89 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
+    it('should attach scope to the document node when it is compiled explicitly', inject(function($document){
+      $compile($document)($rootScope);
+      expect($document.scope()).toBe($rootScope);
+    }));
+
     it('should wrap root text nodes in spans', inject(function($compile, $rootScope) {
       element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
       var text = element.contents();
       expect(text[0].nodeName).toEqual('#text');
       text = $compile(text)($rootScope);
-      expect(lowercase(text[0].nodeName)).toEqual('span');
+      expect(text[0].nodeName).toEqual('SPAN');
       expect(element.find('span').text()).toEqual('A<a>B</a>C');
     }));
+
+
+    it('should not wrap root whitespace text nodes in spans', function() {
+      element = jqLite(
+        '<div>   <div>A</div>\n  '+ // The spaces and newlines here should not get wrapped
+        '<div>B</div>C\t\n  '+  // The "C", tabs and spaces here will be wrapped
+        '</div>');
+      $compile(element.contents())($rootScope);
+      var spans = element.find('span');
+      expect(spans.length).toEqual(1);
+      expect(spans.text().indexOf('C')).toEqual(0);
+    });
+
+    it('should not leak memory when there are top level empty text nodes', function() {
+      var calcCacheSize = function() {
+        var size = 0;
+        forEach(jqLite.cache, function(item, key) { size++; });
+        return size;
+      };
+
+      // We compile the contents of element (i.e. not element itself)
+      // Then delete these contents and check the cache has been reset to zero
+
+      // First with only elements at the top level
+      element = jqLite('<div><div></div></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with non-empty text nodes at the top level
+      // (in this case the compiler will wrap them in a <span>)
+      element = jqLite('<div>xxx</div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Next with comment nodes at the top level
+      element = jqLite('<div><!-- comment --></div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+
+      // Finally with empty text nodes at the top level
+      element = jqLite('<div>   \n<div></div>   </div>');
+      $compile(element.contents())($rootScope);
+      element.html('');
+      expect(calcCacheSize()).toEqual(0);
+    });
+
+
+    it('should not blow up when elements with no childNodes property are compiled', inject(
+        function($compile, $rootScope) {
+      // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
+      // the plugin's context rather than the usual DOM apis are exposed on this element, so
+      // childNodes might not exist.
+      if (msie < 9) return;
+
+      element = jqLite('<div>{{1+2}}</div>');
+      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+
+      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      expect(element[0].childNodes[1].textContent).toBe('fake node');
+
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+
+      // object's children can't be compiled in this case, so we expect them to be raw
+      expect(element.html()).toBe("3");
+    }));
+
 
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
@@ -285,6 +360,25 @@ describe('$compile', function() {
           expect(log).toEqual('LOG; LOG');
         });
       });
+
+
+      it('should allow modifying the DOM structure in post link fn', function() {
+        module(function() {
+          directive('removeNode', valueFn({
+            link: function($scope, $element) {
+              $element.remove();
+            }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = jqLite('<div><div remove-node></div><div>{{test}}</div></div>');
+          $rootScope.test = 'Hello';
+          $compile(element)($rootScope);
+          $rootScope.$digest();
+          expect(element.children().length).toBe(1);
+          expect(element.text()).toBe('Hello');
+        });
+      })
     });
 
     describe('compiler control', function() {
@@ -369,7 +463,6 @@ describe('$compile', function() {
 
       describe('template', function() {
 
-
         beforeEach(module(function() {
           directive('replace', valueFn({
             restrict: 'CAM',
@@ -394,7 +487,7 @@ describe('$compile', function() {
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
               expect(element).toBe(attr.$$element);
-	    }
+            }
           }));
         }));
 
@@ -447,8 +540,8 @@ describe('$compile', function() {
 
         it('should prevent multiple templates per element', inject(function($compile) {
           try {
-            $compile('<div><span replace class="replace"></span></div>')
-            fail();
+            $compile('<div><span replace class="replace"></span></div>');
+            this.fail(new Error('should have thrown Multiple directives error'));
           } catch(e) {
             expect(e.message).toMatch(/Multiple directives .* asking for template/);
           }
@@ -554,6 +647,32 @@ describe('$compile', function() {
       });
 
 
+      describe('template as function', function() {
+
+        beforeEach(module(function() {
+          directive('myDirective', valueFn({
+            replace: true,
+            template: function($element, $attrs) {
+              expect($element.text()).toBe('original content');
+              expect($attrs.myDirective).toBe('some value');
+              return '<div id="templateContent">template content</div>';
+            },
+            compile: function($element, $attrs) {
+              expect($element.text()).toBe('template content');
+              expect($attrs.id).toBe('templateContent');
+            }
+          }));
+        }));
+
+
+        it('should evaluate `template` when defined as fn and use returned string as template', inject(
+            function($compile, $rootScope) {
+          element = $compile('<div my-directive="some value">original content<div>')($rootScope);
+          expect(element.text()).toEqual('template content');
+        }));
+      });
+
+
       describe('templateUrl', function() {
 
         beforeEach(module(
@@ -609,6 +728,10 @@ describe('$compile', function() {
               }
             }));
 
+            directive('replace', valueFn({
+              replace: true,
+              template: '<span>Hello, {{name}}!</span>'
+            }));
           }
         ));
 
@@ -648,12 +771,16 @@ describe('$compile', function() {
               $rootScope.$digest();
 
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>',
+                  '<div><b class="i-hello"></b><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
 
               $httpBackend.flush();
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello!</span><span class="i-cau" i-cau="">Cau!</span></div>' //ie8
+              );
             }
         ));
 
@@ -680,8 +807,10 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
 
@@ -710,10 +839,37 @@ describe('$compile', function() {
               element = template($rootScope);
               $rootScope.$digest();
 
-              expect(sortedHtml(element)).
-                  toEqual('<div><span class="i-hello">Hello, Elvis!</span></div>');
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><span class="i-hello">Hello, Elvis!</span></div>',
+                  '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
             }
         ));
+
+
+        it('should compile template when replacing element in another template',
+            inject(function($compile, $templateCache, $rootScope) {
+          $templateCache.put('hello.html', '<div replace></div>');
+          $rootScope.name = 'Elvis';
+          element = $compile('<div><b class="hello"></b></div>')($rootScope);
+
+          $rootScope.$digest();
+
+          expect(sortedHtml(element)).
+            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
+        }));
+
+
+        it('should compile template when replacing root element',
+            inject(function($compile, $templateCache, $rootScope) {
+              $rootScope.name = 'Elvis';
+              element = $compile('<div replace></div>')($rootScope);
+
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<span replace="">Hello, Elvis!</span>');
+            }));
 
 
         it('should resolve widgets after cloning in append mode', function() {
@@ -1049,6 +1205,70 @@ describe('$compile', function() {
             expect($exceptionHandler.errors).toEqual([]);
           });
         });
+
+
+        it('should resume delayed compilation without duplicates when in a repeater', function() {
+          // this is a test for a regression
+          // scope creation, isolate watcher setup, controller instantiation, etc should happen
+          // only once even if we are dealing with delayed compilation of a node due to templateUrl
+          // and the template node is in a repeater
+
+          var controllerSpy = jasmine.createSpy('controller');
+
+          module(function($compileProvider) {
+            $compileProvider.directive('delayed', valueFn({
+              controller: controllerSpy,
+              templateUrl: 'delayed.html',
+              scope: {
+                title: '@'
+              }
+            }));
+          });
+
+          inject(function($templateCache, $compile, $rootScope) {
+            $rootScope.coolTitle = 'boom!';
+            $templateCache.put('delayed.html', '<div>{{title}}</div>');
+            element = $compile(
+                '<div><div ng-repeat="i in [1,2]"><div delayed title="{{coolTitle + i}}"></div>|</div></div>'
+            )($rootScope);
+
+            $rootScope.$apply();
+
+            expect(controllerSpy.callCount).toBe(2);
+            expect(element.text()).toBe('boom!1|boom!2|');
+          });
+        });
+      });
+
+
+      describe('template as function', function() {
+
+        beforeEach(module(function() {
+          directive('myDirective', valueFn({
+            replace: true,
+            templateUrl: function($element, $attrs) {
+              expect($element.text()).toBe('original content');
+              expect($attrs.myDirective).toBe('some value');
+              return 'my-directive.html';
+            },
+            compile: function($element, $attrs) {
+              expect($element.text()).toBe('template content');
+              expect($attrs.id).toBe('templateContent');
+            }
+          }));
+        }));
+
+
+        it('should evaluate `templateUrl` when defined as fn and use returned value as url', inject(
+            function($compile, $rootScope, $templateCache) {
+          $templateCache.put('my-directive.html', '<div id="templateContent">template content</span>');
+          element = $compile('<div my-directive="some value">original content<div>')($rootScope);
+          expect(element.text()).toEqual('');
+
+          $rootScope.$digest();
+
+          expect(element.text()).toEqual('template content');
+        }));
       });
 
 
@@ -1283,6 +1503,12 @@ describe('$compile', function() {
           expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
         };
       });
+      directive('replaceSomeAttr', valueFn({
+        compile: function(element, attr) {
+          attr.$set('someAttr', 'bar-{{1+1}}');
+          expect(element).toBe(attr.$$element);
+        }
+      }));
     }));
 
 
@@ -1317,9 +1543,18 @@ describe('$compile', function() {
     }));
 
 
-    it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
+    it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
+      $rootScope.whatever = 'test value';
       $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
-      expect(directiveAttrs.someAttr).toBeUndefined();
+      expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
+    }));
+
+
+    it('should allow directive to replace interpolated attributes before attr interpolation compilation', inject(
+        function($compile, $rootScope) {
+      element = $compile('<div some-attr="foo-{{1+1}}" replace-some-attr></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('some-attr')).toEqual('bar-2');
     }));
 
 
@@ -1364,15 +1599,56 @@ describe('$compile', function() {
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet !</option>' +
+                  '<option value="">Greet !</option>' +
                 '</select>');
       $rootScope.name = 'Misko';
       $rootScope.$digest();
       expect(sortedHtml(element).replace(' selected="true"', '')).
         toEqual('<select ng:model="x">' +
-                  '<option>Greet Misko!</option>' +
+                  '<option value="">Greet Misko!</option>' +
                 '</select>');
     }));
+
+
+    it('should support custom start/end interpolation symbols in template and directive template',
+        function() {
+      module(function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##').endSymbol(']]');
+        $compileProvider.directive('myDirective', function() {
+          return {
+            template: '<span>{{hello}}|{{hello|uppercase}}</span>'
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div>##hello|uppercase]]|<div my-directive></div></div>')($rootScope);
+        $rootScope.hello = 'ahoj';
+        $rootScope.$digest();
+        expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+      });
+    });
+
+
+    it('should support custom start/end interpolation symbols in async directive template',
+        function() {
+      module(function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##').endSymbol(']]');
+        $compileProvider.directive('myDirective', function() {
+          return {
+            templateUrl: 'myDirective.html'
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('myDirective.html', '<span>{{hello}}|{{hello|uppercase}}</span>');
+        element = $compile('<div>##hello|uppercase]]|<div my-directive></div></div>')($rootScope);
+        $rootScope.hello = 'ahoj';
+        $rootScope.$digest();
+        expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+      });
+    });
   });
 
 
@@ -1431,6 +1707,25 @@ describe('$compile', function() {
       inject(function($compile, $rootScope) {
         element = $compile('<div abc="WORKS">FAIL</div>')($rootScope);
         expect(element.text()).toEqual('WORKS');
+      });
+    });
+
+    it('should support $observe inside link function on directive object', function() {
+      module(function() {
+        directive('testLink', valueFn({
+          templateUrl: 'test-link.html',
+          link: function(scope, element, attrs) {
+            attrs.$observe( 'testLink', function ( val ) {
+              scope.testAttr = val;
+            });
+          }
+        }));
+      });
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('test-link.html', '{{testAttr}}' );
+        element = $compile('<div test-link="{{1+2}}"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('3');
       });
     });
   });
@@ -1669,6 +1964,10 @@ describe('$compile', function() {
             attrAlias: '@attr',
             ref: '=',
             refAlias: '= ref',
+            reference: '=',
+            optref: '=?',
+            optrefAlias: '=? optref',
+            optreference: '=?',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -1687,27 +1986,21 @@ describe('$compile', function() {
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.$apply();
 
         expect(componentScope.attr).toEqual('some text');
         expect(componentScope.attrAlias).toEqual('some text');
         expect(componentScope.attrAlias).toEqual(componentScope.attr);
       }));
 
+      it('should set up the interpolation before it reaches the link function', inject(function() {
+        $rootScope.name = 'misko';
+        compile('<div><span my-component attr="hello {{name}}">');
+        expect(componentScope.attr).toEqual('hello misko');
+        expect(componentScope.attrAlias).toEqual('hello misko');
+      }));
 
       it('should update when interpolated attribute updates', inject(function() {
         compile('<div><span my-component attr="hello {{name}}">');
-        expect(componentScope.attr).toEqual(undefined);
-        expect(componentScope.attrAlias).toEqual(undefined);
-
-        $rootScope.name = 'misko';
-        $rootScope.$apply();
-
-        expect(componentScope.attr).toEqual('hello misko');
-        expect(componentScope.attrAlias).toEqual('hello misko');
 
         $rootScope.name = 'igor';
         $rootScope.$apply();
@@ -1790,6 +2083,51 @@ describe('$compile', function() {
         $rootScope.$apply();
         expect(componentScope.ref).toBe('hello misko');
       }));
+
+      // regression
+      it('should stabilize model', inject(function() {
+        compile('<div><span my-component reference="name">');
+
+        var lastRefValueInParent;
+        $rootScope.$watch('name', function(ref) {
+          lastRefValueInParent = ref;
+        });
+
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        componentScope.reference = 'new';
+        $rootScope.$apply();
+
+        expect(lastRefValueInParent).toBe('new');
+      }));
+    });
+
+
+    describe('optional object reference', function() {
+      it('should update local when origin changes', inject(function() {
+        compile('<div><span my-component optref="name">');
+        expect(componentScope.optRef).toBe(undefined);
+        expect(componentScope.optRefAlias).toBe(componentScope.optRef);
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+
+        $rootScope.name = {};
+        $rootScope.$apply();
+        expect(componentScope.optref).toBe($rootScope.name);
+        expect(componentScope.optrefAlias).toBe($rootScope.name);
+      }));
+
+      it('should not throw exception when reference does not exist', inject(function() {
+        compile('<div><span my-component>');
+
+        expect(componentScope.optref).toBe(undefined);
+        expect(componentScope.optrefAlias).toBe(undefined);
+        expect(componentScope.optreference).toBe(undefined);
+      }));
     });
 
 
@@ -1813,6 +2151,21 @@ describe('$compile', function() {
       expect(function() {
         compile('<div><span bad-declaration>');
       }).toThrow('Invalid isolate scope definition for directive badDeclaration: xxx');
+    }));
+
+    it('should expose a $$isolateBindings property onto the scope', inject(function() {
+      compile('<div><span my-component>');
+
+      expect(typeof componentScope.$$isolateBindings).toBe('object');
+
+      expect(componentScope.$$isolateBindings.attr).toBe('@attr');
+      expect(componentScope.$$isolateBindings.attrAlias).toBe('@attr');
+      expect(componentScope.$$isolateBindings.ref).toBe('=ref');
+      expect(componentScope.$$isolateBindings.refAlias).toBe('=ref');
+      expect(componentScope.$$isolateBindings.reference).toBe('=reference');
+      expect(componentScope.$$isolateBindings.expr).toBe('&expr');
+      expect(componentScope.$$isolateBindings.exprAlias).toBe('&expr');
+
     }));
   });
 
@@ -2130,5 +2483,220 @@ describe('$compile', function() {
         expect(nodeName_(comment)).toBe('#comment');
       });
     });
+
+
+    it('should safely create transclude comment node and not break with "-->"',
+        inject(function($rootScope) {
+      // see: https://github.com/angular/angular.js/issues/1740
+      element = $compile('<ul><li ng-repeat="item in [\'-->\', \'x\']">{{item}}|</li></ul>')($rootScope);
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('-->|x|');
+    }));
+
+
+    it('should add a $$transcluded property onto the transcluded scope', function() {
+      module(function() {
+        directive('trans', function() {
+          return {
+            transclude: true,
+            replace: true,
+            scope: true,
+            template: '<div><span>I:{{$$transcluded}}</span><div ng-transclude></div></div>'
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile) {
+        element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')
+            ($rootScope);
+        $rootScope.$apply();
+        expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
+        expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
+      });
+    });
+  });
+
+
+  describe('href sanitization', function() {
+
+    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('unsafe:data:evilPayload');
+    }));
+
+
+    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      // case-sensitive
+      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // tab in protocol
+      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // space before
+      $rootScope.testUrl = " javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+
+      // ws chars before
+      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // post-fixed with proper url
+      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      $rootScope.$apply();
+      expect(element[0].href).toBeOneOf(
+          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
+          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
+      );
+    }));
+
+
+    it('should sanitize ngHref bindings as well', inject(function($compile, $rootScope) {
+      element = $compile('<a ng-href="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
+      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+      $rootScope.testUrl = "foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('foo/bar');
+
+      $rootScope.testUrl = "/foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('/foo/bar');
+
+      $rootScope.testUrl = "../foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('../foo/bar');
+
+      $rootScope.testUrl = "#foo";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('#foo');
+
+      $rootScope.testUrl = "http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('http://foo/bar');
+
+      $rootScope.testUrl = " http://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe(' http://foo/bar');
+
+      $rootScope.testUrl = "https://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('https://foo/bar');
+
+      $rootScope.testUrl = "ftp://foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('ftp://foo/bar');
+
+      $rootScope.testUrl = "mailto:foo@bar.com";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('mailto:foo@bar.com');
+
+      $rootScope.testUrl = "file:///foo/bar.html";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('file:///foo/bar.html');
+    }));
+
+
+    it('should not sanitize href on elements other than anchor', inject(function($compile, $rootScope) {
+      element = $compile('<div href="{{testUrl}}"></div>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize attributes other than href', inject(function($compile, $rootScope) {
+      element = $compile('<a title="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('title')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should allow reconfiguration of the href whitelist', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect(returnVal).toBe($compileProvider);
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+
+        $rootScope.testUrl = "javascript:doEvilStuff()";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('javascript:doEvilStuff()');
+
+        $rootScope.testUrl = "http://recon/figured";
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('unsafe:http://recon/figured');
+      });
+    });
+  });
+
+  describe('ngAttr* attribute binding', function() {
+
+    it('should bind after digest but not before', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng-attr-test="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+    }));
+
+
+    it('should work with different prefixes', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test2')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('Misko');
+      expect(element.attr('test2')).toBe('Misko');
+      expect(element.attr('test3')).toBe('Misko');
+    }));
+
+
+    it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+      $rootScope.name = "Misko";
+      element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}"></span>')($rootScope);
+      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test3')).toBeUndefined();
+      expect(element.attr('test4')).toBeUndefined();
+      $rootScope.$digest();
+      expect(element.attr('test2')).toBe('Misko');
+      expect(element.attr('test3')).toBe('Misko');
+      expect(element.attr('test4')).toBe('Misko');
+    }));
   });
 });

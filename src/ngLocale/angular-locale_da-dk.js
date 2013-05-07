@@ -1,4 +1,98 @@
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-$provide.value("$locale", {"NUMBER_FORMATS":{"DECIMAL_SEP":",","GROUP_SEP":".","PATTERNS":[{"minInt":1,"minFrac":0,"macFrac":0,"posPre":"","posSuf":"","negPre":"-","negSuf":"","gSize":3,"lgSize":3,"maxFrac":3},{"minInt":1,"minFrac":2,"macFrac":0,"posPre":"","posSuf":" \u00A4","negPre":"-","negSuf":" \u00A4","gSize":3,"lgSize":3,"maxFrac":2}],"CURRENCY_SYM":"kr"},"pluralCat":function (n) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;},"DATETIME_FORMATS":{"MONTH":["januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"],"SHORTMONTH":["jan.","feb.","mar.","apr.","maj","jun.","jul.","aug.","sep.","okt.","nov.","dec."],"DAY":["søndag","mandag","tirsdag","onsdag","torsdag","fredag","lørdag"],"SHORTDAY":["søn","man","tir","ons","tor","fre","lør"],"AMPMS":["f.m.","e.m."],"medium":"dd/MM/yyyy HH.mm.ss","short":"dd/MM/yy HH.mm","fullDate":"EEEE 'den' d. MMMM y","longDate":"d. MMM y","mediumDate":"dd/MM/yyyy","shortDate":"dd/MM/yy","mediumTime":"HH.mm.ss","shortTime":"HH.mm"},"id":"da-dk"});
+$provide.value("$locale", {
+  "DATETIME_FORMATS": {
+    "AMPMS": {
+      "0": "f.m.",
+      "1": "e.m."
+    },
+    "DAY": {
+      "0": "s\u00f8ndag",
+      "1": "mandag",
+      "2": "tirsdag",
+      "3": "onsdag",
+      "4": "torsdag",
+      "5": "fredag",
+      "6": "l\u00f8rdag"
+    },
+    "MONTH": {
+      "0": "januar",
+      "1": "februar",
+      "2": "marts",
+      "3": "april",
+      "4": "maj",
+      "5": "juni",
+      "6": "juli",
+      "7": "august",
+      "8": "september",
+      "9": "oktober",
+      "10": "november",
+      "11": "december"
+    },
+    "SHORTDAY": {
+      "0": "s\u00f8n",
+      "1": "man",
+      "2": "tir",
+      "3": "ons",
+      "4": "tor",
+      "5": "fre",
+      "6": "l\u00f8r"
+    },
+    "SHORTMONTH": {
+      "0": "jan.",
+      "1": "feb.",
+      "2": "mar.",
+      "3": "apr.",
+      "4": "maj",
+      "5": "jun.",
+      "6": "jul.",
+      "7": "aug.",
+      "8": "sep.",
+      "9": "okt.",
+      "10": "nov.",
+      "11": "dec."
+    },
+    "fullDate": "EEEE 'den' d. MMMM y",
+    "longDate": "d. MMM y",
+    "medium": "dd/MM/yyyy HH.mm.ss",
+    "mediumDate": "dd/MM/yyyy",
+    "mediumTime": "HH.mm.ss",
+    "short": "dd/MM/yy HH.mm",
+    "shortDate": "dd/MM/yy",
+    "shortTime": "HH.mm"
+  },
+  "NUMBER_FORMATS": {
+    "CURRENCY_SYM": "kr",
+    "DECIMAL_SEP": ",",
+    "GROUP_SEP": ".",
+    "PATTERNS": {
+      "0": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 3,
+        "minFrac": 0,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "",
+        "posPre": "",
+        "posSuf": ""
+      },
+      "1": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 2,
+        "minFrac": 2,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
+      }
+    }
+  },
+  "id": "da-dk",
+  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+});
 }]);

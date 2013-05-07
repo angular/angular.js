@@ -32,7 +32,8 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+    var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -42,12 +43,12 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         callbacks[callbackId].data = data;
       };
 
-      jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+      var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
           function() {
         if (callbacks[callbackId].data) {
           completeRequest(callback, 200, callbacks[callbackId].data);
         } else {
-          completeRequest(callback, -2);
+          completeRequest(callback, status || -2);
         }
         delete callbacks[callbackId];
       });
@@ -58,15 +59,39 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         if (value) xhr.setRequestHeader(key, value);
       });
 
-      var status;
-
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
       // response is in the cache. the promise api will ensure that to the app code the api is
       // always async
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-          completeRequest(
-              callback, status || xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
+          var responseHeaders = xhr.getAllResponseHeaders();
+
+          // TODO(vojta): remove once Firefox 21 gets released.
+          // begin: workaround to overcome Firefox CORS http response headers bug
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=608735
+          // Firefox already patched in nightly. Should land in Firefox 21.
+
+          // CORS "simple response headers" http://www.w3.org/TR/cors/
+          var value,
+              simpleHeaders = ["Cache-Control", "Content-Language", "Content-Type",
+                                  "Expires", "Last-Modified", "Pragma"];
+          if (!responseHeaders) {
+            responseHeaders = "";
+            forEach(simpleHeaders, function (header) {
+              var value = xhr.getResponseHeader(header);
+              if (value) {
+                  responseHeaders += header + ": " + value + "\n";
+              }
+            });
+          }
+          // end of the workaround.
+
+          // responseText is the old-school way of retrieving response (supported by IE8 & 9)
+          // response and responseType properties were introduced in XHR Level2 spec (supported by IE10)
+          completeRequest(callback,
+              status || xhr.status,
+              (xhr.responseType ? xhr.response : xhr.responseText),
+              responseHeaders);
         }
       };
 
@@ -74,20 +99,28 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         xhr.withCredentials = true;
       }
 
-      xhr.send(post || '');
-
-      if (timeout > 0) {
-        $browserDefer(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
+      if (responseType) {
+        xhr.responseType = responseType;
       }
+
+      xhr.send(post || '');
+    }
+
+    if (timeout > 0) {
+      var timeoutId = $browserDefer(function() {
+        status = -1;
+        jsonpDone && jsonpDone();
+        xhr && xhr.abort();
+      }, timeout);
     }
 
 
     function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
-      var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];
+      var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
+
+      // cancel timeout
+      timeoutId && $browserDefer.cancel(timeoutId);
 
       // fix status code for file protocol (it's always 0)
       status = (protocol == 'file') ? (response ? 200 : 404) : status;
@@ -122,5 +155,6 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
     rawDocument.body.appendChild(script);
+    return doneWrapper;
   }
 }

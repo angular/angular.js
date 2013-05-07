@@ -36,16 +36,15 @@ var parseRawCommit = function(raw) {
   msg.breaks = [];
 
   lines.forEach(function(line) {
-    match = line.match(/Closes\s#(\d+)/);
+    match = line.match(/(?:Closes|Fixes)\s#(\d+)/);
     if (match) msg.closes.push(parseInt(match[1]));
   });
-  
+
   match = raw.match(/BREAKING CHANGE:([\s\S]*)/);
   if (match) {
-    console.log('found!!!')
-    msg.breaks.push(match[1]);
+    msg.breaking = match[1];
   }
-  
+
 
   msg.body = lines.join('\n');
   match = msg.subject.match(/^(.*)\((.*)\)\:\s(.*)$/);
@@ -88,7 +87,8 @@ var currentDate = function() {
 };
 
 
-var printSection = function(stream, title, section) {
+var printSection = function(stream, title, section, printCommitLinks) {
+  printCommitLinks = printCommitLinks === undefined ? true : printCommitLinks;
   var components = Object.getOwnPropertyNames(section).sort();
 
   if (!components.length) return;
@@ -109,11 +109,15 @@ var printSection = function(stream, title, section) {
     }
 
     section[name].forEach(function(commit) {
-      stream.write(util.format('%s %s (%s', prefix, commit.subject, linkToCommit(commit.hash)));
-      if (commit.closes.length) {
-        stream.write(', closes ' + commit.closes.map(linkToIssue).join(', '));
+      if (printCommitLinks) {
+        stream.write(util.format('%s %s\n  (%s', prefix, commit.subject, linkToCommit(commit.hash)));
+        if (commit.closes.length) {
+          stream.write(',\n   ' + commit.closes.map(linkToIssue).join(', '));
+        }
+        stream.write(')\n');
+      } else {
+        stream.write(util.format('%s %s', prefix, commit.subject));
       }
-      stream.write(')\n');
     });
   });
 
@@ -122,7 +126,7 @@ var printSection = function(stream, title, section) {
 
 
 var readGitLog = function(grep, from) {
-  var deffered = q.defer();
+  var deferred = q.defer();
 
   // TODO(vojta): if it's slow, use spawn and stream it instead
   child.exec(util.format(GIT_LOG_CMD, grep, '%H%n%s%n%b%n==END==', from), function(code, stdout, stderr) {
@@ -133,10 +137,10 @@ var readGitLog = function(grep, from) {
       if (commit) commits.push(commit);
     });
 
-    deffered.resolve(commits);
+    deferred.resolve(commits);
   });
 
-  return deffered.promise;
+  return deferred.promise;
 };
 
 
@@ -158,29 +162,30 @@ var writeChangelog = function(stream, commits, version) {
       section[component].push(commit);
     }
 
-    commit.breaks.forEach(function(breakMsg) {
-      sections.breaks[EMPTY_COMPONENT].push({
-        subject: breakMsg,
+    if (commit.breaking) {
+      sections.breaks[component] = sections.breaks[component] || [];
+      sections.breaks[component].push({
+        subject: util.format("due to %s,\n %s", linkToCommit(commit.hash), commit.breaking),
         hash: commit.hash,
         closes: []
       });
-    });
+    };
   });
 
   stream.write(util.format(HEADER_TPL, version, version, currentDate()));
   printSection(stream, 'Bug Fixes', sections.fix);
   printSection(stream, 'Features', sections.feat);
-  printSection(stream, 'Breaking Changes', sections.breaks);
+  printSection(stream, 'Breaking Changes', sections.breaks, false);
 }
 
 
 var getPreviousTag = function() {
-  var deffered = q.defer();
+  var deferred = q.defer();
   child.exec(GIT_TAG_CMD, function(code, stdout, stderr) {
-    if (code) deffered.reject('Cannot get the previous tag.');
-    else deffered.resolve(stdout.replace('\n', ''));
+    if (code) deferred.reject('Cannot get the previous tag.');
+    else deferred.resolve(stdout.replace('\n', ''));
   });
-  return deffered.promise;
+  return deferred.promise;
 };
 
 

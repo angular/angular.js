@@ -13,7 +13,7 @@ In this step, you will add a clickable phone image swapper to the phone details 
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
-clicking on the desired thumbnail image. Let's have a look at how we can do this with angular.
+clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-9...step-10
@@ -40,7 +40,7 @@ function PhoneDetailCtrl($scope, $routeParams, $http) {
 </pre>
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
-default value to the first phone image url.
+default value to the first phone image URL.
 
 We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
 
@@ -66,7 +66,7 @@ We bound the `ngSrc` directive of the large image to the `mainImageUrl` property
 We also registered an {@link api/ng.directive:ngClick `ngClick`}
 handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
 use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
-url of the thumbnail image.
+URL of the thumbnail image.
 
 <div style="display: none">
 TODO!
@@ -102,10 +102,10 @@ __`test/e2e/scenarios.js`:__
 });
 </pre>
 
-You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
-can see them running on {@link
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
-angular's server}.
+Angular's server}.
 
 # Experiments
 

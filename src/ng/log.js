@@ -12,30 +12,54 @@
  * The main purpose of this service is to simplify debugging and troubleshooting.
  *
  * @example
-    <doc:example>
-      <doc:source>
-         <script>
-           function LogCtrl($log) {
-             this.$log = $log;
-             this.message = 'Hello World!';
-           }
-         </script>
-         <div ng-controller="LogCtrl">
-           <p>Reload this page with open console, enter text and hit the log button...</p>
-           Message:
-           <input type="text" ng-model="message"/>
-           <button ng-click="$log.log(message)">log</button>
-           <button ng-click="$log.warn(message)">warn</button>
-           <button ng-click="$log.info(message)">info</button>
-           <button ng-click="$log.error(message)">error</button>
-         </div>
-      </doc:source>
-      <doc:scenario>
-      </doc:scenario>
-    </doc:example>
+   <example>
+     <file name="script.js">
+       function LogCtrl($scope, $log) {
+         $scope.$log = $log;
+         $scope.message = 'Hello World!';
+       }
+     </file>
+     <file name="index.html">
+       <div ng-controller="LogCtrl">
+         <p>Reload this page with open console, enter text and hit the log button...</p>
+         Message:
+         <input type="text" ng-model="message"/>
+         <button ng-click="$log.log(message)">log</button>
+         <button ng-click="$log.warn(message)">warn</button>
+         <button ng-click="$log.info(message)">info</button>
+         <button ng-click="$log.error(message)">error</button>
+       </div>
+     </file>
+   </example>
  */
 
+/**
+ * @ngdoc object
+ * @name ng.$logProvider
+ * @description
+ * Use the `$logProvider` to configure how the application logs messages
+ */
 function $LogProvider(){
+  var debug = true,
+      self = this;
+  
+  /**
+   * @ngdoc property
+   * @name ng.$logProvider#debugEnabled
+   * @methodOf ng.$logProvider
+   * @description
+   * @param {string=} flag enable or disable debug level messages
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.debugEnabled = function(flag) {
+	  if (isDefined(flag)) {
+		  debug = flag;
+		  return this;
+	  } else {
+		  return debug;
+	  }
+  };
+  
   this.$get = ['$window', function($window){
     return {
       /**
@@ -76,7 +100,25 @@ function $LogProvider(){
        * @description
        * Write an error message
        */
-      error: consoleLog('error')
+      error: consoleLog('error'),
+      
+      /**
+       * @ngdoc method
+       * @name ng.$log#debug
+       * @methodOf ng.$log
+       * 
+       * @description
+       * Write a debug message
+       */
+      debug: (function () {
+    	var fn = consoleLog('debug');
+    	
+    	return function() {
+    		if (debug) {
+    			fn.apply(self, arguments);
+    		}
+    	}
+      }())
     };
 
     function formatError(arg) {

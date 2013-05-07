@@ -12,8 +12,8 @@
  * interface for interacting with an object that represents the result of an action that is
  * performed asynchronously, and may or may not be finished at any given point in time.
  *
- * From the perspective of dealing with error handling, deferred and promise apis are to
- * asynchronous programing what `try`, `catch` and `throw` keywords are to synchronous programing.
+ * From the perspective of dealing with error handling, deferred and promise APIs are to
+ * asynchronous programming what `try`, `catch` and `throw` keywords are to synchronous programming.
  *
  * <pre>
  *   // for the purpose of this example let's assume that variables `$q` and `scope` are
@@ -42,12 +42,12 @@
  *     alert('Success: ' + greeting);
  *   }, function(reason) {
  *     alert('Failed: ' + reason);
- *   );
+ *   });
  * </pre>
  *
  * At first it might not be obvious why this extra complexity is worth the trouble. The payoff
  * comes in the way of
- * [guarantees that promise and deferred apis make](https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md).
+ * [guarantees that promise and deferred APIs make](https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md).
  *
  * Additionally the promise api allows for composition that is very hard to do with the
  * traditional callback ([CPS](http://en.wikipedia.org/wiki/Continuation-passing_style)) approach.
@@ -59,7 +59,7 @@
  *
  * A new instance of deferred is constructed by calling `$q.defer()`.
  *
- * The purpose of the deferred object is to expose the associated Promise instance as well as apis
+ * The purpose of the deferred object is to expose the associated Promise instance as well as APIs
  * that can be used for signaling the successful or unsuccessful completion of the task.
  *
  * **Methods**
@@ -91,6 +91,11 @@
  *   This method *returns a new promise* which is resolved or rejected via the return value of the
  *   `successCallback` or `errorCallback`.
  *
+ * - `always(callback)` – allows you to observe either the fulfillment or rejection of a promise,
+ *   but to do so without modifying the final value. This is useful to release resources or do some
+ *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
+ *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
+ *   more information.
  *
  * # Chaining promises
  *
@@ -102,7 +107,7 @@
  *     return result + 1;
  *   });
  *
- *   // promiseB will be resolved immediately after promiseA is resolved and it's value will be
+ *   // promiseB will be resolved immediately after promiseA is resolved and its value will be
  *   // the result of promiseA incremented by 1
  * </pre>
  *
@@ -121,8 +126,32 @@
  *   models and avoiding unnecessary browser repaints, which would result in flickering UI.
  * - $q promises are recognized by the templating engine in angular, which means that in templates
  *   you can treat promises attached to a scope as if they were the resulting values.
- * - Q has many more features that $q, but that comes at a cost of bytes. $q is tiny, but contains
+ * - Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
+ * 
+ *  # Testing
+ * 
+ *  <pre>
+ *    it('should simulate promise', inject(function($q, $rootScope) {
+ *      var deferred = $q.defer();
+ *      var promise = deferred.promise;
+ *      var resolvedValue;
+ * 
+ *      promise.then(function(value) { resolvedValue = value; });
+ *      expect(resolvedValue).toBeUndefined();
+ * 
+ *      // Simulate resolving of promise
+ *      deferred.resolve(123);
+ *      // Note that the 'then' function does not get called synchronously.
+ *      // This is because we want the promise API to always be async, whether or not
+ *      // it got called synchronously or asynchronously.
+ *      expect(resolvedValue).toBeUndefined();
+ * 
+ *      // Propagate promise resolution to 'then' functions using $apply().
+ *      $rootScope.$apply();
+ *      expect(resolvedValue).toEqual(123);
+ *    });
+ *  </pre>
  */
 function $QProvider() {
 
@@ -212,6 +241,42 @@ function qFactory(nextTick, exceptionHandler) {
           }
 
           return result.promise;
+        },
+        always: function(callback) {
+          
+          function makePromise(value, resolved) {
+            var result = defer();
+            if (resolved) {
+              result.resolve(value);
+            } else {
+              result.reject(value);
+            }
+            return result.promise;
+          }
+          
+          function handleCallback(value, isResolved) {
+            var callbackOutput = null;            
+            try {
+              callbackOutput = (callback ||defaultCallback)();
+            } catch(e) {
+              return makePromise(e, false);
+            }            
+            if (callbackOutput && callbackOutput.then) {
+              return callbackOutput.then(function() {
+                return makePromise(value, isResolved);
+              }, function(error) {
+                return makePromise(error, false);
+              });
+            } else {
+              return makePromise(value, isResolved);
+            }
+          }
+          
+          return this.then(function(value) {
+            return handleCallback(value, true);
+          }, function(error) {
+            return handleCallback(error, false);
+          });
         }
       }
     };
@@ -288,14 +353,11 @@ function qFactory(nextTick, exceptionHandler) {
    * @methodOf ng.$q
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
-   * This is useful when you are dealing with on object that might or might not be a promise, or if
+   * This is useful when you are dealing with an object that might or might not be a promise, or if
    * the promise comes from a source that can't be trusted.
    *
    * @param {*} value Value or a promise
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
-   *   each value coresponding to the promise at the same index in the `promises` array. If any of
-   *   the promises is resolved with a rejection, this resulting promise will be resolved with the
-   *   same rejection.
+   * @returns {Promise} Returns a promise of the passed value or promise
    */
   var when = function(value, callback, errback) {
     var result = defer(),
@@ -353,29 +415,30 @@ function qFactory(nextTick, exceptionHandler) {
    * Combines multiple promises into a single promise that is resolved when all of the input
    * promises are resolved.
    *
-   * @param {Array.<Promise>} promises An array of promises.
-   * @returns {Promise} Returns a single promise that will be resolved with an array of values,
-   *   each value coresponding to the promise at the same index in the `promises` array. If any of
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} Returns a single promise that will be resolved with an array/hash of values,
+   *   each value corresponding to the promise at the same index/key in the `promises` array/hash. If any of
    *   the promises is resolved with a rejection, this resulting promise will be resolved with the
    *   same rejection.
    */
   function all(promises) {
     var deferred = defer(),
-        counter = promises.length,
-        results = [];
+        counter = 0,
+        results = isArray(promises) ? [] : {};
 
-    if (counter) {
-      forEach(promises, function(promise, index) {
-        ref(promise).then(function(value) {
-          if (index in results) return;
-          results[index] = value;
-          if (!(--counter)) deferred.resolve(results);
-        }, function(reason) {
-          if (index in results) return;
-          deferred.reject(reason);
-        });
+    forEach(promises, function(promise, key) {
+      counter++;
+      ref(promise).then(function(value) {
+        if (results.hasOwnProperty(key)) return;
+        results[key] = value;
+        if (!(--counter)) deferred.resolve(results);
+      }, function(reason) {
+        if (results.hasOwnProperty(key)) return;
+        deferred.reject(reason);
       });
-    } else {
+    });
+
+    if (counter === 0) {
       deferred.resolve(results);
     }
 

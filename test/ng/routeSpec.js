@@ -59,6 +59,129 @@ describe('$route', function() {
     });
   });
 
+  it('should route and fire change event when catch-all params are used', function() {
+    var log = '',
+        lastRoute,
+        nextRoute;
+
+    module(function($routeProvider) {
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+          {controller: noop, templateUrl: 'Chapter.html'});
+      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+          {controller: noop, templateUrl: 'Chapter.html'});
+      $routeProvider.when('/Blank', {});
+    });
+    inject(function($route, $location, $rootScope) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        log += 'before();';
+        expect(current).toBe($route.current);
+        lastRoute = current;
+        nextRoute = next;
+      });
+      $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+        log += 'after();';
+        expect(current).toBe($route.current);
+        expect(lastRoute).toBe(last);
+        expect(nextRoute).toBe(current);
+      });
+
+      $location.path('/Book1/Moby/Chapter/Intro/one/edit').search('p=123');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+
+      log = '';
+      $location.path('/Blank').search('ignore');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({ignore:true});
+
+      log = '';
+      $location.path('/Book1/Moby/Chapter/Intro/one/two/edit').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+
+      log = '';
+      $location.path('/Book2/Moby/one/two/Chapter/Intro').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+
+      log = '';
+      $location.path('/NONE');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+    });
+  });
+
+
+  it('should route and fire change event correctly whenever the case insensitive flag is utilized', function() {
+    var log = '',
+        lastRoute,
+        nextRoute;
+
+    module(function($routeProvider) {
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+          {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
+      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+          {controller: noop, templateUrl: 'Chapter.html'});
+      $routeProvider.when('/Blank', {});
+    });
+    inject(function($route, $location, $rootScope) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        log += 'before();';
+        expect(current).toBe($route.current);
+        lastRoute = current;
+        nextRoute = next;
+      });
+      $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+        log += 'after();';
+        expect(current).toBe($route.current);
+        expect(lastRoute).toBe(last);
+        expect(nextRoute).toBe(current);
+      });
+
+      $location.path('/Book1/Moby/Chapter/Intro/one/edit').search('p=123');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+
+      log = '';
+      $location.path('/BOOK1/Moby/CHAPTER/Intro/one/EDIT').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one', p:'123'});
+
+      log = '';
+      $location.path('/Blank').search('ignore');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({ignore:true});
+
+      log = '';
+      $location.path('/BLANK');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+
+      log = '';
+      $location.path('/Book2/Moby/one/two/Chapter/Intro').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', highlight:'one/two', p:'123'});
+
+      log = '';
+      $location.path('/BOOK2/Moby/one/two/CHAPTER/Intro').search('p=123');
+      $rootScope.$digest();
+      expect(log).toEqual('before();after();');
+      expect($route.current).toEqual(null);
+    });
+  });
+
 
   it('should not change route when location is canceled', function() {
     module(function($routeProvider) {
@@ -82,28 +205,40 @@ describe('$route', function() {
   });
 
 
-  it('should match a route that contains special chars in the path', function() {
-    module(function($routeProvider) {
-      $routeProvider.when('/$test.23/foo(bar)/:baz', {templateUrl: 'test.html'});
-    });
-    inject(function($route, $location, $rootScope) {
+  describe('should match a route that contains special chars in the path', function() {
+    beforeEach(module(function($routeProvider) {
+      $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});
+    }));
 
+    it('matches the full path', inject(function($route, $location, $rootScope) {
       $location.path('/test');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$testX23/foo(bar)/222');
+    it('matches literal .', inject(function($route, $location, $rootScope) {
+      $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
+    }));
 
-      $location.path('/$test.23/foo(bar)/222');
+    it('matches literal *', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foooo(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('treats backslashes normally', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*\\(bar)/222');
+      $rootScope.$digest();
+      expect($route.current).toBeUndefined();
+    }));
+
+    it('matches a URL with special chars', inject(function($route, $location, $rootScope) {
+      $location.path('/$test.23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeDefined();
-
-      $location.path('/$test.23/foo\\(bar)/222');
-      $rootScope.$digest();
-      expect($route.current).toBeUndefined();
-    });
+    }));
   });
 
 
@@ -150,44 +285,11 @@ describe('$route', function() {
   });
 
 
-  it('should handle unknown routes with "otherwise" route definition', function() {
-    function NotFoundCtrl() {}
-
-    module(function($routeProvider){
-      $routeProvider.when('/foo', {templateUrl: 'foo.html'});
-      $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
-    });
-
-    inject(function($route, $location, $rootScope) {
-      var onChangeSpy = jasmine.createSpy('onChange');
-
-      $rootScope.$on('$routeChangeStart', onChangeSpy);
-      expect($route.current).toBeUndefined();
-      expect(onChangeSpy).not.toHaveBeenCalled();
-
-      $location.path('/unknownRoute');
-      $rootScope.$digest();
-
-      expect($route.current.templateUrl).toBe('404.html');
-      expect($route.current.controller).toBe(NotFoundCtrl);
-      expect(onChangeSpy).toHaveBeenCalled();
-
-      onChangeSpy.reset();
-      $location.path('/foo');
-      $rootScope.$digest();
-
-      expect($route.current.templateUrl).toEqual('foo.html');
-      expect($route.current.controller).toBeUndefined();
-      expect(onChangeSpy).toHaveBeenCalled();
-    });
-  });
-
-
   it('should chain whens and otherwise', function() {
     module(function($routeProvider){
       $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
-                     otherwise({templateUrl: 'bar.html'}).
-                     when('/baz', {templateUrl: 'baz.html'});
+          otherwise({templateUrl: 'bar.html'}).
+          when('/baz', {templateUrl: 'baz.html'});
     });
 
     inject(function($route, $location, $rootScope) {
@@ -197,6 +299,94 @@ describe('$route', function() {
       $location.url('/baz');
       $rootScope.$digest();
       expect($route.current.templateUrl).toBe('baz.html');
+    });
+  });
+
+
+  describe('otherwise', function() {
+
+    it('should handle unknown routes with "otherwise" route definition', function() {
+      function NotFoundCtrl() {}
+
+      module(function($routeProvider){
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.otherwise({templateUrl: '404.html', controller: NotFoundCtrl});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        var onChangeSpy = jasmine.createSpy('onChange');
+
+        $rootScope.$on('$routeChangeStart', onChangeSpy);
+        expect($route.current).toBeUndefined();
+        expect(onChangeSpy).not.toHaveBeenCalled();
+
+        $location.path('/unknownRoute');
+        $rootScope.$digest();
+
+        expect($route.current.templateUrl).toBe('404.html');
+        expect($route.current.controller).toBe(NotFoundCtrl);
+        expect(onChangeSpy).toHaveBeenCalled();
+
+        onChangeSpy.reset();
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect($route.current.templateUrl).toEqual('foo.html');
+        expect($route.current.controller).toBeUndefined();
+        expect(onChangeSpy).toHaveBeenCalled();
+      });
+    });
+
+
+    it('should update $route.current and $route.next when default route is matched', function() {
+      module(function($routeProvider){
+        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+        $routeProvider.otherwise({templateUrl: '404.html'});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        var currentRoute, nextRoute,
+            onChangeSpy = jasmine.createSpy('onChange').andCallFake(function(e, next) {
+          currentRoute = $route.current;
+          nextRoute = next;
+        });
+
+
+        // init
+        $rootScope.$on('$routeChangeStart', onChangeSpy);
+        expect($route.current).toBeUndefined();
+        expect(onChangeSpy).not.toHaveBeenCalled();
+
+
+        // match otherwise route
+        $location.path('/unknownRoute');
+        $rootScope.$digest();
+
+        expect(currentRoute).toBeUndefined();
+        expect(nextRoute.templateUrl).toBe('404.html');
+        expect($route.current.templateUrl).toBe('404.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+        onChangeSpy.reset();
+
+        // match regular route
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect(currentRoute.templateUrl).toBe('404.html');
+        expect(nextRoute.templateUrl).toBe('foo.html');
+        expect($route.current.templateUrl).toEqual('foo.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+        onChangeSpy.reset();
+
+        // match otherwise route again
+        $location.path('/anotherUnknownRoute');
+        $rootScope.$digest();
+
+        expect(currentRoute.templateUrl).toBe('foo.html');
+        expect(nextRoute.templateUrl).toBe('404.html');
+        expect($route.current.templateUrl).toEqual('404.html');
+        expect(onChangeSpy).toHaveBeenCalled();
+      });
     });
   });
 
@@ -232,10 +422,10 @@ describe('$route', function() {
           return deferB.promise;
         });
         $routeProvider.when('/path', { templateUrl: 'foo.html', resolve: {
-          a: function($q) {
+          a: ['$q', function($q) {
             deferA = $q.defer();
             return deferA.promise;
-          },
+          }],
           b: 'b'
         } });
       });
@@ -434,8 +624,8 @@ describe('$route', function() {
       });
     });
   });
-  
-  
+
+
   it('should match route with and without trailing slash', function() {
     module(function($routeProvider){
       $routeProvider.when('/foo', {templateUrl: 'foo.html'});
@@ -560,20 +750,15 @@ describe('$route', function() {
         $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
       });
-      inject(function($route, $location, $rootScope) {
-        var replace;
-
-        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-          if (oldUrl == 'http://server/#/foo/id3/eId') {
-            replace = $location.$$replace;
-          }
-        });
+      inject(function($browser, $route, $location, $rootScope) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
 
         $location.path('/foo/id3/eId');
         $rootScope.$digest();
 
         expect($location.path()).toEqual('/bar/id3');
-        expect(replace).toBe(true);
+        expect($browserUrl.mostRecentCall.args)
+            .toEqual(['http://server/#/bar/id3?extra=eId', true]);
       });
     });
   });
@@ -704,6 +889,53 @@ describe('$route', function() {
         $location.search({foo: 'bar'});
         $rootScope.$digest();
         expect(routeParamsWatcher).toHaveBeenCalledWith({barId: '123', foo: 'bar'});
+      });
+    });
+
+
+    it('should allow using a function as a template', function() {
+      var customTemplateWatcher = jasmine.createSpy('customTemplateWatcher');
+
+      function customTemplateFn(routePathParams) {
+        customTemplateWatcher(routePathParams);
+        expect(routePathParams).toEqual({id: 'id3'});
+        return '<h1>' + routePathParams.id + '</h1>';
+      }
+
+      module(function($routeProvider){
+        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+        $routeProvider.when('/foo/:id', {template: customTemplateFn});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo/id3');
+        $rootScope.$digest();
+
+        expect(customTemplateWatcher).toHaveBeenCalledWith({id: 'id3'});
+      });
+    });
+
+
+    it('should allow using a function as a templateUrl', function() {
+      var customTemplateUrlWatcher = jasmine.createSpy('customTemplateUrlWatcher');
+
+      function customTemplateUrlFn(routePathParams) {
+        customTemplateUrlWatcher(routePathParams);
+        expect(routePathParams).toEqual({id: 'id3'});
+        return 'foo.html';
+      }
+
+      module(function($routeProvider){
+        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+        $routeProvider.when('/foo/:id', {templateUrl: customTemplateUrlFn});
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo/id3');
+        $rootScope.$digest();
+
+        expect(customTemplateUrlWatcher).toHaveBeenCalledWith({id: 'id3'});
+        expect($route.current.loadedTemplateUrl).toEqual('foo.html');
       });
     });
 
