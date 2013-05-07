@@ -1438,8 +1438,8 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    */
   $delegate.verifyNoPendingTasks = function() {
     if ($browser.deferredFns.length) {
-      throw Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' +
-          formatPendingTasksAsString($browser.deferredFns));
+      throw NgError(51, 'Deferred tasks to flush ({0}): {1}',
+          $browser.deferredFns.length, formatPendingTasksAsString($browser.deferredFns));
     }
   };
 
@@ -1755,14 +1755,8 @@ window.jstestdriver && (function(window) {
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
-<<<<<<< HEAD
-      var spec = getCurrentSpec();
-      if (spec.$injector) {
-        throw NgError(42, 'Injector already created, can not register a module!');
-=======
       if (currentSpec.$injector) {
-        throw Error('Injector already created, can not register a module!');
->>>>>>> master
+        throw NgError(42, 'Injector already created, can not register a module!');
       } else {
         var modules = currentSpec.$modules || (currentSpec.$modules = []);
         angular.forEach(moduleFns, function(module) {
@@ -1826,7 +1820,7 @@ window.jstestdriver && (function(window) {
    */
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    var errorForStack = new Error('Declaration Location');
+    var errorForStack = new NgError(52, 'Declaration Location');
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
