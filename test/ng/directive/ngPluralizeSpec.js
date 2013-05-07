@@ -99,6 +99,21 @@ describe('ngPluralize', function() {
   });
 
 
+  describe('edge cases', function() {
+    it('should be able to handle empty strings as possible values', inject(function($rootScope, $compile) {
+      element = $compile(
+          '<ng:pluralize count="email"' +
+                         "when=\"{'0': ''," +
+                                 "'one': 'Some text'," +
+                                 "'other': 'Some text'}\">" +
+          '</ng:pluralize>')($rootScope);
+      $rootScope.email = '0';
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
+    }));
+  });
+
+
   describe('deal with pluralized strings with offset', function() {
     it('should show single/plural strings with offset', inject(function($rootScope, $compile) {
       element = $compile(
