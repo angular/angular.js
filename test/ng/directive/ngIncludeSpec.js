@@ -352,17 +352,17 @@ describe('ngInclude ngAnimate', function() {
       applyCSS(child, 'transition', '1s linear all');
 
       if ($sniffer.transitions) {
-        expect(child.attr('class')).toContain('custom-enter-setup');
+        expect(child.attr('class')).toContain('custom-enter');
         window.setTimeout.expect(1).process();
 
-        expect(child.attr('class')).toContain('custom-enter-start');
+        expect(child.attr('class')).toContain('custom-enter-active');
         window.setTimeout.expect(1000).process();
       } else {
        expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(child.attr('class')).not.toContain('custom-enter-setup');
-      expect(child.attr('class')).not.toContain('custom-enter-start');
+      expect(child.attr('class')).not.toContain('custom-enter');
+      expect(child.attr('class')).not.toContain('custom-enter-active');
   }));
 
   it('should fire off the leave animation + add and remove the css classes',
@@ -385,17 +385,17 @@ describe('ngInclude ngAnimate', function() {
       $rootScope.$digest();
 
       if ($sniffer.transitions) {
-        expect(child.attr('class')).toContain('custom-leave-setup');
+        expect(child.attr('class')).toContain('custom-leave');
         window.setTimeout.expect(1).process();
 
-        expect(child.attr('class')).toContain('custom-leave-start');
+        expect(child.attr('class')).toContain('custom-leave-active');
         window.setTimeout.expect(1000).process();
       } else {
        expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(child.attr('class')).not.toContain('custom-leave-setup');
-      expect(child.attr('class')).not.toContain('custom-leave-start');
+      expect(child.attr('class')).not.toContain('custom-leave');
+      expect(child.attr('class')).not.toContain('custom-leave-active');
   }));
 
   it('should catch and use the correct duration for animation',

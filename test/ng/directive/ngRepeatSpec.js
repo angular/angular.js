@@ -610,12 +610,12 @@ describe('ngRepeat ngAnimate', function() {
 
     if ($sniffer.transitions) {
       angular.forEach(kids, function(kid) {
-        expect(kid.attr('class')).toContain('custom-enter-setup');
+        expect(kid.attr('class')).toContain('custom-enter');
         window.setTimeout.expect(1).process();
       });
 
       angular.forEach(kids, function(kid) {
-        expect(kid.attr('class')).toContain('custom-enter-start');
+        expect(kid.attr('class')).toContain('custom-enter-active');
         window.setTimeout.expect(1000).process();
       });
     } else {
@@ -623,8 +623,8 @@ describe('ngRepeat ngAnimate', function() {
     }
 
     angular.forEach(kids, function(kid) {
-      expect(kid.attr('class')).not.toContain('custom-enter-setup');
-      expect(kid.attr('class')).not.toContain('custom-enter-start');
+      expect(kid.attr('class')).not.toContain('custom-enter');
+      expect(kid.attr('class')).not.toContain('custom-enter-active');
     });
   }));
 
@@ -655,16 +655,16 @@ describe('ngRepeat ngAnimate', function() {
     //the last element gets pushed down when it animates
     var kid = jqLite(element.children()[1]);
     if ($sniffer.transitions) {
-      expect(kid.attr('class')).toContain('custom-leave-setup');
+      expect(kid.attr('class')).toContain('custom-leave');
       window.setTimeout.expect(1).process();
-      expect(kid.attr('class')).toContain('custom-leave-start');
+      expect(kid.attr('class')).toContain('custom-leave-active');
       window.setTimeout.expect(1000).process();
     } else {
       expect(window.setTimeout.queue).toEqual([]);
     }
 
-    expect(kid.attr('class')).not.toContain('custom-leave-setup');
-    expect(kid.attr('class')).not.toContain('custom-leave-start');
+    expect(kid.attr('class')).not.toContain('custom-leave');
+    expect(kid.attr('class')).not.toContain('custom-leave-active');
   }));
 
   it('should fire off the move animation + add and remove the css classes',
@@ -697,25 +697,25 @@ describe('ngRepeat ngAnimate', function() {
       var right = jqLite(kids[2]);
 
       if ($sniffer.transitions) {
-        expect(first.attr('class')).toContain('custom-move-setup');
+        expect(first.attr('class')).toContain('custom-move');
         window.setTimeout.expect(1).process();
-        expect(left.attr('class')).toContain('custom-move-setup');
+        expect(left.attr('class')).toContain('custom-move');
         window.setTimeout.expect(1).process();
 
-        expect(first.attr('class')).toContain('custom-move-start');
+        expect(first.attr('class')).toContain('custom-move-active');
         window.setTimeout.expect(1000).process();
-        expect(left.attr('class')).toContain('custom-move-start');
+        expect(left.attr('class')).toContain('custom-move-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(first.attr('class')).not.toContain('custom-move-setup');
-      expect(first.attr('class')).not.toContain('custom-move-start');
-      expect(left.attr('class')).not.toContain('custom-move-setup');
-      expect(left.attr('class')).not.toContain('custom-move-start');
-      expect(right.attr('class')).not.toContain('custom-move-setup');
-      expect(right.attr('class')).not.toContain('custom-move-start');
+      expect(first.attr('class')).not.toContain('custom-move');
+      expect(first.attr('class')).not.toContain('custom-move-active');
+      expect(left.attr('class')).not.toContain('custom-move');
+      expect(left.attr('class')).not.toContain('custom-move-active');
+      expect(right.attr('class')).not.toContain('custom-move');
+      expect(right.attr('class')).not.toContain('custom-move-active');
   }));
 
   it('should catch and use the correct duration for animation',
