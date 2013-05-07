@@ -1,4 +1,5 @@
 build/
+docs/content/misc/errors.ngdoc
 angularjs.netrc
 jstd.log
 .DS_Store

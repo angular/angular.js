@@ -163,7 +163,7 @@ function $RootScopeProvider(){
 
         if (isFunction(isolate)) {
           // TODO: remove at some point
-          throw Error('API-CHANGE: Use $controller to instantiate controllers.');
+          throw NgError(26, 'API-CHANGE: Use $controller to instantiate controllers.');
         }
         if (isolate) {
           child = new Scope();
@@ -560,8 +560,9 @@ function $RootScopeProvider(){
 
           if(dirty && !(ttl--)) {
             clearPhase();
-            throw Error(TTL + ' $digest() iterations reached. Aborting!\n' +
-                'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
+            throw NgError(27,
+                '{0} $digest() iterations reached. Aborting!\nWatchers fired in the last 5 iterations: {1}',
+                TTL, toJson(watchLog));
           }
         } while (dirty || asyncQueue.length);
 
@@ -923,7 +924,7 @@ function $RootScopeProvider(){
 
     function beginPhase(phase) {
       if ($rootScope.$$phase) {
-        throw Error($rootScope.$$phase + ' already in progress');
+        throw NgError(28, '{0} already in progress', $rootScope.$$phase);
       }
 
       $rootScope.$$phase = phase;

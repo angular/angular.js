@@ -269,7 +269,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
+        toBe("[NgErr7] Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
   });
 
 
@@ -277,9 +277,8 @@ describe('ngRepeat', function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("'item' in 'item in collection' should be identifier or (key, value) but got 'i dont parse'.");
+        toBe("[NgErr8] 'item' in 'item in collection' should be identifier or (key, value) but got 'i dont parse'.");
   });
-
 
   it('should expose iterator offset as $index when iterating over arrays',
       function() {
@@ -481,7 +480,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
+          toEqual('[NgErr50] Duplicates in a repeater are not allowed. Repeater: item in items key: object:003');
 
       // recover
       scope.items = [a];
@@ -501,7 +500,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual('Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
+          toEqual('[NgErr50] Duplicates in a repeater are not allowed. Repeater: item in items key: object:009');
 
       // recover
       scope.items = [a];
@@ -563,7 +562,7 @@ describe('ngRepeat ngAnimate', function() {
   }
 
   function applyCSS(element, cssProp, cssValue) {
-    element.css(cssProp, cssValue);    
+    element.css(cssProp, cssValue);
     element.css(vendorPrefix + cssProp, cssValue);
   }
 
@@ -592,7 +591,7 @@ describe('ngRepeat ngAnimate', function() {
       '<div><div ' +
         'ng-repeat="item in items" ' +
         'ng-animate="{enter: \'custom-enter\'}">' +
-        '{{ item }}' + 
+        '{{ item }}' +
       '</div></div>'
     ))($rootScope);
 
@@ -635,7 +634,7 @@ describe('ngRepeat ngAnimate', function() {
       '<div><div ' +
         'ng-repeat="item in items" ' +
         'ng-animate="{leave: \'custom-leave\'}">' +
-        '{{ item }}' + 
+        '{{ item }}' +
       '</div></div>'
     ))($rootScope);
 

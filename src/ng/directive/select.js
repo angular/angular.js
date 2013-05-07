@@ -297,9 +297,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw Error(
-            "Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-            " but got '" + optionsExp + "'.");
+          throw NgError(9,
+              "Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'.",
+              optionsExp);
         }
 
         var displayFn = $parse(match[2] || match[1]),

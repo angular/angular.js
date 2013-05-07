@@ -28,7 +28,7 @@ function $CacheFactoryProvider() {
 
     function cacheFactory(cacheId, options) {
       if (cacheId in caches) {
-        throw Error('cacheId ' + cacheId + ' taken');
+        throw NgError(10, 'cacheId {0} taken', cacheId);
       }
 
       var size = 0,
