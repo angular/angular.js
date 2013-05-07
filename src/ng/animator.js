@@ -57,7 +57,7 @@
  *  The animate-enter CSS class is the event name that you
  *  have provided within the ngAnimate attribute.
  * &#42;/
- * .animate-enter-setup {
+ * .animate-enter {
  *  -webkit-transition: 1s linear all; /&#42; Safari/Chrome &#42;/
  *  -moz-transition: 1s linear all; /&#42; Firefox &#42;/
  *  -ms-transition: 1s linear all; /&#42; IE10 &#42;/
@@ -73,7 +73,7 @@
  *  classes together to avoid any CSS-specificity
  *  conflicts
  * &#42;/
- * .animate-enter-setup.animate-enter-start {
+ * .animate-enter.animate-enter-active {
  *  /&#42; The animation code itself &#42;/
  *  opacity: 1;
  * }
@@ -86,7 +86,7 @@
  *
  * <pre>
  * <style type="text/css">
- * .animate-enter-setup {
+ * .animate-enter {
  *   -webkit-animation: enter_sequence 1s linear;
  *   -moz-animation: enter_sequence 1s linear;
  *   -o-animation: enter_sequence 1s linear;
@@ -115,8 +115,8 @@
  *
  * ngAnimate will first examine any CSS animation code and then fallback to using CSS transitions.
  *
- * Upon DOM mutation, the setup class is added first, then the browser is allowed to reflow the content and then,
- * the start class is added to trigger the animation. The ngAnimate directive will automatically extract the duration
+ * Upon DOM mutation, the event class is added first, then the browser is allowed to reflow the content and then,
+ * the active class is added to trigger the animation. The ngAnimate directive will automatically extract the duration
  * of the animation to determine when the animation ends. Once the animation is over then both CSS classes will be
  * removed from the DOM. If a browser does not support CSS transitions or CSS animations then the animation will start and end
  * immediately resulting in a DOM element that is at it's final state. This final state is when the DOM element
@@ -269,8 +269,7 @@ var $AnimatorProvider = function() {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
             } else {
-              var setupClass = className + '-setup';
-              var startClass = className + '-start';
+              var activeClassName = className + '-active';
 
               if (!parent) {
                 parent = after ? after.parent() : element.parent();
@@ -283,7 +282,7 @@ var $AnimatorProvider = function() {
               }
 
               element.data(NG_ANIMATE_CONTROLLER, {running:true});
-              element.addClass(setupClass);
+              element.addClass(className);
               beforeFn(element, parent, after);
               if (element.length == 0) return done();
 
@@ -303,7 +302,7 @@ var $AnimatorProvider = function() {
             };
 
             function beginAnimation() {
-              element.addClass(startClass);
+              element.addClass(activeClassName);
               if (polyfillStart) {
                 polyfillStart(element, done, memento);
               } else if (isFunction($window.getComputedStyle)) {
@@ -356,8 +355,8 @@ var $AnimatorProvider = function() {
 
             function done() {
               afterFn(element, parent, after);
-              element.removeClass(setupClass);
-              element.removeClass(startClass);
+              element.removeClass(className);
+              element.removeClass(activeClassName);
               element.removeData(NG_ANIMATE_CONTROLLER);
             }
           }
