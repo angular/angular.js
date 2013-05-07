@@ -554,7 +554,7 @@ describe('ngView', function() {
           var child = jqLite(element.children()[0]);
           applyCSS(child, 'transition', '1s linear all');
 
-          if ($sniffer.supportsTransitions) {
+          if ($sniffer.transitions) {
             expect(child.attr('class')).toContain('custom-enter-setup');
             window.setTimeout.expect(1).process();
 
@@ -583,7 +583,7 @@ describe('ngView', function() {
       $location.path('/');
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(child.attr('class')).toContain('custom-leave-setup');
         window.setTimeout.expect(1).process();
 
@@ -614,9 +614,9 @@ describe('ngView', function() {
       var child = jqLite(element.children()[0]);
       applyCSS(child, 'transition', '0.5s linear all');
 
-      if($sniffer.supportsTransitions) {
+      if($sniffer.transitions) {
         window.setTimeout.expect(1).process();
-        window.setTimeout.expect($sniffer.supportsTransitions ? 500 : 0).process();
+        window.setTimeout.expect($sniffer.transitions ? 500 : 0).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
@@ -641,7 +641,7 @@ describe('ngView', function() {
 
         $location.path('/foo');
         $rootScope.$digest();
-        if ($sniffer.supportsTransitions) {
+        if ($sniffer.transitions) {
           $window.setTimeout.expect(1).process();
           $window.setTimeout.expect(0).process();
         }
@@ -650,7 +650,7 @@ describe('ngView', function() {
         $location.path('/bar');
         $rootScope.$digest();
         expect(n(element.text())).toEqual('1234');
-        if ($sniffer.supportsTransitions) {
+        if ($sniffer.transitions) {
           $window.setTimeout.expect(1).process();
           $window.setTimeout.expect(1).process();
         } else {

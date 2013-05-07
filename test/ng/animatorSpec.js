@@ -216,7 +216,7 @@ describe("$animator", function() {
     it("should assign the ngAnimate string to all events if a string is given",
         inject(function($animator, $sniffer, $rootScope) {
       $animator.enabled(true);
-      if (!$sniffer.supportsTransitions) return;
+      if (!$sniffer.transitions) return;
       animator = $animator($rootScope, {
         ngAnimate : '"custom"'
       });
@@ -328,7 +328,7 @@ describe("$animator", function() {
       expect(element.css('display')).toBe('none');
 
       animator.show(element);
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1000).process();
       }

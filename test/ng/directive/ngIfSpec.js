@@ -120,7 +120,7 @@ describe('ngIf ngAnimate', function () {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.className).toContain('custom-enter-setup');
         window.setTimeout.expect(1).process();
         expect(first.className).toContain('custom-enter-start');
@@ -147,7 +147,7 @@ describe('ngIf ngAnimate', function () {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1000).process();
       } else {
@@ -155,9 +155,9 @@ describe('ngIf ngAnimate', function () {
       }
 
       $scope.$apply('value = false');
-      expect(element.children().length).toBe($sniffer.supportsTransitions ? 1 : 0);
+      expect(element.children().length).toBe($sniffer.transitions ? 1 : 0);
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.className).toContain('custom-leave-setup');
         window.setTimeout.expect(1).process();
         expect(first.className).toContain('custom-leave-start');
@@ -180,7 +180,7 @@ describe('ngIf ngAnimate', function () {
       ))($scope);
       $scope.$apply('value = true');
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {

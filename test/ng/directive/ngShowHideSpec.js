@@ -87,7 +87,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(element.attr('class')).toContain('custom-show-setup');
         window.setTimeout.expect(1).process();
 
@@ -102,7 +102,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
 
       $scope.on = false;
       $scope.$digest();
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(element.attr('class')).toContain('custom-hide-setup');
         window.setTimeout.expect(1).process();
         expect(element.attr('class')).toContain('custom-hide-start');
@@ -133,7 +133,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
         $rootElement.controller('ngAnimate').running = false;
         $rootScope.val = false;
         $rootScope.$digest();
-        if ($sniffer.supportsTransitions) {
+        if ($sniffer.transitions) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(0).process();
         } else {
@@ -157,7 +157,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(element.attr('class')).toContain('custom-hide-setup');
         window.setTimeout.expect(1).process();
 
@@ -173,7 +173,7 @@ describe('ngShow / ngHide - ngAnimate', function() {
       $scope.off = false;
       $scope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(element.attr('class')).toContain('custom-show-setup');
         window.setTimeout.expect(1).process();
         expect(element.attr('class')).toContain('custom-show-start');

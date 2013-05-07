@@ -608,7 +608,7 @@ describe('ngRepeat ngAnimate', function() {
       applyCSS(kids[i], 'transition', '1s linear all');
     }
 
-    if ($sniffer.supportsTransitions) {
+    if ($sniffer.transitions) {
       angular.forEach(kids, function(kid) {
         expect(kid.attr('class')).toContain('custom-enter-setup');
         window.setTimeout.expect(1).process();
@@ -654,7 +654,7 @@ describe('ngRepeat ngAnimate', function() {
 
     //the last element gets pushed down when it animates
     var kid = jqLite(element.children()[1]);
-    if ($sniffer.supportsTransitions) {
+    if ($sniffer.transitions) {
       expect(kid.attr('class')).toContain('custom-leave-setup');
       window.setTimeout.expect(1).process();
       expect(kid.attr('class')).toContain('custom-leave-start');
@@ -696,7 +696,7 @@ describe('ngRepeat ngAnimate', function() {
       var left  = jqLite(kids[1]);
       var right = jqLite(kids[2]);
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         expect(first.attr('class')).toContain('custom-move-setup');
         window.setTimeout.expect(1).process();
         expect(left.attr('class')).toContain('custom-move-setup');
@@ -743,7 +743,7 @@ describe('ngRepeat ngAnimate', function() {
       applyCSS(first, cssProp, cssValue);
       applyCSS(second, cssProp, cssValue);
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
