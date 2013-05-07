@@ -66,7 +66,7 @@
         it('should execute ng-click but not reload when no href but name specified', function() {
           element('#link-5').click();
           expect(input('value').val()).toEqual('5');
-          expect(element('#link-5').attr('href')).toBe('');
+          expect(element('#link-5').attr('href')).toBe(undefined);
         });
 
         it('should only change url when only ng-href', function() {
@@ -272,6 +272,37 @@
  * @param {string} expression Angular expression that will be evaluated.
  */
 
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngOpen
+ * @restrict A
+ *
+ * @description
+ * The HTML specs do not require browsers to preserve the special attributes such as open.
+ * (The presence of them means true and absence means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce the `ngOpen` directive.
+ *
+ * @example
+     <doc:example>
+       <doc:source>
+         Check me check multiple: <input type="checkbox" ng-model="open"><br/>
+         <details id="details" ng-open="open">
+            <summary>Show/Hide me</summary>
+         </details>
+       </doc:source>
+       <doc:scenario>
+         it('should toggle open', function() {
+           expect(element('#details').prop('open')).toBeFalsy();
+           input('open').check();
+           expect(element('#details').prop('open')).toBeTruthy();
+         });
+       </doc:scenario>
+     </doc:example>
+ *
+ * @element DETAILS
+ * @param {string} expression Angular expression that will be evaluated.
+ */
 
 var ngAttributeAliasDirectives = {};
 
@@ -284,7 +315,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
       priority: 100,
       compile: function() {
         return function(scope, element, attr) {
-          scope.$watch(attr[normalized], function(value) {
+          scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
             attr.$set(attrName, !!value);
           });
         };
@@ -302,12 +333,16 @@ forEach(['src', 'href'], function(attrName) {
       priority: 99, // it needs to run after the attributes are interpolated
       link: function(scope, element, attr) {
         attr.$observe(normalized, function(value) {
+          if (!value)
+             return;
+
           attr.$set(attrName, value);
 
           // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
-          // to set the property as well to achieve the desired effect
-          if (msie) element.prop(attrName, value);
+          // to set the property as well to achieve the desired effect.
+          // we use attr[attrName] value since $set can sanitize the url.
+          if (msie) element.prop(attrName, attr[attrName]);
         });
       }
     };

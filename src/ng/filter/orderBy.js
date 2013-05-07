@@ -9,7 +9,7 @@
  * Orders a specified `array` by the `expression` predicate.
  *
  * Note: this function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more informaton about Angular arrays.
+ * {@link ng.$filter} for more information about Angular arrays.
  *
  * @param {Array} array The array to sort.
  * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be
@@ -52,12 +52,12 @@
                  (<a href ng-click="predicate = '-name'; reverse=false">^</a>)</th>
              <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
              <th><a href="" ng-click="predicate = 'age'; reverse=!reverse">Age</a></th>
-           <tr>
+           </tr>
            <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
              <td>{{friend.name}}</td>
              <td>{{friend.phone}}</td>
              <td>{{friend.age}}</td>
-           <tr>
+           </tr>
          </table>
        </div>
      </doc:source>
@@ -89,7 +89,7 @@
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){
   return function(array, sortPredicate, reverseOrder) {
-    if (!(array instanceof Array)) return array;
+    if (!isArray(array)) return array;
     if (!sortPredicate) return array;
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     sortPredicate = map(sortPredicate, function(predicate){

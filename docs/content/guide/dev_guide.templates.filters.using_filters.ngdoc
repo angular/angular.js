@@ -19,6 +19,10 @@ You can also pass colon-delimited arguments to filters, for example, to display 
 
         123 | number:2
 
+Use the same syntax for multiple arguments:
+
+        myArray | orderBy:'timestamp':true
+
 Here are some examples that show values before and after applying different filters to an
 expression in a binding:
 

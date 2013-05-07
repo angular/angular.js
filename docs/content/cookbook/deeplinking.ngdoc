@@ -5,7 +5,7 @@
 Deep linking allows you to encode the state of the application in the URL so that it can be
 bookmarked and the application can be restored from the URL to the same state.
 
-While angular does not force you to deal with bookmarks in any particular way, it has services
+While Angular does not force you to deal with bookmarks in any particular way, it has services
 which make the common case described here very easy to implement.
 
 # Assumptions

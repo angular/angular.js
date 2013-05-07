@@ -14,8 +14,8 @@
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by rake's
-  major: "NG_VERSION_MAJOR",    // compile task
+  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by grunt's
+  major: "NG_VERSION_MAJOR",    // package task
   minor: "NG_VERSION_MINOR",
   dot: "NG_VERSION_DOT",
   codeName: '"NG_VERSION_CODENAME"'
@@ -48,7 +48,8 @@ function publishExternalAPI(angular){
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
-    'callbacks': {counter: 0}
+    'callbacks': {counter: 0},
+    'noConflict': noConflict
   });
 
   angularModule = setupModuleLoader(window);
@@ -81,6 +82,7 @@ function publishExternalAPI(angular){
             ngController: ngControllerDirective,
             ngForm: ngFormDirective,
             ngHide: ngHideDirective,
+            ngIf: ngIfDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
             ngNonBindable: ngNonBindableDirective,
@@ -106,6 +108,8 @@ function publishExternalAPI(angular){
         directive(ngEventDirectives);
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
+        $animation: $AnimationProvider,
+        $animator: $AnimatorProvider,
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,

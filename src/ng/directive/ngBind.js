@@ -12,7 +12,7 @@
  * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
  * `{{ expression }}` which is similar but less verbose.
  *
- * Once scenario in which the use of `ngBind` is prefered over `{{ expression }}` binding is when
+ * One scenario in which the use of `ngBind` is preferred over `{{ expression }}` binding is when
  * it's desirable to put bindings into template that is momentarily displayed by the browser in its
  * raw state before Angular compiles it. Since `ngBind` is an element attribute, it makes the
  * bindings invisible to the user while the page is loading.
@@ -49,7 +49,7 @@
  */
 var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
-  scope.$watch(attr.ngBind, function(value) {
+  scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
     element.text(value == undefined ? '' : value);
   });
 });
@@ -132,7 +132,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 var ngBindHtmlUnsafeDirective = [function() {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
-    scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
+    scope.$watch(attr.ngBindHtmlUnsafe, function ngBindHtmlUnsafeWatchAction(value) {
       element.html(value || '');
     });
   };

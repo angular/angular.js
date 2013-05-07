@@ -1,4 +1,98 @@
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-$provide.value("$locale", {"NUMBER_FORMATS":{"DECIMAL_SEP":".","GROUP_SEP":",","PATTERNS":[{"minInt":1,"minFrac":0,"macFrac":0,"posPre":"","posSuf":"","negPre":"-","negSuf":"","gSize":3,"lgSize":3,"maxFrac":3},{"minInt":1,"minFrac":2,"macFrac":0,"posPre":"\u00A4","posSuf":"","negPre":"(\u00A4","negSuf":")","gSize":3,"lgSize":3,"maxFrac":2}],"CURRENCY_SYM":"Br"},"pluralCat":function (n) {  if (n == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;},"DATETIME_FORMATS":{"MONTH":["ጃንዩወሪ","ፌብሩወሪ","ማርች","ኤፕረል","ሜይ","ጁን","ጁላይ","ኦገስት","ሴፕቴምበር","ኦክተውበር","ኖቬምበር","ዲሴምበር"],"SHORTMONTH":["ጃንዩ","ፌብሩ","ማርች","ኤፕረ","ሜይ","ጁን","ጁላይ","ኦገስ","ሴፕቴ","ኦክተ","ኖቬም","ዲሴም"],"DAY":["እሑድ","ሰኞ","ማክሰኞ","ረቡዕ","ሐሙስ","ዓርብ","ቅዳሜ"],"SHORTDAY":["እሑድ","ሰኞ","ማክሰ","ረቡዕ","ሐሙስ","ዓርብ","ቅዳሜ"],"AMPMS":["ጡዋት","ከሳዓት"],"medium":"d MMM y h:mm:ss a","short":"dd/MM/yyyy h:mm a","fullDate":"EEEE, d MMMM y","longDate":"d MMMM y","mediumDate":"d MMM y","shortDate":"dd/MM/yyyy","mediumTime":"h:mm:ss a","shortTime":"h:mm a"},"id":"am-et"});
+$provide.value("$locale", {
+  "DATETIME_FORMATS": {
+    "AMPMS": {
+      "0": "\u1321\u12cb\u1275",
+      "1": "\u12a8\u1233\u12d3\u1275"
+    },
+    "DAY": {
+      "0": "\u12a5\u1211\u12f5",
+      "1": "\u1230\u129e",
+      "2": "\u121b\u12ad\u1230\u129e",
+      "3": "\u1228\u1261\u12d5",
+      "4": "\u1210\u1219\u1235",
+      "5": "\u12d3\u122d\u1265",
+      "6": "\u1245\u12f3\u121c"
+    },
+    "MONTH": {
+      "0": "\u1303\u1295\u12e9\u12c8\u122a",
+      "1": "\u134c\u1265\u1229\u12c8\u122a",
+      "2": "\u121b\u122d\u127d",
+      "3": "\u12a4\u1355\u1228\u120d",
+      "4": "\u121c\u12ed",
+      "5": "\u1301\u1295",
+      "6": "\u1301\u120b\u12ed",
+      "7": "\u12a6\u1308\u1235\u1275",
+      "8": "\u1234\u1355\u1274\u121d\u1260\u122d",
+      "9": "\u12a6\u12ad\u1270\u12cd\u1260\u122d",
+      "10": "\u1296\u126c\u121d\u1260\u122d",
+      "11": "\u12f2\u1234\u121d\u1260\u122d"
+    },
+    "SHORTDAY": {
+      "0": "\u12a5\u1211\u12f5",
+      "1": "\u1230\u129e",
+      "2": "\u121b\u12ad\u1230",
+      "3": "\u1228\u1261\u12d5",
+      "4": "\u1210\u1219\u1235",
+      "5": "\u12d3\u122d\u1265",
+      "6": "\u1245\u12f3\u121c"
+    },
+    "SHORTMONTH": {
+      "0": "\u1303\u1295\u12e9",
+      "1": "\u134c\u1265\u1229",
+      "2": "\u121b\u122d\u127d",
+      "3": "\u12a4\u1355\u1228",
+      "4": "\u121c\u12ed",
+      "5": "\u1301\u1295",
+      "6": "\u1301\u120b\u12ed",
+      "7": "\u12a6\u1308\u1235",
+      "8": "\u1234\u1355\u1274",
+      "9": "\u12a6\u12ad\u1270",
+      "10": "\u1296\u126c\u121d",
+      "11": "\u12f2\u1234\u121d"
+    },
+    "fullDate": "EEEE, d MMMM y",
+    "longDate": "d MMMM y",
+    "medium": "d MMM y h:mm:ss a",
+    "mediumDate": "d MMM y",
+    "mediumTime": "h:mm:ss a",
+    "short": "dd/MM/yyyy h:mm a",
+    "shortDate": "dd/MM/yyyy",
+    "shortTime": "h:mm a"
+  },
+  "NUMBER_FORMATS": {
+    "CURRENCY_SYM": "Birr",
+    "DECIMAL_SEP": ".",
+    "GROUP_SEP": ",",
+    "PATTERNS": {
+      "0": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 3,
+        "minFrac": 0,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "",
+        "posPre": "",
+        "posSuf": ""
+      },
+      "1": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 2,
+        "minFrac": 2,
+        "minInt": 1,
+        "negPre": "(\u00a4",
+        "negSuf": ")",
+        "posPre": "\u00a4",
+        "posSuf": ""
+      }
+    }
+  },
+  "id": "am-et",
+  "pluralCat": function (n) {  if (n == 0 || n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+});
 }]);

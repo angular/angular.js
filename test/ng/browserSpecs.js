@@ -271,41 +271,26 @@ describe('browser', function() {
         browser.cookies('x', longVal + longVal + longVal); //should be too long for all browsers
 
         if (document.cookie !== cookieStr) {
-          fail("browser didn't drop long cookie when it was expected. make the cookie in this " +
-              "test longer");
+          this.fail(new Error("browser didn't drop long cookie when it was expected. make the " +
+              "cookie in this test longer"));
         }
 
         expect(browser.cookies().x).toEqual('shortVal');
       });
-
-      it('should log warnings when 20 cookies per domain storage limit is reached', function() {
-        var i, str, cookieStr;
-
-        for (i=0; i<20; i++) {
-          str = '' + i;
-          browser.cookies(str, str);
-        }
-
-        i=0;
-        for (str in browser.cookies()) {
-          i++;
-        }
-        expect(i).toEqual(20);
-        expect(logs.warn).toEqual([]);
-        cookieStr = document.cookie;
-
-        browser.cookies('one', 'more');
-        expect(logs.warn).toEqual([]);
-
-        //if browser dropped a cookie (very likely), make sure that the cache is not out of sync
-        if (document.cookie === cookieStr) {
-          expect(size(browser.cookies())).toEqual(20);
-        } else {
-          expect(size(browser.cookies())).toEqual(21);
-        }
-      });
     });
 
+    describe('put via cookies(cookieName, string), if no <base href> ', function () {
+      beforeEach(function () {
+        fakeDocument.basePath = undefined;
+      });
+
+      it('should default path in cookie to "" (empty string)', function () {
+        browser.cookies('cookie', 'bender');
+        // This only fails in Safari and IE when cookiePath returns undefined
+        // Where it now succeeds since baseHref return '' instead of undefined         
+        expect(document.cookie).toEqual('cookie=bender');
+      });
+    });
 
     describe('get via cookies()[cookieName]', function() {
 
@@ -582,9 +567,9 @@ describe('browser', function() {
       expect(browser.baseHref()).toEqual('/base/path/');
     });
 
-    it('should return undefined if no <base href>', function() {
+    it('should return \'\' (empty string) if no <base href>', function() {
       fakeDocument.basePath = undefined;
-      expect(browser.baseHref()).toBeUndefined();
+      expect(browser.baseHref()).toEqual('');
     });
 
     it('should remove domain from <base href>', function() {

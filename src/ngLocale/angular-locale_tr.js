@@ -1,4 +1,98 @@
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-$provide.value("$locale", {"DATETIME_FORMATS":{"MONTH":["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],"SHORTMONTH":["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"],"DAY":["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"],"SHORTDAY":["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"],"AMPMS":["AM","PM"],"medium":"dd MMM y HH:mm:ss","short":"dd MM yyyy HH:mm","fullDate":"dd MMMM y EEEE","longDate":"dd MMMM y","mediumDate":"dd MMM y","shortDate":"dd MM yyyy","mediumTime":"HH:mm:ss","shortTime":"HH:mm"},"NUMBER_FORMATS":{"DECIMAL_SEP":",","GROUP_SEP":".","PATTERNS":[{"minInt":1,"minFrac":0,"macFrac":0,"posPre":"","posSuf":"","negPre":"-","negSuf":"","gSize":3,"lgSize":3,"maxFrac":3},{"minInt":1,"minFrac":2,"macFrac":0,"posPre":"","posSuf":" \u00A4","negPre":"-","negSuf":" \u00A4","gSize":3,"lgSize":3,"maxFrac":2}],"CURRENCY_SYM":"YTL"},"pluralCat":function (n) {  return PLURAL_CATEGORY.OTHER;},"id":"tr"});
+$provide.value("$locale", {
+  "DATETIME_FORMATS": {
+    "AMPMS": {
+      "0": "AM",
+      "1": "PM"
+    },
+    "DAY": {
+      "0": "Pazar",
+      "1": "Pazartesi",
+      "2": "Sal\u0131",
+      "3": "\u00c7ar\u015famba",
+      "4": "Per\u015fembe",
+      "5": "Cuma",
+      "6": "Cumartesi"
+    },
+    "MONTH": {
+      "0": "Ocak",
+      "1": "\u015eubat",
+      "2": "Mart",
+      "3": "Nisan",
+      "4": "May\u0131s",
+      "5": "Haziran",
+      "6": "Temmuz",
+      "7": "A\u011fustos",
+      "8": "Eyl\u00fcl",
+      "9": "Ekim",
+      "10": "Kas\u0131m",
+      "11": "Aral\u0131k"
+    },
+    "SHORTDAY": {
+      "0": "Paz",
+      "1": "Pzt",
+      "2": "Sal",
+      "3": "\u00c7ar",
+      "4": "Per",
+      "5": "Cum",
+      "6": "Cmt"
+    },
+    "SHORTMONTH": {
+      "0": "Oca",
+      "1": "\u015eub",
+      "2": "Mar",
+      "3": "Nis",
+      "4": "May",
+      "5": "Haz",
+      "6": "Tem",
+      "7": "A\u011fu",
+      "8": "Eyl",
+      "9": "Eki",
+      "10": "Kas",
+      "11": "Ara"
+    },
+    "fullDate": "d MMMM y EEEE",
+    "longDate": "d MMMM y",
+    "medium": "d MMM y HH:mm:ss",
+    "mediumDate": "d MMM y",
+    "mediumTime": "HH:mm:ss",
+    "short": "dd MM yyyy HH:mm",
+    "shortDate": "dd MM yyyy",
+    "shortTime": "HH:mm"
+  },
+  "NUMBER_FORMATS": {
+    "CURRENCY_SYM": "TL",
+    "DECIMAL_SEP": ",",
+    "GROUP_SEP": ".",
+    "PATTERNS": {
+      "0": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 3,
+        "minFrac": 0,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "",
+        "posPre": "",
+        "posSuf": ""
+      },
+      "1": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 2,
+        "minFrac": 2,
+        "minInt": 1,
+        "negPre": "(",
+        "negSuf": "\u00a0\u00a4)",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
+      }
+    }
+  },
+  "id": "tr",
+  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+});
 }]);

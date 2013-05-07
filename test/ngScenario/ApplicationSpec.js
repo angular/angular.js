@@ -5,18 +5,24 @@ describe('angular.scenario.Application', function() {
   var app, frames;
 
   function callLoadHandlers(app) {
-    var handlers = app.getFrame_().data('events').load;
-    expect(handlers).toBeDefined();
-    expect(handlers.length).toEqual(1);
-    handlers[0].handler();
+    var handler = app.getFrame_().triggerHandler('load')
   }
 
   beforeEach(function() {
+    document.body.innerHTML = '';
     frames = _jQuery("<div></div>");
+    _jQuery(document.body).append(frames);
     app = new angular.scenario.Application(frames);
   });
 
-  it('should return new $window and $document after navigate', function() {
+
+  afterEach(function() {
+    _jQuery('iframe').unbind(); // cleanup any leftover onload handlers
+    document.body.innerHTML = '';
+  });
+
+
+  it('should return new $window and $document after navigateTo', function() {
     var called;
     var testWindow, testDocument, counter = 0;
     app.getWindow_ = function() {

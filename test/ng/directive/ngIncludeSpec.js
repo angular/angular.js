@@ -59,6 +59,22 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('');
   }));
 
+  it('should fire $includeContentRequested event on scope after making the xhr call', inject(
+      function ($rootScope, $compile, $httpBackend) {
+    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
+        expect(event.targetScope).toBe($rootScope);
+    });
+
+    $httpBackend.whenGET('url').respond('my partial');
+    $rootScope.$on('$includeContentRequested', contentRequestedSpy);
+
+    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    $rootScope.$digest();
+
+    expect(contentRequestedSpy).toHaveBeenCalledOnce();
+
+    $httpBackend.flush();
+  }));
 
   it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
@@ -178,25 +194,23 @@ describe('ngInclude', function() {
   it('should discard pending xhr callbacks if a new template is requested before the current ' +
       'finished loading', inject(function($rootScope, $compile, $httpBackend) {
     element = jqLite("<ng:include src='templateUrl'></ng:include>");
-    var log = [];
+    var log = {};
 
     $rootScope.templateUrl = 'myUrl1';
     $rootScope.logger = function(msg) {
-      log.push(msg);
+      log[msg] = true;
     }
     $compile(element)($rootScope);
-    expect(log.join('; ')).toEqual('');
+    expect(log).toEqual({});
 
     $httpBackend.expect('GET', 'myUrl1').respond('<div>{{logger("url1")}}</div>');
     $rootScope.$digest();
-    expect(log.join('; ')).toEqual('');
+    expect(log).toEqual({});
     $rootScope.templateUrl = 'myUrl2';
     $httpBackend.expect('GET', 'myUrl2').respond('<div>{{logger("url2")}}</div>');
-    $rootScope.$digest();
     $httpBackend.flush(); // now that we have two requests pending, flush!
 
-    expect(log.join('; ')).toEqual('url2; url2'); // it's here twice because we go through at
-                                                  // least two digest cycles
+    expect(log).toEqual({ url2 : true });
   }));
 
 
@@ -281,4 +295,134 @@ describe('ngInclude', function() {
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
   });
+});
+
+describe('ngInclude ngAnimate', function() {
+  var vendorPrefix, window;
+  var body, element;
+
+  function html(html) {
+    body.html(html);
+    element = body.children().eq(0);
+    return element;
+  }
+
+  function applyCSS(element, cssProp, cssValue) {
+    element.css(cssProp, cssValue);    
+    element.css(vendorPrefix + cssProp, cssValue);
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
+
+  beforeEach(module(function($animationProvider, $provide) {
+    $provide.value('$window', window = angular.mock.createMockWindow());
+    return function($sniffer, $animator) {
+      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+      $animator.enabled(true);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  it('should fire off the enter animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(html(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{enter: \'custom-enter\'}">' +
+        '</div>'
+      ))($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      applyCSS(child, 'transition', '1s linear all');
+
+      if ($sniffer.supportsTransitions) {
+        expect(child.attr('class')).toContain('custom-enter-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(child.attr('class')).toContain('custom-enter-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+       expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(child.attr('class')).not.toContain('custom-enter-setup');
+      expect(child.attr('class')).not.toContain('custom-enter-start');
+  }));
+
+  it('should fire off the leave animation + add and remove the css classes',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(html(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{leave: \'custom-leave\'}">' +
+        '</div>'
+      ))($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      applyCSS(child, 'transition', '1s linear all');
+
+      $rootScope.tpl = '';
+      $rootScope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        expect(child.attr('class')).toContain('custom-leave-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(child.attr('class')).toContain('custom-leave-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+       expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(child.attr('class')).not.toContain('custom-leave-setup');
+      expect(child.attr('class')).not.toContain('custom-leave-start');
+  }));
+
+  it('should catch and use the correct duration for animation',
+    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(html(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{enter: \'custom-enter\'}">' +
+        '</div>'
+      ))($rootScope);
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      applyCSS(child, 'transition', '0.5s linear all');
+
+      $rootScope.tpl = 'enter';
+      $rootScope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(500).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+  }));
+
 });

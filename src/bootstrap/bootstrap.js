@@ -9,7 +9,7 @@ directive.dropdownToggle =
     return {
       restrict: 'C',
       link: function(scope, element, attrs) {
-        scope.$watch(function(){return $location.path();}, function() {
+        scope.$watch(function dropdownTogglePathWatch(){return $location.path();}, function dropdownTogglePathWatchAction() {
           close && close();
         });
 
@@ -143,6 +143,14 @@ directive.tabbable = function() {
   };
 };
 
+directive.table = function() {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attrs) {
+      element[0].className = 'table table-bordered table-striped code-table';
+    }
+  };
+};
 
 directive.tabPane = function() {
   return {

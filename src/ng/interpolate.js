@@ -1,13 +1,13 @@
 'use strict';
 
 /**
- * @ngdoc function
+ * @ngdoc object
  * @name ng.$interpolateProvider
  * @function
  *
  * @description
  *
- * Used for configuring the interpolation markup. Deafults to `{{` and `}}`.
+ * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
@@ -20,7 +20,8 @@ function $InterpolateProvider() {
    * @description
    * Symbol to denote start of expression in the interpolated string. Defaults to `{{`.
    *
-   * @prop {string=} value new value to set the starting symbol to.
+   * @param {string=} value new value to set the starting symbol to.
+   * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
   this.startSymbol = function(value){
     if (value) {
@@ -38,19 +39,20 @@ function $InterpolateProvider() {
    * @description
    * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
    *
-   * @prop {string=} value new value to set the ending symbol to.
+   * @param {string=} value new value to set the ending symbol to.
+   * @returns {string|self} Returns the symbol when used as getter and self if used as setter.
    */
   this.endSymbol = function(value){
     if (value) {
       endSymbol = value;
       return this;
     } else {
-      return startSymbol;
+      return endSymbol;
     }
   };
 
 
-  this.$get = ['$parse', function($parse) {
+  this.$get = ['$parse', '$exceptionHandler', function($parse, $exceptionHandler) {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length;
 
@@ -87,7 +89,7 @@ function $InterpolateProvider() {
      *      against.
      *
      */
-    return function(text, mustHaveExpression) {
+    function $interpolate(text, mustHaveExpression) {
       var startIndex,
           endIndex,
           index = 0,
@@ -122,24 +124,66 @@ function $InterpolateProvider() {
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
         fn = function(context) {
-          for(var i = 0, ii = length, part; i<ii; i++) {
-            if (typeof (part = parts[i]) == 'function') {
-              part = part(context);
-              if (part == null || part == undefined) {
-                part = '';
-              } else if (typeof part != 'string') {
-                part = toJson(part);
+          try {
+            for(var i = 0, ii = length, part; i<ii; i++) {
+              if (typeof (part = parts[i]) == 'function') {
+                part = part(context);
+                if (part == null || part == undefined) {
+                  part = '';
+                } else if (typeof part != 'string') {
+                  part = toJson(part);
+                }
               }
+              concat[i] = part;
             }
-            concat[i] = part;
+            return concat.join('');
           }
-          return concat.join('');
+          catch(err) {
+            var newErr = new Error('Error while interpolating: ' + text + '\n' + err.toString());
+            $exceptionHandler(newErr);
+          }
         };
         fn.exp = text;
         fn.parts = parts;
         return fn;
       }
-    };
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name ng.$interpolate#startSymbol
+     * @methodOf ng.$interpolate
+     * @description
+     * Symbol to denote the start of expression in the interpolated string. Defaults to `{{`.
+     *
+     * Use {@link ng.$interpolateProvider#startSymbol $interpolateProvider#startSymbol} to change
+     * the symbol.
+     *
+     * @returns {string} start symbol.
+     */
+    $interpolate.startSymbol = function() {
+      return startSymbol;
+    }
+
+
+    /**
+     * @ngdoc method
+     * @name ng.$interpolate#endSymbol
+     * @methodOf ng.$interpolate
+     * @description
+     * Symbol to denote the end of expression in the interpolated string. Defaults to `}}`.
+     *
+     * Use {@link ng.$interpolateProvider#endSymbol $interpolateProvider#endSymbol} to change
+     * the symbol.
+     *
+     * @returns {string} start symbol.
+     */
+    $interpolate.endSymbol = function() {
+      return endSymbol;
+    }
+
+    return $interpolate;
   }];
 }
 

@@ -28,12 +28,12 @@ var uppercase = function(string){return isString(string) ? string.toUpperCase() 
 
 var manualLowercase = function(s) {
   return isString(s)
-      ? s.replace(/[A-Z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) | 32);})
+      ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
 };
 var manualUppercase = function(s) {
   return isString(s)
-      ? s.replace(/[a-z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) & ~32);})
+      ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
 };
 
@@ -46,11 +46,8 @@ if ('i' !== 'I'.toLowerCase()) {
   uppercase = manualUppercase;
 }
 
-function fromCharCode(code) {return String.fromCharCode(code);}
 
-
-var Error             = window.Error,
-    /** holds major version number for IE or NaN for real browsers */
+var /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
@@ -58,11 +55,31 @@ var Error             = window.Error,
     push              = [].push,
     toString          = Object.prototype.toString,
 
+
+    _angular          = window.angular,
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
+
+/**
+ * @ngdoc function
+ * @name angular.noConflict
+ * @function
+ *
+ * @description
+ * Restores the previous global value of angular and returns the current instance. Other libraries may already use the
+ * angular namespace. Or a previous version of angular is already loaded on the page. In these cases you may want to
+ * restore the previous namespace and keep a reference to angular.
+ *
+ * @return {Object} The current angular namespace
+ */
+function noConflict() {
+  var a = window.angular;
+  window.angular = _angular;
+  return a;
+}
 
 /**
  * @ngdoc function
@@ -91,6 +108,30 @@ var Error             = window.Error,
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
+
+
+/**
+ * @private
+ * @param {*} obj
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
+ */
+function isArrayLike(obj) {
+  if (!obj || (typeof obj.length !== 'number')) return false;
+
+  // We have on object which has length property. Should we treat it as array?
+  if (typeof obj.hasOwnProperty != 'function' &&
+      typeof obj.constructor != 'function') {
+    // This is here for IE8: it is a bogus object treat it as array;
+    return true;
+  } else  {
+    return obj instanceof JQLite ||                      // JQLite
+           (jQuery && obj instanceof jQuery) ||          // jQuery
+           toString.call(obj) !== '[object Object]' ||   // some browser native object
+           typeof obj.callee === 'function';              // arguments (on IE8 looks like regular obj)
+  }
+}
+
+
 function forEach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -102,7 +143,7 @@ function forEach(obj, iterator, context) {
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
-    } else if (isObject(obj) && isNumber(obj.length)) {
+    } else if (isArrayLike(obj)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
@@ -147,7 +188,7 @@ function reverseParams(iteratorFn) {
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
  * characters such as '012ABC'. The reason why we are not using simply a number counter is that
- * the number string gets longer over time, and it can also overflow, where as the the nextId
+ * the number string gets longer over time, and it can also overflow, where as the nextId
  * will grow much slower, it is a string, and it will never overflow.
  *
  * @returns an unique alpha-numeric string
@@ -206,6 +247,11 @@ function inherit(parent, extra) {
   return extend(new (extend(function() {}, {prototype:parent}))(), extra);
 }
 
+var START_SPACE = /^\s*/;
+var END_SPACE = /\s*$/;
+function stripWhitespace(str) {
+  return isString(str) ? str.replace(START_SPACE, '').replace(END_SPACE, '') : str;
+}
 
 /**
  * @ngdoc function
@@ -543,9 +589,7 @@ function copy(source, destination){
   } else {
     if (source === destination) throw NgError(44, "Can't copy equivalent objects or arrays");
     if (isArray(source)) {
-      while(destination.length) {
-        destination.pop();
-      }
+      destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
         destination.push(copy(source[i]));
       }
@@ -592,10 +636,10 @@ function shallowCopy(src, dst) {
  * * Both objects or values are of the same type and all of their properties pass `===` comparison.
  * * Both values are NaN. (In JavasScript, NaN == NaN => false. But we consider two NaN as equal)
  *
- * During a property comparision, properties of `function` type and properties with names
+ * During a property comparison, properties of `function` type and properties with names
  * that begin with `$` are ignored.
  *
- * Scope and DOMWindow objects are being compared only be identify (`===`).
+ * Scope and DOMWindow objects are being compared only by identify (`===`).
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -621,13 +665,15 @@ function equals(o1, o2) {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
         keySet = {};
         for(key in o1) {
-          if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) {
-            return false;
-          }
+          if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
+          if (!equals(o1[key], o2[key])) return false;
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] && key.charAt(0) !== '$' && !isFunction(o2[key])) return false;
+          if (!keySet[key] &&
+              key.charAt(0) !== '$' &&
+              o2[key] !== undefined &&
+              !isFunction(o2[key])) return false;
         }
         return true;
       }
@@ -653,7 +699,7 @@ function sliceArgs(args, startIndex) {
  *
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
- * `fn`). You can supply optional `args` that are are prebound to the function. This feature is also
+ * `fn`). You can supply optional `args` that are prebound to the function. This feature is also
  * known as [function currying](http://en.wikipedia.org/wiki/Currying).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
@@ -754,9 +800,18 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {}
-  return jqLite('<div>').append(element).html().
-      match(/^(<[^>]+>)/)[1].
-      replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
+  // As Per DOM Standards
+  var TEXT_NODE = 3;
+  var elemHtml = jqLite('<div>').append(element).html();
+  try {
+    return element[0].nodeType === TEXT_NODE ? lowercase(elemHtml) :
+        elemHtml.
+          match(/^(<[^>]+>)/)[1].
+          replace(/^<([\w\-]+)/, function(match, nodeName) { return '<' + lowercase(nodeName); });
+  } catch(e) {
+    return lowercase(elemHtml);
+  }
+
 }
 
 
@@ -788,7 +843,7 @@ function toKeyValue(obj) {
 
 
 /**
- * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+ * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
  * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
  * segments:
  *    segment       = *pchar
@@ -808,7 +863,7 @@ function encodeUriSegment(val) {
 
 /**
  * This method is intended for encoding *key* or *value* parts of query component. We need a custom
- * method becuase encodeURIComponent is too agressive and encodes stuff that doesn't have to be
+ * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
  * encoded per http://tools.ietf.org/html/rfc3986:
  *    query       = *( pchar / "/" / "?" )
  *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
@@ -823,7 +878,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
              replace(/%3A/gi, ':').
              replace(/%24/g, '$').
              replace(/%2C/gi, ',').
-             replace((pctEncodeSpaces ? null : /%20/g), '+');
+             replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
 }
 
 
@@ -832,15 +887,15 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @name ng.directive:ngApp
  *
  * @element ANY
- * @param {angular.Module} ngApp on optional application
+ * @param {angular.Module} ngApp an optional application
  *   {@link angular.module module} name to load.
  *
  * @description
  *
- * Use this directive to auto-bootstrap on application. Only
+ * Use this directive to auto-bootstrap an application. Only
  * one directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
- * ot the root of the page.
+ * at the root of the page.
  *
  * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
@@ -912,22 +967,39 @@ function angularInit(element, bootstrap) {
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
-  element = jqLite(element);
-  modules = modules || [];
-  modules.unshift(['$provide', function($provide) {
-    $provide.value('$rootElement', element);
-  }]);
-  modules.unshift('ng');
-  var injector = createInjector(modules);
-  injector.invoke(
-    ['$rootScope', '$rootElement', '$compile', '$injector', function(scope, element, compile, injector){
-      scope.$apply(function() {
-        element.data('$injector', injector);
-        compile(element)(scope);
-      });
-    }]
-  );
-  return injector;
+  var resumeBootstrapInternal = function() {
+    element = jqLite(element);
+    modules = modules || [];
+    modules.unshift(['$provide', function($provide) {
+      $provide.value('$rootElement', element);
+    }]);
+    modules.unshift('ng');
+    var injector = createInjector(modules);
+    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animator',
+       function(scope, element, compile, injector, animator) {
+        scope.$apply(function() {
+          element.data('$injector', injector);
+          compile(element)(scope);
+        });
+        animator.enabled(true);
+      }]
+    );
+    return injector;
+  };
+
+  var NG_DEFER_BOOTSTRAP = /^NG_DEFER_BOOTSTRAP!/;
+
+  if (window && !NG_DEFER_BOOTSTRAP.test(window.name)) {
+    return resumeBootstrapInternal();
+  }
+
+  window.name = window.name.replace(NG_DEFER_BOOTSTRAP, '');
+  angular.resumeBootstrap = function(extraModules) {
+    forEach(extraModules, function(module) {
+      modules.push(module);
+    });
+    resumeBootstrapInternal();
+  };
 }
 
 var SNAKE_CASE_REGEXP = /[A-Z]/g;
@@ -960,7 +1032,7 @@ function bindJQuery() {
 }
 
 /**
- * throw error of the argument is falsy.
+ * throw error if the argument is falsy.
  */
 function assertArg(arg, name, reason) {
   if (!arg) {

@@ -19,7 +19,7 @@
  * {@link http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html
  * plural categories} in Angular's default en-US locale: "one" and "other".
  *
- * While a pural category may match many numbers (for example, in en-US locale, "other" can match
+ * While a plural category may match many numbers (for example, in en-US locale, "other" can match
  * any number that is not 1), an explicit number rule can only match one number. For example, the
  * explicit number rule for "3" matches the number 3. You will see the use of plural categories
  * and explicit number rules throughout later parts of this documentation.
@@ -87,7 +87,7 @@
  * plural categories "one" and "other".
  *
  * @param {string|expression} count The variable to be bounded to.
- * @param {string} when The mapping between plural category to its correspoding strings.
+ * @param {string} when The mapping between plural category to its corresponding strings.
  * @param {number=} offset Offset to deduct from the total number.
  *
  * @example
@@ -178,14 +178,17 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
           whenExp = element.attr(attr.$attr.when), // this is because we have {{}} in attrs
           offset = attr.offset || 0,
           whens = scope.$eval(whenExp),
-          whensExpFns = {};
+          whensExpFns = {},
+          startSymbol = $interpolate.startSymbol(),
+          endSymbol = $interpolate.endSymbol();
 
       forEach(whens, function(expression, key) {
         whensExpFns[key] =
-          $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+          $interpolate(expression.replace(BRACE, startSymbol + numberExp + '-' +
+            offset + endSymbol));
       });
 
-      scope.$watch(function() {
+      scope.$watch(function ngPluralizeWatch() {
         var value = parseFloat(scope.$eval(numberExp));
 
         if (!isNaN(value)) {
@@ -196,7 +199,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
         } else {
           return '';
         }
-      }, function(newVal) {
+      }, function ngPluralizeWatchAction(newVal) {
         element.text(newVal);
       });
     }

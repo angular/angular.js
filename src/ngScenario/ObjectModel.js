@@ -106,6 +106,9 @@ angular.scenario.ObjectModel = function(runner) {
     self.emit('StepError', it, modelStep, error);
   });
 
+  runner.on('RunnerBegin', function() {
+    self.emit('RunnerBegin');
+  });
   runner.on('RunnerEnd', function() {
     self.emit('RunnerEnd');
   });

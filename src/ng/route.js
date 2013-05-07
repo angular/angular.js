@@ -20,25 +20,54 @@ function $RouteProvider(){
    *
    * @param {string} path Route path (matched against `$location.path`). If `$location.path`
    *    contains redundant trailing slash or is missing one, the route will still match and the
-   *    `$location.path` will be updated to add or drop the trailing slash to exacly match the
+   *    `$location.path` will be updated to add or drop the trailing slash to exactly match the
    *    route definition.
+   *
+   *      * `path` can contain named groups starting with a colon (`:name`). All characters up
+   *        to the next slash are matched and stored in `$routeParams` under the given `name`
+   *        when the route matches.
+   *      * `path` can contain named groups starting with a star (`*name`). All characters are
+   *        eagerly stored in `$routeParams` under the given `name` when the route matches.
+   *
+   *    For example, routes like `/color/:color/largecode/*largecode/edit` will match
+   *    `/color/brown/largecode/code/with/slashs/edit` and extract:
+   *
+   *      * `color: brown`
+   *      * `largecode: code/with/slashs`.
+   *
+   *
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
    *
    *    Object properties:
    *
-   *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
-   *      created scope.
-   *    - `template` – `{string=}` –  html template as a string that should be used by
-   *      {@link ng.directive:ngView ngView} or
+   *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with newly
+   *      created scope or the name of a {@link angular.Module#controller registered controller}
+   *      if passed as a string.
+   *    - `controllerAs` – `{string=}` – A controller alias name. If present the controller will be
+   *      published to scope under the `controllerAs` name.
+   *    - `template` – `{string=|function()=}` – html template as a string or function that returns
+   *      an html template as a string which should be used by {@link ng.directive:ngView ngView} or
    *      {@link ng.directive:ngInclude ngInclude} directives.
-   *      this property takes precedence over `templateUrl`.
-   *    - `templateUrl` – `{string=}` – path to an html template that should be used by
-   *      {@link ng.directive:ngView ngView}.
+   *      This property takes precedence over `templateUrl`.
+   *
+   *      If `template` is a function, it will be called with the following parameters:
+   *
+   *      - `{Array.<Object>}` - route parameters extracted from the current
+   *        `$location.path()` by applying the current route
+   *
+   *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
+   *      template that should be used by {@link ng.directive:ngView ngView}.
+   *
+   *      If `templateUrl` is a function, it will be called with the following parameters:
+   *
+   *      - `{Array.<Object>}` - route parameters extracted from the current
+   *        `$location.path()` by applying the current route
+   *
    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
    *      be injected into the controller. If any of these dependencies are promises, they will be
    *      resolved and converted to a value before the controller is instantiated and the
-   *      `$aftreRouteChange` event is fired. The map object is:
+   *      `$routeChangeSuccess` event is fired. The map object is:
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
@@ -65,13 +94,18 @@ function $RouteProvider(){
    *      If the option is set to `false` and url in the browser changes, then
    *      `$routeUpdate` event is broadcasted on the root scope.
    *
+   *    - `[caseInsensitiveMatch=false]` - {boolean=} - match routes without being case sensitive
+   *
+   *      If the option is set to `true`, then the particular route can be matched without being
+   *      case sensitive
+   *
    * @returns {Object} self
    *
    * @description
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true}, route);
+    routes[path] = extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
 
     // create redirection for trailing slashes
     if (path) {
@@ -257,8 +291,9 @@ function $RouteProvider(){
      * {@link ng.directive:ngView ngView} listens for the directive
      * to instantiate the controller and render the view.
      *
+     * @param {Object} angularEvent Synthetic event object.
      * @param {Route} current Current route information.
-     * @param {Route} previous Previous route information.
+     * @param {Route|Undefined} previous Previous route information, or undefined if current is first route entered.
      */
 
     /**
@@ -285,8 +320,7 @@ function $RouteProvider(){
      * instance of the Controller.
      */
 
-    var matcher = switchRouteMatcher,
-        forceReload = false,
+    var forceReload = false,
         $route = {
           routes: routes,
 
@@ -314,22 +348,46 @@ function $RouteProvider(){
 
     /////////////////////////////////////////////////////
 
-    function switchRouteMatcher(on, when) {
+    /**
+     * @param on {string} current url
+     * @param when {string} route when template to match the url against
+     * @param whenProperties {Object} properties to define when's matching behavior
+     * @return {?Object}
+     */
+    function switchRouteMatcher(on, when, whenProperties) {
       // TODO(i): this code is convoluted and inefficient, we should construct the route matching
       //   regex only once and then reuse it
-      var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
+
+      // Escape regexp special characters.
+      when = '^' + when.replace(/[-\/\\^$:*+?.()|[\]{}]/g, "\\$&") + '$';
+
+      var regex = '',
           params = [],
           dst = {};
-      forEach(when.split(/\W/), function(param) {
-        if (param) {
-          var paramRegExp = new RegExp(":" + param + "([\\W])");
-          if (regex.match(paramRegExp)) {
-            regex = regex.replace(paramRegExp, "([^\\/]*)$1");
-            params.push(param);
-          }
+
+      var re = /\\([:*])(\w+)/g,
+          paramMatch,
+          lastMatchedIndex = 0;
+
+      while ((paramMatch = re.exec(when)) !== null) {
+        // Find each :param in `when` and replace it with a capturing group.
+        // Append all other sections of when unchanged.
+        regex += when.slice(lastMatchedIndex, paramMatch.index);
+        switch(paramMatch[1]) {
+          case ':':
+            regex += '([^\\/]*)';
+            break;
+          case '*':
+            regex += '(.*)';
+            break;
         }
-      });
-      var match = on.match(new RegExp(regex));
+        params.push(paramMatch[2]);
+        lastMatchedIndex = re.lastIndex;
+      }
+      // Append trailing path part.
+      regex += when.substr(lastMatchedIndex);
+
+      var match = on.match(new RegExp(regex, whenProperties.caseInsensitiveMatch ? 'i' : ''));
       if (match) {
         forEach(params, function(name, index) {
           dst[name] = match[index + 1];
@@ -342,7 +400,7 @@ function $RouteProvider(){
       var next = parseRoute(),
           last = $route.current;
 
-      if (next && last && next.$route === last.$route
+      if (next && last && next.$$route === last.$$route
           && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
         last.params = next.params;
         copy(last.params, $routeParams);
@@ -366,30 +424,31 @@ function $RouteProvider(){
         $q.when(next).
           then(function() {
             if (next) {
-              var keys = [],
-                  values = [],
+              var locals = extend({}, next.resolve),
                   template;
 
-              forEach(next.resolve || {}, function(value, key) {
-                keys.push(key);
-                values.push(isFunction(value) ? $injector.invoke(value) : $injector.get(value));
+              forEach(locals, function(value, key) {
+                locals[key] = isString(value) ? $injector.get(value) : $injector.invoke(value);
               });
+
               if (isDefined(template = next.template)) {
+                if (isFunction(template)) {
+                  template = template(next.params);
+                }
               } else if (isDefined(template = next.templateUrl)) {
-                template = $http.get(template, {cache: $templateCache}).
-                    then(function(response) { return response.data; });
+                if (isFunction(template)) {
+                  template = template(next.params);
+                }
+                if (isDefined(template)) {
+                  next.loadedTemplateUrl = template;
+                  template = $http.get(template, {cache: $templateCache}).
+                      then(function(response) { return response.data; });
+                }
               }
               if (isDefined(template)) {
-                keys.push('$template');
-                values.push(template);
+                locals['$template'] = template;
               }
-              return $q.all(values).then(function(values) {
-                var locals = {};
-                forEach(values, function(value, index) {
-                  locals[keys[index]] = value;
-                });
-                return locals;
-              });
+              return $q.all(locals);
             }
           }).
           // after route change
@@ -417,11 +476,11 @@ function $RouteProvider(){
       // Match a route
       var params, match;
       forEach(routes, function(route, path) {
-        if (!match && (params = matcher($location.path(), path))) {
+        if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
           match = inherit(route, {
             params: extend({}, $location.search(), params),
             pathParams: params});
-          match.$route = route;
+          match.$$route = route;
         }
       });
       // No route matched; fallback to "otherwise" route
@@ -429,7 +488,7 @@ function $RouteProvider(){
     }
 
     /**
-     * @returns interpolation of the redirect path with the parametrs
+     * @returns interpolation of the redirect path with the parameters
      */
     function interpolate(string, params) {
       var result = [];

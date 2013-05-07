@@ -1,4 +1,98 @@
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-$provide.value("$locale", {"DATETIME_FORMATS":{"MONTH":["January","February","March","April","May","June","July","August","September","October","November","December"],"SHORTMONTH":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"DAY":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"SHORTDAY":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"AMPMS":["a.m.","p.m."],"medium":"d MMM y HH:mm:ss","short":"dd/MM/yyyy HH:mm","fullDate":"EEEE d MMMM y","longDate":"d MMMM y","mediumDate":"d MMM y","shortDate":"dd/MM/yyyy","mediumTime":"HH:mm:ss","shortTime":"HH:mm"},"NUMBER_FORMATS":{"DECIMAL_SEP":".","GROUP_SEP":",","PATTERNS":[{"minInt":1,"minFrac":0,"macFrac":0,"posPre":"","posSuf":"","negPre":"-","negSuf":"","gSize":3,"lgSize":3,"maxFrac":3},{"minInt":1,"minFrac":2,"macFrac":0,"posPre":"\u00A4","posSuf":"","negPre":"\u00A4-","negSuf":"","gSize":3,"lgSize":3,"maxFrac":2}],"CURRENCY_SYM":"€"},"pluralCat":function (n) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;},"id":"en-ie"});
+$provide.value("$locale", {
+  "DATETIME_FORMATS": {
+    "AMPMS": {
+      "0": "a.m.",
+      "1": "p.m."
+    },
+    "DAY": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "MONTH": {
+      "0": "January",
+      "1": "February",
+      "2": "March",
+      "3": "April",
+      "4": "May",
+      "5": "June",
+      "6": "July",
+      "7": "August",
+      "8": "September",
+      "9": "October",
+      "10": "November",
+      "11": "December"
+    },
+    "SHORTDAY": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "SHORTMONTH": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
+    "fullDate": "EEEE d MMMM y",
+    "longDate": "d MMMM y",
+    "medium": "d MMM y h:mm:ss a",
+    "mediumDate": "d MMM y",
+    "mediumTime": "h:mm:ss a",
+    "short": "dd/MM/yyyy h:mm a",
+    "shortDate": "dd/MM/yyyy",
+    "shortTime": "h:mm a"
+  },
+  "NUMBER_FORMATS": {
+    "CURRENCY_SYM": "\u20ac",
+    "DECIMAL_SEP": ".",
+    "GROUP_SEP": ",",
+    "PATTERNS": {
+      "0": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 3,
+        "minFrac": 0,
+        "minInt": 1,
+        "negPre": "-",
+        "negSuf": "",
+        "posPre": "",
+        "posSuf": ""
+      },
+      "1": {
+        "gSize": 3,
+        "lgSize": 3,
+        "macFrac": 0,
+        "maxFrac": 2,
+        "minFrac": 2,
+        "minInt": 1,
+        "negPre": "(\u00a4",
+        "negSuf": ")",
+        "posPre": "\u00a4",
+        "posSuf": ""
+      }
+    }
+  },
+  "id": "en-ie",
+  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+});
 }]);

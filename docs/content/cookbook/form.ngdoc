@@ -2,7 +2,7 @@
 @name Cookbook: Form
 @description
 
-A web application's main purpose is to present and gather data. For this reason angular strives
+A web application's main purpose is to present and gather data. For this reason Angular strives
 to make both of these operations trivial. This example shows off how you can build a simple form to
 allow a user to enter data.
 

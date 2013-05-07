@@ -43,7 +43,7 @@ describe('ngClass', function() {
       'expressions', inject(function($rootScope, $compile) {
     var element = $compile(
         '<div class="existing" ' +
-            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB}">' +
+            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB()}">' +
         '</div>')($rootScope);
     $rootScope.conditionA = true;
     $rootScope.$digest();
@@ -52,12 +52,26 @@ describe('ngClass', function() {
     expect(element.hasClass('B')).toBeFalsy();
     expect(element.hasClass('AnotB')).toBeTruthy();
 
-    $rootScope.conditionB = function() { return true };
+    $rootScope.conditionB = function() { return true; };
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBeTruthy();
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeTruthy();
     expect(element.hasClass('AnotB')).toBeFalsy();
+  }));
+
+
+  it('should remove classes when the referenced object is the same but its property is changed',
+    inject(function($rootScope, $compile) {
+      var element = $compile('<div ng-class="classes"></div>')($rootScope);
+      $rootScope.classes = { A: true, B: true };
+      $rootScope.$digest();
+      expect(element.hasClass('A')).toBeTruthy();
+      expect(element.hasClass('B')).toBeTruthy();
+      $rootScope.classes.A = false;
+      $rootScope.$digest();
+      expect(element.hasClass('A')).toBeFalsy();
+      expect(element.hasClass('B')).toBeTruthy();
   }));
 
 
@@ -200,5 +214,93 @@ describe('ngClass', function() {
     expect(e2.hasClass('F')).toBeTruthy();
     expect(e2.hasClass('C')).toBeFalsy();
     expect(e2.hasClass('D')).toBeFalsy();
+  }));
+
+
+  it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
+    element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "two";
+      $rootScope.four = true;
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('two'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four');
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "too";
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('too'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four'); // should still be there
+    expect(element.hasClass('two')).toBeFalsy();
+
+    $rootScope.$apply(function() {
+      $rootScope.cls = "to";
+    });
+    expect(element).toHaveClass('one');
+    expect(element).toHaveClass('to'); // interpolated
+    expect(element).toHaveClass('three');
+    expect(element).toHaveClass('four'); // should still be there
+    expect(element.hasClass('two')).toBeFalsy();
+    expect(element.hasClass('too')).toBeFalsy();
+  }));
+
+
+  it('should not mess up class value due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
+    $rootScope.foo = true;
+    $rootScope.$watch("anything", function() {
+      $rootScope.foo = false;
+    });
+    element = $compile('<div ng-class="{foo:foo}"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.hasClass('foo')).toBe(false);
+  }));
+
+
+  it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items track by $index" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['a','b','a'];
+    $rootScope.$digest();
+
+    $rootScope.items = ['a','a'];
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e2.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeFalsy();
+  }));
+
+
+  it('should update ngClassOdd/Even when model is changed by sorting', inject(function($rootScope, $compile) {
+    element = $compile('<ul>' +
+      '<li ng-repeat="i in items" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'">i</li>' +
+      '<ul>')($rootScope);
+    $rootScope.items = ['a','b'];
+    $rootScope.$digest();
+
+    $rootScope.items = ['b','a'];
+    $rootScope.$digest();
+
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeFalsy();
+
+    expect(e2.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeFalsy();
   }));
 });

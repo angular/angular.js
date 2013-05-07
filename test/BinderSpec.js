@@ -175,7 +175,7 @@ describe('Binder', function() {
       $rootScope.error['throw'] = function() {throw 'MyError';};
       errorLogs.length = 0;
       $rootScope.$apply();
-      expect(errorLogs.shift()).toBe('MyError');
+      expect(errorLogs.shift().message).toBe('Error while interpolating: {{error.throw()}}\nMyError');
 
       $rootScope.error['throw'] = function() {return 'ok';};
       $rootScope.$apply();

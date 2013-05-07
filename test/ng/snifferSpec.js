@@ -2,9 +2,13 @@
 
 describe('$sniffer', function() {
 
-  function sniffer($window) {
+  function sniffer($window, $document) {
     $window.navigator = {};
-    return new $SnifferProvider().$get[1]($window);
+    $document = jqLite($document || {});
+    if (!$document[0].body) {
+      $document[0].body = window.document.body;
+    }
+    return new $SnifferProvider().$get[2]($window, $document);
   }
 
   describe('history', function() {
@@ -20,15 +24,15 @@ describe('$sniffer', function() {
 
   describe('hashchange', function() {
     it('should be true if onhashchange property defined', function() {
-      expect(sniffer({onhashchange: true, document: {}}).hashchange).toBe(true);
+      expect(sniffer({onhashchange: true}).hashchange).toBe(true);
     });
 
     it('should be false if onhashchange property not defined', function() {
-      expect(sniffer({document: {}}).hashchange).toBe(false);
+      expect(sniffer({}).hashchange).toBe(false);
     });
 
     it('should be false if documentMode is 7 (IE8 comp mode)', function() {
-      expect(sniffer({onhashchange: true, document: {documentMode: 7}}).hashchange).toBe(false);
+      expect(sniffer({onhashchange: true}, {documentMode: 7}).hashchange).toBe(false);
     });
   });
 
@@ -42,7 +46,7 @@ describe('$sniffer', function() {
         if (elm === 'div') return mockDivElement;
       });
 
-      $sniffer = sniffer({document: mockDocument});
+      $sniffer = sniffer({}, mockDocument);
     });
 
 
@@ -77,5 +81,105 @@ describe('$sniffer', function() {
 
       expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
     });
+  });
+
+
+  describe('csp', function() {
+    it('should be false if document.securityPolicy.isActive not available', function() {
+      expect(sniffer({}).csp).toBe(false);
+    });
+
+
+    it('should use document.securityPolicy.isActive if available', function() {
+      var createDocumentWithCSP = function(csp) {
+        return {securityPolicy: {isActive: csp}};
+      };
+
+      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
+      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
+    });
+  });
+
+  describe('vendorPrefix', function() {
+
+    it('should return the correct vendor prefix based on the browser', function() {
+      inject(function($sniffer, $window) {
+        var expectedPrefix;
+        var ua = $window.navigator.userAgent.toLowerCase();
+        if(/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+          expectedPrefix = 'Webkit';
+        }
+        else if(/firefox/i.test(ua)) {
+          expectedPrefix = 'Moz';
+        }
+        else if(/ie/i.test(ua)) {
+          expectedPrefix = 'Ms';
+        }
+        else if(/opera/i.test(ua)) {
+          expectedPrefix = 'O';
+        }
+        expect($sniffer.vendorPrefix).toBe(expectedPrefix);
+      });
+    });
+
+  });
+
+  describe('supportsTransitions', function() {
+
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).not.toBe(undefined);
+      });
+    });
+
+    it('should be false when there is no transition style', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(false);
+      });
+    });
+
+    it('should be true with vendor-specific transitions', function() {
+      module(function($provide) {
+        var transitionStyle = '1s linear all';
+        var doc = {
+          body : {
+            style : {
+              WebkitTransition : transitionStyle,
+              MozTransition : transitionStyle,
+              OTransition : transitionStyle
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(true);
+      });
+    });
+
+    it('should be true with w3c-style transitions', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              transition : '1s linear all'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.supportsTransitions).toBe(true);
+      });
+    });
+
   });
 });

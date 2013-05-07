@@ -4,10 +4,10 @@ var directive = {};
 var service = { value: {} };
 
 var DEPENDENCIES = {
-  'angular.js': 'http://code.angularjs.org/angular-' + angular.version.full + '.min.js',
-  'angular-resource.js': 'http://code.angularjs.org/angular-resource-' + angular.version.full + '.min.js',
-  'angular-sanitize.js': 'http://code.angularjs.org/angular-sanitize-' + angular.version.full + '.min.js',
-  'angular-cookies.js': 'http://code.angularjs.org/angular-cookies-' + angular.version.full + '.min.js'
+  'angular.js': 'http://code.angularjs.org/' + angular.version.full + '/angular.min.js',
+  'angular-resource.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-resource.min.js',
+  'angular-sanitize.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-sanitize.min.js',
+  'angular-cookies.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-cookies.min.js'
 };
 
 
@@ -179,7 +179,8 @@ directive.ngEvalJavascript = ['getEmbeddedTemplate', function(getEmbeddedTemplat
 }];
 
 
-directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location', function($templateCache, $browser, docsRootScope, $location) {
+directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location', '$sniffer',
+                function($templateCache,   $browser,  docsRootScope, $location,   $sniffer) {
   return {
     terminal: true,
     link: function(scope, element, attrs) {
@@ -189,6 +190,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         $provide.value('$templateCache', $templateCache);
         $provide.value('$anchorScroll', angular.noop);
         $provide.value('$browser', $browser);
+        $provide.value('$sniffer', $sniffer);
         $provide.provider('$location', function() {
           this.$get = ['$rootScope', function($rootScope) {
             docsRootScope.$on('$locationChangeSuccess', function(event, oldUrl, newUrl) {
@@ -210,7 +212,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           }, $delegate);
         }]);
         $provide.decorator('$rootScope', ['$delegate', function(embedRootScope) {
-          docsRootScope.$watch(function() {
+          docsRootScope.$watch(function embedRootScopeDigestWatch() {
             embedRootScope.$digest();
           });
           return embedRootScope;
@@ -223,6 +225,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           event.preventDefault();
         }
       });
+
       angular.bootstrap(element, modules);
     }
   };
