@@ -450,7 +450,7 @@ In this examples we use `<base href="/base/index.html" />`
               input = angular.element('<input type="text">').val(browser.url()),
               delay;
 
-          input.bind('keypress keyup keydown', function() {
+          input.on('keypress keyup keydown', function() {
             if (!delay) {
               delay = setTimeout(fireUrlChange, 250);
             }
@@ -469,7 +469,7 @@ In this examples we use `<base href="/base/index.html" />`
         };
       });
     }]);
-    root.bind('click', function(e) {
+    root.on('click', function(e) {
       e.stopPropagation();
     });
   }

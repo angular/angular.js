@@ -306,7 +306,7 @@ describe("angular.scenario.dsl", function() {
             elm = jqLite('<a href="#foo"></a>');
 
         doc.append(elm);
-        elm.bind('click', function(event) {
+        elm.on('click', function(event) {
           event.preventDefault();
         });
 
@@ -338,7 +338,7 @@ describe("angular.scenario.dsl", function() {
             elm = jqLite('<a href="#foo"></a>');
 
         doc.append(elm);
-        elm.bind('dblclick', function(event) {
+        elm.on('dblclick', function(event) {
           event.preventDefault();
         });
 

@@ -232,7 +232,7 @@ In this example we will build a directive that displays the current time.
 
            // listen on DOM destroy (removal) event, and cancel the next UI update
            // to prevent updating time after the DOM element was removed.
-           element.bind('$destroy', function() {
+           element.on('$destroy', function() {
              $timeout.cancel(timeoutId);
            });
 
@@ -687,7 +687,7 @@ Following is an example of building a reusable widget.
                  opened = true;
 
              // Clicking on title should open/close the zippy
-             title.bind('click', toggle);
+             title.on('click', toggle);
 
              // Toggle the closed/opened state
              function toggle() {

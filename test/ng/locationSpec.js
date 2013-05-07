@@ -7,7 +7,7 @@ describe('$location', function() {
   afterEach(function() {
     // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
     // to clean this up after each test.
-    jqLite(document).unbind('click');
+    jqLite(document).off('click');
   });
 
   describe('NewUrl', function() {
@@ -770,7 +770,7 @@ describe('$location', function() {
         originalBrowser = $browser.url();
         // we have to prevent the default operation, as we need to test absolute links (http://...)
         // and navigating to these links would kill jstd
-        $rootElement.bind('click', function(e) {
+        $rootElement.on('click', function(e) {
           lastEventPreventDefault = e.isDefaultPrevented();
           e.preventDefault();
         });
@@ -825,7 +825,7 @@ describe('$location', function() {
 
           jqLite(link).
               attr('href', 'http://host.com/base/foo').
-              bind('click', function(e) { e.preventDefault(); });
+              on('click', function(e) { e.preventDefault(); });
           browserTrigger(link, 'click');
           expect($browser.url()).toBe('http://host.com/base/');
         }
@@ -1116,11 +1116,11 @@ describe('$location', function() {
       var base, clickHandler;
       module(function($provide) {
         $provide.value('$rootElement', {
-          bind: function(event, handler) {
+          on: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
           },
-          unbind: noop
+          off: noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
@@ -1146,11 +1146,11 @@ describe('$location', function() {
       var base, clickHandler;
       module(function($provide) {
         $provide.value('$rootElement', {
-          bind: function(event, handler) {
+          on: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
           },
-          unbind: angular.noop
+          off: angular.noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
@@ -1180,7 +1180,7 @@ describe('$location', function() {
       $rootElement.html('<button></button>');
       var button = $rootElement.find('button');
 
-      button.bind('click', function() {
+      button.on('click', function() {
         button.remove();
       });
       browserTrigger(button, 'click');
