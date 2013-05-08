@@ -76,6 +76,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
           $window.angular.resumeBootstrap([['$provide', function($provide) {
             $provide.decorator('$sniffer', function($delegate) {
               $delegate.transitions = false;
+              $delegate.animations = false;
               return $delegate;
             });
           }]]);
