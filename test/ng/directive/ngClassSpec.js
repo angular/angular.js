@@ -43,7 +43,7 @@ describe('ngClass', function() {
       'expressions', inject(function($rootScope, $compile) {
     var element = $compile(
         '<div class="existing" ' +
-            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB}">' +
+            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB()}">' +
         '</div>')($rootScope);
     $rootScope.conditionA = true;
     $rootScope.$digest();
@@ -52,12 +52,26 @@ describe('ngClass', function() {
     expect(element.hasClass('B')).toBeFalsy();
     expect(element.hasClass('AnotB')).toBeTruthy();
 
-    $rootScope.conditionB = function() { return true };
+    $rootScope.conditionB = function() { return true; };
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBeTruthy();
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeTruthy();
     expect(element.hasClass('AnotB')).toBeFalsy();
+  }));
+
+
+  it('should remove classes when the referenced object is the same but its property is changed',
+    inject(function($rootScope, $compile) {
+      var element = $compile('<div ng-class="classes"></div>')($rootScope);
+      $rootScope.classes = { A: true, B: true };
+      $rootScope.$digest();
+      expect(element.hasClass('A')).toBeTruthy();
+      expect(element.hasClass('B')).toBeTruthy();
+      $rootScope.classes.A = false;
+      $rootScope.$digest();
+      expect(element.hasClass('A')).toBeFalsy();
+      expect(element.hasClass('B')).toBeTruthy();
   }));
 
 
@@ -249,7 +263,7 @@ describe('ngClass', function() {
 
   it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
-      '<li ng-repeat="i in items" ' +
+      '<li ng-repeat="i in items track by $index" ' +
       'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
       '<ul>')($rootScope);
     $rootScope.items = ['a','b','a'];

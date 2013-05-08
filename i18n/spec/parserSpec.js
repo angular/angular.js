@@ -24,6 +24,8 @@ describe('parsePattern', function() {
     parseAndExpect('#,##,##0.###', '', '-', '', '', 1, 0, 3, 2, 3);
     parseAndExpect("#,##0.###;\'\u202A\'-#,##0.###\'\u202C\'",
         '', '\u202A-', '', '\u202C', 1, 0, 3, 3, 3);
+    parseAndExpect('#0.###;#0.###-', '', '', '', '-', 1, 0, 3, 0, 0);
+
   });
 
   it('should parse CURRENCY patterns', function() {

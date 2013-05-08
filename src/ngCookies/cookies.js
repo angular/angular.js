@@ -139,7 +139,8 @@ angular.module('ngCookies', ['ng']).
          * @returns {Object} Deserialized cookie value.
          */
         get: function(key) {
-          return angular.fromJson($cookies[key]);
+          var value = $cookies[key];
+          return value ? angular.fromJson(value) : value;
         },
 
         /**

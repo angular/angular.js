@@ -180,7 +180,7 @@ ignored in the unit-tests.
 
 Modules can list other modules as their dependencies. Depending on a module implies that required
 module needs to be loaded before the requiring module is loaded. In other words the configuration
-blocks of the required modules execute before the configuration blocks or the requiring module.
+blocks of the required modules execute before the configuration blocks of the requiring module.
 The same is true for the run blocks. Each module can only be loaded once, even if multiple other
 modules require it.
 

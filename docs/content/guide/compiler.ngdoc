@@ -70,8 +70,8 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
   <file name="script.js">
     angular.module('drag', []).
       directive('draggable', function($document) {
-        var startX=0, startY=0, x = 0, y = 0;
         return function(scope, element, attr) {
+          var startX = 0, startY = 0, x = 0, y = 0;
           element.css({
            position: 'relative',
            border: '1px solid red',
@@ -79,6 +79,8 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
            cursor: 'pointer'
           });
           element.bind('mousedown', function(event) {
+            // Prevent default dragging of selected content
+            event.preventDefault();
             startX = event.screenX - x;
             startY = event.screenY - y;
             $document.bind('mousemove', mousemove);

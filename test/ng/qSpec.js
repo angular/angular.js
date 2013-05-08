@@ -345,6 +345,10 @@ describe('q', function() {
       it('should have a then method', function() {
         expect(typeof promise.then).toBe('function');
       });
+      
+      it('should have a always method', function() {
+        expect(typeof promise.always).toBe('function');
+      });
 
 
       describe('then', function() {
@@ -460,6 +464,134 @@ describe('q', function() {
           mockNextTick.flush();
           expect(log).toEqual(['error(oops!)']);
         });
+      });
+
+      
+      describe('always', function() {
+      
+        it('should not take an argument',
+            function() {
+          promise.always(success(1))
+          syncResolve(deferred, 'foo');
+          expect(logStr()).toBe('success1()');
+        });
+        
+        describe("when the promise is fulfilled", function () {
+          
+          it('should call the callback',
+              function() {
+            promise.then(success(1))
+                   .always(success(2))
+            syncResolve(deferred, 'foo');
+            expect(logStr()).toBe('success1(foo); success2()');
+          });
+      
+          it('should fulfill with the original value',
+              function() {
+            promise.always(success(1))
+                   .then(success(2), error(2))
+            syncResolve(deferred, 'foo');
+            expect(logStr()).toBe('success1(); success2(foo)');
+          });
+          
+          describe("when the callback returns a promise", function() {
+            
+            describe("that is fulfilled", function() {
+              it("should fulfill with the original reason after that promise resolves",
+                function () {
+                var returnedDef = defer()
+                returnedDef.resolve('bar');
+                promise.always(success(1, returnedDef.promise))
+                       .then(success(2))
+                syncResolve(deferred, 'foo');
+                expect(logStr()).toBe('success1(); success2(foo)');
+              });
+            });
+            
+            describe("that is rejected", function() {
+              it("should reject with this new rejection reason",
+                function () {
+                var returnedDef = defer()
+                returnedDef.reject('bar');
+                promise.always(success(1, returnedDef.promise))
+                       .then(success(2), error(1))
+                syncResolve(deferred, 'foo');
+                expect(logStr()).toBe('success1(); error1(bar)');
+              });
+            });
+            
+          });
+
+          describe("when the callback throws an exception", function() {
+            it("should reject with this new exception", function() {
+              promise.always(error(1, "exception", true))
+                     .then(success(1), error(2))
+              syncResolve(deferred, 'foo');
+              expect(logStr()).toBe('error1(); error2(exception)');
+            });
+          });
+          
+        });
+
+
+        describe("when the promise is rejected", function () {
+
+          it("should call the callback", function () {
+            promise.always(success(1))
+                   .then(success(2), error(1))
+            syncReject(deferred, 'foo');
+            expect(logStr()).toBe('success1(); error1(foo)');
+          });
+          
+          it('should reject with the original reason', function() {
+            promise.always(success(1), "hello")
+                   .then(success(2), error(2))
+            syncReject(deferred, 'original');
+            expect(logStr()).toBe('success1(); error2(original)');
+          });
+          
+          describe("when the callback returns a promise", function() {
+            
+            describe("that is fulfilled", function() {
+              
+              it("should reject with the original reason after that promise resolves", function () {
+                var returnedDef = defer()
+                returnedDef.resolve('bar');
+                promise.always(success(1, returnedDef.promise))
+                       .then(success(2), error(2))
+                syncReject(deferred, 'original');
+                expect(logStr()).toBe('success1(); error2(original)');
+              });
+              
+            });
+            
+            describe("that is rejected", function () {
+              
+              it("should reject with the new reason", function() {
+                var returnedDef = defer()
+                returnedDef.reject('bar');
+                promise.always(success(1, returnedDef.promise))
+                       .then(success(2), error(1))
+                syncResolve(deferred, 'foo');
+                expect(logStr()).toBe('success1(); error1(bar)');
+              });
+              
+            });
+            
+          });
+
+          describe("when the callback throws an exception", function() {
+            
+            it("should reject with this new exception", function() {
+              promise.always(error(1, "exception", true))
+                     .then(success(1), error(2))
+              syncResolve(deferred, 'foo');
+              expect(logStr()).toBe('error1(); error2(exception)');
+            });
+            
+          });
+
+        });        
       });
     });
   });

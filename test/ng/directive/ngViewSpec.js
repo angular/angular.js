@@ -3,9 +3,11 @@
 describe('ngView', function() {
   var element;
 
-  beforeEach(module(function() {
-    return function($rootScope, $compile) {
+  beforeEach(module(function($provide) {
+    $provide.value('$window', angular.mock.createMockWindow());
+    return function($rootScope, $compile, $animator) {
       element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
+      $animator.enabled(true);
     };
   }));
 
@@ -50,6 +52,27 @@ describe('ngView', function() {
       expect(controllerScope.$parent).toBe($rootScope);
       expect(controllerScope).toBe($route.current.scope);
       expect(log).toEqual(['compile', 'ctrl-init']);
+    });
+  });
+
+
+  it('should instantiate controller with an alias', function() {
+    var log = [], controllerScope,
+        Ctrl = function($scope) {
+          this.name = 'alias';
+          controllerScope = $scope;
+        };
+
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl, controllerAs: 'ctrl'});
+    });
+
+    inject(function($route, $rootScope, $templateCache, $location) {
+      $templateCache.put('/tpl.html', [200, '<div></div>', {}]);
+      $location.path('/some');
+      $rootScope.$digest();
+
+      expect(controllerScope.ctrl.name).toBe('alias');
     });
   });
 
@@ -473,12 +496,170 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       forEach(element.contents(), function(node) {
-        if ( node.nodeType == 3 ) {
+        if ( node.nodeType == 3 /* text node */) {
           expect(jqLite(node).scope()).not.toBe($route.current.scope);
           expect(jqLite(node).controller()).not.toBeDefined();
         } else {
           expect(jqLite(node).scope()).toBe($route.current.scope);
           expect(jqLite(node).controller()).toBeDefined();
+        }
+      });
+    });
+  });
+
+  describe('ngAnimate ', function() {
+    var window, vendorPrefix;
+    var body, element;
+
+    function html(html) {
+      body.html(html);
+      element = body.children().eq(0);
+      return element;
+    }
+
+    function applyCSS(element, cssProp, cssValue) {
+      element.css(cssProp, cssValue);    
+      element.css(vendorPrefix + cssProp, cssValue);
+    }
+
+    beforeEach(function() {
+      // we need to run animation on attached elements;
+      body = jqLite(document.body);
+    });
+
+    afterEach(function(){
+      dealoc(body);
+      dealoc(element);
+    });
+
+
+    beforeEach(module(function($provide, $routeProvider) {
+      $provide.value('$window', window = angular.mock.createMockWindow());
+      $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+      return function($sniffer, $templateCache, $animator) {
+        vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+        $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
+        $animator.enabled(true);
+      }
+    }));
+
+    it('should fire off the enter animation + add and remove the css classes',
+        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+          element = $compile(html('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>'))($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          //if we add the custom css stuff here then it will get picked up before the animation takes place
+          var child = jqLite(element.children()[0]);
+          applyCSS(child, 'transition', '1s linear all');
+
+          if ($sniffer.supportsTransitions) {
+            expect(child.attr('class')).toContain('custom-enter-setup');
+            window.setTimeout.expect(1).process();
+
+            expect(child.attr('class')).toContain('custom-enter-start');
+            window.setTimeout.expect(1000).process();
+          } else {
+            expect(window.setTimeout.queue).toEqual([]);
+          }
+
+          expect(child.attr('class')).not.toContain('custom-enter-setup');
+          expect(child.attr('class')).not.toContain('custom-enter-start');
+        }));
+
+    it('should fire off the leave animation + add and remove the css classes',
+        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+      element = $compile(html('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>'))($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      applyCSS(child, 'transition', '1s linear all');
+
+      $location.path('/');
+      $rootScope.$digest();
+
+      if ($sniffer.supportsTransitions) {
+        expect(child.attr('class')).toContain('custom-leave-setup');
+        window.setTimeout.expect(1).process();
+
+        expect(child.attr('class')).toContain('custom-leave-start');
+        window.setTimeout.expect(1000).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+
+      expect(child.attr('class')).not.toContain('custom-leave-setup');
+      expect(child.attr('class')).not.toContain('custom-leave-start');
+    }));
+
+    it('should catch and use the correct duration for animations',
+        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+      element = $compile(html(
+          '<div ' +
+              'ng-view ' +
+              'ng-animate="{enter: \'customEnter\'}">' +
+            '</div>'
+      ))($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      //if we add the custom css stuff here then it will get picked up before the animation takes place
+      var child = jqLite(element.children()[0]);
+      applyCSS(child, 'transition', '0.5s linear all');
+
+      if($sniffer.supportsTransitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect($sniffer.supportsTransitions ? 500 : 0).process();
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+    }));
+
+
+    it('should not double compile when route changes', function() {
+      module(function($routeProvider, $animationProvider, $provide) {
+        $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
+        $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
+        $animationProvider.register('my-animation-leave', function() {
+          return {
+            start: function(element, done) {
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer) {
+        element = $compile(html('<ng:view onload="load()" ng-animate="\'my-animation\'"></ng:view>'))($rootScope);
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        if ($sniffer.supportsTransitions) {
+          $window.setTimeout.expect(1).process();
+          $window.setTimeout.expect(0).process();
+        }
+        expect(element.text()).toEqual('12');
+
+        $location.path('/bar');
+        $rootScope.$digest();
+        expect(n(element.text())).toEqual('1234');
+        if ($sniffer.supportsTransitions) {
+          $window.setTimeout.expect(1).process();
+          $window.setTimeout.expect(1).process();
+        } else {
+          $window.setTimeout.expect(1).process();
+        }
+        expect(element.text()).toEqual('34');
+
+        function n(text) {
+          return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
         }
       });
     });

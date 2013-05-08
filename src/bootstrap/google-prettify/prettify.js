@@ -643,7 +643,7 @@ var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|[!=]=?=?|\\#|%=?|&&?=?|\\(|\\*=?|[
     * recognized.
     *
     * Shortcut is an optional string of characters, any of which, if the first
-    * character, gurantee that this pattern and only this pattern matches.
+    * character, guarantee that this pattern and only this pattern matches.
     *
     * @param {Array} shortcutStylePatterns patterns that always start with
     *   a known character.  Must have a shortcut string.

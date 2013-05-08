@@ -3,6 +3,15 @@ img.AngularJS-small {
   height: 25px;
 }
 
+/* this is here to avoid the display=block shuffling of ngShow */
+.breadcrumb li > * {
+  float:left;
+  margin:0 2px 0 0;
+}
+
+.breadcrumb {
+  padding-bottom:2px;
+}
 
 .clear-navbar {
   margin-top: 60px;
@@ -47,7 +56,12 @@ img.AngularJS-small {
 }
 
 .form-search > ul.nav > li.last {
-  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+
+.form-search > ul.nav > li.last + li.api-list-item {
+  margin-top:-1em;
+  padding-bottom: 1em;
 }
 
 .form-search .well {
@@ -85,6 +99,10 @@ img.AngularJS-small {
 /* =============================== */
 /*            Content              */
 /* =============================== */
+
+.improve-docs {
+  float: right;
+}
 
 .hint {
   font-size: .7em;

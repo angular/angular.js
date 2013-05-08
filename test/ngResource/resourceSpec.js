@@ -468,12 +468,9 @@ describe("resource", function() {
 
         var response = callback.mostRecentCall.args[0];
 
-        expect(response).toEqualData({
-          data: {id: 123, number: '9876'},
-          status: 200,
-          config: {method: 'GET', data: undefined, url: '/CreditCard/123'},
-          resource: {id: 123, number: '9876', $resolved: true}
-        });
+        expect(response.data).toEqual({id: 123, number: '9876'});
+        expect(response.status).toEqual(200);
+        expect(response.resource).toEqualData({id: 123, number: '9876', $resolved: true});
         expect(typeof response.resource.$save).toBe('function');
       });
 
@@ -516,11 +513,8 @@ describe("resource", function() {
 
         var response = callback.mostRecentCall.args[0];
 
-        expect(response).toEqualData({
-          data : 'resource not found',
-          status : 404,
-          config : { method : 'GET', data : undefined, url : '/CreditCard/123' }
-        });
+        expect(response.data).toEqual('resource not found');
+        expect(response.status).toEqual(404);
       });
 
 
@@ -564,12 +558,9 @@ describe("resource", function() {
 
         var response = callback.mostRecentCall.args[0];
 
-        expect(response).toEqualData({
-          data: [{id: 1}, {id :2}],
-          status: 200,
-          config: {method: 'GET', data: undefined, url: '/CreditCard', params: {key: 'value'}},
-          resource: [ { id : 1 }, { id : 2 } ]
-        });
+        expect(response.data).toEqual([{id: 1}, {id :2}]);
+        expect(response.status).toEqual(200);
+        expect(response.resource).toEqualData([ { id : 1 }, { id : 2 } ]);
         expect(typeof response.resource[0].$save).toBe('function');
         expect(typeof response.resource[1].$save).toBe('function');
       });
@@ -613,11 +604,8 @@ describe("resource", function() {
 
         var response = callback.mostRecentCall.args[0];
 
-        expect(response).toEqualData({
-          data : 'resource not found',
-          status : 404,
-          config : { method : 'GET', data : undefined, url : '/CreditCard', params: {key: 'value'}}
-        });
+        expect(response.data).toEqual('resource not found');
+        expect(response.status).toEqual(404);
       });
 
 

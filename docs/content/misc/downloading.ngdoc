@@ -64,8 +64,8 @@ testing angular apps even easier. Your unit/integration test harness should load
 to write and execute end-to-end tests for angular applications.
 
 * __`angular-loader.min.js`__ — Module loader for Angular modules. If you are loading multiple script files containing
- Angular modules, you can load them asynchronosuly and in any order as long as you load this file first. Often the
- contents of this file are copy&pasted into the `index.html` to avoid even the inial request to `angular-loader.min.js`.
+ Angular modules, you can load them asynchronously and in any order as long as you load this file first. Often the
+ contents of this file are copy&pasted into the `index.html` to avoid even the initial request to `angular-loader.min.js`.
  See [angular-seed](https://github.com/angular/angular-seed/blob/master/app/index-async.html) for an example of usage.
 
 * __`angular-resource.js`__, __`angular-cookies.js`__, etc - extra Angular modules with additional functionality.

@@ -2,12 +2,14 @@
  * All parsing/transformation code goes here. All code here should be sync to ease testing.
  */
 
-var Showdown = require('../../lib/showdown').Showdown;
+var Showdown = require('showdown');
 var DOM = require('./dom.js').DOM;
 var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
 var NEW_LINE = /\n\r?/;
 var globalID = 0;
+var fs = require('fs');
+var fspath = require('path');
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -113,17 +115,57 @@ Doc.prototype = {
       return id;
     }
 
+    function extractInlineDocCode(text, tag) {
+      if(tag == 'all') {
+        //use a greedy operator to match the last </docs> tag
+        regex = /\/\/<docs.*?>([.\s\S]+)\/\/<\/docs>/im;
+      }
+      else {
+        //use a non-greedy operator to match the next </docs> tag
+        regex = new RegExp("\/\/<docs\\s*tag=\"" + tag + "\".*?>([.\\s\\S]+?)\/\/<\/docs>","im");
+      }
+      var matches = regex.exec(text.toString());
+      return matches && matches.length > 1 ? matches[1] : "";
+    }
+
     parts.forEach(function(text, i) {
       parts[i] = (text || '').
-        replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?>([\s\S]*?)<\/example>/gmi, function(_, module, deps, content) {
+        replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?(\s+animations="true")?>([\s\S]*?)<\/example>/gmi,
+          function(_, module, deps, animations, content) {
+
           var example = new Example(self.scenarios);
+          if(animations) {
+            example.enableAnimations();
+          }
 
           example.setModule(module);
           example.addDeps(deps);
           content.replace(/<file\s+name="([^"]*)"\s*>([\s\S]*?)<\/file>/gmi, function(_, name, content) {
             example.addSource(name, content);
           });
+          content.replace(/<file\s+src="([^"]+)"(?:\s+tag="([^"]+)")?(?:\s+name="([^"]+)")?\s*\/?>/gmi, function(_, file, tag, name) {
+            if(fspath.existsSync(file)) {
+              var content = fs.readFileSync(file, 'utf8');
+              if(content && content.length > 0) {
+                if(tag && tag.length > 0) {
+                  content = extractInlineDocCode(content, tag);
+                }
+                name = name && name.length > 0 ? name : fspath.basename(file);
+                example.addSource(name, content);
+              }
+            }
+            return '';
+          })
           return placeholder(example.toHtml());
+        }).
+        replace(/(?:\*\s+)?<file.+?src="([^"]+)"(?:\s+tag="([^"]+)")?\s*\/?>/i, function(_, file, tag) {
+          if(fspath.existsSync(file)) {
+            var content = fs.readFileSync(file, 'utf8');
+            if(tag && tag.length > 0) {
+              content = extractInlineDocCode(content, tag);
+            }
+            return content;
+          }
         }).
         replace(/^<doc:example(\s+[^>]*)?>([\s\S]*)<\/doc:example>/mi, function(_, attrs, content) {
           var html, script, scenario,
@@ -174,7 +216,7 @@ Doc.prototype = {
         });
     });
     text = parts.join('');
-    text = new Showdown.converter().makeHtml(text);
+    text = new Showdown.converter({ extensions : ['table'] }).makeHtml(text);
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });
@@ -272,8 +314,9 @@ Doc.prototype = {
       self = this;
 
     dom.h(title(this.name), function() {
-      notice('deprecated', 'Deprecated API', self.deprecated);
 
+      notice('deprecated', 'Deprecated API', self.deprecated);
+      dom.tag('a', {href: 'http://github.com/angular/angular.js/edit/master/' + self.file, class: 'improve-docs btn btn-primary'}, 'Improve this doc');
       if (self.ngdoc != 'overview') {
         dom.h('Description', self.description, dom.html);
       }
@@ -327,6 +370,18 @@ Doc.prototype = {
       });
       dom.html(param.description);
     });
+    if(this.animations) {
+      dom.h('Animations', this.animations, function(animations){
+        dom.html('<ul>');
+        var animations = animations.split("\n");
+        animations.forEach(function(ani) {
+          dom.html('<li>');
+          dom.text(ani);
+          dom.html('</li>');
+        });
+        dom.html('</ul>');
+      });
+    }
   },
 
   html_usage_returns: function(dom) {
@@ -387,9 +442,11 @@ Doc.prototype = {
       var restrict = self.restrict || 'AC';
 
       if (restrict.match(/E/)) {
-        dom.text('This directive can be used as custom element, but we aware of ');
+        dom.html('<p>');
+        dom.text('This directive can be used as custom element, but be aware of ');
         dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
         dom.text('.');
+        dom.html('</p>');
       }
 
       if (self.usage) {
@@ -431,6 +488,48 @@ Doc.prototype = {
             dom.text('">\n   ...\n');
             dom.text('</' + element + '>');
           });
+        }
+        if(self.animations) {
+          var animations = [], matches = self.animations.split("\n");
+          matches.forEach(function(ani) {
+            var name = ani.match(/^\s*(.+?)\s*-/)[1];
+            animations.push(name);
+          });
+
+          dom.html('with <span id="animations">animations</span>');
+          var comment;
+          if(animations.length == 1) {
+            comment = 'The ' + animations[0] + ' animation is supported';
+          }
+          else {
+            var rhs = animations[animations.length-1];
+            var lhs = '';
+            for(var i=0;i<animations.length-1;i++) {
+              if(i>0) {
+                lhs += ', ';
+              }
+              lhs += animations[i];
+            }
+            comment = 'The ' + lhs + ' and ' + rhs + ' animations are supported';
+          }
+          var element = self.element || 'ANY';
+          dom.code(function() {
+            dom.text('//' + comment + "\n");
+            dom.text('<' + element + ' ');
+            dom.text(dashCase(self.shortName));
+            renderParams('\n     ', '="', '"', true);
+            dom.text(' ng-animate="{');
+            animations.forEach(function(ani, index) {
+              if (index) {
+                dom.text(', ');
+              }
+              dom.text(ani + ': \'' + ani + '-animation\'');
+            });
+            dom.text('}">\n   ...\n');
+            dom.text('</' + element + '>');
+          });
+
+          dom.html('<a href="api/ng.$animator#Methods">Click here</a> to learn more about the steps involved in the animation.');
         }
       }
       self.html_usage_directiveInfo(dom);

@@ -90,7 +90,7 @@ concepts which the application developer may face:
       <table>
        <tr><td>Quantity</td><td>Cost</td></tr>
        <tr>
-         <td><input type="integer" min="0" ng-model="qty" required ></td>
+         <td><input type="number" ng-pattern="/\d+/" step="1" min="0" ng-model="qty" required ></td>
          <td><input type="number" ng-model="cost" required ></td>
        </tr>
       </table>
@@ -124,7 +124,7 @@ We load Angular using the  `<script>` tag:
 From the `ng-model` attribute of the `<input>` tags, Angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
-    Quantity: <input type="integer" min="0" ng-model="qty" required >
+    Quantity: <input type="number" ng-pattern="/\d+/" step="1" min="0" ng-model="qty" required >
     Cost: <input type="number" ng-model="cost" required >
 
 These input widgets look normal enough, but consider these points:
@@ -202,6 +202,6 @@ Angular frees you from the following pain:
 
 # Watch a Presentation About Angular
 
-Here is a presentation on Angular from May 2012.
+Here is a presentation on Angular from May 2012. The {@link http://mhevery.github.io/angular-demo-slides/index.html#/list corresponding slides} are also available.
 
 <iframe width="560" height="315" src="http://www.youtube.com/embed/bfrn5VNpwsg" frameborder="0" allowfullscreen></iframe>
