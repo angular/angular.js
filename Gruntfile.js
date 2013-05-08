@@ -89,9 +89,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-mobile.js',
         src: util.wrap([
           'src/ngMobile/mobile.js',
-           'src/ngMobile/ngSensor.js',
-           'src/ngMobile/directive/ngClick.js',
-          'src/ngMobile/directive/ngSwipe.js'
+          'src/ngMobile/ngSensor.js',
+          'src/ngMobile/directive/ngClick.js',
+          'src/ngMobile/directive/ngSwipe.js',
+          'src/ngMobile/directive/ngShake.js'
             ], 'module')
       },
       mocks: {
