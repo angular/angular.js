@@ -1,5 +1,23 @@
 'use strict';
 
+/**
+ * @ngdoc directive
+ * @name ngMobile.directive:ngShake
+ *
+ * @description
+ * The `ngShake` directive allows you to specify custom behavior on shake event.
+ * A shake event is triggered when the difference of two tracked DeviceMotionEvents
+ * is greater than a configurable intense.
+ * After a shake event is tracked no other shake event is triggered in a configurable timeout.
+ *
+ * @element ANY
+ * @param {expression} ngShake {@link guide/expression Expression} to evaluate upon
+ * shake. (DeviceMotionEvent object is available as `$event`)
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
 ngMobile.directive('ngShake', [
     '$parse', '$motion',
     function ($parse, $motion) {
