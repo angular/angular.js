@@ -22,7 +22,7 @@ ngMobile.directive('ngShake', [
     '$parse', '$motion',
     function ($parse, $motion) {
         var INTENSE = 10; // Intense
-        var TIMEOUT = 1000; // Timeout in ms
+        var TIMEOUT = 500; // Timeout in ms
 
         function difference(num1, num2) {
             return (num1 > num2) ? num1 - num2 : num2 - num1;
