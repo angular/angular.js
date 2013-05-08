@@ -1,8 +1,7 @@
 'use strict';
 
 function registerSensorService(eventType) {
-    angular.module('ruhrjsApp')
-        .factory("$"+angular.lowercase(eventType.replace("Device","")),
+    ngMobile.factory("$"+angular.lowercase(eventType.replace("Device","")),
             ["$timeout","$window",function ($timeout, $window) {
                 return {
                     //TODO: (un-)register correct wording?
