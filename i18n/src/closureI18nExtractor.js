@@ -116,7 +116,7 @@ function canonicalizeForJsonStringify(unused_key, object) {
   //    2. https://code.google.com/p/v8/issues/detail?id=164
   //       ECMA-262 does not specify enumeration order. The de facto standard
   //       is to match insertion order, which V8 also does ...
-  if (typeof object != "object") {
+  if (typeof object != "object" || Object.prototype.toString.apply(object) === '[object Array]') {
     return object;
   }
   var result = {};
