@@ -489,6 +489,10 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceDirective', valueFn({
+            replace: true,
+            template: '<input ng-maxlength="3" />'
+          }));
         }));
 
 
@@ -572,6 +576,19 @@ describe('$compile', function() {
           element = $compile('<div replace-with-interpolated-class></div>')($rootScope);
           $rootScope.$digest();
           expect(element).toHaveClass('class_2');
+        }));
+
+
+        it('should not collect the directive from an element if the element has a' +
+           ' replace directive', inject(function($compile, $rootScope, $sniffer, $browser) {
+          var element = $compile('<form name="form"><input ng-model="name" name="alias" replace-directive /></form>')($rootScope);
+
+          element.find('input').val('aaaa');
+          browserTrigger(element.find('input'), ($sniffer.hasEvent('input')) ? 'input' : 'change');
+          expect($rootScope.name).toBe(undefined);
+          expect($rootScope.form.alias.$valid).toBe(false);
+
+          dealoc(element);
         }));
 
 
