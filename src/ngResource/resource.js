@@ -34,8 +34,9 @@
  *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
  *   number, like this: `$resource('http://example.com\\:8080/api')`. 
  *
- *   If you are using a url with a suffix, just add the suffix, like this: `$resource('http://example.com/resource.json')` or
- *   `$resource('http://example.com/:id.json')
+ *   If you are using a url with a suffix, just add the suffix, like this: 
+ *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')
+ *   or even `$resource('http://example.com/resource/:resource_id.:format')` 
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If any of the parameter value is a function, it will be executed every time
@@ -331,10 +332,8 @@ angular.module('ngResource', ['ng']).
         var self = this,
             url = actionUrl || self.template,
             val,
-            encodedVal,
-            suffix = '';
+            encodedVal;
 
-        if (params.hasOwnProperty('suffix')) {suffix = params['suffix']; delete params['suffix'];}
         var urlParams = self.urlParams = {};
         forEach(url.split(/\W/), function(param){
           if (param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
@@ -362,7 +361,9 @@ angular.module('ngResource', ['ng']).
         });
 
         // strip trailing slashes and set the url
-        config.url = url.replace(/\/+$/, '');
+        // then replace http://url.com/id./format with http://url.com/id.format
+        config.url = url.replace(/\/+$/, '').replace(/\/\.(?=\w+($|\?))/, '.');
+          
 
         // set params - delegate param encoding to $http
         forEach(params, function(value, key){

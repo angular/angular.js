@@ -719,6 +719,22 @@ describe("resource", function() {
         expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
+      it('should work when query parameters are supplied', function() {
+        $httpBackend.expect('GET', '/users.json?red=blue').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.query({red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
+      it('should work when query parameters are supplied and the format is a resource parameter', function() {
+        $httpBackend.expect('GET', '/users.json?red=blue').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
+        var user = UserService.query({red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
       it('should work with the action is overriden', function(){
         $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
@@ -746,6 +762,14 @@ describe("resource", function() {
       it('should work when an id and query parameters are supplied', function() {
         $httpBackend.expect('GET', '/users/1.json?red=blue').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.get({user_id: 1, red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 1, name: 'user1'});
+      });
+
+      it('should work when the format is a parameter', function() {
+        $httpBackend.expect('GET', '/users/1.json?red=blue').respond({id: 1, name: 'user1'});
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
         var user = UserService.get({user_id: 1, red: 'blue'});
         $httpBackend.flush();
         expect(user).toEqualData({id: 1, name: 'user1'});
@@ -782,6 +806,18 @@ describe("resource", function() {
       it('should append when an id is supplied', function() {
         $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.save({id: 123, name: 'newName'}, callback);
+        expect(callback).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 123, name: 'newName'});
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toEqual(user);
+        expect(callback.mostRecentCall.args[1]()).toEqual({});
+      });
+
+      it('should append when an id is supplied and the format is a parameter', function() {
+        $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
         var user = UserService.save({id: 123, name: 'newName'}, callback);
         expect(callback).not.toHaveBeenCalled();
         $httpBackend.flush();
