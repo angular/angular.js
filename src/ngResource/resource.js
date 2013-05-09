@@ -19,7 +19,7 @@
  * the need to interact with the low level {@link ng.$http $http} service.
  *
  * # Installation
- * To use $resource make sure you have included the `angular-resource.js` that comes in Angular 
+ * To use $resource make sure you have included the `angular-resource.js` that comes in Angular
  * package. You can also find this file on Google CDN, bower as well as at
  * {@link http://code.angularjs.org/ code.angularjs.org}.
  *
@@ -317,7 +317,7 @@ angular.module('ngResource', ['ng']).
     }
 
     function Route(template, defaults) {
-      this.template = template = template + '#';
+      this.template = template;
       this.defaults = defaults || {};
       this.urlParams = {};
     }
@@ -355,8 +355,8 @@ angular.module('ngResource', ['ng']).
           }
         });
 
-        // set the url
-        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '');
+        // strip trailing slashes and set the url
+        config.url = url.replace(/\/+$/, '');
 
         // set params - delegate param encoding to $http
         forEach(params, function(value, key){

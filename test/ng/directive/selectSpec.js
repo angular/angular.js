@@ -977,6 +977,19 @@ describe('select', function() {
         expect(option.attr('id')).toBe('road-runner');
         expect(option.attr('custom-attr')).toBe('custom-attr');
       });
+
+      it('should be selected, if it is available and no other option is selected', function() {
+        // selectedIndex is used here because jqLite incorrectly reports element.val()
+        scope.$apply(function() {
+          scope.values = [{name: 'A'}];
+        });
+        createSingleSelect(true);
+        // ensure the first option (the blank option) is selected
+        expect(element[0].selectedIndex).toEqual(0);
+        scope.$digest();
+        // ensure the option has not changed following the digest
+        expect(element[0].selectedIndex).toEqual(0);
+      });
     });
 
 
@@ -1099,6 +1112,21 @@ describe('select', function() {
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual(['0']);
       });
+
+      it('should deselect all options when model is emptied', function() {
+        createMultiSelect();
+         scope.$apply(function() {
+          scope.values = [{name: 'A'}, {name: 'B'}];
+          scope.selected = [scope.values[0]];
+        });
+        expect(element.find('option')[0].selected).toEqual(true);
+
+        scope.$apply(function() {
+          scope.selected.pop();
+        });
+
+        expect(element.find('option')[0].selected).toEqual(false);
+      })
     });
 
 

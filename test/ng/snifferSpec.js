@@ -124,11 +124,68 @@ describe('$sniffer', function() {
 
   });
 
-  describe('supportsTransitions', function() {
+  describe('animations', function() {
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.animations).not.toBe(undefined);
+      });
+    });
+
+    it('should be false when there is no animation style', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
+    it('should be true with vendor-specific animations', function() {
+      module(function($provide) {
+        var animationStyle = 'some_animation 2s linear';
+        var doc = {
+          body : {
+            style : {
+              WebkitAnimation : animationStyle,
+              MozAnimation : animationStyle,
+              OAnimation : animationStyle
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+
+    it('should be true with w3c-style animations', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              animation : 'some_animation 2s linear'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+  });
+
+  describe('transitions', function() {
 
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).not.toBe(undefined);
+        expect($sniffer.transitions).not.toBe(undefined);
       });
     });
 
@@ -142,7 +199,7 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(false);
+        expect($sniffer.transitions).toBe(false);
       });
     });
 
@@ -161,7 +218,7 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(true);
+        expect($sniffer.transitions).toBe(true);
       });
     });
 
@@ -177,7 +234,7 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(true);
+        expect($sniffer.transitions).toBe(true);
       });
     });
 

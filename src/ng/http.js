@@ -699,7 +699,7 @@ function $HttpProvider() {
         var rejectFn = chain.shift();
 
         promise = promise.then(thenFn, rejectFn);
-      };
+      }
 
       promise.success = function(fn) {
         promise.then(function(response) {

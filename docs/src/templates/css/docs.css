@@ -202,3 +202,42 @@ ul.events > li > h3 {
 .clear {
   clear: both;
 }
+
+.variables-matrix td {
+  vertical-align:top;
+  padding:5px;
+}
+
+.type-hint {
+  display:inline-block;
+}
+
+.variables-matrix .type-hint {
+  text-align:center;
+  display:block;
+  min-width:60px;
+}
+
+.type-hint + .type-hint {
+  margin-top:5px;
+}
+
+.type-hint-string {
+  background:#3a87ad;
+}
+
+.type-hint-object {
+  background:#999;
+}
+
+.type-hint-array {
+  background:#F90;;
+}
+
+.type-hint-boolean {
+  background:rgb(18, 131, 39);
+}
+
+.type-hint-number {
+  background:rgb(189, 63, 66);
+}
