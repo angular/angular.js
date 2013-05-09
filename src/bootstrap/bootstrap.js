@@ -48,6 +48,48 @@ directive.dropdownToggle =
     };
   }];
 
+directive.syntax = function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      function makeLink(type, text, link, icon) {
+        return '<a href="' + link + '" class="btn syntax-' + type + '" target="_blank" rel="nofollow">' + 
+                '<span class="' + icon + '"></span> ' + text +
+               '</a>';
+      };
+      var html = '<nav class="syntax-links">';
+      var types = {
+        'github' : {
+          text : 'View on Github',
+          key : 'syntaxGithub',
+          icon : 'icon-github'
+        },
+        'plunkr' : {
+          text : 'View on Plunkr',
+          key : 'syntaxPlunkr',
+          icon : 'icon-arrow-down'
+        },
+        'jsfiddle' : {
+          text : 'View on JSFiddle',
+          key : 'syntaxFiddle',
+          icon : 'icon-cloud'
+        }
+      };
+      for(var type in types) {
+        var data = types[type];
+        var link = attrs[data.key];
+        if(link) {
+          html += makeLink(type, data.text, link, data.icon);
+        }
+      };
+      html += '</nav>';
+      var nav = angular.element(html);
+      var node = element[0];
+      var par = node.parentNode;
+      par.insertBefore(nav[0], node);
+    }
+  }
+}
 
 directive.tabbable = function() {
   return {
