@@ -105,7 +105,7 @@ Doc.prototype = {
       IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
       IS_ANGULAR = /^(api\/)?(angular|ng|AUTO)\./,
       IS_HASH = /^#/,
-      parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
+      parts = trim(text).split(/(<pre.*?>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
       seq = 0,
       placeholderMap = {};
 
@@ -191,9 +191,9 @@ Doc.prototype = {
 
           return placeholder(example.toHtml());
         }).
-        replace(/^<pre>([\s\S]*?)<\/pre>/mi, function(_, content){
+        replace(/^<pre(.*?)>([\s\S]*?)<\/pre>/mi, function(_, attrs, content){
           return placeholder(
-            '<pre class="prettyprint linenums">' +
+            '<pre'+attrs+' class="prettyprint linenums">' +
               content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
               '</pre>');
         }).
