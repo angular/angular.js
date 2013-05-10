@@ -662,7 +662,7 @@ function $CompileProvider($provide) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, jqLite($template[0]), compileNode);
             cloneContent.append($template);
-            forEach(nestedContent.splice(1),
+            forEach(nestedContent.splice(1, nestedContent.length - 1),
               function(toRemove) {
                 removeElement(jqCollection, toRemove);
                 cloneContent.append(toRemove);

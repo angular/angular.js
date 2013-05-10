@@ -405,8 +405,7 @@ describe('$compile', function() {
           '<span>{{item.text}}></span>' +
           '<span>{{item.done}}</span>' +
         '</div>' +
-        '<div ng-repeat-end></div>',
-
+        '<div ng-repeat-end></div>'
         ], function(template) {
           expect(function() {
             $compile('<div>' + template + '</div>');
