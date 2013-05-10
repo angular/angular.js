@@ -510,10 +510,8 @@ function $CompileProvider($provide) {
 
       switch(nodeType) {
         case 1: /* Element */
-          // use the node name: <directive>
-          addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority);
-
+          var attributesDirectives = [];
+          var hasReplaceAttributeDirective = false;
           // iterate over the attributes
           for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
@@ -534,7 +532,7 @@ function $CompileProvider($provide) {
                 attrs[nName] = true; // presence means true
               }
               addAttrInterpolateDirective(node, directives, value, nName);
-              addDirective(directives, nName, 'A', maxPriority);
+              addDirective(attributesDirectives, nName, 'A', maxPriority);
             }
           }
 
@@ -543,12 +541,24 @@ function $CompileProvider($provide) {
           if (isString(className) && className !== '') {
             while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
               nName = directiveNormalize(match[2]);
-              if (addDirective(directives, nName, 'C', maxPriority)) {
+              if (addDirective(attributesDirectives, nName, 'C', maxPriority)) {
                 attrs[nName] = trim(match[3]);
               }
               className = className.substr(match.index + match[0].length);
             }
           }
+
+          forEach(attributesDirectives, function(directive) {
+            hasReplaceAttributeDirective |= directive.replace;
+          });
+          if (!hasReplaceAttributeDirective) {
+            // use the node name: <directive>
+            addDirective(directives,
+                directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority);
+          }
+          forEach(attributesDirectives, function(directive) {
+            directives.push(directive);
+          });
           break;
         case 3: /* Text Node */
           addTextInterpolateDirective(directives, node.nodeValue);
