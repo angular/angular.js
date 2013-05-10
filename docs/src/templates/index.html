@@ -43,6 +43,7 @@
       addTag('script', {src: path('angular-mobile.js') }, sync);
       addTag('script', {src: path('angular-bootstrap.js') }, sync);
       addTag('script', {src: path('angular-bootstrap-prettify.js') }, sync);
+      addTag('script', {src: 'js/lunr.js' }, sync);
       addTag('script', {src: 'js/docs.js'}, sync);
       addTag('script', {src: 'docs-keywords.js'}, sync);
 
@@ -112,7 +113,7 @@
 </head>
 
 <body>
-  <header class="header">
+  <header class="header" ng-controller="DocsNavigationCtrl">
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -166,10 +167,21 @@
             </li>
             <li class="divider-vertical"></li>
           </ul>
-          <form class="navbar-search pull-right" method="GET" action="https://www.google.com/search">
-            <input type="text" name="as_q" class="search-query" placeholder="Search">
+          <form class="navbar-search pull-right" ng-submit="submit()">
+            <input type="text" name="as_q" class="search-query" placeholder="Search" ng-change="search(q)" ng-model="q" autocomplete="off">
             <input type="hidden" name="as_sitesearch" value="angularjs.org">
           </form>
+          <div ng-show="hasResults" class="search-results">
+            <a href="" ng-click="hideResults()" class="search-close">
+              <span class="icon-remove-sign"></span>
+            </a>
+            <div ng-repeat="(key, value) in results" class="search-group" ng-class="colClassName">
+              <h4>{{ key }}</h4>
+              <div ng-repeat="item in value" class="search-result">
+                <a ng-click="hideResults()" href="{{ item.url }}">{{ item.shortName }}</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
