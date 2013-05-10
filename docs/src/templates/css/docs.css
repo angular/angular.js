@@ -95,8 +95,9 @@
 /*            Content              */
 /* =============================== */
 
-.improve-docs {
+.improve-docs, .view-source {
   float: right;
+  margin: 0 5px;
 }
 
 .hint {

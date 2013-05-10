@@ -378,7 +378,16 @@ Doc.prototype = {
     dom.h(title(this.name), function() {
 
       notice('deprecated', 'Deprecated API', self.deprecated);
-      dom.tag('a', {href: 'http://github.com/angular/angular.js/edit/master/' + self.file, class: 'improve-docs btn btn-primary'}, 'Improve this doc');
+      dom.tag('a', {href: 'http://github.com/angular/angular.js/edit/master/' + self.file, class: 'improve-docs btn btn-primary'}, function(dom) {
+        dom.tag('i', {class:'icon-edit'}, ' ');
+        dom.text(' Improve this doc');
+      });
+      if (self.section === 'api') {
+        dom.tag('a', {href: 'http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().number + '/' + self.file + '#L' + self.line, class: 'view-source btn btn-action'}, function(dom) {
+          dom.tag('i', {class:'icon-zoom-in'}, ' ');
+          dom.text(' View source');
+        });
+      }
       if (self.ngdoc != 'overview') {
         dom.h('Description', self.description, dom.html);
       }
@@ -401,7 +410,7 @@ Doc.prototype = {
     //////////////////////////
 
     function notice(name, legend, msg){
-      if (self[name] == undefined) return;
+      if (self[name] === undefined) return;
       dom.tag('fieldset', {'class':name}, function(dom){
         dom.tag('legend', legend);
         dom.text(msg);
