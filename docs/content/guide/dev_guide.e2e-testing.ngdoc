@@ -176,3 +176,81 @@ JavaScript is a dynamically typed language which comes with great power of expre
 come with almost no-help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
 angular which makes testing your angular applications easy. So there is no excuse for not testing.
+
+#More examples:
+* checking number of input fields and rows
+* changing val in one input field and checking that it effects another
+* changing select list option and and checking that it effects the one next to it
+* finding the 2nd row in a multi line form and test that row making 
+    sure the previous row does not change
+
+<pre class="prettyprint linenums">
+describe('Quoting System', function() {
+  it('Line items should update as hours field changes.', function() {
+      expect(repeater('input.line-item-hours').count()).toBe(1);
+      expect(element('input.line-item-hours').val()).toBe("0");
+      expect(repeater('input.line-item-high').count()).toBe(1);
+      expect(element('input.line-item-high').val()).toBe("0");
+      
+      //Now Set lineitem.hours to cause a change on input.line-item-high
+      input('lineitem.hours').enter('2');
+      expect(element('input.line-item-high').val()).toBe("2.8");
+
+      //Change selector to value 4
+      select('lineitem.doc').option('4');
+      expect(element('input.line-item-high').val()).toBe("2.2");
+      
+      .....
+
+      //In a multi-row form change the 2nd line item
+      // leaving the first as is.
+      // test that the first has not changed.
+      // test that the related field in this row has changed
+      using('tr:nth-of-type(2)', "Second line item").input('lineitem.hours').enter('3');
+      element('input.line-item-hours:eq(1)').val('3');
+      //Verify the change that should happen from the val set above
+      expect(element('input.line-item-high:eq(1)').val()).toBe("4.2");
+      //Change the 2nd rows select list
+      using('tr:nth-of-type(2)', "Second line item").select('lineitem.doc').option('4');
+      expect(element('input.line-item-high:eq(1)').val()).toBe("3.3");
+
+  });
+});
+</pre>
+
+#Here is the HTML I will be testing
+<pre class="prettyprint linenums">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Major Feature</th>
+                        <th>Feature Set</th>
+                        <th>Item</th>
+                        <th>Hours</th>
+                        <th><a href="#docModal" data-toggle="modal">DOC</a></th>
+                        <th>High</th>
+                      </tr>
+                    </thead>
+                    <tr ng-repeat="lineitem in quote.lineitems"></td>
+                      <td class="span2"><input class="span12" type="text" ng-model="lineitem.major_feature"></td>
+                      <td class="span2"><input class="span12" type="text" ng-model="lineitem.feature_set"></td>
+                      <td class="span4"><input class="span12" type="text" ng-model="lineitem.item"></td>
+                      <td class="span1"><input class="span12 line-item-hours" min="0" max="99" step="any" type="number" ng-model="lineitem.hours" ng-change="updateHigh()"></td>
+                      <td class="span2">
+                        <select 
+                          class="span12 chzn-select" 
+                          ng-change="updateHigh()"
+                          ng-model="lineitem.doc"
+                          data-rel="chosen" 
+                          name="doc"
+                          ng-options="d.applied as d.name for d in quote.docs">
+                        </select>
+                      </td>
+                      <td class="span2"><input class="span12 line-item-high" min="0" max="99" step="any" type="number" ng-model="lineitem.high" disabled /></td>                   
+                    </tr>
+                  </table>
+</pre>
+
+This line item example has an Hours field where the user can enter hours. As they do this there is a select field that
+has several options to measuer the Degree of Certainty (DOC) each one having a value. Finally the High field for calculating
+hours * doc = high hours
