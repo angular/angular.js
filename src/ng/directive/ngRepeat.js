@@ -88,9 +88,9 @@
       </div>
     </file>
     <file name="animations.css">
-      .example-repeat-enter-setup,
-      .example-repeat-leave-setup,
-      .example-repeat-move-setup {
+      .example-repeat-enter,
+      .example-repeat-leave,
+      .example-repeat-move {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -ms-transition:all linear 0.5s;
@@ -98,26 +98,26 @@
         transition:all linear 0.5s;
       }
 
-      .example-repeat-enter-setup {
+      .example-repeat-enter {
         line-height:0;
         opacity:0;
       }
-      .example-repeat-enter-setup.example-repeat-enter-start {
+      .example-repeat-enter.example-repeat-enter-active {
         line-height:20px;
         opacity:1;
       }
 
-      .example-repeat-leave-setup {
+      .example-repeat-leave {
         opacity:1;
         line-height:20px;
       }
-      .example-repeat-leave-setup.example-repeat-leave-start {
+      .example-repeat-leave.example-repeat-leave-active {
         opacity:0;
         line-height:0;
       }
 
-      .example-repeat-move-setup { }
-      .example-repeat-move-setup.example-repeat-move-start { }
+      .example-repeat-move { }
+      .example-repeat-move.example-repeat-move-active { }
     </file>
     <file name="scenario.js">
        it('should render initial data set', function() {

@@ -153,6 +153,18 @@ function annotate(fn) {
 
 /**
  * @ngdoc method
+ * @name AUTO.$injector#has
+ * @methodOf AUTO.$injector
+ *
+ * @description
+ * Allows the user to query if the particular service exist.
+ *
+ * @param {string} Name of the service to query.
+ * @returns {boolean} returns true if injector has given service.
+ */
+
+/**
+ * @ngdoc method
  * @name AUTO.$injector#instantiate
  * @methodOf AUTO.$injector
  * @description

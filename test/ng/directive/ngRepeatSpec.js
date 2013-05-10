@@ -673,16 +673,16 @@ describe('ngRepeat ngAnimate', function() {
       applyCSS(kids[i], 'transition', '1s linear all');
     }
 
-    if ($sniffer.supportsTransitions) {
+    if ($sniffer.transitions) {
       for (var i = 0; i < $rootScope.items.length; ++i) {
-        expect(kids[2*i].attr('class')).toContain('custom-enter-setup');
-        expect(kids[2*i + 1].attr('class')).toContain('custom-enter-setup');
+        expect(kids[2*i].attr('class')).toContain('custom-enter');
+        expect(kids[2*i + 1].attr('class')).toContain('custom-enter');
         window.setTimeout.expect(1).process();
       }
 
       for (var i = 0; i < $rootScope.items.length; ++i) {
-        expect(kids[2*i].attr('class')).toContain('custom-enter-start');
-        expect(kids[2*i + 1].attr('class')).toContain('custom-enter-start');
+        expect(kids[2*i].attr('class')).toContain('custom-enter-active');
+        expect(kids[2*i + 1].attr('class')).toContain('custom-enter-active');
         window.setTimeout.expect(1000).process();
       }
     } else {
@@ -690,8 +690,8 @@ describe('ngRepeat ngAnimate', function() {
     }
 
     angular.forEach(kids, function(kid) {
-      expect(kid.attr('class')).not.toContain('custom-enter-setup');
-      expect(kid.attr('class')).not.toContain('custom-enter-start');
+      expect(kid.attr('class')).not.toContain('custom-enter');
+      expect(kid.attr('class')).not.toContain('custom-enter-active');
     });
   }));
 
@@ -721,21 +721,21 @@ describe('ngRepeat ngAnimate', function() {
       //the last element gets pushed down when it animates
       var kid1 = jqLite(element.children()[2]);
       var kid2 = jqLite(element.children()[3]);
-      if ($sniffer.supportsTransitions) {
-        expect(kid1.attr('class')).toContain('custom-leave-setup');
-        expect(kid2.attr('class')).toContain('custom-leave-setup');
+      if ($sniffer.transitions) {
+        expect(kid1.attr('class')).toContain('custom-leave');
+        expect(kid2.attr('class')).toContain('custom-leave');
         window.setTimeout.expect(1).process();
-        expect(kid1.attr('class')).toContain('custom-leave-start');
-        expect(kid2.attr('class')).toContain('custom-leave-start');
+        expect(kid1.attr('class')).toContain('custom-leave-active');
+        expect(kid2.attr('class')).toContain('custom-leave-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(kid1.attr('class')).not.toContain('custom-leave-setup');
-      expect(kid2.attr('class')).not.toContain('custom-leave-setup');
-      expect(kid1.attr('class')).not.toContain('custom-leave-start');
-      expect(kid2.attr('class')).not.toContain('custom-leave-start');
+      expect(kid1.attr('class')).not.toContain('custom-leave');
+      expect(kid2.attr('class')).not.toContain('custom-leave');
+      expect(kid1.attr('class')).not.toContain('custom-leave-active');
+      expect(kid2.attr('class')).not.toContain('custom-leave-active');
   }));
 
   it('should fire off the move animation + add and remove the css classes',
@@ -771,36 +771,36 @@ describe('ngRepeat ngAnimate', function() {
       var right1 = jqLite(kids[4]);
       var right2 = jqLite(kids[5]);
 
-      if ($sniffer.supportsTransitions) {
-        expect(first1.attr('class')).toContain('custom-move-setup');
-        expect(first2.attr('class')).toContain('custom-move-setup');
+      if ($sniffer.transitions) {
+        expect(first1.attr('class')).toContain('custom-move');
+        expect(first2.attr('class')).toContain('custom-move');
         window.setTimeout.expect(1).process();
-        expect(left1.attr('class')).toContain('custom-move-setup');
-        expect(left2.attr('class')).toContain('custom-move-setup');
+        expect(left1.attr('class')).toContain('custom-move');
+        expect(left2.attr('class')).toContain('custom-move');
         window.setTimeout.expect(1).process();
 
-        expect(first1.attr('class')).toContain('custom-move-start');
-        expect(first2.attr('class')).toContain('custom-move-start');
+        expect(first1.attr('class')).toContain('custom-move-active');
+        expect(first2.attr('class')).toContain('custom-move-active');
         window.setTimeout.expect(1000).process();
-        expect(left1.attr('class')).toContain('custom-move-start');
-        expect(left2.attr('class')).toContain('custom-move-start');
+        expect(left1.attr('class')).toContain('custom-move-active');
+        expect(left2.attr('class')).toContain('custom-move-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(first1.attr('class')).not.toContain('custom-move-setup');
-      expect(first2.attr('class')).not.toContain('custom-move-setup');
-      expect(first1.attr('class')).not.toContain('custom-move-start');
-      expect(first2.attr('class')).not.toContain('custom-move-start');
-      expect(left1.attr('class')).not.toContain('custom-move-setup');
-      expect(left2.attr('class')).not.toContain('custom-move-setup');
-      expect(left1.attr('class')).not.toContain('custom-move-start');
-      expect(left2.attr('class')).not.toContain('custom-move-start');
-      expect(right1.attr('class')).not.toContain('custom-move-setup');
-      expect(right2.attr('class')).not.toContain('custom-move-setup');
-      expect(right1.attr('class')).not.toContain('custom-move-start');
-      expect(right2.attr('class')).not.toContain('custom-move-start');
+      expect(first1.attr('class')).not.toContain('custom-move');
+      expect(first2.attr('class')).not.toContain('custom-move');
+      expect(first1.attr('class')).not.toContain('custom-move-active');
+      expect(first2.attr('class')).not.toContain('custom-move-active');
+      expect(left1.attr('class')).not.toContain('custom-move');
+      expect(left2.attr('class')).not.toContain('custom-move');
+      expect(left1.attr('class')).not.toContain('custom-move-active');
+      expect(left2.attr('class')).not.toContain('custom-move-active');
+      expect(right1.attr('class')).not.toContain('custom-move');
+      expect(right2.attr('class')).not.toContain('custom-move');
+      expect(right1.attr('class')).not.toContain('custom-move-active');
+      expect(right2.attr('class')).not.toContain('custom-move-active');
   }));
 
   it('should catch and use the correct duration for animation',
@@ -829,7 +829,7 @@ describe('ngRepeat ngAnimate', function() {
       applyCSS(second, cssProp, cssValue);
       applyCSS(jqLite(kids[3]), cssProp, cssValue);
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
