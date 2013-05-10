@@ -259,4 +259,39 @@ ul.events > li > h3 {
 .syntax-links + pre {
   border-top-left-radius:0;
   border-top-right-radius:0;
+
+.search-results {
+  clear:both;
+  display:table;
+  width:100%;
+}
+
+.search-results > .search-group {
+  vertical-align:top;
+  padding:10px 0;
+  display:table-cell;
+}
+
+.search-group.cols-1 { width:100%; }
+.search-group.cols-2 { width:50%; }
+.search-group.cols-3 { width:33%; }
+.search-group.cols-4 { width:25%; }
+
+.search-close {
+  z-index:1029;
+  position:absolute;
+  bottom:-25px;
+  left:80%;
+  text-align:center;
+  line-height:50px;
+  width:50px;
+  font-size:2em;
+  background:#222222;
+  border-radius:15px;
+}
+
+.search-close span {
+  text-decoration:none;
+  position:relative;
+  z-index:1031;
 }
