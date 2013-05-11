@@ -123,7 +123,8 @@ function isSuccess(status) {
 function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
-      PROTECTION_PREFIX = /^\)\]\}',?\n/;
+      PROTECTION_PREFIX = /^\)\]\}',?\n/,
+      CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': 'application/json;charset=utf-8'};
 
   var defaults = this.defaults = {
     // transform incoming response data
@@ -147,8 +148,9 @@ function $HttpProvider() {
       common: {
         'Accept': 'application/json, text/plain, */*'
       },
-      post: {'Content-Type': 'application/json;charset=utf-8'},
-      put:  {'Content-Type': 'application/json;charset=utf-8'}
+      post:   CONTENT_TYPE_APPLICATION_JSON,
+      put:    CONTENT_TYPE_APPLICATION_JSON,
+      patch:  CONTENT_TYPE_APPLICATION_JSON
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
@@ -340,7 +342,7 @@ function $HttpProvider() {
      *
      * A custom default cache built with $cacheFactory can be provided in $http.defaults.cache.
      * To skip it, set configuration property `cache` to `false`.
-     * 
+     *
      *
      * # Interceptors
      *
@@ -873,8 +875,8 @@ function $HttpProvider() {
 
 
       if ((config.cache || defaults.cache) && config.cache !== false && config.method == 'GET') {
-        cache = isObject(config.cache) ? config.cache 
-              : isObject(defaults.cache) ? defaults.cache 
+        cache = isObject(config.cache) ? config.cache
+              : isObject(defaults.cache) ? defaults.cache
               : defaultCache;
       }
 
