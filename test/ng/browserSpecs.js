@@ -304,6 +304,13 @@ describe('browser', function() {
         expect(browser.cookies().foo).toEqual('bar=baz');
       });
 
+      it('should return the the first value provided for a cookie', function() {
+        // For a cookie that has different values that differ by path, the
+        // value for the most specific path appears first.  browser.cookies()
+        // should provide that value for the cookie.
+        document.cookie = 'foo="first"; foo="second"';
+        expect(browser.cookies()['foo']).toBe('"first"');
+      });
 
       it ('should unescape cookie values that were escaped by puts', function() {
         document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
