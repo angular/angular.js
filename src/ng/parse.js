@@ -463,7 +463,8 @@ function parser(text, json, $filter, csp){
     if((token = expect('?'))){
       middle = ternary();
       if((token = expect(':'))){
-        return ternaryFn(left, middle, ternary());
+        right = ternary();
+        return ternaryFn(left, middle, right);
       }
       else {
         throwError('expected :', token);
