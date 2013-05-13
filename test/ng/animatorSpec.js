@@ -128,6 +128,16 @@ describe("$animator", function() {
             }
           }
         });
+       $animationProvider.register('custom-delay', function() {
+          return {
+            start: function(element, done) {
+              window.setTimeout(done, 2000);
+            },
+            cancel : function(element) {
+              element.addClass('animation-cancelled');
+            }
+          }
+        });
        $animationProvider.register('setup-memo', function() {
           return {
             setup: function(element) {
@@ -140,14 +150,16 @@ describe("$animator", function() {
           }
         });
       })
-      inject(function($animator, $compile, $rootScope) {
+      inject(function($animator, $compile, $rootScope, $rootElement) {
         element = $compile('<div></div>')($rootScope);
         child   = $compile('<div></div>')($rootScope);
         after   = $compile('<div></div>')($rootScope);
+        $rootElement.append(element);
       });
     })
 
     it("should animate the enter animation event", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{enter: \'custom\'}'
       });
@@ -158,6 +170,7 @@ describe("$animator", function() {
     }));
 
     it("should animate the leave animation event", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
       animator = $animator($rootScope, {
         ngAnimate : '{leave: \'custom\'}'
       });
@@ -273,8 +286,6 @@ describe("$animator", function() {
     }));
 
     it("should not run if animations are disabled", inject(function($animator, $rootScope) {
-      $animator.enabled(true);
-      $rootScope.$digest(); // clear initial animation suppression
       $animator.enabled(false);
 
       animator = $animator($rootScope, {
@@ -293,6 +304,54 @@ describe("$animator", function() {
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
     }));
+
+    it("should only call done() once and right away if another animation takes place in between",
+      inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'custom-delay\', leave: \'custom-delay\'}'
+      });
+
+      element.append(child);
+
+      child.css('display','block');
+      animator.hide(child);
+      window.setTimeout.expect(1).process();
+      expect(child.css('display')).toBe('block');
+
+      animator.leave(child);
+      expect(child.css('display')).toBe('none'); //hides instantly
+
+      //lets change this to prove that done doesn't fire anymore for the previous hide() operation
+      child.css('display','block'); 
+
+      window.setTimeout.expect(2000).process();
+      expect(child.css('display')).toBe('block'); //doesn't run the done() method to hide it
+
+      expect(element.children().length).toBe(1); //still animating
+
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(2000).process();
+      expect(element.children().length).toBe(0);
+    }));
+
+    it("should call the cancel callback when another animation is called on the same element",
+      inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'custom-delay\', show: \'custom-delay\'}'
+      });
+
+      child.css('display','none');
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+      animator.hide(element);
+
+      expect(element.hasClass('animation-cancelled')).toBe(true);
+    }));
+
   });
 
   describe("with CSS3", function() {
@@ -413,6 +472,28 @@ describe("$animator", function() {
         animator.show(element);
         expect(element[0].style.display).toBe('');
       }));
+
+      it("should finish the previous animation when a new animation is started",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          if(!$sniffer.animations) return;
+
+          var style = 'animation: some_animation 2s linear 0s 1 alternate;' +
+                      vendorPrefix + 'animation: some_animation 2s linear 0s 1 alternate;'
+
+          element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'show\', hide: \'hide\'}'
+          });
+
+          animator.show(element);
+          window.setTimeout.expect(1).process();
+          expect(element.hasClass('show')).toBe(true);
+          expect(element.hasClass('show-active')).toBe(true);
+
+          animator.hide(element);
+          expect(element.hasClass('show')).toBe(false);
+          expect(element.hasClass('show-active')).toBe(false);
+      }));
     });
 
     describe("Transitions", function() {
@@ -487,6 +568,28 @@ describe("$animator", function() {
           return;
           }
           expect(element[0].style.display).toBe('');
+      }));
+
+      it("should finish the previous transition when a new animation is started",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          if(!$sniffer.animations) return;
+
+          var style = 'transition: 1s linear all;' +
+                      vendorPrefix + 'animation: 1s linear all;'
+
+          element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'show\', hide: \'hide\'}'
+          });
+
+          animator.show(element);
+          window.setTimeout.expect(1).process();
+          expect(element.hasClass('show')).toBe(true);
+          expect(element.hasClass('show-active')).toBe(true);
+
+          animator.hide(element);
+          expect(element.hasClass('show')).toBe(false);
+          expect(element.hasClass('show-active')).toBe(false);
       }));
     });
   });

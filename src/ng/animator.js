@@ -264,6 +264,7 @@ var $AnimatorProvider = function() {
             var animationPolyfill = $animation(className);
             var polyfillSetup = animationPolyfill && animationPolyfill.setup;
             var polyfillStart = animationPolyfill && animationPolyfill.start;
+            var polyfillCancel = animationPolyfill && animationPolyfill.cancel;
 
             if (!className) {
               beforeFn(element, parent, after);
@@ -281,7 +282,13 @@ var $AnimatorProvider = function() {
                 return;
               }
 
-              element.data(NG_ANIMATE_CONTROLLER, {running:true});
+              var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
+              if(animationData.running) {
+                (polyfillCancel || noop)(element);
+                animationData.done();
+              }
+
+              element.data(NG_ANIMATE_CONTROLLER, {running:true, done:done});
               element.addClass(className);
               beforeFn(element, parent, after);
               if (element.length == 0) return done();
@@ -354,10 +361,13 @@ var $AnimatorProvider = function() {
             }
 
             function done() {
-              afterFn(element, parent, after);
-              element.removeClass(className);
-              element.removeClass(activeClassName);
-              element.removeData(NG_ANIMATE_CONTROLLER);
+              if(!done.run) {
+                done.run = true;
+                afterFn(element, parent, after);
+                element.removeClass(className);
+                element.removeClass(activeClassName);
+                element.removeData(NG_ANIMATE_CONTROLLER);
+              }
             }
           };
         }
