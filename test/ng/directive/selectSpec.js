@@ -494,8 +494,8 @@ describe('select', function() {
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
         compile('<select ng-model="selected" ng-options="i dont parse"></select>');
-      }).toThrow("Expected ngOptions in form of '_select_ (identify by _ident_)? (as _label_)? for (_key_,)?_value_ in" +
-                 " _collection_' but got 'i dont parse'.");
+      }).toThrow("Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
+                 " _collection_ (track by _expr_)?' but got 'i dont parse'.");
     });
 
 
@@ -753,10 +753,10 @@ describe('select', function() {
       });
 
 
-      it('should bind to scope value and identify objects', function() {
+      it('should bind to scope value and track/identify objects', function() {
         createSelect({
           'ng-model': 'selected',
-          'ng-options': 'item identify by item.id as item.name for item in values'
+          'ng-options': 'item as item.name for item in values track by item.id'
         });
 
         scope.$apply(function() {

@@ -38,9 +38,7 @@
  *     * `label` **`for`** `value` **`in`** `array`
  *     * `select` **`as`** `label` **`for`** `value` **`in`** `array`
  *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
- *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array`
- *     * `select` **`identify by`** `ident` **`as`** `label` **`group by`** `group`
- *         **`for`** `value` **`in`** `array`
+ *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
  *   * for object data sources:
  *     * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
  *     * `select` **`as`** `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
@@ -54,15 +52,15 @@
  *   * `value`: local variable which will refer to each item in the `array` or each property value
  *      of `object` during iteration.
  *   * `key`: local variable which will refer to a property name in `object` during iteration.
- *   * `ident`: Used when working with an array of objects. The result of this expression will be
- *      used to identify the objects in the array. The `expression` will most likely refer to the
- *     `value` variable (e.g. `value.propertyName`).
  *   * `label`: The result of this expression will be the label for `<option>` element. The
  *     `expression` will most likely refer to the `value` variable (e.g. `value.propertyName`).
  *   * `select`: The result of this expression will be bound to the model of the parent `<select>`
  *      element. If not specified, `select` expression will default to `value`.
  *   * `group`: The result of this expression will be used to group options using the `<optgroup>`
  *      DOM element.
+ *   * `trackexpr`: Used when working with an array of objects. The result of this expression will be
+ *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
+ *     `value` variable (e.g. `value.propertyName`).
  *
  * @example
     <doc:example>
@@ -127,8 +125,8 @@
 
 var ngOptionsDirective = valueFn({ terminal: true });
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
-                         //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
-  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+identify\s+by\s+(.*?))?(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/,
+                         //0000111110000000000022220000000000000000000000333300000000000000444444444444444440000000005555555555555555500000006666666666666666600000000000000007777000000000000000000088888
+  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/,
       nullModelCtrl = {$setViewValue: noop};
 
   return {
@@ -302,18 +300,18 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw Error(
-            "Expected ngOptions in form of '_select_ (identify by _ident_)? (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            "Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_ (track by _expr_)?'" +
             " but got '" + optionsExp + "'.");
         }
 
-        var displayFn = $parse(match[3] || match[1]),
-            valueName = match[5] || match[7],
-            keyName = match[6],
-            ident = match[2],
-            identFn = ident ? $parse(match[2]) : null,
-            groupByFn = $parse(match[4] || ''),
-            valueFn = $parse(match[3] ? match[1] : valueName),
-            valuesFn = $parse(match[8]),
+        var displayFn = $parse(match[2] || match[1]),
+            valueName = match[4] || match[6],
+            keyName = match[5],
+            groupByFn = $parse(match[3] || ''),
+            valueFn = $parse(match[2] ? match[1] : valueName),
+            valuesFn = $parse(match[7]),
+            track = match[8],
+            trackFn = track ? $parse(match[8]) : null,
             // This is an array of array of existing option groups in DOM. We try to reuse these if possible
             // optionGroupsCache[0] is the options with no option group
             // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
@@ -354,10 +352,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                   if ((optionElement = optionGroup[index].element)[0].selected) {
                     key = optionElement.val();
                     if (keyName) locals[keyName] = key;
-                    if (identFn) {
-                      for (var identIndex = 0; identIndex < collection.length; identIndex++) {
-                        locals[valueName] = collection[identIndex];
-                        if (identFn(scope, locals) == key) break;
+                    if (trackFn) {
+                      for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                        locals[valueName] = collection[trackIndex];
+                        if (trackFn(scope, locals) == key) break;
                       } 
                     } else {
                       locals[valueName] = collection[key];
@@ -373,10 +371,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               } else if (key == ''){
                 value = null;
               } else {
-                if (identFn) {
-                  for (var identIndex = 0; identIndex < collection.length; identIndex++) {
-                    locals[valueName] = collection[identIndex];
-                    if (identFn(scope, locals) == key) {
+                if (trackFn) {
+                  for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                    locals[valueName] = collection[trackIndex];
+                    if (trackFn(scope, locals) == key) {
                       value = valueFn(scope, locals);
                       break;
                     }
@@ -417,11 +415,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               label;
 
           if (multiple) {
-            if (identFn && isArray(modelValue)) {
+            if (trackFn && isArray(modelValue)) {
               selectedSet = new HashMap([]);
-              for (var identIndex = 0; identIndex < modelValue.length; identIndex++) {
-                locals[valueName] = modelValue[identIndex];
-                selectedSet.put(identFn(scope, locals), modelValue[identIndex]);
+              for (var trackIndex = 0; trackIndex < modelValue.length; trackIndex++) {
+                locals[valueName] = modelValue[trackIndex];
+                selectedSet.put(trackFn(scope, locals), modelValue[trackIndex]);
               }
             } else {
               selectedSet = new HashMap(modelValue);
@@ -441,12 +439,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(identFn ? identFn(scope, locals) : valueFn(scope, locals)) != undefined;
+              selected = selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals)) != undefined;
             } else {
-              if (identFn) {
+              if (trackFn) {
                 var modelCast = {};
                 modelCast[valueName] = modelValue;
-                selected = identFn(scope, modelCast) === identFn(scope, locals);
+                selected = trackFn(scope, modelCast) === trackFn(scope, locals);
               } else {
                 selected = modelValue === valueFn(scope, locals);
               }
@@ -455,7 +453,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             label = displayFn(scope, locals); // what will be seen by the user
             label = label === undefined ? '' : label; // doing displayFn(scope, locals) || '' overwrites zero values
             optionGroup.push({
-              id: identFn ? identFn(scope, locals) : (keyName ? keys[index] : index),   // either the index into array or key from object
+              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),   // either the index into array or key from object
               label: label,
               selected: selected                   // determine if we should be selected
             });
