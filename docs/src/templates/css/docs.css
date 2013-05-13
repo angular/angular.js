@@ -241,3 +241,22 @@ ul.events > li > h3 {
 .type-hint-number {
   background:rgb(189, 63, 66);
 }
+
+.syntax-links {
+  background:#eee;
+  border:1px solid #ddd;
+  text-align:right;
+  padding:1em;
+  border-bottom:0;
+  border-top-left-radius:4px;
+  border-top-right-radius:4px;
+}
+
+.syntax-links a {
+  margin-left:10px;
+}
+
+.syntax-links + pre {
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+}
