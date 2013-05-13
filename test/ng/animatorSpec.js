@@ -352,6 +352,18 @@ describe("$animator", function() {
       expect(element.hasClass('animation-cancelled')).toBe(true);
     }));
 
+
+    it("should properly animate custom animation events", inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+      animator = $animator($rootScope, {
+        ngAnimate : '{custom: \'setup-memo\'}'
+      });
+
+      element.text('123');
+      animator.animate('custom',element);
+      window.setTimeout.expect(1).process();
+      expect(element.text()).toBe('memento');
+    }));
   });
 
   describe("with CSS3", function() {
@@ -367,6 +379,64 @@ describe("$animator", function() {
         };
       })
     });
+
+    it("should properly animate custom animations for specific animation events",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      $animator.enabled(true);
+      var element = $compile(html('<div></div>'))($rootScope);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{custom: \'special\'}'
+      });
+
+      animator.animate('custom',element);
+      if($sniffer.transitions) {
+        expect(element.hasClass('special')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('special-active')).toBe(true);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+    }));
+
+    it("should not animate custom animations if not specifically defined",
+      inject(function($animator, $rootScope, $compile) {
+
+      $animator.enabled(true);
+      var element = $compile(html('<div></div>'))($rootScope);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{custom: \'special\'}'
+      });
+
+      expect(window.setTimeout.queue.length).toBe(0);
+      animator.animate('custom1',element);
+      expect(element.hasClass('special')).toBe(false);
+      expect(window.setTimeout.queue.length).toBe(0);
+    }));
+
+    it("should properly animate custom animations for general animation events",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      $animator.enabled(true);
+      var element = $compile(html('<div></div>'))($rootScope);
+
+      animator = $animator($rootScope, {
+        ngAnimate : "'special'"
+      });
+
+      animator.animate('custom',element);
+      if($sniffer.transitions) {
+        expect(element.hasClass('special-custom')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('special-custom-active')).toBe(true);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+    }));
 
     describe("Animations", function() {
       it("should properly detect and make use of CSS Animations",
