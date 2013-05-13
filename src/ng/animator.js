@@ -61,9 +61,8 @@
  * .animate-enter {
  *  -webkit-transition: 1s linear all; /&#42; Safari/Chrome &#42;/
  *  -moz-transition: 1s linear all; /&#42; Firefox &#42;/
- *  -ms-transition: 1s linear all; /&#42; IE10 &#42;/
  *  -o-transition: 1s linear all; /&#42; Opera &#42;/
- *  transition: 1s linear all; /&#42; Future Browsers &#42;/
+ *  transition: 1s linear all; /&#42; IE10+ and Future Browsers &#42;/
  *
  *  /&#42; The animation preparation code &#42;/
  *  opacity: 0;
@@ -88,10 +87,10 @@
  * <pre>
  * <style type="text/css">
  * .animate-enter {
- *   -webkit-animation: enter_sequence 1s linear;
- *   -moz-animation: enter_sequence 1s linear;
- *   -o-animation: enter_sequence 1s linear;
- *   animation: enter_sequence 1s linear;
+ *   -webkit-animation: enter_sequence 1s linear; /&#42; Safari/Chrome &#42;/
+ *   -moz-animation: enter_sequence 1s linear; /&#42; Firefox &#42;/
+ *   -o-animation: enter_sequence 1s linear; /&#42; Opera &#42;/
+ *   animation: enter_sequence 1s linear; /&#42; IE10+ and Future Browsers &#42;/
  * }
  * &#64-webkit-keyframes enter_sequence {
  *   from { opacity:0; }
