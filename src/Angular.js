@@ -589,7 +589,7 @@ function isLeafNode (node) {
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  */
 function copy(source, destination){
-  if (isWindow(source) || isScope(source)) throw Error("Can't copy Window or Scope");
+  if (isWindow(source) || isScope(source)) throw NgError(43, "Can't copy Window or Scope");
   if (!destination) {
     destination = source;
     if (source) {
@@ -602,7 +602,7 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw Error("Can't copy equivalent objects or arrays");
+    if (source === destination) throw NgError(44, "Can't copy equivalent objects or arrays");
     if (isArray(source)) {
       destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
@@ -1053,7 +1053,7 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    throw new Error("Argument '" + (name || '?') + "' is " + (reason || "required"));
+    throw NgError(45, "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
   }
   return arg;
 }
