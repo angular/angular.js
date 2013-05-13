@@ -323,7 +323,7 @@ describe("$animator", function() {
         expect(element.css('display')).toBe('none');
 
         animator.show(element);
-        if ($sniffer.supportsAnimations) {
+        if ($sniffer.animations) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(4000).process();
         }
@@ -345,7 +345,7 @@ describe("$animator", function() {
         expect(element.css('display')).toBe('none');
 
         animator.show(element);
-        if ($sniffer.supportsAnimations) {
+        if ($sniffer.animations) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(6000).process();
         }
@@ -367,7 +367,7 @@ describe("$animator", function() {
         expect(element.css('display')).toBe('none');
 
         animator.show(element);
-        if ($sniffer.supportsAnimations) {
+        if ($sniffer.animations) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(2000).process();
         }
@@ -391,7 +391,7 @@ describe("$animator", function() {
         expect(element.css('display')).toBe('none');
 
         animator.show(element);
-        if ($sniffer.supportsTransitions) {
+        if ($sniffer.transitions) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(20000).process();
         }
@@ -435,7 +435,7 @@ describe("$animator", function() {
         expect(element.css('display')).toBe('none');
 
         animator.show(element);
-        if ($sniffer.supportsTransitions) {
+        if ($sniffer.transitions) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(1000).process();
         }
@@ -451,7 +451,7 @@ describe("$animator", function() {
           });
           element.css('display','none');
           animator.show(element);
-          if ($sniffer.supportsTransitions) {
+          if ($sniffer.transitions) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(2000).process();
           }
