@@ -437,14 +437,17 @@ function isBoolean(value) {
 }
 
 
-function trim(value) {
-  if (!isString(value)) return value;
+var trim = (function() {
+  if (!String.prototype.trim) {
+    return function(value) {
+      return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+    };
+  }
+  return function(value) {
+    return isString(value) ? String.prototype.trim.apply(value) : value;
+  };
+})();
 
-  if (!String.prototype.trim)
-    return value.replace(/^\s*/, '').replace(/\s*$/, '');
-  
-  return String.prototype.trim.apply(value);
-}
 
 /**
  * @ngdoc function
