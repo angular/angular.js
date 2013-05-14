@@ -681,9 +681,17 @@ describe('$compile', function() {
               restrict: 'CAM', templateUrl: 'hello.html', transclude: true
             }));
             directive('cau', valueFn({
-              restrict: 'CAM', templateUrl:'cau.html'
+              restrict: 'CAM', templateUrl: 'cau.html'
             }));
-
+            directive('crossDomainTemplate', valueFn({
+              restrict: 'CAM', templateUrl: 'http://example.com/should-not-load.html'
+            }));
+            directive('trustedTemplate', function($sce) { return {
+              restrict: 'CAM',
+              templateUrl: function() {
+                return $sce.trustAsResourceUrl('http://example.com/trusted-template.html');
+              }};
+            });
             directive('cError', valueFn({
               restrict: 'CAM',
               templateUrl:'error.html',
@@ -735,6 +743,24 @@ describe('$compile', function() {
           }
         ));
 
+        it('should not load cross domain templates by default', inject(
+            function($compile, $rootScope, $templateCache, $sce) {
+              expect(function() {
+                $templateCache.put('http://example.com/should-not-load.html', 'Should not load even if in cache.');
+                $compile('<div class="crossDomainTemplate"></div>')($rootScope);
+              }).toThrow('[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
+        }));
+
+        it('should load cross domain templates when trusted', inject(
+            function($compile, $httpBackend, $rootScope, $sce) {
+              $httpBackend.expect('GET', 'http://example.com/trusted-template.html').respond('<span>example.com/trusted_template_contents</span>');
+              element = $compile('<div class="trustedTemplate"></div>')($rootScope);
+              expect(sortedHtml(element)).
+                  toEqual('<div class="trustedTemplate"></div>');
+              $httpBackend.flush();
+              expect(sortedHtml(element)).
+                  toEqual('<div class="trustedTemplate"><span>example.com/trusted_template_contents</span></div>');
+        }));
 
         it('should append template via $http and cache it in $templateCache', inject(
             function($compile, $httpBackend, $templateCache, $rootScope, $browser) {
@@ -1521,6 +1547,16 @@ describe('$compile', function() {
           expect(element.attr('name')).toEqual('attr: angular');
         }));
 
+    describe('SCE values', function() {
+      it('should resolve compile and link both attribute and text bindings', inject(
+          function($rootScope, $compile, $sce) {
+            $rootScope.name = $sce.trustAsHtml('angular');
+            element = $compile('<div name="attr: {{name}}">text: {{name}}</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('text: angular');
+            expect(element.attr('name')).toEqual('attr: angular');
+          }));
+    });
 
     it('should decorate the binding with ng-binding and interpolation function', inject(
         function($compile, $rootScope) {
@@ -2625,12 +2661,16 @@ describe('$compile', function() {
   });
 
 
-  describe('img[src] sanitization', function() {
-    it('should NOT require trusted values for img src', inject(function($rootScope, $compile) {
+  describe('img[src] sanitization', function($sce) {
+    it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = 'http://example.com/image.png';
       $rootScope.$digest();
       expect(element.attr('src')).toEqual('http://example.com/image.png');
+      // But it should accept trusted values anyway.
+      $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.png');
+      $rootScope.$digest();
+      expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
     it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
@@ -2965,6 +3005,48 @@ describe('$compile', function() {
     }));
   });
 
+  describe('iframe[src]', function() {
+    it('should pass through src attributes for the same domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "different_page";
+      $rootScope.$apply();
+      expect(element.attr('src')).toEqual('different_page');
+    }));
+
+    it('should clear out src attributes for a different domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "http://a.different.domain.example.com";
+      expect(function() { $rootScope.$apply() }).toThrow(
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "http://a.different.domain.example.com");
+    }));
+
+    it('should clear out JS src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "javascript:alert(1);";
+      expect(function() { $rootScope.$apply() }).toThrow(
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "javascript:alert(1);");
+    }));
+
+    it('should clear out non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
+      expect($rootScope.$apply).toThrow(
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
+    }));
+
+    it('should pass through $sce.trustAs() values in src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
+      $rootScope.$apply();
+
+      expect(element.attr('src')).toEqual('javascript:doTrustedStuff()');
+    }));
+  });
 
   describe('ngAttr* attribute binding', function() {
 

@@ -54,7 +54,7 @@ function $InterpolateProvider() {
   };
 
 
-  this.$get = ['$parse', '$exceptionHandler', function($parse, $exceptionHandler) {
+  this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
     var startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length;
 
@@ -64,6 +64,7 @@ function $InterpolateProvider() {
      * @function
      *
      * @requires $parse
+     * @requires $sce
      *
      * @description
      *
@@ -84,12 +85,10 @@ function $InterpolateProvider() {
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
      *    embedded expression in order to return an interpolation function. Strings with no
      *    embedded expression will return null for the interpolation function.
-     * @param {boolean=} isTrustedContext when true, requires that the interpolation string does not
-     *    contain any concatenations - i.e. the interpolation string is a single expression.
-     *    Interpolations for *[src] and *[ng-src] (except IMG, since itwhich sanitizes its value)
-     *    pass true for this parameter.  This helps avoid hunting through the template code to
-     *    figure out of some iframe[src], object[src], etc. was interpolated with a concatenation
-     *    that ended up introducing a XSS.
+     * @param {string=} trustedContext when provided, the returned function passes the interpolated
+     *    result through {@link ng.$sce#getTrusted $sce.getTrusted(interpolatedResult,
+     *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
+     *    provides Strict Contextual Escaping for details.
      * @returns {function(context)} an interpolation function which is used to compute the interpolated
      *    string. The function has these parameters:
      *
@@ -97,7 +96,7 @@ function $InterpolateProvider() {
      *      against.
      *
      */
-    function $interpolate(text, mustHaveExpression, isTrustedContext) {
+    function $interpolate(text, mustHaveExpression, trustedContext) {
       var startIndex,
           endIndex,
           index = 0,
@@ -135,10 +134,11 @@ function $InterpolateProvider() {
       // is assigned or constructed by some JS code somewhere that is more testable or make it
       // obvious that you bound the value to some user controlled value.  This helps reduce the load
       // when auditing for XSS issues.
-      if (isTrustedContext && parts.length > 1) {
+      if (trustedContext && parts.length > 1) {
           throw $interpolateMinErr('noconcat',
-              "Error while interpolating: {0}\nYou may not use multiple expressions when " +
-              "interpolating this expression.", text);
+              "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
+              "interpolations that concatenate multiple expressions when a trusted value is " +
+              "required.  See http://docs.angularjs.org/api/ng.$sce", text);
       }
 
       if (!mustHaveExpression  || hasInterpolation) {
@@ -148,6 +148,11 @@ function $InterpolateProvider() {
             for(var i = 0, ii = length, part; i<ii; i++) {
               if (typeof (part = parts[i]) == 'function') {
                 part = part(context);
+                if (trustedContext) {
+                  part = $sce.getTrusted(trustedContext, part);
+                } else {
+                  part = $sce.valueOf(part);
+                }
                 if (part == null || part == undefined) {
                   part = '';
                 } else if (typeof part != 'string') {

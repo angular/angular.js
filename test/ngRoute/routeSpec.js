@@ -13,6 +13,7 @@ describe('$route', function() {
       $httpBackend.when('GET', 'foo.html').respond('foo');
       $httpBackend.when('GET', 'baz.html').respond('baz');
       $httpBackend.when('GET', 'bar.html').respond('bar');
+      $httpBackend.when('GET', 'http://example.com/trusted-template.html').respond('cross domain trusted template');
       $httpBackend.when('GET', '404.html').respond('not found');
     };
   }));
@@ -510,6 +511,33 @@ describe('$route', function() {
       });
     });
 
+    it('should NOT load cross domain templates by default', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/foo', { templateUrl: 'http://example.com/foo.html' });
+        });
+
+      inject(function ($route, $location, $rootScope) {
+        $location.path('/foo');
+        expect(function() {
+          $rootScope.$digest();
+        }).toThrow('[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/foo.html');
+      });
+    });
+
+    it('should load cross domain templates that are trusted', function() {
+      module(function($routeProvider, $sceDelegateProvider) {
+        $routeProvider.when('/foo', { templateUrl: 'http://example.com/foo.html' });
+        $sceDelegateProvider.resourceUrlWhitelist([/^http:\/\/example\.com\/foo\.html$/]);
+      });
+
+      inject(function ($route, $location, $rootScope) {
+        $httpBackend.whenGET('http://example.com/foo.html').respond('FOO BODY');
+        $location.path('/foo');
+        $rootScope.$digest();
+        $httpBackend.flush();
+        expect($route.current.locals.$template).toEqual('FOO BODY');
+      });
+    });
 
     it('should not update $routeParams until $routeChangeSuccess', function() {
       module(function($routeProvider) {
@@ -904,7 +932,7 @@ describe('$route', function() {
         return '<h1>' + routePathParams.id + '</h1>';
       }
 
-      module(function($routeProvider){
+      module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
         $routeProvider.when('/foo/:id', {template: customTemplateFn});
       });

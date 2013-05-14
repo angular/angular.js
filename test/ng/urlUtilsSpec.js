@@ -11,21 +11,27 @@ describe('$$urlUtils', function() {
       expect(parsed.href).toMatch(/https?:\/\//);
       expect(parsed.protocol).toMatch(/^https?:/);
       expect(parsed.host).not.toBe("");
+      expect(parsed.hostname).not.toBe("");
+      expect(parsed.pathname).not.toBe("");
     }));
   });
 
   describe('isSameOrigin', function() {
-    it('should support various combinations of urls', inject(function($$urlUtils, $document) {
-      expect($$urlUtils.isSameOrigin('path')).toBe(true);
+    it('should support various combinations of urls - both string and parsed', inject(function($$urlUtils, $document) {
+      function expectIsSameOrigin(url, expectedValue) {
+        expect($$urlUtils.isSameOrigin(url)).toBe(expectedValue);
+        expect($$urlUtils.isSameOrigin($$urlUtils.resolve(url, true))).toBe(expectedValue);
+      }
+      expectIsSameOrigin('path', true);
       var origin = $$urlUtils.resolve($document[0].location.href, true);
-      expect($$urlUtils.isSameOrigin('//' + origin.host + '/path')).toBe(true);
+      expectIsSameOrigin('//' + origin.host + '/path', true);
       // Different domain.
-      expect($$urlUtils.isSameOrigin('http://example.com/path')).toBe(false);
+      expectIsSameOrigin('http://example.com/path', false);
       // Auto fill protocol.
-      expect($$urlUtils.isSameOrigin('//example.com/path')).toBe(false);
+      expectIsSameOrigin('//example.com/path', false);
       // Should not match when the ports are different.
       // This assumes that the test is *not* running on port 22 (very unlikely).
-      expect($$urlUtils.isSameOrigin('//' + origin.hostname + ':22/path')).toBe(false);
+      expectIsSameOrigin('//' + origin.hostname + ':22/path', false);
     }));
   });
 });

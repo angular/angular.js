@@ -105,11 +105,12 @@ function $$UrlUtilsProvider() {
       /**
        * Parse a request URL and determine whether this is a same-origin request as the application document.
        *
-       * @param {string} requestUrl The url of the request.
+       * @param {string|object} requestUrl The url of the request as a string that will be resolved
+       * or a parsed URL object.
        * @returns {boolean} Whether the request is for the same origin as the application document.
        */
       isSameOrigin: function isSameOrigin(requestUrl) {
-        var parsed = resolve(requestUrl, true);
+        var parsed = (typeof requestUrl === 'string') ? resolve(requestUrl, true) : requestUrl;
         return (parsed.protocol === originUrl.protocol &&
                 parsed.host === originUrl.host);
       }
