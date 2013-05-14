@@ -31,8 +31,7 @@
  *
  * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
- *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
- *   number, like this: `$resource('http://example.com\\:8080/api')`.
+ *   `http://example.com:8080/api`), it will be respected.
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If any of the parameter value is a function, it will be executed every time
@@ -331,7 +330,7 @@ angular.module('ngResource', ['ng']).
 
         var urlParams = self.urlParams = {};
         forEach(url.split(/\W/), function(param){
-          if (param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
+          if (!(new RegExp("^\\d+","g").test(param)) && param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
               urlParams[param] = true;
           }
         });
