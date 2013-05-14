@@ -495,7 +495,7 @@ describe('select', function() {
       expect(function() {
         compile('<select ng-model="selected" ng-options="i dont parse"></select>');
       }).toThrow("Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
-                 " _collection_' but got 'i dont parse'.");
+                 " _collection_ (track by _expr_)?' but got 'i dont parse'.");
     });
 
 
@@ -750,6 +750,37 @@ describe('select', function() {
         });
 
         expect(element.val()).toEqual('0');
+      });
+
+
+      it('should bind to scope value and track/identify objects', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item as item.name for item in values track by item.id'
+        });
+
+        scope.$apply(function() {
+          scope.values = [{id: 1, name: 'first'},
+                          {id: 2, name: 'second'},
+                          {id: 3, name: 'third'},
+                          {id: 4, name: 'forth'}];
+          scope.selected = {id: 2};
+        });
+
+        expect(element.val()).toEqual('2');
+
+        var first = jqLite(element.find('option')[0]);
+        expect(first.text()).toEqual('first');
+        expect(first.attr('value')).toEqual('1');
+        var forth = jqLite(element.find('option')[3]);
+        expect(forth.text()).toEqual('forth');
+        expect(forth.attr('value')).toEqual('4');
+
+        scope.$apply(function() {
+          scope.selected = scope.values[3];
+        });
+
+        expect(element.val()).toEqual('4');
       });
 
 
