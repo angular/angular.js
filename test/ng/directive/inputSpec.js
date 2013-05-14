@@ -1136,6 +1136,18 @@ describe('input', function() {
 
   describe('ngValue', function() {
 
+    it('should update the dom "value" property and attribute', function() {
+      compileInput('<input type="submit" ng-value="value">');
+
+      scope.$apply(function() {
+        scope.value = 'something';
+      });
+
+      expect(inputElm[0].value).toBe('something');
+      expect(inputElm[0].getAttribute('value')).toBe('something');
+    });
+
+
     it('should evaluate and set constant expressions', function() {
       compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
                    '<input type="radio" ng-model="selected" ng-value="false">' +
