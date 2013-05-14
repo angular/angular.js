@@ -216,6 +216,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         html: read($attrs.sourceEditHtml),
         css: read($attrs.sourceEditCss),
         js: read($attrs.sourceEditJs),
+        json: read($attrs.sourceEditJson),
         unit: read($attrs.sourceEditUnit),
         scenario: read($attrs.sourceEditScenario)
       };
@@ -358,7 +359,7 @@ docsApp.serviceFactory.formPostData = function($document) {
 
 docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angularUrls) {
   return function(content) {
-    var allFiles = [].concat(content.js, content.css, content.html);
+    var allFiles = [].concat(content.js, content.css, content.html, content.json);
     var indexHtmlContent = '<!doctype html>\n' +
         '<html ng-app="{{module}}">\n' +
         '  <head>\n' +

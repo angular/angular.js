@@ -8,9 +8,20 @@
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
- * Keep in mind that Same Origin Policy applies to included resources
- * (e.g. ngInclude won't work for cross-domain requests on all browsers and for
- *  file:// access on some browsers).
+ * Keep in mind that:
+ *
+ * -    by default, the template URL is restricted to the same domain and protocol as the
+ *      application document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
+ *      $sce.getTrustedResourceUrl} on it.  To load templates from other domains and/or protocols,
+ *      you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
+ *      {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.  Refer Angular's {@link
+ *      ng.$sce Strict Contextual Escaping}.
+ * -    in addition, the browser's
+ *      {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
+ *      Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
+ *      (CORS)} policy apply that may further restrict whether the template is successfully loaded.
+ *      (e.g.  ngInclude won't work for cross-domain requests on all browsers and for `file://`
+ *      access on some browsers)
  *
  * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
  * and **leave** effects.
@@ -132,8 +143,8 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator',
-                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator) {
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator', '$sce',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator,   $sce) {
   return {
     restrict: 'ECA',
     terminal: true,
@@ -155,7 +166,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           animate.leave(element.contents(), element);
         };
 
-        scope.$watch(srcExp, function ngIncludeWatchAction(src) {
+        scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
           var thisChangeId = ++changeCounter;
 
           if (src) {
