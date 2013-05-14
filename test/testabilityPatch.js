@@ -107,7 +107,12 @@ function dealoc(obj) {
 
   function cleanup(element) {
     element.off().removeData();
-    for ( var i = 0, children = element.contents() || []; i < children.length; i++) {
+    // Note:  We aren't using element.contents() here.  Under jQuery, element.contents() can fail
+    // for IFRAME elements.  jQuery explicitly uses (element.contentDocument ||
+    // element.contentWindow.document) and both properties are null for IFRAMES that aren't attached
+    // to a document.
+    var children = element[0].childNodes || [];
+    for ( var i = 0; i < children.length; i++) {
       cleanup(angular.element(children[i]));
     }
   }

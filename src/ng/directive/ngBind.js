@@ -129,10 +129,10 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * @element ANY
  * @param {expression} ngBindHtmlUnsafe {@link guide/expression Expression} to evaluate.
  */
-var ngBindHtmlUnsafeDirective = [function() {
+var ngBindHtmlUnsafeDirective = ['$sce', function($sce) {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
-    scope.$watch(attr.ngBindHtmlUnsafe, function ngBindHtmlUnsafeWatchAction(value) {
+    scope.$watch($sce.parseAsHtml(attr.ngBindHtmlUnsafe), function ngBindHtmlUnsafeWatchAction(value) {
       element.html(value || '');
     });
   };
