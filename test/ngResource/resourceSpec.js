@@ -106,6 +106,13 @@ describe("resource", function() {
     R.get({a: 'foo', b: 'bar'});
   });
 
+  it('should support an unescaped url', function() {
+    var R = $resource('http://localhost:8080/Path/:a');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
 
   it('should correctly encode url params', function() {
     var R = $resource('/Path/:a');
