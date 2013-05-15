@@ -648,14 +648,25 @@ function $HttpProvider() {
       };
       var headers = {};
 
+      function execHeaders(headers) {
+        var resultHeaders = {};
+        forEach(headers, function(value, key) {
+          isFunction(value) && (value = value());
+          if (value == null) { return; }
+          resultHeaders[key] = value;
+        });
+        return resultHeaders;
+      }
+
       extend(config, requestConfig);
       config.headers = headers;
       config.method = uppercase(config.method);
 
       extend(headers,
-          defaults.headers.common,
-          defaults.headers[lowercase(config.method)],
-          requestConfig.headers);
+          execHeaders(defaults.headers.common),
+          execHeaders(defaults.headers[lowercase(config.method)]),
+          execHeaders(requestConfig.headers));
+
 
       var xsrfValue = isSameDomain(config.url, $browser.url())
           ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
