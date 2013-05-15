@@ -3,10 +3,7 @@
 @description
 
 In Angular, a controller is a JavaScript function(type/class) that is used to augment instances of
-angular {@link scope Scope}, excluding the root scope. When you or Angular create a new
-child scope object via the {@link api/ng.$rootScope.Scope#$new scope.$new} API        , there is an
-option to pass in a controller as a method argument. This will tell Angular to associate the
-controller with the new scope and to augment its behavior.
+angular {@link scope Scope}, excluding the root scope.
 
 Use controllers to:
 
@@ -82,8 +79,7 @@ instances).
 
 # Associating Controllers with Angular Scope Objects
 
-You can associate controllers with scope objects explicitly via the {@link api/ng.$rootScope.Scope#$new
-scope.$new} api or implicitly via the {@link api/ng.directive:ngController ngController
+You can associate controllers with scope objects implicitly via the {@link api/ng.directive:ngController ngController
 directive} or {@link api/ng.$route $route service}.
 
 
