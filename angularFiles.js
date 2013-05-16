@@ -76,7 +76,7 @@ angularFiles = {
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
 
-    'src/bootstrap/bootstrap.js'
+    'docs/components/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
@@ -104,7 +104,6 @@ angularFiles = {
     'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
-    'test/bootstrap/*.js',
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
@@ -114,7 +113,9 @@ angularFiles = {
     'test/ngSanitize/directive/*.js',
     'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/directive/*.js'
+    'test/ngMobile/directive/*.js',
+    'docs/component-spec/bootstrap/*.js',
+    'docs/component-spec/*.js'
   ],
 
   'jstd': [
