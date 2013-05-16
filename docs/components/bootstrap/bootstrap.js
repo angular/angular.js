@@ -57,7 +57,8 @@ directive.syntax = function() {
                 '<span class="' + icon + '"></span> ' + text +
                '</a>';
       };
-      var html = '<nav class="syntax-links">';
+
+      var html = '';
       var types = {
         'github' : {
           text : 'View on Github',
@@ -82,11 +83,14 @@ directive.syntax = function() {
           html += makeLink(type, data.text, link, data.icon);
         }
       };
-      html += '</nav>';
-      var nav = angular.element(html);
+
+      var nav = document.createElement('nav');
+      nav.className = 'syntax-links';
+      nav.innerHTML = html;
+
       var node = element[0];
       var par = node.parentNode;
-      par.insertBefore(nav[0], node);
+      par.insertBefore(nav, node);
     }
   }
 }
