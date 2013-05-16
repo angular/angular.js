@@ -495,7 +495,7 @@ describe('select', function() {
       expect(function() {
         compile('<select ng-model="selected" ng-options="i dont parse"></select>');
       }).toThrow("Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
-                 " _collection_' but got 'i dont parse'.");
+                 " _collection_ (track by _expr_)?' but got 'i dont parse'.");
     });
 
 
@@ -753,6 +753,37 @@ describe('select', function() {
       });
 
 
+      it('should bind to scope value and track/identify objects', function() {
+        createSelect({
+          'ng-model': 'selected',
+          'ng-options': 'item as item.name for item in values track by item.id'
+        });
+
+        scope.$apply(function() {
+          scope.values = [{id: 1, name: 'first'},
+                          {id: 2, name: 'second'},
+                          {id: 3, name: 'third'},
+                          {id: 4, name: 'forth'}];
+          scope.selected = {id: 2};
+        });
+
+        expect(element.val()).toEqual('2');
+
+        var first = jqLite(element.find('option')[0]);
+        expect(first.text()).toEqual('first');
+        expect(first.attr('value')).toEqual('1');
+        var forth = jqLite(element.find('option')[3]);
+        expect(forth.text()).toEqual('forth');
+        expect(forth.attr('value')).toEqual('4');
+
+        scope.$apply(function() {
+          scope.selected = scope.values[3];
+        });
+
+        expect(element.val()).toEqual('4');
+      });
+
+
       it('should bind to scope value through experession', function() {
         createSelect({
           'ng-model': 'selected',
@@ -977,6 +1008,19 @@ describe('select', function() {
         expect(option.attr('id')).toBe('road-runner');
         expect(option.attr('custom-attr')).toBe('custom-attr');
       });
+
+      it('should be selected, if it is available and no other option is selected', function() {
+        // selectedIndex is used here because jqLite incorrectly reports element.val()
+        scope.$apply(function() {
+          scope.values = [{name: 'A'}];
+        });
+        createSingleSelect(true);
+        // ensure the first option (the blank option) is selected
+        expect(element[0].selectedIndex).toEqual(0);
+        scope.$digest();
+        // ensure the option has not changed following the digest
+        expect(element[0].selectedIndex).toEqual(0);
+      });
     });
 
 
@@ -1099,6 +1143,21 @@ describe('select', function() {
         browserTrigger(element, 'change');
         expect(scope.selected).toEqual(['0']);
       });
+
+      it('should deselect all options when model is emptied', function() {
+        createMultiSelect();
+         scope.$apply(function() {
+          scope.values = [{name: 'A'}, {name: 'B'}];
+          scope.selected = [scope.values[0]];
+        });
+        expect(element.find('option')[0].selected).toEqual(true);
+
+        scope.$apply(function() {
+          scope.selected.pop();
+        });
+
+        expect(element.find('option')[0].selected).toEqual(false);
+      })
     });
 
 

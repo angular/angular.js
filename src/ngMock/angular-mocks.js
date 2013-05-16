@@ -628,7 +628,9 @@ angular.mock.createMockWindow = function() {
     if (setTimeoutQueue.length > 0) {
       return {
         process: function() {
-          setTimeoutQueue.shift().fn();
+          var tick = setTimeoutQueue.shift();
+          expect(tick.delay).toEqual(delay);
+          tick.fn();
         }
       };
     } else {

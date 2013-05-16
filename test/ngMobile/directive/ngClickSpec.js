@@ -82,7 +82,7 @@ describe('ngClick (mobile)', function() {
 
 
   it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
-    element = $compile('<div ng-tap="tapped = true"></div>')($rootScope);
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
 
@@ -93,6 +93,22 @@ describe('ngClick (mobile)', function() {
     browserTrigger(element, 'touchend', [], 400, 400);
 
     expect($rootScope.tapped).toBeUndefined();
+  }));
+
+  it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+    expect($rootScope.tapped).toBeUndefined();
+
+    var CSS_CLASS = 'ng-click-active';
+
+    expect(element.hasClass(CSS_CLASS)).toBe(false);
+    browserTrigger(element, 'touchstart', 10, 10);
+    expect(element.hasClass(CSS_CLASS)).toBe(true);
+    browserTrigger(element, 'touchend', 10, 10);
+    expect(element.hasClass(CSS_CLASS)).toBe(false);
+    expect($rootScope.tapped).toBe(true);
   }));
 
 
@@ -292,4 +308,6 @@ describe('ngClick (mobile)', function() {
       expect($rootScope.event).toBeDefined();
     }));
   });
+
+
 });

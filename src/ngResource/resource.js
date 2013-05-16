@@ -19,7 +19,7 @@
  * the need to interact with the low level {@link ng.$http $http} service.
  *
  * # Installation
- * To use $resource make sure you have included the `angular-resource.js` that comes in Angular 
+ * To use $resource make sure you have included the `angular-resource.js` that comes in Angular
  * package. You can also find this file on Google CDN, bower as well as at
  * {@link http://code.angularjs.org/ code.angularjs.org}.
  *
@@ -33,6 +33,13 @@
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
  *   number, like this: `$resource('http://example.com\\:8080/api')`.
+ *
+ *   If you are using a url with a suffix, just add the suffix, like this: 
+ *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')
+ *   or even `$resource('http://example.com/resource/:resource_id.:format')` 
+ *   If the parameter before the suffix is empty, :resource_id in this case, then the `/.` will be
+ *   collapsed down to a single `.`.  If you need this sequence to appear and not collapse then you
+ *   can escape it with `/\.`.
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If any of the parameter value is a function, it will be executed every time
@@ -317,7 +324,7 @@ angular.module('ngResource', ['ng']).
     }
 
     function Route(template, defaults) {
-      this.template = template = template + '#';
+      this.template = template;
       this.defaults = defaults || {};
       this.urlParams = {};
     }
@@ -355,8 +362,14 @@ angular.module('ngResource', ['ng']).
           }
         });
 
-        // set the url
-        config.url = url.replace(/\/?#$/, '').replace(/\/*$/, '');
+        // strip trailing slashes and set the url
+        url = url.replace(/\/+$/, '');
+        // then replace collapse `/.` if found in the last URL path segment before the query
+        // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
+        url = url.replace(/\/\.(?=\w+($|\?))/, '.');
+        // replace escaped `/\.` with `/.`
+        config.url = url.replace(/\/\\\./, '/.');
+          
 
         // set params - delegate param encoding to $http
         forEach(params, function(value, key){

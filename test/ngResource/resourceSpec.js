@@ -76,13 +76,13 @@ describe("resource", function() {
   it('should not ignore leading slashes of undefinend parameters that have non-slash trailing sequence', function() {
     var R = $resource('/Path/:a.foo/:b.bar/:c.baz');
 
-    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/0.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/false.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/1.foo/.bar/.baz').respond('{}');
-    $httpBackend.when('GET', '/Path/2.foo/3.bar/.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/0.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/false.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/1.foo/.bar.baz').respond('{}');
+    $httpBackend.when('GET', '/Path/2.foo/3.bar.baz').respond('{}');
     $httpBackend.when('GET', '/Path/4.foo/.bar/5.baz').respond('{}');
     $httpBackend.when('GET', '/Path/6.foo/7.bar/8.baz').respond('{}');
 
@@ -692,17 +692,160 @@ describe("resource", function() {
     expect(person.id).toEqual(456);
   });
 
+  describe('suffix parameter', function() {
+
+    describe('query', function() {
+      it('should add a suffix', function() {
+        $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:id.json', {id: '@id'});
+        var user = UserService.query();
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
+      it('should not require it if not provided', function(){
+        $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users.json');
+        var user = UserService.query();
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
+      it('should work when query parameters are supplied', function() {
+        $httpBackend.expect('GET', '/users.json?red=blue').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.query({red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
+      it('should work when query parameters are supplied and the format is a resource parameter', function() {
+        $httpBackend.expect('GET', '/users.json?red=blue').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
+        var user = UserService.query({red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData([{id: 1, name: 'user1'}]);
+      });
+
+      it('should work with the action is overriden', function(){
+        $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
+        var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
+          query: {
+            method: 'GET',
+            url: '/users/:user_id.json',
+            isArray: true
+          }
+        });
+        var user = UserService.query();
+        $httpBackend.flush();
+        expect(user).toEqualData([ {id: 1, name: 'user1'} ]);
+      });
+    });
+    
+    describe('get', function(){ 
+      it('should add them to the id', function() {
+        $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.get({user_id: 1});
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 1, name: 'user1'});
+      });
+
+      it('should work when an id and query parameters are supplied', function() {
+        $httpBackend.expect('GET', '/users/1.json?red=blue').respond({id: 1, name: 'user1'});
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.get({user_id: 1, red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 1, name: 'user1'});
+      });
+
+      it('should work when the format is a parameter', function() {
+        $httpBackend.expect('GET', '/users/1.json?red=blue').respond({id: 1, name: 'user1'});
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
+        var user = UserService.get({user_id: 1, red: 'blue'});
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 1, name: 'user1'});
+      });
+
+      it('should work with the action is overriden', function(){
+        $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
+        var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
+          get: {
+            method: 'GET',
+            url: '/users/:user_id.json' 
+          }
+        });
+        var user = UserService.get({user_id: 1});
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 1, name: 'user1'});
+      });
+    });
+
+    describe("save", function() {
+      it('should append the suffix', function() {
+        $httpBackend.expect('POST', '/users.json', '{"name":"user1"}').respond({id: 123, name: 'user1'});
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.save({name: 'user1'}, callback);
+        expect(user).toEqualData({name: 'user1'});
+        expect(callback).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 123, name: 'user1'});
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toEqual(user);
+        expect(callback.mostRecentCall.args[1]()).toEqual({});
+      });
+
+      it('should append when an id is supplied', function() {
+        $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
+        var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
+        var user = UserService.save({id: 123, name: 'newName'}, callback);
+        expect(callback).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 123, name: 'newName'});
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toEqual(user);
+        expect(callback.mostRecentCall.args[1]()).toEqual({});
+      });
+
+      it('should append when an id is supplied and the format is a parameter', function() {
+        $httpBackend.expect('POST', '/users/123.json', '{"id":123,"name":"newName"}').respond({id: 123, name: 'newName'});
+        var UserService = $resource('/users/:user_id.:format', {user_id: '@id', format: 'json'});
+        var user = UserService.save({id: 123, name: 'newName'}, callback);
+        expect(callback).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(user).toEqualData({id: 123, name: 'newName'});
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.mostRecentCall.args[0]).toEqual(user);
+        expect(callback.mostRecentCall.args[1]()).toEqual({});
+      });
+    });
+
+    describe('escaping /. with /\\.', function() {
+      it('should work with query()', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/\\.json').query();
+      });
+      it('should work with get()', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/\\.json').get();
+      });
+      it('should work with save()', function() {
+        $httpBackend.expect('POST', '/users/.json').respond();
+        $resource('/users/\\.json').save({});
+      });
+    });
+  });
 
   describe('action-level url override', function() {
 
     it('should support overriding url template with static url', function() {
       $httpBackend.expect('GET', '/override-url?type=Customer&typeId=123').respond({id: 'abc'});
       var TypeItem = $resource('/:type/:typeId', {type: 'Order'}, {
-          get: {
-            method: 'GET',
-            params: {type: 'Customer'},
-            url: '/override-url'
-          }
+        get: {
+          method: 'GET',
+          params: {type: 'Customer'},
+          url: '/override-url'
+        }
       });
       var item = TypeItem.get({typeId: 123});
       $httpBackend.flush();

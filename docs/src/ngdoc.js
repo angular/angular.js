@@ -2,7 +2,7 @@
  * All parsing/transformation code goes here. All code here should be sync to ease testing.
  */
 
-var Showdown = require('../../lib/showdown').Showdown;
+var Showdown = require('showdown');
 var DOM = require('./dom.js').DOM;
 var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
@@ -105,7 +105,7 @@ Doc.prototype = {
       IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
       IS_ANGULAR = /^(api\/)?(angular|ng|AUTO)\./,
       IS_HASH = /^#/,
-      parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
+      parts = trim(text).split(/(<pre.*?>[\s\S]*?<\/pre>|<doc:example(\S*).*?>[\s\S]*?<\/doc:example>|<example[^>]*>[\s\S]*?<\/example>)/),
       seq = 0,
       placeholderMap = {};
 
@@ -191,9 +191,9 @@ Doc.prototype = {
 
           return placeholder(example.toHtml());
         }).
-        replace(/^<pre>([\s\S]*?)<\/pre>/mi, function(_, content){
+        replace(/^<pre(.*?)>([\s\S]*?)<\/pre>/mi, function(_, attrs, content){
           return placeholder(
-            '<pre class="prettyprint linenums">' +
+            '<pre'+attrs+' class="prettyprint linenums">' +
               content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
               '</pre>');
         }).
@@ -216,7 +216,7 @@ Doc.prototype = {
         });
     });
     text = parts.join('');
-    text = new Showdown.converter().makeHtml(text);
+    text = new Showdown.converter({ extensions : ['table'] }).makeHtml(text);
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });
@@ -348,28 +348,59 @@ Doc.prototype = {
 
   },
 
+  prepare_type_hint_class_name : function(type) {
+    var typeClass = type.toLowerCase().match(/^[-\w]+/) || [];
+    typeClass = typeClass[0] ? typeClass[0] : 'object';
+    return 'label type-hint type-hint-' + typeClass;
+  },
+
   html_usage_parameters: function(dom) {
-    dom.h('Parameters', this.param, function(param){
-      dom.tag('code', function() {
-        dom.text(param.name);
-        if (param.optional) {
-          dom.tag('i', function() {
-            dom.text('(optional');
-            if(param['default']) {
-              dom.text('=' + param['default']);
-            }
-            dom.text(')');
-          });
+    var self = this;
+    var params = this.param ? this.param : []; 
+    if(params.length > 0) {
+      dom.html('<h2 id="parameters">Parameters</h2>');
+      dom.html('<table class="variables-matrix table table-bordered table-striped">');
+      dom.html('<thead>');
+      dom.html('<tr>');
+      dom.html('<th>Param</th>');
+      dom.html('<th>Type</th>');
+      dom.html('<th>Details</th>');
+      dom.html('</tr>');
+      dom.html('</thead>');
+      dom.html('<tbody>');
+      for(var i=0;i<params.length;i++) {
+        param = params[i];
+        var name = param.name;
+        var types = param.type;
+        if(types[0]=='(') {
+          types = types.substr(1);
         }
-        dom.text(' – {');
-        dom.text(param.type);
-        if (param.optional) {
-          dom.text('=');
+
+        var limit = types.length - 1;
+        if(types.charAt(limit) == ')' && types.charAt(limit-1) != '(') {
+          types = types.substr(0,limit);
         }
-        dom.text('} – ');
-      });
-      dom.html(param.description);
-    });
+        types = types.split(/\|(?![\(\)\w\|\s]+>)/);
+        var description = param.description;
+        if (param.optional) {
+          name += ' <div><em>(optional)</em></div>';
+        }
+        dom.html('<tr>');
+        dom.html('<td>' + name + '</td>');
+        dom.html('<td>');
+        for(var j=0;j<types.length;j++) {
+          var type = types[j];
+          dom.html('<a href="" class="' + self.prepare_type_hint_class_name(type) + '">');
+          dom.text(type);
+          dom.html('</a>');
+        }
+        dom.html('</td>');
+        dom.html('<td>' + description + '</td>');
+        dom.html('</tr>');
+      };
+      dom.html('</tbody>');
+      dom.html('</table>');
+    }
     if(this.animations) {
       dom.h('Animations', this.animations, function(animations){
         dom.html('<ul>');
@@ -387,11 +418,19 @@ Doc.prototype = {
   html_usage_returns: function(dom) {
     var self = this;
     if (self.returns) {
-      dom.h('Returns', function() {
-        dom.tag('code', '{' + self.returns.type + '}');
-        dom.text('– ');
-        dom.html(self.returns.description);
-      });
+      dom.html('<h2 id="returns">Returns</h2>');
+      dom.html('<table class="variables-matrix">');
+      dom.html('<tr>');
+      dom.html('<td>');
+      dom.html('<a href="" class="' + self.prepare_type_hint_class_name(self.returns.type) + '">');
+      dom.text(self.returns.type);
+      dom.html('</a>');
+      dom.html('</td>');
+      dom.html('<td>');
+      dom.html(self.returns.description);
+      dom.html('</td>');
+      dom.html('</tr>');
+      dom.html('</table>');
     }
   },
 
@@ -443,7 +482,7 @@ Doc.prototype = {
 
       if (restrict.match(/E/)) {
         dom.html('<p>');
-        dom.text('This directive can be used as custom element, but we aware of ');
+        dom.text('This directive can be used as custom element, but be aware of ');
         dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
         dom.text('.');
         dom.html('</p>');

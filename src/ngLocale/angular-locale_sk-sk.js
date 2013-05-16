@@ -4,28 +4,28 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": {
       "0": "dopoludnia",
-      "1": "popoludní"
+      "1": "popoludn\u00ed"
     },
     "DAY": {
-      "0": "nedeľa",
+      "0": "nede\u013ea",
       "1": "pondelok",
       "2": "utorok",
       "3": "streda",
-      "4": "štvrtok",
+      "4": "\u0161tvrtok",
       "5": "piatok",
       "6": "sobota"
     },
     "MONTH": {
-      "0": "januára",
-      "1": "februára",
+      "0": "janu\u00e1ra",
+      "1": "febru\u00e1ra",
       "2": "marca",
-      "3": "apríla",
-      "4": "mája",
-      "5": "júna",
-      "6": "júla",
+      "3": "apr\u00edla",
+      "4": "m\u00e1ja",
+      "5": "j\u00fana",
+      "6": "j\u00fala",
       "7": "augusta",
       "8": "septembra",
-      "9": "októbra",
+      "9": "okt\u00f3bra",
       "10": "novembra",
       "11": "decembra"
     },
@@ -34,7 +34,7 @@ $provide.value("$locale", {
       "1": "po",
       "2": "ut",
       "3": "st",
-      "4": "št",
+      "4": "\u0161t",
       "5": "pi",
       "6": "so"
     },
@@ -43,9 +43,9 @@ $provide.value("$locale", {
       "1": "feb",
       "2": "mar",
       "3": "apr",
-      "4": "máj",
-      "5": "jún",
-      "6": "júl",
+      "4": "m\u00e1j",
+      "5": "j\u00fan",
+      "6": "j\u00fal",
       "7": "aug",
       "8": "sep",
       "9": "okt",
@@ -62,9 +62,9 @@ $provide.value("$locale", {
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "€",
+    "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

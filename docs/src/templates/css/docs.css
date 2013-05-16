@@ -56,7 +56,12 @@ img.AngularJS-small {
 }
 
 .form-search > ul.nav > li.last {
-  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+
+.form-search > ul.nav > li.last + li.api-list-item {
+  margin-top:-1em;
+  padding-bottom: 1em;
 }
 
 .form-search .well {
@@ -196,4 +201,62 @@ ul.events > li > h3 {
 
 .clear {
   clear: both;
+}
+
+.variables-matrix td {
+  vertical-align:top;
+  padding:5px;
+}
+
+.type-hint {
+  display:inline-block;
+}
+
+.variables-matrix .type-hint {
+  text-align:center;
+  display:block;
+  min-width:60px;
+}
+
+.type-hint + .type-hint {
+  margin-top:5px;
+}
+
+.type-hint-string {
+  background:#3a87ad;
+}
+
+.type-hint-object {
+  background:#999;
+}
+
+.type-hint-array {
+  background:#F90;;
+}
+
+.type-hint-boolean {
+  background:rgb(18, 131, 39);
+}
+
+.type-hint-number {
+  background:rgb(189, 63, 66);
+}
+
+.syntax-links {
+  background:#eee;
+  border:1px solid #ddd;
+  text-align:right;
+  padding:1em;
+  border-bottom:0;
+  border-top-left-radius:4px;
+  border-top-right-radius:4px;
+}
+
+.syntax-links a {
+  margin-left:10px;
+}
+
+.syntax-links + pre {
+  border-top-left-radius:0;
+  border-top-right-radius:0;
 }
