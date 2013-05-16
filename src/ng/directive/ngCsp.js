@@ -7,12 +7,28 @@
  *
  * @description
  * Enables [CSP (Content Security Policy)](https://developer.mozilla.org/en/Security/CSP) support.
- * This directive should be used on the root element of the application (typically the `<html>`
- * element or other element with the {@link ng.directive:ngApp ngApp}
- * directive).
- *
- * If enabled the performance of template expression evaluator will suffer slightly, so don't enable
- * this mode unless you need it.
+ * CSP forbids apps to use eval or
+ * Function(string) generated functions (among other things). For us to be
+ * compatible, we just need to implement the "getterFn" in $parse without
+ * violating any of these restrictions.
+
+ * We currently use Function(string) generated functions as a speed
+ * optimization. With this change, it will be possible to opt into the CSP
+ * compatible mode using the ngCsp directive. When this mode is on Angular
+ * will evaluate all expressions up to 30% slower than in non-CSP mode, but
+ * no security violations will be raised.
+ * 
+ * This is necessary when developing things like Google Chrome Extensions
+
+ * In order to use this feature put ngCsp directive on the root element of
+ * the application. For example:
+
+ * @example
+ * <!doctype html>
+ * <html ng-app ng-csp>
+ *  ...
+ *  ...
+ * </html>
  *
  * @element html
  */
