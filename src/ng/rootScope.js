@@ -196,7 +196,7 @@ function $RootScopeProvider(){
           setTimeout(function() {
             child.__proto__ = {};
             for(var i in child)
-              child[i] = null;
+              delete child[i];
             child = null;
           });
         });
