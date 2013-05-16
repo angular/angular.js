@@ -684,6 +684,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should set default headers for PATCH request', function() {
+        $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
+          return headers['Accept'] == 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
+        $httpBackend.flush();
+      });
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {

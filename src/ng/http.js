@@ -147,8 +147,9 @@ function $HttpProvider() {
       common: {
         'Accept': 'application/json, text/plain, */*'
       },
-      post: {'Content-Type': 'application/json;charset=utf-8'},
-      put:  {'Content-Type': 'application/json;charset=utf-8'}
+      post:   {'Content-Type': 'application/json;charset=utf-8'},
+      put:    {'Content-Type': 'application/json;charset=utf-8'},
+      patch:  {'Content-Type': 'application/json;charset=utf-8'}
     },
 
     xsrfCookieName: 'XSRF-TOKEN',
