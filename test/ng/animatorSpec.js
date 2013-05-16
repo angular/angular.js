@@ -386,6 +386,9 @@ describe("$animator", function() {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(4000).process();
         }
+        else {
+          expect(window.setTimeout.queue.length).toBe(0);
+        }
         expect(element[0].style.display).toBe('');
       }));
 
@@ -408,6 +411,9 @@ describe("$animator", function() {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(6000).process();
         }
+        else {
+          expect(window.setTimeout.queue.length).toBe(0);
+        }
         expect(element[0].style.display).toBe('');
       }));
 
@@ -429,6 +435,9 @@ describe("$animator", function() {
         if ($sniffer.animations) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(2000).process();
+        }
+        else {
+          expect(window.setTimeout.queue.length).toBe(0);
         }
         expect(element[0].style.display).toBe('');
       }));
@@ -454,6 +463,9 @@ describe("$animator", function() {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(20000).process();
         }
+        else {
+          expect(window.setTimeout.queue.length).toBe(0);
+        }
         expect(element[0].style.display).toBe('');
       }));
 
@@ -475,8 +487,6 @@ describe("$animator", function() {
 
       it("should finish the previous animation when a new animation is started",
         inject(function($animator, $rootScope, $compile, $sniffer) {
-          if(!$sniffer.animations) return;
-
           var style = 'animation: some_animation 2s linear 0s 1 alternate;' +
                       vendorPrefix + 'animation: some_animation 2s linear 0s 1 alternate;'
 
@@ -486,11 +496,19 @@ describe("$animator", function() {
           });
 
           animator.show(element);
-          window.setTimeout.expect(1).process();
-          expect(element.hasClass('show')).toBe(true);
-          expect(element.hasClass('show-active')).toBe(true);
+          if($sniffer.animations) {
+            window.setTimeout.expect(1).process();
+            expect(element.hasClass('show')).toBe(true);
+            expect(element.hasClass('show-active')).toBe(true);
+          }
+          else { //animation is skipped
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
 
           animator.hide(element);
+          if(!$sniffer.animations) {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
           expect(element.hasClass('show')).toBe(false);
           expect(element.hasClass('show-active')).toBe(false);
       }));
@@ -520,6 +538,9 @@ describe("$animator", function() {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(1000).process();
         }
+        else {
+          expect(window.setTimeout.queue.length).toBe(0);
+        }
         expect(element[0].style.display).toBe('');
       }));
 
@@ -535,6 +556,9 @@ describe("$animator", function() {
           if ($sniffer.transitions) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(2000).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
           }
           expect(element[0].style.display).toBe('');
         }));
@@ -565,17 +589,17 @@ describe("$animator", function() {
           if ($sniffer.transitions) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(3000).process();
-          return;
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
           }
           expect(element[0].style.display).toBe('');
       }));
 
       it("should finish the previous transition when a new animation is started",
         inject(function($animator, $rootScope, $compile, $sniffer) {
-          if(!$sniffer.animations) return;
-
           var style = 'transition: 1s linear all;' +
-                      vendorPrefix + 'animation: 1s linear all;'
+                      vendorPrefix + 'transition: 1s linear all;'
 
           element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
           var animator = $animator($rootScope, {
@@ -583,11 +607,19 @@ describe("$animator", function() {
           });
 
           animator.show(element);
-          window.setTimeout.expect(1).process();
-          expect(element.hasClass('show')).toBe(true);
-          expect(element.hasClass('show-active')).toBe(true);
+          if($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+            expect(element.hasClass('show')).toBe(true);
+            expect(element.hasClass('show-active')).toBe(true);
+          }
+          else { //animation is skipped
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
 
           animator.hide(element);
+          if(!$sniffer.transitions) {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
           expect(element.hasClass('show')).toBe(false);
           expect(element.hasClass('show-active')).toBe(false);
       }));
