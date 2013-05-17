@@ -150,7 +150,7 @@ http://karma-runner.github.io/ Karma}. To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
 `./scripts/test.sh` to start the Karma server (the config file necessary to start the server
-is located at `./config/testacular.conf.js`).
+is located at `./config/karma.conf.js`).
 
 2. Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
    the background. Karma will use this browser for test execution.
