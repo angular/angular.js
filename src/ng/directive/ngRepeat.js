@@ -152,18 +152,19 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
       return function($scope, $element, $attr){
         var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+?)\s*)?\s*(\s+watch\s+with\s+(.+?)\s*)?$/),
+          trackByExp, trackByExpGetter, trackByIdFn, watchWithExp, watchWithFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
-          throw Error("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got '" +
+          throw Error("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_][ watch with _function_]' but got '" +
             expression + "'.");
         }
 
         lhs = match[1];
         rhs = match[2];
         trackByExp = match[4];
+        watchWithExp = match[6];
 
         if (trackByExp) {
           trackByExpGetter = $parse(trackByExp);
@@ -178,6 +179,10 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           trackByIdFn = function(key, value) {
             return hashKey(value);
           }
+        }
+
+        if (watchWithExp) {
+          watchWithFn = $parse(watchWithExp)($scope);
         }
 
         match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
@@ -209,7 +214,10 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
               trackById,
               collectionKeys,
               block,       // last object information {scope, element, id}
-              nextBlockOrder = [];
+              nextBlockOrder = [],
+              addedElements = [],
+              movedElements = [],
+              removedElements = [];
 
 
           if (isArrayLike(collection)) {
@@ -257,9 +265,11 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
-              animate.leave(block.element);
+              // DOM removal is handled in the watcher's done() function
+              if (!watchWithFn) animate.leave(block.element);
               block.element[0][NG_REMOVED] = true;
               block.scope.$destroy();
+              removedElements.push(block.element);
             }
           }
 
@@ -286,6 +296,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 // existing item which got moved
                 animate.move(block.element, null, cursor);
                 cursor = block.element;
+                movedElements.push(block.element);
               }
             } else {
               // new item which we don't know about
@@ -306,10 +317,21 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 block.scope = childScope;
                 block.element = clone;
                 nextBlockMap[block.id] = block;
+                addedElements.push(clone);
               });
             }
           }
           lastBlockMap = nextBlockMap;
+
+          if (watchWithFn) {
+            watchWithFn(addedElements, movedElements, removedElements, function() {
+              // done function called at the end of the watcher
+              for (var index = 0, length = removedElements.length; index < length; index++) {
+                animate.leave(removedElements[index]);
+              }
+            });
+          }
+
         });
       };
     }
