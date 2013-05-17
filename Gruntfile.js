@@ -125,6 +125,10 @@ module.exports = function(grunt) {
           css: ['src/bootstrap/google-prettify/prettify.css'],
           minify: true
         }
+      },
+      lunr: {
+        dest: 'build/docs/lunr.js',
+        src: 'node_modules/lunr/lunr.js'
       }
     },
 
