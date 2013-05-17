@@ -58,7 +58,7 @@ function lex(text, csp){
          (token=tokens[tokens.length-1])) {
         token.json = token.text.indexOf('.') == -1;
       }
-    } else if (is('(){}[].,;:')) {
+    } else if (is('(){}[].,;:?')) {
       tokens.push({
         index:index,
         text:ch,
@@ -162,10 +162,10 @@ function lex(text, csp){
   function readIdent() {
     var ident = "",
         start = index,
-        lastDot, peekIndex, methodName;
+        lastDot, peekIndex, methodName, ch;
 
     while (index < text.length) {
-      var ch = text.charAt(index);
+      ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
         if (ch == '.') lastDot = index;
         ident += ch;
@@ -179,7 +179,7 @@ function lex(text, csp){
     if (lastDot) {
       peekIndex = index;
       while(peekIndex < text.length) {
-        var ch = text.charAt(peekIndex);
+        ch = text.charAt(peekIndex);
         if (ch == '(') {
           methodName = ident.substr(lastDot - start + 1);
           ident = ident.substr(0, lastDot - start);
@@ -358,6 +358,14 @@ function parser(text, json, $filter, csp){
     });
   }
 
+  function ternaryFn(left, middle, right){
+    return extend(function(self, locals){
+      return left(self, locals) ? middle(self, locals) : right(self, locals);
+    }, {
+      constant: left.constant && middle.constant && right.constant
+    });
+  }
+  
   function binaryFn(left, fn, right) {
     return extend(function(self, locals) {
       return fn(self, locals, left, right);
@@ -428,7 +436,7 @@ function parser(text, json, $filter, csp){
   }
 
   function _assignment() {
-    var left = logicalOR();
+    var left = ternary();
     var right;
     var token;
     if ((token = expect('='))) {
@@ -436,7 +444,7 @@ function parser(text, json, $filter, csp){
         throwError("implies assignment but [" +
           text.substring(0, token.index) + "] can not be assigned to", token);
       }
-      right = logicalOR();
+      right = ternary();
       return function(scope, locals){
         return left.assign(scope, right(scope, locals), locals);
       };
@@ -445,6 +453,24 @@ function parser(text, json, $filter, csp){
     }
   }
 
+  function ternary() {
+    var left = logicalOR();
+    var middle;
+    var token;
+    if((token = expect('?'))){
+      middle = ternary();
+      if((token = expect(':'))){
+        return ternaryFn(left, middle, ternary());
+      }
+      else {
+        throwError('expected :', token);
+      }
+    }
+    else {
+      return left;
+    }
+  }
+  
   function logicalOR() {
     var left = logicalAND();
     var token;
@@ -665,8 +691,7 @@ function parser(text, json, $filter, csp){
       var object = {};
       for ( var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
-        var value = keyValue.value(self, locals);
-        object[keyValue.key] = value;
+        object[keyValue.key] = keyValue.value(self, locals);
       }
       return object;
     }, {
@@ -791,7 +816,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4) {
     }
     return pathVal;
   };
-};
+}
 
 function getterFn(path, csp) {
   if (getterFnCache.hasOwnProperty(path)) {
@@ -806,7 +831,7 @@ function getterFn(path, csp) {
     fn = (pathKeysLength < 6)
         ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4])
         : function(scope, locals) {
-          var i = 0, val
+          var i = 0, val;
           do {
             val = cspSafeGetterFn(
                     pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++]

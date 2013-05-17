@@ -120,17 +120,17 @@ describe('ngIf ngAnimate', function () {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
-        expect(first.className).toContain('custom-enter-setup');
+      if ($sniffer.transitions) {
+        expect(first.className).toContain('custom-enter');
         window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-enter-start');
+        expect(first.className).toContain('custom-enter-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(first.className).not.toContain('custom-enter-setup');
-      expect(first.className).not.toContain('custom-enter-start');
+      expect(first.className).not.toContain('custom-enter');
+      expect(first.className).not.toContain('custom-enter-active');
   }));
 
   it('should fire off the leave animation + add and remove the css classes',
@@ -147,7 +147,7 @@ describe('ngIf ngAnimate', function () {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1000).process();
       } else {
@@ -155,12 +155,12 @@ describe('ngIf ngAnimate', function () {
       }
 
       $scope.$apply('value = false');
-      expect(element.children().length).toBe($sniffer.supportsTransitions ? 1 : 0);
+      expect(element.children().length).toBe($sniffer.transitions ? 1 : 0);
 
-      if ($sniffer.supportsTransitions) {
-        expect(first.className).toContain('custom-leave-setup');
+      if ($sniffer.transitions) {
+        expect(first.className).toContain('custom-leave');
         window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-leave-start');
+        expect(first.className).toContain('custom-leave-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
@@ -180,7 +180,7 @@ describe('ngIf ngAnimate', function () {
       ))($scope);
       $scope.$apply('value = true');
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {

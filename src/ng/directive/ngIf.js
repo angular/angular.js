@@ -43,12 +43,38 @@
  *     the element is removed from the DOM tree (HTML).
  *
  * @example
-   <doc:example>
-     <doc:source>
-        Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
-        Show when checked: <span ng-if="checked">I'm removed when the checkbox is unchecked</span>
-     </doc:source>
-   </doc:example>
+  <example animations="true">
+    <file name="index.html">
+      Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
+      Show when checked:
+      <span ng-if="checked" ng-animate="'example'">
+        I'm removed when the checkbox is unchecked.
+      </span>
+    </file>
+    <file name="animations.css">
+      .example-leave, .example-enter {
+        -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+      }
+
+      .example-enter {
+        opacity:0;
+      }
+      .example-enter.example-enter-active {
+        opacity:1;
+      }
+
+      .example-leave {
+        opacity:1;
+      }
+      .example-leave.example-leave-active {
+        opacity:0;
+      }
+    </file>
+  </example>
  */
 var ngIfDirective = ['$animator', function($animator) {
   return {

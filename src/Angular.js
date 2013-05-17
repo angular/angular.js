@@ -82,6 +82,27 @@ function noConflict() {
 }
 
 /**
+ * @private
+ * @param {*} obj
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
+ */
+function isArrayLike(obj) {
+  if (!obj || (typeof obj.length !== 'number')) return false;
+
+  // We have on object which has length property. Should we treat it as array?
+  if (typeof obj.hasOwnProperty != 'function' &&
+      typeof obj.constructor != 'function') {
+    // This is here for IE8: it is a bogus object treat it as array;
+    return true;
+  } else  {
+    return obj instanceof JQLite ||                      // JQLite
+           (jQuery && obj instanceof jQuery) ||          // jQuery
+           toString.call(obj) !== '[object Object]' ||   // some browser native object
+           typeof obj.callee === 'function';              // arguments (on IE8 looks like regular obj)
+  }
+}
+
+/**
  * @ngdoc function
  * @name angular.forEach
  * @function
@@ -108,30 +129,6 @@ function noConflict() {
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
-
-
-/**
- * @private
- * @param {*} obj
- * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
- */
-function isArrayLike(obj) {
-  if (!obj || (typeof obj.length !== 'number')) return false;
-
-  // We have on object which has length property. Should we treat it as array?
-  if (typeof obj.hasOwnProperty != 'function' &&
-      typeof obj.constructor != 'function') {
-    // This is here for IE8: it is a bogus object treat it as array;
-    return true;
-  } else  {
-    return obj instanceof JQLite ||                      // JQLite
-           (jQuery && obj instanceof jQuery) ||          // jQuery
-           toString.call(obj) !== '[object Object]' ||   // some browser native object
-           typeof obj.callee === 'function';              // arguments (on IE8 looks like regular obj)
-  }
-}
-
-
 function forEach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -215,6 +212,21 @@ function nextUid() {
   return uid.join('');
 }
 
+
+/**
+ * Set or clear the hashkey for an object.
+ * @param obj object 
+ * @param h the hashkey (!truthy to delete the hashkey)
+ */
+function setHashKey(obj, h) {
+  if (h) {
+    obj.$$hashKey = h;
+  }
+  else {
+    delete obj.$$hashKey;
+  }
+}
+
 /**
  * @ngdoc function
  * @name angular.extend
@@ -228,6 +240,7 @@ function nextUid() {
  * @param {...Object} src Source object(s).
  */
 function extend(dst) {
+  var h = dst.$$hashKey;
   forEach(arguments, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
@@ -235,6 +248,8 @@ function extend(dst) {
       });
     }
   });
+
+  setHashKey(dst,h);
   return dst;
 }
 
@@ -594,12 +609,14 @@ function copy(source, destination){
         destination.push(copy(source[i]));
       }
     } else {
+      var h = destination.$$hashKey;
       forEach(destination, function(value, key){
         delete destination[key];
       });
       for ( var key in source) {
         destination[key] = copy(source[key]);
       }
+      setHashKey(destination,h);
     }
   }
   return destination;
