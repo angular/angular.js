@@ -628,9 +628,9 @@ example:
 $scope.$watch('locationPath', function(path) {
   $location.path(path);
 });
-
-$scope.$watch('$location.path()', function(path) {
-  scope.locationPath = path;
+// watch the path changes, and push to model
+$scope.$watch(function () { $location.path(); }, function(path) {
+  $scope.locationPath = path;
 });
 </pre>
 
