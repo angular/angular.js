@@ -97,7 +97,8 @@ the test frame.
 Asserts the value of the given `future` satisfies the `matcher`. All API statements return a
 `future` object, which get a `value` assigned after they are executed. Matchers are defined using
 `angular.scenario.matcher`, and they use the value of futures to run the expectation. For example:
-`expect(browser().location().href()).toEqual('http://www.google.com')`
+`expect(browser().location().href()).toEqual('http://www.google.com')`. Available matchers
+are presented further down this document.
 
 ## expect(future).not().{matcher}
 Asserts the value of the given `future` satisfies the negation of the `matcher`.
@@ -177,6 +178,43 @@ come with almost no-help from the compiler. For this reason we feel very strongl
 written in JavaScript needs to come with a strong set of tests. We have built many features into
 angular which makes testing your angular applications easy. So there is no excuse for not testing.
 
+# Matchers
+
+Matchers are used in combination with the `expect(...)` function as described above and can
+be negated with `not()`. For instance: `expect(element('h1').text()).not().toEqual('Error')`.
+
+Source: {@link https://github.com/angular/angular.js/blob/master/src/ngScenario/matchers.js}
+
+<pre>
+// value and Object comparison following the rules of angular.equals().
+expect(value).toEqual(value)
+
+// a simpler value comparison using ===
+expect(value).toBe(value)
+
+// checks that the value is defined by checking its type.
+expect(value).toBeDefined()
+
+// the following two matchers are using JavaScript's standard truthiness rules
+expect(value).toBeTruthy()
+expect(value).toBeFalsy()
+
+// verify that the value matches the given regular expression. The regular
+// expression may be passed in form of a string or a regular expression
+// object.
+expect(value).toMatch(expectedRegExp)
+
+// a check for null using ===
+expect(value).toBeNull()
+
+// Array.indexOf(...) is used internally to check whether the element is
+// contained within the array.
+expect(value).toContain(expected)
+
+// number comparison using < and >
+expect(value).toBeLessThan(expected)
+expect(value).toBeGreaterThan(expected)
+</pre>
 
 # Example
 See the {@link angular-seed https://github.com/angular/angular-seed} project for an example.
