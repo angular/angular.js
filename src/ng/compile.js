@@ -768,8 +768,8 @@ function $CompileProvider($provide) {
           transcludeContent.push(cursor);
           cursor = cursor.nextSibling;
         } while(count > 0 && cursor);
-        if (count > 0) throw Error('Unmatched ' + transcludeStart + '.');
-        if (count < 0) throw Error('Unexpected ' + transcludeEnd + '.');
+        if (count > 0) throw new Error('Unmatched ' + transcludeStart + '.');
+        if (count < 0) throw new Error('Unexpected ' + transcludeEnd + '.');
         return transcludeContent;
       }
 
