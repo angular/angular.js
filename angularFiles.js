@@ -207,6 +207,10 @@ angularFiles = {
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
+  ],
+
+  'errorCompressor': [
+    'lib/error-compressor/*.js'
   ]
 };
 
