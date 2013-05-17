@@ -161,7 +161,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     }
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#' ? beginsWith(hashPrefix, withoutBaseUrl) : withoutBaseUrl;
     if (!isString(withoutHashUrl)) {
-      throw new NgError(49, 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
+      throw NgError(49, 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
     }
     matchAppUrl(withoutHashUrl, this);
     this.$$compose();

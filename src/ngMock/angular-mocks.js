@@ -110,7 +110,7 @@ angular.mock.$Browser = function() {
       if (self.deferredFns.length) {
         self.defer.now = self.deferredFns[self.deferredFns.length-1].time;
       } else {
-        throw NgError(29, 'No deferred tasks to be flushed');
+        throw Error('No deferred tasks to be flushed');
       }
     }
 
@@ -270,7 +270,7 @@ angular.mock.$ExceptionHandlerProvider = function() {
         handler.errors = errors;
         break;
       default:
-        throw NgError(30, "Unknown mode '{0}', only 'log'/'rethrow' modes are allowed!", mode);
+        throw Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
     }
   };
 
@@ -375,7 +375,7 @@ angular.mock.$LogProvider = function() {
         errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or an expected " +
           "log message was not checked and removed:");
         errors.push('');
-        throw NgError(31, '{0}', errors.join('\n---------\n'));
+        throw Error(errors.join('\n---------\n'));
       }
     };
 
@@ -576,7 +576,7 @@ angular.mock.$LogProvider = function() {
 
     angular.forEach(unimplementedMethods, function(methodName) {
       self[methodName] = function() {
-        throw NgError(32, "Method '{0}' is not implemented in the TzDate mock", methodName);
+        throw Error("Method '" + methodName + "' is not implemented in the TzDate mock", methodName);
       };
     });
 
@@ -926,12 +926,12 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
 
     if (expectation && expectation.match(method, url)) {
       if (!expectation.matchData(data))
-        throw NgError(33, 'Expected {0} with different data\nEXPECTED: {1}\nGOT:      {2}',
-            expectation + '', prettyPrint(expectation.data), data);
+        throw Error('Expected ' + expectation + ' with different data\nEXPECTED: ' +
+          prettyPrint(expectation.data) + '\nGOT:      ' + data);
 
       if (!expectation.matchHeaders(headers))
-        throw NgError(34, 'Expected {0} with different headers\nEXPECTED: {1}\nGOT:      {2}',
-            expectation + '', prettyPrint(expectation.headers), prettyPrint(headers));
+        throw Error('Expected ' + expectation + ' with different headers\nEXPECTED: ' +
+          prettyPrint(expectation.headers) +'\nGOT:      ' + prettyPrint(headers));
 
       expectations.shift();
 
@@ -958,14 +958,14 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
           });
         } else if (definition.passThrough) {
           $delegate(method, url, data, callback, headers);
-        } else throw NgError(35, 'No response defined !');
+        } else throw Error('No response defined !');
         return;
       }
     }
     var expStr = expectation ? 'Expected ' + expectation : 'No more request expected';
     throw wasExpected ?
-    	new NgError(36, 'No response defined !') :
-    	new NgError(37, 'Unexpected request: {0} {1}\n{2}', method, url, expStr);
+    	Error('No response defined !') :
+    	Error('Unexpected request: ' + method + ' ' + url + '\n' + expStr + '');
   }
 
   /**
@@ -1226,11 +1226,11 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    */
   $httpBackend.flush = function(count) {
     $rootScope.$digest();
-    if (!responses.length) throw NgError(38, 'No pending request to flush !');
+    if (!responses.length) throw Error('No pending request to flush !');
 
     if (angular.isDefined(count)) {
       while (count--) {
-        if (!responses.length) throw NgError(39, 'No more pending request to flush !');
+        if (!responses.length) throw Error('No more pending request to flush !');
         responses.shift()();
       }
     } else {
@@ -1260,7 +1260,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingExpectation = function() {
     $rootScope.$digest();
     if (expectations.length) {
-      throw NgError(40, 'Unsatisfied requests: {0}', expectations.join(', '));
+      throw Error('Unsatisfied requests: ' + expectations.join(', ') + '');
     }
   };
 
@@ -1281,7 +1281,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    */
   $httpBackend.verifyNoOutstandingRequest = function() {
     if (responses.length) {
-      throw NgError(41, 'Unflushed requests: {0}', responses.length);
+      throw Error('Unflushed requests: ' + responses.length);
     }
   };
 
@@ -1438,8 +1438,8 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    */
   $delegate.verifyNoPendingTasks = function() {
     if ($browser.deferredFns.length) {
-      throw NgError(51, 'Deferred tasks to flush ({0}): {1}',
-          $browser.deferredFns.length, formatPendingTasksAsString($browser.deferredFns));
+      throw Error('Deferred tasks to flush (' + $browser.deferredFns.length +
+        '): ' + formatPendingTasksAsString($browser.deferredFns));
     }
   };
 
@@ -1756,7 +1756,7 @@ window.jstestdriver && (function(window) {
     /////////////////////
     function workFn() {
       if (currentSpec.$injector) {
-        throw NgError(42, 'Injector already created, can not register a module!');
+        throw Error('Injector already created, can not register a module!');
       } else {
         var modules = currentSpec.$modules || (currentSpec.$modules = []);
         angular.forEach(moduleFns, function(module) {
@@ -1820,7 +1820,7 @@ window.jstestdriver && (function(window) {
    */
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    var errorForStack = new NgError(52, 'Declaration Location');
+    var errorForStack = new Error('Declaration Location');
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {

@@ -75,7 +75,7 @@ function $ControllerProvider() {
 
       if (identifier) {
         if (typeof locals.$scope !== 'object') {
-          throw new NgError(47, 'Can not export controller as "{0}". ' +
+          throw NgError(47, 'Can not export controller as "{0}". ' +
               'No scope object provided!', identifier);
         }
 

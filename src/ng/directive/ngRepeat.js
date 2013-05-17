@@ -244,7 +244,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                if (block && block.element) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
-             throw new NgError(50, 'Duplicates in a repeater are not allowed. Repeater: {0} key: {1}', expression,
+             throw NgError(50, 'Duplicates in a repeater are not allowed. Repeater: {0} key: {1}', expression,
                  trackById);
            } else {
              // new never before seen block
