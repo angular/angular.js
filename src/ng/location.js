@@ -30,11 +30,11 @@ function matchUrl(url, obj) {
   obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
 }
 
-function matchAppUrl(url, obj) {
+function matchAppUrl(url, obj, queryString) {
   var match = PATH_MATCH.exec(url);
 
   obj.$$path = decodeURIComponent(match[1]);
-  obj.$$search = parseKeyValue(match[3]);
+  obj.$$search = queryString.parse(match[3]);
   obj.$$hash = decodeURIComponent(match[5] || '');
 
   // make sure path starts with '/';
@@ -74,6 +74,13 @@ function serverBase(url) {
 }
 
 
+
+var defaultQueryString = {
+  stringify: toKeyValue,
+  parse: parseKeyValue
+};
+
+
 /**
  * LocationHtml5Url represents an url
  * This object is exposed as $location service when HTML5 mode is enabled and supported
@@ -82,8 +89,9 @@ function serverBase(url) {
  * @param {string} appBase application base URL
  * @param {string} basePrefix url path prefix
  */
-function LocationHtml5Url(appBase, basePrefix) {
+function LocationHtml5Url(appBase, basePrefix, queryString) {
   basePrefix = basePrefix || '';
+  queryString = queryString || defaultQueryString;
   var appBaseNoFile = stripFile(appBase);
   /**
    * Parse given html5 (regular) url string into properties
@@ -97,7 +105,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     if (!isString(pathUrl)) {
       throw Error('Invalid url "' + url + '", missing path prefix "' + appBaseNoFile + '".');
     }
-    matchAppUrl(pathUrl, parsed);
+    matchAppUrl(pathUrl, parsed, queryString);
     extend(this, parsed);
     if (!this.$$path) {
       this.$$path = '/';
@@ -111,7 +119,7 @@ function LocationHtml5Url(appBase, basePrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
+    var search = queryString.stringify(this.$$search),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
@@ -134,6 +142,8 @@ function LocationHtml5Url(appBase, basePrefix) {
       return appBaseNoFile;
     }
   }
+
+  this.queryString = queryString;
 }
 
 
@@ -145,8 +155,10 @@ function LocationHtml5Url(appBase, basePrefix) {
  * @param {string} appBase application base URL
  * @param {string} hashPrefix hashbang prefix
  */
-function LocationHashbangUrl(appBase, hashPrefix) {
+function LocationHashbangUrl(appBase, hashPrefix, queryString) {
+  queryString = queryString || defaultQueryString;
   var appBaseNoFile = stripFile(appBase);
+
 
   /**
    * Parse given hashbang url into properties
@@ -163,7 +175,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     if (!isString(withoutHashUrl)) {
       throw new Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '".');
     }
-    matchAppUrl(withoutHashUrl, this);
+    matchAppUrl(withoutHashUrl, this, queryString);
     this.$$compose();
   };
 
@@ -172,9 +184,9 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
+    var search = queryString.stringify(this.$$search),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
-
+        
     this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : '');
   };
@@ -184,6 +196,8 @@ function LocationHashbangUrl(appBase, hashPrefix) {
       return url;
     }
   }
+
+  this.queryString = queryString;
 }
 
 
@@ -196,7 +210,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
  * @param {string} appBase application base URL
  * @param {string} hashPrefix hashbang prefix
  */
-function LocationHashbangInHtml5Url(appBase, hashPrefix) {
+function LocationHashbangInHtml5Url(appBase, hashPrefix, queryString) {
   LocationHashbangUrl.apply(this, arguments);
 
   var appBaseNoFile = stripFile(appBase);
@@ -360,7 +374,7 @@ LocationHashbangInHtml5Url.prototype =
         this.$$search[search] = paramValue;
       }
     } else {
-      this.$$search = isString(search) ? parseKeyValue(search) : search;
+      this.$$search = isString(search) ? this.queryString.parse(search) : search;
     }
 
     this.$$compose();
@@ -456,7 +470,8 @@ function locationGetterSetter(property, preprocess) {
  */
 function $LocationProvider(){
   var hashPrefix = '',
-      html5Mode = false;
+      html5Mode = false,
+      queryString = defaultQueryString;
 
   /**
    * @ngdoc property
@@ -492,6 +507,24 @@ function $LocationProvider(){
     }
   };
 
+  /**
+   * @ngdoc property
+   * @name ng.$locationProvider#queryString
+   * @methodOf ng.$locationProvider
+   * @description
+   * Custom query string encoding and decoding.
+   *
+   * @param {object} query string parser with stringify and parse functions
+   */
+  this.queryString = function(qs) {
+    if (isDefined(qs)) {
+      queryString = qs;
+    } else {
+      return queryString;
+    }
+
+  };
+
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
@@ -507,7 +540,7 @@ function $LocationProvider(){
       appBase = stripHash(initialUrl);
       LocationMode = LocationHashbangUrl;
     }
-    $location = new LocationMode(appBase, '#' + hashPrefix);
+    $location = new LocationMode(appBase, '#' + hashPrefix, queryString);
     $location.$$parse($location.$$rewrite(initialUrl));
 
     $rootElement.bind('click', function(event) {
