@@ -75,6 +75,36 @@ beforeEach(function() {
       return this.actual.name == 'Error' && messageRegexp.test(this.actual.message);
     },
 
+    toMatchThrow: function(messageRegexp) {
+      if (typeof this.actual != 'function') {
+        throw new Error('Actual is not a function');
+      }
+
+      var exception;
+
+      try {
+        this.actual();
+      } catch (e) {
+        exception = e;
+      }
+
+      if (exception) {
+        result = messageRegexp.test(exception.message);
+      }
+
+      this.message = function() {
+        if (!exception) {
+          return 'Expected function to throw an exception.';
+        } else if (result) {
+
+          return 'Expected function to throw an error matching ' + angular.toJson(messageRegexp) +
+            ', but was ' + exception.message;
+        }
+      };
+
+      return result;
+    },
+
     toHaveBeenCalledOnce: function() {
       if (arguments.length > 0) {
         throw new Error('toHaveBeenCalledOnce does not take arguments, use toHaveBeenCalledWith');
