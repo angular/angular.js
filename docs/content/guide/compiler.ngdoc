@@ -30,7 +30,7 @@ involved.
 # Compiler
 
 Compiler is an angular service which traverses the DOM looking for attributes. The compilation
-process happens into two phases.
+process happens in two phases.
 
   1. **Compile:** traverse the DOM and collect all of the directives. The result is a linking
   function.
