@@ -660,7 +660,7 @@ function $HttpProvider() {
           requestConfig.headers);
 
       var xsrfValue = isSameDomain(config.url, $browser.url())
-          ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
+          ? fromJson($browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName])
           : undefined;
       if (xsrfValue) {
         headers[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
