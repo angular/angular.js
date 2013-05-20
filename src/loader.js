@@ -70,7 +70,8 @@ function setupModuleLoader(window) {
       }
       return ensure(modules, name, function() {
         if (!requires) {
-          throw Error('No module: ' + name);
+          throw Error('No module: ' + name + '. If attempting to register a ' +
+            'module, you must at least specify an empty array of requirements.');
         }
 
         /** @type {!Array.<Array.<*>>} */

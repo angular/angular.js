@@ -268,7 +268,7 @@ describe('injector', function() {
     it('should error on invalid module name', function() {
       expect(function() {
         createInjector(['IDontExist'], {});
-      }).toThrow("No module: IDontExist");
+      }).toMatchThrow(/^No module: IDontExist/);
     });
 
 
