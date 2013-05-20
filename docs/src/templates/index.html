@@ -27,7 +27,7 @@
           sync = true,
           angularVersion = {
             current: '"NG_VERSION_FULL"', // rewrite during build
-            stable: '"NG_VERSION_STABLE"'
+            cdn: '"NG_VERSION_CDN"'
           };
 
       addTag('base', {href: baseUrl});
@@ -51,12 +51,12 @@
         if (production) {
           if (name.match(/^angular(-\w+)?\.js/) && !name.match(/bootstrap/)) {
             name =  '//ajax.googleapis.com/ajax/libs/angularjs/' +
-                angularVersion.stable +
+                angularVersion.cdn +
                 '/' +
                 name.replace(/\.js$/, '.min.js');
           } else {
             name =  'http://code.angularjs.org/' +
-                angularVersion.stable +
+                angularVersion.cdn +
                 '/' +
                 name.replace(/\.js$/, '.min.js');
           }
