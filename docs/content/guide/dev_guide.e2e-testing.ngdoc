@@ -217,4 +217,88 @@ expect(value).toBeGreaterThan(expected)
 </pre>
 
 # Example
-See the {@link https://github.com/angular/angular-seed angular-seed} project for an example.
+See the {@link https://github.com/angular/angular-seed angular-seed} project for more examples.
+
+## Conditional actions with element(...).query(fn)
+
+E2E testing with angular scenario is highly asynchronous and hides a lot of complexity by
+queueing actions and expectations that can handle futures. From time to time, you might need
+conditional assertions or element selection. Even though you should generally try to avoid this
+(as it is can be sign for unstable tests), you can add conditional behavior with
+`element(...).query(fn)`. The following code listing shows how this function can be used to delete
+added entries (where an entry is some domain object) using the application's web interface.
+
+Imagine the application to be structure into two views:
+
+ 1. *Overview view* which lists all the added entries in a table and
+ 2. a *detail view* which shows the entries' details and contains a delete button. When clicking the
+    delete button, the user is redirected back to the *overview page*.
+
+<pre>
+beforeEach(function () {
+  var deleteEntry = function () {
+    browser().navigateTo('/entries');
+
+    // we need to select the <tbody> element as it might be the case that there
+    // are no entries (and therefore no rows). When the selector does not
+    // result in a match, the test would be marked as a failure.
+    element('table tbody').query(function (tbody, done) {
+      // ngScenario gives us a jQuery lite wrapped element. We call the
+      // `children()` function to retrieve the table body's rows
+      var children = tbody.children();
+
+      if (children.length > 0) {
+        // if there is at least one entry in the table, click on the link to
+        // the entry's detail view
+        element('table tbody a').click();
+        // and, after a route change, click the delete button
+        element('.btn-danger').click();
+      }
+
+      // if there is more than one entry shown in the table, queue another
+      // delete action.
+      if (children.length > 1) {
+        deleteEntry();
+      }
+
+      // remember to call `done()` so that ngScenario can continue
+      // test execution.
+      done();
+    });
+
+  };
+
+  // start deleting entries
+  deleteEntry();
+});
+</pre>
+
+In order to understand what is happening, we should emphasize that ngScenario calls are not
+immediately executed, but queued (in ngScenario terms, we would be talking about adding
+future actions). If we had only one entry in our table, than the following future actions
+would be queued:
+
+<pre>
+// delete entry 1
+browser().navigateTo('/entries');
+element('table tbody').query(function (tbody, done) { ... });
+element('table tbody a');
+element('.btn-danger').click();
+</pre>
+
+For two entries, ngScenario would have to work on the following queue:
+
+<pre>
+// delete entry 1
+browser().navigateTo('/entries');
+element('table tbody').query(function (tbody, done) { ... });
+element('table tbody a');
+element('.btn-danger').click();
+
+    // delete entry 2
+    // indented to represent "recursion depth"
+    browser().navigateTo('/entries');
+    element('table tbody').query(function (tbody, done) { ... });
+    element('table tbody a');
+    element('.btn-danger').click();
+</pre>
