@@ -1,6 +1,8 @@
 {
   "name": "AngularJS",
-  "version": "0.0.0",
+  "version": "1.0.7-snapshot",
+  "cdnVersion": "1.0.6",
+  "codename": "monochromatic-rainbow",
   "devDependencies": {
     "grunt": "0.4.0",
     "grunt-contrib-clean": "0.4.0",
