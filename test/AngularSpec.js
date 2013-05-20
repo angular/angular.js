@@ -268,6 +268,17 @@ describe('angular', function() {
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
     });
+
+    it('should compare regular expressions', function() {
+      expect(equals(/abc/, /abc/)).toBe(true);
+      expect(equals(/abc/i, new RegExp('abc', 'i'))).toBe(true);
+      expect(equals(new RegExp('abc', 'i'), new RegExp('abc', 'i'))).toBe(true);
+      expect(equals(new RegExp('abc', 'i'), new RegExp('abc'))).toBe(false);
+      expect(equals(/abc/i, /abc/)).toBe(false);
+      expect(equals(/abc/, /def/)).toBe(false);
+      expect(equals(/^abc/, /abc/)).toBe(false);
+      expect(equals(/^abc/, '/^abc/')).toBe(false);
+    });
   });
 
   describe('size', function() {
@@ -624,6 +635,23 @@ describe('angular', function() {
       expect(isDate({})).toBe(false);
     });
   });
+
+
+  describe('isRegExp', function() {
+    it('should return true for RegExp object', function() {
+      expect(isRegExp(/^foobar$/)).toBe(true);
+      expect(isRegExp(new RegExp('^foobar$/'))).toBe(true);
+    });
+
+    it('should return false for non RegExp objects', function() {
+      expect(isRegExp([])).toBe(false);
+      expect(isRegExp('')).toBe(false);
+      expect(isRegExp(23)).toBe(false);
+      expect(isRegExp({})).toBe(false);
+      expect(isRegExp(new Date())).toBe(false);
+    });
+  });
+
 
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
