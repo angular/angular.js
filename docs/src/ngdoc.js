@@ -10,6 +10,7 @@ var NEW_LINE = /\n\r?/;
 var globalID = 0;
 var fs = require('fs');
 var fspath = require('path');
+var markdown = new Showdown.converter({ extensions : ['table'] });
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -216,7 +217,7 @@ Doc.prototype = {
         });
     });
     text = parts.join('');
-    text = new Showdown.converter({ extensions : ['table'] }).makeHtml(text);
+    text = markdown.makeHtml(text);
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });
