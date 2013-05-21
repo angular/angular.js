@@ -985,13 +985,14 @@ function $CompileProvider($provide) {
           }),
           templateUrl = (isFunction(origAsyncDirective.templateUrl))
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
-              : origAsyncDirective.templateUrl;
+              : origAsyncDirective.templateUrl,
+          contentTemplateLinkFn;
 
       $compileNode.html('');
 
       $http.get(templateUrl, {cache: $templateCache}).
         success(function(content) {
-          var compileNode, tempTemplateAttrs, $template;
+          var compileNode, tempTemplateAttrs, $template, contentDirectives;
 
           content = denormalizeTemplate(content);
 
@@ -1005,7 +1006,7 @@ function $CompileProvider($provide) {
 
             tempTemplateAttrs = {$attr: {}};
             replaceWith($rootElement, $compileNode, compileNode);
-            collectDirectives(compileNode, directives, tempTemplateAttrs);
+            contentDirectives = collectDirectives(compileNode, [], tempTemplateAttrs);
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;
@@ -1014,8 +1015,10 @@ function $CompileProvider($provide) {
 
           directives.unshift(derivedSyncDirective);
           afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn);
+          if (contentDirectives) {
+            contentTemplateLinkFn = applyDirectivesToNode(contentDirectives, compileNode, tAttrs, childTranscludeFn);
+          }
           afterTemplateChildLinkFn = compileNodes($compileNode[0].childNodes, childTranscludeFn);
-
 
           while(linkQueue.length) {
             var scope = linkQueue.shift(),
@@ -1030,9 +1033,17 @@ function $CompileProvider($provide) {
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
-            afterTemplateNodeLinkFn(function() {
-              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
-            }, scope, linkNode, $rootElement, controller);
+            if (contentTemplateLinkFn) {
+              afterTemplateNodeLinkFn(function() {
+                  beforeTemplateNodeLinkFn(function () {
+                      contentTemplateLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
+                    }, scope, linkNode, $rootElement, controller);
+                }, scope, linkNode, $rootElement, controller);
+            } else {
+              afterTemplateNodeLinkFn(function() {
+                  beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
+                }, scope, linkNode, $rootElement, controller);
+            }
           }
           linkQueue = null;
         }).
@@ -1047,9 +1058,17 @@ function $CompileProvider($provide) {
           linkQueue.push(rootElement);
           linkQueue.push(controller);
         } else {
-          afterTemplateNodeLinkFn(function() {
-            beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, controller);
-          }, scope, node, rootElement, controller);
+          if (contentTemplateLinkFn) {
+            afterTemplateNodeLinkFn(function() {
+                beforeTemplateNodeLinkFn(function () {
+                    contentTemplateLinkFn(afterTemplateChildLinkFn, scope, node, $rootElement, controller);
+                  }, scope, node, $rootElement, controller);
+              }, scope, node, $rootElement, controller);
+          } else {
+            afterTemplateNodeLinkFn(function() {
+                beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, $rootElement, controller);
+              }, scope, node, $rootElement, controller);
+          }
         }
       };
     }

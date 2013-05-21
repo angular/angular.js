@@ -1072,8 +1072,8 @@ describe('$compile', function() {
             $httpBackend.flush();
             $rootScope.$digest();
             expect(log).toEqual(
-              'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
-              'iFirst-L; iSecond-L; iThird-L; iLast-L');
+              'iFirst-C; FLUSH; iSecond-C; iLast-C; iThird-C; ' +
+              'iThird-L; iFirst-L; iSecond-L; iLast-L');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1117,13 +1117,13 @@ describe('$compile', function() {
             expect(log).toEqual('iFirst-C');
             log('FLUSH');
             $httpBackend.flush();
-            expect(log).toEqual('iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C');
+            expect(log).toEqual('iFirst-C; FLUSH; iSecond-C; iLast-C; iThird-C');
 
             element = template($rootScope);
             $rootScope.$digest();
             expect(log).toEqual(
-              'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
-              'iFirst-L; iSecond-L; iThird-L; iLast-L');
+              'iFirst-C; FLUSH; iSecond-C; iLast-C; iThird-C; ' +
+              'iThird-L; iFirst-L; iSecond-L; iLast-L');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1981,6 +1981,31 @@ describe('$compile', function() {
           scope: { attr: 'xxx' }
         };
       });
+      directive('parentDirective', function() {
+        return {
+          restrict: 'E',
+          transclude: true,
+          replace: true,
+          templateUrl: 'parentDirective.html',
+          scope: { param: '=' },
+          controller: function ($scope, $element, log) { log($scope.param); }
+        };
+      });
+      directive('childDirective', function() {
+        return {
+          restrict : 'E',
+          require: '^parentDirective',
+          scope: { otherParam: '@' },
+          link: function ($scope, $elem, $attrs, parentDirective) { },
+          replace : true,
+          templateUrl: 'childDirective.html',
+          controller : function($scope, $attrs, log) { log($scope.otherParam); }
+        };
+      });
+    }));
+    beforeEach(inject(function($templateCache) {
+      $templateCache.put('parentDirective.html', '<div ng-transclude></div>');
+      $templateCache.put('childDirective.html', '<span>{{otherParam}}</span>');
     }));
 
     describe('attribute', function() {
@@ -2008,6 +2033,15 @@ describe('$compile', function() {
         expect(componentScope.attr).toEqual('hello igor');
         expect(componentScope.attrAlias).toEqual('hello igor');
       }));
+      it('should invoke the controller of the element directive before the controllers of the ' +
+          'attribute directives at the top level element of a templateUrl', inject(function($rootScope, $compile, log) {
+        $rootScope.name = 'lucas';
+        var element = $compile('<div><parent-directive param="name"><child-directive other-param=":-)"></child-directive></parentDirective></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe(":-)");
+        expect(log).toEqual('lucas; :-)');
+        dealoc(element);
+      })); 
     });
 
 
