@@ -150,6 +150,11 @@ describe('ngdoc', function() {
         toMatch('</pre>\n\n<h1 id="one">One</h1>\n\n<pre');
     });
 
+    it('should replace inline variable type hints', function() {
+      expect(new Doc().markdown('{@type string}')).
+        toMatch(/<a\s+.*?class=".*?type-hint type-hint-string.*?".*?>/);
+    });
+
     it('should ignore nested doc widgets', function() {
       expect(new Doc().markdown(
         'before<div class="tabbable">\n' +

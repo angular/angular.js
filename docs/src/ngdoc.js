@@ -214,6 +214,10 @@ Doc.prototype = {
             (title || url).replace(/^#/g, '').replace(/\n/g, ' ') +
             (isAngular ? '</code>' : '') +
             '</a>';
+        }).
+        replace(/{@type\s+(\S+)(?:\s+(\S+))?}/g, function(_, type, url) {
+          url = url || '#';
+          return '<a href="' + url + '" class="' + self.prepare_type_hint_class_name(type) + '">' + type + '</a>';
         });
     });
     text = parts.join('');
