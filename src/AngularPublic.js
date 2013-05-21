@@ -46,6 +46,7 @@ function publishExternalAPI(angular){
     'isArray': isArray,
     'version': version,
     'isDate': isDate,
+    'isRegExp': isRegExp,
     'lowercase': lowercase,
     'uppercase': uppercase,
     'callbacks': {counter: 0},

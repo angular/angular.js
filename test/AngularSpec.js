@@ -619,6 +619,23 @@ describe('angular', function() {
     });
   });
 
+
+  describe('isRegExp', function() {
+    it('should return true for RegExp object', function() {
+      expect(isRegExp(/^foobar$/)).toBe(true);
+      expect(isRegExp(new RegExp('^foobar$/'))).toBe(true);
+    });
+
+    it('should return false for non RegExp objects', function() {
+      expect(isRegExp([])).toBe(false);
+      expect(isRegExp('')).toBe(false);
+      expect(isRegExp(23)).toBe(false);
+      expect(isRegExp({})).toBe(false);
+      expect(isRegExp(new Date())).toBe(false);
+    });
+  });
+
+
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');

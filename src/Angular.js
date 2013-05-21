@@ -215,7 +215,7 @@ function nextUid() {
 
 /**
  * Set or clear the hashkey for an object.
- * @param obj object 
+ * @param obj object
  * @param h the hashkey (!truthy to delete the hashkey)
  */
 function setHashKey(obj, h) {
@@ -392,6 +392,22 @@ function isNumber(value){return typeof value == 'number';}
  */
 function isDate(value){
   return toString.apply(value) == '[object Date]';
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.isRegExp
+ * @function
+ *
+ * @description
+ * Determines if a value is a regular expression object.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `RegExp`.
+ */
+function isRegExp(value) {
+  return toString.apply(value) == '[object RegExp]';
 }
 
 
