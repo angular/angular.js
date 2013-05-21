@@ -21,9 +21,11 @@ constructor). Constructors are always applied to an existing scope object.
 
 You set up the initial state of a scope by creating model properties. For example:
 
-function GreetingCtrl($scope) {
- $scope.greeting = 'Hola!';
-}
+<pre>
+    function GreetingCtrl($scope) {
+        $scope.greeting = 'Hola!';
+    }
+</pre>
 
 The `GreetingCtrl` controller creates a `greeting` model which can be referred to in a template.
 
@@ -32,11 +34,13 @@ in the global scope. This is only for demonstration purposes - in a real
 application you should use the `.controller` method of your Angular module for
 your application as follows:
 
-var myApp = angular.module('myApp',[]);
+<pre>
+    var myApp = angular.module('myApp',[]);
 
-myApp.controller('GreetingCtrl', ['$scope', function($scope) {
-  $scope.greeting = 'Hola!';
-}]);
+    myApp.controller('GreetingCtrl', ['$scope', function($scope) {
+        $scope.greeting = 'Hola!';
+    }]);
+</pre>
 
 Note also that we use the array notation to explicitly specify the dependency
 of the controller on the `$scope` service provided by Angular.
