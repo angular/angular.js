@@ -61,8 +61,13 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
       // Add listeners for events such as progress
       hooks = hooks || {};
+      var uploadHooks = hooks.upload || {};
+      delete hooks.upload;
       forEach(Object.keys(hooks), function(event) {
         xhr.addEventListener(event, hooks[event], false);
+      });
+      forEach(Object.keys(uploadHooks), function(event) {
+        xhr.upload.addEventListener(event, uploadHooks[event], false);
       });
 
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
