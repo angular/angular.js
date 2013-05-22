@@ -294,14 +294,14 @@ app.directive('aGreatEye', function () {
     return {
         restrict: 'E',
         replace:  true,
-        template: '<h1>lidless, wreathed in flame</h1>'
+        template: '<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>'
     };
 });
 </pre>
 
 This directive is used as a tag `<a-great-eye></a-great-eye>`. It replaces the entire tag with the
-template `<h1>lidless, wreathed in flame</h1>`. Now we are going to write a jasmine unit test to
-verify this functionality.
+template `<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>`. Now we are going to write a jasmine unit test to
+verify this functionality. Note that the expression `{{1 + 1}}` times will also be evaluated in the rendered content.
 
 <pre>
 describe('Unit testing great quotes', function() {
@@ -322,30 +322,18 @@ describe('Unit testing great quotes', function() {
     it('Replaces the element with the appropriate content', function() {
         // Compile a piece of HTML containing the directive
         var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
+        // fire all the watches, so the scope expression {{1 + 1}} will be evaluated
+        $rootScope.$digest();
         // Check that the compiled element contains the templated content
-        expect(element.html()).toContain("lidless, wreathed in flame");
+        expect(element.html()).toContain("lidless, wreathed in flame, 2 times");
     });
 });
 </pre>
 
 We inject the $compile service and $rootScope before each jasmine test. The $compile service is used
 to render the aGreatEye directive. After rendering the directive we ensure that the directive has
-replaced the content and "lidless, wreathed in flame" is present.
+replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
-## Mocks
-oue
-
-## Global State Isolation
-oue
-
-# Preferred way of Testing
-uo
-
-## JavaScriptTestDriver
-ou
-
-## Jasmine
-ou
 
 ## Sample project
 See the {@link https://github.com/angular/angular-seed angular-seed} project for an example.
