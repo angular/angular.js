@@ -2048,18 +2048,18 @@ describe('$compile', function() {
       }));
 
 
-      it('should update local when both change', inject(function() {
+      it('should stay in sync when both change', inject(function() {
         compile('<div><span my-component ref="name">');
         $rootScope.name = {mark:123};
         componentScope.ref = 'misko';
 
         $rootScope.$apply();
-        expect($rootScope.name).toEqual({mark:123})
+        expect($rootScope.name).toEqual('misko');
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
 
-        $rootScope.name = 'igor';
         componentScope.ref = {};
+        $rootScope.name = 'igor';
         $rootScope.$apply();
         expect($rootScope.name).toEqual('igor')
         expect(componentScope.ref).toBe($rootScope.name);
@@ -2072,9 +2072,9 @@ describe('$compile', function() {
         $rootScope.$apply();
         expect(componentScope.ref).toBe('hello world');
 
-        componentScope.ref = 'ignore me';
-        expect($rootScope.$apply).
-            toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
+        expect(function() {
+          componentScope.ref = 'ignore me';
+        }).toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;

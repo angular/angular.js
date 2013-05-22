@@ -813,26 +813,17 @@ function $CompileProvider($provide) {
                 }
                 parentGet = $parse(attrs[attrName]);
                 parentSet = parentGet.assign || function() {
-                  // reset the change, or we will throw this exception on every $digest
-                  lastValue = scope[scopeName] = parentGet(parentScope);
                   throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
                       ' (directive: ' + newIsolateScopeDirective.name + ')');
                 };
-                lastValue = scope[scopeName] = parentGet(parentScope);
-                scope.$watch(function parentValueWatch() {
-                  var parentValue = parentGet(parentScope);
 
-                  if (parentValue !== scope[scopeName]) {
-                    // we are out of sync and need to copy
-                    if (parentValue !== lastValue) {
-                      // parent changed and it has precedence
-                      lastValue = scope[scopeName] = parentValue;
-                    } else {
-                      // if the parent can be assigned then do so
-                      parentSet(parentScope, parentValue = lastValue = scope[scopeName]);
-                    }
+                Object.defineProperty(scope, scopeName, {
+                  get: function() {
+                    return parentGet(parentScope);
+                  },
+                  set: function(value) {
+                    parentSet(parentScope, value);
                   }
-                  return parentValue;
                 });
                 break;
               }
