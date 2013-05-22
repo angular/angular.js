@@ -1084,7 +1084,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * @element input
  *
  * @description
- * Is directive that tells Angular to do two-way data binding. It works together with `input`,
+ * Is a directive that tells Angular to do two-way data binding. It works together with `input`,
  * `select`, `textarea`. You can easily write your own directives to use `ngModel` as well.
  *
  * `ngModel` is responsible for:
@@ -1095,6 +1095,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - keeping state of the control (valid/invalid, dirty/pristine, validation errors),
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
  * - register the control with parent {@link ng.directive:form form}.
+ * 
+ * Note: `ngModel` will try to bind to a property on the related controller's scope. If the property doesn't
+ * already exist on the scope, it will be created implicitely and added to the scope.
  *
  * For basic examples, how to use `ngModel`, see:
  *
