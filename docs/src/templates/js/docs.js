@@ -70,7 +70,7 @@ docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootS
     onReady : function() {
       this.ready = true;
       var self = this;
-      self.deferReady.resolve(); 
+      self.deferReady.resolve();
       if(!$rootScope.$$phase) {
         $rootScope.$apply();
       }
@@ -114,9 +114,9 @@ docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootS
           if(groups[section].length < 15) {
             groups[section].push(item);
           }
-        })
+        });
         onReady(groups);
-      })
+      });
     }
   };
 }];
@@ -134,8 +134,8 @@ docsApp.directive.focused = function($timeout) {
         scope.$eval(attrs.focused + '=false');
       });
     });
-    scope.$eval(attrs.focused + '=true')
-  }
+    scope.$eval(attrs.focused + '=true');
+  };
 };
 
 
@@ -175,7 +175,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         openPlunkr(sources);
       };
     }
-  }
+  };
 
   function read(text) {
     var files = [];
@@ -243,7 +243,7 @@ docsApp.directive.docTutorialReset = function() {
         '</div>\n');
     }
   };
-}
+};
 
 
 docsApp.serviceFactory.angularUrls = function($document) {
@@ -257,7 +257,7 @@ docsApp.serviceFactory.angularUrls = function($document) {
   });
 
   return urls;
-}
+};
 
 
 docsApp.serviceFactory.formPostData = function($document) {
@@ -290,7 +290,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
     var scriptDeps = '';
     angular.forEach(content.deps, function(file) {
       if (file.name !== 'angular.js') {
-        scriptDeps += '    <script src="' + file.name + '"></script>\n'
+        scriptDeps += '    <script src="' + file.name + '"></script>\n';
       }
     });
     indexProp = {
@@ -307,7 +307,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -426,7 +426,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       last: this.$last,
       active: page1 && this.currentPage == page1 || page2 && this.currentPage == page2
     };
-  }
+  };
 
   $scope.submitForm = function() {
     $scope.bestMatch && $location.path($scope.bestMatch.page.url);
@@ -625,7 +625,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
           },
           types: [],
           filters: []
-        }
+        };
         modules.push(module);
       }
       return module;
@@ -676,7 +676,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
     angular.element(document.getElementById('disqus_thread')).html('');
   }
-}
+};
 
 
 angular.module('docsApp', ['ngResource', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
