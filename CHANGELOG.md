@@ -1,3 +1,211 @@
+<a name="1.1.5"></a>
+# 1.1.5 triangle-squarification (2013-05-22)
+
+_Note: 1.1.x releases are [considered unstable](http://blog.angularjs.org/2012/07/angularjs-10-12-roadmap.html).
+They pass all tests but we reserve the right to change new features/apis in between minor releases. Check them
+out and please give us feedback._
+
+_Note: This release also contains all bug fixes available in [1.0.7](#1.0.7)._
+
+
+## Features
+
+- **$animator:**
+  - provide support for custom animation events
+  ([c53d4c94](https://github.com/angular/angular.js/commit/c53d4c94300c97dd005f9a0cbdbfa387294b9026))
+  - allow to globally disable and enable animations
+  ([5476cb6e](https://github.com/angular/angular.js/commit/5476cb6e9b6d7a16e3a86585bc2db5e63b16cd4d))
+- **$http:**
+  - add support for aborting via timeout promises
+  ([9f4f5937](https://github.com/angular/angular.js/commit/9f4f5937112655a9881d3281da8e72035bc8b180),
+   [#1159](https://github.com/angular/angular.js/issues/1159))
+  - add a default content type header for PATCH requests
+  ([f9b897de](https://github.com/angular/angular.js/commit/f9b897de4b5cc438515cbb54519fbdf6242f5858))
+  - add timeout support for JSONP requests
+  ([cda7b711](https://github.com/angular/angular.js/commit/cda7b71146f6748116ad5bbc9050ee7e79a9ce2b))
+
+- **$parse:** add support for ternary operators to parser
+  ([6798fec4](https://github.com/angular/angular.js/commit/6798fec4390a72b7943a49505f8a245b6016c84b))
+
+- **$q:** add $q.always() method
+  ([6605adf6](https://github.com/angular/angular.js/commit/6605adf6d96cee2ef53dfad24e99d325df732cab))
+
+- **$controller:** support "Controller as" syntax
+  ([cd38cbf9](https://github.com/angular/angular.js/commit/cd38cbf975b501d846e6149d1d993972a1af0053),
+   [400f9360](https://github.com/angular/angular.js/commit/400f9360bb2f7553c5bd3b1f256a5f3db175b7bc))
+
+- **$injector:** add `has` method for querying
+  ([80341cb9](https://github.com/angular/angular.js/commit/80341cb9badd952fdc80094df4123629313b4cc4),
+   [#2556](https://github.com/angular/angular.js/issues/2556))
+
+- **Directives:**
+  - **ngAnimate:**
+     - add support for CSS3 Animations with working delays and multiple durations
+     ([14757874](https://github.com/angular/angular.js/commit/14757874a7cea7961f31211b245c417bd4b20512))
+     - cancel previous incomplete animations when new animations take place
+     ([4acc28a3](https://github.com/angular/angular.js/commit/4acc28a310d006c62afe0de8ec82fed21c98c2d6))
+  - **ngSrcset:** add new ngSrcset directive
+  ([d551d729](https://github.com/angular/angular.js/commit/d551d72924f7c43a043e4760ff05d7389e310f99),
+   [#2601](https://github.com/angular/angular.js/issues/2601))
+  - **ngIf:** add directive to remove and recreate DOM elements
+    ([2f96fbd1](https://github.com/angular/angular.js/commit/2f96fbd17577685bc013a4f7ced06664af253944))
+  - **select:** match options by expression other than object identity
+  ([c32a859b](https://github.com/angular/angular.js/commit/c32a859bdb93699cc080f9affed4bcff63005a64))
+  - **ngInclude:** $includeContentRequested event
+  ([af0eaa30](https://github.com/angular/angular.js/commit/af0eaa304748f330739a4b0aadb13201126c5407))
+
+- **Mobile:**
+  - **ngClick:** Add a CSS class while the element is held down via a tap
+  ([52a55ec6](https://github.com/angular/angular.js/commit/52a55ec61895951999cb0d74e706725b965e9c9f))
+  - **ngSwipe:** Add ngSwipeRight/Left directives to ngMobile
+  ([5e0f876c](https://github.com/angular/angular.js/commit/5e0f876c39099adb6a0300c429b8df1f6b544846))
+
+- **docs:**
+  - Add FullText search to replace Google search in docs
+  ([3a49b7ee](https://github.com/angular/angular.js/commit/3a49b7eec4836ec9dc1588e6cedda942755dc7bf))
+  - external links to github, plunkr and jsfiddle available for code examples
+  ([c8197b44](https://github.com/angular/angular.js/commit/c8197b44eb0b4d49acda142f4179876732e1c751))
+  - add variable type hinting with colors
+  ([404c9a65](https://github.com/angular/angular.js/commit/404c9a653a1e28de1c6dda996875d6616812313a))
+  - support for HTML table generation from docs code
+  ([b3a62b2e](https://github.com/angular/angular.js/commit/b3a62b2e19b1743df52034d4d7a0405e6a65f925))
+
+- **scenario runner:** adds mousedown and mouseup event triggers to scenario
+  ([629fb373](https://github.com/angular/angular.js/commit/629fb37351ce5778a40a8bc8cd7c1385b382ce75))
+
+
+  ## Bug Fixes
+
+  - **$animator:** remove dependency on window.setTimeout
+    ([021bdf39](https://github.com/angular/angular.js/commit/021bdf3922b6525bd117e59fb4945b30a5a55341))
+
+  - **$controller:** allow dots in a controller name
+    ([de2cdb06](https://github.com/angular/angular.js/commit/de2cdb0658b8b8cff5a59e26c5ec1c9b470efb9b))
+
+  - **$location:**
+    - prevent navigation when event isDefaultPrevented
+    ([2c69a673](https://github.com/angular/angular.js/commit/2c69a6735e8af5d1b9b73fd221274d374e8efdea))
+    - compare against actual instead of current URL
+    ([a348e90a](https://github.com/angular/angular.js/commit/a348e90aa141921b914f87ec930cd6ebf481a446))
+    - prevent navigation if already on the URL
+    ([4bd7bedf](https://github.com/angular/angular.js/commit/4bd7bedf48c0c1ebb62f6bd8c85e8ea00f94502b))
+    - fix URL interception in hash-bang mode
+    ([58ef3230](https://github.com/angular/angular.js/commit/58ef32308f45141c8f7f7cc32a6156cd328ba692),
+     [#1051](https://github.com/angular/angular.js/issues/1051))
+    - correctly rewrite Html5 urls
+    ([77ff1085](https://github.com/angular/angular.js/commit/77ff1085554675f1a8375642996e5b1e51f9ed2d))
+
+  - **$resource:**
+    - null default param results in TypeError
+    ([cefbcd47](https://github.com/angular/angular.js/commit/cefbcd470d4c9020cc3487b2326d45058ef831e2))
+    - collapse empty suffix parameters correctly
+    ([53061363](https://github.com/angular/angular.js/commit/53061363c7aa1ab9085273d269c6f04ac2162336))
+
+  - **$rootScope:**
+    - ensure $watchCollection correctly handles arrayLike objects
+    ([6452707d](https://github.com/angular/angular.js/commit/6452707d4098235bdbde34e790aee05a1b091218))
+
+  - **date filter:** correctly format dates with more than 3 sub-second digits
+    ([4f2e3606](https://github.com/angular/angular.js/commit/4f2e36068502f18814fee0abd26951124881f951))
+
+  - **jqLite:**
+    - pass a dummy event into triggerHandler
+    ([0401a7f5](https://github.com/angular/angular.js/commit/0401a7f598ef9a36ffe1f217e1a98961046fa551))
+
+  - **Directives:**
+    - **ngAnimate:**
+       - eval ng-animate expression on each animation
+       ([fd21c750](https://github.com/angular/angular.js/commit/fd21c7502f0a25364a810c26ebeecb678e5783c5))
+       - prevent animation on initial page load
+       ([570463a4](https://github.com/angular/angular.js/commit/570463a465fae02efc33e5a1fa963437cdc275dd))
+       - skip animation on first render
+       ([1351ba26](https://github.com/angular/angular.js/commit/1351ba2632b5011ad6eaddf004a7f0411bea8453))
+    - **ngPattern:** allow modifiers on inline ng-pattern
+      ([12b6deb1](https://github.com/angular/angular.js/commit/12b6deb1ce99df64e2fc91a06bf05cd7f4a3a475),
+       [#1437](https://github.com/angular/angular.js/issues/1437))
+    - **ngRepeat:**
+       - correctly iterate over array-like objects
+       ([1d8e11dd](https://github.com/angular/angular.js/commit/1d8e11ddfbd6b08ff02df4331f6df125f49da3dc),
+        [#2546](https://github.com/angular/angular.js/issues/2546))
+       - prevent initial duplicates
+       ([a0bc71e2](https://github.com/angular/angular.js/commit/a0bc71e27107c58282e71415c4e8d89e916ae99c))
+    - **ngView:** accidentally compiling leaving content
+    ([9956baed](https://github.com/angular/angular.js/commit/9956baedd73d5e8d0edd04c9eed368bd3988444b))
+
+  - **scenario runner:** correct bootstrap issue on IE
+    ([ab755a25](https://github.com/angular/angular.js/commit/ab755a25f9ca3f3f000623071d8de3ddc4b1d78e))
+
+
+
+## Breaking Changes
+
+- **$animator/ngAnimate:**
+
+
+- **$resource:** due to [53061363](https://github.com/angular/angular.js/commit/53061363c7aa1ab9085273d269c6f04ac2162336),
+  A `/` followed by a `.`, in the last segment of the URL template is now collapsed into a single `.` delimiter.
+
+  For example: `users/.json` will become `users.json`. If your server relied upon this sequence then it will no longer
+  work. In this case you can now escape the `/.` sequence with `/\.`
+
+
+
+
+<a name="1.0.7"></a>
+# 1.0.7 monochromatic-rainbow (2013-05-22)
+
+
+## Bug Fixes
+
+- **$browser:** should use first value for a cookie.
+  ([3952d35a](https://github.com/angular/angular.js/commit/3952d35abe334a0e6afd1f6e34a74d984d1e9d24),
+   [#2635](https://github.com/angular/angular.js/issues/2635))
+
+- **$cookieStore:** $cookieStore.get now parses blank string as blank string
+  ([cf4729fa](https://github.com/angular/angular.js/commit/cf4729faa3e6e0a5178e2064a6f3cfd345686554))
+
+- **$location:** back-button should fire $locationChangeStart
+  ([dc9a5806](https://github.com/angular/angular.js/commit/dc9a580617a838b63cbf5feae362b6f9cf5ed986),
+   [#2109](https://github.com/angular/angular.js/issues/2109))
+
+- **$parse:** Fix context access and double function call
+  ([7812ae75](https://github.com/angular/angular.js/commit/7812ae75d578314c1a285e9644fc75812940eb1d),
+   [#2496](https://github.com/angular/angular.js/issues/2496))
+
+- **dateFilter:** correctly format ISODates on Android<=2.1
+  ([f046f6f7](https://github.com/angular/angular.js/commit/f046f6f73c910998a94f30a4cb4ed087b6325485),
+   [#2277](https://github.com/angular/angular.js/issues/2277))
+
+- **jqLite:** correct implementation of mouseenter/mouseleave event
+  ([06f2b2a8](https://github.com/angular/angular.js/commit/06f2b2a8cf7e8216ad9ef05f73426271c2d97faa),
+   [#2131](https://github.com/angular/angular.js/issues/2131))
+
+- **angular.copy/angular.extend:** do not copy $$hashKey in copy/extend functions.
+  ([6d0b325f](https://github.com/angular/angular.js/commit/6d0b325f7f5b9c1f3cfac9b73c6cd5fc3d1e2af0),
+   [#1875](https://github.com/angular/angular.js/issues/1875))
+
+- **i18n:** escape all chars above \u007f in locale files
+  ([695c54c1](https://github.com/angular/angular.js/commit/695c54c17b3299cd6170c45878b41cb46a577cd2),
+   [#2417](https://github.com/angular/angular.js/issues/2417))
+
+- **Directives:**
+  - **ngPluralize:** handle the empty string as a valid override
+  ([67a4a25b](https://github.com/angular/angular.js/commit/67a4a25b890fada0043c1ff98e5437d793f44d0c),
+   [#2575](https://github.com/angular/angular.js/issues/2575))
+  - **select:** ensure empty option is not lost in IE9
+  ([4622af3f](https://github.com/angular/angular.js/commit/4622af3f075204e2d5ab33d5bd002074f2d940c9),
+   [#2150](https://github.com/angular/angular.js/issues/2150))
+  - **ngModel:** use paste/cut events in IE to support context menu
+  ([363e4cbf](https://github.com/angular/angular.js/commit/363e4cbf649de4c5206f1904ee76f89301ceaab0),
+   [#1462](https://github.com/angular/angular.js/issues/1462))
+  - **ngClass:** should remove classes when object is the same but property has changed
+  ([0ac969a5](https://github.com/angular/angular.js/commit/0ac969a5ee1687cfd4517821943f34fe948bb3fc))
+
+- **PhoneCat Tutorial:** renamed Testacular to Karma
+  ([angular-phonecat](https://github.com/angular/angular-phonecat))
+
+
+
 <a name="1.1.4"></a>
 # 1.1.4 quantum-manipulation (2013-04-03)
 
