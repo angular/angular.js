@@ -1,6 +1,6 @@
 {
   "name": "AngularJS",
-  "version": "1.0.7-snapshot",
+  "version": "1.0.7",
   "cdnVersion": "1.0.6",
   "codename": "monochromatic-rainbow",
   "devDependencies": {
