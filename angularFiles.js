@@ -58,6 +58,7 @@ angularFiles = {
     'src/ng/directive/ngShowHide.js',
     'src/ng/directive/ngStyle.js',
     'src/ng/directive/ngSwitch.js',
+    'src/ng/directive/ngToggle.js',
     'src/ng/directive/ngTransclude.js',
     'src/ng/directive/ngView.js',
     'src/ng/directive/script.js',
