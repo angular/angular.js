@@ -1,8 +1,8 @@
 {
   "name": "AngularJS",
-  "version": "1.0.7",
+  "version": "1.0.8-snapshot",
   "cdnVersion": "1.0.6",
-  "codename": "monochromatic-rainbow",
+  "codename": "bubble-burst",
   "devDependencies": {
     "grunt": "0.4.0",
     "grunt-contrib-clean": "0.4.0",
