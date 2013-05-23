@@ -83,54 +83,52 @@ _Note: This release also contains all bug fixes available in [1.0.7](#1.0.7)._
     ([de2cdb06](https://github.com/angular/angular.js/commit/de2cdb0658b8b8cff5a59e26c5ec1c9b470efb9b))
 
   - **$location:**
-    - prevent navigation when event isDefaultPrevented
-    ([2c69a673](https://github.com/angular/angular.js/commit/2c69a6735e8af5d1b9b73fd221274d374e8efdea))
-    - compare against actual instead of current URL
-    ([a348e90a](https://github.com/angular/angular.js/commit/a348e90aa141921b914f87ec930cd6ebf481a446))
-    - prevent navigation if already on the URL
-    ([4bd7bedf](https://github.com/angular/angular.js/commit/4bd7bedf48c0c1ebb62f6bd8c85e8ea00f94502b))
-    - fix URL interception in hash-bang mode
-    ([58ef3230](https://github.com/angular/angular.js/commit/58ef32308f45141c8f7f7cc32a6156cd328ba692),
-     [#1051](https://github.com/angular/angular.js/issues/1051))
-    - correctly rewrite Html5 urls
-    ([77ff1085](https://github.com/angular/angular.js/commit/77ff1085554675f1a8375642996e5b1e51f9ed2d))
+      - prevent navigation when event isDefaultPrevented
+      ([2c69a673](https://github.com/angular/angular.js/commit/2c69a6735e8af5d1b9b73fd221274d374e8efdea))
+      - compare against actual instead of current URL
+      ([a348e90a](https://github.com/angular/angular.js/commit/a348e90aa141921b914f87ec930cd6ebf481a446))
+      - prevent navigation if already on the URL
+      ([4bd7bedf](https://github.com/angular/angular.js/commit/4bd7bedf48c0c1ebb62f6bd8c85e8ea00f94502b))
+      - fix URL interception in hash-bang mode
+      ([58ef3230](https://github.com/angular/angular.js/commit/58ef32308f45141c8f7f7cc32a6156cd328ba692),
+       [#1051](https://github.com/angular/angular.js/issues/1051))
+      - correctly rewrite Html5 urls
+      ([77ff1085](https://github.com/angular/angular.js/commit/77ff1085554675f1a8375642996e5b1e51f9ed2d))
 
   - **$resource:**
-    - null default param results in TypeError
-    ([cefbcd47](https://github.com/angular/angular.js/commit/cefbcd470d4c9020cc3487b2326d45058ef831e2))
-    - collapse empty suffix parameters correctly
-    ([53061363](https://github.com/angular/angular.js/commit/53061363c7aa1ab9085273d269c6f04ac2162336))
+      - null default param results in TypeError
+      ([cefbcd47](https://github.com/angular/angular.js/commit/cefbcd470d4c9020cc3487b2326d45058ef831e2))
+      - collapse empty suffix parameters correctly
+      ([53061363](https://github.com/angular/angular.js/commit/53061363c7aa1ab9085273d269c6f04ac2162336))
 
-  - **$rootScope:**
-    - ensure $watchCollection correctly handles arrayLike objects
+  - **$rootScope:** ensure $watchCollection correctly handles arrayLike objects
     ([6452707d](https://github.com/angular/angular.js/commit/6452707d4098235bdbde34e790aee05a1b091218))
 
   - **date filter:** correctly format dates with more than 3 sub-second digits
     ([4f2e3606](https://github.com/angular/angular.js/commit/4f2e36068502f18814fee0abd26951124881f951))
 
-  - **jqLite:**
-    - pass a dummy event into triggerHandler
+  - **jqLite:** pass a dummy event into triggerHandler
     ([0401a7f5](https://github.com/angular/angular.js/commit/0401a7f598ef9a36ffe1f217e1a98961046fa551))
 
   - **Directives:**
-    - **ngAnimate:**
-       - eval ng-animate expression on each animation
-       ([fd21c750](https://github.com/angular/angular.js/commit/fd21c7502f0a25364a810c26ebeecb678e5783c5))
-       - prevent animation on initial page load
-       ([570463a4](https://github.com/angular/angular.js/commit/570463a465fae02efc33e5a1fa963437cdc275dd))
-       - skip animation on first render
-       ([1351ba26](https://github.com/angular/angular.js/commit/1351ba2632b5011ad6eaddf004a7f0411bea8453))
-    - **ngPattern:** allow modifiers on inline ng-pattern
-      ([12b6deb1](https://github.com/angular/angular.js/commit/12b6deb1ce99df64e2fc91a06bf05cd7f4a3a475),
-       [#1437](https://github.com/angular/angular.js/issues/1437))
-    - **ngRepeat:**
-       - correctly iterate over array-like objects
-       ([1d8e11dd](https://github.com/angular/angular.js/commit/1d8e11ddfbd6b08ff02df4331f6df125f49da3dc),
-        [#2546](https://github.com/angular/angular.js/issues/2546))
-       - prevent initial duplicates
-       ([a0bc71e2](https://github.com/angular/angular.js/commit/a0bc71e27107c58282e71415c4e8d89e916ae99c))
-    - **ngView:** accidentally compiling leaving content
-    ([9956baed](https://github.com/angular/angular.js/commit/9956baedd73d5e8d0edd04c9eed368bd3988444b))
+      - **ngAnimate:**
+         - eval ng-animate expression on each animation
+         ([fd21c750](https://github.com/angular/angular.js/commit/fd21c7502f0a25364a810c26ebeecb678e5783c5))
+         - prevent animation on initial page load
+         ([570463a4](https://github.com/angular/angular.js/commit/570463a465fae02efc33e5a1fa963437cdc275dd))
+         - skip animation on first render
+         ([1351ba26](https://github.com/angular/angular.js/commit/1351ba2632b5011ad6eaddf004a7f0411bea8453))
+      - **ngPattern:** allow modifiers on inline ng-pattern
+        ([12b6deb1](https://github.com/angular/angular.js/commit/12b6deb1ce99df64e2fc91a06bf05cd7f4a3a475),
+         [#1437](https://github.com/angular/angular.js/issues/1437))
+      - **ngRepeat:**
+         - correctly iterate over array-like objects
+         ([1d8e11dd](https://github.com/angular/angular.js/commit/1d8e11ddfbd6b08ff02df4331f6df125f49da3dc),
+          [#2546](https://github.com/angular/angular.js/issues/2546))
+         - prevent initial duplicates
+         ([a0bc71e2](https://github.com/angular/angular.js/commit/a0bc71e27107c58282e71415c4e8d89e916ae99c))
+      - **ngView:** accidentally compiling leaving content
+      ([9956baed](https://github.com/angular/angular.js/commit/9956baedd73d5e8d0edd04c9eed368bd3988444b))
 
   - **scenario runner:** correct bootstrap issue on IE
     ([ab755a25](https://github.com/angular/angular.js/commit/ab755a25f9ca3f3f000623071d8de3ddc4b1d78e))
