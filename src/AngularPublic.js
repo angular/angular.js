@@ -89,7 +89,6 @@ function publishExternalAPI(angular){
             ngPluralize: ngPluralizeDirective,
             ngRepeat: ngRepeatDirective,
             ngShow: ngShowDirective,
-            ngSubmit: ngSubmitDirective,
             ngStyle: ngStyleDirective,
             ngSwitch: ngSwitchDirective,
             ngSwitchWhen: ngSwitchWhenDirective,

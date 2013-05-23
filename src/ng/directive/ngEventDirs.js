@@ -37,7 +37,7 @@
  */
 var ngEventDirectives = {};
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
@@ -263,8 +263,3 @@ forEach(
      </doc:scenario>
    </doc:example>
  */
-var ngSubmitDirective = ngDirective(function(scope, element, attrs) {
-  element.bind('submit', function() {
-    scope.$apply(attrs.ngSubmit);
-  });
-});
