@@ -102,12 +102,12 @@ dependency lookup responsibility to the injector by declaring the dependencies a
 
 Notice that by having the `ng-controller` instantiate the class, it can satisfy all of the
 dependencies of `MyController` without the controller ever knowing about the injector. This is
-the best outcome. The application code simply ask for the dependencies it needs, without having to
+the best outcome. The application code simply asks for the dependencies it needs, without having to
 deal with the injector. This setup does not break the Law of Demeter.
 
 # Dependency Annotation
 
-How does the injector know what service needs to be injected? 
+How does the injector know what service needs to be injected?
 
 The application developer needs to provide annotation information that the injector uses in order
 to resolve the dependencies. Throughout Angular certain API functions are invoked using the
@@ -137,7 +137,7 @@ http://www.pretotyping.org/ pretotyping}, and demo applications.
 # `$inject` Annotation
 
 To allow the minifers to rename the function parameters and still be able to inject right services
-the function needs to be annotate with the `$inject` property. The `$inject` property is an array
+the function needs to be annotated with the `$inject` property. The `$inject` property is an array
 of service names to inject.
 
 <pre>
