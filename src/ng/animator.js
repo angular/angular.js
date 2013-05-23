@@ -262,7 +262,8 @@ var $AnimatorProvider = function() {
          * @description
          * Triggers a custom animation event to be executed on the given element
          *
-         * @param {jQuery/jqLite element} element that will be animated
+         * @param {string} event the name of the custom event 
+         * @param {jQuery/jqLite element} element the element that will be animated
         */
         animator.animate = function(event, element) {
           animateActionFactory(event, noop, noop)(element);
