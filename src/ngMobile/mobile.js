@@ -4,13 +4,10 @@
  * @ngdoc overview
  * @name ngMobile
  * @description
- */
-
-/*
- * Touch events and other mobile helpers by Braden Shepherdson (braden.shepherdson@gmail.com)
+ * Touch events and other mobile helpers.
  * Based on jQuery Mobile touch event handling (jquerymobile.com)
  */
 
-// define ngSanitize module and register $sanitize service
+// define ngMobile module
 var ngMobile = angular.module('ngMobile', []);
 

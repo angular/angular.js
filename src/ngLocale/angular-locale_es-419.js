@@ -10,10 +10,10 @@ $provide.value("$locale", {
       "0": "domingo",
       "1": "lunes",
       "2": "martes",
-      "3": "miércoles",
+      "3": "mi\u00e9rcoles",
       "4": "jueves",
       "5": "viernes",
-      "6": "sábado"
+      "6": "s\u00e1bado"
     },
     "MONTH": {
       "0": "enero",
@@ -33,10 +33,10 @@ $provide.value("$locale", {
       "0": "dom",
       "1": "lun",
       "2": "mar",
-      "3": "mié",
+      "3": "mi\u00e9",
       "4": "jue",
       "5": "vie",
-      "6": "sáb"
+      "6": "s\u00e1b"
     },
     "SHORTMONTH": {
       "0": "ene",
@@ -85,9 +85,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00A4-",
+        "negPre": "\u00a4-",
         "negSuf": "",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     }

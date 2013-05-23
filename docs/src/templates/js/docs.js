@@ -4,6 +4,122 @@ var docsApp = {
   serviceFactory: {}
 };
 
+docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location', function($scope, fullTextSearch, $location) {
+  fullTextSearch.init();
+  $scope.search = function(q) {
+    fullTextSearch.search(q, function(results) {
+      if(q && q.length >= 4) {
+        $scope.results = results;
+        var totalSections = 0;
+        for(var i in results) {
+          ++totalSections;
+        }
+        if(totalSections > 0) {
+          $scope.colClassName = 'cols-' + totalSections;
+          $scope.hasResults = true;
+        }
+        else {
+          $scope.hasResults = false;
+        }
+      }
+      else {
+        $scope.hasResults = false;
+      }
+      if(!$scope.$$phase) $scope.$apply();
+    });
+  };
+  $scope.submit = function() {
+    var result;
+    for(var i in $scope.results) {
+      result = $scope.results[i][0];
+      if(result) {
+        break;
+      }
+    }
+    if(result) {
+      $location.path(result.url);
+      $scope.hideResults();
+    }
+  };
+  $scope.hideResults = function() {
+    $scope.hasResults = false;
+    $scope.q = '';
+  };
+}];
+
+docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootScope) {
+  return {
+    dbName : 'docs',
+    indexName : 'docsindex',
+
+    init : function(onReady) {
+      this.init = function() {};
+
+      var self = this;
+      this.deferReady = $q.defer();
+      this.readyPromise = this.deferReady.promise;
+
+      this.engine = lunr(function () {
+        this.ref('id');
+        this.field('title', {boost: 50});
+        this.field('description', { boost : 20 });
+      });
+      this.prepare();
+      this.onReady();
+    },
+    onReady : function() {
+      this.ready = true;
+      var self = this;
+      self.deferReady.resolve();
+      if(!$rootScope.$$phase) {
+        $rootScope.$apply();
+      }
+    },
+    whenReady : function(fn) {
+      if(this.ready) {
+        fn();
+      }
+      else {
+        this.init();
+        this.readyPromise.then(fn);
+      }
+    },
+    prepare : function(injector, callback) {
+      for(var i=0;i<NG_PAGES.length;i++) {
+        var page = NG_PAGES[i];
+        var title = page.shortName;
+        if(title.charAt(0) == 'n' && title.charAt(1) == 'g') {
+          title = title + ' ' + title.substr(2);
+        }
+        this.engine.add({
+          id: i,
+          title: title,
+          description: page.keywords
+        });
+      }
+    },
+    search : function(q, onReady) {
+      var self = this;
+      this.whenReady(function() {
+        var data = [];
+        var results = self.engine.search(q);
+        var groups = {};
+        angular.forEach(results, function(result) {
+          var item = NG_PAGES[result.ref];
+          var section = item.section;
+          if(section == 'cookbook') {
+            section = 'tutorial';
+          }
+          groups[section] = groups[section] || [];
+          if(groups[section].length < 15) {
+            groups[section].push(item);
+          }
+        });
+        onReady(groups);
+      });
+    }
+  };
+}];
 
 docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
@@ -18,8 +134,8 @@ docsApp.directive.focused = function($timeout) {
         scope.$eval(attrs.focused + '=false');
       });
     });
-    scope.$eval(attrs.focused + '=true')
-  }
+    scope.$eval(attrs.focused + '=true');
+  };
 };
 
 
@@ -59,7 +175,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         openPlunkr(sources);
       };
     }
-  }
+  };
 
   function read(text) {
     var files = [];
@@ -127,7 +243,7 @@ docsApp.directive.docTutorialReset = function() {
         '</div>\n');
     }
   };
-}
+};
 
 
 docsApp.serviceFactory.angularUrls = function($document) {
@@ -141,7 +257,7 @@ docsApp.serviceFactory.angularUrls = function($document) {
   });
 
   return urls;
-}
+};
 
 
 docsApp.serviceFactory.formPostData = function($document) {
@@ -174,7 +290,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
     var scriptDeps = '';
     angular.forEach(content.deps, function(file) {
       if (file.name !== 'angular.js') {
-        scriptDeps += '    <script src="' + file.name + '"></script>\n'
+        scriptDeps += '    <script src="' + file.name + '"></script>\n';
       }
     });
     indexProp = {
@@ -191,7 +307,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -310,7 +426,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       last: this.$last,
       active: page1 && this.currentPage == page1 || page2 && this.currentPage == page2
     };
-  }
+  };
 
   $scope.submitForm = function() {
     $scope.bestMatch && $location.path($scope.bestMatch.page.url);
@@ -509,7 +625,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
           },
           types: [],
           filters: []
-        }
+        };
         modules.push(module);
       }
       return module;
@@ -560,7 +676,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
     angular.element(document.getElementById('disqus_thread')).html('');
   }
-}
+};
 
 
 angular.module('docsApp', ['ngResource', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).

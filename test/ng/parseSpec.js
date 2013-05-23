@@ -103,6 +103,14 @@ describe('parser', function() {
       expect(tokens[7].text).toEqual('===');
       expect(tokens[8].text).toEqual('!==');
     });
+    
+    it('should tokenize logical and ternary', function() {
+      var tokens = lex("&& || ? :");
+      expect(tokens[0].text).toEqual('&&');
+      expect(tokens[1].text).toEqual('||');
+      expect(tokens[2].text).toEqual('?');
+      expect(tokens[3].text).toEqual(':');
+    });
 
     it('should tokenize statements', function() {
       var tokens = lex("a;b;");
@@ -219,6 +227,70 @@ describe('parser', function() {
         expect(scope.$eval("0&&2")).toEqual(0&&2);
         expect(scope.$eval("0||2")).toEqual(0||2);
         expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
+      });
+      
+      it('should parse ternary', function(){
+        var returnTrue = scope.returnTrue = function(){ return true; };
+        var returnFalse = scope.returnFalse = function(){ return false; };
+        var returnString = scope.returnString = function(){ return 'asd'; };
+        var returnInt = scope.returnInt = function(){ return 123; };
+        var identity = scope.identity = function(x){ return x; };
+
+        // Simple.
+        expect(scope.$eval('0?0:2')).toEqual(0?0:2);
+        expect(scope.$eval('1?0:2')).toEqual(1?0:2);
+        
+        // Nested on the left.
+        expect(scope.$eval('0?0?0:0:2')).toEqual(0?0?0:0:2);
+        expect(scope.$eval('1?0?0:0:2')).toEqual(1?0?0:0:2);
+        expect(scope.$eval('0?1?0:0:2')).toEqual(0?1?0:0:2);
+        expect(scope.$eval('0?0?1:0:2')).toEqual(0?0?1:0:2);
+        expect(scope.$eval('0?0?0:2:3')).toEqual(0?0?0:2:3);
+        expect(scope.$eval('1?1?0:0:2')).toEqual(1?1?0:0:2);
+        expect(scope.$eval('1?1?1:0:2')).toEqual(1?1?1:0:2);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
+        expect(scope.$eval('1?1?1:2:3')).toEqual(1?1?1:2:3);
+        
+        // Nested on the right.
+        expect(scope.$eval('0?0:0?0:2')).toEqual(0?0:0?0:2);
+        expect(scope.$eval('1?0:0?0:2')).toEqual(1?0:0?0:2);
+        expect(scope.$eval('0?1:0?0:2')).toEqual(0?1:0?0:2);
+        expect(scope.$eval('0?0:1?0:2')).toEqual(0?0:1?0:2);
+        expect(scope.$eval('0?0:0?2:3')).toEqual(0?0:0?2:3);
+        expect(scope.$eval('1?1:0?0:2')).toEqual(1?1:0?0:2);
+        expect(scope.$eval('1?1:1?0:2')).toEqual(1?1:1?0:2);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
+        expect(scope.$eval('1?1:1?2:3')).toEqual(1?1:1?2:3);
+        
+        // Precedence with respect to logical operators.
+        expect(scope.$eval('0&&1?0:1')).toEqual(0&&1?0:1);
+        expect(scope.$eval('1||0?0:0')).toEqual(1||0?0:0);
+        
+        expect(scope.$eval('0?0&&1:2')).toEqual(0?0&&1:2);
+        expect(scope.$eval('0?1&&1:2')).toEqual(0?1&&1:2);
+        expect(scope.$eval('0?0||0:1')).toEqual(0?0||0:1);
+        expect(scope.$eval('0?0||1:2')).toEqual(0?0||1:2);
+        
+        expect(scope.$eval('1?0&&1:2')).toEqual(1?0&&1:2);
+        expect(scope.$eval('1?1&&1:2')).toEqual(1?1&&1:2);
+        expect(scope.$eval('1?0||0:1')).toEqual(1?0||0:1);
+        expect(scope.$eval('1?0||1:2')).toEqual(1?0||1:2);
+        
+        expect(scope.$eval('0?1:0&&1')).toEqual(0?1:0&&1);
+        expect(scope.$eval('0?2:1&&1')).toEqual(0?2:1&&1);
+        expect(scope.$eval('0?1:0||0')).toEqual(0?1:0||0);
+        expect(scope.$eval('0?2:0||1')).toEqual(0?2:0||1);
+        
+        expect(scope.$eval('1?1:0&&1')).toEqual(1?1:0&&1);
+        expect(scope.$eval('1?2:1&&1')).toEqual(1?2:1&&1);
+        expect(scope.$eval('1?1:0||0')).toEqual(1?1:0||0);
+        expect(scope.$eval('1?2:0||1')).toEqual(1?2:0||1);
+        
+        // Function calls.
+        expect(scope.$eval('returnTrue() ? returnString() : returnInt()')).toEqual(returnTrue() ? returnString() : returnInt());
+        expect(scope.$eval('returnFalse() ? returnString() : returnInt()')).toEqual(returnFalse() ? returnString() : returnInt());
+        expect(scope.$eval('returnTrue() ? returnString() : returnInt()')).toEqual(returnTrue() ? returnString() : returnInt());
+        expect(scope.$eval('identity(returnFalse() ? returnString() : returnInt())')).toEqual(identity(returnFalse() ? returnString() : returnInt()));
       });
 
       it('should parse string', function() {
@@ -480,6 +552,112 @@ describe('parser', function() {
         expect(scope.$eval('empty.substr(0)')).toBe('');
         expect(scope.$eval('zero.toString()')).toBe('0');
         expect(scope.$eval('bool.toString()')).toBe('false');
+      });
+
+
+      it('should call the function from the received instance and not from a new one', function() {
+        var n = 0;
+        scope.fn = function() {
+          var c = n++;
+          return { c: c, anotherFn: function() { return this.c == c; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe(true);
+      });
+
+
+      it('should call the function once when it is part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return { anotherFn: function() { return "lucas"; } };
+        };
+        expect(scope.$eval('fn().anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is not part of the context', function() {
+        var count = 0;
+        scope.fn = function() {
+          count++;
+          return function() { return 'lucas'; };
+        };
+        expect(scope.$eval('fn()()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on assignments', function() {
+        var count = 0;
+        var element = {};
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name = "lucas"')).toBe('lucas');
+        expect(element.name).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookups', function() {
+        var count = 0;
+        var element = [];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0] = "lucas"')).toBe('lucas');
+        expect(element[0]).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = [{anotherFn: function() { return 'lucas';} }];
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn()[0].anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of the context on array lookup function', function() {
+        var count = 0;
+        var element = {name: {anotherFn: function() { return 'lucas';} } };
+        scope.fn = function() {
+          count++;
+          return element;
+        };
+        expect(scope.$eval('fn().name.anotherFn()')).toBe('lucas');
+        expect(count).toBe(1);
+      });
+
+
+      it('should call the function once when it is part of a sub-expression', function() {
+        var count = 0;
+        scope.element = [{}];
+        scope.fn = function() {
+          count++;
+          return 0;
+        };
+        expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
+        expect(scope.element[0].name).toBe('lucas');
+        expect(count).toBe(1);
       });
 
 

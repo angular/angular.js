@@ -89,7 +89,8 @@ module.exports = function(grunt) {
         dest: 'build/angular-mobile.js',
         src: util.wrap([
           'src/ngMobile/mobile.js',
-          'src/ngMobile/directive/ngClick.js'
+          'src/ngMobile/directive/ngClick.js',
+          'src/ngMobile/directive/ngSwipe.js'
             ], 'module')
       },
       mocks: {
@@ -114,14 +115,14 @@ module.exports = function(grunt) {
         src: util.wrap(['src/ngCookies/cookies.js'], 'module')
       },
       bootstrap: {
-        dest: 'build/angular-bootstrap.js',
-        src: util.wrap(['src/bootstrap/bootstrap.js'], 'module')
+        dest: 'build/docs/components/angular-bootstrap.js',
+        src: util.wrap(['docs/components/bootstrap/bootstrap.js'], 'module')
       },
       bootstrapPrettify: {
-        dest: 'build/angular-bootstrap-prettify.js',
-        src: util.wrap(['src/bootstrap/bootstrap-prettify.js', 'src/bootstrap/google-prettify/prettify.js'], 'module'),
+        dest: 'build/docs/components/angular-bootstrap-prettify.js',
+        src: util.wrap(['docs/components/bootstrap/bootstrap-prettify.js', 'docs/components/bootstrap/google-prettify/prettify.js'], 'module'),
         styles: {
-          css: ['src/bootstrap/google-prettify/prettify.css'],
+          css: ['docs/components/bootstrap/google-prettify/prettify.css'],
           minify: true
         }
       }
@@ -135,8 +136,8 @@ module.exports = function(grunt) {
       mobile: 'build/angular-mobile.js',
       resource: 'build/angular-resource.js',
       sanitize: 'build/angular-sanitize.js',
-      bootstrap: 'build/angular-bootstrap.js',
-      bootstrapPrettify: 'build/angular-bootstrap-prettify.js',
+      bootstrap: 'build/docs/components/angular-bootstrap.js',
+      bootstrapPrettify: 'build/docs/components/angular-bootstrap-prettify.js',
     },
 
 

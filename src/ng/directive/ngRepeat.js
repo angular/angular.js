@@ -88,9 +88,9 @@
       </div>
     </file>
     <file name="animations.css">
-      .example-repeat-enter-setup,
-      .example-repeat-leave-setup,
-      .example-repeat-move-setup {
+      .example-repeat-enter,
+      .example-repeat-leave,
+      .example-repeat-move {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -ms-transition:all linear 0.5s;
@@ -98,26 +98,26 @@
         transition:all linear 0.5s;
       }
 
-      .example-repeat-enter-setup {
+      .example-repeat-enter {
         line-height:0;
         opacity:0;
       }
-      .example-repeat-enter-setup.example-repeat-enter-start {
+      .example-repeat-enter.example-repeat-enter-active {
         line-height:20px;
         opacity:1;
       }
 
-      .example-repeat-leave-setup {
+      .example-repeat-leave {
         opacity:1;
         line-height:20px;
       }
-      .example-repeat-leave-setup.example-repeat-leave-start {
+      .example-repeat-leave.example-repeat-leave-active {
         opacity:0;
         line-height:0;
       }
 
-      .example-repeat-move-setup { }
-      .example-repeat-move-setup.example-repeat-move-start { }
+      .example-repeat-move { }
+      .example-repeat-move.example-repeat-move-active { }
     </file>
     <file name="scenario.js">
        it('should render initial data set', function() {
@@ -153,7 +153,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, hashExpFn, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+          trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
@@ -166,13 +166,13 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         trackByExp = match[4];
 
         if (trackByExp) {
-          hashExpFn = $parse(trackByExp);
+          trackByExpGetter = $parse(trackByExp);
           trackByIdFn = function(key, value, index) {
             // assign key, value, and $index to the locals so that they can be used in hash functions
             if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
             hashFnLocals[valueIdentifier] = value;
             hashFnLocals.$index = index;
-            return hashExpFn($scope, hashFnLocals);
+            return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
           trackByIdFn = function(key, value) {
@@ -212,7 +212,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
               nextBlockOrder = [];
 
 
-          if (isArray(collection)) {
+          if (isArrayLike(collection)) {
             collectionKeys = collection;
           } else {
             // if object, extract keys, sort them and use to determine order of iteration over obj props
@@ -233,7 +233,8 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
            key = (collection === collectionKeys) ? index : collectionKeys[index];
            value = collection[key];
            trackById = trackByIdFn(key, value, index);
-           if((block = lastBlockMap[trackById])) {
+           if(lastBlockMap.hasOwnProperty(trackById)) {
+             block = lastBlockMap[trackById]
              delete lastBlockMap[trackById];
              nextBlockMap[trackById] = block;
              nextBlockOrder[index] = block;
@@ -243,10 +244,12 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                if (block && block.element) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
-             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression);
+             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression +
+                 ' key: ' + trackById);
            } else {
              // new never before seen block
              nextBlockOrder[index] = { id: trackById };
+             nextBlockMap[trackById] = false;
            }
          }
 

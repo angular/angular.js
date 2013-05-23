@@ -61,7 +61,7 @@ This is how we get the ball rolling (refer to the diagram and example below):
 
 The diagram and the example below describe how Angular interacts with the browser's event loop.
 
-  1. The browser's event-loop waits for an event to arrive. An event is a user interactions, timer event,
+  1. The browser's event-loop waits for an event to arrive. An event is a user interaction, timer event,
      or network event (response from a server).
   2. The event's callback gets executed. This enters the JavaScript context. The callback can
       modify the DOM structure.
@@ -74,7 +74,7 @@ applied in Angular execution context will benefit from Angular data-binding, exc
 property watching, etc... You can also use $apply() to enter Angular execution context from JavaScript. Keep in
 mind that in most places (controllers, services) $apply has already been called for you by the
 directive which is handling the event. An explicit call to $apply is needed only when
-implementing custom event callbacks, or when working with a third-party library callbacks.
+implementing custom event callbacks, or when working with third-party library callbacks.
 
   1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
      api/ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
@@ -143,8 +143,8 @@ provides the execution context for expressions. The scopes are nested in a hiera
 which closely follow the DOM structure. (See individual directive documentation to see which
 directives cause a creation of new scopes.)
 
-The following example demonstrates how `name` {@link guide/expression expression} will evaluate
-into different value depending on which scope it is evaluated in. The example is followed by
+The following example demonstrates how the `name` {@link guide/expression expression} will evaluate
+into a different value depending on which scope it is evaluated in. The example is followed by
 a diagram depicting the scope boundaries.
 
 <div class="clear">
@@ -425,7 +425,7 @@ function arguments. When angular calls the function, it will use the {@link
 api/AUTO.$injector#invoke call} which will automatically fill the function
 arguments.
 
-Examine the `ClockCtrl` bellow, and notice how it lists the dependencies in the constructor. When the
+Examine the `ClockCtrl` below, and notice how it lists the dependencies in the constructor. When the
 {@link api/ng.directive:ngController ng-controller} instantiates
 the controller it automatically provides the dependencies. There is no need to create
 dependencies, look for dependencies, or even get a reference to the injector.

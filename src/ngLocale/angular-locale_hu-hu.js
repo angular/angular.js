@@ -7,25 +7,25 @@ $provide.value("$locale", {
       "1": "du."
     },
     "DAY": {
-      "0": "vasárnap",
-      "1": "hétfő",
+      "0": "vas\u00e1rnap",
+      "1": "h\u00e9tf\u0151",
       "2": "kedd",
       "3": "szerda",
-      "4": "csütörtök",
-      "5": "péntek",
+      "4": "cs\u00fct\u00f6rt\u00f6k",
+      "5": "p\u00e9ntek",
       "6": "szombat"
     },
     "MONTH": {
-      "0": "január",
-      "1": "február",
-      "2": "március",
-      "3": "április",
-      "4": "május",
-      "5": "június",
-      "6": "július",
+      "0": "janu\u00e1r",
+      "1": "febru\u00e1r",
+      "2": "m\u00e1rcius",
+      "3": "\u00e1prilis",
+      "4": "m\u00e1jus",
+      "5": "j\u00fanius",
+      "6": "j\u00falius",
       "7": "augusztus",
       "8": "szeptember",
-      "9": "október",
+      "9": "okt\u00f3ber",
       "10": "november",
       "11": "december"
     },
@@ -41,11 +41,11 @@ $provide.value("$locale", {
     "SHORTMONTH": {
       "0": "jan.",
       "1": "febr.",
-      "2": "márc.",
-      "3": "ápr.",
-      "4": "máj.",
-      "5": "jún.",
-      "6": "júl.",
+      "2": "m\u00e1rc.",
+      "3": "\u00e1pr.",
+      "4": "m\u00e1j.",
+      "5": "j\u00fan.",
+      "6": "j\u00fal.",
       "7": "aug.",
       "8": "szept.",
       "9": "okt.",
@@ -64,7 +64,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Ft",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": " ",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": {
       "0": {
         "gSize": 3,
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

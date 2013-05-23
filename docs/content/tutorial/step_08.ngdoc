@@ -147,7 +147,7 @@ __`test/unit/controllersSpec.js`:__
 ...
 </pre>
 
-You should now see the following output in the Testacular tab:
+You should now see the following output in the Karma tab:
 
     Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)
 

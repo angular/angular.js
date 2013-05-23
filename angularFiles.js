@@ -49,6 +49,7 @@ angularFiles = {
     'src/ng/directive/ngController.js',
     'src/ng/directive/ngCsp.js',
     'src/ng/directive/ngEventDirs.js',
+    'src/ng/directive/ngIf.js',
     'src/ng/directive/ngInclude.js',
     'src/ng/directive/ngInit.js',
     'src/ng/directive/ngNonBindable.js',
@@ -73,11 +74,14 @@ angularFiles = {
     'src/ngMock/angular-mocks.js',
     'src/ngMobile/mobile.js',
     'src/ngMobile/directive/ngClick.js',
-    'src/bootstrap/bootstrap.js'
+    'src/ngMobile/directive/ngSwipe.js',
+
+    'docs/components/bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
     'src/ngScenario/Scenario.js',
+    'src/ngScenario/browserTrigger.js',
     'src/ngScenario/Application.js',
     'src/ngScenario/Describe.js',
     'src/ngScenario/Future.js',
@@ -100,7 +104,6 @@ angularFiles = {
     'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
-    'test/bootstrap/*.js',
     'test/ng/*.js',
     'test/ng/directive/*.js',
     'test/ng/filter/*.js',
@@ -110,7 +113,9 @@ angularFiles = {
     'test/ngSanitize/directive/*.js',
     'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/directive/*.js'
+    'test/ngMobile/directive/*.js',
+    'docs/component-spec/bootstrap/*.js',
+    'docs/component-spec/*.js'
   ],
 
   'jstd': [
@@ -145,16 +150,18 @@ angularFiles = {
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
-    'build/angular-scenario.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngMobile/mobile.js',
     'src/ngMobile/directive/ngClick.js',
+    'src/ngMobile/directive/ngSwipe.js',
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
+    'src/ngScenario/browserTrigger.js',
     'test/matchers.js',
+    'test/testabilityPatch.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',

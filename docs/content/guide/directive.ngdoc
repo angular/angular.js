@@ -157,7 +157,7 @@ able to quickly stamp out new `li`s for every `action` in `user.actions`. This m
 to save a clean copy of the `li` element for cloning purposes and as new `action`s are inserted,
 the template `li` element needs to be cloned and inserted into `ul`. But cloning the `li` element
 is not enough. It also needs to compile the `li` so that its directives such as
-`{{action.descriptions}}` evaluate against the right {@link api/ng.$rootScope.Scope
+`{{action.description}}` evaluate against the right {@link api/ng.$rootScope.Scope
 scope}. A naive method would be to simply insert a copy of the `li` element and then compile it.
 But compiling on every `li` element clone would be slow, since the compilation requires that we
 traverse the DOM tree and look for directives and execute them. If we put the compilation inside a
@@ -250,7 +250,12 @@ In this example we will build a directive that displays the current time.
 
 # Writing directives (long version)
 
-An example skeleton of the directive is shown here, for the complete list see below.
+There are different ways to declare a directive. The difference resides in the return 
+value of the factory function. You can either return a Directive Definition Object
+(see below) that defines the directive properties, or just the postLink function
+of such an object (all other properties will have the default values).
+
+Here's an example directive declared with a Directive Definition Object:
 
 <pre>
   var myModule = angular.module(...);
@@ -264,6 +269,7 @@ An example skeleton of the directive is shown here, for the complete list see be
       transclude: false,
       restrict: 'A',
       scope: false,
+      controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
@@ -276,12 +282,11 @@ An example skeleton of the directive is shown here, for the complete list see be
   });
 </pre>
 
-In most cases you will not need such fine control and so the above can be simplified. All of the
-different parts of this skeleton are explained in following sections. In this section we are
-interested only in some of this skeleton.
+In most cases you will not need such fine control and so the above can be simplified. You can still
+return a Directive Definition Object, but only setting the 'compile' function property of the Object,
+and rely on the default values for other properties. 
 
-The first step in simplifying the code is to rely on the default values. Therefore the above can be
-simplified as:
+Therefore the above can be simplified as:
 
 <pre>
   var myModule = angular.module(...);
@@ -296,8 +301,10 @@ simplified as:
   });
 </pre>
 
-Most directives concern themselves only with instances, not with template transformations, allowing
-further simplification:
+Finally, most directives concern themselves only with instances, not with template transformations, allowing
+further simplification.
+
+Here we only define the postLink function:
 
 <pre>
   var myModule = angular.module(...);
@@ -325,8 +332,9 @@ compiler}. The attributes are:
 
   * `priority` - When there are multiple directives defined on a single DOM element, sometimes it
     is necessary to specify the order in which the directives are applied. The `priority` is used
-    to sort the directives before their `compile` functions get called. Higher `priority` goes
-    first. The order of directives within the same priority is undefined.
+    to sort the directives before their `compile` functions get called. Priority is defined as a
+    number. Directives with greater numerical `priority` are compiled first. The order of directives with
+    the same priority is undefined. The default priority is `0`.
 
   * `terminal` - If set to true then the current `priority` will be the last set of directives
     which will execute (any directives at the current priority will still execute
@@ -385,6 +393,12 @@ compiler}. The attributes are:
     * `$attrs` - Current attributes object for the element
     * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
       `function(cloneLinkingFn)`.
+
+    To avoid errors after minification the bracket notation should be used:
+
+    <pre>
+    controller: ['$scope', '$element', '$attrs', '$transclude', function($scope, $element, $attrs, $transclude) { ... }]
+    </pre>
 
   * `require` - Require another controller be passed into current directive linking function. The
     `require` takes a name of the directive controller to pass in. If no such controller can be
@@ -467,8 +481,8 @@ done in a linking function rather than in a compile function.
 
 A compile function can have a return value which can be either a function or an object.
 
-* returning a function - is equivalent to registering the linking function via the `link` property
-  of the config object when the compile function is empty.
+* returning a (post-link) function - is equivalent to registering the linking function via the
+  `link` property of the config object when the compile function is empty.
 
 * returning an object with function(s) registered via `pre` and `post` properties - allows you to
   control when a linking function should be called during the linking phase. See info about

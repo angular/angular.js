@@ -71,7 +71,7 @@
       }
     </file>
     <file name="animations.css">
-      .example-leave-setup, .example-enter-setup {
+      .example-leave, .example-enter {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -90,17 +90,17 @@
         padding:10px;
       }
 
-      .example-enter-setup {
+      .example-enter {
         top:-50px;
       }
-      .example-enter-start.example-enter-start {
+      .example-enter.example-enter-active {
         top:0;
       }
 
-      .example-leave-setup {
+      .example-leave {
         top:0;
       }
-      .example-leave-start.example-leave-start {
+      .example-leave.example-leave-active {
         top:50px;
       }
     </file>

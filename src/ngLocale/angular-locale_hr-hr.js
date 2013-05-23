@@ -11,14 +11,14 @@ $provide.value("$locale", {
       "1": "ponedjeljak",
       "2": "utorak",
       "3": "srijeda",
-      "4": "četvrtak",
+      "4": "\u010detvrtak",
       "5": "petak",
       "6": "subota"
     },
     "MONTH": {
-      "0": "siječnja",
-      "1": "veljače",
-      "2": "ožujka",
+      "0": "sije\u010dnja",
+      "1": "velja\u010de",
+      "2": "o\u017eujka",
       "3": "travnja",
       "4": "svibnja",
       "5": "lipnja",
@@ -34,14 +34,14 @@ $provide.value("$locale", {
       "1": "pon",
       "2": "uto",
       "3": "sri",
-      "4": "čet",
+      "4": "\u010det",
       "5": "pet",
       "6": "sub"
     },
     "SHORTMONTH": {
       "0": "sij",
       "1": "velj",
-      "2": "ožu",
+      "2": "o\u017eu",
       "3": "tra",
       "4": "svi",
       "5": "lip",
@@ -86,9 +86,9 @@ $provide.value("$locale", {
         "minFrac": 2,
         "minInt": 1,
         "negPre": "-",
-        "negSuf": " \u00A4",
+        "negSuf": "\u00a0\u00a4",
         "posPre": "",
-        "posSuf": " \u00A4"
+        "posSuf": "\u00a0\u00a4"
       }
     }
   },

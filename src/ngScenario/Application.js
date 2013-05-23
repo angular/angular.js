@@ -63,8 +63,6 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     self.context.find('#test-frames').append('<iframe>');
     frame = self.getFrame_();
 
-    frame[0].contentWindow.name = "NG_DEFER_BOOTSTRAP!";
-
     frame.load(function() {
       frame.unbind();
       try {
@@ -77,7 +75,8 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
           //          we don't need that for our tests, but it should be done
           $window.angular.resumeBootstrap([['$provide', function($provide) {
             $provide.decorator('$sniffer', function($delegate) {
-              $delegate.supportsTransitions = false;
+              $delegate.transitions = false;
+              $delegate.animations = false;
               return $delegate;
             });
           }]]);
@@ -88,6 +87,9 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
         errorFn(e);
       }
     }).attr('src', url);
+
+    // for IE compatibility set the name *after* setting the frame url
+    frame[0].contentWindow.name = "NG_DEFER_BOOTSTRAP!";
   }
   self.context.find('> h2 a').attr('href', url).text(url);
 };
