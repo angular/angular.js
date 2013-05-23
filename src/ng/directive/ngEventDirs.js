@@ -223,7 +223,7 @@ forEach(
  * server and reloading the current page).
  *
  * @element form
- * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
+ * @param {expression} ngSubmit {@link guide/expression Expression} to eval. (Event object is available as `$event`
  *
  * @example
    <doc:example>
