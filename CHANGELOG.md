@@ -139,11 +139,21 @@ _Note: This release also contains all bug fixes available in [1.0.7](#1.0.7)._
 
 ## Breaking Changes
 
-- **$animator/ngAnimate:**
+- **$animator/ngAnimate:** due to [11f712bc](https://github.com/angular/angular.js/commit/11f712bc3e310302eb2e8691cf6d110bdcde1810),
+  css transition classes changed from `foo-setup`/`foo-start` to `foo`/`foo-active`
 
+  The CSS transition classes have changed suffixes. To migrate rename
+
+        .foo-setup {...} to .foo {...}
+        .foo-start {...} to .foo-active {...}
+
+  or for type: enter, leave, move, show, hide
+
+        .foo-type-setup {...} to .foo-type {...}
+        .foo-type-start {...} to .foo-type-active {...}
 
 - **$resource:** due to [53061363](https://github.com/angular/angular.js/commit/53061363c7aa1ab9085273d269c6f04ac2162336),
-  A `/` followed by a `.`, in the last segment of the URL template is now collapsed into a single `.` delimiter.
+  a `/` followed by a `.`, in the last segment of the URL template is now collapsed into a single `.` delimiter.
 
   For example: `users/.json` will become `users.json`. If your server relied upon this sequence then it will no longer
   work. In this case you can now escape the `/.` sequence with `/\.`
