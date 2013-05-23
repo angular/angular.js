@@ -93,6 +93,7 @@ function $FilterProvider($provide) {
 
   register('currency', currencyFilter);
   register('date', dateFilter);
+  register('escapeHtml', escapeHtmlFilter);
   register('filter', filterFilter);
   register('json', jsonFilter);
   register('limitTo', limitToFilter);
