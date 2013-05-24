@@ -972,13 +972,12 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
 
     if (expectation && expectation.match(method, url)) {
       if (!expectation.matchData(data))
-        throw Error('Expected ' + expectation + ' with different data\n' +
+        throw new Error('Expected ' + expectation + ' with different data\n' +
             'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
 
       if (!expectation.matchHeaders(headers))
-        throw Error('Expected ' + expectation + ' with different headers\n' +
-            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
-            prettyPrint(headers));
+        throw new Error('Expected ' + expectation + ' with different headers\n' +
+            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
 
       expectations.shift();
 
@@ -1002,9 +1001,9 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
       }
     }
     throw wasExpected ?
-        Error('No response defined !') :
-        Error('Unexpected request: ' + method + ' ' + url + '\n' +
-              (expectation ? 'Expected ' + expectation : 'No more request expected'));
+        new Error('No response defined !') :
+        new Error('Unexpected request: ' + method + ' ' + url + '\n' +
+                  (expectation ? 'Expected ' + expectation : 'No more request expected'));
   }
 
   /**
@@ -1299,7 +1298,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingExpectation = function() {
     $rootScope.$digest();
     if (expectations.length) {
-      throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      throw new Error('Unsatisfied requests: ' + expectations.join(', '));
     }
   };
 
@@ -1451,7 +1450,7 @@ function MockXhr() {
  *
  * This service is just a simple decorator for {@link ng.$timeout $timeout} service
  * that adds a "flush" and "verifyNoPendingTasks" methods.
- */ 
+ */
 
 angular.mock.$TimeoutDecorator = function($delegate, $browser) {
 
@@ -1477,7 +1476,7 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    */
   $delegate.verifyNoPendingTasks = function() {
     if ($browser.deferredFns.length) {
-      throw Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' +
+      throw new Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' +
           formatPendingTasksAsString($browser.deferredFns));
     }
   };

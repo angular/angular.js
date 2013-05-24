@@ -719,6 +719,6 @@ describe("$animator", function() {
     expect(function() {
       var animate = $animator($rootScope, { ngAnimate: ':' });
       animate.enter();
-    }).toThrow("Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
+    }).toThrow("[NgErr24] Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
 });

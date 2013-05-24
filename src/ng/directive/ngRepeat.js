@@ -157,8 +157,8 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
-          throw Error("Expected ngRepeat in form of '_item_ in _collection_[ track by _id_]' but got '" +
-            expression + "'.");
+          throw ngError(7, "ngRepeat error! Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+            expression);
         }
 
         lhs = match[1];
@@ -182,8 +182,8 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
         match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
         if (!match) {
-          throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-              lhs + "'.");
+          throw ngError(8, "ngRepeat error! '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
+                                                                    lhs);
         }
         valueIdentifier = match[3] || match[1];
         keyIdentifier = match[2];
@@ -244,8 +244,8 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                if (block && block.element) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
-             throw new Error('Duplicates in a repeater are not allowed. Repeater: ' + expression +
-                 ' key: ' + trackById);
+             throw ngError(50, "ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
+                                                                                                                                                    expression,       trackById);
            } else {
              // new never before seen block
              nextBlockOrder[index] = { id: trackById };

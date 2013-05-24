@@ -632,11 +632,11 @@ describe('$compile', function() {
           inject(function($compile) {
             expect(function() {
               $compile('<p no-root-elem></p>');
-            }).toThrow('Template must have exactly one root element. was: dada');
+            }).toThrow("[NgErr12] Template for directive 'noRootElem' must have exactly one root element.");
 
             expect(function() {
               $compile('<p multi-root-elem></p>');
-            }).toThrow('Template must have exactly one root element. was: <div></div><div></div>');
+            }).toThrow("[NgErr12] Template for directive 'multiRootElem' must have exactly one root element.");
 
             // ws is ok
             expect(function() {
@@ -985,7 +985,7 @@ describe('$compile', function() {
 
               expect(function() {
                 $httpBackend.flush();
-              }).toThrow('Failed to load template: hello.html');
+              }).toThrow('[NgErr17] Failed to load template: hello.html');
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
@@ -1005,7 +1005,7 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('Multiple directives [sync, async] asking for template on: '+
+            }).toThrow('[NgErr18] Multiple directives [sync, async] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1189,14 +1189,14 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe('Template must have exactly one root element. was: dada');
+                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe('Template must have exactly one root element. was: <div></div><div></div>');
+                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -1456,7 +1456,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrow('Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrow('[NgErr18] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1466,7 +1466,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrow('Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
+            }).toThrow('[NgErr18] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -2074,7 +2074,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
+            toThrow("[NgErr14] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -2150,7 +2150,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow('Invalid isolate scope definition for directive badDeclaration: xxx');
+      }).toThrow("[NgErr15] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
     }));
 
     it('should expose a $$isolateBindings property onto the scope', inject(function() {
@@ -2229,6 +2229,25 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         element = $compile('<div main><div dep></div></div>')($rootScope);
         expect(log).toEqual('dep:main');
+      });
+    });
+
+
+    it("should throw an error if required controller can't be found",function() {
+      module(function() {
+        directive('dep', function(log) {
+          return {
+            require: '^main',
+            link: function(scope, element, attrs, controller) {
+              log('dep:' + controller.name);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        expect(function() {
+          $compile('<div main><div dep></div></div>')($rootScope);
+        }).toThrow("[NgErr13] Controller 'main', required by directive 'dep', can't be found!");
       });
     });
 
@@ -2415,7 +2434,7 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('Multiple directives [first, second] asking for transclusion on: ' +
+        }).toThrow('[NgErr18] Multiple directives [first, second] asking for transclusion on: ' +
             '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
