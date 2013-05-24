@@ -156,11 +156,11 @@ describe('parser', function() {
     it('should throws exception for invalid exponent', function() {
       expect(function() {
         lex("0.5E-");
-      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
+      }).toThrow(new Error('[NgErr23] Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
 
       expect(function() {
         lex("0.5E-A");
-      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
+      }).toThrow(new Error('[NgErr23] Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
     });
 
     it('should tokenize number starting with a dot', function() {
@@ -171,7 +171,7 @@ describe('parser', function() {
     it('should throw error on invalid unicode', function() {
       expect(function() {
         lex("'\\u1''bla'");
-      }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
+      }).toThrow(new Error("[NgErr23] Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
     });
   });
 
@@ -304,7 +304,7 @@ describe('parser', function() {
 
         expect(function() {
           scope.$eval("1|nonexistent");
-        }).toThrow(new Error("Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
+        }).toThrow(new Error("[NgErr1] Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
 
         scope.offset =  3;
         expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
@@ -492,7 +492,7 @@ describe('parser', function() {
       it('should throw exception on non-closed bracket', function() {
         expect(function() {
           scope.$eval('[].count(');
-        }).toThrow('Unexpected end of expression: [].count(');
+        }).toThrow('[NgErr25] Unexpected end of expression: [].count(');
       });
 
       it('should evaluate double negation', function() {

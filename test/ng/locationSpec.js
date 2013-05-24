@@ -203,7 +203,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[NgErr21] $location error! Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -212,7 +212,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[NgErr21] $location error! Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -325,14 +325,14 @@ describe('$location', function() {
     it('should throw error when invalid server url given', function() {
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
+      }).toThrow('[NgErr22] $location error! Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
     });
 
 
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrow('[NgErr49] $location error! Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
