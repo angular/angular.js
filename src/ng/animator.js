@@ -395,11 +395,16 @@ var $AnimatorProvider = function() {
         }
   
         function insert(element, parent, after) {
-          if (after) {
-            after.after(element);
-          } else {
-            parent.append(element);
-          }
+          var afterNode = after && after[after.length - 1];
+          var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+          var afterNextSibling = afterNode && afterNode.nextSibling;
+          forEach(element, function(node) {
+            if (afterNextSibling) {
+              parentNode.insertBefore(node, afterNextSibling);
+            } else {
+              parentNode.appendChild(node);
+            }
+          });
         }
   
         function remove(element) {

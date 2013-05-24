@@ -258,7 +258,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
               animate.leave(block.element);
-              block.element[0][NG_REMOVED] = true;
+              forEach(block.element, function(element) { element[NG_REMOVED] = true});
               block.scope.$destroy();
             }
           }

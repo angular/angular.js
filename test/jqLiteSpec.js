@@ -56,6 +56,9 @@ describe('jqLite', function() {
 
     it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
+      expect(nodes[0].parentNode).toBeDefined();
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
       expect(nodes[1].innerHTML).toEqual('2');
@@ -644,12 +647,13 @@ describe('jqLite', function() {
 
 
     it('should read/write value', function() {
-      var element = jqLite('<div>abc</div>');
-      expect(element.length).toEqual(1);
-      expect(element[0].innerHTML).toEqual('abc');
+      var element = jqLite('<div>ab</div><span>c</span>');
+      expect(element.length).toEqual(2);
+      expect(element[0].innerHTML).toEqual('ab');
+      expect(element[1].innerHTML).toEqual('c');
       expect(element.text()).toEqual('abc');
       expect(element.text('xyz') == element).toBeTruthy();
-      expect(element.text()).toEqual('xyz');
+      expect(element.text()).toEqual('xyzxyz');
     });
   });
 
