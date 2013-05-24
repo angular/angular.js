@@ -130,7 +130,8 @@ angularFiles = {
   'jstdExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
+    'src/ngScenario/angular-bootstrap.js',
+    'test/force_jqlite.js'
   ],
 
   'jstdScenario': [
@@ -194,12 +195,36 @@ angularFiles = {
 
     'example/personalLog/test/*.js'
   ],
+  
+  'jstdForceJqlite': [
+    'lib/jasmine/jasmine.js',
+    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+    'lib/jquery/jquery.js',
+    'test/force_jqlite.js',
+    '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
+    '@angularTest',
+    'example/personalLog/*.js',
+
+    'example/personalLog/test/*.js'
+  ],
 
   'jstdJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'test/jquery_remove.js'
-  ]
+    'test/jquery_remove.js',
+    'test/force_jqlite.js'
+  ],
+  
+  'jstdForceJqliteExclude': [
+    'src/angular-bootstrap.js',
+    'src/ngScenario/angular-bootstrap.js',
+    'test/jquery_remove.js',
+    'test/jquery_alias.js'
+  ],
 };
 
 if (exports) {

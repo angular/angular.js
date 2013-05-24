@@ -47,6 +47,7 @@ module.exports = function(grunt) {
     test: {
       jqlite: 'testacular-jqlite.conf.js',
       jquery: 'testacular-jquery.conf.js',
+      forcejqlite: 'testacular-force-jqlite.conf.js',
       modules: 'testacular-modules.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
       end2end: 'testacular-e2e.conf.js'
