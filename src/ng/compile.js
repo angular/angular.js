@@ -357,7 +357,7 @@ function $CompileProvider($provide) {
 
     //================================
 
-    function compile($compileNodes, transcludeFn, maxPriority) {
+    function compile($compileNodes, transcludeFn, maxPriority, limitMaxPriorityToFirstElement) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can modify it.
         $compileNodes = jqLite($compileNodes);
@@ -369,7 +369,8 @@ function $CompileProvider($provide) {
           $compileNodes[index] = jqLite(node).wrap('<span></span>').parent()[0];
         }
       });
-      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority);
+      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority,
+        limitMaxPriorityToFirstElement);
       return function publicLinkFn(scope, cloneConnectFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
@@ -418,9 +419,13 @@ function $CompileProvider($provide) {
      *        rootElement must be set the jqLite collection of the compile root. This is
      *        needed so that the jqLite collection items can be replaced with widgets.
      * @param {number=} max directive priority
+     * @param {boolean=} limitMaxPriorityToFirstElement if the max priority should only apply to
+     *        the first element in the list. A true value here will make the maxPriority only apply
+     *        to the first element on the list while the other elements on the list will not have
+     *        a maxPriority set
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
-    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
+    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, limitMaxPriorityToFirstElement) {
       var linkFns = [],
           nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
 
@@ -428,7 +433,8 @@ function $CompileProvider($provide) {
         attrs = new Attributes();
 
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
-        directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
+        directives = collectDirectives(nodeList[i], [], attrs,
+          (limitMaxPriorityToFirstElement && i != 0) ? undefined : maxPriority);
 
         nodeLinkFn = (directives.length)
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
@@ -645,6 +651,24 @@ function $CompileProvider($provide) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, jqLite($template[0]), compileNode);
             childTranscludeFn = compile($template, transcludeFn, terminalPriority);
+          } else if (directiveValue == 'multi-element') {
+            // We need to compile a clone of the elements, but at the same time we have to be sure that these elements are siblings
+            var nestedContent = extractMultiElementTransclude(compileNode, directiveName);
+            var cloneContent = jqLite('<div></div>');
+            
+            $template = jqLite(compileNode);
+            $compileNode = templateAttrs.$$element =
+                jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
+            compileNode = $compileNode[0];
+            replaceWith(jqCollection, jqLite($template[0]), compileNode);
+            cloneContent.append($template);
+            forEach(nestedContent.splice(1, nestedContent.length - 1),
+              function(toRemove) {
+                removeElement(jqCollection, toRemove);
+                cloneContent.append(toRemove);
+              }
+            );
+            childTranscludeFn = compile(cloneContent.contents(), transcludeFn, terminalPriority, true);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -730,6 +754,39 @@ function $CompileProvider($provide) {
       return nodeLinkFn;
 
       ////////////////////
+
+
+      function extractMultiElementTransclude(cursor, directiveName) {
+        var transcludeContent = [],
+          c, count = 0,
+          transcludeStart = directiveName + 'Start',
+          transcludeEnd = directiveName + 'End';
+
+        do {
+          if (containsAttr(cursor, transcludeStart)) count++;
+          if (containsAttr(cursor, transcludeEnd)) count--;
+          transcludeContent.push(cursor);
+          cursor = cursor.nextSibling;
+        } while(count > 0 && cursor);
+        if (count > 0) throw new Error('Unmatched ' + transcludeStart + '.');
+        if (count < 0) throw new Error('Unexpected ' + transcludeEnd + '.');
+        return transcludeContent;
+      }
+
+
+      function containsAttr(node, attributeName) {
+        var attr, attrs = node.attributes, length = attrs && attrs.length;
+        if ( length ) {
+          for (var j = 0; j < length; j++) {
+            attr = attrs[j];
+            if (attr.specified && directiveNormalize(attr.name) == attributeName) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
 
       function addLinkFns(pre, post) {
         if (pre) {
@@ -1151,6 +1208,23 @@ function $CompileProvider($provide) {
 
       newNode[jqLite.expando] = oldNode[jqLite.expando];
       $element[0] = newNode;
+    }
+
+
+    function removeElement($rootElement, element) {
+      var i, ii, parent = element.parentNode;
+
+      if ($rootElement) {
+        for(i = 0, ii = $rootElement.length; i < ii; i++) {
+          if ($rootElement[i] == element) {
+            $rootElement.splice(i, 1);
+            break;
+          }
+        }
+      }
+      if (parent) {
+        parent.removeChild(element);
+      }
     }
   }];
 }
