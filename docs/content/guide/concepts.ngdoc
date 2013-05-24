@@ -292,7 +292,7 @@ rendering the view compared to most other templating systems.
 # Directives
 
 A directive is a behavior or DOM transformation which is triggered by the presence of a custom attribute,
-element name, or a class name. A directive allows you to extend the HTML vocabulary in a
+element name, class name or comment. A directive allows you to extend the HTML vocabulary in a
 declarative fashion. Following is an example which enables data-binding for the `contenteditable`
 in HTML.
 
