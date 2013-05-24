@@ -32,7 +32,7 @@ describe('$interpolate', function() {
     };
     expect(function () {
       $interpolate('{{err()}}')($rootScope);
-    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+    }).toThrow("[NgErr48] $interpolate error! Can't interpolate: {{err()}}\nError: oops");
   }));
 
   it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
@@ -43,7 +43,7 @@ describe('$interpolate', function() {
     $compile(dom)($rootScope);
     expect(function () {
       $rootScope.$apply();
-    }).toThrow('Error while interpolating: {{err()}}\nError: oops');
+    }).toThrow("[NgErr48] $interpolate error! Can't interpolate: {{err()}}\nError: oops");
     expect(dom[0].innerHTML).toEqual('2');
     expect(dom[1].innerHTML).toEqual('{{err()}}');
     expect(dom[2].innerHTML).toEqual('{{1 + 2}}');

@@ -123,11 +123,11 @@ function lex(text, csp){
 
   function throwError(error, start, end) {
     end = end || index;
-    throw Error("Lexer Error: " + error + " at column" +
-        (isDefined(start)
-            ? "s " + start +  "-" + index + " [" + text.substring(start, end) + "]"
-            : " " + end) +
-        " in expression [" + text + "].");
+    var colStr = (isDefined(start) ?
+        "s " + start +  "-" + index + " [" + text.substring(start, end) + "]"
+        : " " + end);
+    throw ngError(23, "Lexer Error: {0} at column{1} in expression [{2}].",
+        error, colStr, text);
   }
 
   function readNumber() {
@@ -309,15 +309,14 @@ function parser(text, json, $filter, csp){
 
   ///////////////////////////////////
   function throwError(msg, token) {
-    throw Error("Syntax Error: Token '" + token.text +
-      "' " + msg + " at column " +
-      (token.index + 1) + " of the expression [" +
-      text + "] starting at [" + text.substring(token.index) + "].");
+    throw ngError(24,
+        "Syntax Error: Token '{0}' {1} at column {2} of the expression [{3}] starting at [{4}].",
+        token.text, msg, (token.index + 1), text, text.substring(token.index));
   }
 
   function peekToken() {
     if (tokens.length === 0)
-      throw Error("Unexpected end of expression: " + text);
+      throw ngError(25, "Unexpected end of expression: {0}", text);
     return tokens[0];
   }
 
@@ -366,7 +365,7 @@ function parser(text, json, $filter, csp){
       constant: left.constant && middle.constant && right.constant
     });
   }
-  
+
   function binaryFn(left, fn, right) {
     return extend(function(self, locals) {
       return fn(self, locals, left, right);
@@ -471,7 +470,7 @@ function parser(text, json, $filter, csp){
       return left;
     }
   }
-  
+
   function logicalOR() {
     var left = logicalAND();
     var token;

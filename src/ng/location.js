@@ -95,7 +95,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     matchUrl(url, parsed);
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
-      throw Error('Invalid url "' + url + '", missing path prefix "' + appBaseNoFile + '".');
+      throw ngError(21, '$location error! Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
     }
     matchAppUrl(pathUrl, parsed);
     extend(this, parsed);
@@ -157,11 +157,11 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     matchUrl(url, this);
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
     if (!isString(withoutBaseUrl)) {
-      throw new Error('Invalid url "' + url + '", does not start with "' + appBase +  '".');
+      throw ngError(22, '$location error! Invalid url "{0}", does not start with "{1}".', url, appBase);
     }
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#' ? beginsWith(hashPrefix, withoutBaseUrl) : withoutBaseUrl;
     if (!isString(withoutHashUrl)) {
-      throw new Error('Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '".');
+      throw ngError(49, '$location error! Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
     }
     matchAppUrl(withoutHashUrl, this);
     this.$$compose();

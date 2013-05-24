@@ -147,8 +147,12 @@ beforeEach(function() {
       return this.actual.hasClass ?
               this.actual.hasClass(clazz) :
               angular.element(this.actual).hasClass(clazz);
-    }
+    },
 
+    toThrowNg: function(expected) {
+      return jasmine.Matchers.prototype.toThrow.call(this, new RegExp('\\[NgErr\\d*\\] ' +
+          expected.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")));
+    }
   });
 });
 
