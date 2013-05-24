@@ -10,4 +10,4 @@ before_script:
   - grunt webserver > /dev/null &
 
 script:
-  - grunt test --browsers Firefox --reporters=dots
+  - ./test-commit-msgs.sh && grunt test --browsers Firefox --reporters=dots
