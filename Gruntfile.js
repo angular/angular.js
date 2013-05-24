@@ -52,6 +52,9 @@ module.exports = function(grunt) {
       end2end: 'karma-e2e.conf.js'
     },
 
+    jasmine: {
+      'errorCompressor': 'lib/error-compressor'
+    },
 
     autotest: {
       jqlite: 'karma-jqlite.conf.js',

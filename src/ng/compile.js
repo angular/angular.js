@@ -393,7 +393,7 @@ function $CompileProvider($provide) {
     }
 
     function wrongMode(localName, mode) {
-      throw Error("Unsupported '" + mode + "' for '" + localName + "'.");
+      throw NgError(11, "Unsupported '{0}' for '{1}'.", mode, localName);
     }
 
     function safeAddClass($element, className) {
@@ -669,7 +669,7 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw new Error(MULTI_ROOT_TEMPLATE_ERROR + directiveValue);
+              throw NgError(12, '{0}{1}', MULTI_ROOT_TEMPLATE_ERROR, directiveValue);
             }
 
             replaceWith(jqCollection, $compileNode, compileNode);
@@ -755,7 +755,7 @@ function $CompileProvider($provide) {
           }
           value = $element[retrievalMethod]('$' + require + 'Controller');
           if (!value && !optional) {
-            throw Error("No controller: " + require);
+            throw NgError(13, "No controller: {0}", require);
           }
           return value;
         } else if (isArray(require)) {
@@ -783,8 +783,8 @@ function $CompileProvider($provide) {
 
           var parentScope = scope.$parent || scope;
 
-          forEach(newIsolateScopeDirective.scope, function(definiton, scopeName) {
-            var match = definiton.match(LOCAL_REGEXP) || [],
+          forEach(newIsolateScopeDirective.scope, function(definition, scopeName) {
+            var match = definition.match(LOCAL_REGEXP) || [],
                 attrName = match[3] || scopeName,
                 optional = (match[2] == '?'),
                 mode = match[1], // @, =, or &
@@ -815,8 +815,8 @@ function $CompileProvider($provide) {
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
                   lastValue = scope[scopeName] = parentGet(parentScope);
-                  throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + attrs[attrName] +
-                      ' (directive: ' + newIsolateScopeDirective.name + ')');
+                  throw NgError(14, '{0}{1} (directive: {2})', NON_ASSIGNABLE_MODEL_EXPRESSION,
+                      attrs[attrName], newIsolateScopeDirective.name);
                 };
                 lastValue = scope[scopeName] = parentGet(parentScope);
                 scope.$watch(function parentValueWatch() {
@@ -846,8 +846,8 @@ function $CompileProvider($provide) {
               }
 
               default: {
-                throw Error('Invalid isolate scope definition for directive ' +
-                    newIsolateScopeDirective.name + ': ' + definiton);
+                throw NgError(15, 'Invalid isolate scope definition for directive {0}: {1}',
+                    newIsolateScopeDirective.name, definition);
               }
             }
           });
@@ -1000,7 +1000,7 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw new Error(MULTI_ROOT_TEMPLATE_ERROR + content);
+              throw NgError(16, '{0}{1}', MULTI_ROOT_TEMPLATE_ERROR, content);
             }
 
             tempTemplateAttrs = {$attr: {}};
@@ -1037,7 +1037,7 @@ function $CompileProvider($provide) {
           linkQueue = null;
         }).
         error(function(response, code, headers, config) {
-          throw Error('Failed to load template: ' + config.url);
+          throw NgError(17, 'Failed to load template: {0}', config.url);
         });
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, controller) {
@@ -1065,8 +1065,8 @@ function $CompileProvider($provide) {
 
     function assertNoDuplicate(what, previousDirective, directive, element) {
       if (previousDirective) {
-        throw Error('Multiple directives [' + previousDirective.name + ', ' +
-          directive.name + '] asking for ' + what + ' on: ' +  startingTag(element));
+        throw NgError(18, 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
+            previousDirective.name, directive.name, what, startingTag(element));
       }
     }
 

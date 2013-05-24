@@ -15,7 +15,7 @@ describe('$cacheFactory', function() {
   it('should complain if the cache id is being reused', inject(function($cacheFactory) {
     $cacheFactory('cache1');
     expect(function() { $cacheFactory('cache1'); }).
-      toThrow('cacheId cache1 taken');
+      toThrow('[NgErr10] cacheId cache1 taken');
   }));
 
 

@@ -5,6 +5,7 @@ angularFiles = {
     'src/AngularPublic.js',
     'src/jqLite.js',
     'src/apis.js',
+    'src/ngError.js',
 
     'src/auto/injector.js',
 
@@ -210,6 +211,10 @@ angularFiles = {
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
+  ],
+
+  'errorCompressor': [
+    'lib/error-compressor/*.js'
   ]
 };
 

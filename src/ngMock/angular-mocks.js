@@ -399,7 +399,7 @@ angular.mock.$LogProvider = function() {
         errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or an expected " +
           "log message was not checked and removed:");
         errors.push('');
-        throw new Error(errors.join('\n---------\n'));
+        throw Error(errors.join('\n---------\n'));
       }
     };
 
@@ -600,7 +600,7 @@ angular.mock.$LogProvider = function() {
 
     angular.forEach(unimplementedMethods, function(methodName) {
       self[methodName] = function() {
-        throw Error("Method '" + methodName + "' is not implemented in the TzDate mock");
+        throw Error("Method '" + methodName + "' is not implemented in the TzDate mock", methodName);
       };
     });
 
@@ -972,13 +972,12 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
 
     if (expectation && expectation.match(method, url)) {
       if (!expectation.matchData(data))
-        throw Error('Expected ' + expectation + ' with different data\n' +
-            'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
+        throw Error('Expected ' + expectation + ' with different data\nEXPECTED: ' +
+          prettyPrint(expectation.data) + '\nGOT:      ' + data);
 
       if (!expectation.matchHeaders(headers))
-        throw Error('Expected ' + expectation + ' with different headers\n' +
-            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
-            prettyPrint(headers));
+        throw Error('Expected ' + expectation + ' with different headers\nEXPECTED: ' +
+          prettyPrint(expectation.headers) +'\nGOT:      ' + prettyPrint(headers));
 
       expectations.shift();
 
@@ -1001,10 +1000,10 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
         return;
       }
     }
+    var expStr = expectation ? 'Expected ' + expectation : 'No more request expected';
     throw wasExpected ?
-        Error('No response defined !') :
-        Error('Unexpected request: ' + method + ' ' + url + '\n' +
-              (expectation ? 'Expected ' + expectation : 'No more request expected'));
+    	Error('No response defined !') :
+    	Error('Unexpected request: ' + method + ' ' + url + '\n' + expStr + '');
   }
 
   /**
@@ -1299,7 +1298,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingExpectation = function() {
     $rootScope.$digest();
     if (expectations.length) {
-      throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      throw Error('Unsatisfied requests: ' + expectations.join(', ') + '');
     }
   };
 
@@ -1451,7 +1450,7 @@ function MockXhr() {
  *
  * This service is just a simple decorator for {@link ng.$timeout $timeout} service
  * that adds a "flush" and "verifyNoPendingTasks" methods.
- */ 
+ */
 
 angular.mock.$TimeoutDecorator = function($delegate, $browser) {
 
@@ -1477,8 +1476,8 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    */
   $delegate.verifyNoPendingTasks = function() {
     if ($browser.deferredFns.length) {
-      throw Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' +
-          formatPendingTasksAsString($browser.deferredFns));
+      throw Error('Deferred tasks to flush (' + $browser.deferredFns.length +
+        '): ' + formatPendingTasksAsString($browser.deferredFns));
     }
   };
 

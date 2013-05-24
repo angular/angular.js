@@ -75,8 +75,8 @@ function $ControllerProvider() {
 
       if (identifier) {
         if (typeof locals.$scope !== 'object') {
-          throw new Error('Can not export controller as "' + identifier + '". ' +
-              'No scope object provided!');
+          throw NgError(47, 'Can not export controller as "{0}". ' +
+              'No scope object provided!', identifier);
         }
 
         locals.$scope[identifier] = instance;
