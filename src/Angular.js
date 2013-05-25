@@ -987,24 +987,29 @@ function angularInit(element, bootstrap) {
  * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
-function bootstrap(element, modules) {
+function bootstrap(element, modules, server) {
   var resumeBootstrapInternal = function() {
-    element = jqLite(element);
     modules = modules || [];
-    modules.unshift(['$provide', function($provide) {
-      $provide.value('$rootElement', element);
-    }]);
-    modules.unshift('ng');
-    var injector = createInjector(modules);
-    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animator',
-       function(scope, element, compile, injector, animator) {
-        scope.$apply(function() {
-          element.data('$injector', injector);
-          compile(element)(scope);
-        });
-        animator.enabled(true);
-      }]
-    );
+    var injector;
+    if(! server) {
+      element = jqLite(element);
+      modules.unshift(['$provide', function($provide) {
+        $provide.value('$rootElement', element);
+      }]);
+      modules.unshift('ng');
+      injector = createInjector(modules);
+      injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animator',
+         function(scope, element, compile, injector, animator) {
+          scope.$apply(function() {
+            element.data('$injector', injector);
+            compile(element)(scope);
+          });
+          animator.enabled(true);
+        }]
+      );
+    } else
+      injector = createInjector(modules);
+
     return injector;
   };
 

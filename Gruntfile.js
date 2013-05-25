@@ -63,6 +63,10 @@ module.exports = function(grunt) {
 
 
     build: {
+      server: {
+        dest: 'build/angular-server.js',
+        src: util.wrap([files['angularServer']], 'server')
+      },
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
