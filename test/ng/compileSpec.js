@@ -2244,6 +2244,52 @@ describe('$compile', function() {
     });
 
 
+    iit('should support controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            transclude: true,
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>template:{{mainCtrl.name}} <div ng-transclude></div></span>');
+        element = $compile('<div main>transclude:{{mainCtrl.name}}</div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('template:lucas transclude:');
+      });
+    });
+
+
+    it('should support controller alias', function() {
+      module(function($controllerProvider) {
+        $controllerProvider.register('MainCtrl', function() {
+          this.name = 'lucas';
+        });
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: 'MainCtrl as mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>{{mainCtrl.name}}</span>');
+        element = $compile('<div main></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('lucas');
+      });
+    });
+
+
+
     it('should require controller on parent element',function() {
       module(function() {
         directive('main', function(log) {
