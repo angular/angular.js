@@ -1276,7 +1276,6 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
         responses.shift()();
       }
     }
-    $httpBackend.verifyNoOutstandingExpectation();
   };
 
 
