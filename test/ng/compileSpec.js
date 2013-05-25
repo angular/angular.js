@@ -2244,7 +2244,7 @@ describe('$compile', function() {
     });
 
 
-    iit('should support controllerAs', function() {
+    it('should support controllerAs', function() {
       module(function() {
         directive('main', function() {
           return {
