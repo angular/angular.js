@@ -2,6 +2,8 @@
 
 describe('parser', function() {
   describe('lexer', function() {
+    function text(token) { return token.text; }
+
     it('should tokenize a string', function() {
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
       var i = 0;
@@ -112,12 +114,12 @@ describe('parser', function() {
 
     it('should tokenize function invocation', function() {
       var tokens = lex("a()")
-      expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
+      expect(map(tokens, text)).toEqual(['a', '(', ')']);
     });
 
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
-      expect(map(tokens, function(t) { return t.text;})).
+      expect(map(tokens, text)).
           toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
     });
 
@@ -162,6 +164,11 @@ describe('parser', function() {
       expect(function() {
         lex("'\\u1''bla'");
       }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
+    });
+
+    it('should tokenize a property access', function() {
+      var tokens = lex('foo.@bar');
+      expect(map(tokens, text)).toEqual(['foo', '.@', 'bar']);
     });
   });
 
@@ -576,6 +583,39 @@ describe('parser', function() {
         expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
         expect(scope.element[0].name).toBe('lucas');
         expect(count).toBe(1);
+      });
+
+
+      iit('should support getter/setter functions', function() {
+        var fooVal = 'bar';
+        scope.getFoo = function() { return fooVal; }
+        scope.setFoo = function(val) { fooVal = val; }
+
+        expect(scope.$eval('@foo')).toBe('bar');
+        expect(scope.$eval('@foo = "baz"')).toBeUndefined();
+      });
+
+      it('should support defining properties as part of expressions', inject(function($parse) {
+        var foo = 'bar';
+        scope.object = {
+          getFoo: function() { return foo; },
+          setFoo: function(value) { foo = value; }
+        };
+        expect(scope.$eval('object.@foo')).toBe('bar');
+        expect(scope.$eval('object.@foo = "baz";')).toBeUndefined();
+        var prop = $parse('object.@foo');
+        expect(prop.assign instanceof Function).toBe(true);
+
+        foo = {baz: 'bam', fn: function() { return 42; }};
+        expect(scope.$eval('object.@foo["baz"]')).toBe('bam');
+        expect(scope.$eval('object.@foo.fn()')).toBe(42);
+        expect(scope.$eval('object.@foo["baz"] = 12')).toBe(12);
+        expect(foo.baz).toBe(12);
+      }));
+
+
+      it('should not allow further property getters on properties', function() {
+        expect(function() { scope.$eval('foo.@bar.baz'); }).toThrow(new Error("Property accessor must be last"));
       });
 
 

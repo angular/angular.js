@@ -334,6 +334,22 @@ describe('input', function() {
   });
 
 
+  it('should bind to property accessors', function() {
+    compileInput('<input type="text" ng-model="foo.@bar">');
+    var bar = 'hello';
+    scope.$apply(function() {
+      scope.foo = {
+        getBar: function() { return bar; },
+        setBar: function(value) { bar = value; }
+      };
+    });
+
+    expect(inputElm.val()).toBe('hello');
+    changeInputValueTo('goodbye');
+    expect(bar).toBe('goodbye');
+  });
+
+
   it('should not set readonly or disabled property on ie7', function() {
     this.addMatchers({
       toBeOff: function(attributeName) {
