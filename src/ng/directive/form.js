@@ -128,6 +128,35 @@ function FormController(element, attrs) {
 
   /**
    * @ngdoc function
+   * @name ng.directive:form.FormController#$formData
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Get the form data in a object, depending on the filter and the member you want to return
+   * 
+   * This method is mainly used to transmit data, either to emit an event, send data through 
+   * AJAX, to use on $watch and test the validity of certain forms in an easy way
+   *
+   * @param {string|Object|function()|null|undefined} filter The predicate to be used for selecting 
+   * items from. See filterFilter for more
+   * 
+   * @param {string=} member The member of the NgModelController, defaults to '$modelValue'. 
+   * Another useful string for this param is '$viewValue'
+   */
+  form.$formData = function(filter, member) {
+    member = member || '$modelValue';
+    var out = {}, ctrls;
+    ctrls = filter ? filterFilter()(controls, filter) : controls;
+    
+    forEach(ctrls, function(control){
+      out[control.$name] = control[member];
+    });
+    
+    return out;
+  };
+
+  /**
+   * @ngdoc function
    * @name ng.directive:form.FormController#$setPristine
    * @methodOf ng.directive:form.FormController
    *
