@@ -666,6 +666,33 @@ describe("$animator", function() {
           expect(element[0].style.display).toBe('');
       }));
 
+      it("should select the highest duration and delay",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          var styles = 'transition:1s linear all 2s;' + 
+                       vendorPrefix + 'transition:1s linear all 2s;' + 
+                       'animation:my_ani 10s 1s;' + 
+                       vendorPrefix + 'animation:my_ani 10s 1s;';
+
+          element = $compile(html('<div style="' + styles + '">foo</div>'))($rootScope);
+
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'inline-show\'}'
+          });
+
+          element.css('display','none');
+          expect(element.css('display')).toBe('none');
+
+          animator.show(element);
+          if ($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+            window.setTimeout.expect(11000).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+          expect(element[0].style.display).toBe('');
+      }));
+
       it("should finish the previous transition when a new animation is started",
         inject(function($animator, $rootScope, $compile, $sniffer) {
           var style = 'transition: 1s linear all;' +
