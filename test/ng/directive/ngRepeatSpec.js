@@ -89,6 +89,15 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:swe|shyam:set|');
   });
 
+  it('should iterate over an object/map with identical values', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, value) in items">{{key}}:{{value}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {age:20, wealth:20, prodname: "Bingo", dogname: "Bingo", codename: "20"};
+    scope.$digest();
+    expect(element.text()).toEqual('age:20|codename:20|dogname:Bingo|prodname:Bingo|wealth:20|');
+  });
 
   describe('track by', function() {
     it('should track using expression function', function() {

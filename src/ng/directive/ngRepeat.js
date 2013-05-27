@@ -205,7 +205,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
         var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+          trackByExp, trackByExpGetter, trackByIdFn, trackByIdArrayFn, trackByIdObjFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
@@ -227,8 +227,11 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
-          trackByIdFn = function(key, value) {
+          trackByIdArrayFn = function(key, value) {
             return hashKey(value);
+          }
+          trackByIdObjFn = function(key) {
+            return key;
           }
         }
 
@@ -266,7 +269,9 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
           if (isArrayLike(collection)) {
             collectionKeys = collection;
+            trackByIdFn = trackByIdFn || trackByIdArrayFn;
           } else {
+            trackByIdFn = trackByIdFn || trackByIdObjFn;
             // if object, extract keys, sort them and use to determine order of iteration over obj props
             collectionKeys = [];
             for (key in collection) {
