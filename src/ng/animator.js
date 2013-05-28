@@ -263,9 +263,13 @@ var $AnimatorProvider = function() {
          * Triggers a custom animation event to be executed on the given element
          *
          * @param {jQuery/jqLite element} element that will be animated
+         * @param {function beforeFn} function that will be executed before animation
+         * @param {function afterFn} function that will be executed after animation
         */
-        animator.animate = function(event, element) {
-          animateActionFactory(event, noop, noop)(element);
+        animator.animate = function(event, element, beforeFn, afterFn) {
+          beforeFn = beforeFn || noop;
+          afterFn = afterFn || noop;
+          animateActionFactory(event, beforeFn, afterFn)(element);
         }
         return animator;
   
