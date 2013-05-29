@@ -226,6 +226,7 @@ describe('jqLite', function() {
 
       expect(selected.data('prop')).toBeUndefined();
       expect(selected.data('prop', 'value')).toBe(selected);
+      expect(!!jqLite(a).data('prop2', 'doublevalue')).toBe(true);
       expect(selected.data('prop')).toBe('value');
       expect(jqLite(a).data('prop')).toBe('value');
       expect(jqLite(b).data('prop')).toBe('value');
@@ -233,11 +234,13 @@ describe('jqLite', function() {
 
       jqLite(a).data('prop', 'new value');
       expect(jqLite(a).data('prop')).toBe('new value');
+      expect(jqLite(a).data('prop2')).toBe('doublevalue');
       expect(selected.data('prop')).toBe('new value');
       expect(jqLite(b).data('prop')).toBe('value');
       expect(jqLite(c).data('prop')).toBe('value');
 
       expect(selected.removeData('prop')).toBe(selected);
+      expect(jqLite(a).data('prop2')).toBe('doublevalue');
       expect(jqLite(a).data('prop')).toBeUndefined();
       expect(jqLite(b).data('prop')).toBeUndefined();
       expect(jqLite(c).data('prop')).toBeUndefined();
