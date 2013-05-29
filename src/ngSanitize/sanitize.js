@@ -4,6 +4,21 @@
  * @ngdoc overview
  * @name ngSanitize
  * @description
+ * 
+ * The `ngSanitize` is a separate module which extends Angular by making the {@link ngSanitize.$sanitize $sanitize} service avaialble.
+ * 
+ * # Installation
+ * As a separate module, it must be loaded after Angular core is loaded; otherwise, a 'Uncaught Error: No module: ngSanitize' runtime error will occour. 
+ *
+ *         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+ *         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-sanitize.js"></script>
+ *
+ * To download the appropriate version number see {@link http://code.angularjs.org/ code.angularjs.org}.
+ *
+ * # Usage
+ * To make sure the module is laoded into your application, it must be declared as a dependency when your application is initialized.
+ *
+ *        angular.module('app', ['ngSanitize']);
  */
 
 /*
