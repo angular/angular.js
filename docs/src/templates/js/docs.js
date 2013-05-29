@@ -56,29 +56,30 @@ docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', function($scope, $wi
   };
 }];
 
-docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location', function($scope, fullTextSearch, $location) {
-  fullTextSearch.init();
+docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
+  function clearResults() {
+    $scope.results = [];
+    $scope.colClassName = null;
+    $scope.hasResults = false;
+  }
   $scope.search = function(q) {
-    fullTextSearch.search(q, function(results) {
-      if(q && q.length >= 4) {
-        $scope.results = results;
-        var totalSections = 0;
-        for(var i in results) {
-          ++totalSections;
-        }
-        if(totalSections > 0) {
-          $scope.colClassName = 'cols-' + totalSections;
-          $scope.hasResults = true;
-        }
-        else {
-          $scope.hasResults = false;
-        }
+    var MIN_SEARCH_LENGTH = 4;
+    if(q.length >= MIN_SEARCH_LENGTH) {
+      var results = docsSearch(q);
+      var totalSections = 0;
+      for(var i in results) {
+        ++totalSections;
       }
-      else {
-        $scope.hasResults = false;
+      if(totalSections > 0) {
+        $scope.colClassName = 'cols-' + totalSections;
+        $scope.hasResults = true;
       }
-      if(!$scope.$$phase) $scope.$apply();
-    });
+      $scope.results = results;
+    }
+    else {
+      clearResults();
+    }
+    if(!$scope.$$phase) $scope.$apply();
   };
   $scope.submit = function() {
     var result;
@@ -94,82 +95,64 @@ docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location'
     }
   };
   $scope.hideResults = function() {
-    $scope.hasResults = false;
+    clearResults();
     $scope.q = '';
   };
 }];
 
-docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootScope) {
-  return {
-    dbName : 'docs',
-    indexName : 'docsindex',
+docsApp.serviceFactory.lunrSearch = function() {
+  return function(properties) {
+    var engine = lunr(properties);
+    return {
+      store : function(values) {
+        engine.add(values);
+      },
+      search : function(q) {
+        return engine.search(q);
+      }
+    };
+  };
+};
 
-    init : function(onReady) {
-      this.init = function() {};
+docsApp.serviceFactory.docsPages = function() {
+  return NG_PAGES;
+};
 
-      var self = this;
-      this.deferReady = $q.defer();
-      this.readyPromise = this.deferReady.promise;
+docsApp.serviceFactory.docsSearch = ['$rootScope','lunrSearch', 'docsPages',
+  function($rootScope, lunrSearch, docsPages) {
 
-      this.engine = lunr(function () {
-        this.ref('id');
-        this.field('title', {boost: 50});
-        this.field('description', { boost : 20 });
-      });
-      this.prepare();
-      this.onReady();
-    },
-    onReady : function() {
-      this.ready = true;
-      var self = this;
-      self.deferReady.resolve();
-      if(!$rootScope.$$phase) {
-        $rootScope.$apply();
-      }
-    },
-    whenReady : function(fn) {
-      if(this.ready) {
-        fn();
-      }
-      else {
-        this.init();
-        this.readyPromise.then(fn);
-      }
-    },
-    prepare : function(injector, callback) {
-      for(var i=0;i<NG_PAGES.length;i++) {
-        var page = NG_PAGES[i];
-        var title = page.shortName;
-        if(title.charAt(0) == 'n' && title.charAt(1) == 'g') {
-          title = title + ' ' + title.substr(2);
-        }
-        this.engine.add({
-          id: i,
-          title: title,
-          description: page.keywords
-        });
-      }
-    },
-    search : function(q, onReady) {
-      var self = this;
-      this.whenReady(function() {
-        var data = [];
-        var results = self.engine.search(q);
-        var groups = {};
-        angular.forEach(results, function(result) {
-          var item = NG_PAGES[result.ref];
-          var section = item.section;
-          if(section == 'cookbook') {
-            section = 'tutorial';
-          }
-          groups[section] = groups[section] || [];
-          if(groups[section].length < 15) {
-            groups[section].push(item);
-          }
-        });
-        onReady(groups);
-      });
+  var index = lunrSearch(function() {
+    this.ref('id');
+    this.field('title', {boost: 50});
+    this.field('description', { boost : 20 });
+  });
+
+  angular.forEach(docsPages, function(page, i) {
+    var title = page.shortName;
+    if(title.charAt(0) == 'n' && title.charAt(1) == 'g') {
+      title = title + ' ' + title.charAt(2).toLowerCase() + title.substr(3);
     }
+    index.store({
+      id: i,
+      title: title,
+      description: page.keywords
+    });
+  });
+
+  return function(q) {
+    var results = {};
+    angular.forEach(index.search(q), function(result) {
+      var item = docsPages[result.ref];
+      var section = item.section;
+      if(section == 'cookbook') {
+        section = 'tutorial';
+      }
+      results[section] = results[section] || [];
+      if(results[section].length < 15) {
+        results[section].push(item);
+      }
+    });
+    return results;
   };
 }];
 
@@ -411,7 +394,7 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
 };
 
 
-docsApp.serviceFactory.sections = function sections() {
+docsApp.serviceFactory.sections = ['docsPages', function sections(docsPages) {
   var sections = {
     guide: [],
     api: [],
@@ -432,7 +415,7 @@ docsApp.serviceFactory.sections = function sections() {
     }
   };
 
-  angular.forEach(NG_PAGES, function(page) {
+  angular.forEach(docsPages, function(page) {
     page.url = page.section + '/' +  page.id;
     if (page.id == 'angular.Module') {
       page.partialUrl = 'partials/api/angular.IModule.html';
@@ -444,7 +427,7 @@ docsApp.serviceFactory.sections = function sections() {
   });
 
   return sections;
-};
+}];
 
 
 docsApp.controller.DocsController = function($scope, $location, $window, $cookies, sections) {
