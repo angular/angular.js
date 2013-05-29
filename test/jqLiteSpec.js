@@ -246,6 +246,25 @@ describe('jqLite', function() {
       expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
+    it('should only remove the specified value when providing a property name to removeData', function () {
+      var selected = jqLite(a);
+
+      expect(selected.data('prop1')).toBeUndefined();
+
+      selected.data('prop1', 'value');
+      selected.data('prop2', 'doublevalue');
+
+      expect(selected.data('prop1')).toBe('value');
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop1');
+
+      expect(selected.data('prop1')).toBeUndefined();
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop2');
+    });
+
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);

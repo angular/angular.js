@@ -345,11 +345,33 @@ describe("$animator", function() {
       });
 
       child.css('display','none');
+      element.data('foo', 'bar');
       animator.show(element);
       window.setTimeout.expect(1).process();
+
       animator.hide(element);
 
       expect(element.hasClass('animation-cancelled')).toBe(true);
+      expect(element.data('foo')).toEqual('bar');
+    }));
+
+    it("should NOT clobber all data on an element when animation is finished",
+      inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'custom-delay\', show: \'custom-delay\'}'
+      });
+
+      child.css('display','none');
+      element.data('foo', 'bar');
+
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+
+      animator.hide(element);
+
+      expect(element.data('foo')).toEqual('bar');
     }));
 
 
