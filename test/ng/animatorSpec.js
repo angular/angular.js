@@ -336,6 +336,24 @@ describe("$animator", function() {
       expect(element.children().length).toBe(0);
     }));
 
+    it("should NOT clobber all data on element when calling done", inject(function($animator, $rootScope) {
+      var parent = jqLite('<div>');
+      var child = jqLite('<div>');
+      child.data('foo', 123);
+
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '\'custom-delay\''
+      });
+
+      animator.enter(parent, child);
+      window.setTimeout.expect(1).process();
+      expect(child.data('foo')).toEqual(123);
+      child.removeData();
+      parent.removeData();
+    }));
+
     it("should call the cancel callback when another animation is called on the same element",
       inject(function($animator, $rootScope) {
       $animator.enabled(true);
