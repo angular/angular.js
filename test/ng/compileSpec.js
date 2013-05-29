@@ -2718,4 +2718,129 @@ describe('$compile', function() {
       expect(element.attr('test4')).toBe('Misko');
     }));
   });
+
+
+  describe('multi-element directive', function() {
+    it('should group on link function', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div>' +
+              '<span ng-show-start="show"></span>' +
+              '<span ng-show-end></span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      var spans = element.find('span');
+      expect(spans.eq(0).css('display')).toBe('none');
+      expect(spans.eq(1).css('display')).toBe('none');
+    }));
+
+
+    it('should group on compile function', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div>' +
+              '<span ng-repeat-start="i in [1,2]">{{i}}A</span>' +
+              '<span ng-repeat-end>{{i}}B;</span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('1A1B;2A2B;');
+    }));
+
+
+    it('should group on $root compile function', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div></div>' +
+              '<span ng-repeat-start="i in [1,2]">{{i}}A</span>' +
+              '<span ng-repeat-end>{{i}}B;</span>' +
+          '<div></div>')($rootScope);
+      $rootScope.$digest();
+      element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
+      expect(element.text()).toEqual('1A1B;2A2B;');
+    }));
+
+
+    it('should group on nested groups', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div></div>' +
+              '<div ng-repeat-start="i in [1,2]">{{i}}A</div>' +
+              '<span ng-bind-start="\'.\'"></span>' +
+              '<span ng-bind-end></span>' +
+              '<div ng-repeat-end>{{i}}B;</div>' +
+          '<div></div>')($rootScope);
+      $rootScope.$digest();
+      element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
+      expect(element.text()).toEqual('1A..1B;2A..2B;');
+    }));
+
+
+    it('should group on nested groups', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div></div>' +
+              '<div ng-repeat-start="i in [1,2]">{{i}}(</div>' +
+              '<span ng-repeat-start="j in [2,3]">{{j}}-</span>' +
+              '<span ng-repeat-end>{{j}}</span>' +
+              '<div ng-repeat-end>){{i}};</div>' +
+          '<div></div>')($rootScope);
+      $rootScope.$digest();
+      element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
+      expect(element.text()).toEqual('1(2-23-3)1;2(2-23-3)2;');
+    }));
+
+
+    it('should throw error if unterminated', function () {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          element = $compile(
+              '<div>' +
+                '<span foo-start></span>' +
+              '</div>');
+        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+      });
+    });
+
+
+    it('should throw error if unterminated', function () {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          element = $compile(
+              '<div>' +
+                  '<span foo-start><span foo-end></span></span>' +
+              '</div>');
+        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+      });
+    });
+
+
+    it('should support data- and x- prefix', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div>' +
+              '<span data-ng-show-start="show"></span>' +
+              '<span data-ng-show-end></span>' +
+              '<span x-ng-show-start="show"></span>' +
+              '<span x-ng-show-end></span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      var spans = element.find('span');
+      expect(spans.eq(0).css('display')).toBe('none');
+      expect(spans.eq(1).css('display')).toBe('none');
+      expect(spans.eq(2).css('display')).toBe('none');
+      expect(spans.eq(3).css('display')).toBe('none');
+    }));
+  });
 });
