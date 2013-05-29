@@ -204,11 +204,16 @@ function JQLiteUnbind(element, type, fn) {
   }
 }
 
-function JQLiteRemoveData(element) {
+function JQLiteRemoveData(element, name) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId];
 
   if (expandoStore) {
+    if (name) {
+      delete jqCache[expandoId].data[name];
+      return;
+    }
+
     if (expandoStore.handle) {
       expandoStore.events.$destroy && expandoStore.handle({}, '$destroy');
       JQLiteUnbind(element);
