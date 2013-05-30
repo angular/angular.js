@@ -78,7 +78,9 @@ angularFiles = {
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
 
-    'docs/components/bootstrap/bootstrap.js'
+    'docs/components/bootstrap/bootstrap.js',
+    'docs/components/bootstrap/bootstrap-prettify.js',
+    'docs/src/templates/js/docs.js'
   ],
 
   'angularScenario': [

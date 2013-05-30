@@ -4,6 +4,58 @@ var docsApp = {
   serviceFactory: {}
 };
 
+docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', function($scope, $window) {
+  var versions  = expandVersions([], '1.1', 0, 6, false);      //unstable versions 
+  versions      = expandVersions(versions, '1.0', 0, 6, true); //stable versions
+
+  $scope.versions = versions;
+  $scope.version  = ($scope.version || angular.version.full).match(/^([\d\.]+\d+)/)[1]; //match only the number
+  
+  $scope.jumpToDocsVersion = function(value) {
+    var versions = $scope.versions,
+        version,
+        isLastStable;
+    for(var i=versions.length-1;i>=0;i--) {
+      var v = versions[i];
+      if(v.version == value) {
+        var next = versions[i - 1];
+        isLastStable = v.stable && !(next && next.stable);
+        version = v;
+        break;
+      }
+    };
+
+    if(!version) return;
+
+    //the older versions have a different path to the docs within their repo directory
+    var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
+
+    //the last stable version should be at docs.angularjs.org
+    var url = 'http://' +
+                (isLastStable ?
+                  'docs.angularjs.org' :
+                  'code.angularjs.org/' + version.version + '/' + docsPath);
+
+    $window.location = url;
+  };
+
+  function expandVersions(versions, lhs, rhsStart, rhsEnd, stable) {
+    var status = stable ? '(stable)' : '(unstable)';
+    for(var i=rhsEnd;i>=rhsStart;i--) {
+      var v = lhs + '.' + i;
+      versions.push({
+        stable : stable,
+        lhs : lhs,
+        rhs : i,
+        title : 'AngularJS - ' + v,
+        version : v,
+        status : lhs + '.x ' + status
+      });
+    };
+    return versions;
+  };
+}];
+
 docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location', function($scope, fullTextSearch, $location) {
   fullTextSearch.init();
   $scope.search = function(q) {
