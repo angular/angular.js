@@ -308,3 +308,7 @@ ul.events > li > h3 {
   top:0;
   right:0;
 }
+.docs-version-jump {
+  width:180px;
+  margin-bottom:20px;
+}

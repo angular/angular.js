@@ -1,3 +1,5 @@
+(function(window, angular, undefined) {
+
 'use strict';
 
 var directive = {};
@@ -287,3 +289,5 @@ service.getEmbeddedTemplate = ['reindentCode', function(reindentCode) {
 
 
 angular.module('bootstrapPrettify', []).directive(directive).factory(service);
+
+})(window, window.angular);
