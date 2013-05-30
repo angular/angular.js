@@ -26,8 +26,8 @@ function $TimeoutProvider() {
       *
       * You can also use `$timeout` to debounce the call of a function using the returned promise
       * as the fourth parameter in the next call. See the following example:
-      * 
-      * <pre>
+      *
+      * ```js
       *   var debounce;
       *   var doRealSave = function() {
       *      // Save model to DB
@@ -36,13 +36,13 @@ function $TimeoutProvider() {
       *      // debounce call for 2 seconds
       *      debounce = $timeout(doRealSave, 2000, false, debounce);
       *   }
-      * </pre>
+      * ```
       *
       * And in the form:
       *
-      * <pre>
+      * ```html
       *   <input type="text" ng-model="name" ng-change="save()">
-      * </pre>
+      * ```
       *
       * @param {function()} fn A function, whose execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.

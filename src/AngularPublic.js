@@ -48,6 +48,8 @@
     ngValueDirective,
     ngAttributeAliasDirectives,
     ngEventDirectives,
+    ngUpdateModelOnDirective,
+    ngUpdateModelDebounceDirective,
 
     $AnchorScrollProvider,
     $AnimateProvider,
@@ -183,6 +185,8 @@ function publishExternalAPI(angular){
             ngChange: ngChangeDirective,
             required: requiredDirective,
             ngRequired: requiredDirective,
+            ngUpdateModelOn: ngUpdateModelOnDirective,
+            ngUpdateModelDebounce: ngUpdateModelDebounceDirective,
             ngValue: ngValueDirective
         }).
         directive({

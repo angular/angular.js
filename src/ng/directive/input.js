@@ -42,6 +42,12 @@ var inputType = {
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
+   * @param {integer=} ngUpdateModelDebounce Time in milliseconds to wait since the last registered
+   *    content change before triggering a model update (debouncing).
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept. You can also specify an
+   *    object in which the key is the event and the value the particular timeout to be applied to it.
    *
    * @example
       <example name="text-input-directive">
@@ -541,6 +547,11 @@ var inputType = {
    *    patterns defined as scope expressions.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {integer=} ngUpdateModelDebounce Time in milliseconds to wait since the last registered
+   *    content change before triggering a model update.
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept.
    *
    * @example
       <example name="number-input-directive">
@@ -616,6 +627,11 @@ var inputType = {
    *    patterns defined as scope expressions.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {integer=} ngUpdateModelDebounce Time in milliseconds to wait since the last registered
+   *    content change before triggering a model update.
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept.
    *
    * @example
       <example name="url-input-directive">
@@ -692,6 +708,11 @@ var inputType = {
    *    patterns defined as scope expressions.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {integer=} ngUpdateModelDebounce Time in milliseconds to wait since the last registered
+   *    content change before triggering a model update.
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept.
    *
    * @example
       <example name="email-input-directive">
@@ -758,6 +779,9 @@ var inputType = {
    *    interaction with the input element.
    * @param {string} ngValue Angular expression which sets the value to which the expression should
    *    be set when selected.
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept.
    *
    * @example
       <example name="radio-input-directive">
@@ -808,6 +832,11 @@ var inputType = {
    * @param {string=} ngFalseValue The value to which the expression should be set when not selected.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
+   * @param {integer=} ngUpdateModelDebounce Time in milliseconds to wait since the last registered
+   *    content change before triggering a model update.
+   * @param {string=} ngUpdateModelOn Allows specifying an event or a comma-delimited list of events
+   *    that will trigger a model update. If it is not set, it defaults to any inmediate change. If
+   *    the list contains "default", the original behavior is also kept.
    *
    * @example
       <example name="checkbox-input-directive">
@@ -878,7 +907,7 @@ function addNativeHtml5Validators(ctrl, validatorName, element) {
   }
 }
 
-function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+function textInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser) {
   var validity = element.prop('validity');
   // In composition mode, users are still inputing intermediate text buffer,
   // hold the listener until composition is done.
@@ -896,8 +925,26 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
-  var listener = function() {
-    if (composing) return;
+  var timeout = null,
+      eventList,
+      updateTimeout,
+      updateDefaultTimeout;
+
+  var isEmpty = function(value) {
+    return isUndefined(value) || value === '' || value === null || value !== value;
+  };
+
+  // Get update model details from controllers
+  if (isDefined(updModOnCtrl)) {
+    eventList = updModOnCtrl.$getEventList();
+    updateTimeout = updModOnCtrl.$getDebounceTimeout();
+  }
+
+  if (isDefined(updModlTimCtrl)) {
+    updateDefaultTimeout = updModlTimCtrl.$getDefaultTimeout();
+  }
+
+  var update = function() {
     var value = element.val();
 
     // By default we will trim the value
@@ -922,41 +969,73 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   };
 
-  // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
-  // input event on backspace, delete or cut
-  if ($sniffer.hasEvent('input')) {
-    element.on('input', listener);
-  } else {
-    var timeout;
+  var listener = function(event) {
+    if (composing) return;
 
-    var deferListener = function() {
-      if (!timeout) {
-        timeout = $browser.defer(function() {
-          listener();
-          timeout = null;
-        });
-      }
-    };
+    var callbackTimeout = (!isEmpty(updateTimeout))
+            ? updateTimeout[event.type] || updateTimeout['default'] || updateDefaultTimeout || 0
+            : updateDefaultTimeout || 0;
 
-    element.on('keydown', function(event) {
-      var key = event.keyCode;
-
-      // ignore
-      //    command            modifiers                   arrows
-      if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-
-      deferListener();
-    });
-
-    // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
-    if ($sniffer.hasEvent('paste')) {
-      element.on('paste cut', deferListener);
+    if (callbackTimeout>0) {
+      timeout = $timeout(update, callbackTimeout, false, timeout);
     }
+    else {
+      update();
+    }
+  };
+
+  var deferListener = function(ev) {
+    $browser.defer(function() {
+      listener(ev);
+    });
+  };
+
+  var defaultEvents = true;
+
+  // Allow adding/overriding bound events
+  if (!isEmpty(eventList)) {
+    defaultEvents = false;
+    // bind to user-defined events
+    forEach(eventList.split(','), function(ev) {
+      ev = trim(ev).toLowerCase();
+      if (ev === 'default') {
+        defaultEvents = true;
+      }
+      else {
+        element.on(ev, listener);
+      }
+    });
   }
 
-  // if user paste into input using mouse on older browser
-  // or form autocomplete on newer browser, we need "change" event to catch it
-  element.on('change', listener);
+  if (defaultEvents) {
+
+    // default behavior: bind to input events or keydown+change
+
+    // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
+    // input event on backspace, delete or cut
+    if ($sniffer.hasEvent('input')) {
+      element.bind('input', listener);
+    } else {
+      element.on('keydown', function(event) {
+        var key = event.keyCode;
+
+        // ignore
+        //    command            modifiers                   arrows
+        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+
+        deferListener('keydown');
+      });
+
+      // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
+      if ($sniffer.hasEvent('paste')) {
+        element.on('paste cut', deferListener);
+      }
+    }
+
+    // if user paste into input using mouse on older browser
+    // or form autocomplete on newer browser, we need "change" event to catch it
+    element.on('change', listener);
+  }
 
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
@@ -1068,8 +1147,8 @@ function createDateParser(regexp, mapping) {
 }
 
 function createDateInputType(type, regexp, parseDate, format) {
-   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
-      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+   return function dynamicDateInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser, $filter) {
+      textInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser);
 
       ctrl.$parsers.push(function(value) {
          if(ctrl.$isEmpty(value)) {
@@ -1119,8 +1198,8 @@ function createDateInputType(type, regexp, parseDate, format) {
    };
 }
 
-function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function numberInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser);
 
   ctrl.$parsers.push(function(value) {
     var empty = ctrl.$isEmpty(value);
@@ -1164,8 +1243,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   });
 }
 
-function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function urlInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser);
 
   var urlValidator = function(value) {
     return validate(ctrl, 'url', ctrl.$isEmpty(value) || URL_REGEXP.test(value), value);
@@ -1175,8 +1254,8 @@ function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(urlValidator);
 }
 
-function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+function emailInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser) {
+  textInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout, $sniffer, $browser);
 
   var emailValidator = function(value) {
     return validate(ctrl, 'email', ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value), value);
@@ -1186,18 +1265,31 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$parsers.push(emailValidator);
 }
 
-function radioInputType(scope, element, attr, ctrl) {
-  // make the name unique, if not defined
-  if (isUndefined(attr.name)) {
-    element.attr('name', nextUid());
-  }
+function radioInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout) {
 
-  element.on('click', function() {
+  // Get update model details from controllers
+  var eventList = (isDefined(updModOnCtrl)) ? updModOnCtrl.$getEventList() : 'click';
+
+  var listener = function() {
     if (element[0].checked) {
       scope.$apply(function() {
         ctrl.$setViewValue(attr.value);
       });
     }
+  };
+
+  // make the name unique, if not defined
+  if (isUndefined(attr.name)) {
+    element.attr('name', nextUid());
+  }
+
+  // bind to user-defined/default events
+  forEach(eventList.split(','), function(ev) {
+    ev = trim(ev).toLowerCase();
+    if (ev === 'default') {
+      ev = 'click';
+    }
+    element.bind(ev, listener);
   });
 
   ctrl.$render = function() {
@@ -1208,17 +1300,61 @@ function radioInputType(scope, element, attr, ctrl) {
   attr.$observe('value', ctrl.$render);
 }
 
-function checkboxInputType(scope, element, attr, ctrl) {
-  var trueValue = attr.ngTrueValue,
-      falseValue = attr.ngFalseValue;
+function checkboxInputType(scope, element, attr, ctrl, updModOnCtrl, updModlTimCtrl, $timeout) {
+  var timeout = null,
+      trueValue = attr.ngTrueValue,
+      falseValue = attr.ngFalseValue,
+      eventList,
+      updateDefaultTimeout,
+      updateTimeout;
+
+  // Get update model details from controllers
+  eventList = 'click';
+
+  // Get update model details from controllers
+  if (isDefined(updModOnCtrl)) {
+    eventList = updModOnCtrl.$getEventList();
+    updateTimeout = updModOnCtrl.$getDebounceTimeout();
+  }
+
+  if (isDefined(updModlTimCtrl)) {
+    updateDefaultTimeout = updModlTimCtrl.$getDefaultTimeout();
+  }
+
+  var update = function() {
+    scope.$apply(function() {
+      ctrl.$setViewValue(element[0].checked);
+    });
+  };
+
+  var listener = function(event) {
+
+      var isEmpty = function(value) {
+        return isUndefined(value) || value === '' || value === null || value !== value;
+      };
+
+      var callbackTimeout = (!isEmpty(updateTimeout))
+          ? updateTimeout[event.type] || updateTimeout['default'] || updateDefaultTimeout || 0
+          : updateDefaultTimeout || 0;
+
+    if (callbackTimeout>0) {
+      timeout = $timeout(update, callbackTimeout, false, timeout);
+    }
+    else {
+      update();
+    }
+  };
 
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
-  element.on('click', function() {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked);
-    });
+  // bind to user-defined/default events
+  forEach(eventList.split(','), function(ev) {
+    ev = trim(ev).toLowerCase();
+    if (ev === 'default') {
+      ev = 'click';
+    }
+    element.bind(ev, listener);
   });
 
   ctrl.$render = function() {
@@ -1378,14 +1514,15 @@ function checkboxInputType(scope, element, attr, ctrl) {
       </file>
     </example>
  */
-var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
+
+var inputDirective = ['$browser', '$sniffer', '$timeout', '$filter', function($browser, $sniffer, $timeout, $filter) {
   return {
     restrict: 'E',
-    require: '?ngModel',
-    link: function(scope, element, attr, ctrl) {
-      if (ctrl) {
-        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
-                                                            $browser, $filter);
+    require: ['?ngModel', '^?ngUpdateModelOn', '^?ngUpdateModelDebounce'],
+    link: function(scope, element, attr, ctrls) {
+      if (ctrls[0]) {
+        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], ctrls[1], ctrls[2], $timeout,
+                                                            $sniffer, $browser, $filter);
       }
     }
   };
