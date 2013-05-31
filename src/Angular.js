@@ -914,9 +914,13 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @description
  *
  * Use this directive to auto-bootstrap an application. Only
- * one directive can be used per HTML document. The directive
+ * one ngApp directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
  * at the root of the page.
+ * 
+ * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in an 
+ * HTML document you must manually bootstrap them using {@link angular.bootstrap}. 
+ * Applications cannot be nested.
  *
  * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
