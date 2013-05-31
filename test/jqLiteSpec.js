@@ -10,7 +10,6 @@ describe('jqLite', function() {
     c = jqLite('<div>C</div>')[0];
   });
 
-
   beforeEach(inject(function($rootScope) {
     scope = $rootScope;
     this.addMatchers({
@@ -88,7 +87,6 @@ describe('jqLite', function() {
 
 
   describe('inheritedData', function() {
-
     it('should retrieve data attached to the current element', function() {
       var element = jqLite('<i>foo</i>');
       element.data('myData', 'abc');
@@ -229,6 +227,7 @@ describe('jqLite', function() {
 
       expect(selected.data('prop')).toBeUndefined();
       expect(selected.data('prop', 'value')).toBe(selected);
+      
       expect(selected.data('prop')).toBe('value');
       expect(jqLite(a).data('prop')).toBe('value');
       expect(jqLite(b).data('prop')).toBe('value');
@@ -244,6 +243,25 @@ describe('jqLite', function() {
       expect(jqLite(a).data('prop')).toBeUndefined();
       expect(jqLite(b).data('prop')).toBeUndefined();
       expect(jqLite(c).data('prop')).toBeUndefined();
+    });
+
+    it('should only remove the specified value when providing a property name to removeData', function () {
+      var selected = jqLite(a);
+
+      expect(selected.data('prop1')).toBeUndefined();
+      
+      selected.data('prop1', 'value');
+      selected.data('prop2', 'doublevalue');
+      
+      expect(selected.data('prop1')).toBe('value');
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop1');
+
+      expect(selected.data('prop1')).toBeUndefined();
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop2');
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
