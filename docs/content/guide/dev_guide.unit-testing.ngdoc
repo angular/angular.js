@@ -249,7 +249,7 @@ and the test is straight forward
 
 <pre>
 var pc = new PasswordCtrl();
-pc.password('abc');
+pc.password = 'abc';
 pc.grade();
 expect(pc.strength).toEqual('weak');
 </pre>
