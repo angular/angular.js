@@ -12,7 +12,7 @@
  */
 function $RouteProvider(){
   var routes = {};
-
+  var customRouteMatcher = null;
   /**
    * @ngdoc method
    * @name ng.$routeProvider#when
@@ -135,6 +135,37 @@ function $RouteProvider(){
     this.when(null, params);
     return this;
   };
+
+
+  /**
+   * @ngdoc method
+   * @name ng.$routeProvider#customRouteMatcher
+   * @methodOf ng.$routeProvider
+   *
+   * @description
+   * Sets custom route matcher for use when the standard routing scheme does not meet your requirements.
+   * 
+   * The custom route matcher will be called whever $location changes. It will be passed three parameters:
+   *
+   *    - `path` {String}:  The new path.
+   *    - `search` {Object}: The new search params.
+   *    - `routes` {Object}:  Routes defined by `$routeProvider.when`, which the custom router can interpret as it sees fit.
+   *
+   * The custom matcher function should return a `route` or `null`, where:
+   * 
+   *    - a `route` is in the same format as the `route` function for `$routeProvider.when`, with an additional
+   *      item `params`, which should be a mapping containing any parameters that have been extracted from the path.
+   *      The router will load this route.
+   *
+   *    - `null` indicates no route matches, the route defined by `$routeProvider.otherwise` will be used.
+   *
+   * @param {function} matcherFunction Custom routing function.
+   * @returns {Object} self
+   */
+  this.customRouteMatcher = function(matcherFunction) {
+    customRouteMatcher = matcherFunction;
+    return this;  
+  }
 
 
   this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache',
@@ -474,15 +505,32 @@ function $RouteProvider(){
      */
     function parseRoute() {
       // Match a route
-      var params, match;
-      forEach(routes, function(route, path) {
-        if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
+      var match;
+      
+      if (customRouteMatcher) {
+        // Use custom route matcher
+        var route = customRouteMatcher($location.path(), $location.search(), routes);
+        if (route) {
+          route = extend({reloadOnSearch: true}, route);
           match = inherit(route, {
-            params: extend({}, $location.search(), params),
-            pathParams: params});
+            params: extend({}, $location.search(), route.params),
+            pathParams: route.params});
           match.$$route = route;
         }
-      });
+        
+      } else {
+        // Use the default route matcher
+        var params;
+        forEach(routes, function(route, path) {
+          if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
+            match = inherit(route, {
+              params: extend({}, $location.search(), params),
+              pathParams: params});
+            match.$$route = route;
+          }
+        });
+      }
+      
       // No route matched; fallback to "otherwise" route
       return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
     }
