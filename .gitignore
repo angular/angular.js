@@ -11,3 +11,4 @@ angular.js.tmproj
 /components/
 angular.xcodeproj
 .idea
+.agignore
