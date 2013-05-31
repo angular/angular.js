@@ -95,9 +95,6 @@
        });
      </doc:scenario>
    </doc:example>
-
-
-
     <doc:example>
      <doc:source>
       <script>
