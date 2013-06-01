@@ -92,6 +92,9 @@
  *     requests with credentials} for more information.
  *   - **`responseType`** - `{string}` - see {@link
  *     https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
+ *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
+ *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
+ *     with `http response` object. See {@link ng.$http $http interceptors}.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -130,24 +133,27 @@
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
+ *   Success callback is called with (value, responseHeaders) arguments. Error callback is called
+ *   with (httpResponse) argument.
+ *
+ *   Class actions return empty instance (with additional properties below).
+ *   Instance actions return promise of the action.
  *
  *   The Resource instances and collection have these additional properties:
  *
- *   - `$then`: the `then` method of a {@link ng.$q promise} derived from the underlying
- *     {@link ng.$http $http} call.
+ *   - `$promise`: the {@link ng.$q promise} of the original server interaction that created this
+ *     instance or collection.
  *
- *     The success callback for the `$then` method will be resolved if the underlying `$http` requests
- *     succeeds.
+ *     On success, the promise is resolved with the same resource instance or collection object,
+ *     updated with data from server. This makes it easy to use in
+ *     {@link ng.$routeProvider resolve section of $routeProvider.when()} to defer view rendering
+ *     until the resource(s) are loaded.
  *
- *     The success callback is called with a single object which is the {@link ng.$http http response}
- *     object extended with a new property `resource`. This `resource` property is a reference to the
- *     result of the resource action — resource object or array of resources.
+ *     On failure, the promise is resolved with the {@link ng.$http http response} object,
+ *     without the `resource` property.
  *
- *     The error callback is called with the {@link ng.$http http response} object when an http
- *     error occurs.
- *
- *   - `$resolved`: true if the promise has been resolved (either with success or rejection);
- *     Knowing if the Resource has been resolved is useful in data-binding.
+ *   - `$resolved`: `true` after first server interaction is completed (either with success or rejection),
+ *     `false` before that. Knowing if the Resource has been resolved is useful in data-binding.
  *
  * @example
  *
@@ -268,7 +274,7 @@
     </doc:example>
  */
 angular.module('ngResource', ['ng']).
-  factory('$resource', ['$http', '$parse', function($http, $parse) {
+  factory('$resource', ['$http', '$parse', '$q', function($http, $parse, $q) {
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
@@ -398,19 +404,19 @@ angular.module('ngResource', ['ng']).
         return ids;
       }
 
+      function defaultResponseInterceptor(response) {
+        return response.resource;
+      }
+
       function Resource(value){
         copy(value || {}, this);
       }
 
       forEach(actions, function(action, name) {
-        action.method = angular.uppercase(action.method);
-        var hasBody = action.method == 'POST' || action.method == 'PUT' || action.method == 'PATCH';
+        var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
+
         Resource[name] = function(a1, a2, a3, a4) {
-          var params = {};
-          var data;
-          var success = noop;
-          var error = null;
-          var promise;
+          var params = {}, data, success, error;
 
           switch(arguments.length) {
           case 4:
@@ -442,31 +448,28 @@ angular.module('ngResource', ['ng']).
             break;
           case 0: break;
           default:
-            throw "Expected between 0-4 arguments [params, data, success, error], got " +
+            throw "Expected up to 4 arguments [params, data, success, error], got " +
               arguments.length + " arguments.";
           }
 
-          var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-          var httpConfig = {},
-              promise;
+          var isInstanceCall = data instanceof Resource;
+          var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
+          var httpConfig = {};
+          var responseInterceptor = action.interceptor && action.interceptor.response || defaultResponseInterceptor;
+          var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
 
           forEach(action, function(value, key) {
-            if (key != 'params' && key != 'isArray' ) {
+            if (key != 'params' && key != 'isArray' && key != 'interceptor') {
               httpConfig[key] = copy(value);
             }
           });
+
           httpConfig.data = data;
           route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
 
-          function markResolved() { value.$resolved = true; }
-
-          promise = $http(httpConfig);
-          value.$resolved = false;
-
-          promise.then(markResolved, markResolved);
-          value.$then = promise.then(function(response) {
-            var data = response.data;
-            var then = value.$then, resolved = value.$resolved;
+          var promise = $http(httpConfig).then(function(response) {
+            var data = response.data,
+                promise = value.$promise;
 
             if (data) {
               if (action.isArray) {
@@ -476,44 +479,47 @@ angular.module('ngResource', ['ng']).
                 });
               } else {
                 copy(data, value);
-                value.$then = then;
-                value.$resolved = resolved;
+                value.$promise = promise;
               }
             }
+
+            value.$resolved = true;
 
             (success||noop)(value, response.headers);
 
             response.resource = value;
-            return response;
-          }, error).then;
 
-          return value;
+            return response;
+          }, function(response) {
+            value.$resolved = true;
+
+            (error||noop)(response);
+
+            return $q.reject(response);
+          }).then(responseInterceptor, responseErrorInterceptor);
+
+
+          if (!isInstanceCall) {
+            // we are creating instance / collection
+            // - set the initial promise
+            // - return the instance / collection
+            value.$promise = promise;
+            value.$resolved = false;
+
+            return value;
+          }
+
+          // instance call
+          return promise;
         };
 
 
-        Resource.prototype['$' + name] = function(a1, a2, a3) {
-          var params = extractParams(this),
-              success = noop,
-              error;
-
-          switch(arguments.length) {
-          case 3: params = a1; success = a2; error = a3; break;
-          case 2:
-          case 1:
-            if (isFunction(a1)) {
-              success = a1;
-              error = a2;
-            } else {
-              params = a1;
-              success = a2 || noop;
-            }
-          case 0: break;
-          default:
-            throw "Expected between 1-3 arguments [params, success, error], got " +
-              arguments.length + " arguments.";
+        Resource.prototype['$' + name] = function(params, success, error) {
+          if (isFunction(params)) {
+            error = success; success = params; params = {};
           }
-          var data = hasBody ? this : undefined;
-          Resource[name].call(this, params, data, success, error);
+          var result = Resource[name](params, this, success, error);
+          return result.$promise || result;
         };
       });
 

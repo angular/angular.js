@@ -84,19 +84,21 @@ describe('angular', function() {
     });
 
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
-      expect(function() { copy($rootScope.$new()); }).toThrow("Can't copy Window or Scope");
+      expect(function() { copy($rootScope.$new()); }).
+          toThrow("[NgErr43] Can't copy! Making copies of Window or Scope instances is not supported.");
     }));
 
     it('should throw an exception if a Window is being copied', function() {
-      expect(function() { copy(window); }).toThrow("Can't copy Window or Scope");
+      expect(function() { copy(window); }).
+          toThrow("[NgErr43] Can't copy! Making copies of Window or Scope instances is not supported.");
     });
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
 	    src = dst = {key: 'value'};
-      expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
+      expect(function() { copy(src, dst); }).toThrow("[NgErr44] Can't copy! Source and destination are identical.");
       src = dst = [2, 4];
-      expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
+      expect(function() { copy(src, dst); }).toThrow("[NgErr44] Can't copy! Source and destination are identical.");
     });
 
     it('should not copy the private $$hashKey', function() {
@@ -580,7 +582,7 @@ describe('angular', function() {
 
       expect(function() {
         angularInit(appElement, bootstrap);
-      }).toThrow('No module: doesntexist');
+      }).toThrow("[NgErr47] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it.");
     });
   });
 
@@ -724,7 +726,7 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
-      }).toThrow('No module: doesntexist');
+      }).toThrow("[NgErr47] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it.");
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
@@ -783,7 +785,7 @@ describe('angular', function() {
 
         expect(function() {
           element.injector().get('foo');
-        }).toThrow('Unknown provider: fooProvider <- foo');
+        }).toThrow('[NgErr1] Unknown provider: fooProvider <- foo');
 
         expect(element.injector().get('$http')).toBeDefined();
       });

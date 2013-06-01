@@ -68,6 +68,6 @@ describe('module loader', function() {
   it('should complain of no module', function() {
     expect(function() {
       window.angular.module('dontExist');
-    }).toThrow('No module: dontExist');
+    }).toThrow("[NgErr47] Module 'dontExist' is not available! You either misspelled the module name or forgot to load it.");
   });
 });

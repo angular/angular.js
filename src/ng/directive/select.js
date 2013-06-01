@@ -300,9 +300,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw Error(
-            "Expected ngOptions in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_ (track by _expr_)?'" +
-            " but got '" + optionsExp + "'.");
+          throw ngError(9,
+            "ngOptions error! Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
+            optionsExp, startingTag(selectElement));
         }
 
         var displayFn = $parse(match[2] || match[1]),
@@ -357,7 +357,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                       for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
                         locals[valueName] = collection[trackIndex];
                         if (trackFn(scope, locals) == key) break;
-                      } 
+                      }
                     } else {
                       locals[valueName] = collection[key];
                     }

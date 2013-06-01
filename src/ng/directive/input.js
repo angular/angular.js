@@ -243,6 +243,8 @@ var inputType = {
    * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
    *
    * @example
       <doc:example>
@@ -473,7 +475,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         var patternObj = scope.$eval(pattern);
 
         if (!patternObj || !patternObj.test) {
-          throw new Error('Expected ' + pattern + ' to be a RegExp but was ' + patternObj);
+          throw ngError(5, 'ngPattern error! Expected {0} to be a RegExp but was {1}. Element: {2}',
+                                                      pattern,                   patternObj,   startingTag(element));
         }
         return validate(patternObj, value);
       };
@@ -916,8 +919,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ngModelSet = ngModelGet.assign;
 
   if (!ngModelSet) {
-    throw Error(NON_ASSIGNABLE_MODEL_EXPRESSION + $attr.ngModel +
-        ' (' + startingTag($element) + ')');
+    throw ngError(6, "ngModel error! Expression '{0}' is non-assignable. Element: {1}", $attr.ngModel,
+        startingTag($element));
   }
 
   /**
