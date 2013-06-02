@@ -270,6 +270,11 @@ describe('angular', function() {
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
     });
+
+    it('should return false when comparing an object and an array', function() {
+      expect(equals({}, [])).toBe(false);
+      expect(equals([], {})).toBe(false);
+    });
   });
 
   describe('size', function() {
