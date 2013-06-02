@@ -302,6 +302,11 @@ describe('angular', function() {
       expect(equals(/^abc/, /abc/)).toBe(false);
       expect(equals(/^abc/, '/^abc/')).toBe(false);
     });
+
+    it('should return false when comparing an object and an array', function() {
+      expect(equals({}, [])).toBe(false);
+      expect(equals([], {})).toBe(false);
+    });
   });
 
   describe('size', function() {
