@@ -262,7 +262,8 @@ var $AnimatorProvider = function() {
          * @description
          * Triggers a custom animation event to be executed on the given element
          *
-         * @param {jQuery/jqLite element} element that will be animated
+         * @param {string} event the name of the custom event 
+         * @param {jQuery/jqLite element} element the element that will be animated
         */
         animator.animate = function(event, element) {
           animateActionFactory(event, noop, noop)(element);
@@ -344,28 +345,29 @@ var $AnimatorProvider = function() {
                 var ELEMENT_NODE = 1;
                 forEach(element, function(element) {
                   if (element.nodeType == ELEMENT_NODE) {
-                    var w3cProp = w3cTransitionProp,
-                        vendorProp = vendorTransitionProp,
-                        iterations = 1,
-                        elementStyles = $window.getComputedStyle(element) || {};
+                    var elementStyles = $window.getComputedStyle(element) || {};
 
-                    //use CSS Animations over CSS Transitions
-                    if(parseFloat(elementStyles[w3cAnimationProp + durationKey]) > 0 ||
-                       parseFloat(elementStyles[vendorAnimationProp + durationKey]) > 0) {
-                      w3cProp = w3cAnimationProp;
-                      vendorProp = vendorAnimationProp;
-                      iterations = Math.max(parseInt(elementStyles[w3cProp    + animationIterationCountKey]) || 0,
-                                            parseInt(elementStyles[vendorProp + animationIterationCountKey]) || 0,
-                                            iterations);
+                    var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                                       parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+                    var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                                       parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
+                    var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
+                                                       parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+
+                    var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
+                                                       parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+
+                    if(animationDuration > 0) {
+                      animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp    + animationIterationCountKey]) || 0,
+                                                   parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
+                                                   1);
                     }
 
-                    var parsedDelay     = Math.max(parseMaxTime(elementStyles[w3cProp     + delayKey]),
-                                                   parseMaxTime(elementStyles[vendorProp  + delayKey]));
-
-                    var parsedDuration  = Math.max(parseMaxTime(elementStyles[w3cProp     + durationKey]),
-                                                   parseMaxTime(elementStyles[vendorProp  + durationKey]));
-
-                    duration = Math.max(parsedDelay + (iterations * parsedDuration), duration);
+                    duration = Math.max(animationDelay  + animationDuration,
+                                        transitionDelay + transitionDuration,
+                                        duration);
                   }
                 });
                 $window.setTimeout(done, duration * 1000);
@@ -395,11 +397,16 @@ var $AnimatorProvider = function() {
         }
   
         function insert(element, parent, after) {
-          if (after) {
-            after.after(element);
-          } else {
-            parent.append(element);
-          }
+          var afterNode = after && after[after.length - 1];
+          var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+          var afterNextSibling = afterNode && afterNode.nextSibling;
+          forEach(element, function(node) {
+            if (afterNextSibling) {
+              parentNode.insertBefore(node, afterNextSibling);
+            } else {
+              parentNode.appendChild(node);
+            }
+          });
         }
   
         function remove(element) {

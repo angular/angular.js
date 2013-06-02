@@ -43,7 +43,7 @@ describe('NgModelController', function() {
     }
 
     expect(exception.message).
-        toMatch(/Non-assignable model expression: 1\+2 \(<input( value="")? ng-model="1\+2">\)/);
+        toMatch(/^\[NgErr6\] ngModel error! Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
   }));
 
 
@@ -457,7 +457,7 @@ describe('input', function() {
     expect(function() {
       compileInput('<input type="text" ng-model="throw \'\'">');
       scope.$digest();
-    }).toThrow("Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
+    }).toThrow("[NgErr24] Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
   });
 
 
@@ -548,11 +548,11 @@ describe('input', function() {
     });
 
 
-    xit('should throw an error when scope pattern can\'t be found', function() {
-      compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
-
-      expect(function() { changeInputValueTo('xx'); }).
-          toThrow('Expected fooRegexp to be a RegExp but was undefined');
+    it('should throw an error when scope pattern can\'t be found', function() {
+      expect(function() {
+        compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
+        scope.$apply();
+      }).toThrowNg('ngPattern error! Expected fooRegexp to be a RegExp but was undefined.');
     });
   });
 

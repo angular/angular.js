@@ -345,11 +345,33 @@ describe("$animator", function() {
       });
 
       child.css('display','none');
+      element.data('foo', 'bar');
       animator.show(element);
       window.setTimeout.expect(1).process();
+
       animator.hide(element);
 
       expect(element.hasClass('animation-cancelled')).toBe(true);
+      expect(element.data('foo')).toEqual('bar');
+    }));
+
+    it("should NOT clobber all data on an element when animation is finished",
+      inject(function($animator, $rootScope) {
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'custom-delay\', show: \'custom-delay\'}'
+      });
+
+      child.css('display','none');
+      element.data('foo', 'bar');
+
+      animator.show(element);
+      window.setTimeout.expect(1).process();
+
+      animator.hide(element);
+
+      expect(element.data('foo')).toEqual('bar');
     }));
 
 
@@ -666,6 +688,33 @@ describe("$animator", function() {
           expect(element[0].style.display).toBe('');
       }));
 
+      it("should select the highest duration and delay",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          var styles = 'transition:1s linear all 2s;' + 
+                       vendorPrefix + 'transition:1s linear all 2s;' + 
+                       'animation:my_ani 10s 1s;' + 
+                       vendorPrefix + 'animation:my_ani 10s 1s;';
+
+          element = $compile(html('<div style="' + styles + '">foo</div>'))($rootScope);
+
+          var animator = $animator($rootScope, {
+            ngAnimate : '{show: \'inline-show\'}'
+          });
+
+          element.css('display','none');
+          expect(element.css('display')).toBe('none');
+
+          animator.show(element);
+          if ($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+            window.setTimeout.expect(11000).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+          expect(element[0].style.display).toBe('');
+      }));
+
       it("should finish the previous transition when a new animation is started",
         inject(function($animator, $rootScope, $compile, $sniffer) {
           var style = 'transition: 1s linear all;' +
@@ -719,6 +768,6 @@ describe("$animator", function() {
     expect(function() {
       var animate = $animator($rootScope, { ngAnimate: ':' });
       animate.enter();
-    }).toThrow("Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
+    }).toThrow("[NgErr24] Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
 });

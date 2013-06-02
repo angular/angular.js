@@ -56,6 +56,9 @@ describe('jqLite', function() {
 
     it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
+      expect(nodes[0].parentNode).toBeDefined();
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
       expect(nodes[1].innerHTML).toEqual('2');
@@ -241,6 +244,25 @@ describe('jqLite', function() {
       expect(jqLite(a).data('prop')).toBeUndefined();
       expect(jqLite(b).data('prop')).toBeUndefined();
       expect(jqLite(c).data('prop')).toBeUndefined();
+    });
+
+    it('should only remove the specified value when providing a property name to removeData', function () {
+      var selected = jqLite(a);
+
+      expect(selected.data('prop1')).toBeUndefined();
+
+      selected.data('prop1', 'value');
+      selected.data('prop2', 'doublevalue');
+
+      expect(selected.data('prop1')).toBe('value');
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop1');
+
+      expect(selected.data('prop1')).toBeUndefined();
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop2');
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
@@ -644,12 +666,13 @@ describe('jqLite', function() {
 
 
     it('should read/write value', function() {
-      var element = jqLite('<div>abc</div>');
-      expect(element.length).toEqual(1);
-      expect(element[0].innerHTML).toEqual('abc');
+      var element = jqLite('<div>ab</div><span>c</span>');
+      expect(element.length).toEqual(2);
+      expect(element[0].innerHTML).toEqual('ab');
+      expect(element[1].innerHTML).toEqual('c');
       expect(element.text()).toEqual('abc');
       expect(element.text('xyz') == element).toBeTruthy();
-      expect(element.text()).toEqual('xyz');
+      expect(element.text()).toEqual('xyzxyz');
     });
   });
 
