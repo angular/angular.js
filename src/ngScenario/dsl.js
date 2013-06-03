@@ -295,7 +295,12 @@ angular.scenario.dsl('select', function() {
       if (option.length) {
         select.val(value);
       } else {
-        option = select.find('option:contains("' + value + '")');
+        option = select.find('option').filter(function(){
+          return _jQuery(this).text() === value;
+        });
+        if (!option.length) {
+          option = select.find('option:contains("' + value + '")');
+        }
         if (option.length) {
           select.val(option.val());
         } else {
