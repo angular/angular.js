@@ -591,8 +591,8 @@ function $CompileProvider($provide) {
           if (!node) {
             throw ngError(51, "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
           }
-          if (node.hasAttribute(attrStart)) depth++;
-          if (node.hasAttribute(attrEnd)) depth--;
+          if (node.hasAttribute && node.hasAttribute(attrStart)) depth++;
+          if (node.hasAttribute && node.hasAttribute(attrEnd)) depth--;
           nodes.push(node);
           node = node.nextSibling;
         } while (depth > 0);
