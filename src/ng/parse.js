@@ -714,7 +714,7 @@ function unwrapPromise(obj){
   
   // If we'v been passed a promise then unwrap it. 
   // If the value has not been resolved yet, bind to a throwaway object. This will simulate a read-only field.
-  if( obj && obj.then )    
+  if(obj && obj.then)
     return obj.$$v || {}
   else
     return obj;
