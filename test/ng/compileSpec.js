@@ -2746,6 +2746,17 @@ describe('$compile', function() {
       expect(element.text()).toEqual('1A1B;2A2B;');
     }));
 
+    it('should group on embedded text nodes', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+        '<div>' +
+          '<span ng-repeat-start="i in [1,2]">{{i}}A</span>' +
+          'X' +
+          '<span ng-repeat-end>{{i}}B;</span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('1AX1B;2AX2B;');
+    }));
 
     it('should group on $root compile function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
