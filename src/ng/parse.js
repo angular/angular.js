@@ -705,17 +705,19 @@ function parser(text, json, $filter, csp){
 // Parser helper functions
 //////////////////////////////////////////////////
 
-// Unwrap values from a promise
+/**
+ * Unwrap values from a promise
+ * @param {Object} obj object to unwrap
+ * @returns if passed a promise, the inner value. Otherwise original object.
+ */
 function unwrapPromise(obj){
   
-  // If we'v been passed a promise
-  if( obj.then ){
-
-    // Then unwrap the value. If the value has not been returned yet, bind to a throwaway object. This will simulate a read-only field.
+  // If we'v been passed a promise then unwrap it. 
+  // If the value has not been resolved yet, bind to a throwaway object. This will simulate a read-only field.
+  if( obj && obj.then )    
     return obj.$$v || {}
-  }
-
-  return obj;
+  else
+    return obj;
 }
 
 
