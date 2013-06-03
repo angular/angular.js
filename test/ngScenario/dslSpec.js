@@ -227,6 +227,7 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.select('test').option('A');
         expect(doc.find('[data-ng-model="test"]').val()).toEqual('A');
       });
+
       it('should select single option using x-ng', function() {
         doc.append(
           '<select x-ng-model="test">' +
@@ -238,14 +239,25 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('[x-ng-model="test"]').val()).toEqual('A');
       });
 
-
-
-
-      it('should select option by name', function() {
+      it('should select option by exact name', function() {
         doc.append(
             '<select ng-model="test">' +
-            '  <option value=A>one</option>' +
+            '  <option value=A>twenty one</option>' +
             '  <option value=B selected>two</option>' +
+            '  <option value=C>thirty one</option>' +
+            '  <option value=D>one</option>' +
+            '</select>'
+          );
+          $root.dsl.select('test').option('one');
+          expect(doc.find('[ng-model="test"]').val()).toEqual('D');
+      });
+
+      it('should select option by name if no exact match and name contains value', function() {
+        doc.append(
+            '<select ng-model="test">' +
+            '  <option value=A>twenty one</option>' +
+            '  <option value=B selected>two</option>' +
+            '  <option value=C>thirty one</option>' +
             '</select>'
           );
           $root.dsl.select('test').option('one');
