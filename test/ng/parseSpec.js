@@ -845,6 +845,86 @@ describe('parser', function() {
             scope.$digest();
             expect(scope.$eval('greeting')).toBe(undefined);
           });
+
+
+          describe('assignment into promises', function() {
+            // This behavior is analogous to assignments to non-promise values
+            // that are lazily set on the scope.
+            it('should evaluate a resolved object promise and set its value', inject(function($parse) {
+              scope.person = promise;
+              deferred.resolve({'name': 'Bill Gates'});
+
+              var getter = $parse('person.name');
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe('Bill Gates');
+              getter.assign(scope, 'Warren Buffet');
+              expect(getter(scope)).toBe('Warren Buffet');
+            }));
+
+
+            it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {            
+              scope.greeting = promise;
+              deferred.resolve('Salut!');
+              
+              var getter = $parse('greeting');
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe('Salut!');
+
+              getter.assign(scope, 'Bonjour');
+              expect(getter(scope)).toBe('Bonjour');
+            }));
+
+
+            it('should evaluate an unresolved promise and set and remember its value', inject(function($parse) {
+              scope.person = promise;
+
+              var getter = $parse('person.name');
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe(undefined);
+
+              getter.assign(scope, 'Bonjour');
+              scope.$digest();
+
+              expect(getter(scope)).toBe('Bonjour');
+
+              var c1Getter = $parse('person.A.B.C1');
+              scope.$digest();
+              expect(c1Getter(scope)).toBe(undefined);
+              c1Getter.assign(scope, 'c1_value');
+              scope.$digest();
+              expect(c1Getter(scope)).toBe('c1_value');
+
+              // Set another property on the person.A.B
+              var c2Getter = $parse('person.A.B.C2');
+              scope.$digest();
+              expect(c2Getter(scope)).toBe(undefined);
+              c2Getter.assign(scope, 'c2_value');
+              scope.$digest();
+              expect(c2Getter(scope)).toBe('c2_value');
+
+              // c1 should be unchanged.
+              expect($parse('person.A')(scope)).toEqual(
+                  {B: {C1: 'c1_value', C2: 'c2_value'}});
+            }));
+
+
+            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
+               inject(function($parse) {
+              scope.person = promise;
+              var c1Getter = $parse('person.A.B.C1');
+              c1Getter.assign(scope, 'c1_value');
+              // resolving the promise should update the tree.
+              deferred.resolve({A: {B: {C1: 'resolved_c1'}}});
+              scope.$digest();
+              expect(c1Getter(scope)).toEqual('resolved_c1');
+            }));
+          });
         });
 
         describe('dereferencing', function() {
