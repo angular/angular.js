@@ -705,6 +705,20 @@ function parser(text, json, $filter, csp){
 // Parser helper functions
 //////////////////////////////////////////////////
 
+// Unwrap values from a promise
+function unwrapPromise(obj){
+  
+  // If we'v been passed a promise
+  if( obj.then ){
+
+    // Then unwrap the value. If the value has not been returned yet, bind to a throwaway object. This will simulate a read-only field.
+    return obj.$$v || {}
+  }
+
+  return obj;
+}
+
+
 function setter(obj, path, setValue) {
   var element = path.split('.');
   for (var i = 0; element.length > 1; i++) {
@@ -714,7 +728,7 @@ function setter(obj, path, setValue) {
       propertyObj = {};
       obj[key] = propertyObj;
     }
-    obj = propertyObj;
+    obj = unwrapPromise( propertyObj );
   }
   obj[element.shift()] = setValue;
   return setValue;
