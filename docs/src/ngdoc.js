@@ -43,7 +43,7 @@ function Doc(text, file, line) {
   this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function() {
-  var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
+  var words = fs.readFileSync(__dirname + '/ignore.words', 'utf8');
   return words.toString().split(/[,\s\n\r]+/gm);
 })();
 
@@ -145,7 +145,7 @@ Doc.prototype = {
             example.addSource(name, content);
           });
           content.replace(/<file\s+src="([^"]+)"(?:\s+tag="([^"]+)")?(?:\s+name="([^"]+)")?\s*\/?>/gmi, function(_, file, tag, name) {
-            if(fspath.existsSync(file)) {
+            if(fs.existsSync(file)) {
               var content = fs.readFileSync(file, 'utf8');
               if(content && content.length > 0) {
                 if(tag && tag.length > 0) {
@@ -160,7 +160,7 @@ Doc.prototype = {
           return placeholder(example.toHtml());
         }).
         replace(/(?:\*\s+)?<file.+?src="([^"]+)"(?:\s+tag="([^"]+)")?\s*\/?>/i, function(_, file, tag) {
-          if(fspath.existsSync(file)) {
+          if(fs.existsSync(file)) {
             var content = fs.readFileSync(file, 'utf8');
             if(tag && tag.length > 0) {
               content = extractInlineDocCode(content, tag);
