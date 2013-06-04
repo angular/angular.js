@@ -24,7 +24,10 @@ To make your Angular application work on IE please make sure that:
            <![endif]-->
          </head>
          <body>
+         <!-- we need this div to boot angularjs tags on ie7+ -->
+           <div class="ng-app:myapp" id="ng-app">
            ...
+           </div>
          </body>
        </html>
      </pre>
