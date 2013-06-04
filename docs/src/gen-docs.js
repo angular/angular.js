@@ -39,8 +39,8 @@ function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
   writesFuture.push(writer.symlinkTemplate('css', 'dir'));
-  writesFuture.push(writer.symlinkTemplate('font', 'dir'));
   writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
+  writesFuture.push(writer.symlink('../../../components/', 'build/docs/components/lib', 'dir'));
   writesFuture.push(writer.symlinkTemplate('js', 'dir'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
