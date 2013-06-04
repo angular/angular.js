@@ -123,7 +123,6 @@ docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootS
 
 docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
-    element[0].focus();
     element.bind('focus', function() {
       scope.$apply(attrs.focused + '=true');
     });
