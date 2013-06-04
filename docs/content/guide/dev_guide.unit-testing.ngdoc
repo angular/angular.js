@@ -248,10 +248,11 @@ function PasswordCtrl($scope) {
 and the test is straight forward
 
 <pre>
-var pc = new PasswordCtrl();
-pc.password('abc');
-pc.grade();
-expect(pc.strength).toEqual('weak');
+var $scope = {};
+var pc = $controller('PasswordCtrl', { $scope: $scope });
+$scope.password = 'abc';
+$scope.grade();
+expect($scope.strength).toEqual('weak');
 </pre>
 
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
