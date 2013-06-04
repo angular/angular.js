@@ -257,10 +257,14 @@ function $RootScopeProvider(){
        *    - `string`: Evaluated as {@link guide/expression expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
        *
-       * @param {boolean=} objectEquality Compare object for equality rather than for reference.
+       * @param {boolean=|function()} objectEquality Compare object for equality rather than for reference, or supply with comparator function.
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality) {
+        var equalityComparator;
+        if(isFunction(objectEquality)){
+            equalityComparator = objectEquality;
+        }
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
@@ -269,7 +273,7 @@ function $RootScopeProvider(){
               last: initWatchVal,
               get: get,
               exp: watchExp,
-              eq: !!objectEquality
+              eq: equalityComparator || !!objectEquality
             };
 
         // in the case user pass string, we need to compile it, do we really need this ?
@@ -488,7 +492,7 @@ function $RootScopeProvider(){
        *
        */
       $digest: function() {
-        var watch, value, last,
+        var watch, value, last, equalityFunc,
             watchers,
             asyncQueue = this.$$asyncQueue,
             length,
@@ -518,11 +522,16 @@ function $RootScopeProvider(){
               while (length--) {
                 try {
                   watch = watchers[length];
+                  // If the watch provided with equality function, use that, else use default.
+                  if(isFunction(watch.eq))
+                      equalityFunc = watch.eq;
+                  else
+                      equalityFunc = equals;
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
                   if ((value = watch.get(current)) !== (last = watch.last) &&
-                      !(watch.eq
-                          ? equals(value, last)
+                      !(!!watch.eq
+                          ? equalityFunc(value, last)
                           : (typeof value == 'number' && typeof last == 'number'
                              && isNaN(value) && isNaN(last)))) {
                     dirty = true;
