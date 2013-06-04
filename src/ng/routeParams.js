@@ -14,6 +14,9 @@
  *
  * The service guarantees that the identity of the `$routeParams` object will remain unchanged
  * (but its properties will likely change) even when a route change occurs.
+ * 
+ * To be noted that this service is only usable once a route change has occurred, therefore not properly initialized 
+ * in the resolve methods of the $routeProvider
  *
  * @example
  * <pre>
