@@ -30,3 +30,16 @@ better than it is today!
 
 [list]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [contribute]: http://docs.angularjs.org/misc/contribute
+
+## Checklist
+
+* Feature improves existing core functionality
+* API is compatible with existing Angular apis and relevant standards (if applicable)
+* Contributor signed CLA now or in the past (after signing leave a comment here with your real name)
+* PR contains unit tests
+* PR contains e2e tests (if suitable)
+* PR contains documentation update
+* PR was tested on ci.angularjs.org for cross-browser compatibility
+* PR is rebased against recent master
+* PR is squashed into one commit per logical change
+* PR's commit message is descriptive and allows us to autogenerate release notes (required commit message format)
