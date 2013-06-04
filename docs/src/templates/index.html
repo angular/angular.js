@@ -31,11 +31,12 @@
           };
 
       addTag('base', {href: baseUrl});
-      addTag('link', {rel: 'stylesheet', href: 'css/bootstrap.min.css', type: 'text/css'});
-      addTag('link', {rel: 'stylesheet', href: 'css/font-awesome.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'components/bootstrap/css/' + (debug ? 'bootstrap.css' : 'bootstrap.min.css'), type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'components/font-awesome/css/' + (debug ? 'font-awesome.css' : 'font-awesome.min.css'), type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/prettify.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
-      if (jQuery) addTag('script', {src: debug ? 'js/jquery.js' : 'js/jquery.min.js'});
+      if (jQuery) addTag('script', {src: (debug ? 'components/jquery.js' : 'components/jquery.min.js')});
       addTag('script', {src: path('angular.js')}, sync);
       addTag('script', {src: path('angular-resource.js') }, sync);
       addTag('script', {src: path('angular-route.js') }, sync);
@@ -44,7 +45,8 @@
       addTag('script', {src: path('angular-mobile.js') }, sync);
       addTag('script', {src: 'components/angular-bootstrap.js' }, sync);
       addTag('script', {src: 'components/angular-bootstrap-prettify.js' }, sync);
-      addTag('script', {src: 'js/lunr.js' }, sync);
+      addTag('script', {src: 'components/google-code-prettify.js' }, sync);
+      addTag('script', {src: 'components/' + (debug ? 'lunr.js' : 'lunr.min.js') }, sync);
       addTag('script', {src: 'js/docs.js'}, sync);
       addTag('script', {src: 'docs-keywords.js'}, sync);
 
@@ -115,7 +117,7 @@
 
 <body>
   <header class="header" ng-controller="DocsNavigationCtrl">
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="http://angularjs.org" style="padding-top: 6px; padding-bottom: 0px;">

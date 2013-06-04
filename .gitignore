@@ -10,5 +10,6 @@ performance/temp*.html
 *~
 angular.js.tmproj
 node_modules
+components
 angular.xcodeproj
 .idea

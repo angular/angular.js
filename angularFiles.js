@@ -79,7 +79,7 @@ angularFiles = {
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
 
-    'docs/components/bootstrap/bootstrap.js'
+    'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
@@ -120,7 +120,7 @@ angularFiles = {
   'jstd': [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'lib/jquery/jquery.js',
+    'components/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -180,7 +180,7 @@ angularFiles = {
   'jstdJquery': [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'lib/jquery/jquery.js',
+    'components/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
