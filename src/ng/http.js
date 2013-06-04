@@ -649,53 +649,11 @@ function $HttpProvider() {
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse
       };
-      var headers = {};
+      var headers = mergeHeaders(requestConfig);
 
       extend(config, requestConfig);
       config.headers = headers;
       config.method = uppercase(config.method);
-
-      extend(headers,
-          defaults.headers.common,
-          defaults.headers[lowercase(config.method)],
-          requestConfig.headers);
-      /*
-      var reqTransformFn = config.transformRequest || defaults.transformRequest,
-          respTransformFn = config.transformResponse || defaults.transformResponse,
-          xsrfHeader = {},
-          xsrfCookieName = config.xsrfCookieName || defaults.xsrfCookieName,
-          xsrfHeaderName = config.xsrfHeaderName || defaults.xsrfHeaderName,
-          xsrfToken = isSameDomain(config.url, $browser.url()) ? 
-            $browser.cookies()[xsrfCookieName] : undefined;
-      xsrfHeader[xsrfHeaderName] = xsrfToken;
-
-      var reqHeaders = extend(xsrfHeader, config.headers),
-          defHeaders = defaults.headers,
-          reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
-          promise, found, lowercaseHeader;
-
-      defHeaders = extend(defHeaders.common, defHeaders[lowercase(config.method)]);
-      
-      forEach(defHeaders, function(defValue, defHeader) {
-        found = false;
-        lowercaseHeader = lowercase(defHeader);
-
-        forEach(reqHeaders, function(reqValue, reqHeader) {
-          found = found || lowercase(reqHeader) === lowercaseHeader;
-        });
-
-        !found && (reqHeaders[defHeader] = defValue);
-      });
-
-      // strip content-type if data is undefined
-      if (isUndefined(config.data)) {
-        forEach(reqHeaders, function(value, header) {
-          if (lowercase(header) === 'content-type') {
-              delete reqHeaders[header];
-          }
-        });
-      }
-      */
 
       var xsrfValue = isSameDomain(config.url, $browser.url())
           ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
@@ -710,7 +668,11 @@ function $HttpProvider() {
 
         // strip content-type if data is undefined
         if (isUndefined(config.data)) {
-          delete headers['Content-Type'];
+          forEach(headers, function(value, header) {
+            if (lowercase(header) === 'content-type') {
+                delete headers[header];
+            }
+          });
         }
 
         if (isUndefined(config.withCredentials) && !isUndefined(defaults.withCredentials)) {
@@ -765,6 +727,30 @@ function $HttpProvider() {
         return (isSuccess(response.status))
           ? resp
           : $q.reject(resp);
+      }
+
+      function mergeHeaders(config) {
+        var defHeaders = defaults.headers,
+            reqHeaders = extend({}, config.headers),
+            defHeaderName, lowercaseDefHeaderName, reqHeaderName;
+
+        defHeaders = extend({}, defHeaders.common, defHeaders[lowercase(config.method)]);
+
+        // using for-in instead of forEach to avoid unecessary iteration after header has been found
+        defaultHeadersIteration:
+        for (defHeaderName in defHeaders) {
+          lowercaseDefHeaderName = lowercase(defHeaderName);
+
+          for (reqHeaderName in reqHeaders) {
+            if (lowercase(reqHeaderName) === lowercaseDefHeaderName) {
+              continue defaultHeadersIteration;
+            }
+          }
+
+          reqHeaders[defHeaderName] = defHeaders[defHeaderName];
+        }
+
+        return reqHeaders;
       }
     }
 
