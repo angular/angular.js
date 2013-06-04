@@ -1,3 +1,4 @@
+
 @ngdoc overview
 @name Developer Guide: Dependency Injection
 @description
@@ -127,7 +128,7 @@ are the names of the dependencies.
 </pre>
 
 Given a function the injector can infer the names of the service to inject by examining the
-function declaration and extracting the parameter names. In the above example `$scope`, and
+function declaration and extracting the argument names. In the above example `$scope`, and
 `greeter` are two services which need to be injected into the function.
 
 While straightforward, this method will not work with JavaScript minifiers/obfuscators as they
