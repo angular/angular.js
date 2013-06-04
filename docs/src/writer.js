@@ -90,10 +90,12 @@ exports.replace = function(content, replacements) {
   return content;
 }
 
-exports.copyDir = function copyDir(dir) {
-  return qfs.listTree('docs/' + dir).then(function(files) {
+exports.copyDir = function copyDir(from, to) {
+  return qfs.listTree(from).then(function(files) {
     files.forEach(function(file) {
-      exports.copy(file, file.replace(/^docs\//, ''));
+      var path = to ? file.replace(from, to) : from;
+      path = path.replace('/docs/build', '');
+      exports.copy(file, path);
     });
   });
 };

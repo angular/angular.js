@@ -5,10 +5,12 @@
   "codename": "spooky-giraffe",
   "devDependencies": {
     "grunt": "0.4.0",
+    "bower": "0.9.2",
     "grunt-contrib-clean": "0.4.0",
     "grunt-contrib-compress": "0.4.1",
     "grunt-contrib-connect": "0.1.2",
     "grunt-contrib-copy": "0.4.1",
+    "grunt-shell": "~0.2.2",
     "jasmine-node": "1.2.3",
     "closure-compiler" : "0.2.0",
     "q": "~0.9.2",

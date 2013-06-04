@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
@@ -63,11 +64,21 @@ module.exports = function(grunt) {
     clean: {build: ['build']},
 
 
+    shell: {
+      bower: {
+        command: './node_modules/bower/bin/bower install',
+        options: {
+            stdout: false
+        }
+      }
+    },
+
+
     build: {
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
-          'lib/jquery/jquery.js',
+          'components/jquery/jquery.js',
           util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
         ],
         styles: {
@@ -124,18 +135,6 @@ module.exports = function(grunt) {
       cookies: {
         dest: 'build/angular-cookies.js',
         src: util.wrap(['src/ngCookies/cookies.js'], 'module')
-      },
-      bootstrap: {
-        dest: 'build/docs/components/angular-bootstrap.js',
-        src: util.wrap(['docs/components/bootstrap/bootstrap.js'], 'module')
-      },
-      bootstrapPrettify: {
-        dest: 'build/docs/components/angular-bootstrap-prettify.js',
-        src: util.wrap(['docs/components/bootstrap/bootstrap-prettify.js', 'docs/components/bootstrap/google-prettify/prettify.js'], 'module'),
-        styles: {
-          css: ['docs/components/bootstrap/google-prettify/prettify.css'],
-          minify: true
-        }
       }
     },
 
@@ -147,9 +146,7 @@ module.exports = function(grunt) {
       mobile: 'build/angular-mobile.js',
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
-      sanitize: 'build/angular-sanitize.js',
-      bootstrap: 'build/docs/components/angular-bootstrap.js',
-      bootstrapPrettify: 'build/docs/components/angular-bootstrap-prettify.js',
+      sanitize: 'build/angular-sanitize.js'
     },
 
 
@@ -184,9 +181,9 @@ module.exports = function(grunt) {
 
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
-  grunt.registerTask('minify', ['clean', 'build', 'minall']);
+  grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['clean', 'buildall', 'minall', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
