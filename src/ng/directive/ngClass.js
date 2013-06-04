@@ -73,7 +73,8 @@ function classDirective(name, selector) {
  * @element ANY
  * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class
- *   names, an array, or a map of class names to boolean values.
+ *   names, an array, or a map of class names to boolean values. In the later case,
+ *   for each true value, the corresponding class will be added to the element.
  *
  * @example
    <example>
