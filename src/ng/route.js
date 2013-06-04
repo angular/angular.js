@@ -105,7 +105,9 @@ function $RouteProvider(){
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
+      routes[path] = isFunction(route) 
+        ? route
+        : extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
 
     // create redirection for trailing slashes
     if (path) {
@@ -477,8 +479,16 @@ function $RouteProvider(){
       var params, match;
       forEach(routes, function(route, path) {
         if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
+          var search = $location.search();
+          
+          if (isFunction(route)) {
+            // route is a function, call it to get the actual route to use
+            // route function can update params or search
+            route = route(params, search);
+          }
+          
           match = inherit(route, {
-            params: extend({}, $location.search(), params),
+            params: extend({}, search, params),
             pathParams: params});
           match.$$route = route;
         }
