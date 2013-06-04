@@ -16,7 +16,7 @@
     <doc:source>
       <script type="text/ng-template" id="/tpl.html">
         Content of the template.
-      </script>
+      &lt;/script>
 
       <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
       <div id="tpl-content" ng-include src="currentTpl"></div>
