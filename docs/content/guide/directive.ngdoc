@@ -63,7 +63,7 @@ api/ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is sh
 here:
 
 <pre>
-<a href="img/{{username}}.jpg">Hello {{username}}!</a>
+<a ng-href="img/{{username}}.jpg">Hello {{username}}!</a>
 </pre>
 
 
@@ -263,29 +263,38 @@ Here's an example directive declared with a Directive Definition Object:
   myModule.directive('directiveName', function factory(injectables) {
     var directiveDefinitionObject = {
       priority: 0,
-      template: '<div></div>',
-      templateUrl: 'directive.html',
+      template: '<div></div>', // or // function(tElement, tAttrs) { ... },
+      // or
+      // templateUrl: 'directive.html', // or // function(tElement, tAttrs) { ... },
       replace: false,
       transclude: false,
       restrict: 'A',
       scope: false,
-      controller: ["$scope", "$element", "$attrs", "$transclude", "otherInjectables",
-        function($scope, $element, $attrs, $transclude, otherInjectables) { ... }],
+      controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
+      require: 'siblingDirectiveName', // or // ['^parentDirectiveName', '?optionalDirectiveName', '?^optionalParent'],
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
           post: function postLink(scope, iElement, iAttrs, controller) { ... }
         }
+	// or
+	// return function postLink( ... ) { ... }
       },
-      link: function postLink(scope, iElement, iAttrs) { ... }
+      // or
+      // link: {
+      //  pre: function preLink(scope, iElement, iAttrs, controller) { ... },
+      //  post: function postLink(scope, iElement, iAttrs, controller) { ... }
+      // }
+      // or
+      // link: function postLink( ... ) { ... }
     };
     return directiveDefinitionObject;
   });
 </pre>
 
 In most cases you will not need such fine control and so the above can be simplified. You can still
-return a Directive Definition Object, but only setting the 'compile' function property of the Object,
-and rely on the default values for other properties.
+return a Directive Definition Object, but only setting the 'link' function property of the Object,
+and rely on the default values for other properties. 
 
 Therefore the above can be simplified as:
 
@@ -294,24 +303,11 @@ Therefore the above can be simplified as:
 
   myModule.directive('directiveName', function factory(injectables) {
     var directiveDefinitionObject = {
-      compile: function compile(tElement, tAttrs) {
-        return function postLink(scope, iElement, iAttrs) { ... }
-      }
+      link: function postLink(scope, iElement, iAttrs) { ... }
     };
     return directiveDefinitionObject;
-  });
-</pre>
-
-Finally, most directives concern themselves only with instances, not with template transformations, allowing
-further simplification.
-
-Here we only define the postLink function:
-
-<pre>
-  var myModule = angular.module(...);
-
-  myModule.directive('directiveName', function factory(injectables) {
-    return function postLink(scope, iElement, iAttrs) { ... }
+    // or
+    // return function postLink(scope, iElement, iAttrs) { ... }
   });
 </pre>
 
@@ -385,9 +381,9 @@ compiler}. The attributes are:
         by calling the `localFn` as `localFn({amount: 22})`.
 
   * `controller` - Controller constructor function. The controller is instantiated before the
-    pre-linking phase and it is shared with other directives if they request it by name (see
+    pre-linking phase and it is shared with other directives (see
     `require` attribute). This allows the directives to communicate with each other and augment
-    each other's behavior. The controller is injectable with the following locals:
+    each other's behavior. The controller is injectable (and supports bracket notation) with the following locals:
 
     * `$scope` - Current scope associated with the element
     * `$element` - Current element
@@ -395,25 +391,20 @@ compiler}. The attributes are:
     * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
       `function(cloneLinkingFn)`.
 
-    To avoid errors after minification the bracket notation should be used:
+  * `require` - Require another directive and inject it's _controller_ as the fourth argument to the linking function. The
+    `require` takes a string name (or array of strings) of the directive(s) to pass in. If an array is used, the injected
+    argument will be an array in corresponding order. If no such directive can be
+    found, or if the directive does not have a controller, then an error is raised. The name can be prefixed with:
 
-    <pre>
-    controller: ['$scope', '$element', '$attrs', '$transclude', function($scope, $element, $attrs, $transclude) { ... }]
-    </pre>
-
-  * `require` - Require another controller be passed into current directive linking function. The
-    `require` takes a name of the directive controller to pass in. If no such controller can be
-    found an error is raised. The name can be prefixed with:
-
-    * `?` - Don't raise an error. This makes the require dependency optional.
-    * `^` - Look for the controller on parent elements as well.
+    * `?` - Required dependency is optional. The parameter might be `null/undefined`.
+    * `^` - Look for the directive on parent/ancestor elements as well.
 
 
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
-    declaration style. If omitted directives are allowed on attributes only.
+    declaration style. If omitted, the default (attributes only) is used.
 
     * `E` - Element name: `<my-directive></my-directive>`
-    * `A` - Attribute: `<div my-directive="exp"></div>`
+    * `A` - Attribute (default): `<div my-directive="exp"></div>`
     * `C` - Class: `<div class="my-directive: exp;"></div>`
     * `M` - Comment: `<!-- directive: my-directive exp -->`
 
