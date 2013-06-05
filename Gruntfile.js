@@ -104,12 +104,21 @@ module.exports = function(grunt) {
         src: util.wrap([
           'src/ngSanitize/sanitize.js',
           'src/ngSanitize/directive/ngBindHtml.js',
-          'src/ngSanitize/filter/linky.js',
+          'src/ngSanitize/filter/linky.js'
         ], 'module')
       },
       resource: {
         dest: 'build/angular-resource.js',
         src: util.wrap(['src/ngResource/resource.js'], 'module')
+      },
+      route: {
+        dest: 'build/angular-route.js',
+        src: util.wrap([
+          'src/ngRoute/routeUtils.js',
+          'src/ngRoute/route.js',
+          'src/ngRoute/routeParams.js',
+          'src/ngRoute/directive/ngView.js'
+        ], 'module')
       },
       cookies: {
         dest: 'build/angular-cookies.js',
@@ -136,6 +145,7 @@ module.exports = function(grunt) {
       loader: 'build/angular-loader.js',
       mobile: 'build/angular-mobile.js',
       resource: 'build/angular-resource.js',
+      route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js',
       bootstrap: 'build/docs/components/angular-bootstrap.js',
       bootstrapPrettify: 'build/docs/components/angular-bootstrap-prettify.js',

@@ -679,7 +679,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 };
 
 
-angular.module('docsApp', ['ngResource', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
+angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
   config(function($locationProvider) {
     $locationProvider.html5Mode(true).hashPrefix('!');
   }).

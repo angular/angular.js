@@ -3,6 +3,8 @@
 describe('$route', function() {
   var $httpBackend;
 
+  beforeEach(module('ngRoute'));
+
   beforeEach(module(function() {
     return function(_$httpBackend_) {
       $httpBackend = _$httpBackend_;
@@ -946,7 +948,7 @@ describe('$route', function() {
         var routeChangeSpy = jasmine.createSpy('route change');
 
         module(function($routeProvider) {
-          $routeProvider.when('/bar/:barId', {controller: noop, reloadOnSearch: false});
+          $routeProvider.when('/bar/:barId', {controller: angular.noop, reloadOnSearch: false});
         });
 
         inject(function($route, $location, $rootScope, $routeParams) {
