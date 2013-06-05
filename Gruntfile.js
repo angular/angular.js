@@ -47,6 +47,7 @@ module.exports = function(grunt) {
     test: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
       end2end: 'karma-e2e.conf.js'
@@ -55,7 +56,8 @@ module.exports = function(grunt) {
 
     autotest: {
       jqlite: 'karma-jqlite.conf.js',
-      jquery: 'karma-jquery.conf.js'
+      jquery: 'karma-jquery.conf.js',
+      docs: 'karma-docs.conf.js',
     },
 
 
@@ -66,7 +68,7 @@ module.exports = function(grunt) {
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
-          'lib/jquery/jquery.js',
+          'components/jquery/jquery.js',
           util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
         ],
         styles: {
@@ -117,15 +119,15 @@ module.exports = function(grunt) {
       },
       bootstrap: {
         dest: 'build/docs/components/angular-bootstrap.js',
-        src: util.wrap(['docs/components/bootstrap/bootstrap.js'], 'module')
+        src: util.wrap(['docs/components/angular-bootstrap/bootstrap.js'], 'module')
       },
       bootstrapPrettify: {
         dest: 'build/docs/components/angular-bootstrap-prettify.js',
-        src: util.wrap(['docs/components/bootstrap/bootstrap-prettify.js', 'docs/components/bootstrap/google-prettify/prettify.js'], 'module'),
-        styles: {
-          css: ['docs/components/bootstrap/google-prettify/prettify.css'],
-          minify: true
-        }
+        src: util.wrap(['docs/components/angular-bootstrap/bootstrap-prettify.js', 'components/google-code-prettify/src/prettify.js'], 'module')
+      },
+      showdown: {
+        dest: 'build/docs/components/showdown.js',
+        src: 'node_modules/showdown/src/showdown.js'
       }
     },
 
