@@ -124,6 +124,10 @@ module.exports = function(grunt) {
       bootstrapPrettify: {
         dest: 'build/docs/components/angular-bootstrap-prettify.js',
         src: util.wrap(['docs/components/angular-bootstrap/bootstrap-prettify.js', 'components/google-code-prettify/src/prettify.js'], 'module')
+      },
+      showdown: {
+        dest: 'build/docs/components/showdown.js',
+        src: 'node_modules/showdown/src/showdown.js'
       }
     },
 
