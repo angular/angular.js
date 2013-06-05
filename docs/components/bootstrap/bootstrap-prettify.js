@@ -6,6 +6,7 @@ var service = { value: {} };
 var DEPENDENCIES = {
   'angular.js': 'http://code.angularjs.org/' + angular.version.full + '/angular.min.js',
   'angular-resource.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-resource.min.js',
+  'angular-route.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-route.min.js',
   'angular-sanitize.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-sanitize.min.js',
   'angular-cookies.js': 'http://code.angularjs.org/' + angular.version.full + '/angular-cookies.min.js'
 };

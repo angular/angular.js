@@ -1,13 +1,15 @@
 'use strict';
 
+ngRouteModule.directive('ngView', ngViewFactory);
+
 /**
  * @ngdoc directive
- * @name ng.directive:ngView
+ * @name ngRoute.directive:ngView
  * @restrict ECA
  *
  * @description
  * # Overview
- * `ngView` is a directive that complements the {@link ng.$route $route} service by
+ * `ngView` is a directive that complements the {@link ngRoute.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
@@ -21,7 +23,7 @@
  *
  * @scope
  * @example
-    <example module="ngView" animations="true">
+    <example module="ngViewExample" deps="angular-route.js" animations="true">
       <file name="index.html">
         <div ng-controller="MainCntl as main">
           Choose:
@@ -101,7 +103,7 @@
       </file>
 
       <file name="script.js">
-        angular.module('ngView', [], function($routeProvider, $locationProvider) {
+        angular.module('ngViewExample', ['ngRoute'], function($routeProvider, $locationProvider) {
           $routeProvider.when('/Book/:bookId', {
             templateUrl: 'book.html',
             controller: BookCntl,
@@ -154,16 +156,14 @@
 
 /**
  * @ngdoc event
- * @name ng.directive:ngView#$viewContentLoaded
- * @eventOf ng.directive:ngView
+ * @name ngRoute.directive:ngView#$viewContentLoaded
+ * @eventOf ngRoute.directive:ngView
  * @eventType emit on the current ngView scope
  * @description
  * Emitted every time the ngView content is reloaded.
  */
-var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
-                       '$controller', '$animator',
-               function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
-                        $controller,  $animator) {
+ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animator'];
+function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animator) {
   return {
     restrict: 'ECA',
     terminal: true,
@@ -223,4 +223,4 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
       }
     }
   };
-}];
+}

@@ -1,22 +1,32 @@
 'use strict';
 
+/**
+ * @ngdoc overview
+ * @name ngRoute
+ * @description
+ *
+ * Module that provides routing and deeplinking services and directives for angular apps.
+ */
+
+var ngRouteModule = angular.module('ngRoute', ['ng']).
+                        provider('$route', $RouteProvider);
 
 /**
  * @ngdoc object
- * @name ng.$routeProvider
+ * @name ngRoute.$routeProvider
  * @function
  *
  * @description
  *
- * Used for configuring routes. See {@link ng.$route $route} for an example.
+ * Used for configuring routes. See {@link ngRoute.$route $route} for an example.
  */
 function $RouteProvider(){
   var routes = {};
 
   /**
    * @ngdoc method
-   * @name ng.$routeProvider#when
-   * @methodOf ng.$routeProvider
+   * @name ngRoute.$routeProvider#when
+   * @methodOf ngRoute.$routeProvider
    *
    * @param {string} path Route path (matched against `$location.path`). If `$location.path`
    *    contains redundant trailing slash or is missing one, the route will still match and the
@@ -47,7 +57,7 @@ function $RouteProvider(){
    *    - `controllerAs` – `{string=}` – A controller alias name. If present the controller will be
    *      published to scope under the `controllerAs` name.
    *    - `template` – `{string=|function()=}` – html template as a string or function that returns
-   *      an html template as a string which should be used by {@link ng.directive:ngView ngView} or
+   *      an html template as a string which should be used by {@link ngRoute.directive:ngView ngView} or
    *      {@link ng.directive:ngInclude ngInclude} directives.
    *      This property takes precedence over `templateUrl`.
    *
@@ -57,7 +67,7 @@ function $RouteProvider(){
    *        `$location.path()` by applying the current route
    *
    *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
-   *      template that should be used by {@link ng.directive:ngView ngView}.
+   *      template that should be used by {@link ngRoute.directive:ngView ngView}.
    *
    *      If `templateUrl` is a function, it will be called with the following parameters:
    *
@@ -121,8 +131,8 @@ function $RouteProvider(){
 
   /**
    * @ngdoc method
-   * @name ng.$routeProvider#otherwise
-   * @methodOf ng.$routeProvider
+   * @name ngRoute.$routeProvider#otherwise
+   * @methodOf ngRoute.$routeProvider
    *
    * @description
    * Sets route definition that will be used on route change when no other route definition
@@ -142,7 +152,7 @@ function $RouteProvider(){
 
     /**
      * @ngdoc object
-     * @name ng.$route
+     * @name ngRoute.$route
      * @requires $location
      * @requires $routeParams
      *
@@ -163,10 +173,10 @@ function $RouteProvider(){
      * Is used for deep-linking URLs to controllers and views (HTML partials).
      * It watches `$location.url()` and tries to map the path to an existing route definition.
      *
-     * You can define routes through {@link ng.$routeProvider $routeProvider}'s API.
+     * You can define routes through {@link ngRoute.$routeProvider $routeProvider}'s API.
      *
-     * The `$route` service is typically used in conjunction with {@link ng.directive:ngView ngView}
-     * directive and the {@link ng.$routeParams $routeParams} service.
+     * The `$route` service is typically used in conjunction with {@link ngRoute.directive:ngView ngView}
+     * directive and the {@link ngRoute.$routeParams $routeParams} service.
      *
      * @example
        This example shows how changing the URL hash causes the `$route` to match a route against the
@@ -175,7 +185,7 @@ function $RouteProvider(){
        Note that this example is using {@link ng.directive:script inlined templates}
        to get it working on jsfiddle as well.
 
-     <example module="ngView">
+     <example module="ngView" deps="angular-route.js">
        <file name="index.html">
          <div ng-controller="MainCntl">
            Choose:
@@ -208,7 +218,7 @@ function $RouteProvider(){
        </file>
 
        <file name="script.js">
-         angular.module('ngView', [], function($routeProvider, $locationProvider) {
+         angular.module('ngView', ['ngRoute'], function($routeProvider, $locationProvider) {
            $routeProvider.when('/Book/:bookId', {
              templateUrl: 'book.html',
              controller: BookCntl,
@@ -267,8 +277,8 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ng.$route#$routeChangeStart
-     * @eventOf ng.$route
+     * @name ngRoute.$route#$routeChangeStart
+     * @eventOf ngRoute.$route
      * @eventType broadcast on root scope
      * @description
      * Broadcasted before a route change. At this  point the route services starts
@@ -283,12 +293,12 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ng.$route#$routeChangeSuccess
-     * @eventOf ng.$route
+     * @name ngRoute.$route#$routeChangeSuccess
+     * @eventOf ngRoute.$route
      * @eventType broadcast on root scope
      * @description
      * Broadcasted after a route dependencies are resolved.
-     * {@link ng.directive:ngView ngView} listens for the directive
+     * {@link ngRoute.directive:ngView ngView} listens for the directive
      * to instantiate the controller and render the view.
      *
      * @param {Object} angularEvent Synthetic event object.
@@ -298,8 +308,8 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ng.$route#$routeChangeError
-     * @eventOf ng.$route
+     * @name ngRoute.$route#$routeChangeError
+     * @eventOf ngRoute.$route
      * @eventType broadcast on root scope
      * @description
      * Broadcasted if any of the resolve promises are rejected.
@@ -311,8 +321,8 @@ function $RouteProvider(){
 
     /**
      * @ngdoc event
-     * @name ng.$route#$routeUpdate
-     * @eventOf ng.$route
+     * @name ngRoute.$route#$routeUpdate
+     * @eventOf ngRoute.$route
      * @eventType broadcast on root scope
      * @description
      *
@@ -326,14 +336,14 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name ng.$route#reload
-           * @methodOf ng.$route
+           * @name ngRoute.$route#reload
+           * @methodOf ngRoute.$route
            *
            * @description
            * Causes `$route` service to reload the current route even if
            * {@link ng.$location $location} hasn't changed.
            *
-           * As a result of that, {@link ng.directive:ngView ngView}
+           * As a result of that, {@link ngRoute.directive:ngView ngView}
            * creates new scope, reinstantiates the controller.
            */
           reload: function() {

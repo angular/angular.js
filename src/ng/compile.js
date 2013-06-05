@@ -172,7 +172,7 @@ function $CompileProvider($provide) {
    */
    this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
-      assertArg(directiveFactory, 'directive');
+      assertArg(directiveFactory, 'directiveFactory');
       if (!hasDirectives.hasOwnProperty(name)) {
         hasDirectives[name] = [];
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',

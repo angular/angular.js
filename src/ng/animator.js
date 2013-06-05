@@ -18,7 +18,7 @@
  * | Directive                                                 | Supported Animations                               |
  * |========================================================== |====================================================|
  * | {@link ng.directive:ngRepeat#animations ngRepeat}         | enter, leave and move                              |
- * | {@link ng.directive:ngView#animations ngView}             | enter and leave                                    |
+ * | {@link ngRoute.directive:ngView#animations ngView}        | enter and leave                                    |
  * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |
  * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
  * | {@link ng.directive:ngIf#animations ngIf}                 | enter and leave                                    |
@@ -183,7 +183,7 @@ var $AnimatorProvider = function() {
      */
      var AnimatorService = function(scope, attrs) {
         var animator = {};
-  
+
         /**
          * @ngdoc function
          * @name ng.animator#enter
@@ -198,7 +198,7 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
         */
         animator.enter = animateActionFactory('enter', insert, noop);
-  
+
         /**
          * @ngdoc function
          * @name ng.animator#leave
@@ -212,7 +212,7 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the leave animation
         */
         animator.leave = animateActionFactory('leave', noop, remove);
-  
+
         /**
          * @ngdoc function
          * @name ng.animator#move
@@ -228,7 +228,7 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
         */
         animator.move = animateActionFactory('move', move, noop);
-  
+
         /**
          * @ngdoc function
          * @name ng.animator#show
@@ -241,7 +241,7 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
         */
         animator.show = animateActionFactory('show', show, noop);
-  
+
         /**
          * @ngdoc function
          * @name ng.animator#hide
@@ -262,14 +262,14 @@ var $AnimatorProvider = function() {
          * @description
          * Triggers a custom animation event to be executed on the given element
          *
-         * @param {string} event the name of the custom event 
+         * @param {string} event the name of the custom event
          * @param {jQuery/jqLite element} element the element that will be animated
         */
         animator.animate = function(event, element) {
           animateActionFactory(event, noop, noop)(element);
         }
         return animator;
-  
+
         function animateActionFactory(type, beforeFn, afterFn) {
           return function(element, parent, after) {
             var ngAnimateValue = scope.$eval(attrs.ngAnimate);
@@ -329,10 +329,10 @@ var $AnimatorProvider = function() {
                 polyfillStart(element, done, memento);
               } else if (isFunction($window.getComputedStyle)) {
                 //one day all browsers will have these properties
-                var w3cAnimationProp = 'animation'; 
+                var w3cAnimationProp = 'animation';
                 var w3cTransitionProp = 'transition';
 
-                //but some still use vendor-prefixed styles 
+                //but some still use vendor-prefixed styles
                 var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
                 var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
 
@@ -340,7 +340,7 @@ var $AnimatorProvider = function() {
                     delayKey = 'Delay',
                     animationIterationCountKey = 'IterationCount',
                     duration = 0;
-                
+
                 //we want all the styles defined before and after
                 var ELEMENT_NODE = 1;
                 forEach(element, function(element) {
@@ -387,15 +387,15 @@ var $AnimatorProvider = function() {
             }
           };
         }
-  
+
         function show(element) {
           element.css('display', '');
         }
-  
+
         function hide(element) {
           element.css('display', 'none');
         }
-  
+
         function insert(element, parent, after) {
           var afterNode = after && after[after.length - 1];
           var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
@@ -408,11 +408,11 @@ var $AnimatorProvider = function() {
             }
           });
         }
-  
+
         function remove(element) {
           element.remove();
         }
-  
+
         function move(element, parent, after) {
           // Do not remove element before insert. Removing will cause data associated with the
           // element to be dropped. Insert will implicitly do the remove.

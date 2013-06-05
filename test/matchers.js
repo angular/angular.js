@@ -190,3 +190,17 @@ jasmine.Matchers.prototype.toThrow = function(expected) {
 
   return result;
 };
+
+
+/**
+ * Create jasmine.Spy on given method, but ignore calls without arguments
+ * This is helpful when need to spy only setter methods and ignore getters
+ */
+function spyOnlyCallsWithArgs(obj, method) {
+  var spy = spyOn(obj, method);
+  obj[method] = function() {
+    if (arguments.length) return spy.apply(this, arguments);
+    return spy.originalValue.apply(this);
+  };
+  return spy;
+}

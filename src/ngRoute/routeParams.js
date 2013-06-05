@@ -1,14 +1,17 @@
 'use strict';
 
+ngRouteModule.provider('$routeParams', $RouteParamsProvider);
+
+
 /**
  * @ngdoc object
- * @name ng.$routeParams
+ * @name ngRoute.$routeParams
  * @requires $route
  *
  * @description
  * Current set of route parameters. The route parameters are a combination of the
  * {@link ng.$location $location} `search()`, and `path()`. The `path` parameters
- * are extracted when the {@link ng.$route $route} path is matched.
+ * are extracted when the {@link ngRoute.$route $route} path is matched.
  *
  * In case of parameter name collision, `path` params take precedence over `search` params.
  *
@@ -26,5 +29,5 @@
  * </pre>
  */
 function $RouteParamsProvider() {
-  this.$get = valueFn({});
+  this.$get = function() { return {}; };
 }
