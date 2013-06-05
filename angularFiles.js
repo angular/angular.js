@@ -78,7 +78,6 @@ angularFiles = {
     'src/ngMobile/swipe.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
-
     'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
