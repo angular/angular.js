@@ -48,6 +48,7 @@ module.exports = function(grunt) {
     test: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
       end2end: 'karma-e2e.conf.js'
@@ -57,7 +58,8 @@ module.exports = function(grunt) {
     autotest: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
-      modules: 'karma-modules.conf.js'
+      modules: 'karma-modules.conf.js',
+      docs: 'karma-docs.conf.js',
     },
 
 
