@@ -14,6 +14,7 @@ files = [
 
   'build/docs/components/lib/lunr.js/lunr.js',
   'build/docs/components/lib/google-code-prettify/src/prettify.js',
+  'build/docs/components/showdown.js',
 
   'build/docs/components/angular-bootstrap.js',
   'build/docs/components/angular-bootstrap-prettify.js',
