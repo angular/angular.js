@@ -77,7 +77,6 @@ angularFiles = {
     'src/ngMobile/swipe.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
-
     'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
@@ -116,9 +115,7 @@ angularFiles = {
     'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js',
     'test/ngMobile/*.js',
-    'test/ngMobile/directive/*.js',
-    'docs/component-spec/bootstrap/*.js',
-    'docs/component-spec/*.js'
+    'test/ngMobile/directive/*.js'
   ],
 
   'jstd': [
