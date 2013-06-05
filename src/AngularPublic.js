@@ -48,8 +48,7 @@ function publishExternalAPI(angular){
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
-    'callbacks': {counter: 0},
-    'noConflict': noConflict
+    'callbacks': {counter: 0}
   });
 
   angularModule = setupModuleLoader(window);
