@@ -145,7 +145,7 @@ Doc.prototype = {
             example.addSource(name, content);
           });
           content.replace(/<file\s+src="([^"]+)"(?:\s+tag="([^"]+)")?(?:\s+name="([^"]+)")?\s*\/?>/gmi, function(_, file, tag, name) {
-            if(fspath.existsSync(file)) {
+            if(fs.existsSync(file)) {
               var content = fs.readFileSync(file, 'utf8');
               if(content && content.length > 0) {
                 if(tag && tag.length > 0) {
@@ -160,7 +160,7 @@ Doc.prototype = {
           return placeholder(example.toHtml());
         }).
         replace(/(?:\*\s+)?<file.+?src="([^"]+)"(?:\s+tag="([^"]+)")?\s*\/?>/i, function(_, file, tag) {
-          if(fspath.existsSync(file)) {
+          if(fs.existsSync(file)) {
             var content = fs.readFileSync(file, 'utf8');
             if(tag && tag.length > 0) {
               content = extractInlineDocCode(content, tag);
@@ -361,7 +361,7 @@ Doc.prototype = {
 
   html_usage_parameters: function(dom) {
     var self = this;
-    var params = this.param ? this.param : []; 
+    var params = this.param ? this.param : [];
     if(params.length > 0) {
       dom.html('<h2 id="parameters">Parameters</h2>');
       dom.html('<table class="variables-matrix table table-bordered table-striped">');
