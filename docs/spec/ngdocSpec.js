@@ -196,6 +196,28 @@ describe('ngdoc', function() {
     });
 
 
+    describe('inline annotations', function() {
+      it('should convert inline docs annotations into proper HTML', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate supertext\n<br />\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext"')
+      });
+
+      it('should allow for a custom regular expression for matching', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate=\"soon\" supertext\n<p>soon</p>\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext" data-title="Info">soon</div>')
+      });
+
+      it('should allow for a custom title to be set', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate=\"soon\" coming soon|supertext\n<p>soon</p>\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext" data-title="coming soon">soon</div>')
+      });
+    });
   });
 
   describe('trim', function() {

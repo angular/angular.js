@@ -411,6 +411,18 @@ docsApp.serviceFactory.sections = function sections() {
 
 
 docsApp.controller.DocsController = function($scope, $location, $window, $cookies, sections) {
+  $scope.fold = function(url) {
+    if(url) {
+      $scope.docs_fold = '/notes/' + url;
+      if(/\/build/.test($window.location.href)) {
+        $scope.docs_fold = '/build/docs' + $scope.docs_fold;
+      }
+      window.scrollTo(0,0);
+    }
+    else {
+      $scope.docs_fold = null;
+    }
+  };
   var OFFLINE_COOKIE_NAME = 'ng-offline',
       DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
