@@ -198,6 +198,15 @@
     </div>
   </header>
 
+ <div id="docs-fold-overlay" ng-show="docs_fold" ng-click="fold(null)"></div>
+ <div id="docs-fold" ng-show="docs_fold" ng-animate="'fold'">
+   <div id="docs-fold-close" ng-click="fold(null)">
+     <span class="icon-remove-sign"></span>
+   </div>
+   <div ng-include="docs_fold"></div>
+ </div>
+
+<div ng-class="{fixed_body:docs_fold}">
   <div role="main" class="container">
     <div class="row clear-navbar"></div>
 
@@ -359,6 +368,7 @@
       </p>
     </div>
   </footer>
+</div>
 
 </body>
 </html>
