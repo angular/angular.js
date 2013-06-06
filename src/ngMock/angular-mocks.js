@@ -640,6 +640,7 @@ angular.mock.createMockWindow = function() {
   var mockWindow = {};
   var setTimeoutQueue = [];
 
+  mockWindow.location = window.location;
   mockWindow.document = window.document;
   mockWindow.getComputedStyle = angular.bind(window, window.getComputedStyle);
   mockWindow.scrollTo = angular.bind(window, window.scrollTo);
