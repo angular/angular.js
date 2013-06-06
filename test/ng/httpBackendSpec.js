@@ -1,6 +1,6 @@
 describe('$httpBackend', function() {
 
-  var $backend, $browser, callbacks,
+  var $backend, $browser, $window, callbacks,
       xhr, fakeDocument, callback,
       fakeTimeoutId = 0;
 
@@ -36,6 +36,7 @@ describe('$httpBackend', function() {
   beforeEach(inject(function($injector) {
     callbacks = {counter: 0};
     $browser = $injector.get('$browser');
+    $window = $injector.get('$window');
     fakeDocument = {
       $$scripts: [],
       createElement: jasmine.createSpy('createElement').andCallFake(function() {
@@ -53,7 +54,7 @@ describe('$httpBackend', function() {
         })
       }
     };
-    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeDocument);
+    $backend = createHttpBackend($browser, $window, MockXhr, fakeTimeout, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -200,7 +201,7 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, SyncXhr);
+    $backend = createHttpBackend($browser, $window, SyncXhr);
     $backend('GET', '/url', null, callback);
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -232,7 +233,7 @@ describe('$httpBackend', function() {
 
   describe('JSONP', function() {
 
-    var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;
+    var SCRIPT_URL = /([^\?]*)\?cb=ngJsonpCallback_(.*)/;
 
 
     it('should add script tag for JSONP request', function() {
@@ -243,12 +244,12 @@ describe('$httpBackend', function() {
 
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
       expect(fakeDocument.$$scripts.length).toBe(1);
-
       var script = fakeDocument.$$scripts.shift(),
           url = script.src.match(SCRIPT_URL);
 
       expect(url[1]).toBe('http://example.org/path');
-      callbacks[url[2]]('some-data');
+      var callbackHanger = 'ngJsonpCallback_' + url[2];
+      $window[callbackHanger]('some-data');
 
       if (script.onreadystatechange) {
         script.readyState = 'complete';
@@ -267,9 +268,9 @@ describe('$httpBackend', function() {
 
 
       var script = fakeDocument.$$scripts.shift(),
-          callbackId = script.src.match(SCRIPT_URL)[2];
+          callbackHanger = 'ngJsonpCallback_' + script.src.match(SCRIPT_URL)[2];
 
-      callbacks[callbackId]('some-data');
+      $window[callbackHanger]('some-data');
 
       if (script.onreadystatechange) {
         script.readyState = 'complete';
@@ -278,7 +279,7 @@ describe('$httpBackend', function() {
         script.onload()
       }
 
-      expect(callbacks[callbackId]).toBeUndefined();
+      expect($window[callbackHanger]).toBeUndefined();
       expect(fakeDocument.body.removeChild).toHaveBeenCalledOnceWith(script);
     });
 
@@ -344,7 +345,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, $window, MockXhr, null, null, 'http');
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -355,7 +356,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+      $backend = createHttpBackend($browser, $window, MockXhr, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -366,7 +367,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, $window, MockXhr, null, null, 'http');
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -377,7 +378,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+      $backend = createHttpBackend($browser, $window, MockXhr, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
       respond(0, '');

@@ -25,12 +25,12 @@ var XHR = window.XMLHttpRequest || function() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, XHR, $browser.defer, $window.angular.callbacks,
+    return createHttpBackend($browser, $window, XHR, $browser.defer,
         $document[0], $window.location.protocol.replace(':', ''));
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
+function createHttpBackend($browser, $window, XHR, $browserDefer, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
     var status;
@@ -38,19 +38,19 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     url = url || $browser.url();
 
     if (lowercase(method) == 'jsonp') {
-      var callbackId = '_' + (callbacks.counter++).toString(36);
-      callbacks[callbackId] = function(data) {
-        callbacks[callbackId].data = data;
+      var callbackHanger = 'ngJsonpCallback_' + Math.random().toString(36).substring(7);
+      $window[callbackHanger] = function(data) {
+        $window[callbackHanger].data = data;
       };
 
-      var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+      var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', callbackHanger),
           function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
+        if ($window[callbackHanger].data) {
+          completeRequest(callback, 200, $window[callbackHanger].data);
         } else {
           completeRequest(callback, status || -2);
         }
-        delete callbacks[callbackId];
+        delete $window[callbackHanger];
       });
     } else {
       var xhr = new XHR();
