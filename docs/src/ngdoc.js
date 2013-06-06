@@ -225,6 +225,44 @@ Doc.prototype = {
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });
+
+    //!annotate CONTENT
+    //!annotate="REGEX" CONTENT
+    //!annotate="REGEX" TITLE|CONTENT
+    text = text.replace(/\n?\/\/!annotate\s*(?:=\s*['"](.+?)['"])?\s+(.+?)\n\s*(.+?\n)/img,
+      function(_, pattern, content, line) {
+        var pattern = new RegExp(pattern || '.+');
+        var title, text, split = content.split(/\|/);
+        if(split.length > 1) {
+          text = split[1];
+          title = split[0];
+        }
+        else {
+          title = 'Info';
+          text = content;
+        }
+        return "\n" + line.replace(pattern, function(match) {
+          return '<div class="nocode nocode-content" data-popover ' + 
+                   'data-content="' + text + '" ' + 
+                   'data-title="' + title + '">' +
+                      match +
+                 '</div>';
+        });
+      }
+    );
+
+    //!details /path/to/local/docs/file.html
+    //!details="REGEX" /path/to/local/docs/file.html
+    text = text.replace(/\/\/!details\s*(?:=\s*['"](.+?)['"])?\s+(.+?)\n\s*(.+?\n)/img,
+      function(_, pattern, url, line) {
+        url = '/notes/' + url;
+        var pattern = new RegExp(pattern || '.+');
+        return line.replace(pattern, function(match) {
+          return '<div class="nocode nocode-content" data-foldout data-url="' + url + '">' + match + '</div>';
+        });
+      }
+    );
+
     return text;
   },
 
