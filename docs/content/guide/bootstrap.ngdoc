@@ -102,6 +102,9 @@ api/ng.directive:ngApp ng-app} directive.
 </html>
 </pre>
 
+**Note:** The second (optional) argument is a list of module names to load. To convert 
+`<div ng-app="mymod">...</div>` to use this method, you would call `angular.bootstrap(thenode, ['myapp'])`.
+
 This is the sequence that your code should follow:
 
   1. After the page and all of the code is loaded, find the root of the HTML template, which is
