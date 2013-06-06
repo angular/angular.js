@@ -124,7 +124,8 @@ function Browser(window, document, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
 
   var lastBrowserUrl = location.href,
-      baseElement = document.find('base');
+      baseElement = document.find('base'),
+      locationHref;
 
   /**
    * @name ng.$browser#url
@@ -149,8 +150,10 @@ function Browser(window, document, $log, $sniffer) {
   self.url = function(url, replace) {
     // setter
     if (url) {
-      if (lastBrowserUrl == url) return;
-      lastBrowserUrl = url;
+      url = sanitizeUrl(url);
+      if (lastBrowserUrl === url) return;
+      var lastHref = location.href;
+      locationHref = lastBrowserUrl = url;
       if ($sniffer.history) {
         if (replace) history.replaceState(null, '', url);
         else {
@@ -162,11 +165,17 @@ function Browser(window, document, $log, $sniffer) {
         if (replace) location.replace(url);
         else location.href = url;
       }
+      var timerId = setInterval(function() {
+        if (location.href !== lastHref) {
+          locationHref = undefined;
+          clearInterval(timerId);
+        }
+      }, 100);
       return self;
     // getter
     } else {
       // the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return location.href.replace(/%27/g,"'");
+      return (locationHref || location.href).replace(/%27/g,"'");
     }
   };
 
