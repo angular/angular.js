@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 
     shell: {
       bower: {
-        command: './node_modules/bower/bin/bower install',
+        command: 'node ./node_modules/bower/bin/bower install',
         options: {
             stdout: false
         }
