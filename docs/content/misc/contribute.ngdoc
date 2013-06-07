@@ -97,10 +97,15 @@ and included in your {@link http://docs.oracle.com/javase/tutorial/essential/env
 
   * `cd angular.js`
   * `npm install`
+  * `bower install`
 
 * {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   * `sudo npm install -g grunt-cli`
+
+* {@link http://bower.io/ Bower}: Bower is used to manage packages for the docs. Install the bower tool globally with:
+
+  * `sudo npm install -g bower`
 
 
 ## Creating a Github Account and Forking Angular
@@ -131,7 +136,11 @@ minified AngularJS files:
 
         npm install
 
-5. To build AngularJS, run:
+5. To add docs components
+
+        bower install
+
+6. To build AngularJS, run:
 
         grunt package
 

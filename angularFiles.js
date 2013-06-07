@@ -77,8 +77,7 @@ angularFiles = {
     'src/ngMobile/swipe.js',
     'src/ngMobile/directive/ngClick.js',
     'src/ngMobile/directive/ngSwipe.js',
-
-    'docs/components/bootstrap/bootstrap.js'
+    'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
@@ -116,15 +115,13 @@ angularFiles = {
     'test/ngSanitize/filter/*.js',
     'test/ngMock/*.js',
     'test/ngMobile/*.js',
-    'test/ngMobile/directive/*.js',
-    'docs/component-spec/bootstrap/*.js',
-    'docs/component-spec/*.js'
+    'test/ngMobile/directive/*.js'
   ],
 
   'jstd': [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'lib/jquery/jquery.js',
+    'components/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -194,7 +191,7 @@ angularFiles = {
   'jstdJquery': [
     'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-    'lib/jquery/jquery.js',
+    'components/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
