@@ -58,7 +58,7 @@ var /** holds major version number for IE or NaN for real browsers */
 
     _angular          = window.angular,
     /** @name angular */
-    angular           = window.angular || (window.angular = {}),
+    angular           = window.angular = {},
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
