@@ -289,6 +289,10 @@ function $CompileProvider($provide) {
 
           // href property always returns normalized absolute url, so we can match against that
           normalizedVal = urlSanitizationNode.href;
+          //except in the case of IE6/7.  The url is missing the protocol and host.
+          if (msie < 8) {
+              normalizedVal = document.location.protocol + '//' + document.location.host + normalizedVal
+          }
           if (!normalizedVal.match(urlSanitizationWhitelist)) {
             this[key] = value = 'unsafe:' + normalizedVal;
           }
