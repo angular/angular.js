@@ -41,8 +41,8 @@ with {@link expression expressions}:
 In a simple single-page app, the template consists of HTML, CSS, and angular directives contained
 in just one HTML file (usually `index.html`). In a more complex app, you can display multiple views
 within one main page using "partials", which are segments of template located in separate HTML
-files.  You "include" the partials in the main page using the {@link api/ng.$route
-$route} service in conjunction with the {@link api/ng.directive:ngView ngView} directive. An
+files.  You "include" the partials in the main page using the {@link api/ngRoute.$route
+$route} service in conjunction with the {@link api/ngRoute.directive:ngView ngView} directive. An
 example of this technique is shown in the {@link tutorial/ angular tutorial}, in steps seven and
 eight.
 

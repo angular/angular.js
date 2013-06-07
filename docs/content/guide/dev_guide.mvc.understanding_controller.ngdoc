@@ -84,7 +84,7 @@ instances).
 # Associating Controllers with Angular Scope Objects
 
 You can associate controllers with scope objects implicitly via the {@link api/ng.directive:ngController ngController
-directive} or {@link api/ng.$route $route service}.
+directive} or {@link api/ngRoute.$route $route service}.
 
 
 ## Controller Constructor and Methods Example

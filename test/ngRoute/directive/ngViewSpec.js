@@ -3,6 +3,8 @@
 describe('ngView', function() {
   var element;
 
+  beforeEach(module('ngRoute'));
+
   beforeEach(module(function($provide) {
     $provide.value('$window', angular.mock.createMockWindow());
     return function($rootScope, $compile, $animator) {
@@ -473,7 +475,7 @@ describe('ngView', function() {
       expect(element.text()).toEqual('WORKS');
 
       var div = element.find('div');
-      expect(nodeName_(div.parent())).toEqual('NG:VIEW');
+      expect(div.parent()[0].nodeName.toUpperCase()).toBeOneOf('NG:VIEW', 'VIEW');
 
       expect(div.scope()).toBe($route.current.scope);
       expect(div.scope().hasOwnProperty('state')).toBe(true);
@@ -518,7 +520,7 @@ describe('ngView', function() {
     }
 
     function applyCSS(element, cssProp, cssValue) {
-      element.css(cssProp, cssValue);    
+      element.css(cssProp, cssValue);
       element.css(vendorPrefix + cssProp, cssValue);
     }
 
@@ -544,7 +546,7 @@ describe('ngView', function() {
     }));
 
     it('should fire off the enter animation + add and remove the css classes',
-        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
+        inject(function($compile, $rootScope, $sniffer, $location) {
           element = $compile(html('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>'))($rootScope);
 
           $location.path('/foo');

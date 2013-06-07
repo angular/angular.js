@@ -250,7 +250,7 @@ In this example we will build a directive that displays the current time.
 
 # Writing directives (long version)
 
-There are different ways to declare a directive. The difference resides in the return 
+There are different ways to declare a directive. The difference resides in the return
 value of the factory function. You can either return a Directive Definition Object
 (see below) that defines the directive properties, or just the postLink function
 of such an object (all other properties will have the default values).
@@ -284,7 +284,7 @@ Here's an example directive declared with a Directive Definition Object:
 
 In most cases you will not need such fine control and so the above can be simplified. You can still
 return a Directive Definition Object, but only setting the 'compile' function property of the Object,
-and rely on the default values for other properties. 
+and rely on the default values for other properties.
 
 Therefore the above can be simplified as:
 
@@ -462,7 +462,7 @@ The compile function deals with transforming the template DOM. Since most direct
 template transformation, it is not used often. Examples that require compile functions are
 directives that transform template DOM, such as {@link
 api/ng.directive:ngRepeat ngRepeat}, or load the contents
-asynchronously, such as {@link api/ng.directive:ngView ngView}. The
+asynchronously, such as {@link api/ngRoute.directive:ngView ngView}. The
 compile function takes the following arguments.
 
   * `tElement` - template element - The element where the directive has been declared. It is
