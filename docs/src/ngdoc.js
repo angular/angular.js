@@ -43,7 +43,7 @@ function Doc(text, file, line) {
   this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function() {
-  var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
+  var words = fs.readFileSync(__dirname + '/ignore.words', 'utf8');
   return words.toString().split(/[,\s\n\r]+/gm);
 })();
 
