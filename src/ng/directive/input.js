@@ -994,6 +994,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
+   * @name ng.directive:ngModel.NgModelController#setContext
+   * @methodOf ng.directive:ngModel.NgModelController
+   *
+   * @description
+   * Sets the context where the attr.ngModel expression has be getted/setted
+   * Useful for isolated directives wich uses ngModel expresion from the parent scope
+   *
+   */
+  var modelContext = $scope;
+  
+  this.$setContext = function(context) {
+    modelContext = context;
+    console.log('context setted', context);
+  }
+
+  /**
+   * @ngdoc function
    * @name ng.directive:ngModel.NgModelController#$setPristine
    * @methodOf ng.directive:ngModel.NgModelController
    *
@@ -1043,7 +1060,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     if (this.$modelValue !== value) {
       this.$modelValue = value;
-      ngModelSet($scope, value);
+      ngModelSet(modelContext, value);
       forEach(this.$viewChangeListeners, function(listener) {
         try {
           listener();
@@ -1058,7 +1075,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   var ctrl = this;
 
   $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+    //Allways context is scope
+    //var value = ngModelGet($scope);
+    var value = ngModelGet(modelContext);
 
     // if scope model value and ngModel value are out of sync
     if (ctrl.$modelValue !== value) {
