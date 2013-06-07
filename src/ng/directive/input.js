@@ -909,6 +909,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
+  this.$validityChangeListeners = [];
   this.$pristine = true;
   this.$dirty = false;
   this.$valid = true;
@@ -988,6 +989,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     $error[validationErrorKey] = !isValid;
     toggleValidCss(isValid, validationErrorKey);
+
+    forEach(this.$validityChangeListeners, function(listener) {
+      try {
+        listener();
+      } catch(e) {
+        $exceptionHandler(e);
+      }
+    });
 
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };
@@ -1189,6 +1198,56 @@ var ngChangeDirective = valueFn({
   link: function(scope, element, attr, ctrl) {
     ctrl.$viewChangeListeners.push(function() {
       scope.$eval(attr.ngChange);
+    });
+  }
+});
+
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngValidityChange
+ * @restrict E
+ *
+ * @description
+ * Evaluate given expression when model validity changes.
+ *
+ * Note, this directive requires `ngModel` to be present.
+ *
+ * @element input
+ *
+ * @example
+ * <doc:example>
+ *   <doc:source>
+ *     <script>
+ *       function Controller($scope) {
+ *         $scope.counter = 0;
+ *         $scope.validityChange = function() {
+ *           $scope.counter++;
+ *         };
+ *       }
+ *     </script>
+ *     <div ng-controller="Controller">
+ *       <input type="checkbox" ng-model="confirmed" required ng-validity-change="validityChange()" id="ng-example1" />
+ *       <label for="ng-example1">Confirmed</label><br />
+ *       debug = {{confirmed}}<br />
+ *       counter = {{counter}}
+ *     </div>
+ *   </doc:source>
+ *   <doc:scenario>
+ *     it('should evaluate the expression when the validity changes', function() {
+ *       expect(binding('counter')).toEqual('0');
+ *       element('#ng-example1').click();
+ *       expect(binding('counter')).toEqual('1');
+ *       expect(binding('confirmed')).toEqual('true');
+ *     });
+ *   </doc:scenario>
+ * </doc:example>
+ */
+var ngValidityChangeDirective = valueFn({
+  require: 'ngModel',
+  link: function(scope, element, attr, ctrl) {
+    ctrl.$validityChangeListeners.push(function() {
+      scope.$eval(attr.ngValidityChange);
     });
   }
 });

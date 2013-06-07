@@ -100,6 +100,7 @@ function publishExternalAPI(angular){
             ngModel: ngModelDirective,
             ngList: ngListDirective,
             ngChange: ngChangeDirective,
+            ngValidityChange: ngValidityChangeDirective,
             required: requiredDirective,
             ngRequired: requiredDirective,
             ngValue: ngValueDirective
