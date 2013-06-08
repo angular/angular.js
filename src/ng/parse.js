@@ -36,6 +36,7 @@ var OPERATORS = {
     '!':function(self, locals, a){return !a(self, locals);}
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var $parseMinErr = minErr('$parse');
 
 function lex(text, csp){
   var tokens = [],
@@ -126,7 +127,7 @@ function lex(text, csp){
     var colStr = (isDefined(start) ?
         "s " + start +  "-" + index + " [" + text.substring(start, end) + "]"
         : " " + end);
-    throw ngError(23, "Lexer Error: {0} at column{1} in expression [{2}].",
+    throw $parseMinErr('lexerr', "Lexer Error: {0} at column{1} in expression [{2}].",
         error, colStr, text);
   }
 
@@ -309,14 +310,14 @@ function parser(text, json, $filter, csp){
 
   ///////////////////////////////////
   function throwError(msg, token) {
-    throw ngError(24,
+    throw $parseMinErr('syntax',
         "Syntax Error: Token '{0}' {1} at column {2} of the expression [{3}] starting at [{4}].",
         token.text, msg, (token.index + 1), text, text.substring(token.index));
   }
 
   function peekToken() {
     if (tokens.length === 0)
-      throw ngError(25, "Unexpected end of expression: {0}", text);
+      throw $parseMinErr('ueoe', "Unexpected end of expression: {0}", text);
     return tokens[0];
   }
 

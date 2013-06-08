@@ -60,6 +60,7 @@
  */
 function $RootScopeProvider(){
   var TTL = 10;
+  var $rootScopeMinErr = minErr('$rootScope');
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -556,7 +557,7 @@ function $RootScopeProvider(){
 
           if(dirty && !(ttl--)) {
             clearPhase();
-            throw ngError(27,
+            throw $rootScopeMinErr('infdig',
                 '{0} $digest() iterations reached. Aborting!\nWatchers fired in the last 5 iterations: {1}',
                 TTL, toJson(watchLog));
           }
@@ -920,7 +921,7 @@ function $RootScopeProvider(){
 
     function beginPhase(phase) {
       if ($rootScope.$$phase) {
-        throw ngError(28, '{0} already in progress', $rootScope.$$phase);
+        throw $rootScopeMinErr('inprog', '{0} already in progress', $rootScope.$$phase);
       }
 
       $rootScope.$$phase = phase;

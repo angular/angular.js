@@ -138,6 +138,7 @@
  * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
  */
 
+var $compileMinErr = minErr('$compile');
 
 /**
  * @ngdoc service
@@ -589,7 +590,7 @@ function $CompileProvider($provide) {
         var startNode = node;
         do {
           if (!node) {
-            throw ngError(51, "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
+            throw $compileMinErr('utrat', "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
           }
           if (node.nodeType == 1 /** Element **/) {
             if (node.hasAttribute(attrStart)) depth++;
@@ -721,7 +722,7 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw ngError(12, "Template for directive '{0}' must have exactly one root element.", directiveName);
+              throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}", directiveName, '');
             }
 
             replaceWith(jqCollection, $compileNode, compileNode);
@@ -809,7 +810,7 @@ function $CompileProvider($provide) {
           }
           value = $element[retrievalMethod]('$' + require + 'Controller');
           if (!value && !optional) {
-            throw ngError(13, "Controller '{0}', required by directive '{1}', can't be found!", require, directiveName);
+            throw $compileMinErr('ctreq', "Controller '{0}', required by directive '{1}', can't be found!", require, directiveName);
           }
           return value;
         } else if (isArray(require)) {
@@ -869,7 +870,7 @@ function $CompileProvider($provide) {
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
                   lastValue = scope[scopeName] = parentGet(parentScope);
-                  throw ngError(14, "Expression '{0}' used with directive '{1}' is non-assignable!",
+                  throw $compileMinErr('noass', "Expression '{0}' used with directive '{1}' is non-assignable!",
                       attrs[attrName], newIsolateScopeDirective.name);
                 };
                 lastValue = scope[scopeName] = parentGet(parentScope);
@@ -900,7 +901,7 @@ function $CompileProvider($provide) {
               }
 
               default: {
-                throw ngError(15, "Invalid isolate scope definition for directive '{0}'. Definition: {... {1}: '{2}' ...}",
+                throw $compileMinErr('iscp', "Invalid isolate scope definition for directive '{0}'. Definition: {... {1}: '{2}' ...}",
                     newIsolateScopeDirective.name, scopeName, definition);
               }
             }
@@ -1057,7 +1058,7 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw ngError(16, "Template for directive '{0}' must have exactly one root element. Template: {1}",
+              throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}",
                   origAsyncDirective.name, templateUrl);
             }
 
@@ -1095,7 +1096,7 @@ function $CompileProvider($provide) {
           linkQueue = null;
         }).
         error(function(response, code, headers, config) {
-          throw ngError(17, 'Failed to load template: {0}', config.url);
+          throw $compileMinErr('tpload', 'Failed to load template: {0}', config.url);
         });
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, controller) {
@@ -1123,7 +1124,7 @@ function $CompileProvider($provide) {
 
     function assertNoDuplicate(what, previousDirective, directive, element) {
       if (previousDirective) {
-        throw ngError(18, 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
+        throw $compileMinErr('multidir', 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
             previousDirective.name, directive.name, what, startingTag(element));
       }
     }

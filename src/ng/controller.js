@@ -75,7 +75,7 @@ function $ControllerProvider() {
 
       if (identifier) {
         if (!(locals && typeof locals.$scope == 'object')) {
-          throw ngError(47, "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.", constructor || expression.name, identifier);
+          throw minErr('$controller')('noscp', "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.", constructor || expression.name, identifier);
         }
 
         locals.$scope[identifier] = instance;
