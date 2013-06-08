@@ -269,7 +269,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[NgErr7] ngRepeat error! Expected expression in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
+        toBe("[ngRepeat:iexp] Expected expression in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
   });
 
 
@@ -277,7 +277,7 @@ describe('ngRepeat', function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[NgErr8] ngRepeat error! '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got 'i dont parse'.");
+        toBe("[ngRepeat:iidexp] '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got 'i dont parse'.");
   });
 
 
@@ -481,7 +481,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[NgErr50] ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:003");
+          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:003");
 
       // recover
       scope.items = [a];
@@ -501,7 +501,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[NgErr50] ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:009");
+          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:009");
 
       // recover
       scope.items = [a];

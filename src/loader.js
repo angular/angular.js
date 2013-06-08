@@ -70,7 +70,7 @@ function setupModuleLoader(window) {
       }
       return ensure(modules, name, function() {
         if (!requires) {
-          throw ngError(47, "Module '{0}' is not available! You either misspelled the module name or forgot to load it.", name);
+          throw minErr('$injector')('nomod', "Module '{0}' is not available! You either misspelled the module name or forgot to load it.", name);
         }
 
         /** @type {!Array.<Array.<*>>} */

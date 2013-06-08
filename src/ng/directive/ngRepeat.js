@@ -191,6 +191,7 @@
  */
 var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
   var NG_REMOVED = '$$NG_REMOVED';
+  var ngRepeatMinErr = minErr('ngRepeat');
   return {
     transclude: 'element',
     priority: 1000,
@@ -204,7 +205,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
-          throw ngError(7, "ngRepeat error! Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+          throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
             expression);
         }
 
@@ -229,7 +230,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
         match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
         if (!match) {
-          throw ngError(8, "ngRepeat error! '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
+          throw ngRepeatMinErr('iidexp', "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
                                                                     lhs);
         }
         valueIdentifier = match[3] || match[1];
@@ -291,7 +292,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                if (block && block.startNode) lastBlockMap[block.id] = block;
              });
              // This is a duplicate and we need to throw an error
-             throw ngError(50, "ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
+             throw ngRepeatMinErr('dupes', "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}",
                                                                                                                                                     expression,       trackById);
            } else {
              // new never before seen block

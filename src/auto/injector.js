@@ -42,6 +42,7 @@ var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+var $injectorMinErr = minErr('$injector');
 function annotate(fn) {
   var $inject,
       fnText,
@@ -422,7 +423,7 @@ function createInjector(modulesToLoad) {
       },
       providerInjector = (providerCache.$injector =
           createInternalInjector(providerCache, function() {
-            throw ngError(1, "Unknown provider: {0}", path.join(' <- '));
+            throw $injectorMinErr('unpr', "Unknown provider: {0}", path.join(' <- '));
           })),
       instanceCache = {},
       instanceInjector = (instanceCache.$injector =
@@ -455,7 +456,7 @@ function createInjector(modulesToLoad) {
       provider_ = providerInjector.instantiate(provider_);
     }
     if (!provider_.$get) {
-      throw ngError(2, "Provider '{0}' must define $get factory method.", name);
+      throw $injectorMinErr('pget', "Provider '{0}' must define $get factory method.", name);
     }
     return providerCache[name + providerSuffix] = provider_;
   }
@@ -538,7 +539,7 @@ function createInjector(modulesToLoad) {
     function getService(serviceName) {
       if (cache.hasOwnProperty(serviceName)) {
         if (cache[serviceName] === INSTANTIATING) {
-          throw ngError(4, 'Circular dependency found: {0}', path.join(' <- '));
+          throw $injectorMinErr('cdep', 'Circular dependency found: {0}', path.join(' <- '));
         }
         return cache[serviceName];
       } else {
@@ -561,7 +562,7 @@ function createInjector(modulesToLoad) {
       for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
         if (typeof key !== 'string') {
-          throw ngError(3, 'Incorrect injection token! Expected service name as string, got {0}', key);
+          throw $injectorMinErr('itkn', 'Incorrect injection token! Expected service name as string, got {0}', key);
         }
         args.push(
           locals && locals.hasOwnProperty(key)

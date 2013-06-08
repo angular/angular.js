@@ -131,7 +131,7 @@ describe('$controller', function() {
 
       expect(function() {
         $controller('a.b.FooCtrl as foo');
-      }).toThrow("[NgErr47] Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
+      }).toThrow("[$controller:noscp] Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
 
     });
   });

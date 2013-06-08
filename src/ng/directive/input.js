@@ -475,8 +475,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         var patternObj = scope.$eval(pattern);
 
         if (!patternObj || !patternObj.test) {
-          throw ngError(5, 'ngPattern error! Expected {0} to be a RegExp but was {1}. Element: {2}',
-                                                      pattern,                   patternObj,   startingTag(element));
+          throw minErr('ngPattern')('noregexp', 
+            'Expected {0} to be a RegExp but was {1}. Element: {2}', pattern, 
+            patternObj, startingTag(element));
         }
         return validate(patternObj, value);
       };
@@ -928,8 +929,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ngModelSet = ngModelGet.assign;
 
   if (!ngModelSet) {
-    throw ngError(6, "ngModel error! Expression '{0}' is non-assignable. Element: {1}", $attr.ngModel,
-        startingTag($element));
+    throw minErr('ngModel')('noass', "Expression '{0}' is non-assignable. Element: {1}", 
+        $attr.ngModel, startingTag($element));
   }
 
   /**

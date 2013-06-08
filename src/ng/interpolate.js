@@ -139,7 +139,7 @@ function $InterpolateProvider() {
             return concat.join('');
           }
           catch(err) {
-            var newErr = ngError(48, "$interpolate error! Can't interpolate: {0}\n{1}", text, err.toString());
+            var newErr = minErr('$interpolate')('interr', "Can't interpolate: {0}\n{1}", text, err.toString());
             $exceptionHandler(newErr);
           }
         };
