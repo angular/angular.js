@@ -1,4 +1,16 @@
 angularFiles = {
+  'angularServer': [
+    'src/Angular.js',
+    'src/loader.js',
+    'src/AngularPublic.js',
+    'src/apis.js',
+    'src/ngError.js',
+    'src/auto/injector.js',
+    'src/ng/interpolate.js',
+    'src/ng/parse.js',
+    'src/ng/locale.js',
+    'src/ng/cacheFactory.js',
+  ],
   'angularSrc': [
     'src/Angular.js',
     'src/loader.js',
