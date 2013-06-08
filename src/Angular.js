@@ -54,6 +54,7 @@ var /** holds major version number for IE or NaN for real browsers */
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,
+    ngMinErr          = minErr('ng'),
 
 
     _angular          = window.angular,
@@ -573,7 +574,7 @@ function isLeafNode (node) {
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) {
-    throw ngError(43, "Can't copy! Making copies of Window or Scope instances is not supported.");
+    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
   }
 
   if (!destination) {
@@ -588,7 +589,7 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw ngError(44, "Can't copy! Source and destination are identical.");
+    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
     if (isArray(source)) {
       destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
@@ -1044,7 +1045,7 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    throw ngError(45, "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
+    throw ngMinErr('areq', "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
   }
   return arg;
 }

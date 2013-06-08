@@ -632,11 +632,11 @@ describe('$compile', function() {
           inject(function($compile) {
             expect(function() {
               $compile('<p no-root-elem></p>');
-            }).toThrow("[NgErr12] Template for directive 'noRootElem' must have exactly one root element.");
+            }).toThrow("[$compile:tplrt] Template for directive 'noRootElem' must have exactly one root element. ");
 
             expect(function() {
               $compile('<p multi-root-elem></p>');
-            }).toThrow("[NgErr12] Template for directive 'multiRootElem' must have exactly one root element.");
+            }).toThrow("[$compile:tplrt] Template for directive 'multiRootElem' must have exactly one root element. ");
 
             // ws is ok
             expect(function() {
@@ -985,7 +985,7 @@ describe('$compile', function() {
 
               expect(function() {
                 $httpBackend.flush();
-              }).toThrow('[NgErr17] Failed to load template: hello.html');
+              }).toThrow('[$compile:tpload] Failed to load template: hello.html');
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
@@ -1005,7 +1005,7 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('[NgErr18] Multiple directives [sync, async] asking for template on: '+
+            }).toThrow('[$compile:multidir] Multiple directives [sync, async] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1189,14 +1189,14 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
+                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
+                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -1456,7 +1456,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrow('[NgErr18] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1466,7 +1466,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrow('[NgErr18] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
+            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -2074,7 +2074,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("[NgErr14] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrow("[$compile:noass] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -2150,7 +2150,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow("[NgErr15] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
+      }).toThrow("[$compile:iscp] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
     }));
 
     it('should expose a $$isolateBindings property onto the scope', inject(function() {
@@ -2247,7 +2247,7 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         expect(function() {
           $compile('<div main><div dep></div></div>')($rootScope);
-        }).toThrow("[NgErr13] Controller 'main', required by directive 'dep', can't be found!");
+        }).toThrow("[$compile:ctreq] Controller 'main', required by directive 'dep', can't be found!");
       });
     });
 
@@ -2434,7 +2434,7 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('[NgErr18] Multiple directives [first, second] asking for transclusion on: ' +
+        }).toThrow('[$compile:multidir] Multiple directives [first, second] asking for transclusion on: ' +
             '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
@@ -2816,7 +2816,7 @@ describe('$compile', function() {
               '<div>' +
                 '<span foo-start></span>' +
               '</div>');
-        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -2834,7 +2834,7 @@ describe('$compile', function() {
               '<div>' +
                   '<span foo-start><span foo-end></span></span>' +
               '</div>');
-        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 

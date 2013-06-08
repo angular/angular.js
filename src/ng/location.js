@@ -3,6 +3,7 @@
 var SERVER_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
+var $locationMinErr = minErr('$location');
 
 
 /**
@@ -95,7 +96,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     matchUrl(url, parsed);
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
-      throw ngError(21, '$location error! Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
+      throw $locationMinErr('nopp', 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
     }
     matchAppUrl(pathUrl, parsed);
     extend(this, parsed);
@@ -157,11 +158,11 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     matchUrl(url, this);
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
     if (!isString(withoutBaseUrl)) {
-      throw ngError(22, '$location error! Invalid url "{0}", does not start with "{1}".', url, appBase);
+      throw $locationMinErr('istart', 'Invalid url "{0}", does not start with "{1}".', url, appBase);
     }
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#' ? beginsWith(hashPrefix, withoutBaseUrl) : withoutBaseUrl;
     if (!isString(withoutHashUrl)) {
-      throw ngError(49, '$location error! Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
+      throw $locationMinErr('nohash', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
     }
     matchAppUrl(withoutHashUrl, this);
     this.$$compose();

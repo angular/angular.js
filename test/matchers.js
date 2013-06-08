@@ -149,9 +149,8 @@ beforeEach(function() {
               angular.element(this.actual).hasClass(clazz);
     },
 
-    toThrowNg: function(expected) {
-      return jasmine.Matchers.prototype.toThrow.call(this, new RegExp('\\[NgErr\\d*\\] ' +
-          expected.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")));
+    toThrowMatching: function(expected) {
+      return jasmine.Matchers.prototype.toThrow.call(this, expected);
     }
   });
 });
