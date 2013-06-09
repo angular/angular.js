@@ -1142,6 +1142,39 @@ describe('input', function() {
   });
 
 
+  describe('ngValidityChange', function() {
+
+    it('should $eval expression after model validity changes', function() {
+      compileInput('<input type="text" ng-model="value" required ng-validity-change="validityChange()" />');
+
+      scope.validityChange = jasmine.createSpy('validityChange');
+      changeInputValueTo('new value');
+      expect(scope.validityChange).toHaveBeenCalledOnce();
+    });
+
+    it('should not $eval expression twice if validity does not change', function() {
+      compileInput('<input type="text" ng-model="value" required ng-validity-change="validityChange()" />');
+
+      scope.validityChange = jasmine.createSpy('validityChange');
+      changeInputValueTo('first value');
+      changeInputValueTo('new value');
+      expect(scope.validityChange).toHaveBeenCalledOnce();
+    });
+
+    it('should not $eval expression after model changes if validity does not change', function() {
+      compileInput('<input type="text" ng-model="value" required ng-validity-change="validityChange()" />');
+
+      scope.$apply(function() {
+        scope.value = 'valid';
+      });
+      
+      scope.validityChange = jasmine.createSpy('validityChange');
+      changeInputValueTo('new value');
+      expect(scope.validityChange).not.toHaveBeenCalled();
+    });
+  });
+
+
   describe('ngValue', function() {
 
     it('should evaluate and set constant expressions', function() {
