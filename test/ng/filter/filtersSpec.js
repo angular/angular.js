@@ -145,9 +145,24 @@ describe('filters', function() {
       expect(number(1234.567, 2)).toEqual("1,234.57");
     });
 
-    it('should filter exponential numbers', function() {
-      expect(number(1e50, 0)).toEqual('1e+50');
-      expect(number(-2e50, 2)).toEqual('-2e+50');
+    it('should filter exponentially large numbers', function() {
+      expect(number(1e50)).toEqual('1e+50');
+      expect(number(-2e100)).toEqual('-2e+100');
+    });
+
+    it('should ignore fraction sizes for large numbers', function() {
+      expect(number(1e50, 2)).toEqual('1e+50');
+      expect(number(-2e100, 5)).toEqual('-2e+100');
+    });
+
+    it('should filter exponentially small numbers', function() {
+      expect(number(1e-50, 0)).toEqual('0');
+      expect(number(1e-6, 6)).toEqual('0.000001');
+      expect(number(1e-7, 6)).toEqual('0.000000');
+
+      expect(number(-1e-50, 0)).toEqual('-0');
+      expect(number(-1e-6, 6)).toEqual('-0.000001');
+      expect(number(-1e-7, 6)).toEqual('-0.000000');
     });
   });
 
