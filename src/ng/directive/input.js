@@ -1206,7 +1206,6 @@ var ngChangeDirective = valueFn({
 /**
  * @ngdoc directive
  * @name ng.directive:ngValidityChange
- * @restrict E
  *
  * @description
  * Evaluate given expression when model validity changes.
@@ -1220,25 +1219,39 @@ var ngChangeDirective = valueFn({
  *   <doc:source>
  *     <script>
  *       function Controller($scope) {
- *         $scope.counter = 0;
+ *         $scope.validityCounter = 0;
  *         $scope.validityChange = function() {
- *           $scope.counter++;
+ *           $scope.validityCounter++;
  *         };
  *       }
  *     </script>
  *     <div ng-controller="Controller">
- *       <input type="checkbox" ng-model="confirmed" required ng-validity-change="validityChange()" id="ng-example1" />
- *       <label for="ng-example1">Confirmed</label><br />
- *       debug = {{confirmed}}<br />
- *       counter = {{counter}}
+ *       <input type="text" ng-model="name" required ng-validity-change="validityChange()" id="name"/>
+ *       <label for="input">First name</label><br />
+ *       debug = {{name}}<br />
+ *       validity changes count = {{validityCounter}}
  *     </div>
  *   </doc:source>
  *   <doc:scenario>
  *     it('should evaluate the expression when the validity changes', function() {
- *       expect(binding('counter')).toEqual('0');
- *       element('#ng-example1').click();
- *       expect(binding('counter')).toEqual('1');
- *       expect(binding('confirmed')).toEqual('true');
+ *       input('name').enter('');
+ *       expect(binding('validityCounter')).toEqual('1');
+ * 
+ *       input('name').enter('Misko');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Misko');
+ *
+ *       input('name').enter('Vojta');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Vojta');
+ *
+ *       input('name').enter('Igor');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Igor');
+ *
+ *       input('name').enter('');
+ *       expect(binding('validityCounter')).toEqual('3');
+ *       expect(binding('name')).toEqual('');
  *     });
  *   </doc:scenario>
  * </doc:example>
