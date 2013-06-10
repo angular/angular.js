@@ -112,8 +112,7 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/**/*.js',
-    'docs/component-spec/**/*.js'
+    'test/ngMobile/**/*.js'
   ],
 
   'jstd': [
