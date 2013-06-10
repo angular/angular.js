@@ -816,9 +816,17 @@ var VALID_CLASS = 'ng-valid',
  * @property {Array.<Function>} $parsers Whenever the control reads value from the DOM, it executes
  *     all of these functions to sanitize / convert the value as well as validate.
  *
- * @property {Array.<Function>} $formatters Whenever the model value changes, it executes all of
- *     these functions to convert the value as well as validate.
- *
+ * @property {Array.<Function>} $formatters Array of functions to execute whenever the model value changes. 
+ *      Used for converting values and validation.
+ *      <example>
+ *  			function formater (value){
+ *          if(value){
+ *            return value.toUpperCase();
+ *          }
+ *         }
+ * 
+ *        ngModel.$formatters = [formater];
+ *      </example>
  * @property {Object} $error An object hash with all errors as keys.
  *
  * @property {boolean} $pristine True if user has not interacted with the control yet.
