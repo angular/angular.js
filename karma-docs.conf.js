@@ -11,6 +11,7 @@ files = [
   'build/angular-resource.js',
   'build/angular-mobile.js',
   'build/angular-sanitize.js',
+  'build/angular-route.js',
 
   'build/docs/components/lib/lunr.js/lunr.js',
   'build/docs/components/lib/google-code-prettify/src/prettify.js',
