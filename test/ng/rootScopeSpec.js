@@ -330,6 +330,30 @@ describe('Scope', function() {
       expect(listener).not.toHaveBeenCalled();
     }));
 
+    it('should allow a watch to be unregistered while in a digest', inject(function($rootScope) {
+      var remove1, remove2;
+      $rootScope.$watch('remove', function() {
+        remove1();
+        remove2();
+      });
+      remove1 = $rootScope.$watch('thing', function() {});
+      remove2 = $rootScope.$watch('thing', function() {});
+      expect(function() {
+        $rootScope.$apply('remove = true');
+      }).not.toThrow();
+    }));
+
+    it('should allow a watch to be added while in a digest', inject(function($rootScope) {
+      var watch1 = jasmine.createSpy('watch1'),
+          watch2 = jasmine.createSpy('watch2');
+      $rootScope.$watch('foo', function() {
+        $rootScope.$watch('foo', watch1);
+        $rootScope.$watch('foo', watch2);
+      });
+      $rootScope.$apply('foo = true');
+      expect(watch1).toHaveBeenCalled();
+      expect(watch2).toHaveBeenCalled();
+    }));
 
     it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
       $rootScope.$watch(function() { return NaN;});
