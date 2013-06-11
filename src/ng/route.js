@@ -24,8 +24,8 @@ function $RouteProvider(){
    *    route definition.
    *
    *    `path` can contain named groups starting with a colon (`:name`). All characters up to the
-   *    next slash are matched and stored in `$routeParams` under the given `name` when the route
-   *    matches.
+   *    next slash are matched and stored in `$routeParams` under the given `name` after the route
+   *    is resolved.
    *
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
@@ -50,7 +50,9 @@ function $RouteProvider(){
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
    *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
    *        and the return value is treated as the dependency. If the result is a promise, it is resolved
-   *        before its value is injected into the controller.
+   *        before its value is injected into the controller. Be aware that `ngRoute.$routeParams` will
+   *        still refer to the previous route within these resolve functions.  Use `$route.current.params`
+   *        to access the new route parameters, instead.
    *
    *    - `redirectTo` – {(string|function())=} – value to update
    *      {@link ng.$location $location} path with and trigger route redirection.
