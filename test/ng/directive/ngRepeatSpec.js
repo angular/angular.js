@@ -753,4 +753,24 @@ describe('ngRepeat ngAnimate', function() {
       }
   }));
 
+  it('should grow multi-node repeater', inject(function($compile, $rootScope) {
+    $rootScope.show = false;
+    $rootScope.books = [
+      {title:'T1', description: 'D1'},
+      {title:'T2', description: 'D2'}
+    ];
+    element = $compile(
+        '<div>' +
+            '<dt ng-repeat-start="book in books">{{book.title}}:</dt>' +
+            '<dd ng-repeat-end>{{book.description}};</dd>' +
+        '</div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.text()).toEqual('T1:D1;T2:D2;');
+    $rootScope.books.push({title:'T3', description: 'D3'});
+    $rootScope.$digest();
+    expect(element.text()).toEqual('T1:D1;T2:D2;T3:D3;');
+  }));
+
+
 });
