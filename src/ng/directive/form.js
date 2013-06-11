@@ -23,7 +23,7 @@ var nullFormCtrl = {
  *
  *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
  *  - values are arrays of controls or forms that are invalid with given error.
- *
+ * 
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
@@ -62,6 +62,16 @@ function FormController(element, attrs) {
       addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$addControl
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Register a control with the form.
+   *
+   * Input elements using ngModelController do this automatically when they are linked.
+   */
   form.$addControl = function(control) {
     controls.push(control);
 
@@ -70,6 +80,16 @@ function FormController(element, attrs) {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$removeControl
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Deregister a control from the form.
+   *
+   * Input elements using ngModelController do this automatically when they are destroyed.
+   */
   form.$removeControl = function(control) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
@@ -81,6 +101,16 @@ function FormController(element, attrs) {
     arrayRemove(controls, control);
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setValidity
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the validity of a form control.
+   * 
+   * This method will also propagate to parent forms.
+   */
   form.$setValidity = function(validationToken, isValid, control) {
     var queue = errors[validationToken];
 
@@ -119,6 +149,17 @@ function FormController(element, attrs) {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setDirty
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to a dirty state.
+   *
+   * This method can be called to add the 'ng-dirty' class and set the form to a dirty
+   * state (ng-dirty class). This method will also propagate to parent forms.
+   */
   form.$setDirty = function() {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
