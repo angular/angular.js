@@ -2747,6 +2747,19 @@ describe('$compile', function() {
     }));
 
 
+    it('should support grouping over text nodes', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div>' +
+              '<span ng-repeat-start="i in [1,2]">{{i}}A</span>' +
+              ':' + // Important: proves that we can iterate over non-elements
+              '<span ng-repeat-end>{{i}}B;</span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('1A:1B;2A:2B;');
+    }));
+
+
     it('should group on $root compile function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
