@@ -60,12 +60,32 @@ function FormController(element, attrs) {
       addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$addControl
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Register a control with the form.
+   *
+   * Input elements using ngModelController do this automatically when they are linked.
+   */
   form.$addControl = function(control) {
     if (control.$name && !form.hasOwnProperty(control.$name)) {
       form[control.$name] = control;
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$removeControl
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Deregister a control from the form.
+   *
+   * Input elements using ngModelController do this automatically when they are destroyed.
+   */
   form.$removeControl = function(control) {
     if (control.$name && form[control.$name] === control) {
       delete form[control.$name];
@@ -75,6 +95,16 @@ function FormController(element, attrs) {
     });
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setValidity
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the validity of a form control.
+   * 
+   * This method will also propagate to parent forms.
+   */
   form.$setValidity = function(validationToken, isValid, control) {
     var queue = errors[validationToken];
 
@@ -113,6 +143,17 @@ function FormController(element, attrs) {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setDirty
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to a dirty state.
+   *
+   * This method can be called to add the 'ng-dirty' class and set the form to a dirty
+   * state (ng-dirty class). This method will also propagate to parent forms.
+   */
   form.$setDirty = function() {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
