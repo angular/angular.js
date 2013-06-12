@@ -202,8 +202,11 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} element the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.enter = animateActionFactory('enter', insert, noop);
+        animator.enter = function(element, parent, after, done) {
+          performAnimation('enter', insert, noop, element, parent, after, done);
+        }
 
         /**
          * @ngdoc function
@@ -216,8 +219,11 @@ var $AnimatorProvider = function() {
          *
          * @param {jQuery/jqLite element} element the element that will be the focus of the leave animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the leave animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.leave = animateActionFactory('leave', noop, remove);
+        animator.leave = function(element, parent, done) {
+          performAnimation('leave', noop, remove, element, parent, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -232,8 +238,11 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} element the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.move = animateActionFactory('move', move, noop);
+        animator.move = function(element, parent, after, done) {
+          performAnimation('move', move, noop, element, parent, after, done);
+        }
 
         /**
          * @ngdoc function
@@ -245,8 +254,11 @@ var $AnimatorProvider = function() {
          * Reveals the element by setting the CSS property `display` to `block` and then starts the show animation directly after.
          *
          * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.show = animateActionFactory('show', show, noop);
+        animator.show = function(element, done) {
+          performAnimation('show', show, noop, element, null, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -257,8 +269,11 @@ var $AnimatorProvider = function() {
          * Starts the hide animation first and sets the CSS `display` property to `none` upon completion.
          *
          * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.hide = animateActionFactory('hide', noop, hide);
+        animator.hide = function(element, done) {
+          performAnimation('hide', noop, hide, element, null, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -270,194 +285,197 @@ var $AnimatorProvider = function() {
          *
          * @param {string} event the name of the custom event
          * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.animate = function(event, element) {
-          animateActionFactory(event, noop, noop)(element);
+        animator.animate = function(event, element, done) {
+          performAnimation(event, noop, noop, element, null, null, done);
         }
+
         return animator;
 
-        function animateActionFactory(type, beforeFn, afterFn) {
-          return function(element, parent, after) {
-            var ngAnimateValue = scope.$eval(attrs.ngAnimate);
-            var classes = ngAnimateValue
-                ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
-                : '';
-            if (classes == null || classes.length == 0) {
+        function performAnimation(type, beforeFn, afterFn, element, parent, after, onComplete) {
+          onComplete = onComplete || noop;
+          var ngAnimateValue = scope.$eval(attrs.ngAnimate);
+          var classes = ngAnimateValue
+              ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
+              : '';
+          if (classes == null || classes.length == 0) {
+            beforeFn(element, parent, after);
+            afterFn(element, parent, after);
+            onComplete();
+          } else {
+            classes = isArray(classes) ? classes : classes.split(/\s+/);
+            var animations = [],
+                className = '',
+                activeClassName = '';
+            forEach(classes, function(klass, i) {
+              var space = i > 0 ? ' ' : '';
+              activeClassName += space + klass + '-active';
+              className += space + klass;
+
+              var polyfill = $animation(klass);
+              if(polyfill) {
+                animations.push({
+                  setup : polyfill.setup || noop,
+                  cancel : polyfill.cancel || noop,
+                  start : polyfill.start
+                });
+              }
+            });
+
+            if (!parent) {
+              parent = after ? after.parent() : element.parent();
+            }
+            var disabledAnimation = { running : true };
+            if ((!$sniffer.transitions && animations.length == 0) ||
+                (parent.inheritedData(NG_ANIMATE_CONTROLLER) || disabledAnimation).running) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
-            } else {
-              classes = isArray(classes) ? classes : classes.split(/\s+/);
-              var animations = [],
-                  className = '',
-                  activeClassName = '';
-              forEach(classes, function(klass, i) {
-                var space = i > 0 ? ' ' : '';
-                activeClassName += space + klass + '-active';
-                className += space + klass;
+              done();
+              return;
+            }
 
-                var polyfill = $animation(klass);
-                if(polyfill) {
-                  animations.push({
-                    setup : polyfill.setup || noop,
-                    cancel : polyfill.cancel || noop,
-                    start : polyfill.start
-                  });
+            var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
+            if(animationData.running) {
+              forEach(animations, function(animation) {
+                animation.cancel(element);
+              });
+              animationData.done();
+            }
+
+            element.data(NG_ANIMATE_CONTROLLER, {running:true, done:done});
+            element.addClass(className);
+            beforeFn(element, parent, after);
+            if (element.length == 0) return done();
+
+            forEach(animations, function(animation) {
+              animation.memo = animation.setup(element);
+            });
+
+            // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
+            // keep at 1 for animation dom rerender
+            $window.setTimeout(beginAnimation, 1);
+          }
+
+          function parseMaxTime(str) {
+            var total = 0, values = isString(str) ? str.split(/\s*,\s*/) : [];
+            forEach(values, function(value) {
+              total = Math.max(parseFloat(value) || 0, total);
+            });
+            return total;
+          }
+
+          function beginAnimation() {
+            if(done.run) return;
+
+            element.addClass(activeClassName);
+            if (animations.length > 0) {
+              forEach(animations, function(animation, index) {
+                animation.start(element, function() {
+                  progress(index);
+                }, animation.memo);
+              });
+            } else if (isFunction($window.getComputedStyle)) {
+              //one day all browsers will have these properties
+              var w3cAnimationProp = 'animation';
+              var w3cTransitionProp = 'transition';
+
+              //but some still use vendor-prefixed styles
+              var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
+              var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+
+              var durationKey = 'Duration',
+                  delayKey = 'Delay',
+                  animationIterationCountKey = 'IterationCount',
+                  duration = 0;
+
+              //we want all the styles defined before and after
+              var ELEMENT_NODE = 1;
+              forEach(element, function(element) {
+                if (element.nodeType == ELEMENT_NODE) {
+                  var elementStyles = $window.getComputedStyle(element) || {};
+
+                  var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                                     parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+                  var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                                     parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
+                  var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
+                                                     parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+
+                  var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
+                                                     parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+
+                  if(animationDuration > 0) {
+                    animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp    + animationIterationCountKey]) || 0,
+                                                 parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
+                                                 1);
+                  }
+
+                  duration = Math.max(animationDelay  + animationDuration,
+                                      transitionDelay + transitionDuration,
+                                      duration);
                 }
               });
+              $window.setTimeout(done, duration * 1000);
+            } else {
+              done();
+            }
+          }
 
-              if (!parent) {
-                parent = after ? after.parent() : element.parent();
-              }
-              var disabledAnimation = { running : true };
-              if ((!$sniffer.transitions && animations.length == 0) ||
-                  (parent.inheritedData(NG_ANIMATE_CONTROLLER) || disabledAnimation).running) {
-                beforeFn(element, parent, after);
-                afterFn(element, parent, after);
-                done();
+          function progress(index) {
+            animations[index].done = true;
+            for(var i=0;i<animations.length;i++) {
+              if(!animations[index].done) {
                 return;
               }
-
-              var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
-              if(animationData.running) {
-                forEach(animations, function(animation) {
-                  animation.cancel(element);
-                });
-                animationData.done();
-              }
-
-              element.data(NG_ANIMATE_CONTROLLER, {running:true, done:done});
-              element.addClass(className);
-              beforeFn(element, parent, after);
-              if (element.length == 0) return done();
-
-              forEach(animations, function(animation) {
-                animation.memo = animation.setup(element);
-              });
-
-              // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
-              // keep at 1 for animation dom rerender
-              $window.setTimeout(beginAnimation, 1);
             }
-
-            function parseMaxTime(str) {
-              var total = 0, values = isString(str) ? str.split(/\s*,\s*/) : [];
-              forEach(values, function(value) {
-                total = Math.max(parseFloat(value) || 0, total);
-              });
-              return total;
-            }
-
-            function beginAnimation() {
-              if(done.run) return;
-
-              element.addClass(activeClassName);
-              if (animations.length > 0) {
-                forEach(animations, function(animation, index) {
-                  animation.start(element, function() {
-                    progress(index);
-                  }, animation.memo);
-                });
-              } else if (isFunction($window.getComputedStyle)) {
-                //one day all browsers will have these properties
-                var w3cAnimationProp = 'animation';
-                var w3cTransitionProp = 'transition';
-
-                //but some still use vendor-prefixed styles
-                var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
-                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-
-                var durationKey = 'Duration',
-                    delayKey = 'Delay',
-                    animationIterationCountKey = 'IterationCount',
-                    duration = 0;
-
-                //we want all the styles defined before and after
-                var ELEMENT_NODE = 1;
-                forEach(element, function(element) {
-                  if (element.nodeType == ELEMENT_NODE) {
-                    var elementStyles = $window.getComputedStyle(element) || {};
-
-                    var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
-                                                       parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
-
-                    var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
-                                                       parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
-
-                    var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
-                                                       parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
-
-                    var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
-                                                       parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
-
-                    if(animationDuration > 0) {
-                      animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp    + animationIterationCountKey]) || 0,
-                                                   parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
-                                                   1);
-                    }
-
-                    duration = Math.max(animationDelay  + animationDuration,
-                                        transitionDelay + transitionDuration,
-                                        duration);
-                  }
-                });
-                $window.setTimeout(done, duration * 1000);
-              } else {
-                done();
-              }
-            }
-
-            function progress(index) {
-              animations[index].done = true;
-              for(var i=0;i<animations.length;i++) {
-                if(!animations[index].done) {
-                  return;
-                }
-              }
-              done();
-            };
-
-            function done() {
-              if(!done.run) {
-                done.run = true;
-                afterFn(element, parent, after);
-                element.removeClass(className);
-                element.removeClass(activeClassName);
-                element.removeData(NG_ANIMATE_CONTROLLER);
-              }
-            }
+            done();
           };
-        }
 
-        function show(element) {
-          element.css('display', '');
-        }
-
-        function hide(element) {
-          element.css('display', 'none');
-        }
-
-        function insert(element, parent, after) {
-          var afterNode = after && after[after.length - 1];
-          var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
-          var afterNextSibling = afterNode && afterNode.nextSibling;
-          forEach(element, function(node) {
-            if (afterNextSibling) {
-              parentNode.insertBefore(node, afterNextSibling);
-            } else {
-              parentNode.appendChild(node);
+          function done() {
+            if(!done.run) {
+              done.run = true;
+              afterFn(element, parent, after);
+              element.removeClass(className);
+              element.removeClass(activeClassName);
+              element.removeData(NG_ANIMATE_CONTROLLER);
+              onComplete();
             }
-          });
-        }
+          }
+        };
+      }
 
-        function remove(element) {
-          element.remove();
-        }
+      function show(element) {
+        element.css('display', '');
+      }
 
-        function move(element, parent, after) {
-          // Do not remove element before insert. Removing will cause data associated with the
-          // element to be dropped. Insert will implicitly do the remove.
-          insert(element, parent, after);
-        }
+      function hide(element) {
+        element.css('display', 'none');
+      }
+
+      function insert(element, parent, after) {
+        var afterNode = after && after[after.length - 1];
+        var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+        var afterNextSibling = afterNode && afterNode.nextSibling;
+        forEach(element, function(node) {
+          if (afterNextSibling) {
+            parentNode.insertBefore(node, afterNextSibling);
+          } else {
+            parentNode.appendChild(node);
+          }
+        });
+      }
+
+      function remove(element) {
+        element.remove();
+      }
+
+      function move(element, parent, after) {
+        // Do not remove element before insert. Removing will cause data associated with the
+        // element to be dropped. Insert will implicitly do the remove.
+        insert(element, parent, after);
       };
 
     /**
