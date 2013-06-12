@@ -837,4 +837,136 @@ describe("$animator", function() {
       animate.enter();
     }).toThrow("[$parse:syntax] Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
+
+  describe("Callbacks", function() {
+
+    var window, vendorPrefix;
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        $animationProvider.register('custom', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 2000);
+            }
+          }
+        });
+        $animationProvider.register('other', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 10000);
+            }
+          }
+        });
+      })
+      inject(function($sniffer) {
+        vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+      });
+    });
+
+    it("should fire a done callback when provided with no animation",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      var parent = jqLite('<div><span></span></div>');
+      var element = parent.find('span');
+      body.append(parent);
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'show\', hide: \'hide\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire a done callback when provided with a css animation/transition",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      var transition = 'transition:1s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      body.append(parent);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'show\', hide: \'hide\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(1000).process();
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire a done callback when provided with a JS animation",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom\', hide: \'custom\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(2000).process();
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire the callback right away if another animation is called right after",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom\', hide: \'other\'}'
+      });
+
+      var signature = '';
+      animator.show(element, function() {
+        signature += 'A';
+      });
+      animator.hide(element, function() {
+        signature += 'B';
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      animator.hide(element); //earlier animation cancelled
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(signature).toBe('AB');
+    }));
+  });
+
 });
