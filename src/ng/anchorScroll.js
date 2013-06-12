@@ -39,24 +39,6 @@
          margin-top: 2000px;
        }
      </file>
-     <file name="scenario.js">
-       it('should scroll to the bottom', function() {
-         var win = element(window),
-             initialScrollTop = win.scrollTop();
-         
-         element('#top').click();    
-       
-         var currentScrollTop = win.scrollTop(),
-             documentBottom = currentScrollTop + win.height(),
-             elemTop = element('#bottom').offset().top,
-             elemBottom = elemTop + element('bottom').height();
-       
-         var isInView = (elemBottom <= documentBottom) && (elemTop >= currentScrollTop);
-       
-         expect(initialScrollTop).toBeLessThan(currentScrollTop);
-         expect(isInView).toEqual(true);
-       });
-     </file>
    </example>
  */
 function $AnchorScrollProvider() {
