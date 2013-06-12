@@ -23,6 +23,12 @@ var nullFormCtrl = {
  *
  *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
  *  - values are arrays of controls or forms that are invalid with given error.
+ * 
+ * @method $addControl(control)
+ * @method $removeControl(control)
+ * @method $setValidity(validationToken, isValid, control) Sets the validity of a form control.
+ * @method $setDirty() Sets the form to a dirty state.
+ * @method $setPristine() Sets the form to a pristine state.
  *
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
@@ -81,6 +87,16 @@ function FormController(element, attrs) {
     arrayRemove(controls, control);
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setValidity
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the validity of a form control.
+   * 
+   * This method will also propagate to parent forms.
+   */
   form.$setValidity = function(validationToken, isValid, control) {
     var queue = errors[validationToken];
 
@@ -119,6 +135,17 @@ function FormController(element, attrs) {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setDirty
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to a dirty state.
+   *
+   * This method can be called to add the 'ng-dirty' class and set the form to a dirty
+   * state (ng-dirty class). This method will also propagate to parent forms.
+   */
   form.$setDirty = function() {
     element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
