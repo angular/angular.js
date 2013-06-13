@@ -383,7 +383,7 @@ var $AnimatorProvider = function() {
                 element.removeClass(className);
                 element.removeClass(activeClassName);
                 element.removeData(NG_ANIMATE_CONTROLLER);
-	        scope.$emit(className+"-done",{element: element,parent: parent});
+                scope.$emit(className+"-done",{element: element,parent: parent});
               }
             }
           };
