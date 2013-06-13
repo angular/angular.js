@@ -138,6 +138,16 @@ describe("$animator", function() {
             }
           }
         });
+       $animationProvider.register('custom-long-delay', function() {
+          return {
+            start: function(element, done) {
+              window.setTimeout(done, 20000);
+            },
+            cancel : function(element) {
+              element.addClass('animation-cancelled');
+            }
+          }
+        });
        $animationProvider.register('setup-memo', function() {
           return {
             setup: function(element) {
@@ -414,6 +424,27 @@ describe("$animator", function() {
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
     }));
+
+    it("should allow multiple JS animations which run in parallel",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+        $animator.enabled(true);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{custom: \'custom-delay custom-long-delay\'}'
+        });
+
+        animator.animate('custom',element);
+        expect(element[0].className).toContain('custom-delay custom-long-delay');
+        window.setTimeout.expect(1).process();
+        expect(element[0].className).toContain('custom-delay-active custom-long-delay-active');
+        window.setTimeout.expect(2000).process();
+        window.setTimeout.expect(20000).process();
+
+        expect(element.hasClass('custom-delay')).toBe(false);
+        expect(element.hasClass('custom-delay-active')).toBe(false);
+        expect(element.hasClass('custom-long-delay')).toBe(false);
+        expect(element.hasClass('custom-long-delay-active')).toBe(false);
+    }));
   });
 
   describe("with CSS3", function() {
@@ -631,6 +662,43 @@ describe("$animator", function() {
           }
           expect(element.hasClass('show')).toBe(false);
           expect(element.hasClass('show-active')).toBe(false);
+      }));
+
+      it("should allow multiple css transitions/animations which run in parallel",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          if (!$sniffer.transitions) return;
+
+          var style = 'transition: 1s linear all;' +
+                      vendorPrefix + 'transition: 1s linear all;'
+
+          var animator = $animator($rootScope, {
+            ngAnimate : '{custom: \'one two\'}'
+          });
+
+          element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+          $rootScope.$digest();
+
+          animator.animate('custom',element);
+          expect(element[0].className).toContain('one two');
+          if($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+
+          expect(element[0].className).toContain('one-active two-active');
+          if($sniffer.transitions) {
+            window.setTimeout.expect(1000).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+
+          expect(element.hasClass('one')).toBe(false);
+          expect(element.hasClass('one-active')).toBe(false);
+          expect(element.hasClass('two')).toBe(false);
+          expect(element.hasClass('two-active')).toBe(false);
       }));
     });
 
