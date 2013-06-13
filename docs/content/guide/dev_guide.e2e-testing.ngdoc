@@ -228,7 +228,7 @@ conditional assertions or element selection. Even though you should generally tr
 `element(...).query(fn)`. The following code listing shows how this function can be used to delete
 added entries (where an entry is some domain object) using the application's web interface.
 
-Imagine the application to be structure into two views:
+Imagine the application to be structured into two views:
 
  1. *Overview view* which lists all the added entries in a table and
  2. a *detail view* which shows the entries' details and contains a delete button. When clicking the
