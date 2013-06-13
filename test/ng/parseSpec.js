@@ -679,6 +679,51 @@ describe('parser', function() {
             expect(scope.$eval('greeting')).toBe('hello!');
           });
 
+          it('should evaluate a resolved object promise and set its value', inject(function($parse) {
+            var person = {'name': 'Bill Gates'};
+
+            deferred.resolve(person);
+            scope.person = promise;
+            
+            var getter = $parse( 'person.name' );
+
+            expect(getter(scope)).toBe(undefined);
+            scope.$digest();
+            expect(getter(scope)).toBe('Bill Gates');
+
+            getter.assign(scope, 'Warren Buffet');
+            expect(getter(scope)).toBe('Warren Buffet');
+          }));
+
+          it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {            
+            deferred.resolve("Salut!");
+            scope.greeting = promise;
+            
+            var getter = $parse( 'greeting' );
+
+            expect(getter(scope)).toBe(undefined);
+            scope.$digest();
+            expect(getter(scope)).toBe('Salut!');
+
+            getter.assign(scope, 'Bonjour');
+            expect(getter(scope)).toBe('Bonjour');
+          }));
+
+          it('should evaluate an unresolved promise and *not* set its value', inject(function($parse) {
+            
+
+            scope.person = promise;
+            
+            var getter = $parse( 'person.name' );
+
+            expect(getter(scope)).toBe(undefined);
+            scope.$digest();
+            expect(getter(scope)).toBe(undefined);
+
+            getter.assign(scope, 'Warren Buffet');
+            expect(getter(scope)).toBe(undefined);
+          }));
+
 
           it('should evaluated rejected promise and ignore the rejection reason', function() {
             deferred.reject('sorry');
