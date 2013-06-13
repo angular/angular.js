@@ -647,6 +647,27 @@ describe('$location', function() {
       expect(match[3]).toBe('www.angularjs.org');
     });
 
+    it('should parse valid IPv6 addresses', function() {
+      var match = SERVER_MATCH.exec('http://[1234:5678:a:b:c:d:e:f]/path');
+
+      expect(match[1]).toBe('http');
+      expect(match[3]).toBe('[1234:5678:a:b:c:d:e:f]');
+      expect(match[5]).toBeFalsy();
+      expect(match[6]).toBe('/path');
+      expect(match[8]).toBeFalsy();
+
+      match = SERVER_MATCH.exec('http://[::]/path');
+      expect(match[3]).toBe('[::]');
+
+      match = SERVER_MATCH.exec('http://[1234:5678:b:a:d:b:a:d:112]/is-a-bad-ipv6');
+      expect(match).toBe(null);
+
+      match = SERVER_MATCH.exec('http://[:]/is-a-bad-ipv6');
+      expect(match).toBe(null);
+
+      match = SERVER_MATCH.exec('http://[::::::::::::::::::::::::::]/is-a-bad-ipv6');
+      expect(match).toBe(null);
+    });
 
     it('should parse file://', function() {
       var match = SERVER_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
