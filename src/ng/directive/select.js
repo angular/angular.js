@@ -102,6 +102,10 @@
           Color grouped by shade:
           <select ng-model="color" ng-options="c.name group by c.shade for c in colors">
           </select><br/>
+          
+          Using 'shade' as the key instead of the object:
+          <select ng-model="selectedShade" ng-options="c.shade as c.name for c in colors">
+          </select><br/>
 
 
           Select <a href ng-click="color={name:'not in list'}">bogus</a>.<br>
