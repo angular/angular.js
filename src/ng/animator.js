@@ -205,7 +205,7 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.enter = function(element, parent, after, done) {
-          performAnimation('enter', insert, noop, element, parent, after, done);
+          performAnimation(extractClassName('enter'), insert, noop, element, parent, after, done);
         }
 
         /**
@@ -222,7 +222,7 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.leave = function(element, done) {
-          performAnimation('leave', noop, remove, element, null, null, done);
+          performAnimation(extractClassName('leave'), noop, remove, element, null, null, done);
         }
 
         /**
@@ -241,7 +241,7 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.move = function(element, parent, after, done) {
-          performAnimation('move', move, noop, element, parent, after, done);
+          performAnimation(extractClassName('move'), move, noop, element, parent, after, done);
         }
 
         /**
@@ -257,7 +257,7 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.show = function(element, done) {
-          performAnimation('show', show, noop, element, null, null, done);
+          performAnimation(extractClassName('show'), show, noop, element, null, null, done);
         }
 
         /**
@@ -272,7 +272,7 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.hide = function(element, done) {
-          performAnimation('hide', noop, hide, element, null, null, done);
+          performAnimation(extractClassName('hide'), noop, hide, element, null, null, done);
         }
 
         /**
@@ -288,17 +288,114 @@ var $AnimatorProvider = function() {
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         animator.animate = function(event, element, done) {
-          performAnimation(event, noop, noop, element, null, null, done);
+          performAnimation(extractClassName(event), noop, noop, element, null, null, done);
+        }
+
+        /**
+         * @ngdoc function
+         * @name ng.animator#addClass
+         * @methodOf ng.$animator
+         *
+         * @description
+         * Triggers a custom animation event based off the className variable and then attaches the className value to the element as a CSS class.
+         * Unlike the other animation methods, the animator will suffix the className value with {@type -add} in order to provide
+         * the animator the setup and active CSS classes in order to trigger the animation.
+         *
+         * For example, upon execution of:
+         *
+         * <pre>
+         * animator.addClass(element, 'super');
+         * </pre>
+         *
+         * The generated CSS class values present on element will look like:
+         * <pre>
+         * .super-add
+         * .super-add-active
+         * </pre>
+         *
+         * And upon completion, the generated animation CSS classes will be removed from the element, but the className
+         * value will be attached to the element. In this case, based on the previous example, the resulting CSS class for the element
+         * will look like so:
+         *
+         * <pre>
+         * .super
+         * </pre>
+         *
+         * Once this is complete, then the done callback, if provided, will be fired.
+         *
+         * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {string} className the CSS class that will be animated and then attached to the element
+         * @param {function()=} done callback function that will be called once the animation is complete
+        */
+        animator.addClass = function(element, className, done) {
+          performAnimation(suffixClasses(className,'-add'), noop, noop, element, null, null, function() {
+            className = isString(className) ? className : className.join(' ');
+            element.addClass(className);
+            (done || noop)();
+          });
+        }
+
+        /**
+         * @ngdoc function
+         * @name ng.animator#removeClass
+         * @methodOf ng.$animator
+         *
+         * @description
+         * Triggers a custom animation event based off the className variable and then removes the CSS class provided by the className value
+         * from the element. Unlike the other animation methods, the animator will suffix the className value with {@type -remove} in
+         * order to provide the animator the setup and active CSS classes in order to trigger the animation.
+         *
+         * For example, upon the execution of:
+         *
+         * <pre>
+         * animator.removeClass(element, 'super');
+         * </pre>
+         *
+         * The generated CSS class values present on element will look like:
+         *
+         * <pre>
+         * .super-remove
+         * .super-remove-active
+         * </pre>
+         *
+         * And upon completion, the generated animation CSS classes will be removed from the element as well as the
+         * className value that was provided (in this case {@type super} will be removed). Once that is complete, then, if provided,
+         * the done callback will be fired.
+         *
+         * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {string} className the CSS class that will be animated and then removed from the element
+         * @param {function()=} done callback function that will be called once the animation is complete
+        */
+        animator.removeClass = function(element, className, done) {
+          performAnimation(suffixClasses(className,'-remove'), noop, noop, element, null, null, function() {
+            className = isString(className) ? className : className.join(' ');
+            element.removeClass(className);
+            (done || noop)();
+          });
         }
 
         return animator;
 
-        function performAnimation(type, beforeFn, afterFn, element, parent, after, onComplete) {
-          onComplete = onComplete || noop;
+        function suffixClasses(classes, suffix) {
+          var className = '';
+          classes = isArray(classes) ? classes : classes.split(/\s+/);
+          forEach(classes, function(klass, i) {
+            if(klass && klass.length > 0) {
+              className += (i > 0 ? ' ' : '') + klass + suffix;
+            }
+          });
+          return className;
+        }
+
+        function extractClassName(type) {
           var ngAnimateValue = scope.$eval(attrs.ngAnimate);
-          var classes = ngAnimateValue
+          return ngAnimateValue
               ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
               : '';
+        }
+
+        function performAnimation(classes, beforeFn, afterFn, element, parent, after, onComplete) {
+          onComplete = onComplete || noop;
           if (classes == null || classes.length == 0) {
             beforeFn(element, parent, after);
             afterFn(element, parent, after);

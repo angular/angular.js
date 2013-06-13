@@ -969,4 +969,303 @@ describe("$animator", function() {
     }));
   });
 
+  describe("addClass / removeClass", function() {
+
+    var window, vendorPrefix;
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        $animationProvider.register('klassy-add', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 500);
+            }
+          }
+        });
+        $animationProvider.register('klassy-remove', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 3000);
+            }
+          }
+        });
+      })
+      inject(function($sniffer) {
+        vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+      });
+    });
+
+    it("should add and remove CSS classes after an animation even if no animation is present",
+      inject(function($animator, $rootScope, $sniffer) {
+
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+
+      if($sniffer.transitions) {
+        animator.addClass(element,'klass');
+      }
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-add')).toBe(true);
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-add')).toBe(true);
+      expect(element.hasClass('klass-add-active')).toBe(true);
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(true);
+      expect(element.hasClass('klass-add')).toBe(false);
+      expect(element.hasClass('klass-add-active')).toBe(false);
+
+      animator.removeClass(element,'klass');
+      expect(element.hasClass('klass')).toBe(true);
+      expect(element.hasClass('klass-remove')).toBe(true);
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(element.hasClass('klass')).toBe(true);
+      expect(element.hasClass('klass-remove')).toBe(true);
+      expect(element.hasClass('klass-remove-active')).toBe(true);
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-remove')).toBe(false);
+      expect(element.hasClass('klass-remove-active')).toBe(false);
+    }));
+
+    it("should add and remove CSS classes with a callback",
+      inject(function($animator, $rootScope, $sniffer) {
+
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += 'A';
+      });
+
+      expect(element.hasClass('klass')).toBe(false);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(true);
+
+      animator.removeClass(element,'klass', function() {
+        signature += 'B';
+      });
+
+      expect(element.hasClass('klass')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+
+      expect(signature).toBe('AB');
+    }));
+
+    it("should end the current addClass animation, add the CSS class and then run the removeClass animation",
+      inject(function($animator, $rootScope, $sniffer) {
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += '1';
+      });
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-add')).toBe(true);
+
+      animator.removeClass(element,'klass', function() {
+        signature += '2';
+      });
+      expect(element.hasClass('klass')).toBe(true);
+      expect(element.hasClass('klass-add')).toBe(false);
+      expect(element.hasClass('klass-add-active')).toBe(false);
+      expect(element.hasClass('klass-remove')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(0).process();
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+
+      expect(element.hasClass('klass')).toBe(false);
+      expect(signature).toBe('12');
+    }));
+
+    it("should properly execute JS animations and use callbacks when using addClass / removeClass",
+      inject(function($animator, $rootScope, $sniffer) {
+      var parent = jqLite('<div><span></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klassy', function() {
+        signature += 'X';
+      });
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(500).process();
+      expect(element.hasClass('klassy')).toBe(true);
+
+      animator.removeClass(element,'klassy', function() {
+        signature += 'Y';
+      });
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(3000).process();
+      expect(element.hasClass('klassy')).toBe(false);
+
+      expect(signature).toBe('XY');
+    }));
+
+    it("should properly execute CSS animations/transitions and use callbacks when using addClass / removeClass",
+      inject(function($animator, $rootScope, $sniffer) {
+
+      var transition = 'transition:11s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += 'd';
+      });
+      expect(element.hasClass('klass-add')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(element.hasClass('klass-add-active')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(11000).process();
+      }
+      expect(element.hasClass('klass-add')).toBe(false);
+      expect(element.hasClass('klass-add-active')).toBe(false);
+      expect(element.hasClass('klass')).toBe(true);
+
+      animator.removeClass(element,'klass', function() {
+        signature += 'b';
+      });
+      expect(element.hasClass('klass-remove')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(element.hasClass('klass-remove-active')).toBe(true);
+      if($sniffer.transitions) {
+        window.setTimeout.expect(11000).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-remove')).toBe(false);
+      expect(element.hasClass('klass-remove-active')).toBe(false);
+
+      expect(signature).toBe('db');
+    }));
+
+    it("should allow for multiple css classes to be animated plus a callback when added",
+      inject(function($animator, $rootScope, $sniffer) {
+
+      var transition = 'transition:7s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var flag = false;
+      animator.addClass(element,'one two', function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('one-add')).toBe(true);
+        expect(element.hasClass('two-add')).toBe(true);
+        window.setTimeout.expect(1).process();
+
+        expect(element.hasClass('one-add-active')).toBe(true);
+        expect(element.hasClass('two-add-active')).toBe(true);
+        window.setTimeout.expect(7000).process();
+
+        expect(element.hasClass('one-add')).toBe(false);
+        expect(element.hasClass('one-add-active')).toBe(false);
+        expect(element.hasClass('two-add')).toBe(false);
+        expect(element.hasClass('two-add-active')).toBe(false);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+
+      expect(element.hasClass('one')).toBe(true);
+      expect(element.hasClass('two')).toBe(true);
+
+      expect(flag).toBe(true);
+    }));
+
+    it("should allow for multiple css classes to be animated plus a callback when removed",
+      inject(function($animator, $rootScope, $sniffer) {
+
+      var transition = 'transition:9s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      body.append(parent);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      element.addClass('one two');
+      expect(element.hasClass('one')).toBe(true);
+      expect(element.hasClass('two')).toBe(true);
+
+      var flag = false;
+      animator.removeClass(element,'one two', function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('one-remove')).toBe(true);
+        expect(element.hasClass('two-remove')).toBe(true);
+        window.setTimeout.expect(1).process();
+
+        expect(element.hasClass('one-remove-active')).toBe(true);
+        expect(element.hasClass('two-remove-active')).toBe(true);
+        window.setTimeout.expect(9000).process();
+
+        expect(element.hasClass('one-remove')).toBe(false);
+        expect(element.hasClass('one-remove-active')).toBe(false);
+        expect(element.hasClass('two-remove')).toBe(false);
+        expect(element.hasClass('two-remove-active')).toBe(false);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+
+      expect(element.hasClass('one')).toBe(false);
+      expect(element.hasClass('two')).toBe(false);
+
+      expect(flag).toBe(true);
+    }));
+  });
 });
