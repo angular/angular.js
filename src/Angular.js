@@ -453,7 +453,7 @@ function trim(value) {
 function isElement(node) {
   return node &&
     (node.nodeName  // we are a direct element
-    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
+    || (node.on && node.find));  // we have an on and find method part of jQuery API
 }
 
 /**

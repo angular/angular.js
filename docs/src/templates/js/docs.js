@@ -124,10 +124,10 @@ docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootS
 docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
     element[0].focus();
-    element.bind('focus', function() {
+    element.on('focus', function() {
       scope.$apply(attrs.focused + '=true');
     });
-    element.bind('blur', function() {
+    element.on('blur', function() {
       // have to use $timeout, so that we close the drop-down after the user clicks,
       // otherwise when the user clicks we process the closing before we process the click.
       $timeout(function() {
@@ -545,7 +545,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     $location.path('/api').replace();
   }
   // bind escape to hash reset callback
-  angular.element(window).bind('keydown', function(e) {
+  angular.element(window).on('keydown', function(e) {
     if (e.keyCode === 27) {
       $scope.$apply(function() {
         $scope.subpage = false;

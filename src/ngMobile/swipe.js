@@ -75,7 +75,7 @@ ngMobile.factory('$swipe', [function() {
       // Whether a swipe is active.
       var active = false;
 
-      element.bind('touchstart mousedown', function(event) {
+      element.on('touchstart mousedown', function(event) {
         startCoords = getCoordinates(event);
         active = true;
         totalX = 0;
@@ -84,12 +84,12 @@ ngMobile.factory('$swipe', [function() {
         eventHandlers['start'] && eventHandlers['start'](startCoords);
       });
 
-      element.bind('touchcancel', function(event) {
+      element.on('touchcancel', function(event) {
         active = false;
         eventHandlers['cancel'] && eventHandlers['cancel']();
       });
 
-      element.bind('touchmove mousemove', function(event) {
+      element.on('touchmove mousemove', function(event) {
         if (!active) return;
 
         // Android will send a touchcancel if it thinks we're starting to scroll.
@@ -124,7 +124,7 @@ ngMobile.factory('$swipe', [function() {
         }
       });
 
-      element.bind('touchend mouseup', function(event) {
+      element.on('touchend mouseup', function(event) {
         if (!active) return;
         active = false;
         eventHandlers['end'] && eventHandlers['end'](getCoordinates(event));
