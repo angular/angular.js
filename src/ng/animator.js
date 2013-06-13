@@ -39,6 +39,12 @@
  * <!-- keep in mind that ng-animate can take expressions -->
  * //!annotate="computeCurrentAnimation\(\)" Scope Function|This will be called each time the scope changes...
  * <ANY ng-directive ng-animate=" computeCurrentAnimation() "></ANY>
+ *
+ * <!--
+ *  By providing more than one animation value (separated by spaces) for each event,
+ *  multiple animations can be run in parallel.
+ * -->
+ * <ANY ng-directive ng-animate="{ enter: 'one two', leave: 'three four'}"></ANY>
  * </pre>
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
@@ -273,24 +279,36 @@ var $AnimatorProvider = function() {
         function animateActionFactory(type, beforeFn, afterFn) {
           return function(element, parent, after) {
             var ngAnimateValue = scope.$eval(attrs.ngAnimate);
-            var className = ngAnimateValue
+            var classes = ngAnimateValue
                 ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
                 : '';
-            var animationPolyfill = $animation(className);
-            var polyfillSetup = animationPolyfill && animationPolyfill.setup;
-            var polyfillStart = animationPolyfill && animationPolyfill.start;
-            var polyfillCancel = animationPolyfill && animationPolyfill.cancel;
-
-            if (!className) {
+            if (classes == null || classes.length == 0) {
               beforeFn(element, parent, after);
               afterFn(element, parent, after);
             } else {
-              var activeClassName = className + '-active';
+              classes = isArray(classes) ? classes : classes.split(/\s+/);
+              var animations = [],
+                  className = '',
+                  activeClassName = '';
+              forEach(classes, function(klass, i) {
+                var space = i > 0 ? ' ' : '';
+                activeClassName += space + klass + '-active';
+                className += space + klass;
+
+                var polyfill = $animation(klass);
+                if(polyfill) {
+                  animations.push({
+                    setup : polyfill.setup || noop,
+                    cancel : polyfill.cancel || noop,
+                    start : polyfill.start
+                  });
+                }
+              });
 
               if (!parent) {
                 parent = after ? after.parent() : element.parent();
               }
-              if ((!$sniffer.transitions && !polyfillSetup && !polyfillStart) ||
+              if ((!$sniffer.transitions && animations.length == 0) ||
                   (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
                 beforeFn(element, parent, after);
                 afterFn(element, parent, after);
@@ -299,7 +317,9 @@ var $AnimatorProvider = function() {
 
               var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
               if(animationData.running) {
-                (polyfillCancel || noop)(element);
+                forEach(animations, function(animation) {
+                  animation.cancel(element);
+                });
                 animationData.done();
               }
 
@@ -308,7 +328,9 @@ var $AnimatorProvider = function() {
               beforeFn(element, parent, after);
               if (element.length == 0) return done();
 
-              var memento = (polyfillSetup || noop)(element);
+              forEach(animations, function(animation) {
+                animation.memo = animation.setup(element);
+              });
 
               // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
               // keep at 1 for animation dom rerender
@@ -325,8 +347,12 @@ var $AnimatorProvider = function() {
 
             function beginAnimation() {
               element.addClass(activeClassName);
-              if (polyfillStart) {
-                polyfillStart(element, done, memento);
+              if (animations.length > 0) {
+                forEach(animations, function(animation, index) {
+                  animation.start(element, function() {
+                    progress(index);
+                  }, animation.memo);
+                });
               } else if (isFunction($window.getComputedStyle)) {
                 //one day all browsers will have these properties
                 var w3cAnimationProp = 'animation';
@@ -375,6 +401,16 @@ var $AnimatorProvider = function() {
                 done();
               }
             }
+
+            function progress(index) {
+              animations[index].done = true;
+              for(var i=0;i<animations.length;i++) {
+                if(!animations[index].done) {
+                  return;
+                }
+              }
+              done();
+            };
 
             function done() {
               if(!done.run) {
