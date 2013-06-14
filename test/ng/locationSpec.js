@@ -610,6 +610,19 @@ describe('$location', function() {
         }
       );
     });
+
+
+    it('should set appBase to serverBase if base[href] is missing', function() {
+      initService(true, '!', true);
+      inject(
+          initBrowser('http://domain.com/my/view1#anchor1', ''),
+          function($rootScope, $location, $browser) {
+            expect($browser.url()).toBe('http://domain.com/my/view1#anchor1');
+            expect($location.path()).toBe('/my/view1');
+            expect($location.hash()).toBe('anchor1');
+          }
+      );
+    });
   });
 
 
