@@ -461,4 +461,8 @@ pre ol li {
   box-shadow:-6px 0 5px #555;
   display:block;
   border-radius:10px;
+
+.docs-version-jump {
+  width:180px;
+  margin-bottom:20px;
 }
