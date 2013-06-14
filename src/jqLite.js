@@ -775,12 +775,15 @@ forEach({
 
   clone: JQLiteClone,
 
-  triggerHandler: function(element, eventName) {
+  triggerHandler: function(element, eventName, eventData) {
     var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
-    var event;
+    eventData = eventData || {
+      preventDefault: noop,
+      stopPropagation: noop
+    };
 
     forEach(eventFns, function(fn) {
-      fn.call(element, {preventDefault: noop});
+      fn.call(element, eventData);
     });
   }
 }, function(fn, name){
