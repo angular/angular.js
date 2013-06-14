@@ -72,7 +72,7 @@
   directory.</p></li>
         <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
         <pre>cd angular-phonecat</pre>
-        <p>The tutorial instructions assume you are running all commands from the angular-phonecat
+        <p>The tutorial instructions assume you are running all commands from the <code>angular-phonecat</code>
   directory.</p></li>
         <li><p>You will need an http server running on your system. Mac and Linux machines typically
   have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
@@ -96,10 +96,10 @@
         <li><p>Clone the angular-phonecat repository located at <a
         href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
         <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
-        <p>This command creates the angular-phonecat directory in your current directory.</p></li>
-        <li><p>Change your current directory to angular-phonecat.</p>
+        <p>This command creates the <code>angular-phonecat</code> directory in your current directory.</p></li>
+        <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
         <pre>cd angular-phonecat</pre>
-        <p>The tutorial instructions assume you are running all commands from the angular-phonecat
+        <p>The tutorial instructions assume you are running all commands from the <code>angular-phonecat</code>
   directory.</p>
         <p>You should run all <code>git</code> commands from Git bash.</p>
         <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be
