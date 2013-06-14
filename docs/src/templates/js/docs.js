@@ -4,6 +4,64 @@ var docsApp = {
   serviceFactory: {}
 };
 
+docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', function($scope, $window, NG_VERSIONS) {
+  $scope.versions = expandVersions(NG_VERSIONS);
+  $scope.version  = ($scope.version || angular.version.full).match(/^([\d\.]+\d+)/)[1]; //match only the number
+  
+  $scope.jumpToDocsVersion = function(value) {
+    var isLastStable,
+        version,
+        versions = $scope.versions;
+    for(var i=versions.length-1;i>=0;i--) {
+      var v = versions[i];
+      if(v.version == value) {
+        var next = versions[i - 1];
+        isLastStable = v.stable && (!next || next && !next.stable);
+        version = v;
+        break;
+      }
+    };
+
+    if(version && version.version >= '1.0.0') {
+      //the older versions have a different path to the docs within their repo directory
+      var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
+
+      //the last stable version should redirect to docs.angularjs.org instead of code.angularjs.org
+      var url = 'http://' +
+                  (isLastStable ?
+                    'docs.angularjs.org' :
+                    'code.angularjs.org/' + version.version + '/' + docsPath);
+
+      $window.location = url;
+    }
+  };
+
+  function expandVersions(angularVersions) {
+    var unstableVersionStart = 0;
+    angularVersions.forEach(function(version) {
+      var split = version.split('.');
+      unstableVersionStart = split[1] % 2 == 1 ?
+                        Math.max(unstableVersionStart, parseInt(split[0] + '' + split[1])) :
+                        unstableVersionStart;
+    });
+
+    var versions = [];
+    for(var i=angularVersions.length-1;i>=0;i--) {
+      var version = angularVersions[i];
+      var split = version.split('.');
+      var stable = parseInt(split[0] + '' + split[1]) < unstableVersionStart;
+      versions.push({
+        version : version,
+        stable : stable,
+        title : 'AngularJS - v' + version,
+        group : (stable ? 'Stable' : 'Unstable')
+      });
+    };
+
+    return versions;
+  };
+}];
+
 docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location', function($scope, fullTextSearch, $location) {
   fullTextSearch.init();
   $scope.search = function(q) {
@@ -47,7 +105,7 @@ docsApp.controller.DocsNavigationCtrl = ['$scope', 'fullTextSearch', '$location'
   };
 }];
 
-docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', function($q, $rootScope) {
+docsApp.serviceFactory.fullTextSearch = ['$q', '$rootScope', 'NG_PAGES', function($q, $rootScope, NG_PAGES) {
   return {
     dbName : 'docs',
     indexName : 'docsindex',
@@ -374,7 +432,7 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
 };
 
 
-docsApp.serviceFactory.sections = function sections() {
+docsApp.serviceFactory.sections = ['NG_PAGES', function sections(NG_PAGES) {
   var sections = {
     guide: [],
     api: [],
@@ -407,7 +465,7 @@ docsApp.serviceFactory.sections = function sections() {
   });
 
   return sections;
-};
+}];
 
 
 docsApp.controller.DocsController = function($scope, $location, $window, $cookies, sections) {
@@ -706,7 +764,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 };
 
 
-angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
+angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify', 'docsData']).
   config(function($locationProvider) {
     $locationProvider.html5Mode(true).hashPrefix('!');
   }).
