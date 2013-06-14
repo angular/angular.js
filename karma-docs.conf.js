@@ -20,7 +20,7 @@ files = [
   'build/docs/components/angular-bootstrap.js',
   'build/docs/components/angular-bootstrap-prettify.js',
   'build/docs/js/docs.js',
-  'build/docs/docs-keywords.js',
+  'build/docs/docs-data.js',
 
   'docs/component-spec/*.js'
 ];
