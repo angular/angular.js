@@ -69,7 +69,7 @@ function stripFile(url) {
   return url.substr(0, stripHash(url).lastIndexOf('/') + 1);
 }
 
-/* return the server only */
+/* return the server only (scheme://host:port) */
 function serverBase(url) {
   return url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
 }
@@ -497,12 +497,12 @@ function $LocationProvider(){
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
     var $location,
         LocationMode,
-        baseHref = $browser.baseHref(),
+        baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
         initialUrl = $browser.url(),
         appBase;
 
     if (html5Mode) {
-      appBase = baseHref ? serverBase(initialUrl) + baseHref : initialUrl;
+      appBase = serverBase(initialUrl) + (baseHref || '/');
       LocationMode = $sniffer.history ? LocationHtml5Url : LocationHashbangInHtml5Url;
     } else {
       appBase = stripHash(initialUrl);
