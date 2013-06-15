@@ -53,7 +53,7 @@ When the application bootstraps, Angular creates an injector that will be used f
 this app. The injector itself doesn't know anything about what `$http` or `$route` services do, in
 fact it doesn't even know about the existence of these services unless it is configured with proper
 module definitions. The sole responsibilities of the injector are to load specified module
-definition(s), register all service providers defined in these modules and when asked inject
+definition(s), register all service providers defined in these modules, and when asked, inject
 a specified function with dependencies (services) that it lazily instantiates via their providers.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs
