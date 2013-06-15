@@ -97,6 +97,7 @@
 
 .improve-docs {
   float: right;
+  margin: 0 2em 1em;
 }
 
 .hint {
@@ -290,16 +291,4 @@ ul.events > li > h3 {
   text-decoration:none;
   position:relative;
   z-index:1031;
-}
-
-.tutorial-page {
-  position:relative;
-}
-.tutorial-page-no-nav {
-  padding-top:50px;
-}
-.tutorial-page-no-nav .improve-docs {
-  position:absolute;
-  top:0;
-  right:0;
 }
