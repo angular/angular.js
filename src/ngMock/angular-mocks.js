@@ -1384,6 +1384,7 @@ function MockHttpExpectation(method, url, data, headers) {
   this.matchData = function(d) {
     if (angular.isUndefined(data)) return true;
     if (data && angular.isFunction(data.test)) return data.test(d);
+    if (data && angular.isFunction(data)) return data(d);
     if (data && !angular.isString(data)) return angular.toJson(data) == d;
     return data == d;
   };
