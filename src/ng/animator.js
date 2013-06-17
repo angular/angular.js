@@ -23,6 +23,7 @@
  * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
  * | {@link ng.directive:ngIf#animations ngIf}                 | enter and leave                                    |
  * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | show and hide                                      |
+ * | {@link ng.directive:ngClass#animations ngClass}           | add and remove                                     |
  *
  * You can find out more information about animations upon visiting each directive page.
  *

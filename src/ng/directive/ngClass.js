@@ -2,59 +2,84 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return ngDirective(function(scope, element, attr) {
-    var oldVal = undefined;
+  return ['$animator', function($animator) {
+    return function(scope, element, attr) {
+      var animator = $animator(scope, attr);
+      var oldVal = undefined;
 
-    scope.$watch(attr[name], ngClassWatchAction, true);
+      scope.$watch(attr[name], ngClassWatchAction, true);
 
-    attr.$observe('class', function(value) {
-      var ngClass = scope.$eval(attr[name]);
-      ngClassWatchAction(ngClass, ngClass);
-    });
-
-
-    if (name !== 'ngClass') {
-      scope.$watch('$index', function($index, old$index) {
-        var mod = $index & 1;
-        if (mod !== old$index & 1) {
-          if (mod === selector) {
-            addClass(scope.$eval(attr[name]));
-          } else {
-            removeClass(scope.$eval(attr[name]));
-          }
-        }
+      attr.$observe('class', function(value) {
+        var ngClass = scope.$eval(attr[name]);
+        ngClassWatchAction(ngClass, ngClass);
       });
-    }
 
 
-    function ngClassWatchAction(newVal) {
-      if (selector === true || scope.$index % 2 === selector) {
-        if (oldVal && !equals(newVal,oldVal)) {
-          removeClass(oldVal);
+      if (name !== 'ngClass') {
+        scope.$watch('$index', function($index, old$index) {
+          var mod = $index & 1;
+          if (mod !== old$index & 1) {
+            if (mod === selector) {
+              addClass(scope.$eval(attr[name]));
+            } else {
+              removeClass(scope.$eval(attr[name]));
+            }
+          }
+        });
+      }
+
+
+      function ngClassWatchAction(newVal) {
+        if (selector === true || scope.$index % 2 === selector) {
+          if (oldVal && !equals(newVal,oldVal)) {
+            removeClass(oldVal);
+          }
+          addClass(newVal);
         }
-        addClass(newVal);
+        oldVal = copy(newVal);
       }
-      oldVal = copy(newVal);
-    }
 
 
-    function removeClass(classVal) {
-      if (isObject(classVal) && !isArray(classVal)) {
-        classVal = map(classVal, function(v, k) { if (v) return k });
+      function removeClass(classVal) {
+        classVal = flattenClasses(classVal);
+        var REMOVE_FLAG = 'ngClassRemove';
+        if (!equals(element.data(REMOVE_FLAG), classVal) && element.hasClass(classVal)) {
+          element.data(REMOVE_FLAG, classVal);
+          animator.removeClass(element, classVal, function() {
+            element.data(REMOVE_FLAG, null);
+          });
+        }
       }
-      element.removeClass(isArray(classVal) ? classVal.join(' ') : classVal);
-    }
 
 
-    function addClass(classVal) {
-      if (isObject(classVal) && !isArray(classVal)) {
-        classVal = map(classVal, function(v, k) { if (v) return k });
+      function addClass(classVal) {
+        classVal = flattenClasses(classVal);
+        var ADD_FLAG = 'ngClassRemove';
+        if (classVal && !equals(element.data(ADD_FLAG),classVal) && !element.hasClass(classVal)) {
+          element.data(ADD_FLAG, classVal);
+          animator.addClass(element, classVal, function() {
+            element.data(ADD_FLAG, null);
+          });
+        }
       }
-      if (classVal) {
-        element.addClass(isArray(classVal) ? classVal.join(' ') : classVal);
-      }
-    }
-  });
+
+      function flattenClasses(classVal) {
+        if (isObject(classVal) && !isArray(classVal)) {
+          var temp = '', i = 0;
+          forEach(classVal, function(v, k) {
+            if (v) {
+              temp += (i++ ? ' ' : '') + k;
+            }
+          });
+          return temp;
+        }
+        else if(isArray(classVal)) {
+          return classVal.join(' ');
+        }
+        return classVal;
+      };
+    };
+  }];
 }
 
 /**

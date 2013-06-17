@@ -4,6 +4,12 @@ describe('Binder', function() {
 
   var element;
 
+  beforeEach(module(function() {
+    return function($animator) {
+      $animator.enabled(false);
+    }
+  }));
+
   function childNode(element, index) {
     return jqLite(element[0].childNodes[index]);
   }
