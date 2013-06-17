@@ -532,7 +532,7 @@ The {@link api/ng.$compile.directive.Attributes Attributes} object - passed as a
 link() or compile() functions - is a way of accessing:
 
   * *normalized attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
-    such as 'ng:bind', or 'x-ng-bind', the attributes object allows for normalized accessed to
+    such as 'ng:bind', or 'x-ng-bind', the attributes object allows for normalized access to
     the attributes.
 
   * *directive inter-communication:* All directives share the same instance of the attributes
