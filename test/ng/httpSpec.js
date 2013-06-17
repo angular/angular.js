@@ -367,6 +367,20 @@ describe('$http', function() {
         });
       });
     });
+
+    describe('promise decorators', function () {
+      it('should allow decorators to modify the returned promise', function() {
+        module(function($httpProvider) {
+          $httpProvider.promiseDecorators.push(function(promise) {
+            promise.custom = callback;
+          });
+        });
+        inject(function($http) {
+          var promise = $http.get('/url');
+          expect(promise.custom).toBe(callback);
+        });
+      });
+    })
   });
 
 
