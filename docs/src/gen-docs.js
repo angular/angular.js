@@ -44,6 +44,7 @@ writer.makeDir('build/docs/', true).then(function() {
 function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
 
+  writesFuture.push(writer.symlink('../../docs/content/notes', 'build/docs/notes', 'dir'));
   writesFuture.push(writer.symlinkTemplate('css', 'dir'));
   writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
   writesFuture.push(writer.symlinkTemplate('js', 'dir'));

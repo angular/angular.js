@@ -33,11 +33,11 @@
  * <ANY ng-directive ng-animate="{event1: 'animation-name', event2: 'animation-name-2'}"></ANY>
  *
  * <!-- you can also use a short hand -->
+ * //!annotate="animation" ngAnimate|This *expands* to `{ enter: 'animation-enter', leave: 'animation-leave', ...}`</strong>
  * <ANY ng-directive ng-animate=" 'animation' "></ANY>
- * <!-- which expands to -->
- * <ANY ng-directive ng-animate="{ enter: 'animation-enter', leave: 'animation-leave', ...}"></ANY>
  *
  * <!-- keep in mind that ng-animate can take expressions -->
+ * //!annotate="computeCurrentAnimation\(\)" Scope Function|This will be called each time the scope changes...
  * <ANY ng-directive ng-animate=" computeCurrentAnimation() "></ANY>
  * </pre>
  *

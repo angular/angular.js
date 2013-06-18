@@ -79,3 +79,26 @@
   -o-transition: color 0 ease-in; /* opera is special :) */
   transition: none;
 }
+
+.foldout-show, .foldout-enter, .foldout-hide {
+  -webkit-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -moz-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -o-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+}
+
+.foldout-show, .foldout-enter {
+  opacity:0;
+}
+
+.foldout-show.foldout-show-active, .foldout-hide.foldout-hide-active {
+  opacity:1;
+}
+
+.foldout-hide {
+  opacity:1;
+}
+
+.foldout-hide.foldout-hide-active {
+  opacity:0;
+}

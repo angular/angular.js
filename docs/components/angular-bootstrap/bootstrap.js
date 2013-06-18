@@ -198,6 +198,133 @@ directive.table = function() {
   };
 };
 
+var popoverElement = function() {
+  var object = {
+    init : function() {
+      this.element = angular.element(
+        '<div class="popover popover-incode top">' +
+          '<div class="arrow"></div>' +
+          '<div class="popover-inner">' +
+            '<div class="popover-title"><code></code></div>' +
+            '<div class="popover-content"></div>' +
+          '</div>' +
+        '</div>'
+      );
+      this.node = this.element[0];
+      this.element.css({
+        'display':'block',
+        'position':'absolute'
+      });
+      angular.element(document.body).append(this.element);
+
+      var inner = this.element.children()[1];
+      this.titleElement   = angular.element(inner.childNodes[0].firstChild);
+      this.contentElement = angular.element(inner.childNodes[1]);
+
+      //stop the click on the tooltip
+      this.element.bind('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      var self = this;
+      angular.element(document.body).bind('click',function(event) {
+        if(self.visible()) self.hide();
+      });
+    },
+
+    show : function(x,y) {
+      this.element.addClass('visible');
+      this.position(x || 0, y || 0);
+    },
+
+    hide : function() {
+      this.element.removeClass('visible');
+      this.position(-9999,-9999);
+    },
+
+    visible : function() {
+      return this.position().y >= 0;
+    },
+
+    isSituatedAt : function(element) {
+      return this.besideElement ? element[0] == this.besideElement[0] : false;
+    },
+
+    title : function(value) {
+      return this.titleElement.html(value);
+    },
+
+    content : function(value) { 
+      if(value && value.length > 0) {
+        value = new Showdown.converter().makeHtml(value);
+      }
+      return this.contentElement.html(value);
+    },
+
+    positionArrow : function(position) {
+      this.node.className = 'popover ' + position;
+    },
+
+    positionAway : function() {
+      this.besideElement = null;
+      this.hide();
+    },
+
+    positionBeside : function(element) {
+      this.besideElement = element;
+
+      var elm = element[0];
+      var x = elm.offsetLeft;
+      var y = elm.offsetTop;
+      x -= 30;
+      y -= this.node.offsetHeight + 10;
+      this.show(x,y);
+    },
+
+    position : function(x,y) {
+      if(x != null && y != null) {
+        this.element.css('left',x + 'px');
+        this.element.css('top', y + 'px');
+      }
+      else {
+        return {
+          x : this.node.offsetLeft,
+          y : this.node.offsetTop
+        };
+      }
+    }
+  };
+
+  object.init();
+  object.hide();
+
+  return object;
+};
+
+directive.popover = ['popoverElement', function(popover) {
+  return {
+    restrict: 'A',
+    priority : 500,
+    link: function(scope, element, attrs) {
+      element.bind('click',function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if(popover.isSituatedAt(element) && popover.visible()) {
+          popover.title('');
+          popover.content('');
+          popover.positionAway();
+        }
+        else {
+          popover.title(attrs.title);
+          popover.content(attrs.content);
+          popover.positionBeside(element);
+        }
+      });
+    }
+  }
+}];
+
 directive.tabPane = function() {
   return {
     require: '^tabbable',
@@ -208,5 +335,49 @@ directive.tabPane = function() {
   };
 };
 
+directive.foldout = ['$http', '$animator','$window', function($http, $animator, $window) {
+  return {
+    restrict: 'A',
+    priority : 500,
+    link: function(scope, element, attrs) {
+      var animator = $animator(scope, { ngAnimate: "'foldout'" });
+      var container, loading, url = attrs.url;
+      if(/\/build\//.test($window.location.href)) {
+        url = '/build/docs' + url;
+      }
+      element.bind('click',function() {
+        scope.$apply(function() {
+          if(!container) {
+            if(loading) return;
 
-angular.module('bootstrap', []).directive(directive);
+            loading = true;
+            var par = element.parent();
+            container = angular.element('<div class="foldout">loading...</div>');
+            animator.enter(container, null, par);
+
+            $http.get(url, { cache : true }).success(function(html) {
+              loading = false;
+
+              html = '<div class="foldout-inner">' +
+                      '<div calss="foldout-arrow"></div>' +
+                      html +
+                     '</div>';
+              container.html(html);
+
+              //avoid showing the element if the user has already closed it
+              if(container.css('display') == 'block') {
+                container.css('display','none');
+                animator.show(container);
+              }
+            });
+          }
+          else {
+            container.css('display') == 'none' ? animator.show(container) : animator.hide(container);
+          }
+        });
+      });
+    }
+  }
+}];
+
+angular.module('bootstrap', []).directive(directive).factory('popoverElement', popoverElement);
