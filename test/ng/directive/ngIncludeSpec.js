@@ -299,11 +299,11 @@ describe('ngInclude', function() {
 
 describe('ngInclude ngAnimate', function() {
   var vendorPrefix, window;
-  var body, element;
+  var body, element, $rootElement;
 
   function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
@@ -312,10 +312,14 @@ describe('ngInclude ngAnimate', function() {
     element.css(vendorPrefix + cssProp, cssValue);
   }
 
-  beforeEach(function() {
+  beforeEach(module(function() {
     // we need to run animation on attached elements;
-    body = jqLite(document.body);
-  });
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+      body = jqLite(document.body);
+      body.append($rootElement);
+    };
+  }));
 
   afterEach(function(){
     dealoc(body);
