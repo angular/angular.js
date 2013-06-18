@@ -8,3 +8,7 @@
 ng\:form {
   display: block;
 }
+
+.ng-hide {
+  display: none;
+}

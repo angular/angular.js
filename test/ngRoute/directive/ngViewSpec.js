@@ -7,9 +7,9 @@ describe('ngView', function() {
 
   beforeEach(module(function($provide) {
     $provide.value('$window', angular.mock.createMockWindow());
-    return function($rootScope, $compile, $animator) {
+    return function($rootScope, $compile, $animate) {
       element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
-      $animator.enabled(true);
+      $animate.enabled(true);
     };
   }));
 
@@ -509,8 +509,7 @@ describe('ngView', function() {
     });
   });
 
-  describe('ngAnimate ', function() {
-    var window, vendorPrefix;
+  describe('animations', function() {
     var body, element, $rootElement;
 
     function html(html) {
@@ -518,11 +517,6 @@ describe('ngView', function() {
       body.append($rootElement);
       element = $rootElement.children().eq(0);
       return element;
-    }
-
-    function applyCSS(element, cssProp, cssValue) {
-      element.css(cssProp, cssValue);
-      element.css(vendorPrefix + cssProp, cssValue);
     }
 
     beforeEach(module(function() {
@@ -540,128 +534,131 @@ describe('ngView', function() {
 
 
     beforeEach(module(function($provide, $routeProvider) {
-      $provide.value('$window', window = angular.mock.createMockWindow());
       $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
-      return function($sniffer, $templateCache, $animator) {
-        vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+      return function($templateCache) {
         $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
-        $animator.enabled(true);
       }
     }));
 
-    it('should fire off the enter animation + add and remove the css classes',
-        inject(function($compile, $rootScope, $sniffer, $location) {
-          element = $compile(html('<div ng-view ng-animate="{enter: \'custom-enter\'}"></div>'))($rootScope);
+    describe('hooks', function() {
+      beforeEach(module('mock.animate'));
 
-          $location.path('/foo');
-          $rootScope.$digest();
+      it('should fire off the enter animation',
+          inject(function($compile, $rootScope, $location, $animate) {
+            var item;
+            element = $compile(html('<div ng-view></div>'))($rootScope);
 
-          //if we add the custom css stuff here then it will get picked up before the animation takes place
-          var child = jqLite(element.children()[0]);
-          applyCSS(child, 'transition', '1s linear all');
+            $location.path('/foo');
+            $rootScope.$digest();
 
-          if ($sniffer.transitions) {
-            expect(child.attr('class')).toContain('custom-enter');
-            window.setTimeout.expect(1).process();
+            item = $animate.process('leave').element;
+            item = $animate.process('leave').element;
+            item = $animate.process('leave').element;
 
-            expect(child.attr('class')).toContain('custom-enter-active');
-            window.setTimeout.expect(1000).process();
-          } else {
-            expect(window.setTimeout.queue).toEqual([]);
-          }
+            item = $animate.process('enter').element;
+            expect(item.text()).toBe('data');
 
-          expect(child.attr('class')).not.toContain('custom-enter');
-          expect(child.attr('class')).not.toContain('custom-enter-active');
-        }));
+            item = $animate.process('leave').element;
+            item = $animate.process('enter').element;
+            expect(item.text()).toBe('data');
+          }));
 
-    it('should fire off the leave animation + add and remove the css classes',
-        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
-      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-      element = $compile(html('<div ng-view ng-animate="{leave: \'custom-leave\'}"></div>'))($rootScope);
+      it('should fire off the leave animation',
+          inject(function($compile, $rootScope, $location, $templateCache, $animate) {
 
-      $location.path('/foo');
-      $rootScope.$digest();
+        var item;
+        $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+        element = $compile(html('<div ng-view></div>'))($rootScope);
 
-      //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var child = jqLite(element.children()[0]);
-      applyCSS(child, 'transition', '1s linear all');
+        $location.path('/foo');
+        $rootScope.$digest();
 
-      $location.path('/');
-      $rootScope.$digest();
+        item = $animate.process('leave').element;
+        item = $animate.process('leave').element;
+        item = $animate.process('leave').element;
 
-      if ($sniffer.transitions) {
-        expect(child.attr('class')).toContain('custom-leave');
-        window.setTimeout.expect(1).process();
+        item = $animate.process('enter').element;
+        expect(item.text()).toBe('foo');
 
-        expect(child.attr('class')).toContain('custom-leave-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+        item = $animate.process('leave').element;
+        item = $animate.process('enter').element;
+        expect(item.text()).toBe('foo');
 
-      expect(child.attr('class')).not.toContain('custom-leave');
-      expect(child.attr('class')).not.toContain('custom-leave-active');
-    }));
+        $location.path('/');
+        $rootScope.$digest();
 
-    it('should catch and use the correct duration for animations',
-        inject(function($compile, $rootScope, $sniffer, $location, $templateCache) {
-      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-      element = $compile(html(
-          '<div ' +
-              'ng-view ' +
-              'ng-animate="{enter: \'customEnter\'}">' +
-            '</div>'
-      ))($rootScope);
+        item = $animate.process('leave').element;
+        expect(item.text()).toBe('foo');
 
-      $location.path('/foo');
-      $rootScope.$digest();
-
-      //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var child = jqLite(element.children()[0]);
-      applyCSS(child, 'transition', '0.5s linear all');
-
-      if($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect($sniffer.transitions ? 500 : 0).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-    }));
-
+        item = $animate.process('leave').element;
+        expect(item.text()).toBe('foo');
+      }));
+    });
 
     it('should not double compile when route changes', function() {
-      module(function($routeProvider, $animationProvider, $provide) {
+      module('ngAnimate');
+      module('mock.animate');
+      module(function($routeProvider, $animateProvider, $provide) {
         $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
         $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
-        $animationProvider.register('my-animation-leave', function() {
+        $animateProvider.register('.my-animation', function() {
           return {
-            start: function(element, done) {
+            leave: function(element, done) {
+              dump('yes');
               done();
             }
           };
         });
       });
 
-      inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer) {
-        element = $compile(html('<ng:view onload="load()" ng-animate="\'my-animation\'"></ng:view>'))($rootScope);
+      inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer, $animate) {
+        if (!$sniffer.transitions) return;
+
+        element = $compile(html('<ng:view onload="load()"></ng:view>'))($rootScope);
 
         $location.path('/foo');
         $rootScope.$digest();
-        if ($sniffer.transitions) {
-          $window.setTimeout.expect(1).process();
-          $window.setTimeout.expect(0).process();
-        }
+
+        $animate.process('leave');
+        $animate.process('leave');
+        $animate.process('leave');
+        $animate.process('enter');
+        $animate.process('leave');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+
         expect(element.text()).toEqual('12');
 
         $location.path('/bar');
         $rootScope.$digest();
+        $animate.process('leave');
+        $animate.process('enter');
+        $animate.process('leave');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
+        $animate.process('enter');
         expect(n(element.text())).toEqual('1234');
-        if ($sniffer.transitions) {
-          $window.setTimeout.expect(1).process();
-          $window.setTimeout.expect(1).process();
-        } else {
-          $window.setTimeout.expect(1).process();
-        }
+
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+
         expect(element.text()).toEqual('34');
 
         function n(text) {

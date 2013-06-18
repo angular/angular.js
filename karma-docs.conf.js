@@ -15,6 +15,7 @@ module.exports = function(config) {
       'build/angular-mobile.js',
       'build/angular-sanitize.js',
       'build/angular-route.js',
+      'build/angular-animate.js',
 
       'build/docs/components/lunr.js',
       'build/docs/components/google-code-prettify.js',
