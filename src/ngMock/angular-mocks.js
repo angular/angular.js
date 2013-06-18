@@ -834,27 +834,33 @@ angular.mock.dump = function(object) {
  * # Unit testing with mock $httpBackend
  *
  * <pre>
-   // controller
-   function MyController($scope, $http) {
-     $http.get('/auth.py').success(function(data) {
-       $scope.user = data;
+ // controller
+ function MyController($scope, $http) {
+   $http.get('/auth.py').success(function(data, status, headers) {
+     $scope.user = data;
+     $scope.auth = headers('A-Token');
+   });
+
+   $scope.saveMessage = function(message) {
+     var headers = { 'a-token': $scope.auth, bar: 'baz' };
+     $scope.status = 'Saving...';
+
+     $http.post('/add-msg.py', message, {headers: headers}).success(function(response) {
+       $scope.status = '';
+     }).error(function() {
+       $scope.status = 'ERROR!';
      });
+   };
+ }
 
-     this.saveMessage = function(message) {
-       $scope.status = 'Saving...';
-       $http.post('/add-msg.py', message).success(function(response) {
-         $scope.status = '';
-       }).error(function() {
-         $scope.status = 'ERROR!';
-       });
-     };
-   }
-
-   // testing controller
-   var $httpBackend;
+ // testing controller
+describe('$httpBackend.flush()', function () {
+   var $httpBackend, $rootScope, $controller;
 
    beforeEach(inject(function($injector) {
      $httpBackend = $injector.get('$httpBackend');
+     $rootScope   = $injector.get('$rootScope');
+     $controller  = $injector.get('$controller');
 
      // backend definition common for all tests
      $httpBackend.when('GET', '/auth.py').respond({userId: 'userX'}, {'A-Token': 'xxx'});
@@ -869,7 +875,8 @@ angular.mock.dump = function(object) {
 
    it('should fetch authentication token', function() {
      $httpBackend.expectGET('/auth.py');
-     var controller = scope.$new(MyController);
+     var scope = $rootScope.$new()
+     $controller(MyController, {$scope: scope})
      $httpBackend.flush();
    });
 
@@ -879,28 +886,52 @@ angular.mock.dump = function(object) {
      // the controller will still send the request and
      // $httpBackend will respond without you having to
      // specify the expectation and response for this request
-     $httpBackend.expectPOST('/add-msg.py', 'message content').respond(201, '');
 
-     var controller = scope.$new(MyController);
+     var scope = $rootScope.$new()
+     $controller(MyController, {$scope: scope})
      $httpBackend.flush();
-     controller.saveMessage('message content');
-     expect(controller.status).toBe('Saving...');
+
+     // note that flush() calls verifyNoOutstandingExpectation()
+     // so new expectations have to come after the flush
+     $httpBackend.expectPOST('/add-msg.py', 'message content').respond(201, '');
+     scope.saveMessage('message content');
+     expect(scope.status).toBe('Saving...');
      $httpBackend.flush();
-     expect(controller.status).toBe('');
+     expect(scope.status).toBe('');
    });
 
 
-   it('should send auth header', function() {
+   it('should send auth header when auth has completed', function() {
+
+     var scope = $rootScope.$new()
+     $controller(MyController, {$scope: scope})
+     $httpBackend.flush() // require that auth happens to set the header
+
      $httpBackend.expectPOST('/add-msg.py', undefined, function(headers) {
        // check if the header was send, if it wasn't the expectation won't
        // match the request and the test will fail
-       return headers['Authorization'] == 'xxx';
+       return headers['a-token'] == 'xxx';
      }).respond(201, '');
-
-     var controller = scope.$new(MyController);
-     controller.saveMessage('whatever');
+     scope.saveMessage('whatever');
      $httpBackend.flush();
+
    });
+
+
+   it('should not send auth header when auth has not completed', function() {
+     var scope = $rootScope.$new()
+     $controller(MyController, {$scope: scope})
+     // no flush,  so success callback doesn't happen yet.
+     $httpBackend.expectPOST('/add-msg.py', undefined, function(headers) {
+       return typeof headers['a-token'] === "undefined"
+     }).respond(201, '');
+     scope.saveMessage('whatever');
+     $httpBackend.flush();
+
+   });
+
+
+})
    </pre>
  */
 angular.mock.$HttpBackendProvider = function() {
