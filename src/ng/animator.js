@@ -295,6 +295,7 @@ var $AnimatorProvider = function() {
                   (parent.inheritedData(NG_ANIMATE_CONTROLLER) || disabledAnimation).running) {
                 beforeFn(element, parent, after);
                 afterFn(element, parent, after);
+                done();
                 return;
               }
 
@@ -325,6 +326,8 @@ var $AnimatorProvider = function() {
             }
 
             function beginAnimation() {
+              if(done.run) return;
+
               element.addClass(activeClassName);
               if (polyfillStart) {
                 polyfillStart(element, done, memento);

@@ -355,6 +355,34 @@ describe("$animator", function() {
       expect(element.data('foo')).toEqual('bar');
     }));
 
+    it("should ensure that the active class is not assigned if the animation is cancelled early",
+      inject(function($animator, $rootScope, $sniffer) {
+      if(!$sniffer.transitions) return;
+
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'one\', show: \'two\'}'
+      });
+
+      animator.show(element);
+      expect(element.hasClass('two')).toBe(true);
+
+      animator.hide(element);
+      expect(element.hasClass('two')).toBe(false);
+      expect(element.hasClass('one')).toBe(true);
+      window.setTimeout.expect(1).process();
+      expect(element.hasClass('two-active')).toBe(false);
+      expect(element.hasClass('one-active')).toBe(false);
+
+      window.setTimeout.expect(1).process();
+      expect(element.hasClass('one-active')).toBe(true);
+      window.setTimeout.expect(0).process();
+      expect(element.hasClass('one')).toBe(false);
+      expect(element.hasClass('one-active')).toBe(false);
+    }));
+
+
     it("should NOT clobber all data on an element when animation is finished",
       inject(function($animator, $rootScope) {
       $animator.enabled(true);
