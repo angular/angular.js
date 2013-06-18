@@ -91,13 +91,21 @@ describe('Docs Annotations', function() {
           }
         });
       });
-      inject(function($rootScope, $compile, $templateCache) {
+      inject(function($rootScope, $compile, $templateCache, $rootElement, $animator) {
+        $animator.enabled(true);
         url = '/page.html';
         $scope = $rootScope.$new();
         parent = angular.element('<div class="parent"></div>');
         element = angular.element('<div data-url="' + url + '" foldout></div>');
-        body.append(parent);
+
+        //we're injecting the element to the $rootElement since the changes in
+        //$animator only detect and perform animations if the root element has
+        //animations enabled. If the element is not apart of the DOM
+        //then animations are skipped.
         parent.append(element);
+        $rootElement.append(parent);
+        body.append($rootElement);
+
         $compile(parent)($scope);
         $scope.$apply();
       });
