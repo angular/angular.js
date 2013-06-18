@@ -511,11 +511,12 @@ describe('ngView', function() {
 
   describe('ngAnimate ', function() {
     var window, vendorPrefix;
-    var body, element;
+    var body, element, $rootElement;
 
     function html(html) {
-      body.html(html);
-      element = body.children().eq(0);
+      $rootElement.html(html);
+      body.append($rootElement);
+      element = $rootElement.children().eq(0);
       return element;
     }
 
@@ -524,10 +525,13 @@ describe('ngView', function() {
       element.css(vendorPrefix + cssProp, cssValue);
     }
 
-    beforeEach(function() {
+    beforeEach(module(function() {
       // we need to run animation on attached elements;
-      body = jqLite(document.body);
-    });
+      return function(_$rootElement_) {
+        $rootElement = _$rootElement_;
+        body = jqLite(document.body);
+      };
+    }));
 
     afterEach(function(){
       dealoc(body);

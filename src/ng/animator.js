@@ -290,8 +290,9 @@ var $AnimatorProvider = function() {
               if (!parent) {
                 parent = after ? after.parent() : element.parent();
               }
+              var disabledAnimation = { running : true };
               if ((!$sniffer.transitions && !polyfillSetup && !polyfillStart) ||
-                  (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
+                  (parent.inheritedData(NG_ANIMATE_CONTROLLER) || disabledAnimation).running) {
                 beforeFn(element, parent, after);
                 afterFn(element, parent, after);
                 return;
