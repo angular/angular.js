@@ -11,12 +11,31 @@ var globalID = 0;
 var fs = require('fs');
 var fspath = require('path');
 var markdown = new Showdown.converter({ extensions : ['table'] });
+var shell = require('shelljs');
+var gruntUtil = require('../../lib/grunt/utils.js');
 
 exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
 exports.merge = merge;
 exports.Doc = Doc;
+
+exports.ngVersions = function() {
+  var line, versions = [], regex = /^v([1-9]\d*(?:\.\d+)+)$/; //only fetch >= 1.0.0 versions
+  shell.exec('git tag', {silent: true}).output.split(/\s*\n\s*/)
+    .forEach(function(line) {
+      var matches = regex.exec(line);
+      if(matches && matches.length > 0) {
+        versions.push(matches[1]);
+      }
+    });
+  versions.push(exports.ngCurrentVersion().number);
+  return versions;
+};
+
+exports.ngCurrentVersion = function() {
+  return gruntUtil.getVersion();
+};
 
 var BOOLEAN_ATTR = {};
 ['multiple', 'selected', 'checked', 'disabled', 'readOnly', 'required'].forEach(function(value) {
