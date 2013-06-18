@@ -173,24 +173,29 @@ function setupModuleLoader(window) {
            * @param {Function} animationFactory Factory function for creating new instance of an animation.
            * @description
            *
+           * **NOTE**: this service is only available if the **ngAnimate** module is included.
+           *
+           *
            * Defines an animation hook that can be later used with {@link ng.directive:ngAnimate ngAnimate}
            * alongside {@link ng.directive:ngAnimate#Description common ng directives} as well as custom directives.
            * <pre>
-           * module.animation('animation-name', function($inject1, $inject2) {
+           * module.animation('.animation-name', function($inject1, $inject2) {
            *   return {
-           *     //this gets called in preparation to setup an animation
-           *     setup : function(element) { ... },
-           *
-           *     //this gets called once the animation is run
-           *     start : function(element, done, memo) { ... }
+           *     event : function(element, done) {
+           *       //code to run the animation
+           *       //once complete, then run done()
+           *       return function cancellationFunction(element) {
+           *         //code to cancel the animation
+           *       }
+           *     }
            *   }
            * })
            * </pre>
            *
-           * See {@link ng.$animationProvider#register $animationProvider.register()} and
-           * {@link ng.directive:ngAnimate ngAnimate} for more information.
+           * See {@link ngAnimate.$animateProvider#register $animateProvider.register()} and
+           * {@link ngAnimate ngAnimate} for more information.
            */
-          animation: invokeLater('$animationProvider', 'register'),
+          animation: invokeLater('$animateProvider', 'register'),
 
           /**
            * @ngdoc method

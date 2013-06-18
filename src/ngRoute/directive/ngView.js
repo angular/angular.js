@@ -14,7 +14,7 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
+ * Additionally, you can also provide animations via the ngAnimate module to animate the **enter**
  * and **leave** effects.
  *
  * @animations
@@ -35,8 +35,8 @@ ngRouteModule.directive('ngView', ngViewFactory);
 
           <div
             ng-view
-            class="example-animate-container"
-            ng-animate="{enter: 'example-enter', leave: 'example-leave'}"></div>
+            class="example-$animate-container"
+            ng-$animate="{enter: 'example-enter', leave: 'example-leave'}"></div>
           <hr />
 
           <pre>$location.path() = {{main.$location.path()}}</pre>
@@ -71,12 +71,12 @@ ngRouteModule.directive('ngView', ngViewFactory);
           transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
         }
 
-        .example-animate-container {
+        .example-$animate-container {
           position:relative;
           height:100px;
         }
 
-        .example-animate-container > * {
+        .example-$animate-container > * {
           display:block;
           width:100%;
           border-left:1px solid black;
@@ -162,15 +162,14 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * @description
  * Emitted every time the ngView content is reloaded.
  */
-ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animator'];
-function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animator) {
+ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animate'];
+function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animate) {
   return {
     restrict: 'ECA',
     terminal: true,
     link: function(scope, element, attr) {
       var lastScope,
-          onloadExp = attr.onload || '',
-          animate = $animator(scope, attr);
+          onloadExp = attr.onload || '';
 
       scope.$on('$routeChangeSuccess', update);
       update();
@@ -184,7 +183,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
       }
 
       function clearContent() {
-        animate.leave(element.contents(), element);
+        $animate.leave(element.contents());
         destroyLastScope();
       }
 
@@ -195,7 +194,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
         if (template) {
           clearContent();
           var enterElements = jqLite('<div></div>').html(template).contents();
-          animate.enter(enterElements, element);
+          $animate.enter(enterElements, element);
 
           var link = $compile(enterElements),
               current = $route.current,

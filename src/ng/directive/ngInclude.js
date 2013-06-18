@@ -23,7 +23,7 @@
  *      (e.g.  ngInclude won't work for cross-domain requests on all browsers and for `file://`
  *      access on some browsers)
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
+ * Additionally, you can also provide animations via the ngAnimate module to animate the **enter**
  * and **leave** effects.
  *
  * @animations
@@ -143,8 +143,8 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator', '$sce',
-                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator,   $sce) {
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animate', '$sce',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animate,   $sce) {
   return {
     restrict: 'ECA',
     terminal: true,
@@ -154,7 +154,6 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           autoScrollExp = attr.autoscroll;
 
       return function(scope, element, attr) {
-        var animate = $animator(scope, attr);
         var changeCounter = 0,
             childScope;
 
@@ -163,7 +162,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             childScope.$destroy();
             childScope = null;
           }
-          animate.leave(element.contents(), element);
+          $animate.leave(element.contents());
         };
 
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
@@ -175,11 +174,11 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
 
               if (childScope) childScope.$destroy();
               childScope = scope.$new();
-              animate.leave(element.contents(), element);
+              $animate.leave(element.contents());
 
               var contents = jqLite('<div/>').html(response).contents();
 
-              animate.enter(contents, element);
+              $animate.enter(contents, element);
               $compile(contents)(childScope);
 
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {

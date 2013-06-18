@@ -67,41 +67,33 @@ describe('Docs Annotations', function() {
 
     var $scope, parent, element, url, window;
     beforeEach(function() {
-      module(function($provide, $animationProvider) {
+      module(function($provide, $animateProvider) {
         $provide.value('$window', window = angular.mock.createMockWindow());
-        $animationProvider.register('foldout-enter', function($window) {
+        $animateProvider.register('.foldout', function($window) {
           return {
-            start : function(element, done) {
+            enter : function(element, done) {
               $window.setTimeout(done, 1000);
-            }
-          }
-        });
-        $animationProvider.register('foldout-hide', function($window) {
-          return {
-            start : function(element, done) {
+            },
+            show : function(element, done) {
               $window.setTimeout(done, 500);
-            }
-          }
-        });
-        $animationProvider.register('foldout-show', function($window) {
-          return {
-            start : function(element, done) {
+            },
+            hide : function(element, done) {
               $window.setTimeout(done, 200);
             }
           }
         });
       });
-      inject(function($rootScope, $compile, $templateCache, $rootElement, $animator) {
-        $animator.enabled(true);
+      inject(function($rootScope, $compile, $templateCache, $rootElement, $animate) {
+        $animate.enabled(true);
         url = '/page.html';
         $scope = $rootScope.$new();
         parent = angular.element('<div class="parent"></div>');
-        element = angular.element('<div data-url="' + url + '" foldout></div>');
 
         //we're injecting the element to the $rootElement since the changes in
-        //$animator only detect and perform animations if the root element has
+        //$animate only detect and perform animations if the root element has
         //animations enabled. If the element is not apart of the DOM
         //then animations are skipped.
+        element = angular.element('<div data-url="' + url + '" class="foldout" foldout></div>');
         parent.append(element);
         $rootElement.append(parent);
         body.append($rootElement);
@@ -142,16 +134,19 @@ describe('Docs Annotations', function() {
       $httpBackend.flush();
       window.setTimeout.expect(1).process();
       window.setTimeout.expect(1000).process();
+      window.setTimeout.expect(0).process();
 
       //hide
       element.triggerHandler('click');
       window.setTimeout.expect(1).process();
-      window.setTimeout.expect(500).process();
+      window.setTimeout.expect(200).process();
+      window.setTimeout.expect(0).process();
 
       //show
       element.triggerHandler('click');
       window.setTimeout.expect(1).process();
-      window.setTimeout.expect(200).process();
+      window.setTimeout.expect(500).process();
+      window.setTimeout.expect(0).process();
     }));
 
   });
@@ -160,7 +155,7 @@ describe('Docs Annotations', function() {
 
     var window, $scope, ctrl;
     beforeEach(function() {
-      module(function($provide, $animationProvider) {
+      module(function($provide, $animateProvider) {
         $provide.value('$window', window = angular.mock.createMockWindow());
       });
       inject(function($rootScope, $controller, $location, $cookies, sections) {

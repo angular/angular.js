@@ -30,11 +30,23 @@ beforeEach(function() {
     return -1;
   }
 
+  function isNgElementHidden(element) {
+    return angular.element(element).hasClass('ng-hide');
+  };
+
   this.addMatchers({
     toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
     toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
     toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
+    toBeShown: function() {
+      this.message = valueFn("Expected element to not have 'ng-hide' class");
+      return !isNgElementHidden(this.actual);
+    },
+    toBeHidden: function() {
+      this.message = valueFn("Expected element to have 'ng-hide' class");
+      return isNgElementHidden(this.actual);
+    },
 
     toEqual: function(expected) {
       if (this.actual && this.actual.$$log) {

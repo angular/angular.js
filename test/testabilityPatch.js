@@ -233,7 +233,7 @@ function sortedHtml(element, showNgClass) {
  */
 function isCssVisible(node) {
   var display = node.css('display');
-  return display != 'none';
+  return !node.hasClass('ng-hide') && display != 'none';
 }
 
 function assertHidden(node) {
