@@ -39,6 +39,12 @@
  * <!-- keep in mind that ng-animate can take expressions -->
  * //!annotate="computeCurrentAnimation\(\)" Scope Function|This will be called each time the scope changes...
  * <ANY ng-directive ng-animate=" computeCurrentAnimation() "></ANY>
+ *
+ * <!--
+ *  By providing more than one animation value (separated by spaces) for each event,
+ *  multiple animations can be run in parallel.
+ * -->
+ * <ANY ng-directive ng-animate="{ enter: 'one two', leave: 'three four'}"></ANY>
  * </pre>
  *
  * The `event1` and `event2` attributes refer to the animation events specific to the directive that has been assigned.
@@ -196,8 +202,11 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} element the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.enter = animateActionFactory('enter', insert, noop);
+        animator.enter = function(element, parent, after, done) {
+          performAnimation(extractClassName('enter'), insert, noop, element, parent, after, done);
+        }
 
         /**
          * @ngdoc function
@@ -210,8 +219,11 @@ var $AnimatorProvider = function() {
          *
          * @param {jQuery/jqLite element} element the element that will be the focus of the leave animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the leave animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.leave = animateActionFactory('leave', noop, remove);
+        animator.leave = function(element, done) {
+          performAnimation(extractClassName('leave'), noop, remove, element, null, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -226,8 +238,11 @@ var $AnimatorProvider = function() {
          * @param {jQuery/jqLite element} element the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.move = animateActionFactory('move', move, noop);
+        animator.move = function(element, parent, after, done) {
+          performAnimation(extractClassName('move'), move, noop, element, parent, after, done);
+        }
 
         /**
          * @ngdoc function
@@ -239,8 +254,11 @@ var $AnimatorProvider = function() {
          * Reveals the element by setting the CSS property `display` to `block` and then starts the show animation directly after.
          *
          * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.show = animateActionFactory('show', show, noop);
+        animator.show = function(element, done) {
+          performAnimation(extractClassName('show'), show, noop, element, null, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -251,8 +269,11 @@ var $AnimatorProvider = function() {
          * Starts the hide animation first and sets the CSS `display` property to `none` upon completion.
          *
          * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.hide = animateActionFactory('hide', noop, hide);
+        animator.hide = function(element, done) {
+          performAnimation(extractClassName('hide'), noop, hide, element, null, null, done);
+        }
 
         /**
          * @ngdoc function
@@ -264,160 +285,291 @@ var $AnimatorProvider = function() {
          *
          * @param {string} event the name of the custom event
          * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {function()=} done callback function that will be called once the animation is complete
         */
-        animator.animate = function(event, element) {
-          animateActionFactory(event, noop, noop)(element);
-        }
-        return animator;
-
-        function animateActionFactory(type, beforeFn, afterFn) {
-          return function(element, parent, after) {
-            var ngAnimateValue = scope.$eval(attrs.ngAnimate);
-            var className = ngAnimateValue
-                ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
-                : '';
-            var animationPolyfill = $animation(className);
-            var polyfillSetup = animationPolyfill && animationPolyfill.setup;
-            var polyfillStart = animationPolyfill && animationPolyfill.start;
-            var polyfillCancel = animationPolyfill && animationPolyfill.cancel;
-
-            if (!className) {
-              beforeFn(element, parent, after);
-              afterFn(element, parent, after);
-            } else {
-              var activeClassName = className + '-active';
-
-              if (!parent) {
-                parent = after ? after.parent() : element.parent();
-              }
-              if ((!$sniffer.transitions && !polyfillSetup && !polyfillStart) ||
-                  (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
-                beforeFn(element, parent, after);
-                afterFn(element, parent, after);
-                return;
-              }
-
-              var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
-              if(animationData.running) {
-                (polyfillCancel || noop)(element);
-                animationData.done();
-              }
-
-              element.data(NG_ANIMATE_CONTROLLER, {running:true, done:done});
-              element.addClass(className);
-              beforeFn(element, parent, after);
-              if (element.length == 0) return done();
-
-              var memento = (polyfillSetup || noop)(element);
-
-              // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
-              // keep at 1 for animation dom rerender
-              $window.setTimeout(beginAnimation, 1);
-            }
-
-            function parseMaxTime(str) {
-              var total = 0, values = isString(str) ? str.split(/\s*,\s*/) : [];
-              forEach(values, function(value) {
-                total = Math.max(parseFloat(value) || 0, total);
-              });
-              return total;
-            }
-
-            function beginAnimation() {
-              element.addClass(activeClassName);
-              if (polyfillStart) {
-                polyfillStart(element, done, memento);
-              } else if (isFunction($window.getComputedStyle)) {
-                //one day all browsers will have these properties
-                var w3cAnimationProp = 'animation';
-                var w3cTransitionProp = 'transition';
-
-                //but some still use vendor-prefixed styles
-                var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
-                var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-
-                var durationKey = 'Duration',
-                    delayKey = 'Delay',
-                    animationIterationCountKey = 'IterationCount',
-                    duration = 0;
-
-                //we want all the styles defined before and after
-                var ELEMENT_NODE = 1;
-                forEach(element, function(element) {
-                  if (element.nodeType == ELEMENT_NODE) {
-                    var elementStyles = $window.getComputedStyle(element) || {};
-
-                    var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
-                                                       parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
-
-                    var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
-                                                       parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
-
-                    var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
-                                                       parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
-
-                    var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
-                                                       parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
-
-                    if(animationDuration > 0) {
-                      animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp    + animationIterationCountKey]) || 0,
-                                                   parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
-                                                   1);
-                    }
-
-                    duration = Math.max(animationDelay  + animationDuration,
-                                        transitionDelay + transitionDuration,
-                                        duration);
-                  }
-                });
-                $window.setTimeout(done, duration * 1000);
-              } else {
-                done();
-              }
-            }
-
-            function done() {
-              if(!done.run) {
-                done.run = true;
-                afterFn(element, parent, after);
-                element.removeClass(className);
-                element.removeClass(activeClassName);
-                element.removeData(NG_ANIMATE_CONTROLLER);
-              }
-            }
-          };
+        animator.animate = function(event, element, done) {
+          performAnimation(extractClassName(event), noop, noop, element, null, null, done);
         }
 
-        function show(element) {
-          element.css('display', '');
-        }
-
-        function hide(element) {
-          element.css('display', 'none');
-        }
-
-        function insert(element, parent, after) {
-          var afterNode = after && after[after.length - 1];
-          var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
-          var afterNextSibling = afterNode && afterNode.nextSibling;
-          forEach(element, function(node) {
-            if (afterNextSibling) {
-              parentNode.insertBefore(node, afterNextSibling);
-            } else {
-              parentNode.appendChild(node);
-            }
+        /**
+         * @ngdoc function
+         * @name ng.animator#addClass
+         * @methodOf ng.$animator
+         *
+         * @description
+         * Triggers a custom animation event based off the className variable and then attaches the className value to the element as a CSS class.
+         * Unlike the other animation methods, the animator will suffix the className value with {@type -add} in order to provide
+         * the animator the setup and active CSS classes in order to trigger the animation.
+         *
+         * For example, upon execution of:
+         *
+         * <pre>
+         * animator.addClass(element, 'super');
+         * </pre>
+         *
+         * The generated CSS class values present on element will look like:
+         * <pre>
+         * .super-add
+         * .super-add-active
+         * </pre>
+         *
+         * And upon completion, the generated animation CSS classes will be removed from the element, but the className
+         * value will be attached to the element. In this case, based on the previous example, the resulting CSS class for the element
+         * will look like so:
+         *
+         * <pre>
+         * .super
+         * </pre>
+         *
+         * Once this is complete, then the done callback, if provided, will be fired.
+         *
+         * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {string} className the CSS class that will be animated and then attached to the element
+         * @param {function()=} done callback function that will be called once the animation is complete
+        */
+        animator.addClass = function(element, className, done) {
+          performAnimation(suffixClasses(className,'-add'), noop, noop, element, null, null, function() {
+            className = isString(className) ? className : className.join(' ');
+            element.addClass(className);
+            (done || noop)();
           });
         }
 
-        function remove(element) {
-          element.remove();
+        /**
+         * @ngdoc function
+         * @name ng.animator#removeClass
+         * @methodOf ng.$animator
+         *
+         * @description
+         * Triggers a custom animation event based off the className variable and then removes the CSS class provided by the className value
+         * from the element. Unlike the other animation methods, the animator will suffix the className value with {@type -remove} in
+         * order to provide the animator the setup and active CSS classes in order to trigger the animation.
+         *
+         * For example, upon the execution of:
+         *
+         * <pre>
+         * animator.removeClass(element, 'super');
+         * </pre>
+         *
+         * The generated CSS class values present on element will look like:
+         *
+         * <pre>
+         * .super-remove
+         * .super-remove-active
+         * </pre>
+         *
+         * And upon completion, the generated animation CSS classes will be removed from the element as well as the
+         * className value that was provided (in this case {@type super} will be removed). Once that is complete, then, if provided,
+         * the done callback will be fired.
+         *
+         * @param {jQuery/jqLite element} element the element that will be animated
+         * @param {string} className the CSS class that will be animated and then removed from the element
+         * @param {function()=} done callback function that will be called once the animation is complete
+        */
+        animator.removeClass = function(element, className, done) {
+          performAnimation(suffixClasses(className,'-remove'), noop, noop, element, null, null, function() {
+            className = isString(className) ? className : className.join(' ');
+            element.removeClass(className);
+            (done || noop)();
+          });
         }
 
-        function move(element, parent, after) {
-          // Do not remove element before insert. Removing will cause data associated with the
-          // element to be dropped. Insert will implicitly do the remove.
-          insert(element, parent, after);
+        return animator;
+
+        function suffixClasses(classes, suffix) {
+          var className = '';
+          classes = isArray(classes) ? classes : classes.split(/\s+/);
+          forEach(classes, function(klass, i) {
+            if(klass && klass.length > 0) {
+              className += (i > 0 ? ' ' : '') + klass + suffix;
+            }
+          });
+          return className;
         }
+
+        function extractClassName(type) {
+          var ngAnimateValue = scope.$eval(attrs.ngAnimate);
+          return ngAnimateValue
+              ? isObject(ngAnimateValue) ? ngAnimateValue[type] : ngAnimateValue + '-' + type
+              : '';
+        }
+
+        function performAnimation(classes, beforeFn, afterFn, element, parent, after, onComplete) {
+          onComplete = onComplete || noop;
+          if (classes == null || classes.length == 0) {
+            beforeFn(element, parent, after);
+            afterFn(element, parent, after);
+            onComplete();
+          } else {
+            classes = isArray(classes) ? classes : classes.split(/\s+/);
+            var animations = [],
+                className = '',
+                activeClassName = '';
+            forEach(classes, function(klass, i) {
+              var space = i > 0 ? ' ' : '';
+              activeClassName += space + klass + '-active';
+              className += space + klass;
+
+              var polyfill = $animation(klass);
+              if(polyfill) {
+                animations.push({
+                  setup : polyfill.setup || noop,
+                  cancel : polyfill.cancel || noop,
+                  start : polyfill.start
+                });
+              }
+            });
+
+            if (!parent) {
+              parent = after ? after.parent() : element.parent();
+            }
+            if ((!$sniffer.transitions && animations.length == 0) ||
+                (parent.inheritedData(NG_ANIMATE_CONTROLLER) || noop).running) {
+              beforeFn(element, parent, after);
+              afterFn(element, parent, after);
+              done();
+              return;
+            }
+
+            var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
+            if(animationData.running) {
+              forEach(animations, function(animation) {
+                animation.cancel(element);
+              });
+              animationData.done();
+            }
+
+            element.data(NG_ANIMATE_CONTROLLER, {running:true, done:done});
+            element.addClass(className);
+            beforeFn(element, parent, after);
+            if (element.length == 0) return done();
+
+            forEach(animations, function(animation) {
+              animation.memo = animation.setup(element);
+            });
+
+            // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
+            // keep at 1 for animation dom rerender
+            $window.setTimeout(beginAnimation, 1);
+          }
+
+          function parseMaxTime(str) {
+            var total = 0, values = isString(str) ? str.split(/\s*,\s*/) : [];
+            forEach(values, function(value) {
+              total = Math.max(parseFloat(value) || 0, total);
+            });
+            return total;
+          }
+
+          function beginAnimation() {
+            element.addClass(activeClassName);
+            if (animations.length > 0) {
+              forEach(animations, function(animation, index) {
+                animation.start(element, function() {
+                  progress(index);
+                }, animation.memo);
+              });
+            } else if (isFunction($window.getComputedStyle)) {
+              //one day all browsers will have these properties
+              var w3cAnimationProp = 'animation';
+              var w3cTransitionProp = 'transition';
+
+              //but some still use vendor-prefixed styles
+              var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
+              var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+
+              var durationKey = 'Duration',
+                  delayKey = 'Delay',
+                  animationIterationCountKey = 'IterationCount',
+                  duration = 0;
+
+              //we want all the styles defined before and after
+              var ELEMENT_NODE = 1;
+              forEach(element, function(element) {
+                if (element.nodeType == ELEMENT_NODE) {
+                  var elementStyles = $window.getComputedStyle(element) || {};
+
+                  var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                                     parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+                  var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                                     parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
+                  var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
+                                                     parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+
+                  var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
+                                                     parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+
+                  if(animationDuration > 0) {
+                    animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp    + animationIterationCountKey]) || 0,
+                                                 parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
+                                                 1);
+                  }
+
+                  duration = Math.max(animationDelay  + animationDuration,
+                                      transitionDelay + transitionDuration,
+                                      duration);
+                }
+              });
+              $window.setTimeout(done, duration * 1000);
+            } else {
+              done();
+            }
+          }
+
+          function progress(index) {
+            animations[index].done = true;
+            for(var i=0;i<animations.length;i++) {
+              if(!animations[index].done) {
+                return;
+              }
+            }
+            done();
+          };
+
+          function done() {
+            if(!done.run) {
+              done.run = true;
+              afterFn(element, parent, after);
+              element.removeClass(className);
+              element.removeClass(activeClassName);
+              element.removeData(NG_ANIMATE_CONTROLLER);
+              onComplete();
+            }
+          }
+        };
+      }
+
+      function show(element) {
+        element.css('display', '');
+      }
+
+      function hide(element) {
+        element.css('display', 'none');
+      }
+
+      function insert(element, parent, after) {
+        var afterNode = after && after[after.length - 1];
+        var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+        var afterNextSibling = afterNode && afterNode.nextSibling;
+        forEach(element, function(node) {
+          if (afterNextSibling) {
+            parentNode.insertBefore(node, afterNextSibling);
+          } else {
+            parentNode.appendChild(node);
+          }
+        });
+      }
+
+      function remove(element) {
+        element.remove();
+      }
+
+      function move(element, parent, after) {
+        // Do not remove element before insert. Removing will cause data associated with the
+        // element to be dropped. Insert will implicitly do the remove.
+        insert(element, parent, after);
       };
 
     /**
