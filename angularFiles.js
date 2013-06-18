@@ -10,8 +10,7 @@ angularFiles = {
     'src/auto/injector.js',
 
     'src/ng/anchorScroll.js',
-    'src/ng/animation.js',
-    'src/ng/animator.js',
+    'src/ng/animate.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
@@ -66,6 +65,7 @@ angularFiles = {
   ],
 
   'angularSrcModules': [
+    'src/ngAnimate/animate.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngRoute/routeUtils.js',
@@ -107,6 +107,7 @@ angularFiles = {
     'test/*.js',
     'test/auto/*.js',
     'test/ng/**/*.js',
+    'test/ngAnimate/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',

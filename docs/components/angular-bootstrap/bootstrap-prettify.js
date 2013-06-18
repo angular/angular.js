@@ -183,8 +183,8 @@ directive.ngEvalJavascript = ['getEmbeddedTemplate', function(getEmbeddedTemplat
 }];
 
 
-directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location', '$sniffer',
-                function($templateCache,   $browser,  docsRootScope, $location,   $sniffer) {
+directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location', '$sniffer', '$animate',
+                function($templateCache,   $browser,  docsRootScope, $location,   $sniffer, $animate) {
   return {
     terminal: true,
     link: function(scope, element, attrs) {
@@ -193,6 +193,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           deregisterEmbedRootScope;
 
       modules.push(['$provide', function($provide) {
+        $provide.value('$animate', $animate);
         $provide.value('$templateCache', $templateCache);
         $provide.value('$anchorScroll', angular.noop);
         $provide.value('$browser', $browser);

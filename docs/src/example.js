@@ -134,7 +134,7 @@ exports.Example.prototype.toHtmlTabs = function() {
 
 exports.Example.prototype.toHtmlEmbed = function() {
   var out = [];
-  out.push('<div class="well doc-example-live animator-container"');
+  out.push('<div class="well doc-example-live animate-container"');
   if(this.animations) {
     out.push(" ng-class=\"{'animations-off':animationsOff == true}\"");
   }

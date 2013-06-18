@@ -2,59 +2,72 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return ngDirective(function(scope, element, attr) {
-    var oldVal = undefined;
+  return ['$animate', function($animate) {
+    return {
+      restrict: 'AC',
+      link: function(scope, element, attr) {
+        var oldVal = undefined;
 
-    scope.$watch(attr[name], ngClassWatchAction, true);
+        scope.$watch(attr[name], ngClassWatchAction, true);
 
-    attr.$observe('class', function(value) {
-      var ngClass = scope.$eval(attr[name]);
-      ngClassWatchAction(ngClass, ngClass);
-    });
+        attr.$observe('class', function(value) {
+          var ngClass = scope.$eval(attr[name]);
+          ngClassWatchAction(ngClass, ngClass);
+        });
 
 
-    if (name !== 'ngClass') {
-      scope.$watch('$index', function($index, old$index) {
-        var mod = $index & 1;
-        if (mod !== old$index & 1) {
-          if (mod === selector) {
-            addClass(scope.$eval(attr[name]));
-          } else {
-            removeClass(scope.$eval(attr[name]));
+        if (name !== 'ngClass') {
+          scope.$watch('$index', function($index, old$index) {
+            var mod = $index & 1;
+            if (mod !== old$index & 1) {
+              if (mod === selector) {
+                addClass(scope.$eval(attr[name]));
+              } else {
+                removeClass(scope.$eval(attr[name]));
+              }
+            }
+          });
+        }
+
+
+        function ngClassWatchAction(newVal) {
+          if (selector === true || scope.$index % 2 === selector) {
+            if (oldVal && !equals(newVal,oldVal)) {
+              removeClass(oldVal);
+            }
+            addClass(newVal);
           }
+          oldVal = copy(newVal);
         }
-      });
-    }
 
 
-    function ngClassWatchAction(newVal) {
-      if (selector === true || scope.$index % 2 === selector) {
-        if (oldVal && !equals(newVal,oldVal)) {
-          removeClass(oldVal);
+        function removeClass(classVal) {
+          $animate.removeClass(element, flattenClasses(classVal));
         }
-        addClass(newVal);
-      }
-      oldVal = copy(newVal);
-    }
 
 
-    function removeClass(classVal) {
-      if (isObject(classVal) && !isArray(classVal)) {
-        classVal = map(classVal, function(v, k) { if (v) return k });
-      }
-      element.removeClass(isArray(classVal) ? classVal.join(' ') : classVal);
-    }
+        function addClass(classVal) {
+          $animate.addClass(element, flattenClasses(classVal));
+        }
 
+        function flattenClasses(classVal) {
+          if(isArray(classVal)) {
+            return classVal.join(' ');
+          } else if (isObject(classVal)) {
+            var classes = [], i = 0;
+            forEach(classVal, function(v, k) {
+              if (v) {
+                classes.push(k);
+              }
+            });
+            return classes.join(' ');
+          }
 
-    function addClass(classVal) {
-      if (isObject(classVal) && !isArray(classVal)) {
-        classVal = map(classVal, function(v, k) { if (v) return k });
+          return classVal;
+        };
       }
-      if (classVal) {
-        element.addClass(isArray(classVal) ? classVal.join(' ') : classVal);
-      }
-    }
-  });
+    };
+  }];
 }
 
 /**
@@ -70,6 +83,10 @@ function classDirective(name, selector) {
  * When the expression changes, the previously added classes are removed and only then the
  * new classes are added.
  *
+ * @animations
+ * add - happens just before the class is applied to the element
+ * remove - happens just before the class is removed from the element
+ *
  * @element ANY
  * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class
@@ -78,7 +95,7 @@ function classDirective(name, selector) {
  *   element.
  *
  * @example
-   <example>
+   <example animations="true">
      <file name="index.html">
       <input type="button" value="set" ng-click="myVar='my-class'">
       <input type="button" value="clear" ng-click="myVar=''">
@@ -86,8 +103,23 @@ function classDirective(name, selector) {
       <span ng-class="myVar">Sample Text</span>
      </file>
      <file name="style.css">
-       .my-class {
+       .my-class-add,
+       .my-class-remove {
+         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+       }
+
+       .my-class,
+       .my-class-add.my-class-add-active {
          color: red;
+         font-size:3em;
+       }
+
+       .my-class-remove.my-class-remove-active {
+         font-size:1.0em;
+         color:black;
        }
      </file>
      <file name="scenario.js">

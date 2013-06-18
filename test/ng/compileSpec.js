@@ -3096,8 +3096,8 @@ describe('$compile', function() {
           '</div>')($rootScope);
       $rootScope.$digest();
       var spans = element.find('span');
-      expect(spans.eq(0).css('display')).toBe('none');
-      expect(spans.eq(1).css('display')).toBe('none');
+      expect(spans.eq(0)).toBeHidden();
+      expect(spans.eq(1)).toBeHidden();
     }));
 
 
@@ -3216,10 +3216,10 @@ describe('$compile', function() {
           '</div>')($rootScope);
       $rootScope.$digest();
       var spans = element.find('span');
-      expect(spans.eq(0).css('display')).toBe('none');
-      expect(spans.eq(1).css('display')).toBe('none');
-      expect(spans.eq(2).css('display')).toBe('none');
-      expect(spans.eq(3).css('display')).toBe('none');
+      expect(spans.eq(0)).toBeHidden();
+      expect(spans.eq(1)).toBeHidden();
+      expect(spans.eq(2)).toBeHidden();
+      expect(spans.eq(3)).toBeHidden();
     }));
   });
 });
