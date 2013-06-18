@@ -19,9 +19,6 @@
  * expression is evaluated. If a matching expression is not found via a when attribute then an element with the default
  * attribute is displayed.
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
- * and **leave** effects.
- *
  * @animations
  * enter - happens after the ngSwtich contents change and the matched child element is placed inside the container
  * leave - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM
@@ -55,9 +52,8 @@
         <tt>selection={{selection}}</tt>
         <hr/>
         <div
-          class="example-animate-container"
-          ng-switch on="selection"
-          ng-animate="{enter: 'example-enter', leave: 'example-leave'}">
+          class="example-animate-container animate-switch"
+          ng-switch on="selection">
             <div ng-switch-when="settings">Settings Div</div>
             <div ng-switch-when="home">Home Span</div>
             <div ng-switch-default>default</div>
@@ -71,10 +67,9 @@
       }
     </file>
     <file name="animations.css">
-      .example-leave, .example-enter {
+      .animate-switch > * {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 
@@ -90,17 +85,17 @@
         padding:10px;
       }
 
-      .example-enter {
+      .animate-switch > .ng-enter {
         top:-50px;
       }
-      .example-enter.example-enter-active {
+      .animate-switch > .ng-enter.ng-enter-active {
         top:0;
       }
 
-      .example-leave {
+      .animate-switch > .ng-leave {
         top:0;
       }
-      .example-leave.example-leave-active {
+      .animate-switch > .ng-leave.ng-leave-active {
         top:50px;
       }
     </file>
@@ -119,7 +114,7 @@
     </file>
   </example>
  */
-var ngSwitchDirective = ['$animator', function($animator) {
+var ngSwitchDirective = ['$animate', function($animate) {
   return {
     restrict: 'EA',
     require: 'ngSwitch',
@@ -129,7 +124,6 @@ var ngSwitchDirective = ['$animator', function($animator) {
      this.cases = {};
     }],
     link: function(scope, element, attr, ngSwitchController) {
-      var animate = $animator(scope, attr);
       var watchExpr = attr.ngSwitch || attr.on,
           selectedTranscludes,
           selectedElements,
@@ -138,7 +132,7 @@ var ngSwitchDirective = ['$animator', function($animator) {
       scope.$watch(watchExpr, function ngSwitchWatchAction(value) {
         for (var i= 0, ii=selectedScopes.length; i<ii; i++) {
           selectedScopes[i].$destroy();
-          animate.leave(selectedElements[i]);
+          $animate.leave(selectedElements[i]);
         }
 
         selectedElements = [];
@@ -153,7 +147,7 @@ var ngSwitchDirective = ['$animator', function($animator) {
               var anchor = selectedTransclude.element;
 
               selectedElements.push(caseElement);
-              animate.enter(caseElement, anchor.parent(), anchor);
+              $animate.enter(caseElement, anchor.parent(), anchor);
             });
           });
         }

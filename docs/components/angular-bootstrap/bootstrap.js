@@ -335,12 +335,11 @@ directive.tabPane = function() {
   };
 };
 
-directive.foldout = ['$http', '$animator','$window', function($http, $animator, $window) {
+directive.foldout = ['$http', '$animate','$window', function($http, $animate, $window) {
   return {
     restrict: 'A',
     priority : 500,
     link: function(scope, element, attrs) {
-      var animator = $animator(scope, { ngAnimate: "'foldout'" });
       var container, loading, url = attrs.url;
       if(/\/build\//.test($window.location.href)) {
         url = '/build/docs' + url;
@@ -353,7 +352,7 @@ directive.foldout = ['$http', '$animator','$window', function($http, $animator, 
             loading = true;
             var par = element.parent();
             container = angular.element('<div class="foldout">loading...</div>');
-            animator.enter(container, null, par);
+            $animate.enter(container, null, par);
 
             $http.get(url, { cache : true }).success(function(html) {
               loading = false;
@@ -367,12 +366,12 @@ directive.foldout = ['$http', '$animator','$window', function($http, $animator, 
               //avoid showing the element if the user has already closed it
               if(container.css('display') == 'block') {
                 container.css('display','none');
-                animator.show(container);
+                $animate.show(container);
               }
             });
           }
           else {
-            container.css('display') == 'none' ? animator.show(container) : animator.hide(container);
+            container.hasClass('ng-hide') ? $animate.show(container) : $animate.hide(container);
           }
         });
       });

@@ -494,6 +494,19 @@ Doc.prototype = {
   html_usage_parameters: function(dom) {
     var self = this;
     var params = this.param ? this.param : [];
+    if(this.animations) {
+      dom.h('Animations', this.animations, function(animations){
+        dom.html('<ul>');
+        var animations = animations.split("\n");
+        animations.forEach(function(ani) {
+          dom.html('<li>');
+          dom.text(ani);
+          dom.html('</li>');
+        });
+        dom.html('</ul>');
+      });
+      dom.html('<a href="api/ngAnimate.$animate">Click here</a> to learn more about the steps involved in the animation.');
+    }
     if(params.length > 0) {
       dom.html('<h2 id="parameters">Parameters</h2>');
       dom.html('<table class="variables-matrix table table-bordered table-striped">');
@@ -537,18 +550,6 @@ Doc.prototype = {
       };
       dom.html('</tbody>');
       dom.html('</table>');
-    }
-    if(this.animations) {
-      dom.h('Animations', this.animations, function(animations){
-        dom.html('<ul>');
-        var animations = animations.split("\n");
-        animations.forEach(function(ani) {
-          dom.html('<li>');
-          dom.text(ani);
-          dom.html('</li>');
-        });
-        dom.html('</ul>');
-      });
     }
   },
 
@@ -664,48 +665,6 @@ Doc.prototype = {
             dom.text('">\n   ...\n');
             dom.text('</' + element + '>');
           });
-        }
-        if(self.animations) {
-          var animations = [], matches = self.animations.split("\n");
-          matches.forEach(function(ani) {
-            var name = ani.match(/^\s*(.+?)\s*-/)[1];
-            animations.push(name);
-          });
-
-          dom.html('with <span id="animations">animations</span>');
-          var comment;
-          if(animations.length == 1) {
-            comment = 'The ' + animations[0] + ' animation is supported';
-          }
-          else {
-            var rhs = animations[animations.length-1];
-            var lhs = '';
-            for(var i=0;i<animations.length-1;i++) {
-              if(i>0) {
-                lhs += ', ';
-              }
-              lhs += animations[i];
-            }
-            comment = 'The ' + lhs + ' and ' + rhs + ' animations are supported';
-          }
-          var element = self.element || 'ANY';
-          dom.code(function() {
-            dom.text('//' + comment + "\n");
-            dom.text('<' + element + ' ');
-            dom.text(dashCase(self.shortName));
-            renderParams('\n     ', '="', '"', true);
-            dom.text(' ng-animate="{');
-            animations.forEach(function(ani, index) {
-              if (index) {
-                dom.text(', ');
-              }
-              dom.text(ani + ': \'' + ani + '-animation\'');
-            });
-            dom.text('}">\n   ...\n');
-            dom.text('</' + element + '>');
-          });
-
-          dom.html('<a href="api/ng.$animator#Methods">Click here</a> to learn more about the steps involved in the animation.');
         }
       }
       self.html_usage_directiveInfo(dom);
