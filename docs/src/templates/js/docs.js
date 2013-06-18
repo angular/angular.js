@@ -138,6 +138,21 @@ docsApp.directive.focused = function($timeout) {
   };
 };
 
+docsApp.directive.docsSearchInput = function() {
+  return function(scope, element, attrs) {
+    var ESCAPE_KEY_KEYCODE = 27;
+    element.bind('keydown', function(event) {
+      if(event.keyCode == ESCAPE_KEY_KEYCODE) {
+        event.stopPropagation();
+        event.preventDefault();
+        scope.$apply(function() {
+          scope.hideResults();
+        });
+      }
+    });
+  };
+};
+
 
 docsApp.directive.code = function() {
   return { restrict:'E', terminal: true };
