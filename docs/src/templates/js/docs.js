@@ -70,7 +70,7 @@ docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', fu
   }
 
   $scope.search = function(q) {
-    var MIN_SEARCH_LENGTH = 4;
+    var MIN_SEARCH_LENGTH = 3;
     if(q.length >= MIN_SEARCH_LENGTH) {
       var results = docsSearch(q);
       var totalSections = 0;
