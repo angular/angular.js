@@ -9,6 +9,7 @@ env:
 
 before_script:
   - export SAUCE_ACCESS_KEY=`echo $SAK|rev`
+  - echo $SAUCE_USER_NAME
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
