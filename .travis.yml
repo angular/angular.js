@@ -13,10 +13,8 @@ before_script:
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
-
-
-before_script:
   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
 
 script:
+  - echo "user: $SAUCE_USERNAME"
   - grunt test --browsers ./sauce_firefox.sh --reporters=dots
