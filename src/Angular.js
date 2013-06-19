@@ -826,21 +826,38 @@ function startingTag(element) {
  * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
-  var obj = {}, key_value, key;
+  var obj = {}, key_value, key, value;
   forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
       key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      value = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      if (isUndefined(obj[key])) {
+        obj[key] = value;
+      }
+      else if (isArray(obj[key])) {
+        obj[key].push(value);
+      }
+      else {
+        obj[key] = [obj[key], value];
+      }
     }
   });
   return obj;
 }
 
 function toKeyValue(obj) {
-  var parts = [];
+  var parts = [], key;
   forEach(obj, function(value, key) {
-    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
+    key = encodeUriQuery(key, true);
+    if (isArray(value)) {
+      forEach(value, function(v) {
+        parts.push(key + (v === true ? '' : '=' + encodeUriQuery(v, true)));
+      });
+    }
+    else {
+      parts.push(key + (value === true ? '' : '=' + encodeUriQuery(value, true)));
+    }
   });
   return parts.length ? parts.join('&') : '';
 }

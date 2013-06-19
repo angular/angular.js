@@ -66,6 +66,30 @@ describe('$location', function() {
     });
 
 
+    it('search() should accept array of params in string', function () {
+      url.search('x=a&x=b&z');
+
+      expect(url.search()).toEqual({x: ['a', 'b'], z: true});
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?x=a&x=b&z#hash');
+    });
+
+
+    it('search() should accept array of params in object', function () {
+      url.search({one: ['foo', 'bar'], two: true});
+
+      expect(url.search()).toEqual({one: ['foo', 'bar'], two: true});
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?one=foo&one=bar&two#hash');
+    });
+
+
+    it('search() should change single parameter to array of params', function() {
+      url.search({id: 'old', preserved: true});
+      url.search('id', ['foo', 'bar']);
+
+      expect(url.search()).toEqual({id: ['foo', 'bar'], preserved: true});
+    });
+
+
     it('hash() should change hash fragment', function() {
       url.hash('new-hash');
       expect(url.hash()).toBe('new-hash');
