@@ -14,7 +14,7 @@ browser.init({
 
   browser.get("http://localhost:8000/build/docs/api", function() {
     browser.title(function(err, title) {
-      assert.ok(~title.indexOf('AngularJS: API Reference'), 'Wrong title!');
+      assert.ok(title.indexOf('AngularJS:'), 'Wrong title!');
       browser.quit();
     });
   });
