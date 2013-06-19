@@ -482,16 +482,39 @@ function $HttpProvider() {
 
       var reqTransformFn = config.transformRequest || $config.transformRequest,
           respTransformFn = config.transformResponse || $config.transformResponse,
-          defHeaders = $config.headers,
-          reqHeaders = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
-              defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
-          reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
+          reqHeaders = extend({}, config.headers),
+          defHeaders = extend(
+            {'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+            $config.headers.common,
+            $config.headers[lowercase(config.method)]
+          ),
+          reqData,
+          defHeaderName, lowercaseDefHeaderName, headerName,
           promise;
+
+      // using for-in instead of forEach to avoid unecessary iteration after header has been found
+      defaultHeadersIteration:
+      for(defHeaderName in defHeaders) {
+        lowercaseDefHeaderName = lowercase(defHeaderName);
+        for(headerName in config.headers) {
+          if (lowercase(headerName) === lowercaseDefHeaderName) {
+            continue defaultHeadersIteration;
+          }
+        }
+        reqHeaders[defHeaderName] = defHeaders[defHeaderName];
+      }
 
       // strip content-type if data is undefined
       if (isUndefined(config.data)) {
-        delete reqHeaders['Content-Type'];
+        for(var header in reqHeaders) {
+          if (lowercase(header) === 'content-type') {
+            delete reqHeaders[header];
+            break;
+          }
+        }
       }
+
+      reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn);
 
       // send request
       promise = sendReq(config, reqData, reqHeaders);

@@ -430,6 +430,21 @@ describe('$http', function() {
       });
 
 
+      it('should override default headers with custom in a case insensitive manner', function() {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return headers['accept'] == 'Rewritten' &&
+                 headers['content-type'] == 'Content-Type Rewritten' &&
+                 headers['Accept'] === undefined &&
+                 headers['Content-Type'] === undefined;
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'accept': 'Rewritten',
+          'content-type': 'Content-Type Rewritten'
+        }});
+        $httpBackend.flush();
+      });
+
       it('should not send Content-Type header if request data/body is undefined', function() {
         $httpBackend.expect('POST', '/url', undefined, function(headers) {
           return !headers.hasOwnProperty('Content-Type');
