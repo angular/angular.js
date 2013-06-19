@@ -2,6 +2,12 @@ language: node_js
 node_js:
   - 0.8
 
+addons:
+  sauce_connect:
+    username: "angular-ci"
+    access_key:
+      secure: "piN7nQMP1X5Xh0RycZJZVjBHeLucNcBOnQzzzODvECPg7Rq5UVYoFSdavVzR\nq5t2/o+qOIHlzowNpb1X86GQ8egJ2ccDsmimqgQdV1MM/hWMvmSngtLLGNYE\n9XfdOFw9dPJYJfR1GNI+HFX9BElNdWuYQ7uC6EQ7gPHYCvcDLEY="
+
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
@@ -10,4 +16,4 @@ before_script:
   - grunt webserver > /dev/null &
 
 script:
-  - grunt test --browsers Firefox --reporters=dots
+  - node ./sauce-test.js
