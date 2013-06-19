@@ -11,14 +11,17 @@
     "grunt-contrib-connect": "0.1.2",
     "grunt-contrib-copy": "0.4.1",
     "grunt-shell": "~0.2.2",
-    "jasmine-node": "1.2.3",
+    "jasmine-node": "~1.9.1",
     "q": "~0.9.2",
     "q-fs": "0.1.36",
     "qq": "0.3.5",
     "shelljs": "0.1.2",
     "karma": "0.8.4",
     "yaml-js": "0.0.5",
-    "showdown": "0.3.1"
+    "showdown": "0.3.1",
+    "escodegen": "0.0.23",
+    "esprima": "~1.0.3",
+    "grunt-contrib-jasmine-node": "~0.1.1"
   },
   "licenses": [
     {
