@@ -2,10 +2,11 @@ language: node_js
 node_js:
   - 0.8
 
-env:
-  global:
-    - secure: "BBsT8yAoHvft5MqeV9cCJ+loGlmpF5gyW6yVLucoTVgZ+XeKe+YzrAoE0v9f\nicSe7il2uhTbWz1o65+oukFfw8goBjY+RcID2IPDn5ha8+XqFPigHrjxuyp/\nOU1VuCMOPjPNoiFlEVBUsA3PsQp+TNe0Vg1T7hrLj4Kypj1Sif4="
-    - secure: "TKkecFzU0kZEsI6i7AAVBMi5w753a6cMq5HWttqVutUFSe3Qsx3iNhl3bK0X\nkrsTdtxTslPCzImBmXtDUSPSoUz7CXu1mVLgju7eDKJ1VXR87MY0zZpOf2hL\nqmKBF1RDivVVbDZBPqxXXjoufOCbq1OeiWgJiDndAb/352qTZYI="
+addons:
+  sauce_connect:
+    username: "angular-ci"
+    access_key:
+      secure: "piN7nQMP1X5Xh0RycZJZVjBHeLucNcBOnQzzzODvECPg7Rq5UVYoFSdavVzR\nq5t2/o+qOIHlzowNpb1X86GQ8egJ2ccDsmimqgQdV1MM/hWMvmSngtLLGNYE\n9XfdOFw9dPJYJfR1GNI+HFX9BElNdWuYQ7uC6EQ7gPHYCvcDLEY="
 
 before_script:
   - export DISPLAY=:99.0
@@ -13,8 +14,6 @@ before_script:
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
-  - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
 
 script:
-  - echo "user: $SAUCE_USERNAME"
   - grunt test --browsers ./sauce_firefox.sh --reporters=dots
