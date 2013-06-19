@@ -150,9 +150,50 @@ var inputType = {
           });
         </doc:scenario>
       </doc:example>
+   * @example
+      <doc:example>
+        <doc:source>
+         <script>
+           function Ctrl($scope) {
+             $scope.value = 12;
+           }
+         </script>
+         <form name="myForm" ng-controller="Ctrl">
+           Number: <input type="range" name="input" ng-model="value"
+                          min="0" max="99" required>
+           <span class="error" ng-show="myForm.list.$error.required">
+             Required!</span>
+           <span class="error" ng-show="myForm.list.$error.number">
+             Not valid number!</span>
+           <tt>value = {{value}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+          </form>
+        </doc:source>
+        <doc:scenario>
+          it('should initialize to model', function() {
+           expect(binding('value')).toEqual('12');
+           expect(binding('myForm.input.$valid')).toEqual('true');
+          });
+
+          it('should be invalid if empty', function() {
+           input('value').enter('');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
+          });
+
+          it('should be invalid if over max', function() {
+           input('value').enter('123');
+           expect(binding('value')).toEqual('');
+           expect(binding('myForm.input.$valid')).toEqual('false');
+          });
+        </doc:scenario>
+      </doc:example>
    */
   'number': numberInputType,
-
+  'range': numberInputType,
 
   /**
    * @ngdoc inputType
