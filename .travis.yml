@@ -4,17 +4,13 @@ node_js:
 
 env:
   global:
-     - SAUCE_USER_NAME=angular-ci
+     - SAUCE_USERNAME=angular-ci
      - SAK=9b988f434ff8-fbca-8aa4-4ae3-35442987
 
 before_script:
-  - export SAUCE_ACCESS_KEY=`echo $SAK|rev|rev`
-  - echo $SAUCE_USER_NAME
-  - echo $SAUCE_ACCESS_KEY
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
-  - echo "echo in child, \$SAUCE_USER_NAME \`echo \$SAK|rev|rev\`"  | bash
   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | sed 's/\$SAUCE_ACCESS_KEY/\`\echo $SAK | rev\`/g' | bash
 
 
