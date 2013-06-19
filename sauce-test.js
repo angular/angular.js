@@ -2,7 +2,7 @@ var wd = require('wd')
   , assert = require('assert')
   , browser = wd.remote("ondemand.saucelabs.com", 80,
                         process.env.SAUCE_USER_NAME,
-                        process.env.SAUCE_ACCESS_KEY)
+                        process.env.SAUCE_ACCESS_KEY.split("").reverse().join(""))
 
 
 browser.init({
