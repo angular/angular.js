@@ -13,7 +13,7 @@ before_script:
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
-  - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
+  - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | sed 's/\$SAUCE_ACCESS_KEY/\`\echo $SAK | rev\`/g' | bash
 
 script:
   - node ./sauce-test.js
