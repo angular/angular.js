@@ -5,7 +5,7 @@ node_js:
 env:
   global:
      - SAUCE_USERNAME=angular-ci
-     - SAK=9b988f434ff8-fbca-8aa4-4ae3-35442987
+     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
 
 before_script:
   - npm install -g grunt-cli
