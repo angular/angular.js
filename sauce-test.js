@@ -14,8 +14,10 @@ browser.init({
 
   browser.get("http://localhost:8000/build/docs/api", function() {
     browser.title(function(err, title) {
-      assert.ok(title.indexOf('AngularJS:'), 'Wrong title!');
-      browser.quit();
+      browser.get("http://localhost:8000/build/docs/guide", function() {
+        assert.ok(title.indexOf('AngularJS:'), 'Wrong title!');
+        browser.quit();
+      });
     });
   });
 });
