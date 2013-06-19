@@ -147,7 +147,59 @@ beforeEach(function() {
       return this.actual.hasClass ?
               this.actual.hasClass(clazz) :
               angular.element(this.actual).hasClass(clazz);
-    }
+    },
 
+    toThrowMatching: function(expected) {
+      return jasmine.Matchers.prototype.toThrow.call(this, expected);
+    }
   });
 });
+
+
+// TODO(vojta): remove this once Jasmine in Karma gets updated
+// https://github.com/pivotal/jasmine/blob/c40b64a24c607596fa7488f2a0ddb98d063c872a/src/core/Matchers.js#L217-L246
+// This toThrow supports RegExps.
+jasmine.Matchers.prototype.toThrow = function(expected) {
+  var result = false;
+  var exception, exceptionMessage;
+  if (typeof this.actual != 'function') {
+    throw new Error('Actual is not a function');
+  }
+  try {
+    this.actual();
+  } catch (e) {
+    exception = e;
+  }
+
+  if (exception) {
+    exceptionMessage = exception.message || exception;
+    result = (isUndefined(expected) || this.env.equals_(exceptionMessage, expected.message || expected) || (jasmine.isA_("RegExp", expected) && expected.test(exceptionMessage)));
+  }
+
+  var not = this.isNot ? "not " : "";
+  var regexMatch = jasmine.isA_("RegExp", expected) ? " an exception matching" : "";
+
+  this.message = function() {
+    if (exception) {
+      return ["Expected function " + not + "to throw" + regexMatch, expected ? expected.message || expected : "an exception", ", but it threw", exceptionMessage].join(' ');
+    } else {
+      return "Expected function to throw an exception.";
+    }
+  };
+
+  return result;
+};
+
+
+/**
+ * Create jasmine.Spy on given method, but ignore calls without arguments
+ * This is helpful when need to spy only setter methods and ignore getters
+ */
+function spyOnlyCallsWithArgs(obj, method) {
+  var spy = spyOn(obj, method);
+  obj[method] = function() {
+    if (arguments.length) return spy.apply(this, arguments);
+    return spy.originalValue.apply(this);
+  };
+  return spy;
+}

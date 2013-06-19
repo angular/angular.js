@@ -91,7 +91,7 @@ Things to notice in this example:
 * The `batchLog` service depends on the built-in {@link api/ng.$timeout $timeout} and
 {@link api/ng.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
-* The `routeTemplateMonitor` service depends on the built-in {@link api/ng.$route
+* The `routeTemplateMonitor` service depends on the built-in {@link api/ngRoute.$route
 $route} service as well as our custom `batchLog` service.
 * Both of our services use the factory function signature and array notation for inject annotations
 to declare their dependencies. It is important that the order of the string identifiers in the array

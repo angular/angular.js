@@ -56,6 +56,9 @@ describe('jqLite', function() {
 
     it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
+      expect(nodes[0].parentNode).toBeDefined();
+      expect(nodes[0].parentNode.nodeType).toBe(11); /** Document Fragment **/;
+      expect(nodes[0].parentNode).toBe(nodes[1].parentNode);
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
       expect(nodes[1].innerHTML).toEqual('2');
@@ -241,6 +244,25 @@ describe('jqLite', function() {
       expect(jqLite(a).data('prop')).toBeUndefined();
       expect(jqLite(b).data('prop')).toBeUndefined();
       expect(jqLite(c).data('prop')).toBeUndefined();
+    });
+
+    it('should only remove the specified value when providing a property name to removeData', function () {
+      var selected = jqLite(a);
+
+      expect(selected.data('prop1')).toBeUndefined();
+
+      selected.data('prop1', 'value');
+      selected.data('prop2', 'doublevalue');
+
+      expect(selected.data('prop1')).toBe('value');
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop1');
+
+      expect(selected.data('prop1')).toBeUndefined();
+      expect(selected.data('prop2')).toBe('doublevalue');
+
+      selected.removeData('prop2');
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
@@ -644,12 +666,13 @@ describe('jqLite', function() {
 
 
     it('should read/write value', function() {
-      var element = jqLite('<div>abc</div>');
-      expect(element.length).toEqual(1);
-      expect(element[0].innerHTML).toEqual('abc');
+      var element = jqLite('<div>ab</div><span>c</span>');
+      expect(element.length).toEqual(2);
+      expect(element[0].innerHTML).toEqual('ab');
+      expect(element[1].innerHTML).toEqual('c');
       expect(element.text()).toEqual('abc');
       expect(element.text('xyz') == element).toBeTruthy();
-      expect(element.text()).toEqual('xyz');
+      expect(element.text()).toEqual('xyzxyz');
     });
   });
 
@@ -775,13 +798,9 @@ describe('jqLite', function() {
 
         parent.bind('mouseenter', function() { log += 'parentEnter;'; });
         parent.bind('mouseleave', function() { log += 'parentLeave;'; });
-        parent.mouseover = function() { browserTrigger(parent, 'mouseover'); };
-        parent.mouseout = function() { browserTrigger(parent, 'mouseout'); };
 
         child.bind('mouseenter', function() { log += 'childEnter;'; });
         child.bind('mouseleave', function() { log += 'childLeave;'; });
-        child.mouseover = function() { browserTrigger(child, 'mouseover'); };
-        child.mouseout = function() { browserTrigger(child, 'mouseout'); };
       });
 
       afterEach(function() {
@@ -790,20 +809,49 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        parent.mouseover();
+        var browserMoveTrigger = function(from, to){
+          var fireEvent = function(type, element, relatedTarget){
+            var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+            if (msie < 9){
+              var evnt = document.createEventObject();
+              evnt.srcElement = element;
+              evnt.relatedTarget = relatedTarget;
+              element.fireEvent('on' + type, evnt);
+              return;
+            };
+            var evnt = document.createEvent('MouseEvents'),
+            originalPreventDefault = evnt.preventDefault,
+            appWindow = window,
+            fakeProcessDefault = true,
+            finalProcessDefault;
+
+            evnt.preventDefault = function() {
+              fakeProcessDefault = false;
+              return originalPreventDefault.apply(evnt, arguments);
+            };
+
+            var x = 0, y = 0;
+            evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
+            false, false, 0, relatedTarget);
+
+            element.dispatchEvent(evnt);
+          };
+          fireEvent('mouseout', from[0], to[0]);
+          fireEvent('mouseover', to[0], from[0]);
+        };
+
+        browserMoveTrigger(root, parent);
         expect(log).toEqual('parentEnter;');
 
-        child.mouseover();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseover();
+        browserMoveTrigger(parent, child);
         expect(log).toEqual('parentEnter;childEnter;');
 
-        child.mouseout();
-        expect(log).toEqual('parentEnter;childEnter;');
-        child.mouseout();
+        browserMoveTrigger(child, parent);
         expect(log).toEqual('parentEnter;childEnter;childLeave;');
-        parent.mouseout();
+
+        browserMoveTrigger(parent, root);
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
+
       });
     });
   });
@@ -1127,6 +1175,21 @@ describe('jqLite', function() {
       element.triggerHandler('click');
       expect(clickSpy1).toHaveBeenCalledOnce();
       expect(clickSpy2).toHaveBeenCalledOnce();
+    });
+
+    it('should pass in a dummy event', function() {
+      // we need the event to have at least preventDefault because angular will call it on
+      // all anchors with no href automatically
+
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          event;
+
+      element.bind('click', pokeSpy);
+
+      element.triggerHandler('click');
+      event = pokeSpy.mostRecentCall.args[0];
+      expect(event.preventDefault).toBeDefined();
     });
   });
 

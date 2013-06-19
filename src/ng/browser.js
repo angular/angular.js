@@ -359,7 +359,13 @@ function Browser(window, document, $log, $sniffer) {
                   cookie = cookieArray[i];
                   index = cookie.indexOf('=');
                   if (index > 0) { 
-                      lastCookies[unescape(cookie.substring(0, index))] = unescape(cookie.substring(index + 1));
+				      var name = unescape(cookie.substring(0, index)); 
+					  // the first value that is seen for a cookie is the most 
+					  // specific one.  values for the same cookie name that
+					  // follow are for less specific paths. 
+                      if (lastCookies[name] === undefined) {
+                          lastCookies[name] = unescape(cookie.substring(index + 1));
+                      } 
                   } else if (index <0) {
 					  lastCookies[unescape(cookie)] = ''; // IE saves cookie= as cookie, which require special care
 				  } //ignore nameless cookies where index ==0

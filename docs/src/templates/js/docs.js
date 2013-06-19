@@ -4,6 +4,160 @@ var docsApp = {
   serviceFactory: {}
 };
 
+docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', function($scope, $window, NG_VERSIONS) {
+  $scope.versions = expandVersions(NG_VERSIONS);
+  $scope.version  = ($scope.version || angular.version.full).match(/^([\d\.]+\d+)/)[1]; //match only the number
+  
+  $scope.jumpToDocsVersion = function(value) {
+    var isLastStable,
+        version,
+        versions = $scope.versions;
+    for(var i=versions.length-1;i>=0;i--) {
+      var v = versions[i];
+      if(v.version == value) {
+        var next = versions[i - 1];
+        isLastStable = v.stable && (!next || next && !next.stable);
+        version = v;
+        break;
+      }
+    };
+
+    if(version && version.version >= '1.0.0') {
+      //the older versions have a different path to the docs within their repo directory
+      var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
+
+      //the last stable version should redirect to docs.angularjs.org instead of code.angularjs.org
+      var url = 'http://' +
+                  (isLastStable ?
+                    'docs.angularjs.org' :
+                    'code.angularjs.org/' + version.version + '/' + docsPath);
+
+      $window.location = url;
+    }
+  };
+
+  function expandVersions(angularVersions) {
+    var unstableVersionStart = 0;
+    angularVersions.forEach(function(version) {
+      var split = version.split('.');
+      unstableVersionStart = split[1] % 2 == 1 ?
+                        Math.max(unstableVersionStart, parseInt(split[0] + '' + split[1])) :
+                        unstableVersionStart;
+    });
+
+    var versions = [];
+    for(var i=angularVersions.length-1;i>=0;i--) {
+      var version = angularVersions[i];
+      var split = version.split('.');
+      var stable = parseInt(split[0] + '' + split[1]) < unstableVersionStart;
+      versions.push({
+        version : version,
+        stable : stable,
+        title : 'AngularJS - v' + version,
+        group : (stable ? 'Stable' : 'Unstable')
+      });
+    };
+
+    return versions;
+  };
+}];
+
+docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
+  function clearResults() {
+    $scope.results = [];
+    $scope.colClassName = null;
+    $scope.hasResults = false;
+  }
+
+  $scope.search = function(q) {
+    var MIN_SEARCH_LENGTH = 3;
+    if(q.length >= MIN_SEARCH_LENGTH) {
+      var results = docsSearch(q);
+      var totalSections = 0;
+      for(var i in results) {
+        ++totalSections;
+      }
+      if(totalSections > 0) {
+        $scope.colClassName = 'cols-' + totalSections;
+        $scope.hasResults = true;
+      }
+      $scope.results = results;
+    }
+    else {
+      clearResults();
+    }
+    if(!$scope.$$phase) $scope.$apply();
+  };
+  $scope.submit = function() {
+    var result;
+    for(var i in $scope.results) {
+      result = $scope.results[i][0];
+      if(result) {
+        break;
+      }
+    }
+    if(result) {
+      $location.path(result.url);
+      $scope.hideResults();
+    }
+  };
+  $scope.hideResults = function() {
+    clearResults();
+    $scope.q = '';
+  };
+}];
+
+docsApp.serviceFactory.lunrSearch = function() {
+  return function(properties) {
+    var engine = lunr(properties);
+    return {
+      store : function(values) {
+        engine.add(values);
+      },
+      search : function(q) {
+        return engine.search(q);
+      }
+    };
+  };
+};
+
+docsApp.serviceFactory.docsSearch = ['$rootScope','lunrSearch', 'NG_PAGES',
+  function($rootScope, lunrSearch, NG_PAGES) {
+
+  var index = lunrSearch(function() {
+    this.ref('id');
+    this.field('title', {boost: 50});
+    this.field('description', { boost : 20 });
+  });
+
+  angular.forEach(NG_PAGES, function(page, i) {
+    var title = page.shortName;
+    if(title.charAt(0) == 'n' && title.charAt(1) == 'g') {
+      title = title + ' ' + title.charAt(2).toLowerCase() + title.substr(3);
+    }
+    index.store({
+      id: i,
+      title: title,
+      description: page.keywords
+    });
+  });
+
+  return function(q) {
+    var results = {};
+    angular.forEach(index.search(q), function(result) {
+      var item = NG_PAGES[result.ref];
+      var section = item.section;
+      if(section == 'cookbook') {
+        section = 'tutorial';
+      }
+      results[section] = results[section] || [];
+      if(results[section].length < 15) {
+        results[section].push(item);
+      }
+    });
+    return results;
+  };
+}];
 
 docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
@@ -18,8 +172,23 @@ docsApp.directive.focused = function($timeout) {
         scope.$eval(attrs.focused + '=false');
       });
     });
-    scope.$eval(attrs.focused + '=true')
-  }
+    scope.$eval(attrs.focused + '=true');
+  };
+};
+
+docsApp.directive.docsSearchInput = function() {
+  return function(scope, element, attrs) {
+    var ESCAPE_KEY_KEYCODE = 27;
+    element.bind('keydown', function(event) {
+      if(event.keyCode == ESCAPE_KEY_KEYCODE) {
+        event.stopPropagation();
+        event.preventDefault();
+        scope.$apply(function() {
+          scope.hideResults();
+        });
+      }
+    });
+  };
 };
 
 
@@ -59,7 +228,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         openPlunkr(sources);
       };
     }
-  }
+  };
 
   function read(text) {
     var files = [];
@@ -127,7 +296,7 @@ docsApp.directive.docTutorialReset = function() {
         '</div>\n');
     }
   };
-}
+};
 
 
 docsApp.serviceFactory.angularUrls = function($document) {
@@ -141,7 +310,7 @@ docsApp.serviceFactory.angularUrls = function($document) {
   });
 
   return urls;
-}
+};
 
 
 docsApp.serviceFactory.formPostData = function($document) {
@@ -174,7 +343,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
     var scriptDeps = '';
     angular.forEach(content.deps, function(file) {
       if (file.name !== 'angular.js') {
-        scriptDeps += '    <script src="' + file.name + '"></script>\n'
+        scriptDeps += '    <script src="' + file.name + '"></script>\n';
       }
     });
     indexProp = {
@@ -191,7 +360,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -243,7 +412,7 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
 };
 
 
-docsApp.serviceFactory.sections = function sections() {
+docsApp.serviceFactory.sections = ['NG_PAGES', function sections(NG_PAGES) {
   var sections = {
     guide: [],
     api: [],
@@ -276,10 +445,22 @@ docsApp.serviceFactory.sections = function sections() {
   });
 
   return sections;
-};
+}];
 
 
 docsApp.controller.DocsController = function($scope, $location, $window, $cookies, sections) {
+  $scope.fold = function(url) {
+    if(url) {
+      $scope.docs_fold = '/notes/' + url;
+      if(/\/build/.test($window.location.href)) {
+        $scope.docs_fold = '/build/docs' + $scope.docs_fold;
+      }
+      window.scrollTo(0,0);
+    }
+    else {
+      $scope.docs_fold = null;
+    }
+  };
   var OFFLINE_COOKIE_NAME = 'ng-offline',
       DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
@@ -310,7 +491,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       last: this.$last,
       active: page1 && this.currentPage == page1 || page2 && this.currentPage == page2
     };
-  }
+  };
 
   $scope.submitForm = function() {
     $scope.bestMatch && $location.path($scope.bestMatch.page.url);
@@ -509,7 +690,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
           },
           types: [],
           filters: []
-        }
+        };
         modules.push(module);
       }
       return module;
@@ -560,10 +741,10 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
     angular.element(document.getElementById('disqus_thread')).html('');
   }
-}
+};
 
 
-angular.module('docsApp', ['ngResource', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
+angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify', 'docsData']).
   config(function($locationProvider) {
     $locationProvider.html5Mode(true).hashPrefix('!');
   }).

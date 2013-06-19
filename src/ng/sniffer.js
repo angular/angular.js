@@ -9,7 +9,8 @@
  *
  * @property {boolean} history Does the browser support html5 history api ?
  * @property {boolean} hashchange Does the browser support hashchange event ?
- * @property {boolean} supportsTransitions Does the browser support CSS transition events ?
+ * @property {boolean} transitions Does the browser support CSS transition events ?
+ * @property {boolean} animations Does the browser support CSS animation events ?
  *
  * @description
  * This is very simple implementation of testing browser's features.
@@ -23,6 +24,7 @@ function $SnifferProvider() {
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
         bodyStyle = document.body && document.body.style,
         transitions = false,
+        animations = false,
         match;
 
     if (bodyStyle) {
@@ -34,6 +36,7 @@ function $SnifferProvider() {
         }
       }
       transitions = !!(('transition' in bodyStyle) || (vendorPrefix + 'Transition' in bodyStyle));
+      animations  = !!(('animation' in bodyStyle) || (vendorPrefix + 'Animation' in bodyStyle));
     }
 
 
@@ -61,7 +64,8 @@ function $SnifferProvider() {
       },
       csp: document.securityPolicy ? document.securityPolicy.isActive : false,
       vendorPrefix: vendorPrefix,
-      supportsTransitions : transitions
+      transitions : transitions,
+      animations : animations
     };
   }];
 }

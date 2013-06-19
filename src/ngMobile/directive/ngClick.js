@@ -2,11 +2,19 @@
 
 /**
  * @ngdoc directive
- * @name ngMobile.directive:ngTap
+ * @name ngMobile.directive:ngClick
  *
  * @description
- * Specify custom behavior when element is tapped on a touchscreen device.
- * A tap is a brief, down-and-up touch without much motion.
+ * A more powerful replacement for the default ngClick designed to be used on touchscreen
+ * devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
+ * the click event. This version handles them immediately, and then prevents the
+ * following click event from propagating.
+ *
+ * This directive can fall back to using an ordinary click event, and so works on desktop
+ * browsers as well as mobile.
+ *
+ * This directive also sets the CSS class `ng-click-active` while the element is being held
+ * down (by a mouse click or touch) so you can restyle the depressed element if you wish.
  *
  * @element ANY
  * @param {expression} ngClick {@link guide/expression Expression} to evaluate
@@ -15,7 +23,7 @@
  * @example
     <doc:example>
       <doc:source>
-        <button ng-tap="count = count + 1" ng-init="count=0">
+        <button ng-click="count = count + 1" ng-init="count=0">
           Increment
         </button>
         count: {{ count }}
@@ -37,6 +45,8 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
   var PREVENT_DURATION = 2500; // 2.5 seconds maximum from preventGhostClick call to click
   var CLICKBUSTER_THRESHOLD = 25; // 25 pixels in any dimension is the limit for busting clicks.
+
+  var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
   var touchCoordinates;
 
@@ -172,6 +182,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     function resetState() {
       tapping = false;
+      element.removeClass(ACTIVE_CLASS_NAME);
     }
 
     element.bind('touchstart', function(event) {
@@ -181,6 +192,8 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       if(tapElement.nodeType == 3) {
         tapElement = tapElement.parentNode;
       }
+
+      element.addClass(ACTIVE_CLASS_NAME);
 
       startTime = Date.now();
 
@@ -224,7 +237,8 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
           clickHandler(scope, {$event: event});
         });
       }
-      tapping = false;
+
+      resetState();
     });
 
     // Hack for iOS Safari's benefit. It goes searching for onclick handlers and is liable to click
@@ -239,6 +253,15 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         clickHandler(scope, {$event: event});
       });
     });
+
+    element.bind('mousedown', function(event) {
+      element.addClass(ACTIVE_CLASS_NAME);
+    });
+
+    element.bind('mousemove mouseup', function(event) {
+      element.removeClass(ACTIVE_CLASS_NAME);
+    });
+
   };
 }]);
 

@@ -684,6 +684,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should set default headers for PATCH request', function() {
+        $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
+          return headers['Accept'] == 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
+        $httpBackend.flush();
+      });
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
@@ -1261,6 +1270,33 @@ describe('$http', function() {
           $httpBackend.flush();
         });
       });
+    });
+
+
+    describe('timeout', function() {
+
+      it('should abort requests when timeout promise resolves', inject(function($q) {
+        var canceler = $q.defer();
+
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({method: 'GET', url: '/some', timeout: canceler.promise}).error(
+            function(data, status, headers, config) {
+              expect(data).toBeUndefined();
+              expect(status).toBe(0);
+              expect(headers()).toEqual({});
+              expect(config.url).toBe('/some');
+              callback();
+            });
+
+        $rootScope.$apply(function() {
+          canceler.resolve();
+        });
+
+        expect(callback).toHaveBeenCalled();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
     });
 
 

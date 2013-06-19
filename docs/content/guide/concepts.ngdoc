@@ -292,7 +292,7 @@ rendering the view compared to most other templating systems.
 # Directives
 
 A directive is a behavior or DOM transformation which is triggered by the presence of a custom attribute,
-element name, or a class name. A directive allows you to extend the HTML vocabulary in a
+element name, class name or comment. A directive allows you to extend the HTML vocabulary in a
 declarative fashion. Following is an example which enables data-binding for the `contenteditable`
 in HTML.
 
@@ -425,7 +425,7 @@ function arguments. When angular calls the function, it will use the {@link
 api/AUTO.$injector#invoke call} which will automatically fill the function
 arguments.
 
-Examine the `ClockCtrl` bellow, and notice how it lists the dependencies in the constructor. When the
+Examine the `ClockCtrl` below, and notice how it lists the dependencies in the constructor. When the
 {@link api/ng.directive:ngController ng-controller} instantiates
 the controller it automatically provides the dependencies. There is no need to create
 dependencies, look for dependencies, or even get a reference to the injector.

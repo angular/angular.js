@@ -45,7 +45,7 @@
       </div>
     </file>
     <file name="animations.css">
-      .example-show-setup, .example-hide-setup {
+      .example-show, .example-hide {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -ms-transition:all linear 0.5s;
@@ -53,12 +53,12 @@
         transition:all linear 0.5s;
       }
 
-      .example-show-setup {
+      .example-show {
         line-height:0;
         opacity:0;
         padding:0 10px;
       }
-      .example-show-start.example-show-start {
+      .example-show-active.example-show-active {
         line-height:20px;
         opacity:1;
         padding:10px;
@@ -66,14 +66,14 @@
         background:white;
       }
 
-      .example-hide-setup {
+      .example-hide {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
       }
-      .example-hide-start.example-hide-start {
+      .example-hide-active.example-hide-active {
         line-height:0;
         opacity:0;
         padding:0 10px;
@@ -154,7 +154,7 @@ var ngShowDirective = ['$animator', function($animator) {
       </div>
     </file>
     <file name="animations.css">
-      .example-show-setup, .example-hide-setup {
+      .example-show, .example-hide {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -ms-transition:all linear 0.5s;
@@ -162,12 +162,12 @@ var ngShowDirective = ['$animator', function($animator) {
         transition:all linear 0.5s;
       }
 
-      .example-show-setup {
+      .example-show {
         line-height:0;
         opacity:0;
         padding:0 10px;
       }
-      .example-show-start.example-show-start {
+      .example-show.example-show-active {
         line-height:20px;
         opacity:1;
         padding:10px;
@@ -175,14 +175,14 @@ var ngShowDirective = ['$animator', function($animator) {
         background:white;
       }
 
-      .example-hide-setup {
+      .example-hide {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
       }
-      .example-hide-start.example-hide-start {
+      .example-hide.example-hide-active {
         line-height:0;
         opacity:0;
         padding:0 10px;

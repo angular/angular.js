@@ -59,6 +59,22 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('');
   }));
 
+  it('should fire $includeContentRequested event on scope after making the xhr call', inject(
+      function ($rootScope, $compile, $httpBackend) {
+    var contentRequestedSpy = jasmine.createSpy('content requested').andCallFake(function (event) {
+        expect(event.targetScope).toBe($rootScope);
+    });
+
+    $httpBackend.whenGET('url').respond('my partial');
+    $rootScope.$on('$includeContentRequested', contentRequestedSpy);
+
+    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    $rootScope.$digest();
+
+    expect(contentRequestedSpy).toHaveBeenCalledOnce();
+
+    $httpBackend.flush();
+  }));
 
   it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
@@ -291,6 +307,11 @@ describe('ngInclude ngAnimate', function() {
     return element;
   }
 
+  function applyCSS(element, cssProp, cssValue) {
+    element.css(cssProp, cssValue);    
+    element.css(vendorPrefix + cssProp, cssValue);
+  }
+
   beforeEach(function() {
     // we need to run animation on attached elements;
     body = jqLite(document.body);
@@ -328,22 +349,20 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '1s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '1s linear all');
 
-      if ($sniffer.supportsTransitions) {
-        expect(child.attr('class')).toContain('custom-enter-setup');
+      if ($sniffer.transitions) {
+        expect(child.attr('class')).toContain('custom-enter');
         window.setTimeout.expect(1).process();
 
-        expect(child.attr('class')).toContain('custom-enter-start');
+        expect(child.attr('class')).toContain('custom-enter-active');
         window.setTimeout.expect(1000).process();
       } else {
        expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(child.attr('class')).not.toContain('custom-enter-setup');
-      expect(child.attr('class')).not.toContain('custom-enter-start');
+      expect(child.attr('class')).not.toContain('custom-enter');
+      expect(child.attr('class')).not.toContain('custom-enter-active');
   }));
 
   it('should fire off the leave animation + add and remove the css classes',
@@ -360,25 +379,23 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '1s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '1s linear all');
 
       $rootScope.tpl = '';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
-        expect(child.attr('class')).toContain('custom-leave-setup');
+      if ($sniffer.transitions) {
+        expect(child.attr('class')).toContain('custom-leave');
         window.setTimeout.expect(1).process();
 
-        expect(child.attr('class')).toContain('custom-leave-start');
+        expect(child.attr('class')).toContain('custom-leave-active');
         window.setTimeout.expect(1000).process();
       } else {
        expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(child.attr('class')).not.toContain('custom-leave-setup');
-      expect(child.attr('class')).not.toContain('custom-leave-start');
+      expect(child.attr('class')).not.toContain('custom-leave');
+      expect(child.attr('class')).not.toContain('custom-leave-active');
   }));
 
   it('should catch and use the correct duration for animation',
@@ -395,14 +412,12 @@ describe('ngInclude ngAnimate', function() {
 
       //if we add the custom css stuff here then it will get picked up before the animation takes place
       var child = jqLite(element.children()[0]);
-      var cssProp = vendorPrefix + 'transition';
-      var cssValue = '0.5s linear all';
-      child.css(cssProp, cssValue);
+      applyCSS(child, 'transition', '0.5s linear all');
 
       $rootScope.tpl = 'enter';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {

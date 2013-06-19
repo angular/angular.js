@@ -798,6 +798,24 @@ describe('ngMock', function() {
     });
 
 
+    it('should abort requests when timeout promise resolves', function() {
+      hb.expect('GET', '/url1').respond(200);
+
+      var canceler, then = jasmine.createSpy('then').andCallFake(function(fn) {
+        canceler = fn;
+      });
+
+      hb('GET', '/url1', null, callback, null, {then: then});
+      expect(typeof canceler).toBe('function');
+
+      canceler();  // simulate promise resolution
+
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      hb.verifyNoOutstandingExpectation();
+      hb.verifyNoOutstandingRequest();
+    });
+
+
     it('should throw an exception if no response defined', function() {
       hb.when('GET', '/test');
       expect(function() {
@@ -1006,8 +1024,8 @@ describe('ngMockE2E', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
         hb('GET', '/passThrough/23', null, callback);
 
-        expect(realHttpBackend).
-            toHaveBeenCalledOnceWith('GET', '/passThrough/23', null, callback, undefined);
+        expect(realHttpBackend).toHaveBeenCalledOnceWith(
+            'GET', '/passThrough/23', null, callback, undefined, undefined);
       });
     });
 

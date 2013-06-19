@@ -226,8 +226,7 @@ angular.module('ngCookies', ['ng']).
          */
         get: function(key) {
           var value = $cookies[key];
-          if (!value) return value;
-          return angular.fromJson(value);
+          return value ? angular.fromJson(value) : value;
         },
 
         /**

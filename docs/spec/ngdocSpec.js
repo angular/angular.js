@@ -18,9 +18,9 @@ describe('ngdoc', function() {
   describe('Doc', function() {
     describe('metadata', function() {
 
-      it('should find keywords', function() {
+      it('should find keywords and filter ignored words', function() {
         expect(new Doc('\nHello: World! @ignore. $abc').keywords()).toEqual('$abc hello world');
-        expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
+        expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('ng:class-odd');
       });
 
       it('should get property and methods', function() {
@@ -147,7 +147,12 @@ describe('ngdoc', function() {
 
     it('should replace text between two <pre></pre> tags', function() {
       expect(new Doc().markdown('<pre>x</pre>\n# One\n<pre>b</pre>')).
-        toMatch('</pre>\n\n<h1>One</h1>\n\n<pre');
+        toMatch('</pre>\n\n<h1 id="one">One</h1>\n\n<pre');
+    });
+
+    it('should replace inline variable type hints', function() {
+      expect(new Doc().markdown('{@type string}')).
+        toMatch(/<a\s+.*?class=".*?type-hint type-hint-string.*?".*?>/);
     });
 
     it('should ignore nested doc widgets', function() {
@@ -191,6 +196,28 @@ describe('ngdoc', function() {
     });
 
 
+    describe('inline annotations', function() {
+      it('should convert inline docs annotations into proper HTML', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate supertext\n<br />\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext"')
+      });
+
+      it('should allow for a custom regular expression for matching', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate=\"soon\" supertext\n<p>soon</p>\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext" data-title="Info">soon</div>')
+      });
+
+      it('should allow for a custom title to be set', function() {
+        expect(new Doc().markdown(
+          "<pre>\n//!annotate=\"soon\" coming soon|supertext\n<p>soon</p>\n</pre>"
+          )
+        ).toContain('data-popover data-content="supertext" data-title="coming soon">soon</div>')
+      });
+    });
   });
 
   describe('trim', function() {
@@ -405,7 +432,7 @@ describe('ngdoc', function() {
         expect(doc.description).
           toBe('<p>foo \n' +
                '<pre class="prettyprint linenums">abc</pre>\n\n' +
-               '<h1>bah</h1>\n\n' +
+               '<h1 id="bah">bah</h1>\n\n' +
                '<p>foo \n' +
                '<pre class="prettyprint linenums">cba</pre>');
 
@@ -499,7 +526,7 @@ describe('ngdoc', function() {
         var doc = new Doc('@ngdoc overview\n@name angular\n@description\n#heading\ntext');
         doc.parse();
         expect(doc.html()).toContain('text');
-        expect(doc.html()).toContain('<h2>heading</h2>');
+        expect(doc.html()).toContain('<h2 id="heading">heading</h2>');
         expect(doc.html()).not.toContain('Description');
       });
     });
@@ -511,7 +538,7 @@ describe('ngdoc', function() {
           ngdoc:'function',
           name:'some.name',
           param: [
-            {name:'a', optional: true},
+            {name:'a', type: 'string', optional: true},
             {name:'b', type: 'someType', optional: true, 'default': '"xxx"'},
             {name:'c', type: 'string', description: 'param desc'}
           ],
@@ -520,7 +547,7 @@ describe('ngdoc', function() {
         doc.html_usage_function(dom);
         expect(dom).toContain('name([a][, b], c)'); //TODO(i) the comma position here is lame
         expect(dom).toContain('param desc');
-        expect(dom).toContain('(optional="xxx")');
+        expect(dom).toContain('(optional)');
         expect(dom).toContain('return desc');
       });
     });
@@ -531,8 +558,8 @@ describe('ngdoc', function() {
           ngdoc:'formatter',
           shortName:'myFilter',
           param: [
-            {name:'a'},
-            {name:'b'}
+            {name:'a', type:'string'},
+            {name:'b', type:'string'}
           ]
         });
         doc.html_usage_filter(dom);
@@ -546,6 +573,7 @@ describe('ngdoc', function() {
         var doc = new Doc({
           ngdoc:'property',
           name:'myProp',
+          type:'string',
           returns:{type: 'type', description: 'description'}
         });
         doc.html_usage_property(dom);

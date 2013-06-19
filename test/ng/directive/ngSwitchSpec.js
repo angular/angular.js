@@ -261,18 +261,18 @@ describe('ngSwitch ngAnimate', function() {
       expect(element.children().length).toBe(1);
       var first = element.children()[0];
 
-      if ($sniffer.supportsTransitions) {
-        expect(first.className).toContain('cool-enter-setup');
+      if ($sniffer.transitions) {
+        expect(first.className).toContain('cool-enter');
         window.setTimeout.expect(1).process();
 
-        expect(first.className).toContain('cool-enter-start');
+        expect(first.className).toContain('cool-enter-active');
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(first.className).not.toContain('cool-enter-setup');
-      expect(first.className).not.toContain('cool-enter-start');
+      expect(first.className).not.toContain('cool-enter');
+      expect(first.className).not.toContain('cool-enter-active');
   }));
 
 
@@ -292,7 +292,7 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1000).process();
       } else {
@@ -302,12 +302,12 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'three';
       $scope.$digest();
 
-      expect(element.children().length).toBe($sniffer.supportsTransitions ? 2 : 1);
+      expect(element.children().length).toBe($sniffer.transitions ? 2 : 1);
       var first = element.children()[0];
 
 
-      if ($sniffer.supportsTransitions) {
-        expect(first.className).toContain('cool-leave-setup');
+      if ($sniffer.transitions) {
+        expect(first.className).toContain('cool-leave');
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(1).process();
       } else {
@@ -315,16 +315,16 @@ describe('ngSwitch ngAnimate', function() {
       }
 
 
-      if ($sniffer.supportsTransitions) {
-        expect(first.className).toContain('cool-leave-start');
+      if ($sniffer.transitions) {
+        expect(first.className).toContain('cool-leave-active');
         window.setTimeout.expect(1000).process();
         window.setTimeout.expect(1000).process();
       } else {
         expect(window.setTimeout.queue).toEqual([]);
       }
 
-      expect(first.className).not.toContain('cool-leave-setup');
-      expect(first.className).not.toContain('cool-leave-start');
+      expect(first.className).not.toContain('cool-leave');
+      expect(first.className).not.toContain('cool-leave-active');
   }));
 
   it('should catch and use the correct duration for animation',
@@ -339,7 +339,7 @@ describe('ngSwitch ngAnimate', function() {
       $rootScope.val = 'one';
       $rootScope.$digest();
 
-      if ($sniffer.supportsTransitions) {
+      if ($sniffer.transitions) {
         window.setTimeout.expect(1).process();
         window.setTimeout.expect(500).process();
       } else {

@@ -1,18 +1,5 @@
 'use strict';
 
-/**
- * Create jasmine.Spy on given method, but ignore calls without arguments
- * This is helpful when need to spy only setter methods and ignore getters
- */
-function spyOnlyCallsWithArgs(obj, method) {
-  var spy = spyOn(obj, method);
-  obj[method] = function() {
-    if (arguments.length) return spy.apply(this, arguments);
-    return spy.originalValue.apply(this);
-  };
-  return spy;
-}
-
 
 describe('$location', function() {
   var url;
@@ -177,6 +164,15 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/a');
     });
 
+    it('should not rewrite when hashbang url is not given', function() {
+      initService(true, '!', true);
+      inject(
+        initBrowser('http://domain.com/base/a/b', '/base'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/a/b');
+        }
+      );
+    });
 
     it('should prepend path with basePath', function() {
       url = new LocationHtml5Url('http://server/base/');
@@ -194,7 +190,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:nopp] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -203,7 +199,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:nopp] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -316,14 +312,14 @@ describe('$location', function() {
     it('should throw error when invalid server url given', function() {
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
+      }).toThrow('[$location:istart] Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
     });
 
 
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrow('[$location:nohash] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
@@ -810,6 +806,33 @@ describe('$location', function() {
     });
 
 
+    it('should do nothing if already on the same URL', function() {
+      configureService('/base/', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).attr('href', 'http://host.com/base/foo');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/foo');
+
+          jqLite(link).attr('href', 'http://host.com/base/');
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/');
+
+          jqLite(link).
+              attr('href', 'http://host.com/base/foo').
+              bind('click', function(e) { e.preventDefault(); });
+          browserTrigger(link, 'click');
+          expect($browser.url()).toBe('http://host.com/base/');
+        }
+      );
+    });
+
+
     it('should rewrite abs link to new url when history enabled on new browser', function() {
       configureService('/base/link?a#b', true, true);
       inject(
@@ -1228,7 +1251,7 @@ describe('$location', function() {
         expect($location.url()).toEqual('');
 
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-          throw Error('there is no before when user enters URL directly to browser');
+          $log.info('start', newUrl, oldUrl);
         });
         $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
           $log.info('after', newUrl, oldUrl);
@@ -1238,6 +1261,8 @@ describe('$location', function() {
         $browser.url('http://server/#/somePath');
         $browser.poll();
 
+        expect($log.info.logs.shift()).
+          toEqual(['start', 'http://server/#/somePath', 'http://server/']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/somePath', 'http://server/']);
       })
@@ -1306,6 +1331,61 @@ describe('$location', function() {
 
         dealoc($rootElement);
       });
+    });
+  });
+
+  describe('LocationHtml5Url', function() {
+    var location, locationIndex;
+
+    beforeEach(function() {
+      location = new LocationHtml5Url('http://server/pre/', 'http://server/pre/path');
+      locationIndex = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/path');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
+    });
+  });
+
+
+  describe('LocationHashbangUrl', function() {
+    var location;
+
+    beforeEach(function() {
+      location = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/#/path');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
+      expect(location.$$rewrite('javascript:void(0)')).toEqual(undefined);
+    });
+  });
+
+
+  describe('LocationHashbangInHtml5Url', function() {
+    var location, locationIndex;
+
+    beforeEach(function() {
+      location = new LocationHashbangInHtml5Url('http://server/pre/', '#!');
+      locationIndex = new LocationHashbangInHtml5Url('http://server/pre/index.html', '#!');
+    });
+
+    it('should rewrite URL', function() {
+      expect(location.$$rewrite('http://other')).toEqual(undefined);
+      expect(location.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
+      expect(location.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/#!otherPath');
+      expect(locationIndex.$$rewrite('http://server/pre')).toEqual('http://server/pre/');
+      expect(locationIndex.$$rewrite('http://server/pre/')).toEqual(undefined);
+      expect(locationIndex.$$rewrite('http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!otherPath');
     });
   });
 });

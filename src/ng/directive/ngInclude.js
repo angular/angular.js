@@ -33,7 +33,7 @@
  *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
  *
  * @example
-  <example>
+  <example animations="true">
     <file name="index.html">
      <div ng-controller="Ctrl">
        <select ng-model="template" ng-options="t.name for t in templates">
@@ -61,8 +61,8 @@
       <div>Content of template2.html</div>
     </file>
     <file name="animations.css">
-      .example-leave-setup,
-      .example-enter-setup {
+      .example-leave,
+      .example-enter {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -81,17 +81,17 @@
         padding:10px;
       }
 
-      .example-enter-setup {
+      .example-enter {
         top:-50px;
       }
-      .example-enter-setup.example-enter-start {
+      .example-enter.example-enter-active {
         top:0;
       }
 
-      .example-leave-setup {
+      .example-leave {
         top:0;
       }
-      .example-leave-setup.example-leave-start {
+      .example-leave.example-leave-active {
         top:50px;
       }
     </file>
@@ -111,6 +111,16 @@
       });
     </file>
   </example>
+ */
+
+
+/**
+ * @ngdoc event
+ * @name ng.directive:ngInclude#$includeContentRequested
+ * @eventOf ng.directive:ngInclude
+ * @eventType emit on the scope ngInclude was declared in
+ * @description
+ * Emitted every time the ngInclude content is requested.
  */
 
 
@@ -170,6 +180,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
+            scope.$emit('$includeContentRequested');
           } else {
             clearContent();
           }
