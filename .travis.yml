@@ -16,4 +16,4 @@ before_script:
   - grunt webserver > /dev/null &
 
 script:
-  - grunt test --browsers ./sauce_firefox.sh --reporters=dots
+  - node ./sauce-test.js
