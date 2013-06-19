@@ -43,7 +43,7 @@ forEach(
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
       return function(scope, element, attr) {
         var fn = $parse(attr[directiveName]);
-        element.bind(lowercase(name), function(event) {
+        element.on(lowercase(name), function(event) {
           scope.$apply(function() {
             fn(scope, {$event:event});
           });
@@ -265,7 +265,7 @@ forEach(
    </doc:example>
  */
 var ngSubmitDirective = ngDirective(function(scope, element, attrs) {
-  element.bind('submit', function() {
+  element.on('submit', function() {
     scope.$apply(attrs.ngSubmit);
   });
 });

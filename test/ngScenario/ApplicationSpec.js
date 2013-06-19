@@ -17,7 +17,7 @@ describe('angular.scenario.Application', function() {
 
 
   afterEach(function() {
-    _jQuery('iframe').unbind(); // cleanup any leftover onload handlers
+    _jQuery('iframe').off(); // cleanup any leftover onload handlers
     document.body.innerHTML = '';
   });
 

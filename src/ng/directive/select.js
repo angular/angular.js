@@ -257,7 +257,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         };
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             if (unknownOption.parent()) unknownOption.remove();
             ngModelCtrl.$setViewValue(selectElement.val());
@@ -283,7 +283,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         });
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             var array = [];
             forEach(selectElement.find('option'), function(option) {
@@ -334,7 +334,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // clear contents, we'll add what's needed based on the model
         selectElement.html('');
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             var optionGroup,
                 collection = valuesFn(scope) || [],
@@ -598,7 +598,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
           selectCtrl.addOption(attr.value);
         }
 
-        element.bind('$destroy', function() {
+        element.on('$destroy', function() {
           selectCtrl.removeOption(attr.value);
         });
       };

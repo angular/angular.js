@@ -228,7 +228,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
       }]);
       if (attrs.ngEmbedApp)  modules.push(attrs.ngEmbedApp);
 
-      element.bind('click', function(event) {
+      element.on('click', function(event) {
         if (event.target.attributes.getNamedItem('ng-click')) {
           event.preventDefault();
         }

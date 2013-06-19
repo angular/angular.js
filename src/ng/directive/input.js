@@ -411,7 +411,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
   // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
-    element.bind('input', listener);
+    element.on('input', listener);
   } else {
     var timeout;
 
@@ -424,7 +424,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       }
     };
 
-    element.bind('keydown', function(event) {
+    element.on('keydown', function(event) {
       var key = event.keyCode;
 
       // ignore
@@ -435,11 +435,11 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
 
     // if user paste into input using mouse, we need "change" event to catch it
-    element.bind('change', listener);
+    element.on('change', listener);
 
     // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
     if ($sniffer.hasEvent('paste')) {
-      element.bind('paste cut', deferListener);
+      element.on('paste cut', deferListener);
     }
   }
 
@@ -624,7 +624,7 @@ function radioInputType(scope, element, attr, ctrl) {
     element.attr('name', nextUid());
   }
 
-  element.bind('click', function() {
+  element.on('click', function() {
     if (element[0].checked) {
       scope.$apply(function() {
         ctrl.$setViewValue(attr.value);
@@ -647,7 +647,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
-  element.bind('click', function() {
+  element.on('click', function() {
     scope.$apply(function() {
       ctrl.$setViewValue(element[0].checked);
     });
@@ -876,7 +876,7 @@ var VALID_CLASS = 'ng-valid',
               };
 
               // Listen for change events to enable binding
-              element.bind('blur keyup change', function() {
+              element.on('blur keyup change', function() {
                 scope.$apply(read);
               });
               read(); // initialize
@@ -1138,7 +1138,7 @@ var ngModelDirective = function() {
 
       formCtrl.$addControl(modelCtrl);
 
-      element.bind('$destroy', function() {
+      element.on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
       });
     }

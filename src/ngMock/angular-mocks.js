@@ -1710,7 +1710,7 @@ angular.mock.clearDataCache = function() {
     if (cache.hasOwnProperty(key)) {
       var handle = cache[key].handle;
 
-      handle && angular.element(handle.elem).unbind();
+      handle && angular.element(handle.elem).off();
       delete cache[key];
     }
   }
@@ -1750,7 +1750,7 @@ window.jstestdriver && (function(window) {
     currentSpec = null;
 
     if (injector) {
-      injector.get('$rootElement').unbind();
+      injector.get('$rootElement').off();
       injector.get('$browser').pollFns.length = 0;
     }
 
