@@ -8,7 +8,7 @@ env:
      - SAK=9b988f434ff8-fbca-8aa4-4ae3-35442987
 
 before_script:
-  - export SAUCE_ACCESS_KEY=`$SAK|rev`
+  - export SAUCE_ACCESS_KEY=`echo $SAK|rev`
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
