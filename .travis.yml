@@ -10,10 +10,11 @@ env:
 before_script:
   - export SAUCE_ACCESS_KEY=`echo $SAK|rev`
   - echo $SAUCE_USER_NAME
+  - echo $SAUCE_ACCESS_KEY
   - npm install -g grunt-cli
   - grunt package
   - grunt webserver > /dev/null &
-  - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | sed 's/\$SAUCE_ACCESS_KEY/\`\echo $SAK | rev\`/g' | cat
+  - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | sed 's/\$SAUCE_ACCESS_KEY/\`\echo $SAK | rev\`/g' | bash
 
 script:
   - node ./sauce-test.js
