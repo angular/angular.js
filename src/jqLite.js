@@ -32,7 +32,7 @@
  * - [after()](http://api.jquery.com/after/)
  * - [append()](http://api.jquery.com/append/)
  * - [attr()](http://api.jquery.com/attr/)
- * - [bind()](http://api.jquery.com/bind/) - Does not support namespaces
+ * - [bind()](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
  * - [children()](http://api.jquery.com/children/) - Does not support selectors
  * - [clone()](http://api.jquery.com/clone/)
  * - [contents()](http://api.jquery.com/contents/)
@@ -43,6 +43,8 @@
  * - [hasClass()](http://api.jquery.com/hasClass/)
  * - [html()](http://api.jquery.com/html/)
  * - [next()](http://api.jquery.com/next/) - Does not support selectors
+ * - [on()](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+ * - [off()](http://api.jquery.com/off/) - Does not support namespaces or selectors
  * - [parent()](http://api.jquery.com/parent/) - Does not support selectors
  * - [prepend()](http://api.jquery.com/prepend/)
  * - [prop()](http://api.jquery.com/prop/)
@@ -55,7 +57,7 @@
  * - [text()](http://api.jquery.com/text/)
  * - [toggleClass()](http://api.jquery.com/toggleClass/)
  * - [triggerHandler()](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [unbind()](http://api.jquery.com/unbind/) - Does not support namespaces
+ * - [unbind()](http://api.jquery.com/off/) - Does not support namespaces
  * - [val()](http://api.jquery.com/val/)
  * - [wrap()](http://api.jquery.com/wrap/)
  *
@@ -90,6 +92,7 @@ function jqNextId() { return ++jqId; }
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+var jqLiteError = minErr('jqLite');
 
 /**
  * Converts snake_case to camelCase.
@@ -153,7 +156,7 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
-      throw minErr('jqLite')('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
+      throw jqLiteError('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
     }
     return new JQLite(element);
   }
@@ -183,7 +186,9 @@ function JQLiteDealoc(element){
   }
 }
 
-function JQLiteUnbind(element, type, fn) {
+function JQLiteOff(element, type, fn) {
+  if ( arguments.length > 4 ) throw jqLiteError('off_args', 'jqLite#off() does not support the `selector` parameter');
+
   var events = JQLiteExpandoStore(element, 'events'),
       handle = JQLiteExpandoStore(element, 'handle');
 
@@ -216,7 +221,7 @@ function JQLiteRemoveData(element, name) {
 
     if (expandoStore.handle) {
       expandoStore.events.$destroy && expandoStore.handle({}, '$destroy');
-      JQLiteUnbind(element);
+      JQLiteOff(element);
     }
     delete jqCache[expandoId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
@@ -338,9 +343,9 @@ var JQLitePrototype = JQLite.prototype = {
     if (document.readyState === 'complete'){
       setTimeout(trigger);
     } else {
-      this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
+      this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
       // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-      JQLite(window).bind('load', trigger); // fallback to window.onload for others
+      JQLite(window).on('load', trigger); // fallback to window.onload for others
     }
   },
   toString: function() {
@@ -609,7 +614,9 @@ forEach({
 
   dealoc: JQLiteDealoc,
 
-  bind: function bindFn(element, type, fn){
+  on: function onFn(element, type, fn, other1){
+    if ( isDefined(other1) ) throw jqLiteError('on_args', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+    
     var events = JQLiteExpandoStore(element, 'events'),
         handle = JQLiteExpandoStore(element, 'handle');
 
@@ -649,8 +656,8 @@ forEach({
           // http://www.quirksmode.org/js/events_mouse.html#link8
           var eventmap = { mouseleave : "mouseout", mouseenter : "mouseover"};
 
-          bindFn(element, eventmap[type], function(event) {
-            var ret, target = this, related = event.relatedTarget;
+          onFn(element, eventmap[type], function(event) {
+            var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
             if ( !related || (related !== target && !contains(target, related)) ){
@@ -668,7 +675,7 @@ forEach({
     });
   },
 
-  unbind: JQLiteUnbind,
+  off: JQLiteOff,
 
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
@@ -790,19 +797,23 @@ forEach({
   /**
    * chaining functions
    */
-  JQLite.prototype[name] = function(arg1, arg2) {
+  JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
     for(var i=0; i < this.length; i++) {
       if (value == undefined) {
-        value = fn(this[i], arg1, arg2);
+        value = fn(this[i], arg1, arg2, arg3);
         if (value !== undefined) {
           // any function which returns a value needs to be wrapped
           value = jqLite(value);
         }
       } else {
-        JQLiteAddNodes(value, fn(this[i], arg1, arg2));
+        JQLiteAddNodes(value, fn(this[i], arg1, arg2, arg3));
       }
     }
     return value == undefined ? this : value;
   };
+
+  // bind legacy bind/unbind to on/off
+  JQLite.prototype.bind = JQLite.prototype.on;
+  JQLite.prototype.unbind = JQLite.prototype.off;
 });

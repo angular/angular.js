@@ -13,11 +13,11 @@ directive.dropdownToggle =
           close && close();
         });
 
-        element.parent().bind('click', function(event) {
+        element.parent().on('click', function(event) {
           close && close();
         });
 
-        element.bind('click', function(event) {
+        element.on('click', function(event) {
           event.preventDefault();
           event.stopPropagation();
 
@@ -35,13 +35,13 @@ directive.dropdownToggle =
             close = function (event) {
               event && event.preventDefault();
               event && event.stopPropagation();
-              $document.unbind('click', close);
+              $document.off('click', close);
               element.parent().removeClass('open');
               close = null;
               openElement = null;
             }
 
-            $document.bind('click', close);
+            $document.on('click', close);
           }
         });
       }
@@ -161,7 +161,7 @@ directive.tabbable = function() {
         }
 
         navTabs.append(li);
-        li.bind('click', function(event) {
+        li.on('click', function(event) {
           event.preventDefault();
           event.stopPropagation();
           if (ngModel.$setViewValue) {
@@ -330,7 +330,7 @@ directive.tabPane = function() {
     require: '^tabbable',
     restrict: 'C',
     link: function(scope, element, attrs, tabsCtrl) {
-      element.bind('$remove', tabsCtrl.addPane(element, attrs));
+      element.on('$remove', tabsCtrl.addPane(element, attrs));
     }
   };
 };

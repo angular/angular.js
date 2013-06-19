@@ -471,7 +471,7 @@ function $CompileProvider($provide) {
                       transcludeScope.$$transcluded = true;
 
                       return transcludeFn(transcludeScope, cloneFn).
-                          bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
+                          on('$destroy', bind(transcludeScope, transcludeScope.$destroy));
                     };
                   })(childTranscludeFn || transcludeFn)
               );

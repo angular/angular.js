@@ -212,9 +212,9 @@ function Browser(window, document, $log, $sniffer) {
       // changed by push/replaceState
 
       // html5 history api - popstate event
-      if ($sniffer.history) jqLite(window).bind('popstate', fireUrlChange);
+      if ($sniffer.history) jqLite(window).on('popstate', fireUrlChange);
       // hashchange event
-      if ($sniffer.hashchange) jqLite(window).bind('hashchange', fireUrlChange);
+      if ($sniffer.hashchange) jqLite(window).on('hashchange', fireUrlChange);
       // polling
       else self.addPollFn(fireUrlChange);
 

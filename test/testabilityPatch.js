@@ -106,7 +106,7 @@ function dealoc(obj) {
   }
 
   function cleanup(element) {
-    element.unbind().removeData();
+    element.off().removeData();
     for ( var i = 0, children = element.contents() || []; i < children.length; i++) {
       cleanup(angular.element(children[i]));
     }
