@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 # Setup and start Sauce Connect for your TravisCI build
 # This script requires your .travis.yml to include the following two private env variables:
@@ -16,8 +16,6 @@ CONNECT_URL="http://saucelabs.com/downloads/Sauce-Connect-latest.zip"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="Sauce_Connect.zip"
 READY_FILE="connect-ready-$RANDOM"
-
-echo HEHEHEHE $SAUCE_USER_NAME $SAUCE_ACCESS_KEY
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
