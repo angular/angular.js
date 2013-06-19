@@ -331,7 +331,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
   return function(content) {
     var allFiles = [].concat(content.js, content.css, content.html);
     var indexHtmlContent = '<!doctype html>\n' +
-        '<html ng-app>\n' +
+        '<html ng-app="{{module}}">\n' +
         '  <head>\n' +
         '    <script src="{{angularJSUrl}}"></script>\n' +
         '{{scriptDeps}}\n' +
@@ -347,6 +347,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
       }
     });
     indexProp = {
+      module: content.module,
       angularJSUrl: angularUrls['angular.js'],
       scriptDeps: scriptDeps,
       indexContents: content.html[0].content
