@@ -19,9 +19,8 @@
     "karma": "0.8.4",
     "yaml-js": "0.0.5",
     "showdown": "0.3.1",
-    "wd": "*",
+    "selenium-webdriver": "*",
     "assert": "*"
-
   },
   "licenses": [
     {
