@@ -63,6 +63,7 @@ angular.mock.$Browser = function() {
   };
 
   self.cookieHash = {};
+  self.cookieOptionHash = {};
   self.lastCookieHash = {};
   self.deferredFns = [];
   self.deferredNextId = 0;
@@ -160,13 +161,15 @@ angular.mock.$Browser.prototype = {
     return this.$$url;
   },
 
-  cookies:  function(name, value) {
+  cookies:  function(name, value,options) {
     if (name) {
       if (value == undefined) {
+        if (options) this.cookieOptionHash[name] = options;
         delete this.cookieHash[name];
       } else {
         if (angular.isString(value) &&       //strings only
             value.length <= 4096) {          //strict cookie storage limits
+          if (options) this.cookieOptionHash[name] = options;
           this.cookieHash[name] = value;
         }
       }

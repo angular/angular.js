@@ -7,6 +7,7 @@ autoWatch = true;
 logLevel = LOG_INFO;
 logColors = true;
 browsers = ['Chrome'];
+urlRoot = "/karma/tests/"
 
 junitReporter = {
   outputFile: 'test_out/jqlite.xml',
