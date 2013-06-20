@@ -822,16 +822,35 @@ function startingTag(element) {
 /////////////////////////////////////////////////
 
 /**
+ * Tries to decode the URI component without throwing an exception.
+ *
+ * @private
+ * @param str value potential URI component to check.
+ * @returns {boolean} True if `value` can be decoded
+ * with the decodeURIComponent function.
+ */
+function tryDecodeURIComponent(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch(e) {
+    // Ignore any invalid uri component
+  }
+}
+
+
+/**
  * Parses an escaped url query string into key-value pairs.
  * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue){
-    if (keyValue) {
+    if ( keyValue ) {
       key_value = keyValue.split('=');
-      key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      key = tryDecodeURIComponent(key_value[0]);
+      if ( isDefined(key) ) {
+        obj[key] = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+      }
     }
   });
   return obj;
