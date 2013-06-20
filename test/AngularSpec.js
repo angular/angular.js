@@ -312,6 +312,12 @@ describe('angular', function() {
       expect(parseKeyValue('flag1&key=value&flag2')).
       toEqual({flag1: true, key: 'value', flag2: true});
     });
+    it('should ignore key values that are not valid URI components', function() {
+      expect(function() { parseKeyValue('%'); }).not.toThrow();
+      expect(parseKeyValue('%')).toEqual({});
+      expect(parseKeyValue('invalid=%')).toEqual({ invalid: undefined });
+      expect(parseKeyValue('invalid=%&valid=good')).toEqual({ invalid: undefined, valid: 'good' });
+    });
   });
 
   describe('toKeyValue', function() {
