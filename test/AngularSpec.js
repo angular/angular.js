@@ -621,6 +621,16 @@ describe('angular', function() {
     });
   });
 
+  describe('isURIComponent', function() {
+    it('should return true for a valid URI component', function() {
+      expect(isURIComponent('valid-value')).toBe(true);
+    });
+
+    it('should return false for non valid URI components', function() {
+      expect(isURIComponent('%')).toBe(false);
+    });
+  });
+
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
