@@ -200,7 +200,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
       return function($scope, $element, $attr){
         var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(track\s+by\s+(.+?))?(\s*\|.*)?$/),
           trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
@@ -211,6 +211,13 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
         lhs = match[1];
         rhs = match[2];
+
+        // match[5] will contain any remaining filter references (e.g ' | filter:search')
+        // need to append to rhs for proper filtering (if applicable)
+        if (match[5]) {
+            rhs += match[5];
+        }
+
         trackByExp = match[4];
 
         if (trackByExp) {
@@ -282,7 +289,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
            value = collection[key];
            trackById = trackByIdFn(key, value, index);
            if(lastBlockMap.hasOwnProperty(trackById)) {
-             block = lastBlockMap[trackById]
+             block = lastBlockMap[trackById];
              delete lastBlockMap[trackById];
              nextBlockMap[trackById] = block;
              nextBlockOrder[index] = block;
