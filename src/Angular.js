@@ -827,29 +827,25 @@ function startingTag(element) {
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
-  forEach((keyValue || "").split('&'), function(keyValue){
+  forEach((keyValue || "").split('&'), function(keyValue) {
     if (keyValue) {
       key_value = keyValue.split('=');
       key = decodeURIComponent(key_value[0]);
       
-      if (obj.hasOwnProperty(key) )
-      {
+      if (obj.hasOwnProperty(key)) {
         var innerObj = obj[key];
         var value = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
-        if (isArray(innerObj))
-        {
+        if (isArray(innerObj)) {
           innerObj.push(value);                    
         }
-        else
-        {
+        else {
           var newArray = [];
           newArray.push(innerObj);
           newArray.push(value);
           obj[key] = newArray;
         }
       }
-      else
-      {
+      else {
         obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
       }
     }
@@ -858,11 +854,18 @@ function parseKeyValue(/**string*/keyValue) {
 }
 
 function toKeyValue(obj) {
-  var parts = [];
-  forEach(obj, function(value, key) {
-    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
-  });
-  return parts.length ? parts.join('&') : '';
+    var parts = [];
+    forEach(obj, function(value, key) {
+        if (isArray(value)) {
+            forEach(value, function(arrayValue) {
+                parts.push(encodeUriQuery(key, true) + (arrayValue === true ? '' : '=' + encodeUriQuery(arrayValue, true)));
+            });
+        }
+        else {
+            parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
+        }
+    });
+    return parts.length ? parts.join('&') : '';
 }
 
 
