@@ -2831,6 +2831,36 @@ describe('$compile', function() {
     });
   });
 
+  describe('interpolation on HTML DOM event handler attributes onclick, onXYZ, formaction', function() {
+    it('should disallow interpolation on onclick', inject(function($compile, $rootScope) {
+      // All interpolations are disallowed.
+      $rootScope.onClickJs = "";
+      expect(function() {
+          $compile('<button onclick="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+      expect(function() {
+          $compile('<button ONCLICK="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+      expect(function() {
+          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+    }));
+
+    it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
+      element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
+      $rootScope.onClickJs = 'javascript:doSomething()';
+      $rootScope.$apply();
+      expect(element.attr('on-click')).toEqual('javascript:doSomething()');
+    }));
+  });
+
+
   describe('ngAttr* attribute binding', function() {
 
     it('should bind after digest but not before', inject(function($compile, $rootScope) {

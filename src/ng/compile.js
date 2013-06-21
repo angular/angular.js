@@ -155,6 +155,10 @@ function $CompileProvider($provide) {
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
       urlSanitizationWhitelist = /^\s*(https?|ftp|mailto|file):/;
 
+  // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
+  // The assumption is that future DOM event attribute names will begin with
+  // 'on' and be composed of only English letters.
+  var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]*|formaction)$/;
 
   /**
    * @ngdoc function
@@ -1164,6 +1168,12 @@ function $CompileProvider($provide) {
         priority: 100,
         compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
           var $$observers = (attr.$$observers || (attr.$$observers = {}));
+
+          if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
+            throw $compileMinErr('nodomevents',
+                "Interpolations for HTML DOM event attributes are disallowed.  Please use the ng- " +
+                "versions (such as ng-click instead of onclick) instead.");
+          }
 
           // we need to interpolate again, in case the attribute value has been updated
           // (e.g. by another directive's compile function)
