@@ -311,6 +311,7 @@ describe('angular', function() {
       expect(parseKeyValue('emptyKey=')).toEqual({emptyKey: ''});
       expect(parseKeyValue('flag1&key=value&flag2')).
       toEqual({flag1: true, key: 'value', flag2: true});
+      expect(parseKeyValue('key=value1&key=value2')).toEqual({key: ['value1','value2]'});
     });
   });
 
@@ -322,6 +323,7 @@ describe('angular', function() {
       expect(toKeyValue({'escaped key': 'escaped value'})).
       toEqual('escaped%20key=escaped%20value');
       expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
+      expect(toKeyValue({key: ['value1','value2]'}).toEqual('key=value1&key=value2');
     });
 
     it('should parse true values into flags', function() {
