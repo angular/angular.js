@@ -215,14 +215,15 @@ function $CompileProvider($provide) {
    *
    * @description
    * Retrieves or overrides the default regular expression that is used for whitelisting of safe
-   * urls during a[href] sanitization.
+   * urls during a[href] and img[src] sanitization.
    *
    * The sanitization is a security measure aimed at prevent XSS attacks via html links.
    *
-   * Any url about to be assigned to a[href] via data-binding is first normalized and turned into an
-   * absolute url. Afterwards the url is matched against the `urlSanitizationWhitelist` regular
-   * expression. If a match is found the original url is written into the dom. Otherwise the
-   * absolute url is prefixed with `'unsafe:'` string and only then it is written into the DOM.
+   * Any url about to be assigned to a[href] or img[src] via data-binding is first normalized and
+   * turned into an absolute url. Afterwards, the url is matched against the
+   * `urlSanitizationWhitelist` regular expression. If a match is found, the original url is written
+   * into the dom. Otherwise, the absolute url is prefixed with `'unsafe:'` string and only then is
+   * it written into the DOM.
    *
    * @param {RegExp=} regexp New regexp to whitelist urls with.
    * @returns {RegExp|ng.$compileProvider} Current RegExp if called without value or self for
@@ -264,7 +265,8 @@ function $CompileProvider($provide) {
       $set: function(key, value, writeAttr, attrName) {
         var booleanKey = getBooleanAttrName(this.$$element[0], key),
             $$observers = this.$$observers,
-            normalizedVal;
+            normalizedVal,
+            nodeName;
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -284,8 +286,10 @@ function $CompileProvider($provide) {
         }
 
 
-        // sanitize a[href] values
-        if (nodeName_(this.$$element[0]) === 'A' && key === 'href') {
+        // sanitize a[href] and img[src] values
+        nodeName = nodeName_(this.$$element);
+        if ((nodeName === 'A' && key === 'href') ||
+            (nodeName === 'IMG' && key === 'src')){
           urlSanitizationNode.setAttribute('href', value);
 
           // href property always returns normalized absolute url, so we can match against that
