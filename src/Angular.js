@@ -831,7 +831,27 @@ function parseKeyValue(/**string*/keyValue) {
     if (keyValue) {
       key_value = keyValue.split('=');
       key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      
+      if (obj.hasOwnProperty(key) )
+      {
+        var innerObj = obj[key];
+        var value = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+        if (isArray(innerObj))
+        {
+          innerObj.push(value);                    
+        }
+        else
+        {
+          var newArray = [];
+          newArray.push(innerObj);
+          newArray.push(value);
+          obj[key] = newArray;
+        }
+      }
+      else
+      {
+        obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      }
     }
   });
   return obj;
