@@ -354,6 +354,8 @@ var $AnimatorProvider = function() {
 
             // $window.setTimeout(beginAnimation, 0); this was causing the element not to animate
             // keep at 1 for animation dom rerender
+            var cssAnimationsPerformed = false,
+                jsAnimationsPerformed = false;
             $window.setTimeout(beginAnimation, 1);
           }
 
@@ -369,13 +371,9 @@ var $AnimatorProvider = function() {
             if(done.run) return;
 
             element.addClass(activeClassName);
-            if (animations.length > 0) {
-              forEach(animations, function(animation, index) {
-                animation.start(element, function() {
-                  progress(index);
-                }, animation.memo);
-              });
-            } else if (isFunction($window.getComputedStyle)) {
+            var duration = 0;
+
+            if (isFunction($window.getComputedStyle)) {
               //one day all browsers will have these properties
               var w3cAnimationProp = 'animation';
               var w3cTransitionProp = 'transition';
@@ -386,8 +384,7 @@ var $AnimatorProvider = function() {
 
               var durationKey = 'Duration',
                   delayKey = 'Delay',
-                  animationIterationCountKey = 'IterationCount',
-                  duration = 0;
+                  animationIterationCountKey = 'IterationCount';
 
               //we want all the styles defined before and after
               var ELEMENT_NODE = 1;
@@ -418,20 +415,50 @@ var $AnimatorProvider = function() {
                                       duration);
                 }
               });
-              $window.setTimeout(done, duration * 1000);
-            } else {
-              done();
             }
+            else {
+              done();
+              return;
+            }
+
+            cssAnimationsPerformed = duration == 0;
+            jsAnimationsPerformed = animations.length == 0;
+
+            if (animations.length > 0) {
+              forEach(animations, function(animation, index) {
+                animation.start(element, function() {
+                  progress(index);
+                }, animation.memo);
+              });
+
+              //in the event that there are no CSS animations, but there
+              //are JS animations, then it's pointless to have an
+              //additional setTimeout operation since duration == 0
+              if(cssAnimationsPerformed) return;
+            }
+
+            $window.setTimeout(function() {
+              progress(-1); 
+            }, duration * 1000);
           }
 
           function progress(index) {
-            animations[index].done = true;
-            for(var i=0;i<animations.length;i++) {
-              if(!animations[index].done) {
-                return;
+            if(index == -1) {
+              cssAnimationsPerformed = true;
+            }
+            if(index >= 0) {
+              jsAnimationsPerformed = true;
+              animations[index].done = true;
+              for(var i=0;i<animations.length;i++) {
+                if(!animations[index].done) {
+                  jsAnimationsPerformed = false;
+                  break;
+                }
               }
             }
-            done();
+            if(cssAnimationsPerformed && jsAnimationsPerformed) {
+              done();
+            }
           };
 
           function done() {

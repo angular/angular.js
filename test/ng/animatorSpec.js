@@ -445,6 +445,32 @@ describe("$animator", function() {
         expect(element.hasClass('custom-long-delay')).toBe(false);
         expect(element.hasClass('custom-long-delay-active')).toBe(false);
     }));
+
+    it("should allow both multiple JS and CSS animations which run in parallel",
+      inject(function($animator, $rootScope, $compile, $sniffer, _$rootElement_) {
+      $rootElement = _$rootElement_;
+
+      $animator.enabled(true);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom-delay custom-long-delay\'}'
+      });
+
+      var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+      var style = 'transition: 1s linear all;' +
+                  vendorPrefix + 'transition: 1s linear all;'
+
+      element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+      $rootScope.$digest();
+
+      animator.show(element); 
+
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(2000).process(); //1st JavaScript Animation
+      window.setTimeout.expect(20000).process(); //2nd JavaScript Animation
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1000).process(); //CSS animation
+      }
+    }));
   });
 
   describe("with CSS3", function() {
