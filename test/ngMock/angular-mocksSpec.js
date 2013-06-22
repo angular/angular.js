@@ -182,6 +182,14 @@ describe('ngMock', function() {
     it('should provide error method', function() {
       expect(function() { $log.error(''); }).not.toThrow();
     });
+    
+    it('should provide debug method', function() {
+      expect(function() { $log.error(''); }).not.toThrow();
+    });
+
+    it('should provide debugEnabled method', function() {
+      expect(function() { $log.debugEnabled(true); }).not.toThrow();
+    });
 
     it('should store log messages', function() {
       $log.log('fake log');
@@ -202,6 +210,11 @@ describe('ngMock', function() {
       $log.error('fake log');
       expect($log.error.logs).toContain(['fake log']);
     });
+    
+    it('should store error messages', function() {
+      $log.error('fake log');
+      expect($log.debug.logs).toContain(['fake log']);
+    });
 
     it('should assertEmpty', function(){
       try {
@@ -209,6 +222,7 @@ describe('ngMock', function() {
         $log.warn(Error('MyWarn'));
         $log.info(Error('MyInfo'));
         $log.log(Error('MyLog'));
+        $log.debug(Error('MyDebug'));
         $log.assertEmpty();
       } catch (error) {
         error = error.message || error;
@@ -226,6 +240,7 @@ describe('ngMock', function() {
       $log.warn(Error('MyWarn'));
       $log.info(Error('MyInfo'));
       $log.log(Error('MyLog'));
+      $log.debug(Error('MyDebug'));
       $log.reset();
       var passed = false;
       try {
