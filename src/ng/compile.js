@@ -1157,6 +1157,16 @@ function $CompileProvider($provide) {
     }
 
 
+    function isTrustedContext(node, attrNormalizedName) {
+      // maction[xlink:href] can source SVG.  It's not limited to <maction>.
+      if (attrNormalizedName == "xlinkHref" ||
+          (nodeName_(node) != "IMG" && (attrNormalizedName == "src" ||
+                                        attrNormalizedName == "ngSrc"))) {
+        return true;
+      }
+    }
+
+
     function addAttrInterpolateDirective(node, directives, value, name) {
       var interpolateFn = $interpolate(value, true);
 
@@ -1177,7 +1187,7 @@ function $CompileProvider($provide) {
 
           // we need to interpolate again, in case the attribute value has been updated
           // (e.g. by another directive's compile function)
-          interpolateFn = $interpolate(attr[name], true);
+          interpolateFn = $interpolate(attr[name], true, isTrustedContext(node, name));
 
           // if attribute was updated so that there is no interpolation going on we don't want to
           // register any observers
