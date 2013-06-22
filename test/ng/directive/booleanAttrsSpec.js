@@ -89,18 +89,40 @@ describe('boolean attr directives', function() {
 
 describe('ngSrc', function() {
   it('should interpolate the expression and bind to src', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+    var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
 
     $rootScope.$digest();
-    expect(element.attr('src')).toEqual('some/');
+    expect(element.attr('src')).toBeUndefined();
 
     $rootScope.$apply(function() {
       $rootScope.id = 1;
     });
-    expect(element.attr('src')).toEqual('some/1');
+    expect(element.attr('src')).toEqual('1');
 
     dealoc(element);
   }));
+
+  describe('isTrustedContext', function() {
+    it('should NOT interpolate a multi-part expression for non-img src attribute', inject(function($compile, $rootScope) {
+      expect(function() {
+          var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+          dealoc(element);
+        }).toThrow(
+            "[$interpolate:noconcat] Error while interpolating: some/{{id}}\nYou may not use " +
+            "multiple expressions when interpolating this expression.");
+    }));
+
+    it('should interpolate a multi-part expression for regular attributes', inject(function($compile, $rootScope) {
+      var element = $compile('<div foo="some/{{id}}"></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('foo')).toBe('some/');
+      $rootScope.$apply(function() {
+        $rootScope.id = 1;
+      });
+      expect(element.attr('foo')).toEqual('some/1');
+    }));
+
+  });
 
   if (msie) {
     it('should update the element property as well as the attribute', inject(
