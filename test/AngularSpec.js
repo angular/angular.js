@@ -909,6 +909,10 @@ describe('angular', function() {
     it('should not serialize scope instances', inject(function($rootScope) {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');
     }));
+
+    it('should serialize undefined as undefined', function() {
+      expect(toJson(undefined)).toEqual(undefined);
+    });
   });
 
 });
