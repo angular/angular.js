@@ -762,6 +762,7 @@ function toJsonReplacer(key, value) {
  * @returns {string} Jsonified string representing `obj`.
  */
 function toJson(obj, pretty) {
+  if (typeof obj === 'undefined') return undefined;
   return JSON.stringify(obj, toJsonReplacer, pretty ? '  ' : null);
 }
 
