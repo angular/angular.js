@@ -50,14 +50,20 @@ exports.copyTemplate = function(filename) {
  * @param to{string} path of where the copied file should be stored
  * @param  transform{function=} transfromation function to be applied before return
  */
-exports.copy = function(from, to, transform, transformParams) {
+exports.copy = function(from, to, transform) {
+  var transformArgs = Array.prototype.slice.call(arguments, 3);
+
   from = pathUtils.normalize(from);
   to = pathUtils.normalize(to);
 
   // We have to use binary reading, Since some characters are unicode.
   return qfs.read(from, 'b').then(function(content) {
     if (transform) {
-      content = transform.call(null, content.toString(), transformParams);
+      // Pass any extra arguments, e.g.
+      // `copy(from, to, transform, extra1, extra2, ...)`
+      // to the transform function
+      transformArgs.unshift(content.toString());
+      content = transform.apply(null, transformArgs);
     }
     return output(to, content);
   });
