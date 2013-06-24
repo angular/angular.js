@@ -23,8 +23,8 @@ You can think of Angular expressions as JavaScript expressions with following di
     evaluation, unlike in JavaScript where the expressions are evaluated against the global
     `window`.
 
-  * **Forgiving:** expression evaluation is forgiving to undefined and null, unlike in JavaScript,
-    where such evaluations generate `NullPointerExceptions`.
+  * **Forgiving:** expression evaluation is forgiving to `undefined` and `null`, unlike in JavaScript,
+    where trying to evaluate undefined properties can generate `ReferenceError` or `TypeError`.
 
   * **No Control Flow Statements:** you cannot do any of the following in angular expression:
     conditionals, loops, or throw.
