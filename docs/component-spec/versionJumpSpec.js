@@ -83,18 +83,18 @@ describe('DocsApp', function() {
         expect(window.location).toBe('old');
 
         $scope.jumpToDocsVersion('2.1.3');
-        expect(window.location).toBe('http://code.angularjs.org/2.1.3/docs');
+        expect(window.location).toBe('http://code.angularjs.org/2.1.3/docs/index.html');
       }); 
 
       it('should jump to the older versions of current docs for version >= 1.0.2', function() {
         $scope.jumpToDocsVersion('1.0.1');
-        expect(window.location).toBe('http://code.angularjs.org/1.0.1/docs-1.0.1');
+        expect(window.location).toBe('http://code.angularjs.org/1.0.1/docs-1.0.1/index.html');
 
         $scope.jumpToDocsVersion('1.0.2');
-        expect(window.location).toBe('http://code.angularjs.org/1.0.2/docs');
+        expect(window.location).toBe('http://code.angularjs.org/1.0.2/docs/index.html');
 
         $scope.jumpToDocsVersion('1.1.2');
-        expect(window.location).toBe('http://code.angularjs.org/1.1.2/docs');
+        expect(window.location).toBe('http://code.angularjs.org/1.1.2/docs/index.html');
       });
 
       it('should use the current docs.angularjs.org page when the selected version is the last stable version', function() {
@@ -114,7 +114,7 @@ describe('DocsApp', function() {
         });
 
         $scope.jumpToDocsVersion('1.1.1');
-        expect(window.location).toBe('http://code.angularjs.org/1.1.1/docs');
+        expect(window.location).toBe('http://code.angularjs.org/1.1.1/docs/index.html');
         $scope.jumpToDocsVersion('1.2.1');
         expect(window.location).toBe('http://docs.angularjs.org');
       });

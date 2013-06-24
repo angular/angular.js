@@ -30,7 +30,7 @@ docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', funct
       var url = 'http://' +
                   (isLastStable ?
                     'docs.angularjs.org' :
-                    'code.angularjs.org/' + version.version + '/' + docsPath);
+                    'code.angularjs.org/' + version.version + '/' + docsPath + '/index.html');
 
       $window.location = url;
     }
