@@ -334,12 +334,12 @@ describe('parser', function() {
       it('should support property names that collide with native object properties', function() {
         // regression
         scope.watch = 1;
-        scope.constructor = 2;
-        scope.toString = 3;
+        scope.toString = function toString() {
+          return "custom toString";
+        };
 
         expect(scope.$eval('watch', scope)).toBe(1);
-        expect(scope.$eval('constructor', scope)).toBe(2);
-        expect(scope.$eval('toString', scope)).toBe(3);
+        expect(scope.$eval('toString()', scope)).toBe('custom toString');
       });
 
       it('should evaluate grouped expressions', function() {
@@ -554,6 +554,114 @@ describe('parser', function() {
         expect(scope.$eval('bool.toString()')).toBe('false');
       });
 
+      describe('unsafe access', function() {
+        it('should NOT allow access to Function constructor in getter', function() {
+          expect(function() {
+            scope.$eval('{}.toString.constructor');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString.constructor'));
+
+          expect(function() {
+            scope.$eval('{}.toString.constructor("alert(1)")');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString.constructor("alert(1)")'));
+
+          expect(function() {
+            scope.$eval('[].toString.constructor.foo');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: [].toString.constructor.foo'));
+
+          expect(function() {
+            scope.$eval('{}.toString["constructor"]');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString["constructor"]'));
+          expect(function() {
+            scope.$eval('{}["toString"]["constructor"]');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}["toString"]["constructor"]'));
+
+          scope.a = [];
+          expect(function() {
+            scope.$eval('a.toString.constructor', scope);
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: a.toString.constructor'));
+          expect(function() {
+            scope.$eval('a.toString["constructor"]', scope);
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: a.toString["constructor"]'));
+        });
+
+        it('should NOT allow access to Function constructor in setter', function() {
+          expect(function() {
+            scope.$eval('{}.toString.constructor = 1');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString.constructor = 1'));
+          expect(function() {
+            scope.$eval('{}.toString.constructor.a = 1');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString.constructor.a = 1'));
+
+          expect(function() {
+            scope.$eval('{}.toString["constructor"] = 1');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString["constructor"] = 1'));
+          expect(function() {
+            scope.$eval('{}.toString["constructor"]["a"] = 1');
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: {}.toString["constructor"]["a"] = 1'));
+
+          scope.a = [];
+          expect(function() {
+            scope.$eval('a.toString.constructor = 1', scope);
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: a.toString.constructor = 1'));
+        });
+      });
+
+      describe('overriding constructor', function() {
+        it('should evaluate grouped expressions', function() {
+          scope.foo = function foo() {
+            return "foo";
+          };
+          // When not overridden, access should be restricted both by the dot operator and by the
+          // index operator.
+          expect(function() {
+            scope.$eval('foo.constructor()', scope)
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: foo.constructor()'));
+          expect(function() {
+            scope.$eval('foo["constructor"]()', scope)
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: foo["constructor"]()'));
+
+          // User defined value assigned to constructor.
+          scope.foo.constructor = function constructor() {
+            return "custom constructor";
+          }
+          // Dot operator should still block it.
+          expect(function() {
+            scope.$eval('foo.constructor()', scope)
+          }).toThrow(new Error(
+                  '[$parse:unsafemember] Referencing constructor is disallowed in Angular ' +
+                  'expressions: foo.constructor()'));
+          // However, the index operator should allow it.
+          expect(scope.$eval('foo["constructor"]()', scope)).toBe('custom constructor');
+        });
+      });
 
       it('should call the function from the received instance and not from a new one', function() {
         var n = 0;
