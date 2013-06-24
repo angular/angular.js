@@ -1,5 +1,7 @@
 'use strict';
 
+var $interpolateMinErr = minErr('$interpolate');
+
 /**
  * @ngdoc object
  * @name ng.$interpolateProvider
@@ -82,6 +84,12 @@ function $InterpolateProvider() {
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
      *    embedded expression in order to return an interpolation function. Strings with no
      *    embedded expression will return null for the interpolation function.
+     * @param {boolean=} isTrustedContext when true, requires that the interpolation string does not
+     *    contain any concatenations - i.e. the interpolation string is a single expression.
+     *    Interpolations for *[src] and *[ng-src] (except IMG, since itwhich sanitizes its value)
+     *    pass true for this parameter.  This helps avoid hunting through the template code to
+     *    figure out of some iframe[src], object[src], etc. was interpolated with a concatenation
+     *    that ended up introducing a XSS.
      * @returns {function(context)} an interpolation function which is used to compute the interpolated
      *    string. The function has these parameters:
      *
@@ -89,7 +97,7 @@ function $InterpolateProvider() {
      *      against.
      *
      */
-    function $interpolate(text, mustHaveExpression) {
+    function $interpolate(text, mustHaveExpression, isTrustedContext) {
       var startIndex,
           endIndex,
           index = 0,
@@ -121,6 +129,18 @@ function $InterpolateProvider() {
         length = 1;
       }
 
+      // Concatenating expressions makes it hard to reason about whether some combination of concatenated
+      // values are unsafe to use and could easily lead to XSS.  By requiring that a single
+      // expression be used for iframe[src], object[src], etc., we ensure that the value that's used
+      // is assigned or constructed by some JS code somewhere that is more testable or make it
+      // obvious that you bound the value to some user controlled value.  This helps reduce the load
+      // when auditing for XSS issues.
+      if (isTrustedContext && parts.length > 1) {
+          throw $interpolateMinErr('noconcat',
+              "Error while interpolating: {0}\nYou may not use multiple expressions when " +
+              "interpolating this expression.", text);
+      }
+
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
         fn = function(context) {
@@ -139,7 +159,7 @@ function $InterpolateProvider() {
             return concat.join('');
           }
           catch(err) {
-            var newErr = minErr('$interpolate')('interr', "Can't interpolate: {0}\n{1}", text, err.toString());
+            var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text, err.toString());
             $exceptionHandler(newErr);
           }
         };
