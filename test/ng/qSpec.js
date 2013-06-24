@@ -251,6 +251,10 @@ describe('q', function() {
         mockNextTick.flush();
         expect(logStr()).toBe('success1(foo); success2(foo)');
       });
+
+      it('should return the promise object', function() {
+        expect(deferred.resolve()).toBe(promise);
+      });
     });
 
 
@@ -337,6 +341,10 @@ describe('q', function() {
         rejector('detached');
         mockNextTick.flush();
         expect(logStr()).toBe('error(detached)');
+      });
+
+      it('should return the promise object', function() {
+        expect(deferred.reject()).toBe(promise);
       });
     });
 
