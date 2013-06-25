@@ -4,6 +4,20 @@ module.exports = function(config) {
     autoWatch: true,
     logLevel: config.LOG_INFO,
     logColors: true,
-    browsers: ['Chrome']
+    browsers: ['Chrome'],
+
+    // config for Travis CI
+    sauceLabs: {
+      testName: 'AngularJS',
+      startConnect: false,
+      tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+    },
+
+    customLaunchers: {
+      'SL_Chrome': {
+        base: 'SauceLabs',
+        browserName: 'chrome'
+      }
+    }
   });
 };
