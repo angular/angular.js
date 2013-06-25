@@ -65,9 +65,9 @@
  * **Methods**
  *
  * - `resolve(value)` – resolves the derived promise with the `value`. If the value is a rejection
- *   constructed via `$q.reject`, the promise will be rejected instead.
+ *   constructed via `$q.reject`, the promise will be rejected instead. Returns the promise object.
  * - `reject(reason)` – rejects the derived promise with the `reason`. This is equivalent to
- *   resolving it with a rejection constructed via `$q.reject`.
+ *   resolving it with a rejection constructed via `$q.reject`. Returns the promise object.
  *
  * **Properties**
  *
@@ -204,11 +204,12 @@ function qFactory(nextTick, exceptionHandler) {
             });
           }
         }
+        return this.promise;
       },
 
 
       reject: function(reason) {
-        deferred.resolve(reject(reason));
+        return deferred.resolve(reject(reason));
       },
 
 
