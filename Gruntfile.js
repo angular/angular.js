@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.loadNpmTasks('grunt-contrib-jasmine-node');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadTasks('lib/grunt');
 
@@ -156,6 +157,9 @@ module.exports = function(grunt) {
       process: ['build/docs/*.html', 'build/docs/.htaccess']
     },
 
+    "jasmine-node": {
+      run: { spec: 'docs/spec' }
+    },
 
     copy: {
       i18n: {
@@ -183,6 +187,7 @@ module.exports = function(grunt) {
 
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
+  grunt.registerTask('test:docgen', ['jasmine-node']);
   grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
