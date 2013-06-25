@@ -33,4 +33,6 @@ module.exports = function(config) {
       suite: 'Docs'
     }
   });
+
+  config.sauceLabs.testName = 'AngularJS: docs';
 };

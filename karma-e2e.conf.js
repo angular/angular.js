@@ -22,4 +22,6 @@ module.exports = function(config) {
       suite: 'E2E'
     }
   });
+
+  config.sauceLabs.testName = 'AngularJS: e2e';
 };
