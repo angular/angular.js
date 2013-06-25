@@ -131,15 +131,15 @@ describe('ngSrc', function() {
       // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
       // to set the property as well to achieve the desired effect
 
-      var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+      var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
 
       $rootScope.$digest();
-      expect(element.prop('src')).toEqual('some/');
+      expect(element.prop('src')).toBeUndefined();
 
       $rootScope.$apply(function() {
         $rootScope.id = 1;
       });
-      expect(element.prop('src')).toEqual('some/1');
+      expect(element.prop('src')).toEqual('1');
 
       dealoc(element);
     }));
