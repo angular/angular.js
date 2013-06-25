@@ -278,7 +278,7 @@ angular.module('ngResource', ['ng']).
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
-      'query':  {method:'GET', isArray:true},
+      'query':  {method:'GET', isArray:true, canAssociate:true},
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'}
     };
@@ -337,7 +337,7 @@ angular.module('ngResource', ['ng']).
     }
 
     Route.prototype = {
-      setUrlParams: function(config, params, actionUrl) {
+      setUrlParams: function(config, params, actionUrl, actionCanAssociate) {
         var self = this,
             url = actionUrl || self.template,
             val,
@@ -374,8 +374,33 @@ angular.module('ngResource', ['ng']).
         // then replace collapse `/.` if found in the last URL path segment before the query
         // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
         url = url.replace(/\/\.(?=\w+($|\?))/, '.');
+        // apply association if `|` and `canAssociate` exists.
+        // otherwise fallback to association url.
+        // for `query` E.G. `http://url.com/users/1|http://url.com/payments` becomes `http://url.com/users/1/payments`
+        // for anything else E.G. `http://url.com/users/1|http://url.com/payments/2` becomes `http://url.com/payments/2`
+        url = url.split('|');
+        if (url.length === 2) {
+          if (actionCanAssociate) {
+            // Append association.
+            var t1 = url[0].split('/'),
+              t2 = url[1].split('/'),
+              i = 0,
+              extend = '';
+
+            for (i; i < t2.length; i++) {
+              if (t1[i] !== t2[i]) {
+                extend += '/' + t2[i];
+              }
+            }
+
+            url[1] = extend;
+          } else {
+            // Fallback to association url.
+            delete url[0];
+          }
+        }
         // replace escaped `/\.` with `/.`
-        config.url = url.replace(/\/\\\./, '/.');
+        config.url = url.join('').replace(/\/\\\./, '/.');
 
 
         // set params - delegate param encoding to $http
@@ -389,7 +414,7 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function ResourceFactory(url, paramDefaults, actions) {
+    function ResourceFactory(url, paramDefaults, actions, associations) {
       var route = new Route(url);
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
@@ -465,7 +490,7 @@ angular.module('ngResource', ['ng']).
           });
 
           httpConfig.data = data;
-          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
+          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url, action.canAssociate);
 
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
@@ -523,7 +548,19 @@ angular.module('ngResource', ['ng']).
         };
       });
 
-      Resource.bind = function(additionalParamDefaults){
+      forEach(associations, function(association, name) {
+        Resource[name] = association.bind({}, url, association.getUrl());
+      });
+
+      Resource.getUrl = function() {
+        return url;
+      };
+
+      Resource.bind = function(additionalParamDefaults, baseUrl, extendUrl){
+        if (baseUrl && extendUrl) {
+          url = baseUrl + '|' + extendUrl;
+        }
+
         return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
       };
 
