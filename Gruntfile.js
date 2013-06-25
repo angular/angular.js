@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.loadNpmTasks('grunt-contrib-jasmine-node');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadTasks('lib/grunt');
 
@@ -142,13 +143,13 @@ module.exports = function(grunt) {
 
 
     min: {
-      angular: 'build/angular.js',
-      cookies: 'build/angular-cookies.js',
-      loader: 'build/angular-loader.js',
-      mobile: 'build/angular-mobile.js',
-      resource: 'build/angular-resource.js',
-      route: 'build/angular-route.js',
-      sanitize: 'build/angular-sanitize.js'
+      angular: 'build/angular.strip.js',
+      cookies: 'build/angular-cookies.strip.js',
+      loader: 'build/angular-loader.strip.js',
+      mobile: 'build/angular-mobile.strip.js',
+      resource: 'build/angular-resource.strip.js',
+      route: 'build/angular-route.strip.js',
+      sanitize: 'build/angular-sanitize.strip.js'
     },
 
 
@@ -177,15 +178,38 @@ module.exports = function(grunt) {
     write: {
       versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
       versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
+    },
+
+    'strip-errors': {
+      'build/errors.json': {
+        files: {
+          'build/angular.strip.js': 'build/angular.js',
+          'build/angular-cookies.strip.js': 'build/angular-cookies.js',
+          'build/angular-loader.strip.js': 'build/angular-loader.js',
+          'build/angular-mobile.strip.js': 'build/angular-mobile.js',
+          'build/angular-mocks.strip.js': 'build/angular-mocks.js',
+          'build/angular-resource.strip.js': 'build/angular-resource.js',
+          'build/angular-route.strip.js': 'build/angular-route.js',
+          'build/angular-sanitize.strip.js': 'build/angular-sanitize.js',
+          'build/angular-scenario.strip.js': 'build/angular-scenario.js'
+        },
+        url: 'http://docs.angularjs.org/minerr/'
+      }
+    },
+
+    'jasmine-node': {
+      run: {
+        spec: 'lib/minerr/spec'
+      },
+      executable: './node_modules/.bin/jasmine-node'
     }
   });
 
-
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
-  grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
+  grunt.registerTask('minify', ['shell:bower','clean', 'build', 'strip-errors', 'minall', 'post-minify']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'strip-errors', 'minall', 'post-minify', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
