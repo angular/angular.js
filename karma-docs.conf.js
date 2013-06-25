@@ -1,36 +1,36 @@
-files = [
-  JASMINE,
-  JASMINE_ADAPTER,
+var sharedConfig = require('./karma-shared.conf');
 
-  'build/docs/components/jquery.js',
-  'test/jquery_remove.js',
+module.exports = function(config) {
+  sharedConfig(config);
 
-  'build/angular.js',
-  'build/angular-cookies.js',
-  'build/angular-mocks.js',
-  'build/angular-resource.js',
-  'build/angular-mobile.js',
-  'build/angular-sanitize.js',
-  'build/angular-route.js',
+  config.set({
+    files: [
+      'build/docs/components/jquery.js',
+      'test/jquery_remove.js',
 
-  'build/docs/components/lib/lunr.js/lunr.js',
-  'build/docs/components/lib/google-code-prettify/src/prettify.js',
-  'build/docs/components/showdown.js',
+      'build/angular.js',
+      'build/angular-cookies.js',
+      'build/angular-mocks.js',
+      'build/angular-resource.js',
+      'build/angular-mobile.js',
+      'build/angular-sanitize.js',
+      'build/angular-route.js',
 
-  'build/docs/components/angular-bootstrap.js',
-  'build/docs/components/angular-bootstrap-prettify.js',
-  'build/docs/js/docs.js',
-  'build/docs/docs-data.js',
+      'build/docs/components/lib/lunr.js/lunr.js',
+      'build/docs/components/lib/google-code-prettify/src/prettify.js',
+      'build/docs/components/showdown.js',
 
-  'docs/component-spec/*.js'
-];
+      'build/docs/components/angular-bootstrap.js',
+      'build/docs/components/angular-bootstrap-prettify.js',
+      'build/docs/js/docs.js',
+      'build/docs/docs-data.js',
 
-autoWatch = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
+      'docs/component-spec/*.js'
+    ],
 
-junitReporter = {
-  outputFile: 'test_out/docs.xml',
-  suite: 'Docs'
+    junitReporter: {
+      outputFile: 'test_out/docs.xml',
+      suite: 'Docs'
+    }
+  });
 };
