@@ -651,6 +651,12 @@ describe('jqLite', function() {
       expect(element.text('xyz') == element).toBeTruthy();
       expect(element.text()).toEqual('xyz');
     });
+
+   it('should concatenate texts for mixed content html', function() {
+      var element = jqLite('<span> <div>ab</div> <span>c</span> </span>');
+      expect(element.contents().text()).toEqual(' ab c ');
+   });
+
   });
 
 

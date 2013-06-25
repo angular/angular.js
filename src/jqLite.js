@@ -472,7 +472,7 @@ forEach({
           return element.textContent;
         }
         element.textContent = value;
-      }, {$dv:''}),
+      }, {$dv:'', $join: function(array) { return array.join(''); }}),
 
   val: function(element, value) {
     if (isUndefined(value)) {
@@ -495,7 +495,7 @@ forEach({
    * Properties: writes return selection, reads return first value
    */
   JQLite.prototype[name] = function(arg1, arg2) {
-    var i, key;
+    var i, key, array = [];
 
     // JQLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
     // in a way that survives minification.
@@ -516,9 +516,17 @@ forEach({
         // return self for chaining
         return this;
       } else {
-        // we are a read, so read the first child.
-        if (this.length)
+        if (this.length) {
+          // we are a read, if it defines a $join function use it, if not read the first child.
+          if (fn.$join) {
+            for(i=0; i < this.length; i++) {
+              array.push(fn(this[i], arg1, arg2));
+            }
+            return fn.$join(array);
+          }
+         
           return fn(this[0], arg1, arg2);
+        }
       }
     } else {
       // we are a write, so apply to all children
