@@ -489,21 +489,25 @@ forEach({
   })(),
 
   val: function(element, value) {
-    if(element.tagName === 'select' && element.getAttribute('multiple')) {
-        var result = [], options = select && select.options, opt, i;        
-        for (i=0, iLen=options.length; i<iLen; i++) {
-            opt = options[i];    
-            if (opt.selected) {
-                result.push(opt.value || opt.text);
+    
+    if (isUndefined(value)) {
+        if(element.tagName === 'SELECT') {
+            var result = [], options = element && element.options, opt, i, iLen;
+            for (i=0, iLen=options.length; i<iLen; i++) {
+                opt = options[i];
+                if (opt.selected) {
+                    result.push(opt.value || opt.text);
+                }
+            }
+            if(result.length <= 1) {
+                return element.value;
+            } else {
+                return result;
             }
         }
-        element.value = result;
-    } else {
-        if (isUndefined(value)) {
-            return element.value;
-        }
-        element.value = value;
+        return element.value;
     }
+    element.value = value;
   },
 
   html: function(element, value) {
