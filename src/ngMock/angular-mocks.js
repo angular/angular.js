@@ -851,10 +851,13 @@ angular.mock.dump = function(object) {
    }
 
    // testing controller
-   var $httpBackend;
+   var $httpBackend,
+       $http;
 
    beforeEach(inject(function($injector) {
+     // No configuration necessary; $httpBackend replaces the normal $http backend when the mock library is loaded
      $httpBackend = $injector.get('$httpBackend');
+     $http = $injector.get('$http');
 
      // backend definition common for all tests
      $httpBackend.when('GET', '/auth.py').respond({userId: 'userX'}, {'A-Token': 'xxx'});
@@ -869,6 +872,7 @@ angular.mock.dump = function(object) {
 
    it('should fetch authentication token', function() {
      $httpBackend.expectGET('/auth.py');
+     new MyController({}, $http);
      var controller = scope.$new(MyController);
      $httpBackend.flush();
    });
