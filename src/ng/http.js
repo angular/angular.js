@@ -168,6 +168,8 @@ function $HttpProvider() {
    */
   var responseInterceptorFactories = this.responseInterceptors = [];
 
+  var promiseDecorators = this.promiseDecorators = [];
+
   this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
       function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
@@ -702,6 +704,10 @@ function $HttpProvider() {
 
         promise = promise.then(thenFn, rejectFn);
       }
+
+      forEach(promiseDecorators, function(decorator) {
+        decorator(promise);
+      });
 
       promise.success = function(fn) {
         promise.then(function(response) {
