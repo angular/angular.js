@@ -684,6 +684,26 @@ describe('jqLite', function() {
       expect(input[0].value).toEqual('abc');
       expect(input.val()).toEqual('abc');
     });
+
+    it('should get an array of selected elements from a multi select', function () {
+      expect(jqLite(
+        '<select multiple>' +
+          '<option selected>test 1</option>' +
+          '<option selected>test 2</option>' +
+        '</select>').val()).toEqual(['test 1', 'test 2']);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<option selected>test 1</option>' +
+          '<option>test 2</option>' +
+        '</select>').val()).toEqual(['test 1']);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<option>test 1</option>' +
+          '<option>test 2</option>' +
+        '</select>').val()).toEqual(null);
+    });
   });
 
 
