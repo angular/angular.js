@@ -490,7 +490,7 @@ forEach({
 
   val: function(element, value) {
     if (isUndefined(value)) {
-      if(element.tagName === 'SELECT') {
+      if(element.tagName === 'SELECT' && element.getAttribute('multiple') !== null) {
         var result = [], options = element && element.options, opt, i, iLen;
         for (i=0, iLen=options.length; i<iLen; i++) {
           opt = options[i];
