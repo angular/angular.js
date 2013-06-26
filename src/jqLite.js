@@ -489,8 +489,23 @@ forEach({
   })(),
 
   val: function(element, value) {
+    
     if (isUndefined(value)) {
-      return element.value;
+        if(element.tagName === 'SELECT') {
+            var result = [], options = element && element.options, opt, i, iLen;
+            for (i=0, iLen=options.length; i<iLen; i++) {
+                opt = options[i];
+                if (opt.selected) {
+                    result.push(opt.value || opt.text);
+                }
+            }
+            if(result.length <= 1) {
+                return element.value;
+            } else {
+                return result;
+            }
+        }
+        return element.value;
     }
     element.value = value;
   },
