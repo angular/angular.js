@@ -38,12 +38,17 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     url = url || $browser.url();
 
     if (lowercase(method) == 'jsonp') {
-      var callbackId = '_' + (callbacks.counter++).toString(36);
+      var callbackId = (/JSON_CALLBACK\((.*)\)/).exec(url) || ('_' + (callbacks.counter++).toString(36));
+      
+      if (callbackId.constructor.name === "Array") {
+        callbackId = callbackId[1];
+      }
+
       callbacks[callbackId] = function(data) {
         callbacks[callbackId].data = data;
       };
-
-      var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+      
+      var jsonpDone = jsonpReq(url.replace(/JSON_CALLBACK\((.*)\)|JSON_CALLBACK/, 'angular.callbacks.' + callbackId),
           function() {
         if (callbacks[callbackId].data) {
           completeRequest(callback, 200, callbacks[callbackId].data);
