@@ -4,7 +4,7 @@ files = ['build/angular-scenario.js', ANGULAR_SCENARIO_ADAPTER, 'build/docs/docs
 
 autoWatch = false;
 singleRun = true;
-logLevel = LOG_INFO;
+logLevel = LOG_DEBUG;
 logColors = true;
 browsers = ['Chrome'];
 
