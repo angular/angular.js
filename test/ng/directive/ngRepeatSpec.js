@@ -67,8 +67,7 @@ describe('ngRepeat', function() {
                                       "<a name='x'>c</a>" +
                                     "</p>";
 
-    var htmlCollection = document.getElementsByTagName('a')
-    scope.items = htmlCollection;
+    scope.items = document.getElementsByTagName('a');
     scope.$digest();
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('x;y;x;');
@@ -442,7 +441,7 @@ describe('ngRepeat', function() {
     scope.array = ['b', 'a'];
     scope.$digest();
 
-    var lis = element.find('li');
+    lis = element.find('li');
     expect(lis.eq(0).data('mark')).toEqual('b');
     expect(lis.eq(1).data('mark')).toEqual('a');
   });
@@ -492,7 +491,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -512,7 +511,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -548,6 +547,57 @@ describe('ngRepeat', function() {
       expect(newLis[0]).toEqual(lis[2]);
       expect(newLis[1]).toEqual(lis[0]);
       expect(newLis[2]).toEqual(lis[1]);
+    });
+  });
+
+  describe('filter', function() {
+    beforeEach(function() {
+      scope.items = [{
+          name: 'ABC',
+          num: 1
+      }, {
+          name: 'ABD',
+          num: 2
+      }, {
+          name: 'BBC',
+          num: 3
+      }, {
+          name: 'CCC',
+          num: 4
+      }, {
+          name: 'ZBB',
+          num: 5
+      }];
+    });
+
+    it('should pass collection to filter', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="item in items | filter:\'A\'">{{item.name}};</li>' +
+          '</ul>')(scope);
+
+      scope.$digest();
+      expect(element.text()).toEqual('ABC;ABD;');
+    });
+
+    it('should track collection and pass collection to filter', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="item in items track by $id(item) | filter:\'Z\'">{{item.name}};</li>' +
+          '</ul>')(scope);
+
+      scope.$digest();
+      expect(element.text()).toEqual('ZBB;');
+    });
+
+    it('should iterate using key,value and pass collection to filter', function() {
+      element = $compile(
+          '<ul>' +
+              '<li ng-repeat="(key, value) in items | filter:\'C\'">{{value.name}};</li>' +
+          '</ul>')(scope);
+
+      scope.$digest();
+      expect(element.text()).toEqual('ABC;BBC;CCC;');
     });
   });
 });
@@ -691,7 +741,7 @@ describe('ngRepeat ngAnimate', function() {
       $rootScope.$digest();
 
       //the last element gets pushed down when it animates
-      var kids  = element.children();
+      kids  = element.children();
       var first = jqLite(kids[0]);
       var left  = jqLite(kids[1]);
       var right = jqLite(kids[2]);
