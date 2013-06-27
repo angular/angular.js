@@ -9,6 +9,12 @@ describe('ngClass', function() {
   });
 
 
+  beforeEach(module(function() {
+    return function($animator) {
+      $animator.enabled(false);
+    }
+  }));
+
   it('should add new and remove old classes dynamically', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
@@ -303,4 +309,86 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+  describe('ngAnimate', function() {
+
+    var window, container;
+    beforeEach(module(function($animationProvider, $provide) {
+      $provide.value('$window', window = angular.mock.createMockWindow());
+      return function($sniffer, $rootElement, $animator) {
+        container = $rootElement;
+        jqLite(document.body).append(container);
+        $animator.enabled(true);
+      };
+    }));
+
+    it("should animate a class when added", inject(function($rootScope, $compile, $rootElement, $sniffer) {
+      var element = $compile('<div class="def" ng-class="{A:on,B:off}"></div>')($rootScope);
+      container.append(element);
+
+      $rootScope.on = false;
+      $rootScope.on = false;
+
+      $rootScope.$digest();
+      expect(element.hasClass('def')).toBe(true);
+      expect(element.hasClass('A')).toBe(false);
+      expect(element.hasClass('B')).toBe(false);
+
+      //When A is on
+      $rootScope.on = true;
+      $rootScope.off = false;
+      $rootScope.$digest();
+      expect(element.hasClass('def')).toBe(true);
+      if($sniffer.transitions) {
+        expect(element.hasClass('A-add')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('A-add-active')).toBe(true);
+        window.setTimeout.expect(0).process();
+        expect(element.hasClass('A-add')).toBe(false);
+        expect(element.hasClass('A-add-active')).toBe(false);
+      }
+      expect(element.hasClass('A')).toBe(true);
+
+      //When A is off
+      $rootScope.on = false;
+      $rootScope.$digest();
+      expect(element.hasClass('def')).toBe(true);
+      if($sniffer.transitions) {
+        expect(element.hasClass('A')).toBe(true);
+        expect(element.hasClass('A-remove')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('A-remove-active')).toBe(true);
+        window.setTimeout.expect(0).process();
+        expect(element.hasClass('A-remove')).toBe(false);
+        expect(element.hasClass('A-remove-active')).toBe(false);
+      }
+      expect(element.hasClass('A')).toBe(false);
+
+      //Set B on
+      $rootScope.off = true;
+      $rootScope.$digest();
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('B')).toBe(true);
+
+      //When A is on and B is off at the same time
+      $rootScope.on = true;
+      $rootScope.off = false;
+      $rootScope.$digest();
+      expect(element.hasClass('def')).toBe(true);
+      expect(element.hasClass('B')).toBe(false); //removed right away
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process(); //cancel out the last B animation
+
+        expect(element.hasClass('A')).toBe(false); //not added yet
+        expect(element.hasClass('A-add')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('A-add-active')).toBe(true);
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('A')).toBe(true);
+    }));
+  });
 });

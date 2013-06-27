@@ -138,6 +138,16 @@ describe("$animator", function() {
             }
           }
         });
+       $animationProvider.register('custom-long-delay', function() {
+          return {
+            start: function(element, done) {
+              window.setTimeout(done, 20000);
+            },
+            cancel : function(element) {
+              element.addClass('animation-cancelled');
+            }
+          }
+        });
        $animationProvider.register('setup-memo', function() {
           return {
             setup: function(element) {
@@ -355,6 +365,34 @@ describe("$animator", function() {
       expect(element.data('foo')).toEqual('bar');
     }));
 
+    it("should ensure that the active class is not assigned if the animation is cancelled early",
+      inject(function($animator, $rootScope, $sniffer) {
+      if(!$sniffer.transitions) return;
+
+      $animator.enabled(true);
+
+      animator = $animator($rootScope, {
+        ngAnimate : '{hide: \'one\', show: \'two\'}'
+      });
+
+      animator.show(element);
+      expect(element.hasClass('two')).toBe(true);
+
+      animator.hide(element);
+      expect(element.hasClass('two')).toBe(false);
+      expect(element.hasClass('one')).toBe(true);
+      window.setTimeout.expect(1).process();
+      expect(element.hasClass('two-active')).toBe(false);
+      expect(element.hasClass('one-active')).toBe(false);
+
+      window.setTimeout.expect(1).process();
+      expect(element.hasClass('one-active')).toBe(true);
+      window.setTimeout.expect(0).process();
+      expect(element.hasClass('one')).toBe(false);
+      expect(element.hasClass('one-active')).toBe(false);
+    }));
+
+
     it("should NOT clobber all data on an element when animation is finished",
       inject(function($animator, $rootScope) {
       $animator.enabled(true);
@@ -385,6 +423,53 @@ describe("$animator", function() {
       animator.animate('custom',element);
       window.setTimeout.expect(1).process();
       expect(element.text()).toBe('memento');
+    }));
+
+    it("should allow multiple JS animations which run in parallel",
+      inject(function($animator, $rootScope, $compile, $sniffer) {
+
+        $animator.enabled(true);
+        var animator = $animator($rootScope, {
+          ngAnimate : '{custom: \'custom-delay custom-long-delay\'}'
+        });
+
+        animator.animate('custom',element);
+        expect(element[0].className).toContain('custom-delay custom-long-delay');
+        window.setTimeout.expect(1).process();
+        expect(element[0].className).toContain('custom-delay-active custom-long-delay-active');
+        window.setTimeout.expect(2000).process();
+        window.setTimeout.expect(20000).process();
+
+        expect(element.hasClass('custom-delay')).toBe(false);
+        expect(element.hasClass('custom-delay-active')).toBe(false);
+        expect(element.hasClass('custom-long-delay')).toBe(false);
+        expect(element.hasClass('custom-long-delay-active')).toBe(false);
+    }));
+
+    it("should allow both multiple JS and CSS animations which run in parallel",
+      inject(function($animator, $rootScope, $compile, $sniffer, _$rootElement_) {
+      $rootElement = _$rootElement_;
+
+      $animator.enabled(true);
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom-delay custom-long-delay\'}'
+      });
+
+      var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+      var style = 'transition: 1s linear all;' +
+                  vendorPrefix + 'transition: 1s linear all;'
+
+      element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+      $rootScope.$digest();
+
+      animator.show(element); 
+
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(2000).process(); //1st JavaScript Animation
+      window.setTimeout.expect(20000).process(); //2nd JavaScript Animation
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1000).process(); //CSS animation
+      }
     }));
   });
 
@@ -604,6 +689,43 @@ describe("$animator", function() {
           expect(element.hasClass('show')).toBe(false);
           expect(element.hasClass('show-active')).toBe(false);
       }));
+
+      it("should allow multiple css transitions/animations which run in parallel",
+        inject(function($animator, $rootScope, $compile, $sniffer) {
+          if (!$sniffer.transitions) return;
+
+          var style = 'transition: 1s linear all;' +
+                      vendorPrefix + 'transition: 1s linear all;'
+
+          var animator = $animator($rootScope, {
+            ngAnimate : '{custom: \'one two\'}'
+          });
+
+          element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
+          $rootScope.$digest();
+
+          animator.animate('custom',element);
+          expect(element[0].className).toContain('one two');
+          if($sniffer.transitions) {
+            window.setTimeout.expect(1).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+
+          expect(element[0].className).toContain('one-active two-active');
+          if($sniffer.transitions) {
+            window.setTimeout.expect(1000).process();
+          }
+          else {
+            expect(window.setTimeout.queue.length).toBe(0);
+          }
+
+          expect(element.hasClass('one')).toBe(false);
+          expect(element.hasClass('one-active')).toBe(false);
+          expect(element.hasClass('two')).toBe(false);
+          expect(element.hasClass('two-active')).toBe(false);
+      }));
     });
 
     describe("Transitions", function() {
@@ -770,4 +892,443 @@ describe("$animator", function() {
       animate.enter();
     }).toThrow("[$parse:syntax] Syntax Error: Token ':' not a primary expression at column 1 of the expression [:] starting at [:].");
   }));
+
+  describe("Callbacks", function() {
+
+    var window, vendorPrefix;
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        $animationProvider.register('custom', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 2000);
+            }
+          }
+        });
+        $animationProvider.register('other', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 10000);
+            }
+          }
+        });
+      })
+      inject(function($sniffer, $animator) {
+        vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+        $animator.enabled(true);
+      });
+    });
+
+    it("should fire a done callback when provided with no animation",
+      inject(function($animator, $rootScope, $compile, $sniffer, $rootElement) {
+
+      var parent = jqLite('<div><span></span></div>');
+      var element = parent.find('span');
+      $rootElement.append(parent);
+      body.append($rootElement);
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'show\', hide: \'hide\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire a done callback when provided with a css animation/transition",
+      inject(function($animator, $rootScope, $compile, $sniffer, $rootElement) {
+
+      var transition = 'transition:1s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'show\', hide: \'hide\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(1000).process();
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire a done callback when provided with a JS animation",
+      inject(function($animator, $rootScope, $compile, $sniffer, $rootElement) {
+
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom\', hide: \'custom\'}'
+      });
+
+      var flag = false;
+      animator.show(element, function() {
+        flag = true;
+      });
+
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(2000).process();
+      expect(flag).toBe(true);
+    }));
+
+    it("should fire the callback right away if another animation is called right after",
+      inject(function($animator, $rootScope, $compile, $sniffer, $rootElement) {
+
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = parent.find('span');
+
+      var animator = $animator($rootScope, {
+        ngAnimate : '{show: \'custom\', hide: \'other\'}'
+      });
+
+      var signature = '';
+      animator.show(element, function() {
+        signature += 'A';
+      });
+      animator.hide(element, function() {
+        signature += 'B';
+      });
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      animator.hide(element); //earlier animation cancelled
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+      }
+      expect(signature).toBe('AB');
+    }));
+  });
+
+  describe("addClass / removeClass", function() {
+
+    var window, vendorPrefix;
+    beforeEach(function() {
+      module(function($animationProvider, $provide) {
+        $provide.value('$window', window = angular.mock.createMockWindow());
+        $animationProvider.register('klassy-add', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 500);
+            }
+          }
+        });
+        $animationProvider.register('klassy-remove', function() {
+          return {
+            start : function(element, done) {
+              window.setTimeout(done, 3000);
+            }
+          }
+        });
+      })
+      inject(function($sniffer, $animator) {
+        vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
+        $animator.enabled(true);
+      });
+    });
+
+    it("should add and remove CSS classes after an animation even if no animation is present",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+      animator.addClass(element,'klass');
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass-add')).toBe(true);
+      }
+
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('klass-add')).toBe(true);
+        expect(element.hasClass('klass-add-active')).toBe(true);
+        expect(element.hasClass('klass')).toBe(false);
+
+        window.setTimeout.expect(0).process();
+        expect(element.hasClass('klass-add')).toBe(false);
+        expect(element.hasClass('klass-add-active')).toBe(false);
+      }
+      expect(element.hasClass('klass')).toBe(true);
+
+      animator.removeClass(element,'klass');
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass')).toBe(true);
+        expect(element.hasClass('klass-remove')).toBe(true);
+
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('klass')).toBe(true);
+        expect(element.hasClass('klass-remove')).toBe(true);
+        expect(element.hasClass('klass-remove-active')).toBe(true);
+
+        window.setTimeout.expect(0).process();
+      }
+
+      expect(element.hasClass('klass')).toBe(false);
+      expect(element.hasClass('klass-remove')).toBe(false);
+      expect(element.hasClass('klass-remove-active')).toBe(false);
+    }));
+
+    it("should add and remove CSS classes with a callback",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += 'A';
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass')).toBe(false);
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(true);
+
+      animator.removeClass(element,'klass', function() {
+        signature += 'B';
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass')).toBe(true);
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+      expect(element.hasClass('klass')).toBe(false);
+
+      expect(signature).toBe('AB');
+    }));
+
+    it("should end the current addClass animation, add the CSS class and then run the removeClass animation",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += '1';
+      });
+      if($sniffer.transitions) {
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('klass')).toBe(false);
+        expect(element.hasClass('klass-add')).toBe(true);
+      }
+
+      animator.removeClass(element,'klass', function() {
+        signature += '2';
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass')).toBe(true);
+        expect(element.hasClass('klass-add')).toBe(false);
+        expect(element.hasClass('klass-add-active')).toBe(false);
+
+        expect(element.hasClass('klass-remove')).toBe(true);
+        window.setTimeout.expect(0).process();
+        window.setTimeout.expect(1).process();
+        window.setTimeout.expect(0).process();
+      }
+
+      expect(element.hasClass('klass')).toBe(false);
+      expect(signature).toBe('12');
+    }));
+
+    it("should properly execute JS animations and use callbacks when using addClass / removeClass",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+      var parent = jqLite('<div><span></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klassy', function() {
+        signature += 'X';
+      });
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(500).process();
+      expect(element.hasClass('klassy')).toBe(true);
+
+      animator.removeClass(element,'klassy', function() {
+        signature += 'Y';
+      });
+      window.setTimeout.expect(1).process();
+      window.setTimeout.expect(3000).process();
+      expect(element.hasClass('klassy')).toBe(false);
+
+      expect(signature).toBe('XY');
+    }));
+
+    it("should properly execute CSS animations/transitions and use callbacks when using addClass / removeClass",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+
+      var transition = 'transition:11s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var signature = '';
+
+      animator.addClass(element,'klass', function() {
+        signature += 'd';
+      });
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass-add')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('klass-add-active')).toBe(true);
+        window.setTimeout.expect(11000).process();
+        expect(element.hasClass('klass-add')).toBe(false);
+        expect(element.hasClass('klass-add-active')).toBe(false);
+      }
+      expect(element.hasClass('klass')).toBe(true);
+
+      animator.removeClass(element,'klass', function() {
+        signature += 'b';
+      });
+      if($sniffer.transitions) {
+        expect(element.hasClass('klass-remove')).toBe(true);
+        window.setTimeout.expect(1).process();
+        expect(element.hasClass('klass-remove-active')).toBe(true);
+        window.setTimeout.expect(11000).process();
+        expect(element.hasClass('klass-remove')).toBe(false);
+        expect(element.hasClass('klass-remove-active')).toBe(false);
+      }
+      expect(element.hasClass('klass')).toBe(false);
+
+      expect(signature).toBe('db');
+    }));
+
+    it("should allow for multiple css classes to be animated plus a callback when added",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+
+      var transition = 'transition:7s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      var flag = false;
+      animator.addClass(element,'one two', function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('one-add')).toBe(true);
+        expect(element.hasClass('two-add')).toBe(true);
+        window.setTimeout.expect(1).process();
+
+        expect(element.hasClass('one-add-active')).toBe(true);
+        expect(element.hasClass('two-add-active')).toBe(true);
+        window.setTimeout.expect(7000).process();
+
+        expect(element.hasClass('one-add')).toBe(false);
+        expect(element.hasClass('one-add-active')).toBe(false);
+        expect(element.hasClass('two-add')).toBe(false);
+        expect(element.hasClass('two-add-active')).toBe(false);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+
+      expect(element.hasClass('one')).toBe(true);
+      expect(element.hasClass('two')).toBe(true);
+
+      expect(flag).toBe(true);
+    }));
+
+    it("should allow for multiple css classes to be animated plus a callback when removed",
+      inject(function($animator, $rootScope, $sniffer, $rootElement) {
+
+      var transition = 'transition:9s linear all;';
+      var style = transition + ' ' + vendorPrefix + transition;
+      var parent = jqLite('<div><span style="' + style + '"></span></div>');
+      $rootElement.append(parent);
+      body.append($rootElement);
+      var element = jqLite(parent.find('span'));
+      var animator = $animator($rootScope);
+
+      element.addClass('one two');
+      expect(element.hasClass('one')).toBe(true);
+      expect(element.hasClass('two')).toBe(true);
+
+      var flag = false;
+      animator.removeClass(element,'one two', function() {
+        flag = true;
+      });
+
+      if($sniffer.transitions) {
+        expect(element.hasClass('one-remove')).toBe(true);
+        expect(element.hasClass('two-remove')).toBe(true);
+        window.setTimeout.expect(1).process();
+
+        expect(element.hasClass('one-remove-active')).toBe(true);
+        expect(element.hasClass('two-remove-active')).toBe(true);
+        window.setTimeout.expect(9000).process();
+
+        expect(element.hasClass('one-remove')).toBe(false);
+        expect(element.hasClass('one-remove-active')).toBe(false);
+        expect(element.hasClass('two-remove')).toBe(false);
+        expect(element.hasClass('two-remove-active')).toBe(false);
+      }
+      else {
+        expect(window.setTimeout.queue.length).toBe(0);
+      }
+
+      expect(element.hasClass('one')).toBe(false);
+      expect(element.hasClass('two')).toBe(false);
+
+      expect(flag).toBe(true);
+    }));
+  });
 });

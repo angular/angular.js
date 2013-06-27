@@ -91,13 +91,15 @@ describe('Docs Annotations', function() {
           }
         });
       });
-      inject(function($rootScope, $compile, $templateCache) {
+      inject(function($rootScope, $compile, $templateCache, $rootElement, $animator) {
+        $animator.enabled(true);
         url = '/page.html';
         $scope = $rootScope.$new();
         parent = angular.element('<div class="parent"></div>');
         element = angular.element('<div data-url="' + url + '" foldout></div>');
-        body.append(parent);
         parent.append(element);
+        $rootElement.append(parent);
+        body.append($rootElement);
         $compile(parent)($scope);
         $scope.$apply();
       });
@@ -126,7 +128,7 @@ describe('Docs Annotations', function() {
       expect(foldout.text()).toContain('hello');
     }));
 
-    it('should hide then show when clicked again', inject(function($httpBackend) {
+    it('should hide then show when clicked again', inject(function($httpBackend, $rootScope) {
       $httpBackend.expect('GET', url).respond('hello');
 
       //enter
