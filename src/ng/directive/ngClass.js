@@ -101,46 +101,57 @@ function classDirective(name, selector) {
  *   element.
  *
  * @example
-   <example animations="true">
+   <example>
      <file name="index.html">
-      <input type="button" value="set" ng-click="myVar='my-class'">
-      <input type="button" value="clear" ng-click="myVar=''">
-      <br>
-      <span ng-class="myVar">Sample Text</span>
+       <p ng-class="{strike: strike, bold: bold, red: red}">Map Syntax Example</p>
+       <input type="checkbox" ng-model="bold"> bold
+       <input type="checkbox" ng-model="strike"> strike
+       <input type="checkbox" ng-model="red"> red
+       <hr>
+       <p ng-class="style">Using String Syntax</p>
+       <input type="text" ng-model="style" placeholder="Type: bold strike red">
+       <hr>
+       <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
+       <input ng-model="style1" placeholder="Type: bold"><br>
+       <input ng-model="style2" placeholder="Type: strike"><br>
+       <input ng-model="style3" placeholder="Type: red"><br>
      </file>
      <file name="style.css">
-       .my-class-add, .my-class-remove {
-         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-       }
-
-       .my-class,
-       .my-class-add.my-class-add-active {
-         color: red;
-         font-size:3em;
-       }
-
-       .my-class-remove.my-class-remove-active {
-         font-size:1.0em;
-         color:black;
-       }
+        .strike {
+          text-decoration: line-through;
+        }
+        .bold {
+          font-weight: bold;
+        }
+        .red {
+          color: red;
+        }
      </file>
      <file name="scenario.js">
-       it('should check ng-class', function() {
-         expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/my-class/);
+       it('should let you toggle the class', function() {
 
-         using('.doc-example-live').element(':button:first').click();
+         expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
+         expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
 
-         expect(element('.doc-example-live span').prop('className')).
-           toMatch(/my-class/);
+         input('bold').check();
+         expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
 
-         using('.doc-example-live').element(':button:last').click();
+         input('red').check();
+         expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
+       });
 
-         expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/my-class/);
+       it('should let you toggle string example', function() {
+         expect(element('.doc-example-live p:nth-of-type(2)').prop('className')).toBe('');
+         input('style').enter('red');
+         expect(element('.doc-example-live p:nth-of-type(2)').prop('className')).toBe('red');
+       });
+
+       it('array example should have 3 classes', function() {
+         expect(element('.doc-example-live p:last').prop('className')).toBe('');
+         input('style1').enter('bold');
+         input('style2').enter('strike');
+         input('style3').enter('red');
+         expect(element('.doc-example-live p:last').prop('className')).toBe('bold strike red');
        });
      </file>
    </example>
