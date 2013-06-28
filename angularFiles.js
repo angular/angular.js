@@ -94,7 +94,6 @@ angularFiles = {
     'test/matchers.js',
     'test/ngScenario/*.js',
     'test/ngScenario/output/*.js',
-    'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
     'test/bootstrap/*.js',
@@ -110,15 +109,12 @@ angularFiles = {
   ],
 
   'jstd': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
     'example/personalLog/*.js',
     'example/personalLog/test/*.js'
@@ -132,14 +128,10 @@ angularFiles = {
 
   'jstdScenario': [
     'build/angular-scenario.js',
-    'build/jstd-scenario-adapter-config.js',
-    'build/jstd-scenario-adapter.js',
     'build/docs/docs-scenario.js'
   ],
 
   "jstdModules": [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
@@ -157,8 +149,6 @@ angularFiles = {
   ],
 
   'jstdPerf': [
-   'lib/jasmine/jasmine.js',
-   'lib/jasmine-jstd-adapter/JasmineAdapter.js',
    '@angularSrc',
    '@angularSrcModules',
    'src/ngMock/angular-mocks.js',
@@ -173,15 +163,12 @@ angularFiles = {
   ],
 
   'jstdJquery': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
     'example/personalLog/*.js',
 
