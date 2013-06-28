@@ -1075,6 +1075,18 @@ describe('jqLite', function() {
       expect(root.prepend('abc')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('abctext');
     });
+    it('should prepend array to empty in the right order', function() {
+      var root = jqLite('<div>');
+      expect(root.prepend([a, b, c])).toBe(root);
+      expect(sortedHtml(root)).
+        toBe('<div><div>A</div><div>B</div><div>C</div></div>');
+    });
+    it('should prepend array to content in the right order', function() {
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend([a, b, c])).toBe(root);
+      expect(sortedHtml(root)).
+        toBe('<div><div>A</div><div>B</div><div>C</div>text</div>');
+    });
   });
 
 
