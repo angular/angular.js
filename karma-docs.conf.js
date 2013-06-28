@@ -16,8 +16,8 @@ module.exports = function(config) {
       'build/angular-sanitize.js',
       'build/angular-route.js',
 
-      'build/docs/components/lib/lunr.js/lunr.js',
-      'build/docs/components/lib/google-code-prettify/src/prettify.js',
+      'build/docs/components/lunr.js',
+      'build/docs/components/google-code-prettify.js',
       'build/docs/components/showdown.js',
 
       'build/docs/components/angular-bootstrap.js',
