@@ -5,7 +5,7 @@ module.exports = function(config) {
   sharedConfig(config);
 
   config.set({
-    files: angularFiles.mergeFiles('jstdModules', 'angularSrcModules'),
+    files: angularFiles.mergeFilesFor('karmaModules', 'angularSrcModules'),
 
     junitReporter: {
       outputFile: 'test_out/modules.xml',

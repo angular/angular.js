@@ -108,7 +108,7 @@ angularFiles = {
     'test/ngMock/*.js'
   ],
 
-  'jstd': [
+  'karma': [
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
@@ -120,18 +120,18 @@ angularFiles = {
     'example/personalLog/test/*.js'
   ],
 
-  'jstdExclude': [
+  'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js'
   ],
 
-  'jstdScenario': [
+  'karmaScenario': [
     'build/angular-scenario.js',
     'build/docs/docs-scenario.js'
   ],
 
-  "jstdModules": [
+  "karmaModules": [
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
@@ -148,21 +148,7 @@ angularFiles = {
     'test/ngSanitize/filter/*.js'
   ],
 
-  'jstdPerf': [
-   '@angularSrc',
-   '@angularSrcModules',
-   'src/ngMock/angular-mocks.js',
-   'perf/data/*.js',
-   'perf/testUtils.js',
-   'perf/*.js'
-  ],
-
-  'jstdPerfExclude': [
-    'src/ng/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
-  ],
-
-  'jstdJquery': [
+  'karmaJquery': [
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
@@ -175,7 +161,7 @@ angularFiles = {
     'example/personalLog/test/*.js'
   ],
 
-  'jstdJqueryExclude': [
+  'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
@@ -183,29 +169,22 @@ angularFiles = {
 };
 
 if (exports) {
-  exports.files = angularFiles
-  exports.mergeFiles = function mergeFiles() {
+  exports.files = angularFiles;
+  exports.mergeFilesFor = function() {
     var files = [];
 
-    [].splice.call(arguments, 0).forEach(function(file) {
-      if (file.match(/karma/)) {
-        files.push(file);
-      } else {
-        angularFiles[file].forEach(function(f) {
-          // replace @ref
-          var match = f.match(/^\@(.*)/);
-          if (match) {
-            var deps = angularFiles[match[1]];
-            files = files.concat(deps);
-          } else {
-            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
-              files.push(f);
-            }
-          }
-        });
-      }
+    Array.prototype.slice.call(arguments, 0).forEach(function(filegroup) {
+      angularFiles[filegroup].forEach(function(file) {
+        // replace @ref
+        var match = file.match(/^\@(.*)/);
+        if (match) {
+          files = files.concat(angularFiles[match[1]]);
+        } else {
+          files.push(file);
+        }
+      });
     });
 
     return files;
-  }
+  };
 }

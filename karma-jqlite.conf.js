@@ -5,8 +5,8 @@ module.exports = function(config) {
   sharedConfig(config);
 
   config.set({
-    files: angularFiles.mergeFiles('jstd'),
-    exclude: angularFiles.files.jstdExclude,
+    files: angularFiles.mergeFilesFor('karma'),
+    exclude: angularFiles.mergeFilesFor('karmaExclude'),
 
     junitReporter: {
       outputFile: 'test_out/jqlite.xml',
