@@ -2620,21 +2620,21 @@ describe('$compile', function() {
       $rootScope.$apply();
       expect(element.attr('src')).toBe('#foo');
 
-      $rootScope.testUrl = "http://foo/bar";
+      $rootScope.testUrl = "http://foo.com/bar";
       $rootScope.$apply();
-      expect(element.attr('src')).toBe('http://foo/bar');
+      expect(element.attr('src')).toBe('http://foo.com/bar');
 
-      $rootScope.testUrl = " http://foo/bar";
+      $rootScope.testUrl = " http://foo.com/bar";
       $rootScope.$apply();
-      expect(element.attr('src')).toBe(' http://foo/bar');
+      expect(element.attr('src')).toBe(' http://foo.com/bar');
 
-      $rootScope.testUrl = "https://foo/bar";
+      $rootScope.testUrl = "https://foo.com/bar";
       $rootScope.$apply();
-      expect(element.attr('src')).toBe('https://foo/bar');
+      expect(element.attr('src')).toBe('https://foo.com/bar');
 
-      $rootScope.testUrl = "ftp://foo/bar";
+      $rootScope.testUrl = "ftp://foo.com/bar";
       $rootScope.$apply();
-      expect(element.attr('src')).toBe('ftp://foo/bar');
+      expect(element.attr('src')).toBe('ftp://foo.com/bar');
 
       // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
       if (!msie || msie > 10) {
