@@ -191,6 +191,6 @@ module.exports = function(grunt) {
   grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
