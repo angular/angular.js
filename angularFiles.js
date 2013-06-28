@@ -94,7 +94,6 @@ angularFiles = {
     'test/matchers.js',
     'test/ngScenario/*.js',
     'test/ngScenario/output/*.js',
-    'test/ngScenario/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/auto/*.js',
     'test/bootstrap/*.js',
@@ -109,37 +108,30 @@ angularFiles = {
     'test/ngMock/*.js'
   ],
 
-  'jstd': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+  'karma': [
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
     'example/personalLog/*.js',
     'example/personalLog/test/*.js'
   ],
 
-  'jstdExclude': [
+  'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js'
   ],
 
-  'jstdScenario': [
+  'karmaScenario': [
     'build/angular-scenario.js',
-    'build/jstd-scenario-adapter-config.js',
-    'build/jstd-scenario-adapter.js',
     'build/docs/docs-scenario.js'
   ],
 
-  "jstdModules": [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+  "karmaModules": [
     'build/angular.js',
     'src/ngMock/angular-mocks.js',
     'src/ngCookies/cookies.js',
@@ -156,39 +148,20 @@ angularFiles = {
     'test/ngSanitize/filter/*.js'
   ],
 
-  'jstdPerf': [
-   'lib/jasmine/jasmine.js',
-   'lib/jasmine-jstd-adapter/JasmineAdapter.js',
-   '@angularSrc',
-   '@angularSrcModules',
-   'src/ngMock/angular-mocks.js',
-   'perf/data/*.js',
-   'perf/testUtils.js',
-   'perf/*.js'
-  ],
-
-  'jstdPerfExclude': [
-    'src/ng/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
-  ],
-
-  'jstdJquery': [
-    'lib/jasmine/jasmine.js',
-    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+  'karmaJquery': [
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    'src/ngScenario/jstd-scenario-adapter/Adapter.js',
     '@angularTest',
     'example/personalLog/*.js',
 
     'example/personalLog/test/*.js'
   ],
 
-  'jstdJqueryExclude': [
+  'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js'
@@ -196,29 +169,22 @@ angularFiles = {
 };
 
 if (exports) {
-  exports.files = angularFiles
-  exports.mergeFiles = function mergeFiles() {
+  exports.files = angularFiles;
+  exports.mergeFilesFor = function() {
     var files = [];
 
-    [].splice.call(arguments, 0).forEach(function(file) {
-      if (file.match(/karma/)) {
-        files.push(file);
-      } else {
-        angularFiles[file].forEach(function(f) {
-          // replace @ref
-          var match = f.match(/^\@(.*)/);
-          if (match) {
-            var deps = angularFiles[match[1]];
-            files = files.concat(deps);
-          } else {
-            if (!/jstd|jasmine/.test(f)) { //TODO(i): remove once we don't have jstd/jasmine in repo
-              files.push(f);
-            }
-          }
-        });
-      }
+    Array.prototype.slice.call(arguments, 0).forEach(function(filegroup) {
+      angularFiles[filegroup].forEach(function(file) {
+        // replace @ref
+        var match = file.match(/^\@(.*)/);
+        if (match) {
+          files = files.concat(angularFiles[match[1]]);
+        } else {
+          files.push(file);
+        }
+      });
     });
 
     return files;
-  }
+  };
 }
