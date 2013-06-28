@@ -71,7 +71,7 @@ describe('ngRepeat', function() {
                                       "<a name='x'>c</a>" +
                                     "</p>";
 
-    var htmlCollection = document.getElementsByTagName('a')
+    var htmlCollection = document.getElementsByTagName('a');
     scope.items = htmlCollection;
     scope.$digest();
     expect(element.find('li').length).toEqual(3);
@@ -446,7 +446,7 @@ describe('ngRepeat', function() {
     scope.array = ['b', 'a'];
     scope.$digest();
 
-    var lis = element.find('li');
+    lis = element.find('li');
     expect(lis.eq(0).data('mark')).toEqual('b');
     expect(lis.eq(1).data('mark')).toEqual('a');
   });
@@ -460,7 +460,7 @@ describe('ngRepeat', function() {
         return {
           replace: true,
           template: '<span ng-repeat="i in items">{{log(i)}}</span>'
-        }
+        };
       });
       element = jqLite('<span replace-me-with-repeater></span>');
       $compile(element)($rootScope);
@@ -480,13 +480,13 @@ describe('ngRepeat', function() {
     }));
 
 
-    iit('should work when placed on a root element of attr directive with ASYNC replaced template',
+    it('should work when placed on a root element of attr directive with ASYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
       $compileProvider.directive('replaceMeWithRepeater', function() {
         return {
           replace: true,
           templateUrl: 'replace-me-with-repeater.html'
-        }
+        };
       });
       $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in items">{{log(i)}}</div>');
       element = jqLite('<span>-</span><span replace-me-with-repeater></span><span>-</span>');
@@ -514,7 +514,7 @@ describe('ngRepeat', function() {
           restrict: 'E',
           replace: true,
           template: '<div ng-repeat="i in [1,2,3]">{{i}}</div>'
-        }
+        };
       });
       element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
       expect(element.text()).toBe('');
@@ -530,7 +530,7 @@ describe('ngRepeat', function() {
           restrict: 'E',
           replace: true,
           templateUrl: 'replace-me-with-repeater.html'
-        }
+        };
       });
       $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
       element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
@@ -585,7 +585,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -605,7 +605,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -784,7 +784,7 @@ describe('ngRepeat ngAnimate', function() {
       $rootScope.$digest();
 
       //the last element gets pushed down when it animates
-      var kids  = element.children();
+      kids  = element.children();
       var first = jqLite(kids[0]);
       var left  = jqLite(kids[1]);
       var right = jqLite(kids[2]);
