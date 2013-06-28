@@ -5,8 +5,8 @@ module.exports = function(config) {
   sharedConfig(config);
 
   config.set({
-    files: angularFiles.mergeFiles('jstdJquery'),
-    exclude: angularFiles.files.jstdJqueryExclude,
+    files: angularFiles.mergeFilesFor('karmaJquery'),
+    exclude: angularFiles.mergeFilesFor('karmaJqueryExclude'),
 
     junitReporter: {
       outputFile: 'test_out/jquery.xml',
