@@ -13,4 +13,6 @@ module.exports = function(config) {
       suite: 'jQuery'
     }
   });
+
+  config.sauceLabs.testName = 'AngularJS: jQuery';
 };

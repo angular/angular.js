@@ -13,4 +13,6 @@ module.exports = function(config) {
       suite: 'jqLite'
     }
   });
+
+  config.sauceLabs.testName = 'AngularJS: jqLite';
 };

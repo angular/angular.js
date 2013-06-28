@@ -12,4 +12,6 @@ module.exports = function(config) {
       suite: 'modules'
     }
   });
+
+  config.sauceLabs.testName = 'AngularJS: modules';
 };
