@@ -425,9 +425,9 @@ describe('ngMock', function() {
       // through the code makes the test pass. Viva IE!!!
       angular.element(document.body).append(div)
 
-      div.bind('click', function() { log += 'click1;'});
-      div.bind('click', function() { log += 'click2;'});
-      div.bind('mousemove', function() { log += 'mousemove;'});
+      div.on('click', function() { log += 'click1;'});
+      div.on('click', function() { log += 'click2;'});
+      div.on('mousemove', function() { log += 'mousemove;'});
 
       browserTrigger(div, 'click');
       browserTrigger(div, 'mousemove');

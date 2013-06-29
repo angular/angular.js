@@ -138,6 +138,7 @@
  * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
  */
 
+var $compileMinErr = minErr('$compile');
 
 /**
  * @ngdoc service
@@ -154,6 +155,10 @@ function $CompileProvider($provide) {
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
       urlSanitizationWhitelist = /^\s*(https?|ftp|mailto|file):/;
 
+  // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
+  // The assumption is that future DOM event attribute names will begin with
+  // 'on' and be composed of only English letters.
+  var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]*|formaction)$/;
 
   /**
    * @ngdoc function
@@ -172,7 +177,7 @@ function $CompileProvider($provide) {
    */
    this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
-      assertArg(directiveFactory, 'directive');
+      assertArg(directiveFactory, 'directiveFactory');
       if (!hasDirectives.hasOwnProperty(name)) {
         hasDirectives[name] = [];
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
@@ -214,14 +219,15 @@ function $CompileProvider($provide) {
    *
    * @description
    * Retrieves or overrides the default regular expression that is used for whitelisting of safe
-   * urls during a[href] sanitization.
+   * urls during a[href] and img[src] sanitization.
    *
    * The sanitization is a security measure aimed at prevent XSS attacks via html links.
    *
-   * Any url about to be assigned to a[href] via data-binding is first normalized and turned into an
-   * absolute url. Afterwards the url is matched against the `urlSanitizationWhitelist` regular
-   * expression. If a match is found the original url is written into the dom. Otherwise the
-   * absolute url is prefixed with `'unsafe:'` string and only then it is written into the DOM.
+   * Any url about to be assigned to a[href] or img[src] via data-binding is first normalized and
+   * turned into an absolute url. Afterwards, the url is matched against the
+   * `urlSanitizationWhitelist` regular expression. If a match is found, the original url is written
+   * into the dom. Otherwise, the absolute url is prefixed with `'unsafe:'` string and only then is
+   * it written into the DOM.
    *
    * @param {RegExp=} regexp New regexp to whitelist urls with.
    * @returns {RegExp|ng.$compileProvider} Current RegExp if called without value or self for
@@ -263,7 +269,8 @@ function $CompileProvider($provide) {
       $set: function(key, value, writeAttr, attrName) {
         var booleanKey = getBooleanAttrName(this.$$element[0], key),
             $$observers = this.$$observers,
-            normalizedVal;
+            normalizedVal,
+            nodeName;
 
         if (booleanKey) {
           this.$$element.prop(key, value);
@@ -283,8 +290,10 @@ function $CompileProvider($provide) {
         }
 
 
-        // sanitize a[href] values
-        if (nodeName_(this.$$element[0]) === 'A' && key === 'href') {
+        // sanitize a[href] and img[src] values
+        nodeName = nodeName_(this.$$element);
+        if ((nodeName === 'A' && key === 'href') ||
+            (nodeName === 'IMG' && key === 'src')){
           urlSanitizationNode.setAttribute('href', value);
 
           // href property always returns normalized absolute url, so we can match against that
@@ -470,7 +479,7 @@ function $CompileProvider($provide) {
                       transcludeScope.$$transcluded = true;
 
                       return transcludeFn(transcludeScope, cloneFn).
-                          bind('$destroy', bind(transcludeScope, transcludeScope.$destroy));
+                          on('$destroy', bind(transcludeScope, transcludeScope.$destroy));
                     };
                   })(childTranscludeFn || transcludeFn)
               );
@@ -589,10 +598,12 @@ function $CompileProvider($provide) {
         var startNode = node;
         do {
           if (!node) {
-            throw ngError(51, "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
+            throw $compileMinErr('utrat', "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
           }
-          if (node.hasAttribute(attrStart)) depth++;
-          if (node.hasAttribute(attrEnd)) depth--;
+          if (node.nodeType == 1 /** Element **/) {
+            if (node.hasAttribute(attrStart)) depth++;
+            if (node.hasAttribute(attrEnd)) depth--;
+          }
           nodes.push(node);
           node = node.nextSibling;
         } while (depth > 0);
@@ -719,7 +730,7 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw ngError(12, "Template for directive '{0}' must have exactly one root element.", directiveName);
+              throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}", directiveName, '');
             }
 
             replaceWith(jqCollection, $compileNode, compileNode);
@@ -738,7 +749,7 @@ function $CompileProvider($provide) {
                     newTemplateAttrs
                 )
             );
-            mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
+            mergeTemplateAttributes(templateAttrs, newTemplateAttrs, directive.name);
 
             ii = directives.length;
           } else {
@@ -807,7 +818,7 @@ function $CompileProvider($provide) {
           }
           value = $element[retrievalMethod]('$' + require + 'Controller');
           if (!value && !optional) {
-            throw ngError(13, "Controller '{0}', required by directive '{1}', can't be found!", require, directiveName);
+            throw $compileMinErr('ctreq', "Controller '{0}', required by directive '{1}', can't be found!", require, directiveName);
           }
           return value;
         } else if (isArray(require)) {
@@ -867,7 +878,7 @@ function $CompileProvider($provide) {
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
                   lastValue = scope[scopeName] = parentGet(parentScope);
-                  throw ngError(14, "Expression '{0}' used with directive '{1}' is non-assignable!",
+                  throw $compileMinErr('noass', "Expression '{0}' used with directive '{1}' is non-assignable!",
                       attrs[attrName], newIsolateScopeDirective.name);
                 };
                 lastValue = scope[scopeName] = parentGet(parentScope);
@@ -898,7 +909,7 @@ function $CompileProvider($provide) {
               }
 
               default: {
-                throw ngError(15, "Invalid isolate scope definition for directive '{0}'. Definition: {... {1}: '{2}' ...}",
+                throw $compileMinErr('iscp', "Invalid isolate scope definition for directive '{0}'. Definition: {... {1}: '{2}' ...}",
                     newIsolateScopeDirective.name, scopeName, definition);
               }
             }
@@ -996,15 +1007,16 @@ function $CompileProvider($provide) {
      *
      * @param {object} dst destination attributes (original DOM)
      * @param {object} src source attributes (from the directive template)
+     * @param {string} ignoreName attribute which should be ignored
      */
-    function mergeTemplateAttributes(dst, src) {
+    function mergeTemplateAttributes(dst, src, ignoreName) {
       var srcAttr = src.$attr,
           dstAttr = dst.$attr,
           $element = dst.$$element;
 
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
-        if (key.charAt(0) != '$') {
+        if (key.charAt(0) != '$' && key != ignoreName) {
           if (src[key]) {
             value += (key === 'style' ? ';' : ' ') + src[key];
           }
@@ -1019,7 +1031,7 @@ function $CompileProvider($provide) {
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
-        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
+        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key) && key != ignoreName) {
           dst[key] = value;
           dstAttr[key] = srcAttr[key];
         }
@@ -1055,21 +1067,26 @@ function $CompileProvider($provide) {
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
-              throw ngError(16, "Template for directive '{0}' must have exactly one root element. Template: {1}",
+              throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}",
                   origAsyncDirective.name, templateUrl);
             }
 
             tempTemplateAttrs = {$attr: {}};
             replaceWith($rootElement, $compileNode, compileNode);
             collectDirectives(compileNode, directives, tempTemplateAttrs);
-            mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
+            mergeTemplateAttributes(tAttrs, tempTemplateAttrs, origAsyncDirective.name);
           } else {
             compileNode = beforeTemplateCompileNode;
             $compileNode.html(content);
           }
 
           directives.unshift(derivedSyncDirective);
-          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn);
+          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn, $compileNode);
+          forEach($rootElement, function(node, i) {
+            if (node == compileNode) {
+              $rootElement[i] = $compileNode[0];
+            }
+          });
           afterTemplateChildLinkFn = compileNodes($compileNode[0].childNodes, childTranscludeFn);
 
 
@@ -1078,7 +1095,7 @@ function $CompileProvider($provide) {
                 beforeTemplateLinkNode = linkQueue.shift(),
                 linkRootElement = linkQueue.shift(),
                 controller = linkQueue.shift(),
-                linkNode = compileNode;
+                linkNode = $compileNode[0];
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               // it was cloned therefore we have to clone as well.
@@ -1093,7 +1110,7 @@ function $CompileProvider($provide) {
           linkQueue = null;
         }).
         error(function(response, code, headers, config) {
-          throw ngError(17, 'Failed to load template: {0}', config.url);
+          throw $compileMinErr('tpload', 'Failed to load template: {0}', config.url);
         });
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, controller) {
@@ -1121,7 +1138,7 @@ function $CompileProvider($provide) {
 
     function assertNoDuplicate(what, previousDirective, directive, element) {
       if (previousDirective) {
-        throw ngError(18, 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
+        throw $compileMinErr('multidir', 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
             previousDirective.name, directive.name, what, startingTag(element));
       }
     }
@@ -1146,6 +1163,16 @@ function $CompileProvider($provide) {
     }
 
 
+    function isTrustedContext(node, attrNormalizedName) {
+      // maction[xlink:href] can source SVG.  It's not limited to <maction>.
+      if (attrNormalizedName == "xlinkHref" ||
+          (nodeName_(node) != "IMG" && (attrNormalizedName == "src" ||
+                                        attrNormalizedName == "ngSrc"))) {
+        return true;
+      }
+    }
+
+
     function addAttrInterpolateDirective(node, directives, value, name) {
       var interpolateFn = $interpolate(value, true);
 
@@ -1158,9 +1185,15 @@ function $CompileProvider($provide) {
         compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
           var $$observers = (attr.$$observers || (attr.$$observers = {}));
 
+          if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
+            throw $compileMinErr('nodomevents',
+                "Interpolations for HTML DOM event attributes are disallowed.  Please use the ng- " +
+                "versions (such as ng-click instead of onclick) instead.");
+          }
+
           // we need to interpolate again, in case the attribute value has been updated
           // (e.g. by another directive's compile function)
-          interpolateFn = $interpolate(attr[name], true);
+          interpolateFn = $interpolate(attr[name], true, isTrustedContext(node, name));
 
           // if attribute was updated so that there is no interpolation going on we don't want to
           // register any observers

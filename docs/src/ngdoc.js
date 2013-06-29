@@ -11,12 +11,31 @@ var globalID = 0;
 var fs = require('fs');
 var fspath = require('path');
 var markdown = new Showdown.converter({ extensions : ['table'] });
+var shell = require('shelljs');
+var gruntUtil = require('../../lib/grunt/utils.js');
 
 exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
 exports.merge = merge;
 exports.Doc = Doc;
+
+exports.ngVersions = function() {
+  var line, versions = [], regex = /^v([1-9]\d*(?:\.\d+)+)$/; //only fetch >= 1.0.0 versions
+  shell.exec('git tag', {silent: true}).output.split(/\s*\n\s*/)
+    .forEach(function(line) {
+      var matches = regex.exec(line);
+      if(matches && matches.length > 0) {
+        versions.push(matches[1]);
+      }
+    });
+  versions.push(exports.ngCurrentVersion().number);
+  return versions;
+};
+
+exports.ngCurrentVersion = function() {
+  return gruntUtil.getVersion();
+};
 
 var BOOLEAN_ATTR = {};
 ['multiple', 'selected', 'checked', 'disabled', 'readOnly', 'required'].forEach(function(value) {
@@ -43,7 +62,7 @@ function Doc(text, file, line) {
   this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function() {
-  var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
+  var words = fs.readFileSync(__dirname + '/ignore.words', 'utf8');
   return words.toString().split(/[,\s\n\r]+/gm);
 })();
 
@@ -145,7 +164,7 @@ Doc.prototype = {
             example.addSource(name, content);
           });
           content.replace(/<file\s+src="([^"]+)"(?:\s+tag="([^"]+)")?(?:\s+name="([^"]+)")?\s*\/?>/gmi, function(_, file, tag, name) {
-            if(fspath.existsSync(file)) {
+            if(fs.existsSync(file)) {
               var content = fs.readFileSync(file, 'utf8');
               if(content && content.length > 0) {
                 if(tag && tag.length > 0) {
@@ -160,7 +179,7 @@ Doc.prototype = {
           return placeholder(example.toHtml());
         }).
         replace(/(?:\*\s+)?<file.+?src="([^"]+)"(?:\s+tag="([^"]+)")?\s*\/?>/i, function(_, file, tag) {
-          if(fspath.existsSync(file)) {
+          if(fs.existsSync(file)) {
             var content = fs.readFileSync(file, 'utf8');
             if(tag && tag.length > 0) {
               content = extractInlineDocCode(content, tag);
@@ -225,6 +244,44 @@ Doc.prototype = {
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });
+
+    //!annotate CONTENT
+    //!annotate="REGEX" CONTENT
+    //!annotate="REGEX" TITLE|CONTENT
+    text = text.replace(/\n?\/\/!annotate\s*(?:=\s*['"](.+?)['"])?\s+(.+?)\n\s*(.+?\n)/img,
+      function(_, pattern, content, line) {
+        var pattern = new RegExp(pattern || '.+');
+        var title, text, split = content.split(/\|/);
+        if(split.length > 1) {
+          text = split[1];
+          title = split[0];
+        }
+        else {
+          title = 'Info';
+          text = content;
+        }
+        return "\n" + line.replace(pattern, function(match) {
+          return '<div class="nocode nocode-content" data-popover ' + 
+                   'data-content="' + text + '" ' + 
+                   'data-title="' + title + '">' +
+                      match +
+                 '</div>';
+        });
+      }
+    );
+
+    //!details /path/to/local/docs/file.html
+    //!details="REGEX" /path/to/local/docs/file.html
+    text = text.replace(/\/\/!details\s*(?:=\s*['"](.+?)['"])?\s+(.+?)\n\s*(.+?\n)/img,
+      function(_, pattern, url, line) {
+        url = '/notes/' + url;
+        var pattern = new RegExp(pattern || '.+');
+        return line.replace(pattern, function(match) {
+          return '<div class="nocode nocode-content" data-foldout data-url="' + url + '">' + match + '</div>';
+        });
+      }
+    );
+
     return text;
   },
 
@@ -361,7 +418,7 @@ Doc.prototype = {
 
   html_usage_parameters: function(dom) {
     var self = this;
-    var params = this.param ? this.param : []; 
+    var params = this.param ? this.param : [];
     if(params.length > 0) {
       dom.html('<h2 id="parameters">Parameters</h2>');
       dom.html('<table class="variables-matrix table table-bordered table-striped">');

@@ -185,7 +185,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       element.removeClass(ACTIVE_CLASS_NAME);
     }
 
-    element.bind('touchstart', function(event) {
+    element.on('touchstart', function(event) {
       tapping = true;
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
@@ -203,15 +203,15 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       touchStartY = e.clientY;
     });
 
-    element.bind('touchmove', function(event) {
+    element.on('touchmove', function(event) {
       resetState();
     });
 
-    element.bind('touchcancel', function(event) {
+    element.on('touchcancel', function(event) {
       resetState();
     });
 
-    element.bind('touchend', function(event) {
+    element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
 
       var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
@@ -248,17 +248,17 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // Fallback click handler.
     // Busted clicks don't get this far, and adding this handler allows ng-tap to be used on
     // desktop as well, to allow more portable sites.
-    element.bind('click', function(event) {
+    element.on('click', function(event) {
       scope.$apply(function() {
         clickHandler(scope, {$event: event});
       });
     });
 
-    element.bind('mousedown', function(event) {
+    element.on('mousedown', function(event) {
       element.addClass(ACTIVE_CLASS_NAME);
     });
 
-    element.bind('mousemove mouseup', function(event) {
+    element.on('mousemove mouseup', function(event) {
       element.removeClass(ACTIVE_CLASS_NAME);
     });
 

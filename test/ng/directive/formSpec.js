@@ -247,7 +247,7 @@ describe('form', function() {
       });
 
       doc = $compile('<form action="some.py"></form>')(scope);
-      doc.bind('submit', callback);
+      doc.on('submit', callback);
 
       browserTrigger(doc, 'submit');
       expect(callback).toHaveBeenCalledOnce();

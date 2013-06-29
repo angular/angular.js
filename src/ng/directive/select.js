@@ -13,8 +13,8 @@
  * Optionally `ngOptions` attribute can be used to dynamically generate a list of `<option>`
  * elements for a `<select>` element using an array or an object obtained by evaluating the
  * `ngOptions` expression.
- *˝˝
- * When an item in the select menu is select, the value of array element or object property
+ *
+ * When an item in the `<select>` menu is selected, the value of array element or object property
  * represented by the selected option will be bound to the model identified by the `ngModel`
  * directive of the parent select element.
  *
@@ -257,7 +257,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         };
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             if (unknownOption.parent()) unknownOption.remove();
             ngModelCtrl.$setViewValue(selectElement.val());
@@ -283,7 +283,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         });
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             var array = [];
             forEach(selectElement.find('option'), function(option) {
@@ -300,8 +300,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw ngError(9,
-            "ngOptions error! Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
+          throw minErr('ngOptions')('iexp',
+            "Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
             optionsExp, startingTag(selectElement));
         }
 
@@ -334,7 +334,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // clear contents, we'll add what's needed based on the model
         selectElement.html('');
 
-        selectElement.bind('change', function() {
+        selectElement.on('change', function() {
           scope.$apply(function() {
             var optionGroup,
                 collection = valuesFn(scope) || [],
@@ -598,7 +598,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
           selectCtrl.addOption(attr.value);
         }
 
-        element.bind('$destroy', function() {
+        element.on('$destroy', function() {
           selectCtrl.removeOption(attr.value);
         });
       };

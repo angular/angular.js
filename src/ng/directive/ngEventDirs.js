@@ -43,7 +43,7 @@ forEach(
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
       return function(scope, element, attr) {
         var fn = $parse(attr[directiveName]);
-        element.bind(lowercase(name), function(event) {
+        element.on(lowercase(name), function(event) {
           scope.$apply(function() {
             fn(scope, {$event:event});
           });
@@ -220,7 +220,8 @@ forEach(
  * Enables binding angular expressions to onsubmit events.
  *
  * Additionally it prevents the default action (which for form means sending the request to the
- * server and reloading the current page).
+ * server and reloading the current page) **but only if the form does not contain an `action`
+ * attribute**.
  *
  * @element form
  * @param {expression} ngSubmit {@link guide/expression Expression} to eval.
@@ -264,7 +265,7 @@ forEach(
    </doc:example>
  */
 var ngSubmitDirective = ngDirective(function(scope, element, attrs) {
-  element.bind('submit', function() {
+  element.on('submit', function() {
     scope.$apply(attrs.ngSubmit);
   });
 });

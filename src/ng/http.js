@@ -649,16 +649,11 @@ function $HttpProvider() {
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse
       };
-      var headers = {};
+      var headers = mergeHeaders(requestConfig);
 
       extend(config, requestConfig);
       config.headers = headers;
       config.method = uppercase(config.method);
-
-      extend(headers,
-          defaults.headers.common,
-          defaults.headers[lowercase(config.method)],
-          requestConfig.headers);
 
       var xsrfValue = isSameDomain(config.url, $browser.url())
           ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
@@ -673,7 +668,11 @@ function $HttpProvider() {
 
         // strip content-type if data is undefined
         if (isUndefined(config.data)) {
-          delete headers['Content-Type'];
+          forEach(headers, function(value, header) {
+            if (lowercase(header) === 'content-type') {
+                delete headers[header];
+            }
+          });
         }
 
         if (isUndefined(config.withCredentials) && !isUndefined(defaults.withCredentials)) {
@@ -728,6 +727,30 @@ function $HttpProvider() {
         return (isSuccess(response.status))
           ? resp
           : $q.reject(resp);
+      }
+
+      function mergeHeaders(config) {
+        var defHeaders = defaults.headers,
+            reqHeaders = extend({}, config.headers),
+            defHeaderName, lowercaseDefHeaderName, reqHeaderName;
+
+        defHeaders = extend({}, defHeaders.common, defHeaders[lowercase(config.method)]);
+
+        // using for-in instead of forEach to avoid unecessary iteration after header has been found
+        defaultHeadersIteration:
+        for (defHeaderName in defHeaders) {
+          lowercaseDefHeaderName = lowercase(defHeaderName);
+
+          for (reqHeaderName in reqHeaders) {
+            if (lowercase(reqHeaderName) === lowercaseDefHeaderName) {
+              continue defaultHeadersIteration;
+            }
+          }
+
+          reqHeaders[defHeaderName] = defHeaders[defHeaderName];
+        }
+
+        return reqHeaders;
       }
     }
 

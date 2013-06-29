@@ -32,7 +32,7 @@ describe('$interpolate', function() {
     };
     expect(function () {
       $interpolate('{{err()}}')($rootScope);
-    }).toThrow("[NgErr48] $interpolate error! Can't interpolate: {{err()}}\nError: oops");
+    }).toThrow("[$interpolate:interr] Can't interpolate: {{err()}}\nError: oops");
   }));
 
   it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
@@ -43,7 +43,7 @@ describe('$interpolate', function() {
     $compile(dom)($rootScope);
     expect(function () {
       $rootScope.$apply();
-    }).toThrow("[NgErr48] $interpolate error! Can't interpolate: {{err()}}\nError: oops");
+    }).toThrow("[$interpolate:interr] Can't interpolate: {{err()}}\nError: oops");
     expect(dom[0].innerHTML).toEqual('2');
     expect(dom[1].innerHTML).toEqual('{{err()}}');
     expect(dom[2].innerHTML).toEqual('{{1 + 2}}');
@@ -149,6 +149,29 @@ describe('$interpolate', function() {
   });
 
 
+  describe('isTrustedContext', function() {
+    it('should NOT interpolate a multi-part expression when isTrustedContext is true', inject(function($interpolate) {
+      var isTrustedContext = true;
+      expect(function() {
+          $interpolate('constant/{{var}}', true, isTrustedContext);
+        }).toThrow(
+            "[$interpolate:noconcat] Error while interpolating: constant/{{var}}\nYou may not use " +
+            "multiple expressions when interpolating this expression.");
+      expect(function() {
+          $interpolate('{{foo}}{{bar}}', true, isTrustedContext);
+        }).toThrow(
+            "[$interpolate:noconcat] Error while interpolating: {{foo}}{{bar}}\nYou may not use " +
+            "multiple expressions when interpolating this expression.");
+    }));
+
+    it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {
+      expect($interpolate('some/{{id}}')()).toEqual('some/');
+      expect($interpolate('some/{{id}}')({id: 1})).toEqual('some/1');
+      expect($interpolate('{{foo}}{{bar}}')({foo: 1, bar: 2})).toEqual('12');
+    }));
+  });
+
+
   describe('startSymbol', function() {
 
     beforeEach(module(function($interpolateProvider) {
@@ -199,4 +222,5 @@ describe('$interpolate', function() {
       expect($interpolate.endSymbol()).toBe('))');
     }));
   });
+
 });

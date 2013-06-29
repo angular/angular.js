@@ -411,7 +411,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
   // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
-    element.bind('input', listener);
+    element.on('input', listener);
   } else {
     var timeout;
 
@@ -424,7 +424,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       }
     };
 
-    element.bind('keydown', function(event) {
+    element.on('keydown', function(event) {
       var key = event.keyCode;
 
       // ignore
@@ -435,11 +435,11 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
 
     // if user paste into input using mouse, we need "change" event to catch it
-    element.bind('change', listener);
+    element.on('change', listener);
 
     // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
     if ($sniffer.hasEvent('paste')) {
-      element.bind('paste cut', deferListener);
+      element.on('paste cut', deferListener);
     }
   }
 
@@ -475,8 +475,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         var patternObj = scope.$eval(pattern);
 
         if (!patternObj || !patternObj.test) {
-          throw ngError(5, 'ngPattern error! Expected {0} to be a RegExp but was {1}. Element: {2}',
-                                                      pattern,                   patternObj,   startingTag(element));
+          throw minErr('ngPattern')('noregexp', 
+            'Expected {0} to be a RegExp but was {1}. Element: {2}', pattern, 
+            patternObj, startingTag(element));
         }
         return validate(patternObj, value);
       };
@@ -623,7 +624,7 @@ function radioInputType(scope, element, attr, ctrl) {
     element.attr('name', nextUid());
   }
 
-  element.bind('click', function() {
+  element.on('click', function() {
     if (element[0].checked) {
       scope.$apply(function() {
         ctrl.$setViewValue(attr.value);
@@ -646,7 +647,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
-  element.bind('click', function() {
+  element.on('click', function() {
     scope.$apply(function() {
       ctrl.$setViewValue(element[0].checked);
     });
@@ -813,12 +814,21 @@ var VALID_CLASS = 'ng-valid',
  *
  * @property {string} $viewValue Actual string value in the view.
  * @property {*} $modelValue The value in the model, that the control is bound to.
- * @property {Array.<Function>} $parsers Whenever the control reads value from the DOM, it executes
- *     all of these functions to sanitize / convert the value as well as validate.
+ * @property {Array.<Function>} $parsers Array of functions to execute, as a pipeline, whenever
+       the control reads value from the DOM.  Each function is called, in turn, passing the value
+       through to the next. Used to sanitize / convert the value as well as validation.
  *
- * @property {Array.<Function>} $formatters Whenever the model value changes, it executes all of
- *     these functions to convert the value as well as validate.
- *
+ * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
+       the model value changes. Each function is called, in turn, passing the value through to the
+       next. Used to format / convert values for display in the control and validation.
+ *      <pre>
+ *      function formatter(value) {
+ *        if (value) {
+ *          return value.toUpperCase();
+ *        }
+ *      }
+ *      ngModel.$formatters.push(formatter);
+ *      </pre>
  * @property {Object} $error An object hash with all errors as keys.
  *
  * @property {boolean} $pristine True if user has not interacted with the control yet.
@@ -866,7 +876,7 @@ var VALID_CLASS = 'ng-valid',
               };
 
               // Listen for change events to enable binding
-              element.bind('blur keyup change', function() {
+              element.on('blur keyup change', function() {
                 scope.$apply(read);
               });
               read(); // initialize
@@ -919,8 +929,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ngModelSet = ngModelGet.assign;
 
   if (!ngModelSet) {
-    throw ngError(6, "ngModel error! Expression '{0}' is non-assignable. Element: {1}", $attr.ngModel,
-        startingTag($element));
+    throw minErr('ngModel')('noass', "Expression '{0}' is non-assignable. Element: {1}", 
+        $attr.ngModel, startingTag($element));
   }
 
   /**
@@ -1087,7 +1097,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * @element input
  *
  * @description
- * Is directive that tells Angular to do two-way data binding. It works together with `input`,
+ * Is a directive that tells Angular to do two-way data binding. It works together with `input`,
  * `select`, `textarea`. You can easily write your own directives to use `ngModel` as well.
  *
  * `ngModel` is responsible for:
@@ -1098,6 +1108,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - keeping state of the control (valid/invalid, dirty/pristine, validation errors),
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
  * - register the control with parent {@link ng.directive:form form}.
+ * 
+ * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
+ * current scope. If the property doesn't already exist on this scope, it will be created
+ * implicitly and added to the scope.
  *
  * For basic examples, how to use `ngModel`, see:
  *
@@ -1124,7 +1138,7 @@ var ngModelDirective = function() {
 
       formCtrl.$addControl(modelCtrl);
 
-      element.bind('$destroy', function() {
+      element.on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
       });
     }

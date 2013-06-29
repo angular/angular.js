@@ -33,7 +33,7 @@ var htmlAnchorDirective = valueFn({
     }
 
     return function(scope, element) {
-      element.bind('click', function(event){
+      element.on('click', function(event){
         // if we have no href url, then don't navigate anywhere.
         if (!element.attr('href')) {
           event.preventDefault();

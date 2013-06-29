@@ -534,7 +534,7 @@ describe('$compile', function() {
           expect(div.hasClass('log')).toBe(true);
           expect(div.css('width')).toBe('10px');
           expect(div.css('height')).toBe('20px');
-          expect(div.attr('replace')).toEqual('');
+          expect(div.attr('replace')).toEqual(undefined);
           expect(div.attr('high-log')).toEqual('');
         }));
 
@@ -632,11 +632,11 @@ describe('$compile', function() {
           inject(function($compile) {
             expect(function() {
               $compile('<p no-root-elem></p>');
-            }).toThrow("[NgErr12] Template for directive 'noRootElem' must have exactly one root element.");
+            }).toThrow("[$compile:tplrt] Template for directive 'noRootElem' must have exactly one root element. ");
 
             expect(function() {
               $compile('<p multi-root-elem></p>');
-            }).toThrow("[NgErr12] Template for directive 'multiRootElem' must have exactly one root element.");
+            }).toThrow("[$compile:tplrt] Template for directive 'multiRootElem' must have exactly one root element. ");
 
             // ws is ok
             expect(function() {
@@ -856,7 +856,7 @@ describe('$compile', function() {
           $rootScope.$digest();
 
           expect(sortedHtml(element)).
-            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
+            toEqual('<div><b class="hello"><span>Hello, Elvis!</span></b></div>');
         }));
 
 
@@ -868,7 +868,7 @@ describe('$compile', function() {
               $rootScope.$digest();
 
               expect(sortedHtml(element)).
-                  toEqual('<span replace="">Hello, Elvis!</span>');
+                  toEqual('<span>Hello, Elvis!</span>');
             }));
 
 
@@ -985,7 +985,7 @@ describe('$compile', function() {
 
               expect(function() {
                 $httpBackend.flush();
-              }).toThrow('[NgErr17] Failed to load template: hello.html');
+              }).toThrow('[$compile:tpload] Failed to load template: hello.html');
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
@@ -1005,7 +1005,7 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('[NgErr18] Multiple directives [sync, async] asking for template on: '+
+            }).toThrow('[$compile:multidir] Multiple directives [sync, async] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1077,7 +1077,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual('');
+            expect(div.attr('i-second')).toEqual(undefined);
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
@@ -1127,7 +1127,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual('');
+            expect(div.attr('i-second')).toEqual(undefined);
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
@@ -1189,14 +1189,14 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
+                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[NgErr16] Template for directive 'template' must have exactly one root element. Template: template.html");
+                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -1456,7 +1456,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrow('[NgErr18] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1466,7 +1466,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrow('[NgErr18] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
+            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -2074,7 +2074,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("[NgErr14] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrow("[$compile:noass] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -2150,7 +2150,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow("[NgErr15] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
+      }).toThrow("[$compile:iscp] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
     }));
 
     it('should expose a $$isolateBindings property onto the scope', inject(function() {
@@ -2247,7 +2247,7 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         expect(function() {
           $compile('<div main><div dep></div></div>')($rootScope);
-        }).toThrow("[NgErr13] Controller 'main', required by directive 'dep', can't be found!");
+        }).toThrow("[$compile:ctreq] Controller 'main', required by directive 'dep', can't be found!");
       });
     });
 
@@ -2434,7 +2434,7 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('[NgErr18] Multiple directives [first, second] asking for transclusion on: ' +
+        }).toThrow('[$compile:multidir] Multiple directives [first, second] asking for transclusion on: ' +
             '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
@@ -2536,7 +2536,156 @@ describe('$compile', function() {
   });
 
 
-  describe('href sanitization', function() {
+  describe('img[src] sanitization', function() {
+    it('should NOT require trusted values for img src', inject(function($rootScope, $compile) {
+      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+      $rootScope.testUrl = 'http://example.com/image.png';
+      $rootScope.$digest();
+      expect(element.attr('src')).toEqual('http://example.com/image.png');
+    }));
+
+    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
+      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.$apply();
+
+      expect(element.attr('src')).toBe('unsafe:data:evilPayload');
+    }));
+
+
+    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+
+      // case-sensitive
+      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
+
+      // tab in protocol
+      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].src).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // space before
+      $rootScope.testUrl = " javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
+
+      // ws chars before
+      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
+      $rootScope.$apply();
+      expect(element[0].src).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
+
+      // post-fixed with proper url
+      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      $rootScope.$apply();
+      expect(element[0].src).toBeOneOf(
+          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
+          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
+      );
+    }));
+
+    it('should sanitize ng-src bindings as well', inject(function($compile, $rootScope) {
+      element = $compile('<img ng-src="{{testUrl}}"></img>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
+    }));
+
+
+    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+
+      $rootScope.testUrl = "foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('foo/bar');
+
+      $rootScope.testUrl = "/foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('/foo/bar');
+
+      $rootScope.testUrl = "../foo/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('../foo/bar');
+
+      $rootScope.testUrl = "#foo";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('#foo');
+
+      $rootScope.testUrl = "http://foo.com/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('http://foo.com/bar');
+
+      $rootScope.testUrl = " http://foo.com/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe(' http://foo.com/bar');
+
+      $rootScope.testUrl = "https://foo.com/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('https://foo.com/bar');
+
+      $rootScope.testUrl = "ftp://foo.com/bar";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('ftp://foo.com/bar');
+
+      // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
+      if (!msie || msie > 10) {
+        $rootScope.testUrl = "mailto:foo@bar.com";
+        $rootScope.$apply();
+        expect(element.attr('src')).toBe('mailto:foo@bar.com');
+      }
+
+      $rootScope.testUrl = "file:///foo/bar.html";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('file:///foo/bar.html');
+    }));
+
+
+    it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
+      element = $compile('<img title="{{testUrl}}"></img>')($rootScope);
+      $rootScope.testUrl = "javascript:doEvilStuff()";
+      $rootScope.$apply();
+
+      expect(element.attr('title')).toBe('javascript:doEvilStuff()');
+    }));
+
+
+    it('should allow reconfiguration of the src whitelist', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect(returnVal).toBe($compileProvider);
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+
+        // Fails on IE < 10 with "TypeError: Object doesn't support this property or method" when
+        // trying to set img[src]
+        if (!msie || msie > 10) {
+          $rootScope.testUrl = "javascript:doEvilStuff()";
+          $rootScope.$apply();
+          expect(element.attr('src')).toBe('javascript:doEvilStuff()');
+        }
+
+        $rootScope.testUrl = "http://recon/figured";
+        $rootScope.$apply();
+        expect(element.attr('src')).toBe('unsafe:http://recon/figured');
+      });
+    });
+
+  });
+
+
+  describe('a[href] sanitization', function() {
 
     it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
       element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
@@ -2682,6 +2831,36 @@ describe('$compile', function() {
     });
   });
 
+  describe('interpolation on HTML DOM event handler attributes onclick, onXYZ, formaction', function() {
+    it('should disallow interpolation on onclick', inject(function($compile, $rootScope) {
+      // All interpolations are disallowed.
+      $rootScope.onClickJs = "";
+      expect(function() {
+          $compile('<button onclick="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+      expect(function() {
+          $compile('<button ONCLICK="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+      expect(function() {
+          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>')($rootScope);
+        }).toThrow(
+          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+          "Please use the ng- versions (such as ng-click instead of onclick) instead.");
+    }));
+
+    it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
+      element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
+      $rootScope.onClickJs = 'javascript:doSomething()';
+      $rootScope.$apply();
+      expect(element.attr('on-click')).toEqual('javascript:doSomething()');
+    }));
+  });
+
+
   describe('ngAttr* attribute binding', function() {
 
     it('should bind after digest but not before', inject(function($compile, $rootScope) {
@@ -2747,6 +2926,19 @@ describe('$compile', function() {
     }));
 
 
+    it('should support grouping over text nodes', inject(function($compile, $rootScope) {
+      $rootScope.show = false;
+      element = $compile(
+          '<div>' +
+              '<span ng-repeat-start="i in [1,2]">{{i}}A</span>' +
+              ':' + // Important: proves that we can iterate over non-elements
+              '<span ng-repeat-end>{{i}}B;</span>' +
+          '</div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('1A:1B;2A:2B;');
+    }));
+
+
     it('should group on $root compile function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
@@ -2803,7 +2995,7 @@ describe('$compile', function() {
               '<div>' +
                 '<span foo-start></span>' +
               '</div>');
-        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -2821,7 +3013,7 @@ describe('$compile', function() {
               '<div>' +
                   '<span foo-start><span foo-end></span></span>' +
               '</div>');
-        }).toThrow("[NgErr51] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 

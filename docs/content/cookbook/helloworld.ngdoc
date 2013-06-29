@@ -10,9 +10,9 @@
     }
   </script>
   <div ng-controller="HelloCntl">
-    Your name: <input type="text" ng-model="name" value="World"/>
+    Your name: <input type="text" ng-model="name"/>
     <hr/>
-    Hello {{name}}!
+    Hello {{name || "World"}}!
   </div>
  </doc:source>
  <doc:scenario>

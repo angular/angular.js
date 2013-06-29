@@ -11,6 +11,12 @@ var docs;
 writer.makeDir('build/docs/', true).then(function() {
   return writer.makeDir('build/docs/partials/');
 }).then(function() {
+  return writer.makeDir('build/docs/components/');
+}).then(function() {
+  return writer.makeDir('build/docs/components/bootstrap');
+}).then(function() {
+  return writer.makeDir('build/docs/components/font-awesome');
+}).then(function() {
   console.log('Generating AngularJS Reference Documentation...');
   return reader.collect();
 }).then(function generateHtmlDocPartials(docs_) {
@@ -37,13 +43,29 @@ writer.makeDir('build/docs/', true).then(function() {
 
 function writeTheRest(writesFuture) {
   var metadata = ngdoc.metadata(docs);
+  var versions = ngdoc.ngVersions();
+  var currentVersion = ngdoc.ngCurrentVersion();
 
+  writesFuture.push(writer.symlink('../../docs/content/notes', 'build/docs/notes', 'dir'));
   writesFuture.push(writer.symlinkTemplate('css', 'dir'));
-  writesFuture.push(writer.symlinkTemplate('font', 'dir'));
   writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
   writesFuture.push(writer.symlinkTemplate('js', 'dir'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
+
+  writesFuture.push(writer.copyDir('components/components-font-awesome/css', 'components/font-awesome/css'));
+  writesFuture.push(writer.copyDir('components/components-font-awesome/font', 'components/font-awesome/font'));
+  writesFuture.push(writer.copyDir('components/bootstrap', 'components/bootstrap'));
+
+  writesFuture.push(writer.copy('node_modules/showdown/src/showdown.js', 'components/showdown.js'));
+  writesFuture.push(writer.copy('node_modules/showdown/compressed/showdown.js', 'components/showdown.min.js'));
+  writesFuture.push(writer.copy('components/lunr.js/lunr.js', 'components/lunr.js'));
+  writesFuture.push(writer.copy('components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
+  writesFuture.push(writer.copy('components/jquery/jquery.js', 'components/jquery.js'));
+  writesFuture.push(writer.copy('components/jquery/jquery.min.js', 'components/jquery.min.js'));
+  writesFuture.push(writer.copy('components/google-code-prettify/src/prettify.js', 'components/google-code-prettify.js'));
+  writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap.js', 'components/angular-bootstrap.js'));
+  writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap-prettify.js', 'components/angular-bootstrap-prettify.js'));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'index.html',
                                 writer.replace, {'doc:manifest': ''})); //manifest //TODO(i): enable
@@ -70,8 +92,12 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyTemplate('docs-scenario.html')); // will be rewritten, don't symlink
   writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
 
-  writesFuture.push(writer.output('docs-keywords.js',
-                                ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
+  writesFuture.push(writer.output('docs-data.js',[
+    "angular.module('docsData', [])",
+    ".value('NG_PAGES'," + JSON.stringify(metadata).replace(/{/g, '\n{') + ")",
+    ".value('NG_VERSION'," + JSON.stringify(currentVersion) + ")",
+    ".value('NG_VERSIONS'," + JSON.stringify(versions) + ");"
+  ]));
   writesFuture.push(writer.output('sitemap.xml', new SiteMap(docs).render()));
 
   writesFuture.push(writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n'));

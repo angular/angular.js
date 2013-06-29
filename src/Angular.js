@@ -54,6 +54,7 @@ var /** holds major version number for IE or NaN for real browsers */
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,
+    ngMinErr          = minErr('ng'),
 
 
     _angular          = window.angular,
@@ -62,24 +63,6 @@ var /** holds major version number for IE or NaN for real browsers */
     angularModule,
     nodeName_,
     uid               = ['0', '0', '0'];
-
-/**
- * @ngdoc function
- * @name angular.noConflict
- * @function
- *
- * @description
- * Restores the previous global value of angular and returns the current instance. Other libraries may already use the
- * angular namespace. Or a previous version of angular is already loaded on the page. In these cases you may want to
- * restore the previous namespace and keep a reference to angular.
- *
- * @return {Object} The current angular namespace
- */
-function noConflict() {
-  var a = window.angular;
-  window.angular = _angular;
-  return a;
-}
 
 /**
  * @private
@@ -473,7 +456,7 @@ function trim(value) {
 function isElement(node) {
   return node &&
     (node.nodeName  // we are a direct element
-    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
+    || (node.on && node.find));  // we have an on and find method part of jQuery API
 }
 
 /**
@@ -593,7 +576,7 @@ function isLeafNode (node) {
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) {
-    throw ngError(43, "Can't copy! Making copies of Window or Scope instances is not supported.");
+    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
   }
 
   if (!destination) {
@@ -608,7 +591,7 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw ngError(44, "Can't copy! Source and destination are identical.");
+    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
     if (isArray(source)) {
       destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
@@ -841,16 +824,35 @@ function startingTag(element) {
 /////////////////////////////////////////////////
 
 /**
+ * Tries to decode the URI component without throwing an exception.
+ *
+ * @private
+ * @param str value potential URI component to check.
+ * @returns {boolean} True if `value` can be decoded
+ * with the decodeURIComponent function.
+ */
+function tryDecodeURIComponent(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch(e) {
+    // Ignore any invalid uri component
+  }
+}
+
+
+/**
  * Parses an escaped url query string into key-value pairs.
  * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
   forEach((keyValue || "").split('&'), function(keyValue){
-    if (keyValue) {
+    if ( keyValue ) {
       key_value = keyValue.split('=');
-      key = decodeURIComponent(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
+      key = tryDecodeURIComponent(key_value[0]);
+      if ( isDefined(key) ) {
+        obj[key] = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+      }
     }
   });
   return obj;
@@ -916,9 +918,13 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @description
  *
  * Use this directive to auto-bootstrap an application. Only
- * one directive can be used per HTML document. The directive
+ * one ngApp directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
  * at the root of the page.
+ * 
+ * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in an 
+ * HTML document you must manually bootstrap them using {@link angular.bootstrap}. 
+ * Applications cannot be nested.
  *
  * In the example below if the `ngApp` directive would not be placed
  * on the `html` element then the document would not be compiled
@@ -990,7 +996,7 @@ function angularInit(element, bootstrap) {
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
-  var resumeBootstrapInternal = function() {
+  var doBootstrap = function() {
     element = jqLite(element);
     modules = modules || [];
     modules.unshift(['$provide', function($provide) {
@@ -1013,7 +1019,7 @@ function bootstrap(element, modules) {
   var NG_DEFER_BOOTSTRAP = /^NG_DEFER_BOOTSTRAP!/;
 
   if (window && !NG_DEFER_BOOTSTRAP.test(window.name)) {
-    return resumeBootstrapInternal();
+    return doBootstrap();
   }
 
   window.name = window.name.replace(NG_DEFER_BOOTSTRAP, '');
@@ -1021,7 +1027,7 @@ function bootstrap(element, modules) {
     forEach(extraModules, function(module) {
       modules.push(module);
     });
-    resumeBootstrapInternal();
+    doBootstrap();
   };
 }
 
@@ -1060,7 +1066,7 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    throw ngError(45, "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
+    throw ngMinErr('areq', "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
   }
   return arg;
 }
@@ -1073,4 +1079,31 @@ function assertArgFn(arg, name, acceptArrayAnnotation) {
   assertArg(isFunction(arg), name, 'not a function, got ' +
       (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;
+}
+
+/**
+ * Return the value accessible from the object by path. Any undefined traversals are ignored
+ * @param {Object} obj starting object
+ * @param {string} path path to traverse
+ * @param {boolean=true} bindFnToScope
+ * @returns value as accessible by path
+ */
+//TODO(misko): this function needs to be removed
+function getter(obj, path, bindFnToScope) {
+  if (!path) return obj;
+  var keys = path.split('.');
+  var key;
+  var lastInstance = obj;
+  var len = keys.length;
+
+  for (var i = 0; i < len; i++) {
+    key = keys[i];
+    if (obj) {
+      obj = (lastInstance = obj)[key];
+    }
+  }
+  if (!bindFnToScope && isFunction(obj)) {
+    return bind(lastInstance, obj);
+  }
+  return obj;
 }
