@@ -3,7 +3,20 @@
  * @name ng.$cacheFactory
  *
  * @description
- * Factory that constructs cache objects.
+ * Factory that constructs cache objects and gives access to them.
+ * 
+ * <pre>
+ * 
+ *  var cache = $cacheFactory('cacheId');
+ *  expect($cacheFactory.get('cacheId')).toBe(cache);
+ *  expect($cacheFactory.get('noSuchCacheId')).not.toBeDefined();
+ *
+ *  cache.put("key", "value");
+ *  cache.put("another key", "another value");
+ * 
+ *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); // Since we've specified no options on creation
+ * 
+ * </pre>
  *
  *
  * @param {string} cacheId Name or id of the newly created cache.
