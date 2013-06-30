@@ -3,7 +3,20 @@
  * @name ng.$cacheFactory
  *
  * @description
- * Factory that constructs cache objects.
+ * Factory that constructs cache objects and gives access to them.
+ * 
+ * <pre>
+ * 
+ *  var cache = $cacheFactory('cacheId');
+ *  expect($cacheFactory.get('cacheId')).toBe(cache);
+ *  expect($cacheFactory.get('noSuchCacheId')).not.toBeDefined();
+ *
+ *  cache.put("key", "value");
+ *  cache.put("another key", "another value");
+ * 
+ *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); // Since we've specified no options on creation
+ * 
+ * </pre>
  *
  *
  * @param {string} cacheId Name or id of the newly created cache.
@@ -137,6 +150,16 @@ function $CacheFactoryProvider() {
     }
 
 
+  /**
+   * @ngdoc method
+   * @name ng.$cacheFactory#info
+   * @methodOf ng.$cacheFactory
+   *
+   * @description
+   * Get information about all the of the caches that have been created
+   *
+   * @returns {Object} - key-value map of `cacheId` to the result of calling `cache#info`
+   */
     cacheFactory.info = function() {
       var info = {};
       forEach(caches, function(cache, cacheId) {
@@ -146,6 +169,17 @@ function $CacheFactoryProvider() {
     };
 
 
+  /**
+   * @ngdoc method
+   * @name ng.$cacheFactory#get
+   * @methodOf ng.$cacheFactory
+   *
+   * @description
+   * Get access to a cache object by the `cacheId` used when it was created.
+   *
+   * @param {string} cacheId Name or id of a cache to access.
+   * @returns {object} Cache object identified by the cacheId or undefined if no such cache.
+   */
     cacheFactory.get = function(cacheId) {
       return caches[cacheId];
     };
