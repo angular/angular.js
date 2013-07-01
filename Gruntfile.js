@@ -9,6 +9,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-jasmine-node');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-parallel');
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
@@ -22,6 +23,21 @@ module.exports = function(grunt) {
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
+
+    parallel: {
+      travis: {
+        options: {
+          stream: true,
+        },
+        tasks: [
+          util.parallelTask('test:docs'),
+          util.parallelTask('test:modules'),
+          util.parallelTask('test:jquery'),
+          util.parallelTask('test:jqlite'),
+          util.parallelTask('test:e2e')
+        ]
+      }
+    },
 
     connect: {
       devserver: {
@@ -42,7 +58,24 @@ module.exports = function(grunt) {
           }
         }
       },
-      testserver: {}
+      testserver: {
+        options: {
+          middleware: function(connect, options){
+            return [
+              function(req, resp, next) {
+                // cache get requests to speed up tests on travis
+                if (req.method === 'GET') {
+                  resp.setHeader('Cache-control', 'public, max-age=3600');
+                }
+
+                next();
+              },
+              connect.favicon('images/favicon.ico'),
+              connect.static(options.base)
+            ];
+          }
+        }
+      }
     },
 
 

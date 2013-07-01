@@ -13,8 +13,7 @@ before_script:
   - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
   - grunt package
-  - grunt webserver > /dev/null &
   - ./lib/sauce/sauce_connect_block.sh
 
 script:
-  - grunt test --reporters dots --browsers SL_Chrome
+  - grunt parallel:travis --reporters dots --browsers SL_Chrome
