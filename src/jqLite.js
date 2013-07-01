@@ -92,7 +92,7 @@ function jqNextId() { return ++jqId; }
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
-var jqLiteError = minErr('jqLite');
+var jqLiteMinErr = minErr('jqLite');
 
 /**
  * Converts snake_case to camelCase.
@@ -156,7 +156,7 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (isString(element) && element.charAt(0) != '<') {
-      throw jqLiteError('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
+      throw jqLiteMinErr('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
     }
     return new JQLite(element);
   }
@@ -187,7 +187,7 @@ function JQLiteDealoc(element){
 }
 
 function JQLiteOff(element, type, fn) {
-  if ( arguments.length > 4 ) throw jqLiteError('off_args', 'jqLite#off() does not support the `selector` parameter');
+  if ( arguments.length > 4 ) throw jqLiteMinErr('off_args', 'jqLite#off() does not support the `selector` parameter');
 
   var events = JQLiteExpandoStore(element, 'events'),
       handle = JQLiteExpandoStore(element, 'handle');
@@ -615,8 +615,8 @@ forEach({
   dealoc: JQLiteDealoc,
 
   on: function onFn(element, type, fn, other1){
-    if ( isDefined(other1) ) throw jqLiteError('on_args', 'jqLite#on() does not support the `selector` or `eventData` parameters');
-    
+    if ( isDefined(other1) ) throw jqLiteMinErr('on_args', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+
     var events = JQLiteExpandoStore(element, 'events'),
         handle = JQLiteExpandoStore(element, 'handle');
 
