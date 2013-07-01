@@ -5,6 +5,7 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     logColors: true,
     browsers: ['Chrome'],
+    runnerPort: 0,
 
     // config for Travis CI
     sauceLabs: {
