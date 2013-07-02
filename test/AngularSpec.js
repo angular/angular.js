@@ -605,7 +605,9 @@ describe('angular', function() {
 
       expect(function() {
         angularInit(appElement, bootstrap);
-      }).toThrow("[$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it.");
+      }).toThrowMatching(
+        /\[\$injector:modulerr] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./
+      );
     });
   });
 
@@ -749,7 +751,8 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
-      }).toThrow("[$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it.");
+      }).toThrowMatching(
+          /\[\$injector:modulerr\] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod\] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./);
 
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);

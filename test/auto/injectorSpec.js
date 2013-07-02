@@ -268,8 +268,9 @@ describe('injector', function() {
     it('should error on invalid module name', function() {
       expect(function() {
         createInjector(['IDontExist'], {});
-      }).toThrow("[$injector:nomod] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it.");
-
+      }).toThrowMatching(
+          /\[\$injector:modulerr\].+\n.*\[\$injector:nomod] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it/
+      );
     });
 
 
@@ -552,7 +553,7 @@ describe('injector', function() {
           createInjector([
             {}
           ], {});
-        }).toThrow("[ng:areq] Argument 'module' is not a function, got Object");
+        }).toThrowMatching(/\[\$injector:modulerr\] Failed to instantiate module {} due to:\n.*\[ng\:areq] Argument 'module' is not a function, got Object/);
       });
 
 
@@ -561,15 +562,17 @@ describe('injector', function() {
           createInjector([function() {
             throw 'MyError';
           }], {});
-        }).toThrow('MyError');
+        }).toThrowMatching(/\[\$injector:modulerr\] Failed to instantiate module .+ due to:\n.*MyError/);
       });
 
 
       it('should decorate the missing service error with module name', function() {
         angular.module('TestModule', [], function(xyzzy) {});
         expect(function() {
-          createInjector(['TestModule']);
-        }).toThrow('[$injector:unpr] Unknown provider: xyzzy from TestModule');
+          createInjector(['TestModule' ]);
+        }).toThrowMatching(
+            /\[\$injector:modulerr\] Failed to instantiate module TestModule due to:\n.*\[\$injector:unpr] Unknown provider: xyzzy/
+        );
       });
 
 
@@ -577,7 +580,9 @@ describe('injector', function() {
         function myModule(xyzzy){}
         expect(function() {
           createInjector([myModule]);
-        }).toThrow('[$injector:unpr] Unknown provider: xyzzy from ' + myModule);
+        }).toThrowMatching(
+            /\[\$injector:modulerr\] Failed to instantiate module function myModule\(xyzzy\) due to:\n.*\[\$injector:unpr] Unknown provider: xyzzy/
+        );
       });
 
 
@@ -585,7 +590,9 @@ describe('injector', function() {
         function myModule(xyzzy){}
         expect(function() {
           createInjector([['xyzzy', myModule]]);
-        }).toThrow('[$injector:unpr] Unknown provider: xyzzy from ' + myModule);
+        }).toThrowMatching(
+            /\[\$injector:modulerr\] Failed to instantiate module function myModule\(xyzzy\) due to:\n.*\[\$injector:unpr] Unknown provider: xyzzy/
+        );
       });
 
 
@@ -801,7 +808,7 @@ describe('injector', function() {
         createInjector([function($provide) {
           $provide.value('name', 'angular')
         }, instanceLookupInModule]);
-      }).toThrow('[$injector:unpr] Unknown provider: name from ' + String(instanceLookupInModule));
+      }).toThrowMatching(/\[\$injector:unpr] Unknown provider: name/);
     });
   });
 });
