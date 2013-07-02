@@ -527,13 +527,13 @@ describe('ngRepeat', function() {
         inject(function($templateCache, $compile, $rootScope) {
       $compileProvider.directive('replaceMeWithRepeater', function() {
         return {
-          restrict: 'A',
+          restrict: 'E',
           replace: true,
           templateUrl: 'replace-me-with-repeater.html'
         };
       });
       $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
-      element = $compile('<div><div replace-me-with-repeater></div></div>')($rootScope);
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
       expect(element.text()).toBe('');
       $rootScope.$apply();
       expect(element.text()).toBe('123');
