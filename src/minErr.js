@@ -3,7 +3,7 @@
 /**
  * @description
  *
- * This object provides a utility for producing rich Error messages within 
+ * This object provides a utility for producing rich Error messages within
  * Angular. It can be called as follows:
  *
  * var exampleMinErr = minErr('example');
@@ -34,14 +34,14 @@ function minErr(module) {
       template = arguments[1],
       templateArgs = arguments,
       message;
-    
+
     message = prefix + template.replace(/\{\d+\}/g, function (match) {
       var index = +match.slice(1, -1), arg;
 
       if (index + 2 < templateArgs.length) {
         arg = templateArgs[index + 2];
         if (isFunction(arg)) {
-          return arg.toString().replace(/ \{[\s\S]*$/, '');
+          return arg.toString().replace(/ ?\{[\s\S]*$/, '');
         } else if (isUndefined(arg)) {
           return 'undefined';
         } else if (!isString(arg)) {
