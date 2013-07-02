@@ -9,6 +9,7 @@ env:
     - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
 
 before_script:
+  - java -version
   - export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
   - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
