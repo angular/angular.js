@@ -212,7 +212,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 it('should show example', inject(
   function($locationProvider) {
     $locationProvider.html5Mode(false);
-    $locationProvider.hashPrefix = '!';
+    $locationProvider.hashPrefix('!');
   },
   function($location) {
     // open http://host.com/base/index.html#!/a
@@ -261,7 +261,7 @@ having to worry about whether the browser displaying your app supports the histo
 it('should show example', inject(
   function($locationProvider) {
     $locationProvider.html5Mode(true);
-    $locationProvider.hashPrefix = '!';
+    $locationProvider.hashPrefix('!');
   },
   function($location) {
     // in browser with HTML5 history support:
