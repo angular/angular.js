@@ -299,7 +299,7 @@ function FormController(element, attrs) {
     </doc:example>
  */
 var formDirectiveFactory = function(isNgForm) {
-  return ['$timeout', function($timeout) {
+  return ['$timeout', '$parse', function($timeout, $parse) {
     var formDirective = {
       name: 'form',
       restrict: 'E',
@@ -335,13 +335,13 @@ var formDirectiveFactory = function(isNgForm) {
                 alias = attr.name || attr.ngForm;
 
             if (alias) {
-              scope[alias] = controller;
+              $parse(alias).assign(scope, controller);
             }
             if (parentFormCtrl) {
               formElement.on('$destroy', function() {
                 parentFormCtrl.$removeControl(controller);
                 if (alias) {
-                  scope[alias] = undefined;
+                  $parse(alias).assign(scope, undefined);
                 }
                 extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
               });
