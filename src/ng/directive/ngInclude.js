@@ -159,6 +159,13 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           var thisChangeId = ++changeCounter;
 
           if (src) {
+            var selector;
+            var off = src.indexOf(" ");
+            if (off >= 0) {
+              selector = trim(src.slice(off));
+              src = src.slice(0, off);
+            }
+
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
 
@@ -166,7 +173,13 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               childScope = scope.$new();
               animate.leave(element.contents(), element);
 
-              var contents = jqLite('<div/>').html(response).contents();
+              var contents;
+              if (selector) {
+                  contents = jqLite('<div/>').html(response).find(selector);
+              }
+              else {
+                  contents = jqLite('<div/>').html(response).contents();
+              }
 
               animate.enter(contents, element);
               $compile(contents)(childScope);
