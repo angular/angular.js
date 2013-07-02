@@ -23,6 +23,13 @@
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
+ *                 If one or more space characters are included in the string,
+ *                 the portion of the string following the first space is
+ *                 assumed to be a selector that determines a fragment of the
+ *                 content to load, e.g. `src="{{myURL}} + ' div'"`.  If jQuery
+ *                 is available, the selector can be a full jQuery selector,
+ *                 but otherwise it falls back to jqLite which only supports
+ *                 element-name selectors.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
