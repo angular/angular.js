@@ -494,37 +494,36 @@ function createInjector(modulesToLoad) {
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
-      if (isString(module)) {
-        var moduleFn = angularModule(module);
-        runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
 
-        try {
+      try {
+        if (isString(module)) {
+          var moduleFn = angularModule(module);
+          runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
+
           for(var invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
             var invokeArgs = invokeQueue[i],
                 provider = providerInjector.get(invokeArgs[0]);
 
             provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
           }
-        } catch (e) {
-          if (e.message) e.message += ' from ' + module;
-          throw e;
+        } else if (isFunction(module)) {
+            runBlocks.push(providerInjector.invoke(module));
+        } else if (isArray(module)) {
+            runBlocks.push(providerInjector.invoke(module));
+        } else {
+          assertArgFn(module, 'module');
         }
-      } else if (isFunction(module)) {
-        try {
-          runBlocks.push(providerInjector.invoke(module));
-        } catch (e) {
-          if (e.message) e.message += ' from ' + module;
-          throw e;
+      } catch (e) {
+        if (isArray(module)) {
+          module = module[module.length - 1];
         }
-      } else if (isArray(module)) {
-        try {
-          runBlocks.push(providerInjector.invoke(module));
-        } catch (e) {
-          if (e.message) e.message += ' from ' + String(module[module.length - 1]);
-          throw e;
+        if (e.message && e.stack && e.stack.indexOf(e.message) == -1) {
+          // Safari & FF's stack traces don't contain error.message content unlike those of Chrome and IE
+          // So if stack doesn't contain message, we create a new string that contains both.
+          // Since error.stack is read-only in Safari, I'm overriding e and not e.stack here.
+          e = e.message + '\n' + e.stack;
         }
-      } else {
-        assertArgFn(module, 'module');
+        throw $injectorMinErr('modulerr', "Failed to instantiate module {0} due to:\n{1}", module, e.stack || e.message || e);
       }
     });
     return runBlocks;
