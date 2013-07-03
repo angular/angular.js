@@ -10,6 +10,8 @@
     "grunt-contrib-connect": "0.1.2",
     "grunt-contrib-copy": "0.4.1",
     "grunt-parallel": "~0.2.0",
+    "grunt-ddescribe-iit": "~0.0.1",
+    "grunt-merge-conflict": "~0.0.1",
     "jasmine-node": "1.2.3",
     "q": "~0.9.2",
     "q-fs": "0.1.36",

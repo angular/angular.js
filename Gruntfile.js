@@ -7,6 +7,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-compress');
+  grunt.loadNpmTasks('grunt-ddescribe-iit');
+  grunt.loadNpmTasks('grunt-merge-conflict');
   grunt.loadNpmTasks('grunt-parallel');
   grunt.loadTasks('lib/grunt');
 
@@ -169,6 +171,23 @@ module.exports = function(grunt) {
     },
 
 
+    "ddescribe-iit": {
+      files: [
+        'test/**/*.js',
+        '!test/ngScenario/DescribeSpec.js'
+      ]
+    },
+
+    "merge-conflict": {
+      files: [
+        'src/**/*',
+        'test/**/*',
+        'docs/**/*',
+        'css/**/*'
+      ]
+    },
+
+
     copy: {
       i18n: {
         files: [
@@ -199,5 +218,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['clean', 'buildall', 'minall', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict']);
   grunt.registerTask('default', ['package']);
 };
