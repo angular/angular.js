@@ -362,7 +362,7 @@ function $CompileProvider($provide) {
 
     //================================
 
-    function compile($compileNodes, transcludeFn, maxPriority) {
+    function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can modify it.
         $compileNodes = jqLite($compileNodes);
@@ -375,7 +375,7 @@ function $CompileProvider($provide) {
           $compileNodes[index] = node = jqLite(node).wrap('<span></span>').parent()[0];
         }
       });
-      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority);
+      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority, ignoreDirective);
       return function publicLinkFn(scope, cloneConnectFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
@@ -422,7 +422,7 @@ function $CompileProvider($provide) {
      * @param {number=} max directive priority
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
-    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority) {
+    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective) {
       var linkFns = [],
           nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
 
@@ -430,7 +430,7 @@ function $CompileProvider($provide) {
         attrs = new Attributes();
 
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
-        directives = collectDirectives(nodeList[i], [], attrs, i == 0 ? maxPriority : undefined);
+        directives = collectDirectives(nodeList[i], [], attrs, i == 0 ? maxPriority : undefined, ignoreDirective);
 
         nodeLinkFn = (directives.length)
             ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement)
@@ -504,7 +504,7 @@ function $CompileProvider($provide) {
      * @param attrs The shared attrs object which is used to populate the normalized attributes.
      * @param {number=} maxPriority Max directive priority.
      */
-    function collectDirectives(node, directives, attrs, maxPriority) {
+    function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
       var nodeType = node.nodeType,
           attrsMap = attrs.$attr,
           match,
@@ -514,7 +514,7 @@ function $CompileProvider($provide) {
         case 1: /* Element */
           // use the node name: <directive>
           addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority);
+              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
 
           // iterate over the attributes
           for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
@@ -545,7 +545,7 @@ function $CompileProvider($provide) {
                 attrs[nName] = true; // presence means true
               }
               addAttrInterpolateDirective(node, directives, value, nName);
-              addDirective(directives, nName, 'A', maxPriority, attrStartName, attrEndName);
+              addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName, attrEndName);
             }
           }
 
@@ -554,7 +554,7 @@ function $CompileProvider($provide) {
           if (isString(className) && className !== '') {
             while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
               nName = directiveNormalize(match[2]);
-              if (addDirective(directives, nName, 'C', maxPriority)) {
+              if (addDirective(directives, nName, 'C', maxPriority, ignoreDirective)) {
                 attrs[nName] = trim(match[3]);
               }
               className = className.substr(match.index + match[0].length);
@@ -569,7 +569,7 @@ function $CompileProvider($provide) {
             match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
             if (match) {
               nName = directiveNormalize(match[1]);
-              if (addDirective(directives, nName, 'M', maxPriority)) {
+              if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective)) {
                 attrs[nName] = trim(match[2]);
               }
             }
@@ -643,7 +643,7 @@ function $CompileProvider($provide) {
      *        argument has the root jqLite array so that we can replace nodes on it.
      * @returns linkFn
      */
-    function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn, jqCollection) {
+    function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn, jqCollection, originalReplaceDirective) {
       var terminalPriority = -Number.MAX_VALUE,
           preLinkFns = [],
           postLinkFns = [],
@@ -655,6 +655,7 @@ function $CompileProvider($provide) {
           directiveName,
           $template,
           transcludeDirective,
+          replaceDirective = originalReplaceDirective,
           childTranscludeFn = transcludeFn,
           controllerDirectives,
           linkFn,
@@ -705,7 +706,9 @@ function $CompileProvider($provide) {
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
             replaceWith(jqCollection, jqLite(sliceArgs($template)), compileNode);
-            childTranscludeFn = compile($template, transcludeFn, terminalPriority);
+
+            childTranscludeFn = compile($template, transcludeFn, terminalPriority,
+                                        replaceDirective && replaceDirective.name);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -724,6 +727,7 @@ function $CompileProvider($provide) {
           directiveValue = denormalizeTemplate(directiveValue);
 
           if (directive.replace) {
+            replaceDirective = directive;
             $template = jqLite('<div>' +
                                  trim(directiveValue) +
                                '</div>').contents();
@@ -760,9 +764,12 @@ function $CompileProvider($provide) {
         if (directive.templateUrl) {
           assertNoDuplicate('template', templateDirective, directive, $compileNode);
           templateDirective = directive;
+
+          if (directive.replace) {
+            replaceDirective = directive;
+          }
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i),
-              nodeLinkFn, $compileNode, templateAttrs, jqCollection, directive.replace,
-              childTranscludeFn);
+              nodeLinkFn, $compileNode, templateAttrs, jqCollection, childTranscludeFn);
           ii = directives.length;
         } else if (directive.compile) {
           try {
@@ -978,7 +985,8 @@ function $CompileProvider($provide) {
      *   * `M`: comment
      * @returns true if directive was added.
      */
-    function addDirective(tDirectives, name, location, maxPriority, startAttrName, endAttrName) {
+    function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName, endAttrName) {
+      if (name === ignoreDirective) return null;
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
         for(var directive, directives = $injector.get(name + Suffix),
@@ -1039,7 +1047,7 @@ function $CompileProvider($provide) {
 
 
     function compileTemplateUrl(directives, beforeTemplateNodeLinkFn, $compileNode, tAttrs,
-        $rootElement, replace, childTranscludeFn) {
+        $rootElement, childTranscludeFn) {
       var linkQueue = [],
           afterTemplateNodeLinkFn,
           afterTemplateChildLinkFn,
@@ -1047,7 +1055,7 @@ function $CompileProvider($provide) {
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
-            controller: null, templateUrl: null, transclude: null, scope: null
+            controller: null, templateUrl: null, transclude: null, scope: null, replace: null
           }),
           templateUrl = (isFunction(origAsyncDirective.templateUrl))
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
@@ -1061,7 +1069,7 @@ function $CompileProvider($provide) {
 
           content = denormalizeTemplate(content);
 
-          if (replace) {
+          if (origAsyncDirective.replace) {
             $template = jqLite('<div>' + trim(content) + '</div>').contents();
             compileNode = $template[0];
 
@@ -1080,7 +1088,8 @@ function $CompileProvider($provide) {
           }
 
           directives.unshift(derivedSyncDirective);
-          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn, $compileNode);
+
+          afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs, childTranscludeFn, $compileNode, origAsyncDirective);
           forEach($rootElement, function(node, i) {
             if (node == compileNode) {
               $rootElement[i] = $compileNode[0];

@@ -454,6 +454,63 @@ describe('ngRepeat', function() {
 
   describe('nesting in replaced directive templates', function() {
 
+    it('should work when placed on a non-root element of attr directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('rr', function() {
+        return {
+          restrict: 'A',
+          replace: true,
+          template: '<div ng-repeat="i in items">{{i}}|</div>'
+        };
+      });
+      element = jqLite('<div><span rr>{{i}}|</span></div>');
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+      expect(element.text()).toBe('');
+
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+      expect(element.text()).toBe('1|2|');
+      expect(sortedHtml(element)).toBe(
+          '<div>' +
+            '<!-- ngRepeat: i in items -->' +
+            '<div ng-repeat="i in items" rr="">1|</div>' +
+            '<div ng-repeat="i in items" rr="">2|</div>' +
+          '</div>'
+      );
+    }));
+
+
+    it('should work when placed on a non-root element of attr directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('rr', function() {
+        return {
+          restrict: 'A',
+          replace: true,
+          templateUrl: 'rr.html'
+        };
+      });
+
+      $templateCache.put('rr.html', '<div ng-repeat="i in items">{{i}}|</div>');
+
+      element = jqLite('<div><span rr>{{i}}|</span></div>');
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+      expect(element.text()).toBe('');
+
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+      expect(element.text()).toBe('1|2|');
+      expect(sortedHtml(element)).toBe(
+          '<div>' +
+              '<!-- ngRepeat: i in items -->' +
+              '<div ng-repeat="i in items" rr="">1|</div>' +
+              '<div ng-repeat="i in items" rr="">2|</div>' +
+              '</div>'
+      );
+    }));
+
+
     it('should work when placed on a root element of attr directive with SYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
       $compileProvider.directive('replaceMeWithRepeater', function() {
