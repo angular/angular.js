@@ -843,6 +843,10 @@ var VALID_CLASS = 'ng-valid',
  * specifically does not contain any logic which deals with DOM rendering or listening to
  * DOM events. The `NgModelController` is meant to be extended by other directives where, the
  * directive provides DOM manipulation and the `NgModelController` provides the data-binding.
+ * Note that you cannot use `NgModelController` in a directive with an isolated scope,
+ * as, in that case, the `ng-model` value gets put into the isolated scope and does not get
+ * propogated to the parent scope.
+ * 
  *
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
