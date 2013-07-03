@@ -229,6 +229,13 @@ var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
     yy: dateGetter('FullYear', 2, 0, true),
      y: dateGetter('FullYear', 1),
+   // THAI YEAR (BE.) is +543 years greater than AD. (that's all)
+   // http://en.wikipedia.org/wiki/Thai_solar_calendar
+   // Microsoft Excel 2003 and later uses b or B for Buddhist Calendar
+   // http://office.microsoft.com/en-us/excel-help/format-dates-using-alternate-calendars-HP005262656.aspx
+  bbbb: dateGetter('FullYear', 4, 543),
+    bb: dateGetter('FullYear', 2, 543, true),
+     b: dateGetter('FullYear', 1, 543),
   MMMM: dateStrGetter('Month'),
    MMM: dateStrGetter('Month', true),
     MM: dateGetter('Month', 2, 1),
@@ -252,7 +259,7 @@ var DATE_FORMATS = {
      Z: timeZoneGetter
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^byMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
     NUMBER_STRING = /^\d+$/;
 
 /**
