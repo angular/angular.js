@@ -83,13 +83,16 @@ DOM.prototype = {
     this.tag('div', attr, text);
   },
 
-  h: function(heading, content, fn){
+  h: function(heading, content, fn, name){
     if (content==undefined || (content instanceof Array && content.length == 0)) return;
     this.headingDepth++;
     var className = null,
         anchor = null;
     if (typeof heading == 'string') {
-      var id = heading.
+      if (name==undefined){
+          var name = heading;
+      }
+      var id = name.
           replace(/\(.*\)/mg, '').
           replace(/[^\d\w\$]/mg, '.').
           replace(/-+/gm, '-').
