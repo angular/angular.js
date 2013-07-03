@@ -269,7 +269,8 @@ Here's an example directive declared with a Directive Definition Object:
       transclude: false,
       restrict: 'A',
       scope: false,
-      controller: function($scope, $element, $attrs, $transclude, otherInjectables) { ... },
+      controller: ["$scope", "$element", "$attrs", "$transclude", "otherInjectables",
+        function($scope, $element, $attrs, $transclude, otherInjectables) { ... }],
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
