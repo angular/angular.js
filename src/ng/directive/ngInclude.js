@@ -182,10 +182,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
 
               var contents;
               if (selector) {
-                  contents = jqLite('<div/>').html(response).find(selector);
-              }
-              else {
-                  contents = jqLite('<div/>').html(response).contents();
+                contents = jqLite('<div/>').html(response).find(selector);
+              } else {
+                contents = jqLite('<div/>').html(response).contents();
               }
 
               animate.enter(contents, element);
