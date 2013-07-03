@@ -535,7 +535,8 @@ function $HttpProvider() {
      *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned to
      *      `?key1=value1&key2=value2` after the url. If the value is not a string, it will be JSONified.
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
-     *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
+     *    - **headers** – `{Object}` – Map of strings or functions which return strings representing 
+     *      HTTP headers to send to the server.
      *    - **xsrfHeaderName** – `{string}` – Name of HTTP header to populate with the XSRF token.
      *    - **xsrfCookieName** – `{string}` – Name of cookie containing the XSRF token.
      *    - **transformRequest** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
@@ -736,6 +737,10 @@ function $HttpProvider() {
 
         defHeaders = extend({}, defHeaders.common, defHeaders[lowercase(config.method)]);
 
+        // execute if header value is function
+        execHeaders(defHeaders);
+        execHeaders(reqHeaders);
+
         // using for-in instead of forEach to avoid unecessary iteration after header has been found
         defaultHeadersIteration:
         for (defHeaderName in defHeaders) {
@@ -751,6 +756,21 @@ function $HttpProvider() {
         }
 
         return reqHeaders;
+
+        function execHeaders(headers) {
+          var headerContent;
+
+          forEach(headers, function(value, header) {
+            if (isFunction(value)) {
+              headerContent = value();
+              if (headerContent != null) {
+                headers[header] = headerContent;
+              } else {
+                delete headers[header];
+              }
+            }
+          });
+        }
       }
     }
 
