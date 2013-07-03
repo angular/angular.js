@@ -749,7 +749,7 @@ function $CompileProvider($provide) {
                     newTemplateAttrs
                 )
             );
-            mergeTemplateAttributes(templateAttrs, newTemplateAttrs, directive.name);
+            mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
 
             ii = directives.length;
           } else {
@@ -1007,16 +1007,15 @@ function $CompileProvider($provide) {
      *
      * @param {object} dst destination attributes (original DOM)
      * @param {object} src source attributes (from the directive template)
-     * @param {string} ignoreName attribute which should be ignored
      */
-    function mergeTemplateAttributes(dst, src, ignoreName) {
+    function mergeTemplateAttributes(dst, src) {
       var srcAttr = src.$attr,
           dstAttr = dst.$attr,
           $element = dst.$$element;
 
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
-        if (key.charAt(0) != '$' && key != ignoreName) {
+        if (key.charAt(0) != '$') {
           if (src[key]) {
             value += (key === 'style' ? ';' : ' ') + src[key];
           }
@@ -1031,7 +1030,7 @@ function $CompileProvider($provide) {
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
-        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key) && key != ignoreName) {
+        } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
           dst[key] = value;
           dstAttr[key] = srcAttr[key];
         }
@@ -1074,7 +1073,7 @@ function $CompileProvider($provide) {
             tempTemplateAttrs = {$attr: {}};
             replaceWith($rootElement, $compileNode, compileNode);
             collectDirectives(compileNode, directives, tempTemplateAttrs);
-            mergeTemplateAttributes(tAttrs, tempTemplateAttrs, origAsyncDirective.name);
+            mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;
             $compileNode.html(content);

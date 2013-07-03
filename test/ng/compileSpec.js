@@ -534,7 +534,7 @@ describe('$compile', function() {
           expect(div.hasClass('log')).toBe(true);
           expect(div.css('width')).toBe('10px');
           expect(div.css('height')).toBe('20px');
-          expect(div.attr('replace')).toEqual(undefined);
+          expect(div.attr('replace')).toEqual('');
           expect(div.attr('high-log')).toEqual('');
         }));
 
@@ -856,7 +856,7 @@ describe('$compile', function() {
           $rootScope.$digest();
 
           expect(sortedHtml(element)).
-            toEqual('<div><b class="hello"><span>Hello, Elvis!</span></b></div>');
+            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
         }));
 
 
@@ -868,7 +868,7 @@ describe('$compile', function() {
               $rootScope.$digest();
 
               expect(sortedHtml(element)).
-                  toEqual('<span>Hello, Elvis!</span>');
+                  toEqual('<span replace="">Hello, Elvis!</span>');
             }));
 
 
@@ -1077,7 +1077,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual(undefined);
+            expect(div.attr('i-second')).toEqual('');
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
@@ -1127,7 +1127,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual(undefined);
+            expect(div.attr('i-second')).toEqual('');
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
