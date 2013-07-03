@@ -919,6 +919,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
+  this.$validityChangeListeners = [];
   this.$pristine = true;
   this.$dirty = false;
   this.$valid = true;
@@ -998,6 +999,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     $error[validationErrorKey] = !isValid;
     toggleValidCss(isValid, validationErrorKey);
+
+    forEach(this.$validityChangeListeners, function(listener) {
+      try {
+        listener();
+      } catch(e) {
+        $exceptionHandler(e);
+      }
+    });
 
     parentForm.$setValidity(validationErrorKey, isValid, this);
   };
@@ -1199,6 +1208,69 @@ var ngChangeDirective = valueFn({
   link: function(scope, element, attr, ctrl) {
     ctrl.$viewChangeListeners.push(function() {
       scope.$eval(attr.ngChange);
+    });
+  }
+});
+
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngValidityChange
+ *
+ * @description
+ * Evaluate given expression when model validity changes.
+ *
+ * Note, this directive requires `ngModel` to be present.
+ *
+ * @element input
+ *
+ * @example
+ * <doc:example>
+ *   <doc:source>
+ *     <script>
+ *       function Controller($scope) {
+ *         $scope.validityCounter = 0;
+ *         $scope.validityChange = function() {
+ *           $scope.validityCounter++;
+ *         };
+ *       }
+ *     </script>
+ *     <div ng-controller="Controller">
+ *       <input type="text" ng-model="name" required ng-validity-change="validityChange()" id="name"/>
+ *       <label for="input">First name</label><br />
+ *       debug = {{name}}<br />
+ *       validity changes count = {{validityCounter}}
+ *     </div>
+ *   </doc:source>
+ *   <doc:scenario>
+ *     it('should evaluate the expression when the validity changes', function() {
+ *       input('name').enter('');
+ *       expect(binding('validityCounter')).toEqual('1');
+ * 
+ *       input('name').enter('Misko');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Misko');
+ *
+ *       input('name').enter('Vojta');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Vojta');
+ *
+ *       input('name').enter('Igor');
+ *       expect(binding('validityCounter')).toEqual('2');
+ *       expect(binding('name')).toEqual('Igor');
+ *
+ *       input('name').enter('');
+ *       expect(binding('validityCounter')).toEqual('3');
+ *       expect(binding('name')).toEqual('');
+ *     });
+ *   </doc:scenario>
+ * </doc:example>
+ */
+var ngValidityChangeDirective = valueFn({
+  require: 'ngModel',
+  link: function(scope, element, attr, ctrl) {
+    ctrl.$validityChangeListeners.push(function() {
+      scope.$eval(attr.ngValidityChange);
     });
   }
 });
