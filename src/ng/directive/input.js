@@ -1021,18 +1021,42 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
+   * @name ng.directive:ngModel.NgModelController#parse
+   * @methodOf ng.directive:ngModel.NgModelController
+   *
+   * @description
+   * Parse the arbitrary input value according to the current `$parsers` array, good for
+   * code reuse without acessing the `$parsers` array manually. 
+   * 
+   * This method should be called from inside a directive, that inherits data and configurations
+   * from another directive(s).
+   * 
+   * @param {string=} value Value from the view. If no value is passed, it uses the current $viewValue
+   */
+  this.$parse = function(value) {
+    value = value || this.$viewValue;
+    
+    forEach(this.$parsers, function(fn) {
+      value = fn(value);
+    });
+    
+    return value;
+  };
+      
+  /**
+   * @ngdoc function
    * @name ng.directive:ngModel.NgModelController#$setViewValue
    * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
-   * Read a value from view.
+   * Set a value on the view.
    *
    * This method should be called from within a DOM event handler.
    * For example {@link ng.directive:input input} or
    * {@link ng.directive:select select} directives call it.
    *
-   * It internally calls all `parsers` and if resulted value is valid, updates the model and
-   * calls all registered change listeners.
+   * It internally calls the `$parse` function that calls all `parsers` and if resulted value is 
+   * valid, updates the model and calls all registered change listeners.
    *
    * @param {string} value Value from the view.
    */
@@ -1046,10 +1070,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
       parentForm.$setDirty();
     }
-
-    forEach(this.$parsers, function(fn) {
-      value = fn(value);
-    });
+  
+    value = this.$parse();
 
     if (this.$modelValue !== value) {
       this.$modelValue = value;

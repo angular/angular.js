@@ -182,6 +182,23 @@ describe('NgModelController', function() {
       ctrl.$setViewValue('bbbb');
       expect(ctrl.$modelValue).toBeUndefined();
     });
+    
+    it('should returned the parsed data', function() {
+      ctrl.$setViewValue('aaaa');
+      expect(ctrl.$modelValue).toBe('aaaa');
+
+      // add a validator that will make any input invalid
+      ctrl.$parsers.push(function() {return undefined;});
+      expect(ctrl.$modelValue).toBe('aaaa');
+      expect(ctrl.$parse()).toBeUndefined();
+      expect(ctrl.$parse('aaa')).toBeUndefined();
+      
+      delete ctrl.$parsers[0];
+      
+      ctrl.$parsers.push(function(value) {return value.replace(/a/g, 'b');});
+      expect(ctrl.$parse()).toBe('bbbb');
+      expect(ctrl.$parse('abb')).toBe('bbb');
+    });
 
 
     it('should call parentForm.$setDirty only when pristine', function() {
