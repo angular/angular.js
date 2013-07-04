@@ -1245,7 +1245,7 @@ function createHttpBackendMock($delegate, $browser) {
    * "afterEach" clause.
    *
    * <pre>
-   *   afterEach($httpBackend.verifyExpectations);
+   *   afterEach($httpBackend.verifyNoOutstandingExpectation);
    * </pre>
    */
   $httpBackend.verifyNoOutstandingExpectation = function() {
