@@ -258,7 +258,7 @@ To create and submit a change:
 
 2. Create a new branch off the master for your changes:
 
-        git branch my-fix-branch
+        git branch my-fix-branch master
 
 3. Check out the branch:
 
