@@ -205,7 +205,7 @@ function dateGetter(name, size, offset, trim) {
 function dateStrGetter(name, shortForm) {
   return function(date, formats) {
     var value = date['get' + name]();
-    var get = uppercase(shortForm ? ('SHORT' + name) : name);
+    var get = uppercase((shortForm || '') + name);
 
     return formats[get][value];
   };
@@ -230,7 +230,7 @@ var DATE_FORMATS = {
     yy: dateGetter('FullYear', 2, 0, true),
      y: dateGetter('FullYear', 1),
   MMMM: dateStrGetter('Month'),
-   MMM: dateStrGetter('Month', true),
+   MMM: dateStrGetter('Month', 'SHORT'),
     MM: dateGetter('Month', 2, 1),
      M: dateGetter('Month', 1, 1),
     dd: dateGetter('Date', 2),
@@ -247,7 +247,8 @@ var DATE_FORMATS = {
      // we can be just safely rely on using `sss` since we currently don't support single or two digit fractions
    sss: dateGetter('Milliseconds', 3),
   EEEE: dateStrGetter('Day'),
-   EEE: dateStrGetter('Day', true),
+   EEE: dateStrGetter('Day', 'SHORT'),
+    EE: dateStrGetter('Day', 'SHORTER'),
      a: ampmGetter,
      Z: timeZoneGetter
 };
@@ -276,6 +277,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'d'`: Day in month (1-31)
  *   * `'EEEE'`: Day in Week,(Sunday-Saturday)
  *   * `'EEE'`: Day in Week, (Sun-Sat)
+ *   * `'EE'`: Day in Week, (Su-Sa)
  *   * `'HH'`: Hour in day, padded (00-23)
  *   * `'H'`: Hour in day (0-23)
  *   * `'hh'`: Hour in am/pm, padded (01-12)

@@ -221,6 +221,9 @@ describe('filters', function() {
       expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
                       toEqual('2010-09-03 12=12:05:08.012PM-0500');
 
+      expect(date(noon, "EE, MMM d, yyyy")).
+                      toEqual('Fr, Sep 3, 2010');
+
       expect(date(noon, "EEE, MMM d, yyyy")).
                       toEqual('Fri, Sep 3, 2010');
 
