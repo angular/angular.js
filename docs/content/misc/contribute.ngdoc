@@ -256,13 +256,9 @@ To create and submit a change:
    [print, sign and one of scan+email, fax or mail the form](http://code.google.com/legal/corporate-cla-v1.0.html).
 
 
-2. Create a new branch off the master branch for your changes:
+2. Create and checkout a new branch off the master branch for your changes:
 
-        git branch my-fix-branch master
-
-3. Check out the branch:
-
-        git checkout my-fix-branch
+        git checkout -b my-fix-branch master
 
 4. Create your patch, make sure to have plenty of tests (that pass).
 
