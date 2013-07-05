@@ -232,10 +232,11 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
           tapElement.blur();
         }
 
-        scope.$apply(function() {
-          // TODO(braden): This is sending the touchend, not a tap or click. Is that kosher?
-          clickHandler(scope, {$event: event});
-        });
+        if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
+          scope.$apply(function() {
+            clickHandler(scope, {$event: event});
+          });
+        }
       }
 
       resetState();
