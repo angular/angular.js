@@ -310,4 +310,52 @@ describe('ngClick (mobile)', function() {
   });
 
 
+  describe('disabled state', function() {
+    it('should not trigger click if ngDisabled is true', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" ng-disabled="disabled"></div>')($rootScope);
+      $rootScope.disabled = true;
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect($rootScope.event).toBeUndefined();
+    }));
+    it('should trigger click if ngDisabled is false', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" ng-disabled="disabled"></div>')($rootScope);
+      $rootScope.disabled = false;
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect($rootScope.event).toBeDefined();
+    }));
+    it('should not trigger click if regular disabled is true', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" disabled="true"></div>')($rootScope);
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect($rootScope.event).toBeUndefined();
+    }));
+    it('should not trigger click if regular disabled is present', inject(function($rootScope, $compile) {
+      element = $compile('<button ng-click="event = $event" disabled ></button>')($rootScope);
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect($rootScope.event).toBeUndefined();
+    }));
+    it('should trigger click if regular disabled is not present', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" ></div>')($rootScope);
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect($rootScope.event).toBeDefined();
+    }));
+  });
+
+
 });
