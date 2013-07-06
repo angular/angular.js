@@ -24,8 +24,10 @@
  *      access on some browsers)
  *
  * @animations
- * enter - happens just after the ngInclude contents change and a new DOM element is created and injected into the ngInclude container
- * leave - happens just after the ngInclude contents change and just before the former contents are removed from the DOM
+ * enter - animation is used to bring new content into the browser.
+ * leave - animation is used to animate existing content away.
+ *
+ * The enter and leave animation occur concurrently.
  *
  * @scope
  *
@@ -49,9 +51,9 @@
        </select>
        url of the template: <tt>{{template.url}}</tt>
        <hr/>
-       <div class="example-animate-container"
-            ng-include="template.url"
-            ng-animate="{enter: 'example-enter', leave: 'example-leave'}"></div>
+       <div class="example-animate-container">
+         <div class="include-example" ng-include="template.url"></div>
+       </div>
      </div>
     </file>
     <file name="script.js">
@@ -63,14 +65,13 @@
       }
      </file>
     <file name="template1.html">
-      <div>Content of template1.html</div>
+      Content of template1.html
     </file>
     <file name="template2.html">
-      <div>Content of template2.html</div>
+      Content of template2.html
     </file>
     <file name="animations.css">
-      .example-leave,
-      .example-enter {
+      .include-example.ng-enter, .include-example.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -82,24 +83,21 @@
         left:0;
         right:0;
         bottom:0;
-      }
-
-      .example-animate-container > * {
         display:block;
         padding:10px;
       }
 
-      .example-enter {
+      .include-example.ng-enter {
         top:-50px;
       }
-      .example-enter.example-enter-active {
+      .include-example.ng-enter.ng-enter-active {
         top:0;
       }
 
-      .example-leave {
+      .include-example.ng-leave {
         top:0;
       }
-      .example-leave.example-leave-active {
+      .include-example.ng-leave.ng-leave-active {
         top:50px;
       }
     </file>
@@ -115,7 +113,7 @@
       });
       it('should change to blank', function() {
        select('template').option('');
-       expect(element('.doc-example-live [ng-include]').text()).toEqual('');
+       expect(element('.doc-example-live [ng-include]')).toBe(undefined);
       });
     </file>
   </example>
@@ -145,21 +143,26 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
   return {
     restrict: 'ECA',
     terminal: true,
-    compile: function(element, attr) {
+    transclude: 'element',
+    compile: function(element, attr, transclusion) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, element, attr) {
+      return function(scope, $element) {
         var changeCounter = 0,
-            childScope;
+            currentScope,
+            currentElement;
 
-        var clearContent = function() {
-          if (childScope) {
-            childScope.$destroy();
-            childScope = null;
+        var cleanupLastIncludeContent = function() {
+          if (currentScope) {
+            currentScope.$destroy();
+            currentScope = null;
           }
-          $animate.leave(element.contents());
+          if(currentElement) {
+            $animate.leave(currentElement);
+            currentElement = null;
+          }
         };
 
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
@@ -168,28 +171,31 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           if (src) {
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
+              var newScope = scope.$new();
 
-              if (childScope) childScope.$destroy();
-              childScope = scope.$new();
-              $animate.leave(element.contents());
+              transclusion(newScope, function(clone) {
+                cleanupLastIncludeContent();
 
-              var contents = jqLite('<div/>').html(response).contents();
+                currentScope = newScope;
+                currentElement = clone;
 
-              $animate.enter(contents, element);
-              $compile(contents)(childScope);
+                currentElement.html(response);
+                $animate.enter(currentElement, null, $element);
+                $compile(currentElement.contents())(currentScope);
 
-              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $anchorScroll();
-              }
+                if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                  $anchorScroll();
+                }
 
-              childScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
+                currentScope.$emit('$includeContentLoaded');
+                scope.$eval(onloadExp);
+              });
             }).error(function() {
-              if (thisChangeId === changeCounter) clearContent();
+              if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });
             scope.$emit('$includeContentRequested');
           } else {
-            clearContent();
+            cleanupLastIncludeContent();
           }
         });
       };
