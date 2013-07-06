@@ -1029,7 +1029,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
-   * Read a value from view.
+   * Assign a value to the expression assigned to ngModel.
    *
    * This method should be called from within a DOM event handler.
    * For example {@link ng.directive:input input} or
