@@ -73,6 +73,28 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
+  it('should ignore parameters starting with digit', function() {
+    var R = $resource('http://www.example.com:8080/Path/:4a/:a');
+
+    $httpBackend.when('GET', 'http://www.example.com:8080/Path/:4a').respond('{}');
+    $httpBackend.when('GET', 'http://www.example.com:8080/Path/:4a/0').respond('{}');
+    $httpBackend.when('GET', 'http://www.example.com:8080/Path/:4a?8080=1').respond('{}');
+
+    R.get({});
+    R.get({a:0});
+    R.get({"8080":1});
+  });
+
+  it('should not ignore parameters that contain digits but do not start with digit', function() {
+    var R = $resource('/Path/:a42');
+
+    $httpBackend.when('GET', '/Path').respond('{}');
+    $httpBackend.when('GET', '/Path/7').respond('{}');
+
+    R.get({});
+    R.get({a42: 7});
+  });
+
   it('should not ignore leading slashes of undefinend parameters that have non-slash trailing sequence', function() {
     var R = $resource('/Path/:a.foo/:b.bar/:c.baz');
 
