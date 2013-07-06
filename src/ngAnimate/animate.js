@@ -47,10 +47,10 @@
  *   transition:0.5s linear all;
  * }
  * 
- * .slide > .ng-enter { }        /&#42; starting animations for enter &#42;/
- * .slide > .ng-enter-active { } /&#42; terminal animations for enter &#42;/
- * .slide > .ng-leave { }        /&#42; starting animations for leave &#42;/
- * .slide > .ng-leave-active { } /&#42; terminal animations for leave &#42;/
+ * .slide.ng-enter { }        /&#42; starting animations for enter &#42;/
+ * .slide.ng-enter-active { } /&#42; terminal animations for enter &#42;/
+ * .slide.ng-leave { }        /&#42; starting animations for leave &#42;/
+ * .slide.ng-leave-active { } /&#42; terminal animations for leave &#42;/
  * </style>
  *
  * <!--
