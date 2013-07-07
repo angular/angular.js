@@ -235,7 +235,7 @@ Imagine the application to be structured into two views:
     delete button, the user is redirected back to the *overview page*.
 
 <pre>
-beforeEach(function () {s
+beforeEach(function () {
   var deleteEntry = function () {
     browser().navigateTo('/entries');
 
