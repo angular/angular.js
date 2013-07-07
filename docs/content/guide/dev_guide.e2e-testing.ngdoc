@@ -136,7 +136,7 @@ the given jQuery `selector`. The `label` is used for test output.
 ## select(name).option(value)
 Picks the option with the given `value` on the select with the given `name`.
 
-## select(name).option(value1, value2...)
+## select(name).options(value1, value2...)
 Picks the options with the given `values` on the multi select with the given `name`.
 
 ## element(selector, label).count()
