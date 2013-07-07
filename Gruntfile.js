@@ -27,7 +27,7 @@ module.exports = function(grunt) {
     parallel: {
       travis: {
         options: {
-          stream: true,
+          stream: true
         },
         tasks: [
           util.parallelTask('test:docs'),
