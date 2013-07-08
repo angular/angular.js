@@ -295,6 +295,18 @@ describe('ngInclude', function() {
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
   });
+
+  it('should work with a selector', inject(putIntoCache('myUrl', '<a>foo {{name}}</a><b>bar {{name}}</b><c>baz {{name}}</c>'),
+      function($rootScope, $compile) {
+    element = jqLite('<ng:include src="url + \' b\'"></ng:include>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'misko';
+    $rootScope.url = 'myUrl';
+    $rootScope.$digest();
+    expect(element.text()).toEqual('bar misko');
+    jqLite(document.body).html('');
+  }));
 });
 
 describe('ngInclude ngAnimate', function() {
