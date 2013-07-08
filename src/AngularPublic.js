@@ -44,6 +44,7 @@ function publishExternalAPI(angular){
     'isNumber': isNumber,
     'isElement': isElement,
     'isArray': isArray,
+    'minErr': minErr,
     'version': version,
     'isDate': isDate,
     'lowercase': lowercase,
