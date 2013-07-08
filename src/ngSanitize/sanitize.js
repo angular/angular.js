@@ -1,6 +1,6 @@
 'use strict';
 
-var ngSanitizeMinErr = minErr('ngSanitize');
+var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
 
 /**
  * @ngdoc overview
