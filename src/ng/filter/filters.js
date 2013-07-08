@@ -62,7 +62,7 @@ function currencyFilter($locale) {
  * If the input is not a number an empty string is returned.
  *
  * @param {number|string} number Number to format.
- * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
+ * @param {(number|string)=} [fractionSize=3] Number of decimal places to round the number to.
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
