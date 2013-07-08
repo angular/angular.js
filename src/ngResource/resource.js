@@ -1,6 +1,6 @@
 'use strict';
 
-var ngResourceMinErr = minErr('ngResource');
+var ngResourceMinErr = angular.$$minErr('ngResource');
 
 /**
  * @ngdoc overview
