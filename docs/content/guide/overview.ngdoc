@@ -134,7 +134,7 @@ These input widgets look normal enough, but consider these points:
     Model-View-Controller design pattern.
   * Note that the HTML widget {@link api/ng.directive:input input}
     has special powers. The input invalidates itself by turning red when you enter invalid data or
-    leave the the input fields blank. These new widget behaviors make it easier to implement field
+    leave the input fields blank. These new widget behaviors make it easier to implement field
     validation common in CRUD applications.
 
 And finally, the mysterious `{{ double curly braces }}`:
