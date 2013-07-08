@@ -270,6 +270,14 @@ describe('angular', function() {
       expect(equals(new Date(0), 0)).toBe(false);
       expect(equals(0, new Date(0))).toBe(false);
     });
+
+    it('should correctly test for keys that are present on Object.prototype', function() {
+      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
+      // things like hasOwnProperty even if it is explicitly defined on the actual object!
+      if (msie<=8) return;
+      expect(equals({}, {hasOwnProperty: 1})).toBe(false);
+      expect(equals({}, {toString: null})).toBe(false);
+    });
   });
 
   describe('size', function() {

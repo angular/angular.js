@@ -3,6 +3,16 @@
 ////////////////////////////////////
 
 /**
+ * hasOwnProperty may be overriden by a property of the same name, or entirely
+ * absent from an object that does not inherit Object.prototype; this copy is
+ * used instead
+ */
+var hasOwnPropertyFn = Object.prototype.hasOwnProperty;
+var hasOwnPropertyLocal = function(obj, key) {
+  return hasOwnPropertyFn.call(obj, key);
+};
+
+/**
  * @ngdoc function
  * @name angular.lowercase
  * @function
@@ -685,7 +695,7 @@ function equals(o1, o2) {
           keySet[key] = true;
         }
         for(key in o2) {
-          if (!keySet[key] &&
+          if (!keySet.hasOwnProperty(key) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
               !isFunction(o2[key])) return false;
