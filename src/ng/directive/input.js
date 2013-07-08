@@ -876,7 +876,7 @@ var VALID_CLASS = 'ng-valid',
 
               // Specify how UI should be updated
               ngModel.$render = function() {
-                element.html(ngModel.$viewValue || '');
+                element.text(ngModel.$viewValue || '');
               };
 
               // Listen for change events to enable binding
@@ -887,7 +887,7 @@ var VALID_CLASS = 'ng-valid',
 
               // Write data to the model
               function read() {
-                ngModel.$setViewValue(element.html());
+                ngModel.$setViewValue(element.text());
               }
             }
           };
