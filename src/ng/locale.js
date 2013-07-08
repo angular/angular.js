@@ -50,6 +50,7 @@ function $LocaleProvider(){
         SHORTMONTH:  'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'.split(','),
         DAY: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(','),
         SHORTDAY: 'Sun,Mon,Tue,Wed,Thu,Fri,Sat'.split(','),
+        SHORTERDAY: 'Su,Mo,Tu,We,Th,Fr,Sa'.split(','),
         AMPMS: ['AM','PM'],
         medium: 'MMM d, y h:mm:ss a',
         short: 'M/d/yy h:mm a',
