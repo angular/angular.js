@@ -1,5 +1,7 @@
 'use strict';
 
+var ngResourceMinErr = minErr('ngResource');
+
 /**
  * @ngdoc overview
  * @name ngResource
@@ -447,8 +449,8 @@ angular.module('ngResource', ['ng']).
             break;
           case 0: break;
           default:
-            throw "Expected up to 4 arguments [params, data, success, error], got " +
-              arguments.length + " arguments.";
+            throw ngResourceMinErr('badargs',
+              "Expected up to 4 arguments [params, data, success, error], got {0} arguments", arguments.length);
           }
 
           var isInstanceCall = data instanceof Resource;
