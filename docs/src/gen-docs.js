@@ -83,8 +83,7 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyDir('components/components-font-awesome/font', 'components/font-awesome/font'));
   writesFuture.push(writer.copyDir('components/bootstrap', 'components/bootstrap'));
 
-  writesFuture.push(writer.copy('node_modules/showdown/src/showdown.js', 'components/showdown.js'));
-  writesFuture.push(writer.copy('node_modules/showdown/compressed/showdown.js', 'components/showdown.min.js'));
+  writesFuture.push(writer.copy('node_modules/marked/lib/marked.js', 'components/marked.js'));
   writesFuture.push(writer.copy('components/lunr.js/lunr.js', 'components/lunr.js'));
   writesFuture.push(writer.copy('components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
   writesFuture.push(writer.copy('components/jquery/jquery.js', 'components/jquery.js'));

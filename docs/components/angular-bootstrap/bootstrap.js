@@ -257,7 +257,7 @@ var popoverElement = function() {
 
     content : function(value) { 
       if(value && value.length > 0) {
-        value = new Showdown.converter().makeHtml(value);
+        value = marked(value);
       }
       return this.contentElement.html(value);
     },
@@ -380,4 +380,12 @@ directive.foldout = ['$http', '$animator','$window', function($http, $animator, 
   }
 }];
 
-angular.module('bootstrap', []).directive(directive).factory('popoverElement', popoverElement);
+angular.module('bootstrap', [])
+  .directive(directive)
+  .factory('popoverElement', popoverElement)
+  .run(function() {
+    marked.setOptions({
+      gfm: true,
+      tables: true
+    });
+  });

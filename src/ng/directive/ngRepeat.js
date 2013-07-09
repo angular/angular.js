@@ -12,7 +12,7 @@
  * Special properties are exposed on the local scope of each template instance, including:
  *
  * | Variable  | Type            | Details                                                                     |
- * |===========|=================|=============================================================================|
+ * |-----------|-----------------|-----------------------------------------------------------------------------|
  * | `$index`  | {@type number}  | iterator offset of the repeated element (0..length-1)                       |
  * | `$first`  | {@type boolean} | true if the repeated element is first in the iterator.                      |
  * | `$middle` | {@type boolean} | true if the repeated element is between the first and last in the iterator. |

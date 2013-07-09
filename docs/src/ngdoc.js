@@ -1,8 +1,6 @@
 /**
  * All parsing/transformation code goes here. All code here should be sync to ease testing.
  */
-
-var Showdown = require('showdown');
 var DOM = require('./dom.js').DOM;
 var htmlEscape = require('./dom.js').htmlEscape;
 var Example = require('./example.js').Example;
@@ -10,10 +8,14 @@ var NEW_LINE = /\n\r?/;
 var globalID = 0;
 var fs = require('fs');
 var fspath = require('path');
-var markdown = new Showdown.converter({ extensions : ['table'] });
 var shell = require('shelljs');
 var gruntUtil = require('../../lib/grunt/utils.js');
 var errorsJson;
+var marked = require('marked');
+marked.setOptions({
+  gfm: true,
+  tables: true
+});
 
 var lookupMinerrMsg = function (doc) {
   var code, namespace;
@@ -289,7 +291,7 @@ Doc.prototype = {
     pageClassName = pageClassName || prepareClassName(this.name || 'docs') + suffix;
 
     text = '<div class="' + pageClassName + '">' + 
-             markdown.makeHtml(text) +
+             marked(text) +
            '</div>';
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
