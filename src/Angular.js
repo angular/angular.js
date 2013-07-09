@@ -300,6 +300,20 @@ function identity($) {return $;}
 identity.$inject = [];
 
 
+/**
+ * @ngdoc function
+ * @name angular.valueFn
+ * @function
+ *
+ * @description
+ * A function that returns a function that return the argument.
+ *
+ * @param {*} value Data to return.
+ * @returns {function()} Function that return value.
+   <pre>
+     var fnObj = angular.valueFn({}),
+   </pre>
+ */
 function valueFn(value) {return function() {return value;};}
 
 /**
