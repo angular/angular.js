@@ -18,7 +18,7 @@ module.exports = function(config) {
 
       'build/docs/components/lunr.js',
       'build/docs/components/google-code-prettify.js',
-      'build/docs/components/showdown.js',
+      'build/docs/components/marked.js',
 
       'build/docs/components/angular-bootstrap.js',
       'build/docs/components/angular-bootstrap-prettify.js',

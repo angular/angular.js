@@ -16,7 +16,7 @@
  * Below is a more detailed breakdown of the supported callback events provided by pre-exisitng ng directives:
  *
  * | Directive                                                 | Supported Animations                               |
- * |========================================================== |====================================================|
+ * |---------------------------------------------------------- |----------------------------------------------------|
  * | {@link ng.directive:ngRepeat#animations ngRepeat}         | enter, leave and move                              |
  * | {@link ngRoute.directive:ngView#animations ngView}        | enter and leave                                    |
  * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |

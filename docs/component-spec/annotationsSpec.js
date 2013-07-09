@@ -57,7 +57,7 @@ describe('Docs Annotations', function() {
       $scope.$apply();
       element.triggerHandler('click');
       expect(popoverElement.title()).toBe('#title_text');
-      expect(popoverElement.content()).toBe('<h1 id="heading">heading</h1>');
+      expect(popoverElement.content()).toBe('<h1>heading</h1>\n');
     }));
 
   });
