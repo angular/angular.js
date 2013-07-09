@@ -289,8 +289,9 @@ function $RouteProvider(){
      * defined in `resolve` route property. Once  all of the dependencies are resolved
      * `$routeChangeSuccess` is fired.
      *
-     * @param {Route} next Future route information.
-     * @param {Route} current Current route information.
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route} next Current (next) route information.
+     * @param {Route|undefined} last Previous (last) route information, or undefined if current is first route entered.
      */
 
     /**
@@ -304,8 +305,8 @@ function $RouteProvider(){
      * to instantiate the controller and render the view.
      *
      * @param {Object} angularEvent Synthetic event object.
-     * @param {Route} current Current route information.
-     * @param {Route|Undefined} previous Previous route information, or undefined if current is first route entered.
+     * @param {Route} next Current (next) route information.
+     * @param {Route|undefined} last Previous (last) route information, or undefined if current is first route entered.
      */
 
     /**
@@ -316,9 +317,10 @@ function $RouteProvider(){
      * @description
      * Broadcasted if any of the resolve promises are rejected.
      *
-     * @param {Route} current Current route information.
-     * @param {Route} previous Previous route information.
-     * @param {Route} rejection Rejection of the promise. Usually the error of the failed promise.
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route} next Current (next) route information.
+     * @param {Route} last Previous (last) route information.
+     * @param {Route} error Rejection (error) of the promise. Usually the error of the failed promise.
      */
 
     /**
@@ -327,9 +329,11 @@ function $RouteProvider(){
      * @eventOf ngRoute.$route
      * @eventType broadcast on root scope
      * @description
-     *
      * The `reloadOnSearch` property has been set to false, and we are reusing the same
      * instance of the Controller.
+     *
+     * @param {Object} angularEvent Synthetic event object.
+     * @param {Route} last Current (last) route information.
      */
 
     var forceReload = false,
