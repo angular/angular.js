@@ -88,7 +88,7 @@ angular.scenario.Describe.prototype.ddescribe = function(name, body) {
 /**
  * Use to disable a describe block.
  */
-angular.scenario.Describe.prototype.xdescribe = angular.noop;
+angular.scenario.Describe.prototype.xdescribe = noop;
 
 /**
  * Defines a test.
@@ -122,7 +122,7 @@ angular.scenario.Describe.prototype.iit = function(name, body) {
 /**
  * Use to disable a test block.
  */
-angular.scenario.Describe.prototype.xit = angular.noop;
+angular.scenario.Describe.prototype.xit = noop;
 
 /**
  * Gets an array of functions representing all the tests (recursively).
