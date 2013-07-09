@@ -2,56 +2,56 @@ angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
-    "AMPMS": {
-      "0": "ap.",
-      "1": "ip."
-    },
-    "DAY": {
-      "0": "sunnuntaina",
-      "1": "maanantaina",
-      "2": "tiistaina",
-      "3": "keskiviikkona",
-      "4": "torstaina",
-      "5": "perjantaina",
-      "6": "lauantaina"
-    },
-    "MONTH": {
-      "0": "tammikuuta",
-      "1": "helmikuuta",
-      "2": "maaliskuuta",
-      "3": "huhtikuuta",
-      "4": "toukokuuta",
-      "5": "kes\u00e4kuuta",
-      "6": "hein\u00e4kuuta",
-      "7": "elokuuta",
-      "8": "syyskuuta",
-      "9": "lokakuuta",
-      "10": "marraskuuta",
-      "11": "joulukuuta"
-    },
-    "SHORTDAY": {
-      "0": "su",
-      "1": "ma",
-      "2": "ti",
-      "3": "ke",
-      "4": "to",
-      "5": "pe",
-      "6": "la"
-    },
-    "SHORTMONTH": {
-      "0": "tammikuuta",
-      "1": "helmikuuta",
-      "2": "maaliskuuta",
-      "3": "huhtikuuta",
-      "4": "toukokuuta",
-      "5": "kes\u00e4kuuta",
-      "6": "hein\u00e4kuuta",
-      "7": "elokuuta",
-      "8": "syyskuuta",
-      "9": "lokakuuta",
-      "10": "marraskuuta",
-      "11": "joulukuuta"
-    },
+    "AMPMS": [
+      "ap.",
+      "ip."
+    ],
+    "DAY": [
+      "sunnuntaina",
+      "maanantaina",
+      "tiistaina",
+      "keskiviikkona",
+      "torstaina",
+      "perjantaina",
+      "lauantaina"
+    ],
+    "MONTH": [
+      "tammikuuta",
+      "helmikuuta",
+      "maaliskuuta",
+      "huhtikuuta",
+      "toukokuuta",
+      "kes\u00e4kuuta",
+      "hein\u00e4kuuta",
+      "elokuuta",
+      "syyskuuta",
+      "lokakuuta",
+      "marraskuuta",
+      "joulukuuta"
+    ],
+    "SHORTDAY": [
+      "su",
+      "ma",
+      "ti",
+      "ke",
+      "to",
+      "pe",
+      "la"
+    ],
+    "SHORTMONTH": [
+      "tammikuuta",
+      "helmikuuta",
+      "maaliskuuta",
+      "huhtikuuta",
+      "toukokuuta",
+      "kes\u00e4kuuta",
+      "hein\u00e4kuuta",
+      "elokuuta",
+      "syyskuuta",
+      "lokakuuta",
+      "marraskuuta",
+      "joulukuuta"
+    ],
     "fullDate": "cccc, d. MMMM y",
     "longDate": "d. MMMM y",
     "medium": "d.M.yyyy H.mm.ss",
@@ -65,8 +65,8 @@ $provide.value("$locale", {
     "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
-    "PATTERNS": {
-      "0": {
+    "PATTERNS": [
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -78,7 +78,7 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": ""
       },
-      "1": {
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -90,7 +90,7 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": "\u00a0\u00a4"
       }
-    }
+    ]
   },
   "id": "fi",
   "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}

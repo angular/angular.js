@@ -1,5 +1,54 @@
 'use strict';
 
+var $parseMinErr = minErr('$parse');
+
+// Sandboxing Angular Expressions
+// ------------------------------
+// Angular expressions are generally considered safe because these expressions only have direct access to $scope and
+// locals. However, one can obtain the ability to execute arbitrary JS code by obtaining a reference to native JS
+// functions such as the Function constructor.
+//
+// As an example, consider the following Angular expression:
+//
+//   {}.toString.constructor(alert("evil JS code"))
+//
+// We want to prevent this type of access. For the sake of performance, during the lexing phase we disallow any "dotted"
+// access to any member named "constructor".
+//
+// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor while evaluating
+// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor while evaluating
+// the expression, which is a stronger but more expensive test. Since reflective calls are expensive anyway, this is not
+// such a big deal compared to static dereferencing.
+//
+// This sandboxing techniqueue is not perfect and doesn't aim to be. The goal is to prevent exploits against the
+// expression language, but not to prevent exploits that were enabled by exposing sensitive JavaScript or browser apis
+// on Scope. Exposing such objects on a Scope is never a good practice and therefore we are not even trying to protect
+// against interaction with an object explicitly exposed in this way.
+//
+// A developer could foil the name check by aliasing the Function constructor under a different name on the scope.
+//
+// In general, it is not possible to access a Window object from an angular expression unless a window or some DOM
+// object that has a reference to window is published onto a Scope.
+
+function ensureSafeMemberName(name, fullExpression) {
+  if (name === "constructor") {
+    throw $parseMinErr('isecfld',
+        'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}', fullExpression);
+  }
+  return name;
+};
+
+function ensureSafeObject(obj, fullExpression) {
+  // nifty check if obj is Function that is fast and works across iframes and other contexts
+  if (obj && obj.constructor === obj) {
+    throw $parseMinErr('isecfn',
+        'Referencing Function in Angular expressions is disallowed! Expression: {0}', fullExpression);
+  } else {
+    return obj;
+  }
+}
+
+
 var OPERATORS = {
     'null':function(){return null;},
     'true':function(){return true;},
@@ -126,7 +175,7 @@ function lex(text, csp){
     var colStr = (isDefined(start) ?
         "s " + start +  "-" + index + " [" + text.substring(start, end) + "]"
         : " " + end);
-    throw ngError(23, "Lexer Error: {0} at column{1} in expression [{2}].",
+    throw $parseMinErr('lexerr', "Lexer Error: {0} at column{1} in expression [{2}].",
         error, colStr, text);
   }
 
@@ -203,12 +252,12 @@ function lex(text, csp){
     if (OPERATORS.hasOwnProperty(ident)) {
       token.fn = token.json = OPERATORS[ident];
     } else {
-      var getter = getterFn(ident, csp);
+      var getter = getterFn(ident, csp, text);
       token.fn = extend(function(self, locals) {
         return (getter(self, locals));
       }, {
         assign: function(self, value) {
-          return setter(self, ident, value);
+          return setter(self, ident, value, text);
         }
       });
     }
@@ -309,14 +358,14 @@ function parser(text, json, $filter, csp){
 
   ///////////////////////////////////
   function throwError(msg, token) {
-    throw ngError(24,
+    throw $parseMinErr('syntax',
         "Syntax Error: Token '{0}' {1} at column {2} of the expression [{3}] starting at [{4}].",
         token.text, msg, (token.index + 1), text, text.substring(token.index));
   }
 
   function peekToken() {
     if (tokens.length === 0)
-      throw ngError(25, "Unexpected end of expression: {0}", text);
+      throw $parseMinErr('ueoe', "Unexpected end of expression: {0}", text);
     return tokens[0];
   }
 
@@ -582,14 +631,14 @@ function parser(text, json, $filter, csp){
 
   function _fieldAccess(object) {
     var field = expect().text;
-    var getter = getterFn(field, csp);
+    var getter = getterFn(field, csp, text);
     return extend(
         function(scope, locals, self) {
           return getter(self || object(scope, locals), locals);
         },
         {
           assign:function(scope, value, locals) {
-            return setter(object(scope, locals), field, value);
+            return setter(object(scope, locals), field, value, text);
           }
         }
     );
@@ -605,7 +654,7 @@ function parser(text, json, $filter, csp){
             v, p;
 
         if (!o) return undefined;
-        v = o[i];
+        v = ensureSafeObject(o[i], text);
         if (v && v.then) {
           p = v;
           if (!('$$v' in v)) {
@@ -617,7 +666,9 @@ function parser(text, json, $filter, csp){
         return v;
       }, {
         assign:function(self, value, locals){
-          return obj(self, locals)[indexFn(self, locals)] = value;
+          var key = indexFn(self, locals);
+          // prevent overwriting of Function.constructor which would break ensureSafeObject check
+          return ensureSafeObject(obj(self, locals), text)[key] = value;
         }
       });
   }
@@ -705,10 +756,10 @@ function parser(text, json, $filter, csp){
 // Parser helper functions
 //////////////////////////////////////////////////
 
-function setter(obj, path, setValue) {
-  var element = path.split('.');
+function setter(obj, path, setValue, fullExp) {
+  var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
-    var key = element.shift();
+    key = ensureSafeMemberName(element.shift(), fullExp);
     var propertyObj = obj[key];
     if (!propertyObj) {
       propertyObj = {};
@@ -716,35 +767,9 @@ function setter(obj, path, setValue) {
     }
     obj = propertyObj;
   }
-  obj[element.shift()] = setValue;
+  key = ensureSafeMemberName(element.shift(), fullExp);
+  obj[key] = setValue;
   return setValue;
-}
-
-/**
- * Return the value accessible from the object by path. Any undefined traversals are ignored
- * @param {Object} obj starting object
- * @param {string} path path to traverse
- * @param {boolean=true} bindFnToScope
- * @returns value as accessible by path
- */
-//TODO(misko): this function needs to be removed
-function getter(obj, path, bindFnToScope) {
-  if (!path) return obj;
-  var keys = path.split('.');
-  var key;
-  var lastInstance = obj;
-  var len = keys.length;
-
-  for (var i = 0; i < len; i++) {
-    key = keys[i];
-    if (obj) {
-      obj = (lastInstance = obj)[key];
-    }
-  }
-  if (!bindFnToScope && isFunction(obj)) {
-    return bind(lastInstance, obj);
-  }
-  return obj;
 }
 
 var getterFnCache = {};
@@ -754,7 +779,12 @@ var getterFnCache = {};
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
+  ensureSafeMemberName(key0, fullExp);
+  ensureSafeMemberName(key1, fullExp);
+  ensureSafeMemberName(key2, fullExp);
+  ensureSafeMemberName(key3, fullExp);
+  ensureSafeMemberName(key4, fullExp);
   return function(scope, locals) {
     var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
         promise;
@@ -818,7 +848,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4) {
   };
 }
 
-function getterFn(path, csp) {
+function getterFn(path, csp, fullExp) {
   if (getterFnCache.hasOwnProperty(path)) {
     return getterFnCache[path];
   }
@@ -829,12 +859,12 @@ function getterFn(path, csp) {
 
   if (csp) {
     fn = (pathKeysLength < 6)
-        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4])
+        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp)
         : function(scope, locals) {
           var i = 0, val;
           do {
             val = cspSafeGetterFn(
-                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++]
+                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp
                   )(scope, locals);
 
             locals = undefined; // clear after first iteration
@@ -845,6 +875,7 @@ function getterFn(path, csp) {
   } else {
     var code = 'var l, fn, p;\n';
     forEach(pathKeys, function(key, index) {
+      ensureSafeMemberName(key, fullExp);
       code += 'if(s === null || s === undefined) return s;\n' +
               'l=s;\n' +
               's='+ (index

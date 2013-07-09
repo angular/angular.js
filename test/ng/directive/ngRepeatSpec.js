@@ -1,7 +1,11 @@
 'use strict';
 
 describe('ngRepeat', function() {
-  var element, $compile, scope, $exceptionHandler;
+  var element, $compile, scope, $exceptionHandler, $compileProvider;
+
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
 
 
   beforeEach(module(function($exceptionHandlerProvider) {
@@ -67,7 +71,7 @@ describe('ngRepeat', function() {
                                       "<a name='x'>c</a>" +
                                     "</p>";
 
-    var htmlCollection = document.getElementsByTagName('a')
+    var htmlCollection = document.getElementsByTagName('a');
     scope.items = htmlCollection;
     scope.$digest();
     expect(element.find('li').length).toEqual(3);
@@ -269,7 +273,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[NgErr7] ngRepeat error! Expected expression in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
+        toBe("[ngRepeat:iexp] Expected expression in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
   });
 
 
@@ -277,7 +281,7 @@ describe('ngRepeat', function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[NgErr8] ngRepeat error! '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got 'i dont parse'.");
+        toBe("[ngRepeat:iidexp] '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got 'i dont parse'.");
   });
 
 
@@ -442,9 +446,159 @@ describe('ngRepeat', function() {
     scope.array = ['b', 'a'];
     scope.$digest();
 
-    var lis = element.find('li');
+    lis = element.find('li');
     expect(lis.eq(0).data('mark')).toEqual('b');
     expect(lis.eq(1).data('mark')).toEqual('a');
+  });
+
+
+  describe('nesting in replaced directive templates', function() {
+
+    it('should work when placed on a non-root element of attr directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('rr', function() {
+        return {
+          restrict: 'A',
+          replace: true,
+          template: '<div ng-repeat="i in items">{{i}}|</div>'
+        };
+      });
+      element = jqLite('<div><span rr>{{i}}|</span></div>');
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+      expect(element.text()).toBe('');
+
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+      expect(element.text()).toBe('1|2|');
+      expect(sortedHtml(element)).toBe(
+          '<div>' +
+            '<!-- ngRepeat: i in items -->' +
+            '<div ng-repeat="i in items" rr="">1|</div>' +
+            '<div ng-repeat="i in items" rr="">2|</div>' +
+          '</div>'
+      );
+    }));
+
+
+    it('should work when placed on a non-root element of attr directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('rr', function() {
+        return {
+          restrict: 'A',
+          replace: true,
+          templateUrl: 'rr.html'
+        };
+      });
+
+      $templateCache.put('rr.html', '<div ng-repeat="i in items">{{i}}|</div>');
+
+      element = jqLite('<div><span rr>{{i}}|</span></div>');
+      $compile(element)($rootScope);
+      $rootScope.$apply();
+      expect(element.text()).toBe('');
+
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+      expect(element.text()).toBe('1|2|');
+      expect(sortedHtml(element)).toBe(
+          '<div>' +
+              '<!-- ngRepeat: i in items -->' +
+              '<div ng-repeat="i in items" rr="">1|</div>' +
+              '<div ng-repeat="i in items" rr="">2|</div>' +
+              '</div>'
+      );
+    }));
+
+
+    it('should work when placed on a root element of attr directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          template: '<span ng-repeat="i in items">{{log(i)}}</span>'
+        };
+      });
+      element = jqLite('<span replace-me-with-repeater></span>');
+      $compile(element)($rootScope);
+      expect(element.text()).toBe('');
+      var logs = [];
+      $rootScope.log = function(t) { logs.push(t); };
+
+      // This creates one item, but it has no parent so we can't get to it
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+
+      // This cleans up to prevent memory leak
+      $rootScope.items = [];
+      $rootScope.$apply();
+      expect(angular.mock.dump(element)).toBe('<!-- ngRepeat: i in items -->');
+      expect(logs).toEqual([1, 2, 1, 2]);
+    }));
+
+
+    it('should work when placed on a root element of attr directive with ASYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          replace: true,
+          templateUrl: 'replace-me-with-repeater.html'
+        };
+      });
+      $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in items">{{log(i)}}</div>');
+      element = jqLite('<span>-</span><span replace-me-with-repeater></span><span>-</span>');
+      $compile(element)($rootScope);
+      expect(element.text()).toBe('--');
+      var logs = [];
+      $rootScope.log = function(t) { logs.push(t); };
+
+      // This creates one item, but it has no parent so we can't get to it
+      $rootScope.items = [1, 2];
+      $rootScope.$apply();
+
+      // This cleans up to prevent memory leak
+      $rootScope.items = [];
+      $rootScope.$apply();
+      expect(sortedHtml(element)).toBe('<span>-</span><!-- ngRepeat: i in items --><span>-</span>');
+      expect(logs).toEqual([1, 2, 1, 2]);
+    }));
+
+
+    it('should work when placed on a root element of element directive with SYNC replaced template',
+        inject(function($templateCache, $compile, $rootScope) {
+      $compileProvider.directive('replaceMeWithRepeater', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          template: '<div ng-repeat="i in [1,2,3]">{{i}}</div>'
+        };
+      });
+      element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+      expect(element.text()).toBe('');
+      $rootScope.$apply();
+      expect(element.text()).toBe('123');
+    }));
+
+
+    if (!msie || msie > 8) {
+      // only IE>8 supports element directives
+
+      it('should work when placed on a root element of element directive with ASYNC replaced template',
+          inject(function($templateCache, $compile, $rootScope) {
+        $compileProvider.directive('replaceMeWithRepeater', function() {
+          return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'replace-me-with-repeater.html'
+          };
+        });
+        $templateCache.put('replace-me-with-repeater.html', '<div ng-repeat="i in [1,2,3]">{{i}}</div>');
+        element = $compile('<div><replace-me-with-repeater></replace-me-with-repeater></div>')($rootScope);
+        expect(element.text()).toBe('');
+        $rootScope.$apply();
+        expect(element.text()).toBe('123');
+      }));
+    }
   });
 
 
@@ -481,7 +635,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[NgErr50] ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:003");
+          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:003");
 
       // recover
       scope.items = [a];
@@ -492,7 +646,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -501,7 +655,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[NgErr50] ngRepeat error! Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:009");
+          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:009");
 
       // recover
       scope.items = [a];
@@ -512,7 +666,7 @@ describe('ngRepeat', function() {
 
       scope.items = [];
       scope.$digest();
-      var newElements = element.find('li');
+      newElements = element.find('li');
       expect(newElements.length).toEqual(0);
     });
 
@@ -691,7 +845,7 @@ describe('ngRepeat ngAnimate', function() {
       $rootScope.$digest();
 
       //the last element gets pushed down when it animates
-      var kids  = element.children();
+      kids  = element.children();
       var first = jqLite(kids[0]);
       var left  = jqLite(kids[1]);
       var right = jqLite(kids[2]);

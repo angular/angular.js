@@ -717,6 +717,21 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should override default headers with custom in a case insensitive manner', function() {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return headers['accept'] == 'Rewritten' &&
+                 headers['content-type'] == 'Content-Type Rewritten' &&
+                 headers['Accept'] === undefined &&
+                 headers['Content-Type'] === undefined;
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'accept': 'Rewritten',
+          'content-type': 'Content-Type Rewritten'
+        }});
+        $httpBackend.flush();
+      });
+
       it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
         $browser.cookies('XSRF-TOKEN', 'secret');
         $browser.url('http://host.com/base');
@@ -734,7 +749,12 @@ describe('$http', function() {
           return !headers.hasOwnProperty('Content-Type');
         }).respond('');
 
+        $httpBackend.expect('POST', '/url2', undefined, function(headers) {
+          return !headers.hasOwnProperty('content-type');
+        }).respond('');
+        
         $http({url: '/url', method: 'POST'});
+        $http({url: '/url2', method: 'POST', headers: {'content-type': 'Rewritten'}});
         $httpBackend.flush();
       });
 
@@ -761,6 +781,28 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: {}});
         $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'})
         $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'})
+
+        $httpBackend.flush();
+      }));
+
+      it('should send execute result if header value is function', inject(function() {
+        var headerConfig = {'Accept': function() { return 'Rewritten'; }};
+
+        function checkHeaders(headers) {
+          return headers['Accept'] == 'Rewritten';
+        }
+
+        $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('POST', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PUT', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PATCH', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('DELETE', '/url', undefined, checkHeaders).respond('');
+
+        $http({url: '/url', method: 'GET', headers: headerConfig});
+        $http({url: '/url', method: 'POST', headers: headerConfig});
+        $http({url: '/url', method: 'PUT', headers: headerConfig});
+        $http({url: '/url', method: 'PATCH', headers: headerConfig});
+        $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
       }));

@@ -96,9 +96,12 @@ directive.code = function() {
 directive.prettyprint = ['reindentCode', function(reindentCode) {
   return {
     restrict: 'C',
-    terminal: true,
     compile: function(element) {
-      element.html(window.prettyPrintOne(reindentCode(element.html()), undefined, true));
+      var html = element.html();
+      //ensure that angular won't compile {{ curly }} values
+      html = html.replace(/\{\{/g, '<span>{{</span>')
+                 .replace(/\}\}/g, '<span>}}</span>');
+      element.html(window.prettyPrintOne(reindentCode(html), undefined, true));
     }
   };
 }];
@@ -225,7 +228,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
       }]);
       if (attrs.ngEmbedApp)  modules.push(attrs.ngEmbedApp);
 
-      element.bind('click', function(event) {
+      element.on('click', function(event) {
         if (event.target.attributes.getNamedItem('ng-click')) {
           event.preventDefault();
         }

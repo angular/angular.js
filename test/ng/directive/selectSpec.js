@@ -493,9 +493,8 @@ describe('select', function() {
 
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
-        compile('<select ng-model="selected" ng-options="i dont parse"></select>');
-      }).toThrowNg("ngOptions error! Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
-                   " _collection_' but got 'i dont parse'.");
+          compile('<select ng-model="selected" ng-options="i dont parse"></select>');
+        }).toThrowMatching(/^\[ngOptions:iexp\] Expected expression in form of/);
     });
 
 

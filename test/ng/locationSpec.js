@@ -7,7 +7,7 @@ describe('$location', function() {
   afterEach(function() {
     // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
     // to clean this up after each test.
-    jqLite(document).unbind('click');
+    jqLite(document).off('click');
   });
 
   describe('NewUrl', function() {
@@ -190,7 +190,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('[NgErr21] $location error! Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:nopp] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -199,7 +199,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('[NgErr21] $location error! Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:nopp] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -312,14 +312,14 @@ describe('$location', function() {
     it('should throw error when invalid server url given', function() {
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('[NgErr22] $location error! Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
+      }).toThrow('[$location:istart] Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
     });
 
 
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('[NgErr49] $location error! Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrow('[$location:nohash] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
@@ -367,6 +367,29 @@ describe('$location', function() {
         locationUrl.$$parse('http://host.com/')
         locationUrl.search('q', '1/2 3');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
+      });
+
+      it('should return an array for duplicate params', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search('q', ['1/2 3','4/5 6']);
+        expect(locationUrl.search()).toEqual({'q': ['1/2 3','4/5 6']});
+      });
+
+      it('should encode an array correctly from search and add to url', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': ['1/2 3','4/5 6']});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
+      });
+
+      it('should rewrite params when specifing a single param in search', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': '1/2 3'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
+        locationUrl.search({'q': '4/5 6'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=4%2F5%206');
       });
     });
   });
@@ -635,6 +658,19 @@ describe('$location', function() {
         }
       );
     });
+
+
+    it('should set appBase to serverBase if base[href] is missing', function() {
+      initService(true, '!', true);
+      inject(
+          initBrowser('http://domain.com/my/view1#anchor1', ''),
+          function($rootScope, $location, $browser) {
+            expect($browser.url()).toBe('http://domain.com/my/view1#anchor1');
+            expect($location.path()).toBe('/my/view1');
+            expect($location.hash()).toBe('anchor1');
+          }
+      );
+    });
   });
 
 
@@ -770,7 +806,7 @@ describe('$location', function() {
         originalBrowser = $browser.url();
         // we have to prevent the default operation, as we need to test absolute links (http://...)
         // and navigating to these links would kill jstd
-        $rootElement.bind('click', function(e) {
+        $rootElement.on('click', function(e) {
           lastEventPreventDefault = e.isDefaultPrevented();
           e.preventDefault();
         });
@@ -825,7 +861,7 @@ describe('$location', function() {
 
           jqLite(link).
               attr('href', 'http://host.com/base/foo').
-              bind('click', function(e) { e.preventDefault(); });
+              on('click', function(e) { e.preventDefault(); });
           browserTrigger(link, 'click');
           expect($browser.url()).toBe('http://host.com/base/');
         }
@@ -1116,11 +1152,11 @@ describe('$location', function() {
       var base, clickHandler;
       module(function($provide) {
         $provide.value('$rootElement', {
-          bind: function(event, handler) {
+          on: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
           },
-          unbind: noop
+          off: noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
@@ -1146,11 +1182,11 @@ describe('$location', function() {
       var base, clickHandler;
       module(function($provide) {
         $provide.value('$rootElement', {
-          bind: function(event, handler) {
+          on: function(event, handler) {
             expect(event).toEqual('click');
             clickHandler = handler;
           },
-          unbind: angular.noop
+          off: angular.noop
         });
         return function($browser) {
           $browser.url(base = 'http://server/');
@@ -1180,7 +1216,7 @@ describe('$location', function() {
       $rootElement.html('<button></button>');
       var button = $rootElement.find('button');
 
-      button.bind('click', function() {
+      button.on('click', function() {
         button.remove();
       });
       browserTrigger(button, 'click');

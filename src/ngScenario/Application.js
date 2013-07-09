@@ -64,7 +64,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     frame = self.getFrame_();
 
     frame.load(function() {
-      frame.unbind();
+      frame.off();
       try {
         var $window = self.getWindow_();
 

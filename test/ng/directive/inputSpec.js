@@ -43,7 +43,7 @@ describe('NgModelController', function() {
     }
 
     expect(exception.message).
-        toMatch(/^\[NgErr6\] ngModel error! Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
+        toMatch(/^\[ngModel:noass\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
   }));
 
 
@@ -457,7 +457,7 @@ describe('input', function() {
     expect(function() {
       compileInput('<input type="text" ng-model="throw \'\'">');
       scope.$digest();
-    }).toThrow("[NgErr24] Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
+    }).toThrow("[$parse:syntax] Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
   });
 
 
@@ -552,7 +552,7 @@ describe('input', function() {
       expect(function() {
         compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         scope.$apply();
-      }).toThrowNg('ngPattern error! Expected fooRegexp to be a RegExp but was undefined.');
+      }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
   });
 

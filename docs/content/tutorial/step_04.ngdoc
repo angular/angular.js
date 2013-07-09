@@ -178,6 +178,8 @@ ordering will default to unordered/natural order.
 * Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
 text.
 
+* Reverse the sort order by adding a `-` symbol before the sorting value: `<option value="-age">Oldest</option>`
+
 # Summary
 
 Now that you have added list sorting and tested the app, go to {@link step_05 step 5} to learn

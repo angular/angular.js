@@ -13,7 +13,7 @@ angular-seed, and run the application in the browser.
 <div class="tabbable" show="true" ng-model="$cookies.platformPreference">
   <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux" value="gitUnix">
     <ol>
-      <li><p>In angular-phonecat directory, run this command:</p>
+      <li><p>In <code>angular-phonecat</code> directory, run this command:</p>
       <pre>git checkout -f step-0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
@@ -25,7 +25,7 @@ angular-seed, and run the application in the browser.
           <li><b>For node.js users:</b>
             <ol>
               <li>In a <i>separate</i> terminal tab or window, run
-<code>./scripts/web-server.js</code> to start the web server.</li>
+<code>node ./scripts/web-server.js</code> to start the web server.</li>
               <li>Open a browser window for the app and navigate to <a
 href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
             </ol>
@@ -46,7 +46,7 @@ directory.</li>
 
   <div class="tab-pane well" id="git-win" title="Git on Windows" value="gitWin">
     <ol>
-      <li><p>Open Git bash and run this command (in angular-phonecat directory):</p>
+      <li><p>Open Git bash and run this command (in <code>angular-phonecat</code> directory):</p>
       <pre>git checkout -f step-0</pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
