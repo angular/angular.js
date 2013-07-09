@@ -104,7 +104,7 @@ module.exports = function(grunt) {
       bower: {
         command: 'node ./node_modules/bower/bin/bower install',
         options: {
-            stdout: false
+            stdout: true
         }
       }
     },
@@ -224,6 +224,6 @@ module.exports = function(grunt) {
   grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['log-bower-starting', 'shell:bower', 'log-bower-finished', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('default', ['package']);
 };
