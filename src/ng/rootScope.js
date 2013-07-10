@@ -184,6 +184,19 @@ function $RootScopeProvider(){
         } else {
           this.$$childHead = this.$$childTail = child;
         }
+        
+        // Help out chrome's GC
+        child.$on('$destroy', function() {
+          if(Child)
+            Child.prototype = null;
+          // Async so that the $broadcast('$destroy') can traverse the rest
+          setTimeout(function() {
+            child.__proto__ = {};
+            for(var i in child)
+              delete child[i];
+            child = null;
+          });
+        });
         return child;
       },
 
