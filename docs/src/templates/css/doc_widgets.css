@@ -15,7 +15,7 @@ ul.doc-example > li {
 
 ul.doc-example > li.doc-example-heading {
   border: none;
-  border-radius: none;
+  border-radius: 0;
   margin-bottom: -10px;
 }
 
