@@ -296,10 +296,10 @@ function htmlParser( html, handler ) {
 
     var attrs = {};
 
-    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQoutedValue, unqoutedValue) {
+    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQuotedValue, unquotedValue) {
       var value = doubleQuotedValue
-        || singleQoutedValue
-        || unqoutedValue
+        || singleQuotedValue
+        || unquotedValue
         || '';
 
       attrs[name] = decodeEntities(value);
