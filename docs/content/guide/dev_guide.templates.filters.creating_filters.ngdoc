@@ -8,7 +8,7 @@ as the first argument. Any filter arguments are passed in as additional argument
 function.
 
 The following sample filter reverses a text string. In addition, it conditionally makes the
-text upper-case and assigns color.
+text upper-case.
 
 <doc:example module="MyReverseModule">
 <doc:source>
