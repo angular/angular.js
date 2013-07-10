@@ -372,7 +372,7 @@ ul.events > li > h3 {
   content:"";
   position:absolute;
   left:50%;
-  top:0px;
+  top:0;
   margin-left:-10px;
   border-width:10px;
   border-style:solid;
