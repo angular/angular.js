@@ -231,7 +231,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       var y = e.clientY;
       var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
 
-      if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
+      if (diff < TAP_DURATION && (tapping || dist < MOVE_TOLERANCE)) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.
         preventGhostClick(x, y);
 
