@@ -478,7 +478,14 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                copy(data, value);
+                if(!action.params.extend)
+                {
+                  copy(data,value);
+                }
+                else
+                {
+                  $.extend(true,value, data);
+                }                
                 value.$promise = promise;
               }
             }
