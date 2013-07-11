@@ -1136,6 +1136,27 @@ describe('input', function() {
 
   describe('ngValue', function() {
 
+    describe('as input submit value', function() {
+      it('should watch the expression without a model', function() {
+        compileInput('<input type="submit" ng-value="value">');
+
+        scope.$apply(function() {
+          scope.value = 'something';
+        });
+
+        expect(inputElm[0].value).toBe('something');
+      });
+
+      it('should watch the expression with a model', function() {
+        compileInput('<input type="submit" ng-model="value" ng-value="value.some">');
+
+        scope.$apply(function() {
+          scope.value = { some: 'disco' };
+        });
+        expect(inputElm[0].value).toBe('disco');
+      });
+    });
+
     it('should evaluate and set constant expressions', function() {
       compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
                    '<input type="radio" ng-model="selected" ng-value="false">' +
