@@ -990,14 +990,6 @@ describe('input', function() {
     });
 
 
-    xit('should require at least one item', function() {
-      compileInput('<input type="text" ng-model="list" ng-list required />');
-
-      changeInputValueTo(' , ');
-      expect(inputElm).toBeInvalid();
-    });
-
-
     it('should convert empty string to an empty array', function() {
       compileInput('<input type="text" ng-model="list" ng-list />');
 
