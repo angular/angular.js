@@ -377,7 +377,7 @@ describe('form', function() {
       expect(parent.$error.myRule).toBe(false);
       expect(child.$error.myRule).toBe(false);
     });
-  })
+  });
 
 
   describe('validation', function() {
@@ -432,6 +432,46 @@ describe('form', function() {
   });
 
 
+  describe('$formData', function() {
+    
+    beforeEach(function (){
+      doc = $compile(
+        '<form name="form">' +
+          '<input ng-model="model.name" name="name" value="Hello input" />' +
+          '<input ng-model="model.number" name="number" value="10" />' +
+          '<textarea ng-model="model.textarea" name="textarea">Hello textarea</textarea>' +
+        '</form>')(scope);
+      
+      scope.model = {
+        name: 'Hello input',
+        number: '10',
+        textarea: 'Hello textarea'
+      };
+      
+      scope.$digest();
+    });
+
+    it('should return all the controllers from the form without any parameters', function(){
+      var form = scope.form;
+      expect(form.$formData()).toEqualData({name:'Hello input','number': '10','textarea':'Hello textarea'});
+    });
+    
+    it('should return filter the $dirty controllers from the inputs', function(){
+      var form = scope.form;
+      form.number.$setViewValue('another value');
+      expect(form.$formData({'$dirty': true})).toEqualData({'number': 'another value'});
+    });
+    
+    it('should return the correct attribute from each input', function(){
+      var form = scope.form;
+      form.name.$modelValue = 'hello_input';
+      form.number.$modelValue = 'ten';
+      form.textarea.$modelValue = 'textarea';
+      expect(form.$formData(false, '$modelValue')).toEqualData({name: 'hello_input', 'number': 'ten', 'textarea': 'textarea'});
+      expect(form.$formData(false, '$viewValue')).toEqualData({name: 'Hello input', 'number': '10', 'textarea': 'Hello textarea'});
+    });
+  });
+	
   describe('$setPristine', function() {
 
     it('should reset pristine state of form and controls', function() {
