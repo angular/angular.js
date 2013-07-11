@@ -86,9 +86,8 @@ img.AngularJS-small {
 /*            Content              */
 /* =============================== */
 
-.improve-docs, .view-source {
+.improve-docs {
   float: right;
-  margin: 0 5px;
 }
 
 .hint {
