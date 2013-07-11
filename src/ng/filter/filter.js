@@ -128,8 +128,15 @@ function filterFilter() {
         }
       default:
         comperator = function(obj, text) {
+          obj = (''+obj).toLowerCase();
+          if (isArray(text)) {
+            for ( var i = 0; i < text.length; i++ ) {
+              if (obj.indexOf((''+text[i]).toLowerCase()) > -1) return true;
+            }
+            return false;
+          }          
           text = (''+text).toLowerCase();
-          return (''+obj).toLowerCase().indexOf(text) > -1
+          return obj.indexOf(text) > -1
         };
     }
     var search = function(obj, text){
