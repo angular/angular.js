@@ -516,11 +516,11 @@ describe('input', function() {
     });
 
 
-    xit('should throw an error when scope pattern can\'t be found', function() {
-      compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
-
-      expect(function() { changeInputValueTo('xx'); }).
-          toThrow('Expected fooRegexp to be a RegExp but was undefined');
+    it('should throw an error when scope pattern can\'t be found', function() {
+      expect(function() {
+        compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
+        scope.$apply();
+      }).toThrow('Expected fooRegexp to be a RegExp but was undefined');
     });
   });
 
