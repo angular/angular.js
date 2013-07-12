@@ -8,8 +8,7 @@ describe('ngView', function() {
   beforeEach(module(function($provide) {
     $provide.value('$window', angular.mock.createMockWindow());
     return function($rootScope, $compile, $animate) {
-      element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
-      $animate.enabled(true);
+      element = $compile('<div><ng:view onload="load()"></ng:view></div>')($rootScope);
     };
   }));
 
@@ -93,7 +92,7 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       expect($route.current.controller).toBe('MyCtrl');
-      expect(MyCtrl).toHaveBeenCalledWith(element.contents().scope());
+      expect(MyCtrl).toHaveBeenCalledWith(element.children().scope());
     });
   });
 
@@ -498,9 +497,12 @@ describe('ngView', function() {
       $rootScope.$digest();
 
       forEach(element.contents(), function(node) {
-        if ( node.nodeType == 3 /* text node */) {
+        if(node.nodeType == 3 /* text node */) {
           expect(jqLite(node).scope()).not.toBe($route.current.scope);
           expect(jqLite(node).controller()).not.toBeDefined();
+        } else if(node.nodeType == 8 /* comment node */) {
+          expect(jqLite(node).scope()).toBe(element.scope());
+          expect(jqLite(node).controller()).toBe(element.controller());
         } else {
           expect(jqLite(node).scope()).toBe($route.current.scope);
           expect(jqLite(node).controller()).toBeDefined();
@@ -508,163 +510,178 @@ describe('ngView', function() {
       });
     });
   });
+});
 
-  describe('animations', function() {
-    var body, element, $rootElement;
+describe('ngView animations', function() {
+  var body, element, $rootElement;
 
-    function html(html) {
-      $rootElement.html(html);
-      body.append($rootElement);
-      element = $rootElement.children().eq(0);
-      return element;
+  beforeEach(module('ngRoute'));
+
+  function html(html) {
+    $rootElement.html(html);
+    body.append($rootElement);
+    element = $rootElement.children().eq(0);
+    return element;
+  }
+
+  beforeEach(module(function() {
+    // we need to run animation on attached elements;
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+      body = jqLite(document.body);
+    };
+  }));
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+  });
+
+
+  beforeEach(module(function($provide, $routeProvider) {
+    $provide.value('$window', angular.mock.createMockWindow());
+    $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
+    $routeProvider.when('/bar', {controller: noop, templateUrl: '/bar.html'});
+    return function($templateCache) {
+      $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
+      $templateCache.put('/bar.html', [200, '<div>data2</div>', {}]);
     }
+  }));
 
-    beforeEach(module(function() {
-      // we need to run animation on attached elements;
-      return function(_$rootElement_) {
-        $rootElement = _$rootElement_;
-        body = jqLite(document.body);
-      };
+  describe('hooks', function() {
+    beforeEach(module('mock.animate'));
+
+    it('should fire off the enter animation',
+        inject(function($compile, $rootScope, $location, $animate) {
+          element = $compile(html('<div ng-view></div>'))($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          var item = $animate.process('enter').element;
+          expect(item.text()).toBe('data');
+        }));
+
+    it('should fire off the leave animation',
+        inject(function($compile, $rootScope, $location, $templateCache, $animate) {
+
+      var item;
+      $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
+      element = $compile(html('<div ng-view></div>'))($rootScope);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      item = $animate.process('enter').element;
+      expect(item.text()).toBe('foo');
+
+      $location.path('/');
+      $rootScope.$digest();
+
+      item = $animate.process('leave').element;
+      expect(item.text()).toBe('foo');
     }));
 
-    afterEach(function(){
-      dealoc(body);
-      dealoc(element);
-    });
-
-
-    beforeEach(module(function($provide, $routeProvider) {
-      $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
-      return function($templateCache) {
-        $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
-      }
-    }));
-
-    describe('hooks', function() {
-      beforeEach(module('mock.animate'));
-
-      it('should fire off the enter animation',
-          inject(function($compile, $rootScope, $location, $animate) {
-            var item;
-            element = $compile(html('<div ng-view></div>'))($rootScope);
-
-            $location.path('/foo');
-            $rootScope.$digest();
-
-            item = $animate.process('leave').element;
-            item = $animate.process('leave').element;
-            item = $animate.process('leave').element;
-
-            item = $animate.process('enter').element;
-            expect(item.text()).toBe('data');
-
-            item = $animate.process('leave').element;
-            item = $animate.process('enter').element;
-            expect(item.text()).toBe('data');
-          }));
-
-      it('should fire off the leave animation',
-          inject(function($compile, $rootScope, $location, $templateCache, $animate) {
-
+    it('should animate two separate ngView elements',
+      inject(function($compile, $rootScope, $templateCache, $animate, $location) {
         var item;
-        $templateCache.put('/foo.html', [200, '<div>foo</div>', {}]);
-        element = $compile(html('<div ng-view></div>'))($rootScope);
+        $rootScope.tpl = 'one';
+        element = $compile(html('<div><div ng-view></div></div>'))($rootScope);
+        $rootScope.$digest();
 
         $location.path('/foo');
         $rootScope.$digest();
 
-        item = $animate.process('leave').element;
-        item = $animate.process('leave').element;
-        item = $animate.process('leave').element;
-
         item = $animate.process('enter').element;
-        expect(item.text()).toBe('foo');
-
-        item = $animate.process('leave').element;
-        item = $animate.process('enter').element;
-        expect(item.text()).toBe('foo');
-
-        $location.path('/');
-        $rootScope.$digest();
-
-        item = $animate.process('leave').element;
-        expect(item.text()).toBe('foo');
-
-        item = $animate.process('leave').element;
-        expect(item.text()).toBe('foo');
-      }));
-    });
-
-    it('should not double compile when route changes', function() {
-      module('ngAnimate');
-      module('mock.animate');
-      module(function($routeProvider, $animateProvider, $provide) {
-        $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
-        $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
-        $animateProvider.register('.my-animation', function() {
-          return {
-            leave: function(element, done) {
-              dump('yes');
-              done();
-            }
-          };
-        });
-      });
-
-      inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer, $animate) {
-        if (!$sniffer.transitions) return;
-
-        element = $compile(html('<ng:view onload="load()"></ng:view>'))($rootScope);
-
-        $location.path('/foo');
-        $rootScope.$digest();
-
-        $animate.process('leave');
-        $animate.process('leave');
-        $animate.process('leave');
-        $animate.process('enter');
-        $animate.process('leave');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-
-        expect(element.text()).toEqual('12');
+        expect(item.text()).toBe('data');
 
         $location.path('/bar');
         $rootScope.$digest();
-        $animate.process('leave');
-        $animate.process('enter');
-        $animate.process('leave');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        $animate.process('enter');
-        expect(n(element.text())).toEqual('1234');
 
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
+        var itemA = $animate.process('leave').element;
+        expect(itemA).not.toEqual(itemB);
+        var itemB = $animate.process('enter').element;
+    }));
+  });
 
-        expect(element.text()).toEqual('34');
+  it('should not double compile when the route changes', function() {
 
-        function n(text) {
-          return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
-        }
+    module('ngAnimate');
+    module('mock.animate');
+
+    var window;
+    module(function($routeProvider, $animateProvider, $provide) {
+      $provide.value('$window', window = angular.mock.createMockWindow());
+      $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
+      $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
+      $animateProvider.register('.my-animation', function() {
+        return {
+          leave: function(element, done) {
+            done();
+          }
+        };
       });
+    });
+
+    inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer, $animate) {
+      element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
+      $animate.enabled(true);
+
+      $location.path('/foo');
+      $rootScope.$digest();
+
+      $animate.process('enter'); //ngView
+
+      if($sniffer.transitions) {
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+      }
+
+      $animate.process('enter'); //repeat 1
+      $animate.process('enter'); //repeat 2
+
+      if($sniffer.transitions) {
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+      }
+
+      expect(element.text()).toEqual('12');
+
+      $location.path('/bar');
+      $rootScope.$digest();
+
+      $animate.process('leave'); //ngView old
+      if($sniffer.transitions) {
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+      }
+
+      $animate.process('enter'); //ngView new
+      if($sniffer.transitions) {
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+      }
+
+      expect(n(element.text())).toEqual(''); //this is midway during the animation
+
+      $animate.process('enter'); //ngRepeat 3
+      $animate.process('enter'); //ngRepeat 4
+
+
+      if($sniffer.transitions) {
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(1).process();
+        $window.setTimeout.expect(0).process();
+        $window.setTimeout.expect(0).process();
+      }
+
+      expect(element.text()).toEqual('34');
+
+      function n(text) {
+        return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
+      }
     });
   });
 });
