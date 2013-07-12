@@ -196,17 +196,19 @@ DI is pervasive throughout Angular. It is typically used in controllers and fact
 ### DI in controllers
 
 Controllers are classes which are responsible for application behavior. The recommended way of 
-declaring controllers is:
+declaring controllers is using the array notation:
 
 <pre>
-  var MyController = function($scope, dep1, dep2) {
+  someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
     ...
     $scope.aMethod = function() {
       ...
     }
-  }
-  MyController.$inject = ['$scope', 'dep1', 'dep2'];
+    ...
+  }]);
 </pre>
+
+This avoids the creation of global functions for controllers and also protects against minification.
 
 
 ### Factory methods
