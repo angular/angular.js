@@ -892,9 +892,9 @@ function $CompileProvider($provide) {
                 scope.$watch(function parentValueWatch() {
                   var parentValue = parentGet(parentScope);
 
-                  if (parentValue !== scope[scopeName]) {
+                  if (!angular.equals(parentValue, scope[scopeName])) {
                     // we are out of sync and need to copy
-                    if (parentValue !== lastValue) {
+                    if (!angular.equals(parentValue, lastValue)) {
                       // parent changed and it has precedence
                       lastValue = scope[scopeName] = parentValue;
                     } else {
@@ -903,7 +903,7 @@ function $CompileProvider($provide) {
                     }
                   }
                   return parentValue;
-                });
+                }, undefined, true);
                 break;
               }
 
