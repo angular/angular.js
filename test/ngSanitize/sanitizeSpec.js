@@ -227,9 +227,13 @@ describe('HTML', function() {
 
       it('should be URI', function() {
         expect(isUri('http://abc')).toBeTruthy();
+        expect(isUri('HTTP://abc')).toBeTruthy();
         expect(isUri('https://abc')).toBeTruthy();
+        expect(isUri('HTTPS://abc')).toBeTruthy();
         expect(isUri('ftp://abc')).toBeTruthy();
+        expect(isUri('FTP://abc')).toBeTruthy();
         expect(isUri('mailto:me@example.com')).toBeTruthy();
+        expect(isUri('MAILTO:me@example.com')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
       });
 
