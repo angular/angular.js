@@ -666,6 +666,7 @@ function $HttpProvider() {
 
 
       var serverRequest = function(config) {
+        headers = config.headers;
         var reqData = transformData(config.data, headersGetter(headers), config.transformRequest);
 
         // strip content-type if data is undefined
