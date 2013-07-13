@@ -80,6 +80,18 @@ describe('ngClick (mobile)', function() {
     expect($rootScope.tapped).toBeUndefined();
   }));
 
+  it('should click if the touchend is within mvoe tolerance', inject(function($rootScope, $compile, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger(element, 'touchend', [], 15, 15);
+
+    expect($rootScope.tapped).toEqual(true);
+  }));
 
   it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
@@ -93,6 +105,20 @@ describe('ngClick (mobile)', function() {
     browserTrigger(element, 'touchend', [], 400, 400);
 
     expect($rootScope.tapped).toBeUndefined();
+  }));
+
+  it('should click if the touchend is within mvoe tolerance, even there is a touchmove before touchend', inject(function($rootScope, $compile, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger(element, 'touchmove');
+    browserTrigger(element, 'touchend', [], 15, 15);
+
+    expect($rootScope.tapped).toEqual(true);
   }));
 
   it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $rootElement) {
