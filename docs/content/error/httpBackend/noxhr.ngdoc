@@ -1,0 +1,4 @@
+@ngdoc error
+@name $httpBackend:noxhr
+@fullName Unsupported XHR
+@description

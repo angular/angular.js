@@ -3,7 +3,8 @@ var reader = require('./reader.js'),
     writer = require('./writer.js'),
     SiteMap = require('./SiteMap.js').SiteMap,
     appCache = require('./appCache.js').appCache,
-    Q = require('qq');
+    Q = require('qq'),
+    errorsJson = require('../../build/errors.json').errors;
 
 var start = now();
 var docs;
@@ -22,10 +23,35 @@ writer.makeDir('build/docs/', true).then(function() {
 }).then(function generateHtmlDocPartials(docs_) {
   docs = docs_;
   ngdoc.merge(docs);
-  var fileFutures = [];
+  var fileFutures = [], namespace;
+
+  var isErrorDocPresent = function (search) {
+    return docs.some(function (doc) {
+      return doc.ngdoc === 'error' && doc.name === search;
+    });
+  };
+
+  // Check that each generated error code has a doc file.
+  Object.keys(errorsJson).forEach(function (prop) {
+    if (typeof errorsJson[prop] === 'object') {
+      namespace = errorsJson[prop];
+      Object.keys(namespace).forEach(function (code) {
+        var search = prop + ':' + code;
+        if (!isErrorDocPresent(search)) {
+          throw new Error('Missing ngdoc file for error code: ' + search);
+        }
+      });
+    } else {
+      if (!isErrorDocPresent(prop)) {
+        throw new Error('Missing ngdoc file for error code: ' + prop);
+      }
+    }
+  });
+
   docs.forEach(function(doc){
     // this hack is here because on OSX angular.module and angular.Module map to the same file.
     var id = doc.id.replace('angular.Module', 'angular.IModule');
+
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 

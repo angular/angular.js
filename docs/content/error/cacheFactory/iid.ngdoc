@@ -1,0 +1,7 @@
+@ngdoc error
+@name $cacheFactory:iid
+@fullName Invalid ID
+@description
+
+This error occurs when trying to create a new `cacheFactory` object with a 
+specified cache ID, but the cache ID is already taken.

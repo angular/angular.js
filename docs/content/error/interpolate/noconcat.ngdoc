@@ -1,0 +1,4 @@
+@ngdoc error
+@name $interpolate:noconcat
+@fullName Multiple Expressions
+@description
