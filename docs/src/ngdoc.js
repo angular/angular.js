@@ -13,6 +13,22 @@ var fspath = require('path');
 var markdown = new Showdown.converter({ extensions : ['table'] });
 var shell = require('shelljs');
 var gruntUtil = require('../../lib/grunt/utils.js');
+var errorsJson;
+
+var lookupMinerrMsg = function (doc) {
+  var code, namespace;
+
+  if (errorsJson === undefined) {
+    errorsJson = require('../../build/errors.json').errors;
+  }
+
+  namespace = doc.getMinerrNamespace();
+  code = doc.getMinerrCode();
+  if (namespace === undefined) {
+    return errorsJson[code];
+  }
+  return errorsJson[namespace][code];
+};
 
 exports.trim = trim;
 exports.metadata = metadata;
@@ -96,6 +112,22 @@ Doc.prototype = {
     });
     words.sort();
     return words.join(' ');
+  },
+
+  getMinerrNamespace: function () {
+    if (this.ngdoc !== 'error') {
+      throw new Error('Tried to get the minErr namespace, but @ngdoc ' +
+        this.ngdoc + ' was supplied. It should be @ngdoc error');
+    }
+    return this.name.split(':')[0];
+  },
+
+  getMinerrCode: function () {
+    if (this.ngdoc !== 'error') {
+      throw new Error('Tried to get the minErr error code, but @ngdoc ' +
+        this.ngdoc + ' was supplied. It should be @ngdoc error');
+    }
+    return this.name.split(':')[1];
   },
 
   /**
@@ -325,6 +357,7 @@ Doc.prototype = {
     flush();
     this.shortName = this.name.split(/[\.:#]/).pop().trim();
     this.id = this.id || // if we have an id just use it
+      (this.ngdoc === 'error' ? this.name : '') ||
       (((this.file||'').match(/.*(\/|\\)([^(\/|\\)]*)\.ngdoc/)||{})[2]) || // try to extract it from file name
       this.name; // default to name
     this.description = this.markdown(this.description);
@@ -391,20 +424,33 @@ Doc.prototype = {
 
   html: function() {
     var dom = new DOM(),
-      self = this;
+      self = this,
+      minerrMsg;
 
-    dom.h(title(this.name), function() {
+    if (this.section === 'api') {
+      dom.tag('a', {
+          href: 'http://github.com/angular/angular.js/tree/v' +
+            gruntUtil.getVersion().number + '/' + self.file + '#L' + self.line,
+          class: 'view-source btn btn-action' }, function(dom) {
+        dom.tag('i', {class:'icon-zoom-in'}, ' ');
+        dom.text(' View source');
+      });
+    }
+    dom.tag('a', {
+        href: 'http://github.com/angular/angular.js/edit/master/' + self.file,
+        class: 'improve-docs btn btn-primary' }, function(dom) {
+      dom.tag('i', {class:'icon-edit'}, ' ');
+      dom.text(' Improve this doc');
+    });
+    dom.h(title(this), function() {
 
       notice('deprecated', 'Deprecated API', self.deprecated);
-      dom.tag('a', {href: 'http://github.com/angular/angular.js/edit/master/' + self.file, class: 'improve-docs btn btn-primary'}, function(dom) {
-        dom.tag('i', {class:'icon-edit'}, ' ');
-        dom.text(' Improve this doc');
-      });
-      if (self.section === 'api') {
-        dom.tag('a', {href: 'http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().number + '/' + self.file + '#L' + self.line, class: 'view-source btn btn-action'}, function(dom) {
-          dom.tag('i', {class:'icon-zoom-in'}, ' ');
-          dom.text(' View source');
-        });
+      if (self.ngdoc === 'error') {
+        minerrMsg = lookupMinerrMsg(self);
+        dom.tag('pre', {
+          class:'minerr-errmsg',
+          'error-display': minerrMsg
+        }, minerrMsg);
       }
       if (self.ngdoc != 'overview') {
         dom.h('Description', self.description, dom.html);
@@ -763,6 +809,10 @@ Doc.prototype = {
     dom.html(this.description);
   },
 
+  html_usage_error: function (dom) {
+    dom.html();
+  },
+
   html_usage_interface: function(dom){
     var self = this;
 
@@ -878,62 +928,50 @@ var GLOBALS = /^angular\.([^\.]+)$/,
     MODULE_TYPE = /^((?:(?!^angular\.)[^\.])+)\..+\.([A-Z][^\.]+)$/;
 
 
-function title(text) {
-  if (!text) return text;
+function title(doc) {
+  if (!doc.name) return doc.name;
   var match,
-    module,
-    type,
-    name;
+    text = doc.name;
 
-  if (text == 'angular.Module') {
-    module = 'ng';
-    name = 'Module';
-    type = 'Type';
-  } else if (match = text.match(GLOBALS)) {
-    module = 'ng';
-    name = 'angular.' + match[1];
-    type = 'API';
-  } else if (match = text.match(MODULE)) {
-    module = match[1];
-  } else if (match = text.match(MODULE_MOCK)) {
-    module = 'ng';
-    name = 'angular.mock.' + match[1];
-    type = 'API';
-  } else if (match = text.match(MODULE_DIRECTIVE)) {
-    module = match[1];
-    name = match[2];
-    type = 'directive';
-  } else if (match = text.match(MODULE_DIRECTIVE_INPUT)) {
-    module = match[1];
-    name = 'input [' + match[2] + ']';
-    type = 'directive';
-  } else if (match = text.match(MODULE_FILTER)) {
-    module = match[1];
-    name = match[2];
-    type = 'filter';
-  } else if (match = text.match(MODULE_SERVICE)) {
-    module = match[1];
-    name = match[2] + (match[3] || '');
-    type = 'service';
-  } else if (match = text.match(MODULE_TYPE)) {
-    module = match[1];
-    name = match[2];
-    type = 'type';
-  } else {
-    return text;
-  }
-  return function() {
-    this.tag('code', name);
-    this.tag('span', { class: 'hint'}, function() {
-      if (type) {
-        this.text('(');
-        this.text(type);
-        this.text(' in module ');
-        this.tag('code', module);
-        this.text(')');
-      }
-    });
+  var makeTitle = function (name, type, componentType, component) {
+    // Makes title markup.
+    // makeTitle('Foo', 'directive', 'module', 'ng') ->
+    //    Foo is a directive in module ng
+    return function () {
+      this.tag('code', name);
+      this.tag('div', function () {
+        this.tag('span', {class: 'hint'}, function () {
+          if (type && component) {
+            this.text(type + ' in ' + componentType + ' ');
+            this.tag('code', component);
+          }
+        });
+      });
+    };
   };
+
+  if (doc.ngdoc === 'error') {
+    return makeTitle(doc.fullName, 'error', 'component', doc.getMinerrNamespace());
+  } else if (text == 'angular.Module') {
+    return makeTitle('Module', 'Type', 'module', 'ng');
+  } else if (match = text.match(GLOBALS)) {
+    return makeTitle('angular.' + match[1], 'API', 'module', 'ng');
+  } else if (match = text.match(MODULE)) {
+    return makeTitle('', '', 'module', match[1]);
+  } else if (match = text.match(MODULE_MOCK)) {
+    return makeTitle('angular.mock.' + match[1], 'API', 'module', 'ng');
+  } else if (match = text.match(MODULE_DIRECTIVE)) {
+    return makeTitle(match[2], 'directive', 'module', match[1]);
+  } else if (match = text.match(MODULE_DIRECTIVE_INPUT)) {
+    return makeTitle('input [' + match[2] + ']', 'directive', 'module', match[1]);
+  } else if (match = text.match(MODULE_FILTER)) {
+    return makeTitle(match[2], 'filter', 'module', match[1]);
+  } else if (match = text.match(MODULE_SERVICE)) {
+    return makeTitle(match[2] + (match[3] || ''), 'service', 'module', match[1]);
+  } else if (match = text.match(MODULE_TYPE)) {
+    return makeTitle(match[2], 'type', 'module', match[1]);
+  }
+  return text;
 }
 
 
@@ -988,7 +1026,7 @@ function metadata(docs){
     pages.push({
       section: doc.section,
       id: doc.id,
-      name: title(doc.name),
+      name: title(doc),
       shortName: shortName,
       type: doc.ngdoc,
       keywords:doc.keywords()

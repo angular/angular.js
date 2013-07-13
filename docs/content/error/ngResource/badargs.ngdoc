@@ -1,0 +1,4 @@
+@ngdoc error
+@name ngResource:badargs
+@fullName Too Many Arguments
+@description

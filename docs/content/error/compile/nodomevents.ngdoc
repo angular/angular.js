@@ -1,0 +1,4 @@
+@ngdoc error
+@name $compile:nodomevents
+@fullName Interpolated Event Attributes
+@description

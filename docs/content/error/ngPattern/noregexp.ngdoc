@@ -1,0 +1,4 @@
+@ngdoc error
+@name ngPattern:noregexp
+@fullName Expected Regular Expression
+@description

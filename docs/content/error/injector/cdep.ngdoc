@@ -1,0 +1,4 @@
+@ngdoc error
+@name $injector:cdep
+@fullName Circular Dependency
+@description

@@ -299,6 +299,35 @@ docsApp.directive.docTutorialReset = function() {
 };
 
 
+docsApp.directive.errorDisplay = ['$location', function ($location) {
+  var interpolate = function (formatString) {
+    var formatArgs = arguments;
+    return formatString.replace(/\{\d+\}/g, function (match) {
+      // Drop the braces and use the unary plus to convert to an integer.
+      // The index will be off by one because of the formatString.
+      var index = +match.slice(1, -1);
+      if (index + 1 >= formatArgs.length) {
+        return match;
+      }
+      return formatArgs[index+1];
+    });
+  };
+
+  return {
+    link: function (scope, element, attrs) {
+      var search = $location.search(),
+        formatArgs = [attrs.errorDisplay],
+        i;
+
+      for (i = 0; search['p'+i]; i++) {
+        formatArgs.push(search['p'+i]);
+      }
+      element.text(interpolate.apply(null, formatArgs));
+    }
+  };
+}];
+
+
 docsApp.serviceFactory.angularUrls = function($document) {
   var urls = {};
 
@@ -420,6 +449,7 @@ docsApp.serviceFactory.sections = ['NG_PAGES', function sections(NG_PAGES) {
     tutorial: [],
     misc: [],
     cookbook: [],
+    error: [],
     getPage: function(sectionId, partialId) {
       var pages = sections[sectionId];
 
@@ -463,9 +493,10 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     }
   };
   var OFFLINE_COOKIE_NAME = 'ng-offline',
-      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
+      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)|(error)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
       GLOBALS = /^angular\.([^\.]+)$/,
+      ERROR = /^([a-zA-Z0-9_$]+:)?([a-zA-Z0-9_$]+)$/,
       MODULE = /^((?:(?!^angular\.)[^\.])+)$/,
       MODULE_MOCK = /^angular\.mock\.([^\.]+)$/,
       MODULE_DIRECTIVE = /^((?:(?!^angular\.)[^\.])+)\.directive:([^\.]+)$/,
@@ -529,14 +560,15 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     guide: 'Developer Guide',
     misc: 'Miscellaneous',
     tutorial: 'Tutorial',
-    cookbook: 'Examples'
+    cookbook: 'Examples',
+    error: 'Error Reference'
   };
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
       var parts = path.split('/'),
         sectionId = parts[1],
-        partialId = parts[2],
+        partialId = parts.slice(2).join('/'),
         sectionName = SECTION_NAME[sectionId] || sectionId,
         page = sections.getPage(sectionId, partialId);
 
@@ -624,9 +656,12 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
    ***********************************/
 
   function updateSearch() {
-    var cache = {},
+    var moduleCache = {},
+        namespaceCache = {},
         pages = sections[$location.path().split('/')[1]],
         modules = $scope.modules = [],
+        namespaces = $scope.namespaces = [],
+        globalErrors = $scope.globalErrors = [],
         otherPages = $scope.pages = [],
         search = $scope.search,
         bestMatch = {page: null, rank:0};
@@ -644,7 +679,14 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       if (page.id == 'index') {
         //skip
       } else if (page.section != 'api') {
-        otherPages.push(page);
+        if (page.section === 'error') {
+          match = id.match(ERROR);
+          if (match[1] !== undefined) {
+            namespace(match[1].replace(/:/g, '')).errors.push(page);
+          } else {
+            globalErrors.push(page);
+          }
+        }
       } else if (id == 'angular.Module') {
         module('ng').types.push(page);
       } else if (match = id.match(GLOBALS)) {
@@ -672,19 +714,20 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     /*************/
 
     function module(name) {
-      var module = cache[name];
+      var module = moduleCache[name];
+
       if (!module) {
-        module = cache[name] = {
+        module = moduleCache[name] = {
           name: name,
           url: 'api/' + name,
           globals: [],
           directives: [],
           services: [],
           service: function(name) {
-            var service =  cache[this.name + ':' + name];
+            var service =  moduleCache[this.name + ':' + name];
             if (!service) {
               service = {name: name};
-              cache[this.name + ':' + name] = service;
+              moduleCache[this.name + ':' + name] = service;
               this.services.push(service);
             }
             return service;
@@ -695,6 +738,20 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         modules.push(module);
       }
       return module;
+    }
+
+    function namespace(name) {
+      var namespace = namespaceCache[name];
+
+      if (!namespace) {
+        namespace = namespaceCache[name] = {
+          name: name,
+          url: 'error/' + name,
+          errors: []
+        };
+        namespaces.push(namespace);
+      }
+      return namespace;
     }
 
     function rank(page, terms) {

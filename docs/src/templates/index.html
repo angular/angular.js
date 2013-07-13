@@ -18,7 +18,7 @@
     // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
     (function() {
       var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
-          rUrl = /(#!\/|api|guide|misc|tutorial|cookbook|index[^\.]*\.html).*$/,
+          rUrl = /(#!\/|api|guide|misc|tutorial|cookbook|error|index[^\.]*\.html).*$/,
           baseUrl = location.href.replace(rUrl, indexFile),
           jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
           debug = /index[^\.]*-debug\.html$/.test(baseUrl),
@@ -150,6 +150,7 @@
                 <li><a href="./tutorial/">Tutorial</a></li>
                 <li><a href="./guide/">Developer Guide</a></li>
                 <li><a href="./api/">API Reference</a></li>
+                <li><a href="./error/">Error Reference</a></li>
                 <li><a href="http://docs.angularjs.org/misc/contribute">Contribute</a></li>
                 <li><a href="http://code.angularjs.org/">Download</a></li>
               </ul>
@@ -263,7 +264,16 @@
               </li>
             </ul>
 
+            <ul class="nav nav-list well api-list-item" ng-repeat="namespace in namespaces track by namespace.url">
+              <li class="nav-header module">
+                <a class="code" href="{{namespace.url}}">{{namespace.name}}</a>
+              </li>
 
+              <li ng-repeat="page in namespace.errors track by page.url" ng-class="navClass(page)" ng-animate="'expand'" class="api-list-item">
+                <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
+              </li>
+            </ul>
+            
             <ul class="nav nav-list well api-list-item" ng-repeat="module in modules track by module.url">
               <li class="nav-header module">
                 <a class="guide" href="{{URL.module}}">module</a>
