@@ -1,0 +1,4 @@
+@ngdoc error
+@name $compile:ctreq
+@fullName Missing Required Controller
+@description

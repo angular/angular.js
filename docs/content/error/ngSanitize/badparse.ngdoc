@@ -1,0 +1,4 @@
+@ngdoc error
+@name ngSanitize:badparse
+@fullName Parsing Error
+@description

@@ -1,0 +1,4 @@
+@ngdoc error
+@name ngRepeat:dupes
+@fullName Duplicate Repeater Key
+@description

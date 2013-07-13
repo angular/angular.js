@@ -1,0 +1,4 @@
+@ngdoc error
+@name $rootScope:infdig
+@fullName Infinite $digest Loop
+@description

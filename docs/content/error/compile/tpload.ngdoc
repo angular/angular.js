@@ -1,0 +1,4 @@
+@ngdoc error
+@name $compile:tpload
+@fullName Template Loader Error
+@description
