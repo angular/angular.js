@@ -234,6 +234,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
         scope.$apply(function() {
           // TODO(braden): This is sending the touchend, not a tap or click. Is that kosher?
+          angular.element(tapElement).triggerHandler('ngClick', event);
           clickHandler(scope, {$event: event});
         });
       }
