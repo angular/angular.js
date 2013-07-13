@@ -284,6 +284,27 @@ describe('$http', function() {
         });
       });
 
+
+      it('should allow replacement of the headers object', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                config.headers = {foo: 'intercepted'};
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('GET', '/url', null, function (headers) {
+            return angular.equals(headers, {foo: 'intercepted'});
+          }).respond('');
+          $http.get('/url');
+          $rootScope.$apply();
+        });
+      });
+
       it('should reject the http promise if an interceptor fails', function() {
         var reason = new Error('interceptor failed');
         module(function($httpProvider) {
@@ -752,7 +773,7 @@ describe('$http', function() {
         $httpBackend.expect('POST', '/url2', undefined, function(headers) {
           return !headers.hasOwnProperty('content-type');
         }).respond('');
-        
+
         $http({url: '/url', method: 'POST'});
         $http({url: '/url2', method: 'POST', headers: {'content-type': 'Rewritten'}});
         $httpBackend.flush();
