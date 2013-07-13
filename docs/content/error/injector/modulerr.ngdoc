@@ -1,0 +1,4 @@
+@ngdoc error
+@name $injector:modulerr
+@fullName Module Error
+@description

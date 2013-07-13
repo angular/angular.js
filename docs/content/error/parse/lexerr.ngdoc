@@ -1,0 +1,4 @@
+@ngdoc error
+@name $parse:lexerr
+@fullName Lexer Error
+@description

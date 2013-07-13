@@ -1,0 +1,4 @@
+@ngdoc error
+@name $parse:isecfn
+@fullName Referencing Function Disallowed
+@description

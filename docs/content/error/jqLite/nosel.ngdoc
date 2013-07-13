@@ -1,0 +1,4 @@
+@ngdoc error
+@name jqLite:nosel
+@fullName Unsupported Selector Lookup
+@description

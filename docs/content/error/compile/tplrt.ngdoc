@@ -1,0 +1,4 @@
+@ngdoc error
+@name $compile:tplrt
+@fullName Invalid Template Root
+@description

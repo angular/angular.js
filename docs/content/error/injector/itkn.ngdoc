@@ -1,0 +1,4 @@
+@ngdoc error
+@name $injector:itkn
+@fullName Bad Injection Token
+@description

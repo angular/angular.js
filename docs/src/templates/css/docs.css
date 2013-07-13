@@ -476,3 +476,12 @@ pre ol li {
   width:180px;
   margin-bottom:20px;
 }
+
+.minerr-errmsg {
+  clear: both;
+  position: relative;
+  top: 10px;
+  font-size: 16px;
+  word-break: normal;
+  word-wrap: normal;
+}

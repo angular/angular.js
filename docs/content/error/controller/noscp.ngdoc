@@ -1,0 +1,4 @@
+@ngdoc error
+@name $controller:noscp
+@fullName Missing $scope object
+@description
