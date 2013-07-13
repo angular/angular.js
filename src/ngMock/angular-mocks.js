@@ -29,7 +29,7 @@ angular.mock = {};
  * that there are several helper methods available which can be used in tests.
  */
 angular.mock.$BrowserProvider = function() {
-  this.$get = function(){
+  this.$get = function() {
     return new angular.mock.$Browser();
   };
 };
@@ -412,7 +412,7 @@ angular.mock.$LogProvider = function() {
 (function() {
   var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
 
-  function jsonStringToDate(string){
+  function jsonStringToDate(string) {
     var match;
     if (match = string.match(R_ISO8061_STR)) {
       var date = new Date(0),
