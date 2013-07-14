@@ -385,6 +385,22 @@ function isDate(value){
 
 /**
  * @ngdoc function
+ * @name angular.isRegExp
+ * @function
+ *
+ * @description
+ * Determines if a value is a regular expression object.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `RegExp`.
+ */
+function isRegExp(value) {
+  return toString.apply(value) == '[object RegExp]';
+}
+
+
+/**
+ * @ngdoc function
  * @name angular.isArray
  * @function
  *
