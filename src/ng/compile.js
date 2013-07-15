@@ -274,9 +274,9 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document',
+            '$controller', '$rootScope', '$document', '$$urlUtils',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document) {
+             $controller,   $rootScope,   $document,   $$urlUtils) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -319,23 +319,22 @@ function $CompileProvider($provide) {
           }
         }
 
+        nodeName = nodeName_(this.$$element);
 
         // sanitize a[href] and img[src] values
-        nodeName = nodeName_(this.$$element);
         if ((nodeName === 'A' && key === 'href') ||
-            (nodeName === 'IMG' && key === 'src')){
-          urlSanitizationNode.setAttribute('href', value);
-
-          // href property always returns normalized absolute url, so we can match against that
-          normalizedVal = urlSanitizationNode.href;
-          if (normalizedVal !== '') {
-            if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
-                (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
-              this[key] = value = 'unsafe:' + normalizedVal;
+            (nodeName === 'IMG' && key === 'src')) {
+          // NOTE: $$urlUtils.resolve() doesn't support IE < 8 so we don't sanitize for that case.
+          if (!msie || msie >= 8 ) {
+            normalizedVal = $$urlUtils.resolve(value);
+            if (normalizedVal !== '') {
+              if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
+                  (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
+                this[key] = value = 'unsafe:' + normalizedVal;
+              }
             }
           }
         }
-
 
         if (writeAttr !== false) {
           if (value === null || value === undefined) {

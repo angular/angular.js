@@ -30,6 +30,7 @@ angularFiles = {
     'src/ng/httpBackend.js',
     'src/ng/locale.js',
     'src/ng/timeout.js',
+    'src/ng/urlUtils.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
