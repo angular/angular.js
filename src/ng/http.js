@@ -998,26 +998,5 @@ function $HttpProvider() {
         if (idx !== -1) $http.pendingRequests.splice(idx, 1);
       }
     }
-
-
-    function buildUrl(url, params) {
-          if (!params) return url;
-          var parts = [];
-          forEachSorted(params, function(value, key) {
-            if (value == null || value == undefined) return;
-            if (!isArray(value)) value = [value];
-
-            forEach(value, function(v) {
-              if (isObject(v)) {
-                v = toJson(v);
-              }
-              parts.push(encodeUriQuery(key) + '=' +
-                         encodeUriQuery(v));
-            });
-          });
-          return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
-        }
-
-
   }];
 }
