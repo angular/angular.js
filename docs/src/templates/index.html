@@ -245,7 +245,7 @@
             <div class="dropdown search"
                  ng-class="{open: focused && bestMatch.rank > 0 && bestMatch.page != currentPage}">
               <input type="text" ng-model="search" placeholder="search the docs"
-                     tabindex="1" accesskey="s" class="input-medium search-query" focused="focused">
+                tabindex="1" accesskey="s" class="input-medium search-query" />
               <ul class="dropdown-menu">
                 <li>
                   <a href="{{bestMatch.page.url}}">{{bestMatch.page.shortName}}</a>
