@@ -524,29 +524,27 @@ function $CompileProvider($provide) {
             var index;
 
             attr = nAttrs[j];
-            if (attr.specified) {
-              name = attr.name;
-              // support ngAttr attribute binding
-              ngAttrName = directiveNormalize(name);
-              if (NG_ATTR_BINDING.test(ngAttrName)) {
-                name = ngAttrName.substr(6).toLowerCase();
-              }
-              if ((index = ngAttrName.lastIndexOf('Start')) != -1 && index == ngAttrName.length - 5) {
-                attrStartName = name;
-                attrEndName = name.substr(0, name.length - 5) + 'end';
-                name = name.substr(0, name.length - 6);
-              }
-              nName = directiveNormalize(name.toLowerCase());
-              attrsMap[nName] = name;
-              attrs[nName] = value = trim((msie && name == 'href')
-                ? decodeURIComponent(node.getAttribute(name, 2))
-                : attr.value);
-              if (getBooleanAttrName(node, nName)) {
-                attrs[nName] = true; // presence means true
-              }
-              addAttrInterpolateDirective(node, directives, value, nName);
-              addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName, attrEndName);
+            name = attr.name;
+            // support ngAttr attribute binding
+            ngAttrName = directiveNormalize(name);
+            if (NG_ATTR_BINDING.test(ngAttrName)) {
+              name = ngAttrName.substr(6).toLowerCase();
             }
+            if ((index = ngAttrName.lastIndexOf('Start')) != -1 && index == ngAttrName.length - 5) {
+              attrStartName = name;
+              attrEndName = name.substr(0, name.length - 5) + 'end';
+              name = name.substr(0, name.length - 6);
+            }
+            nName = directiveNormalize(name.toLowerCase());
+            attrsMap[nName] = name;
+            attrs[nName] = value = trim((msie && name == 'href')
+              ? decodeURIComponent(node.getAttribute(name, 2))
+              : attr.value);
+            if (getBooleanAttrName(node, nName)) {
+              attrs[nName] = true; // presence means true
+            }
+            addAttrInterpolateDirective(node, directives, value, nName);
+            addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName, attrEndName);
           }
 
           // use class as directive
