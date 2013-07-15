@@ -12,3 +12,4 @@ angular.js.tmproj
 angular.xcodeproj
 .idea
 .agignore
+libpeerconnection.log
