@@ -13,31 +13,32 @@ exports.output = output;
 function output(file, content) {
   var fullPath = pathUtils.join(OUTPUT_DIR,file);
   var dir = pathUtils.dirname(fullPath);
-  return Q.when(exports.makeDir(dir), function(error) {
-    qfs.write(fullPath, exports.toString(content));
+  return Q.when(exports.makeDir(dir), function () {
+    return qfs.write(fullPath, exports.toString(content));
   });
 }
 
 //recursively create directory
 exports.makeDir = function(p) {
-  p = pathUtils.normalize(p);
-  var parts = p.split(pathUtils.sep);
-  var path = ".";
+ p = pathUtils.normalize(p);
+ var parts = p.split(pathUtils.sep);
 
-  // Recursively rebuild directory structure
-  return qfs.exists(p).
-      then(function createPart(exists) {
-        if(!exists && parts.length) {
-          path = pathUtils.join(path, parts.shift());
-          return qfs.exists(path).then(function(exists) {
-            if (!exists) {
-              return qfs.makeDirectory(path).then(createPart, createPart);
-            } else {
-              return createPart();
-            }
-          });
-        }
-      });
+ var makePartialDir = function makePartialDir(path) {
+   return qfs.makeDirectory(path).then(function() {
+     if (parts.length) {
+       return makePartialDir(pathUtils.join(path, parts.shift()));
+     }
+   }, function(error) {
+     if (error.code !== 'EEXIST') {
+       throw error;
+     }
+     if (parts.length) {
+       return makePartialDir(pathUtils.join(path, parts.shift()));
+     }
+   });
+ };
+
+ return makePartialDir(pathUtils.join('.', parts.shift()));
 };
 
 exports.copyTemplate = function(filename) {
