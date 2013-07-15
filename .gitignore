@@ -12,3 +12,4 @@ angular.js.tmproj
 node_modules
 angular.xcodeproj
 .idea
+libpeerconnection.log
