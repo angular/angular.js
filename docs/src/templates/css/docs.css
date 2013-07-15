@@ -1,3 +1,18 @@
+/* Logo */
+
+.header .brand {
+  padding-top: 6px;
+  padding-bottom: 0px;
+}
+
+.header .brand img {
+  height: 25px;
+  width: 92px;
+}
+
+/* end: Logo */
+
+
 /* this is here to avoid the display=block shuffling of ngShow */
 .breadcrumb li > * {
   float:left;
@@ -356,7 +371,7 @@ ul.events > li > h3 {
   opacity:1;
 }
 
-.popover-incode code, 
+.popover-incode code,
 .popover-incode pre {
   white-space:nowrap;
 }
