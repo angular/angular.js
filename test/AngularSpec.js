@@ -887,6 +887,12 @@ describe('angular', function() {
       expect(snake_case('ABC')).toEqual('a_b_c');
       expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
     });
+
+
+    it('should allow seperator to be overridden', function() {
+      expect(snake_case('ABC', '&')).toEqual('a&b&c');
+      expect(snake_case('alanBobCharles', '&')).toEqual('alan&bob&charles');
+    });
   });
 
 
