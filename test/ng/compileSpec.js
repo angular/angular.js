@@ -2551,14 +2551,37 @@ describe('$compile', function() {
       expect(element.attr('src')).toBe('unsafe:javascript:doEvilStuff()');
     }));
 
-    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+    it('should sanitize non-image data: urls', inject(function($compile, $rootScope) {
       element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.testUrl = "data:application/javascript;charset=US-ASCII,alert('evil!');";
       $rootScope.$apply();
-
-      expect(element.attr('src')).toBe('unsafe:data:evilPayload');
+      expect(element.attr('src')).toBe("unsafe:data:application/javascript;charset=US-ASCII,alert('evil!');");
+      $rootScope.testUrl = "data:,foo";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe("unsafe:data:,foo");
     }));
 
+
+    it('should not sanitize data: URIs for images', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{dataUri}}"></img>')($rootScope);
+
+      // image data uri
+      // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
+      $rootScope.dataUri = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+    }));
+
+
+    // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
+    if (!msie || msie > 10) {
+      it('should sanitize mailto: urls', inject(function($compile, $rootScope) {
+        element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
+          $rootScope.testUrl = "mailto:foo@bar.com";
+          $rootScope.$apply();
+          expect(element.attr('src')).toBe('unsafe:mailto:foo@bar.com');
+      }));
+    }
 
     it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
@@ -2636,13 +2659,6 @@ describe('$compile', function() {
       $rootScope.$apply();
       expect(element.attr('src')).toBe('ftp://foo.com/bar');
 
-      // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
-      if (!msie || msie > 10) {
-        $rootScope.testUrl = "mailto:foo@bar.com";
-        $rootScope.$apply();
-        expect(element.attr('src')).toBe('mailto:foo@bar.com');
-      }
-
       $rootScope.testUrl = "file:///foo/bar.html";
       $rootScope.$apply();
       expect(element.attr('src')).toBe('file:///foo/bar.html');
@@ -2660,8 +2676,8 @@ describe('$compile', function() {
 
     it('should allow reconfiguration of the src whitelist', function() {
       module(function($compileProvider) {
-        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect($compileProvider.imgSrcSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.imgSrcSanitizationWhitelist(/javascript:/);
         expect(returnVal).toBe($compileProvider);
       });
 
@@ -2812,8 +2828,8 @@ describe('$compile', function() {
 
     it('should allow reconfiguration of the href whitelist', function() {
       module(function($compileProvider) {
-        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect($compileProvider.aHrefSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.aHrefSanitizationWhitelist(/javascript:/);
         expect(returnVal).toBe($compileProvider);
       });
 
