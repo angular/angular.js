@@ -74,6 +74,10 @@
  *     for the resource-level urls.
  *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
+ *   - **`dataKey`** - {string} - If set, resource(s) will be extracted from the specified key in the
+ *     response body.  If `isArray` is also true, any other properties on the response will be copied
+ *     over as members of the Array containing the resulting resources.  Useful for dealing with APIs
+ *     which wrap responses with additional metadata, such as paging, sorting, and so on.
  *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
  *     request body and headers and returns its transformed (typically serialized) version.
@@ -458,7 +462,7 @@ angular.module('ngResource', ['ng']).
           var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
 
           forEach(action, function(value, key) {
-            if (key != 'params' && key != 'isArray' && key != 'interceptor') {
+            if (key != 'params' && key != 'isArray' && key != 'interceptor' && key != 'dataKey') {
               httpConfig[key] = copy(value);
             }
           });
@@ -468,18 +472,27 @@ angular.module('ngResource', ['ng']).
 
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
-                promise = value.$promise;
+                promise = value.$promise,
+                target = data && action.dataKey ? data[action.dataKey] : data;
 
-            if (data) {
+            if (target) {
               if (action.isArray) {
                 value.length = 0;
-                forEach(data, function(item) {
+                forEach(target, function(item) {
                   value.push(new Resource(item));
                 });
               } else {
-                copy(data, value);
+                copy(target, value);
                 value.$promise = promise;
               }
+            }
+
+            if (data && action.dataKey && action.isArray) {
+              forEach(data, function(val, key) {
+                if (key !== action.dataKey) {
+                  value[key] = val;
+                }
+              });
             }
 
             value.$resolved = true;

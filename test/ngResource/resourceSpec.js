@@ -1033,4 +1033,49 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
   });
+
+  describe('action-level dataKey option', function() {
+    it ('should remove items from a response wrapper if the dataKey option is present', function() {
+      $httpBackend.expect('GET', '/posts/1').respond({
+        post: { id: 1, title: 'hello world' }
+      });
+
+      var Post = $resource('/posts/:id', {id: '@id'}, {
+        get: {
+          method: 'GET',
+          dataKey: 'post'
+        }
+      });
+
+      var post = Post.get({id: 1});
+      $httpBackend.flush();
+      expect(post).toEqualData({id: 1, title: 'hello world'});
+    });
+
+    it ('should copy metadata out to the container when isArray is true', function() {
+      $httpBackend.expect('GET', '/posts').respond({
+        page: 1,
+        page_size: 3,
+        total: 200,
+        posts: [{id: 1}, {id: 2}, {id: 3}]
+      });
+
+      var Post = $resource('/posts/:id', {id: '@id'}, {
+        query: {
+          method: 'GET',
+          isArray: true,
+          dataKey: 'posts'
+        }
+      });
+
+      var posts = Post.query();
+      $httpBackend.flush();
+
+      expect(posts).toEqualData([{id: 1}, {id: 2}, {id: 3}]);
+
+      expect(posts.page).toEqual(1);
+      expect(posts.page_size).toEqual(3);
+      expect(posts.total).toEqual(200);
+    });
+  });
 });
