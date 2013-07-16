@@ -32,7 +32,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, hooks) {
     var status;
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
@@ -59,9 +59,21 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
         if (value) xhr.setRequestHeader(key, value);
       });
 
+      // Add listeners for events such as progress
+      hooks = hooks || {};
+      var uploadHooks = hooks.upload || {};
+      delete hooks.upload;
+      forEach(Object.keys(hooks), function(event) {
+        xhr.addEventListener(event, hooks[event], false);
+      });
+      forEach(Object.keys(uploadHooks), function(event) {
+        xhr.upload.addEventListener(event, uploadHooks[event], false);
+      });
+
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
       // response is in the cache. the promise api will ensure that to the app code the api is
       // always async
+
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var responseHeaders = xhr.getAllResponseHeaders();
