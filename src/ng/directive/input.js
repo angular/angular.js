@@ -641,11 +641,8 @@ function radioInputType(scope, element, attr, ctrl) {
 }
 
 function checkboxInputType(scope, element, attr, ctrl) {
-  var trueValue = attr.ngTrueValue,
-      falseValue = attr.ngFalseValue;
-
-  if (!isString(trueValue)) trueValue = true;
-  if (!isString(falseValue)) falseValue = false;
+  var trueValue = typedValue(attr.ngTrueValue, true),
+      falseValue = typedValue(attr.ngFalseValue, false);
 
   element.on('click', function() {
     scope.$apply(function() {
@@ -666,6 +663,13 @@ function checkboxInputType(scope, element, attr, ctrl) {
   });
 }
 
+function typedValue(val, defaultVal) {
+  return isString(val)
+    ? !isNaN(parseFloat(val)) && isFinite(val)
+      ? parseFloat(val)
+      : val
+    : defaultVal;
+}
 
 /**
  * @ngdoc directive
