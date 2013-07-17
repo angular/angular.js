@@ -75,6 +75,32 @@ describe('$httpBackend', function() {
     expect(xhr.$$data).toBe(null);
   });
 
+  it('should call completion function with xhr.statusText if present', function() {
+    callback.andCallFake(function(status, response, headers, statusText) {
+      expect(statusText).toBe('OK');
+    });
+
+    $backend('GET', '/some-url', null, callback);
+    xhr = MockXhr.$$lastInstance;
+    xhr.statusText = 'OK';
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it('should call completion function with empty string if not present', function() {
+    callback.andCallFake(function(status, response, headers, statusText) {
+      expect(statusText).toBe('');
+    });
+
+    $backend('GET', '/some-url', null, callback);
+    xhr = MockXhr.$$lastInstance;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
       expect(status).toBe(204);

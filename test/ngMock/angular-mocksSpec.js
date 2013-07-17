@@ -1068,29 +1068,29 @@ describe('ngMock', function() {
       hb.flush();
 
       expect(callback.callCount).toBe(2);
-      expect(callback.argsForCall[0]).toEqual([201, 'second', '']);
-      expect(callback.argsForCall[1]).toEqual([200, 'first', '']);
+      expect(callback.argsForCall[0]).toEqual([201, 'second', '', '']);
+      expect(callback.argsForCall[1]).toEqual([200, 'first', '', '']);
     });
 
 
     describe('respond()', function() {
       it('should take values', function() {
-        hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'});
+        hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'}, 'OK');
         hb('GET', '/url1', undefined, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
+        hb.expect('GET', '/some').respond(function (m, u, d, h) {
+          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 
         hb('GET', '/some', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
       });
 
       it('should default status code to 200', function() {
@@ -1119,8 +1119,8 @@ describe('ngMock', function() {
         hb.flush();
 
         expect(callback.callCount).toBe(2);
-        expect(callback.argsForCall[0]).toEqual([200, 'first', '']);
-        expect(callback.argsForCall[1]).toEqual([200, 'second', '']);
+        expect(callback.argsForCall[0]).toEqual([200, 'first', '', '']);
+        expect(callback.argsForCall[1]).toEqual([200, 'second', '', '']);
       });
     });
 
@@ -1415,7 +1415,7 @@ describe('ngMock', function() {
             hb[shortcut]('/foo').respond('bar');
             hb(method, '/foo', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '', '');
           });
         });
       });
