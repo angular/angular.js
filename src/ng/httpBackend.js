@@ -91,7 +91,8 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           completeRequest(callback,
               status || xhr.status,
               (xhr.responseType ? xhr.response : xhr.responseText),
-              responseHeaders);
+              responseHeaders,
+              xhr.statusText || '');
         }
       };
 
@@ -119,7 +120,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       xhr && xhr.abort();
     }
 
-    function completeRequest(callback, status, response, headersString) {
+    function completeRequest(callback, status, response, headersString, statusText) {
       // URL_MATCH is defined in src/service/location.js
       var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
 
@@ -128,12 +129,24 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       jsonpDone = xhr = null;
 
       // fix status code for file protocol (it's always 0)
-      status = (protocol == 'file') ? (response ? 200 : 404) : status;
+      if (protocol == 'file') {
+        if (response) {
+          status = 200;
+          statusText = 'OK';
+        }
+        else {
+          status = 404;
+          statusText = 'Not Found';
+        }
+      }
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-      status = status == 1223 ? 204 : status;
+      if (status == 1223) {
+        status = 204;
+        statusText = 'No Content';
+      }
 
-      callback(status, response, headersString);
+      callback(status, response, headersString, statusText);
       $browser.$$completeOutstandingRequest(noop);
     }
   };
