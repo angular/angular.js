@@ -481,6 +481,30 @@ describe('$http', function() {
       });
 
 
+      it('should pass statusText in response object when a request is successful', function() {
+        $httpBackend.expect('GET', '/url').respond(200, 'SUCCESS', {}, 'OK');
+        $http({url: '/url', method: 'GET'}).then(function(response) {
+          expect(response.statusText).toBe('OK');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should pass statusText in response object when a request fails', function() {
+        $httpBackend.expect('GET', '/url').respond(404, 'ERROR', {}, 'Not Found');
+        $http({url: '/url', method: 'GET'}).then(null, function(response) {
+          expect(response.statusText).toBe('Not Found');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
       it('should pass in the response object when a request failed', function() {
         $httpBackend.expect('GET', '/url').respond(543, 'bad error', {'request-id': '123'});
         $http({url: '/url', method: 'GET'}).then(null, function(response) {
