@@ -15,83 +15,127 @@ view.
 <doc:example>
   <doc:source>
     <script>
-    function TicTacToeCntl($scope, $location) {
-      $scope.cellStyle= {
-        'height': '20px',
-        'width': '20px',
-        'border': '1px solid black',
-        'text-align': 'center',
-        'vertical-align': 'middle',
-        'cursor': 'pointer'
-      };
-
-      $scope.reset = function() {
-        $scope.board = [
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', '']
-        ];
-        $scope.nextMove = 'X';
-        $scope.winner = '';
-        setUrl();
-      };
-
-      $scope.dropPiece = function(row, col) {
-        if (!$scope.winner && !$scope.board[row][col]) {
-          $scope.board[row][col] = $scope.nextMove;
-          $scope.nextMove = $scope.nextMove == 'X' ? 'O' : 'X';
-          setUrl();
-        }
-      };
-
-      $scope.reset();
-      $scope.$watch(function() { return $location.search().board;}, readUrl);
-
-      function setUrl() {
-        var rows = [];
-        angular.forEach($scope.board, function(row) {
-          rows.push(row.join(','));
-        });
-        $location.search({board: rows.join(';') + '/' + $scope.nextMove});
+      function TicTacToeCntl($scope, $location) {
+          $scope.cellStyle = {
+              'height': '20px',
+              'width': '20px',
+              'border': '1px solid black',
+              'text-align': 'center',
+              'vertical-align': 'middle',
+              'cursor': 'pointer'
+          };
+      
+          $scope.reset = function () {
+              $scope.board = [
+                  ['', '', ''],
+                  ['', '', ''],
+                  ['', '', '']
+              ];
+              $scope.nextMove = 'X';
+              $scope.winner = '';
+              setUrl();
+          };
+      
+          $scope.dropPiece = function (row, col) {
+              if (!$scope.winner && !$scope.board[row][col]) {
+                  $scope.board[row][col] = $scope.nextMove;
+                  $scope.nextMove = $scope.nextMove == 'X' ? 'O' : 'X';
+                  setUrl();
+              }
+          };
+      
+          $scope.reset();
+          $scope.$watch(function () {
+              return $location.search().board;
+          }, readUrl);
+      
+          function setUrl() {
+              var rows = [];
+              angular.forEach($scope.board, function (row) {
+                  rows.push(row.join(','));
+              });
+              $location.search({
+                  board: rows.join(';') + '/' + $scope.nextMove
+              });
+          }
+      
+          function grade() {
+              var board = $scope.board;
+              $scope.winner =
+                      rowCheck(0) || rowCheck(1) || rowCheck(2) ||
+                      colCheck(0) || colCheck(1) || colCheck(2) ||
+                      diagonalCheck(-1) || diagonalCheck(1);
+      
+              function rowCheck(row) {
+                  return same(board[row][0], board[row][1], board[row][2]);
+              }
+      
+              function colCheck(col) {
+                  return same(board[0][col], board[1][col], board[2][col]);
+              }
+      
+              function diagonalCheck(diag) {
+                  return same(board[0][1 - diag], board[1][1], board[2][1 + diag]);
+              }
+      
+              function same(a, b, c) {
+                  return (a == b && b == c) ? a : '';
+              };
+          }
+      
+          $scope.tiedGame = function(){
+              var board = $scope.board;
+              var allMoves = [];
+              for(var i in board) {
+                  var row = board[i];
+                  for(var j in row) {
+                      allMoves.push(row[j]);
+                  }
+              }
+              for (i in allMoves) {
+                  if (allMoves[i] == '') {
+                      return false;
+                  }
+              }
+              return !$scope.winner;
+          }
+      
+          /* Easier solution with Underscore.js
+          $scope.tiedGame = function() {
+              return !_.contains( _.flatten($scope.board),'') && !$scope.winner;
+          }
+          */
+      
+          function readUrl(value) {
+              if (value) {
+                  value = value.split('/');
+                  $scope.nextMove = value[1];
+                  angular.forEach(value[0].split(';'), function (row, col) {
+                      $scope.board[col] = row.split(',');
+                  });
+                  grade();
+      
+              }
+          }
       }
-
-      function grade() {
-        var b = $scope.board;
-        $scope.winner =
-          row(0) || row(1) || row(2) ||
-          col(0) || col(1) || col(2) ||
-          diagonal(-1) || diagonal(1);
-        function row(row) { return same(b[row][0], b[row][1], b[row][2]);}
-        function col(col) { return same(b[0][col], b[1][col], b[2][col]);}
-        function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
-        function same(a, b, c) { return (a==b && b==c) ? a : '';};
-      }
-
-      function readUrl(value) {
-        if (value) {
-          value = value.split('/');
-          $scope.nextMove = value[1];
-          angular.forEach(value[0].split(';'), function(row, col){
-            $scope.board[col] = row.split(',');
-          });
-          grade();
-        }
-      }
-    }
     </script>
+    <h4>Tic-Tac-Toe</h4>
+    <!-- See simpler tiedGame version in script.js for use with Underscoe JS -->
+    <!-- <script src="http://underscorejs.org/underscore-min.js"></script> -->
 
-    <h3>Tic-Tac-Toe</h3>
     <div ng-controller="TicTacToeCntl">
-    Next Player: {{nextMove}}
-    <div class="winner" ng-show="winner">Player {{winner}} has won!</div>
-      <table class="board">
-        <tr ng-repeat="row in board track by $index" style="height:15px;">
-          <td ng-repeat="cell in row track by $index" ng-style="cellStyle"
-              ng-click="dropPiece($parent.$index, $index)">{{cell}}</td>
-        </tr>
-      </table>
-      <button ng-click="reset()">reset board</button>
-    </div>
+        <div ng-show='!tiedGame() && !winner'>Next Player: {{nextMove}}</div>
+        <div class="winner" ng-show="winner">Player {{winner}} has won!</div>
+        <div class="cats-game" ng-show="tiedGame()">It's a cats game! </div>
+        <table class="board">
+            <tr ng-repeat="row in board" style="height:15px;">
+                <td ng-repeat="cell in row" ng-style="cellStyle"
+                    ng-click="dropPiece($parent.$index, $index)">{{cell}}
+                </td>
+            </tr>
+        </table>
+        <button ng-click="reset()">reset board</button>
+    </div>  
   </doc:source>
   <doc:scenario>
     it('should play a game', function() {
