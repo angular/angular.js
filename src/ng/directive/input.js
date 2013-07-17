@@ -663,12 +663,13 @@ function checkboxInputType(scope, element, attr, ctrl) {
   });
 }
 
-function typedValue(val, defaultVal) {
-  return isString(val)
-    ? !isNaN(parseFloat(val)) && isFinite(val)
-      ? parseFloat(val)
-      : val
-    : defaultVal;
+function typedValue(value, defaultValue) {
+  if(isString(value)) {
+      var number = parseFloat(value);
+      return !isNaN(number) && isFinite(number) ? number : value;
+  } else {
+      return defaultValue;
+  }
 }
 
 /**
