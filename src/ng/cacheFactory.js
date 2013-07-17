@@ -194,8 +194,44 @@ function $CacheFactoryProvider() {
  * @name ng.$templateCache
  *
  * @description
- * Cache used for storing html templates.
- *
+ * The first time a template is used, it is loaded in the tempalte cache for quick retrieval.  You can 
+ * load templates directly into the cache in a `script` tag, or by consuming the `$templateCache` 
+ * service directly.
+ * 
+ * Adding via the `script` tag:
+ * <pre>
+ * <html ng-app>
+ * <head>
+ * <script type="text/ng-template" id="templateId.html">
+ *   This is the content of the template
+ * </script>
+ * </head>
+ *   ...
+ * </html>
+ * </pre>
+ * 
+ * **Note:** the `script` tag containing the template does not need to be included in the `head` of the document, but 
+ * it must be below the `ng-app` definition.
+ * 
+ * Adding via the $templateCache service:
+ * 
+ * <pre>
+ * var myApp = angular.module('myApp', []);
+ * myApp.run(function($templateCache) {
+ *   $templateCache.put('templateId.html', 'This is the content of the template');
+ * });
+ * </pre>
+ * 
+ * To retrieve the template later, simply use it in your HTML:
+ * <pre>
+ * <div ng-include=" 'templateId.html' "></div>
+ * </pre>
+ * 
+ * or get it via Javascript:
+ * <pre>
+ * $templateCache.get('templateId.html')
+ * </pre>
+ * 
  * See {@link ng.$cacheFactory $cacheFactory}.
  *
  */
