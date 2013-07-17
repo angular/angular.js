@@ -115,6 +115,10 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
+    if (event.originalEvent) {
+      event = event.originalEvent;
+    }
+
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -141,6 +145,9 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
   function onTouchStart(event) {
+    if (event.originalEvent) {
+      event = event.originalEvent;
+    }
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -187,6 +194,9 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('touchstart', function(event) {
       tapping = true;
+      if (event.originalEvent) {
+        event = event.originalEvent;
+      }
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
       if(tapElement.nodeType == 3) {
@@ -198,7 +208,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       startTime = Date.now();
 
       var touches = event.touches && event.touches.length ? event.touches : [event];
-      var e = touches[0].originalEvent || touches[0];
+      var e = touches[0];
       touchStartX = e.clientX;
       touchStartY = e.clientY;
     });
@@ -214,9 +224,12 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
 
+      if (event.originalEvent) {
+        event = event.originalEvent;
+      }
       var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
           ((event.touches && event.touches.length) ? event.touches : [event]);
-      var e = touches[0].originalEvent || touches[0];
+      var e = touches[0];
       var x = e.clientX;
       var y = e.clientY;
       var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
