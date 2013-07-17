@@ -947,6 +947,31 @@ describe('jqLite', function() {
     });
 
 
+    it('should deregister all listeners for types separated by spaces', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.on('click', clickSpy);
+      aElem.on('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.off('click mouseover');
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
     it('should deregister specific listener', function() {
       var aElem = jqLite(a),
           clickSpy1 = jasmine.createSpy('click1'),
@@ -973,6 +998,32 @@ describe('jqLite', function() {
       aElem.off('click', clickSpy2);
       browserTrigger(a, 'click');
       expect(clickSpy2).not.toHaveBeenCalled();
+    });
+
+
+    it('should deregister specific listener for multiple types separated by spaces', function() {
+      var aElem = jqLite(a),
+          masterSpy = jasmine.createSpy('master'),
+          extraSpy = jasmine.createSpy('extra');
+
+      aElem.on('click', masterSpy);
+      aElem.on('click', extraSpy);
+      aElem.on('mouseover', masterSpy);
+
+      browserTrigger(a, 'click');
+      browserTrigger(a, 'mouseover');
+      expect(masterSpy.callCount).toBe(2);
+      expect(extraSpy).toHaveBeenCalledOnce();
+
+      masterSpy.reset();
+      extraSpy.reset();
+
+      aElem.off('click mouseover', masterSpy);
+
+      browserTrigger(a, 'click');
+      browserTrigger(a, 'mouseover');
+      expect(masterSpy).not.toHaveBeenCalled();
+      expect(extraSpy).toHaveBeenCalledOnce();
     });
   });
 

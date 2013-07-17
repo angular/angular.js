@@ -207,12 +207,14 @@ function JQLiteOff(element, type, fn) {
       delete events[type];
     });
   } else {
-    if (isUndefined(fn)) {
-      removeEventListenerFn(element, type, events[type]);
-      delete events[type];
-    } else {
-      arrayRemove(events[type], fn);
-    }
+    forEach(type.split(' '), function(type) {
+      if (isUndefined(fn)) {
+        removeEventListenerFn(element, type, events[type]);
+        delete events[type];
+      } else {
+        arrayRemove(events[type], fn);
+      }
+    });
   }
 }
 
