@@ -936,6 +936,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$invalid = false;
   this.$name = $attr.name;
 
+  // model -> value
+  var ctrl = this;
+
+  if (isDefined($attr.ngName)) {
+    ctrl.$name = $scope.$eval($attr.ngName);
+    $attr.$set('name', ctrl.$name);
+    $attr.$observe('ngName', function() {
+      var newName = $scope.$eval($attr.ngName);
+      if (newName != ctrl.$name) {
+        parentForm.$removeControl(ctrl);
+        ctrl.$name = newName;
+        $attr.$set('name', ctrl.$name);
+        parentForm.$addControl(ctrl);
+      }
+    });
+  }
+
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign;
 
@@ -1074,9 +1091,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       })
     }
   };
-
-  // model -> value
-  var ctrl = this;
 
   $scope.$watch(function ngModelWatch() {
     var value = ngModelGet($scope);
