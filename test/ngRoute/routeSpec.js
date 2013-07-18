@@ -883,7 +883,7 @@ describe('$route', function() {
 
         expect($location.path()).toEqual('/bar/id3');
         expect($browserUrl.mostRecentCall.args)
-            .toEqual(['http://server/#/bar/id3?extra=eId', true]);
+            .toEqual(['http://server/#/bar/id3?extra=eId', true, null]);
       });
     });
   });
