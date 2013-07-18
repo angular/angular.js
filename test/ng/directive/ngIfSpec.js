@@ -14,7 +14,7 @@ describe('ngIf', function () {
   });
 
   function makeIf(expr) {
-    element.append($compile('<div class="my-class" ng-if="' + expr + '"><div>Hi</div></div>')($scope));
+    element.append($compile('<div id="testElement" class="my-class" ng-if="' + expr + '"><div>Hi</div></div>')($scope));
     $scope.$apply();
   }
 
@@ -71,6 +71,21 @@ describe('ngIf', function () {
     $scope.$apply('value = true');
     expect(element.children().length).toBe(1);
     expect(element.children()[0].className).toContain('my-class');
+  });
+
+  it('should still have the directive element attached to the DOM in the $destroy handler', function() {
+    $scope.value = true;
+    makeIf('value');
+    expect(element.children().length).toBe(1);
+    // Attach a $destroy handler to the test element that will be removed
+    var destroyHandler = jasmine.createSpy('$destroy handler').andCallFake(function() {
+      expect(element.children().length).toBe(1);
+    });
+    var ifScope = element.children().scope();
+    ifScope.$on('$destroy', destroyHandler);
+    $scope.$apply('value = false');
+    expect(element.children().length).toBe(0);
+    expect(destroyHandler).toHaveBeenCalled();
   });
 
 });

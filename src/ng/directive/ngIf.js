@@ -87,13 +87,13 @@ var ngIfDirective = ['$animator', function($animator) {
         var animate = $animator($scope, $attr);
         var childElement, childScope;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
-          if (childElement) {
-            animate.leave(childElement);
-            childElement = undefined;
-          }
           if (childScope) {
             childScope.$destroy();
             childScope = undefined;
+          }
+          if (childElement) {
+            animate.leave(childElement);
+            childElement = undefined;
           }
           if (toBoolean(value)) {
             childScope = $scope.$new();
