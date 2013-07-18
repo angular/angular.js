@@ -63,6 +63,17 @@ describe('form', function() {
     expect(scope.myForm.alias).toBeDefined();
   });
 
+  it('should use ngForm value as form name when nested inside form', function () {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<div ng-form="nestedForm"><input type="text" name="alias" ng-model="value"/></div>' +
+      '</form>')(scope);
+
+    expect(scope.myForm).toBeDefined();
+    expect(scope.myForm.nestedForm).toBeDefined();
+    expect(scope.myForm.nestedForm.alias).toBeDefined();
+  });
+
 
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
