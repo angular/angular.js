@@ -305,6 +305,7 @@ ul.events > li > h3 {
 
 .tutorial-page {
   position:relative;
+  white-space:pre-wrap;
 }
 
 .tutorial-page .improve-docs {
