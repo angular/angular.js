@@ -40,7 +40,7 @@ function FormController(element, attrs) {
       errors = form.$error = {};
 
   // init state
-  form.$name = attrs.name;
+  form.$name = attrs.name || attrs.ngForm;
   form.$dirty = false;
   form.$pristine = true;
   form.$valid = true;
@@ -102,7 +102,7 @@ function FormController(element, attrs) {
    *
    * @description
    * Sets the validity of a form control.
-   * 
+   *
    * This method will also propagate to parent forms.
    */
   form.$setValidity = function(validationToken, isValid, control) {
