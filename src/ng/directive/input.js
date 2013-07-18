@@ -1323,9 +1323,57 @@ var ngListDirective = function() {
 
 
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
-
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngValue
+ *
+ * @description
+ * This directive allows for binding the value of a checkbox or a radio button to a 
+ * non-string value. The value provided will be evaluated instead of being interpolated. This 
+ * will not affect the `checked` status of the radio button or checkbox. 
+ *
+ * @element input
+ * @param {string|boolean|Number|Object} ngValue an {@link guide/expression Expression}, a boolean value, or 
+ *    a Number that will determine the value that will be bound to the model upon being selected.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+        <script>
+          function Ctrl($scope) {
+            $scope.truthy = true;
+          }
+        </script>
+        <form name="myForm" ng-controller="Ctrl">
+          <input type="radio" ng-model="selected" ng-value="truthy" id="ngValueDemo1">
+          <label for="ngValueDemo1">The 3rd radio button will also be selected, model set to true</label><br/>
+          <input type="radio" ng-model="selected" ng-value="false" id="ngValueDemo2">
+          <label for="ngValueDemo2">The model will be set to false</label><br/>
+          <input type="radio" ng-model="selected" ng-value="1" id="ngValueDemo3">
+          <label for="ngValueDemo3">The 1st radio button will also be selected, model set to 1</label><br/>
+          <input type="radio" ng-model="selected" ng-value="'test'" id="ngValueDemo4">
+          <label for="ngValueDemo4">The model will be set to "test"</label><br/>
+          <p>{{selected}}</p>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should update the model correctly', function() {
+          element('#ngValueDemo1').click();
+          expect(binding('selected')).toBeTruthy();
+          expect(element('#ngValueDemo3').prop('checked')).toBe(true);
+          element('#ngValueDemo3').click();
+          expect(binding('selected')).toBe('1');
+          element('#ngValueDemo2').click();
+          expect(binding('selected')).toBe('false');
+          element('#ngValueDemo4').click();
+          expect(binding('selected')).toBe('test');
+        });
+      </doc:scenario>
+    </doc:example>
+ */
 var ngValueDirective = function() {
   return {
+    require: 'ngModel',
     priority: 100,
     compile: function(tpl, tplAttr) {
       if (CONSTANT_VALUE_REGEXP.test(tplAttr.ngValue)) {
