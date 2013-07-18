@@ -98,6 +98,11 @@
 .improve-docs, .view-source {
   float: right;
   margin: 0 5px;
+  position: relative;
+}
+
+.improve-docs {
+  z-index:100;
 }
 
 .hint {
