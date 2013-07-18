@@ -388,6 +388,36 @@ describe('$location', function() {
     });
 
 
+    describe('state', function () {
+      it('should set $$state and return itself', function() {
+        expect(url.$$state).toEqual(null);
+
+        var returned = url.state({a: 2});
+        expect(url.$$state).toEqual({a: 2});
+        expect(returned).toBe(url);
+      });
+
+      it('should set state', function () {
+        url.state({a: 2});
+        expect(url.state()).toEqual({a: 2});
+      });
+
+      it('should allow to set both URL and state', function() {
+        url.url('/foo').state({a: 2});
+        expect(url.url()).toEqual('/foo');
+        expect(url.state()).toEqual({a: 2});
+      });
+
+      it('should allow to mix state and various URL functions', function() {
+        url.path('/foo').hash('abcd').state({a: 2}).search('bar', 'baz');
+        expect(url.path()).toEqual('/foo');
+        expect(url.state()).toEqual({a: 2});
+        expect(url.search() && url.search().bar).toBe('baz');
+        expect(url.hash()).toEqual('abcd');
+      });
+    });
+
+
     describe('encoding', function() {
 
       it('should encode special characters', function() {
@@ -684,7 +714,7 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($browserUrl).toHaveBeenCalledOnce();
-      expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true]);
+      expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
       expect($location.$$replace).toBe(false);
     }));
 
@@ -719,6 +749,122 @@ describe('$location', function() {
       $rootScope.$digest();
       expect($browser.url()).toBe('http://new.com/a/b#!/changed');
     }));
+  });
+
+  describe('wiring in html5 mode', function() {
+
+    beforeEach(initService({html5Mode: true, supportHistory: true}));
+    beforeEach(inject(initBrowser({url:'http://new.com/a/b/', basePath: '/a/b/'})));
+
+    it('should initialize state to $browser.state()', inject(function($browser) {
+      $browser.$$state = {a: 2};
+      inject(function($location) {
+        expect($location.state()).toEqual({a: 2});
+      });
+    }));
+
+    it('should update $location when browser state changes', inject(function($browser, $location) {
+      $browser.url('http://new.com/a/b/', false, {b: 3});
+      $browser.poll();
+      expect($location.state()).toEqual({b: 3});
+    }));
+
+    it('should replace browser url & state when replace() was called at least once',
+      inject(function($rootScope, $location, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        $location.path('/n/url').state({a: 2}).replace();
+        $rootScope.$apply();
+
+        expect($browserUrl).toHaveBeenCalledOnce();
+        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/n/url', true, {a: 2}]);
+        expect($location.$$replace).toBe(false);
+        expect($location.$$state).toEqual({a: 2});
+      }));
+
+    it('should use only the most recent url & state definition',
+      inject(function($rootScope, $location, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        $location.path('/n/url').state({a: 2}).replace().state({b: 3}).path('/o/url');
+        $rootScope.$apply();
+
+        expect($browserUrl).toHaveBeenCalledOnce();
+        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/o/url', true, {b: 3}]);
+        expect($location.$$replace).toBe(false);
+        expect($location.$$state).toEqual({b: 3});
+      }));
+
+    it('should allow to set state without touching the URL',
+      inject(function($rootScope, $location, $browser) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        $location.state({a: 2}).replace().state({b: 3});
+        $rootScope.$apply();
+
+        expect($browserUrl).toHaveBeenCalledOnce();
+        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/', true, {b: 3}]);
+        expect($location.$$replace).toBe(false);
+        expect($location.$$state).toEqual({b: 3});
+      }));
+
+    it('should always reset replace flag after running watch', inject(function($rootScope, $location) {
+      // init watches
+      $location.url('/initUrl').state({a: 2});
+      $rootScope.$apply();
+
+      // changes url & state but resets them before digest
+      $location.url('/newUrl').state({a: 2}).replace().state({b: 3}).url('/initUrl');
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+
+      // set the url to the old value
+      $location.url('/newUrl').state({a: 2}).replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+
+      // doesn't even change url only calls replace()
+      $location.replace();
+      $rootScope.$apply();
+      expect($location.$$replace).toBe(false);
+    }));
+
+    it('should allow to modify state only before digest',
+      inject(function($rootScope, $location, $browser) {
+        var o = {a: 2};
+        $location.state(o);
+        o.a = 3;
+        $rootScope.$apply();
+        expect($browser.state()).toEqual({a: 3});
+
+        o.a = 4;
+        $rootScope.$apply();
+        expect($browser.state()).toEqual({a: 3});
+      }));
+
+    it('should make $location.state() referencially identical with $browser.state() after digest',
+      inject(function($rootScope, $location, $browser) {
+        $location.state({a: 2});
+        $rootScope.$apply();
+        expect($location.state()).toBe($browser.state());
+      }));
+
+    it('should allow to query the state after digest',
+      inject(function($rootScope, $location) {
+        $location.url('/foo').state({a: 2});
+        $rootScope.$apply();
+        expect($location.state()).toEqual({a: 2});
+      }));
+
+    it('should reset the state on .url() after digest',
+      inject(function($rootScope, $location, $browser) {
+        $location.url('/foo').state({a: 2});
+        $rootScope.$apply();
+
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        $location.url('/bar');
+        $rootScope.$apply();
+
+        expect($browserUrl).toHaveBeenCalledOnce();
+        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/bar', false, null]);
+      }));
   });
 
 
@@ -1771,8 +1917,20 @@ describe('$location', function() {
           "$location in HTML5 mode requires a <base> tag to be present!");
       });
     });
+
+    it('should support state', function() {
+      expect(location.state({a: 2}).state()).toEqual({a: 2});
+    });
   });
 
+
+  function throwOnState(location) {
+    expect(function () {
+      location.state({a: 2});
+    }).toThrowMinErr('$location', 'nostate', 'History API state support is available only ' +
+      'in HTML5 mode and only in browsers supporting HTML5 History API'
+    );
+  }
 
   describe('LocationHashbangUrl', function() {
     var location;
@@ -1828,6 +1986,10 @@ describe('$location', function() {
       expect(location.url()).toBe('/http://example.com/');
       expect(location.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
     });
+
+    it('should throw on url(urlString, stateObject)', function () {
+      throwOnState(location);
+    });
   });
 
 
@@ -1853,6 +2015,10 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationIndex, 'http://server/pre/otherPath')).toEqual('http://server/pre/index.html#!/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationIndex, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/index.html#!/otherPath#test');
+    });
+
+    it('should throw on url(urlString, stateObject)', function () {
+      throwOnState(location);
     });
   });
 });

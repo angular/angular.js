@@ -79,7 +79,8 @@ describe('$$rAF', function() {
       //we need to create our own injector to work around the ngMock overrides
       var injector = createInjector(['ng', function($provide) {
         $provide.value('$window', {
-          location : window.location,
+          location: window.location,
+          history: window.history,
           webkitRequestAnimationFrame: jasmine.createSpy('$window.webkitRequestAnimationFrame'),
           webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame')
         });
