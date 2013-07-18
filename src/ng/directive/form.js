@@ -23,7 +23,7 @@ var nullFormCtrl = {
  *
  *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
  *  - values are arrays of controls or forms that are invalid with given error.
- * 
+ *
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
@@ -42,7 +42,7 @@ function FormController(element, attrs) {
       controls = [];
 
   // init state
-  form.$name = attrs.name;
+  form.$name = attrs.name || attrs.ngForm;
   form.$dirty = false;
   form.$pristine = true;
   form.$valid = true;
@@ -108,7 +108,7 @@ function FormController(element, attrs) {
    *
    * @description
    * Sets the validity of a form control.
-   * 
+   *
    * This method will also propagate to parent forms.
    */
   form.$setValidity = function(validationToken, isValid, control) {
