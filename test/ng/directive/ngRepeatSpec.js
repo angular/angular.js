@@ -125,6 +125,54 @@ describe('ngRepeat', function() {
     });
 
 
+    it('should still filter when track is presnet', function() {
+      scope.isIgor = function (item) {
+        return item.name === 'igor';
+      };
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="item in items | filter:isIgor track by $id(item)">{{item.name}};</li>' +
+          '</ul>')(scope);
+      scope.items = [{name: 'igor'}, {name: 'misko'}];
+      scope.$digest();
+
+      expect(element.find('li').text()).toBe('igor;');
+    });
+
+
+    it('should track using built in $id function when a filter is present', function() {
+      scope.newArray = function (items) {
+        var newArray = [];
+        angular.forEach(items, function (item) {
+          newArray.push({
+            id: item.id,
+            name: item.name
+          });
+        });
+        return newArray;
+      };
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="item in items | filter:newArray track by item.id">{{item.name}};</li>' +
+          '</ul>')(scope);
+      scope.items = [
+        {id: 1, name: 'igor'},
+        {id: 2, name: 'misko'}
+      ];
+      scope.$digest();
+
+      expect(element.text()).toBe('igor;misko;');
+
+      var li0 = element.find('li')[0];
+      var li1 = element.find('li')[1];
+
+      scope.items.push(scope.items.shift());
+      scope.$digest();
+      expect(element.find('li')[0]).toBe(li1);
+      expect(element.find('li')[1]).toBe(li0);
+    });
+
+
     it('should iterate over an array of primitives', function() {
       element = $compile(
           '<ul>' +
