@@ -49,9 +49,14 @@
  *
  */
 var ngTranscludeDirective = ngDirective({
-  controller: ['$transclude', '$element', function($transclude, $element) {
-    $transclude(function(clone) {
-      $element.append(clone);
+  controller: ['$transclude', '$element', '$scope', function($transclude, $element, $scope) {
+    // use evalAsync so that we don't process transclusion before directives on the parent element even when the
+    // transclusion replaces the current element. (we can't use prority here because that applies only to compile fns
+    // and not controllers
+    $scope.$evalAsync(function() {
+      $transclude(function(clone) {
+        $element.append(clone);
+      });
     });
   }]
 });
