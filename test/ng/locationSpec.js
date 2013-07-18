@@ -567,7 +567,7 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($browserUrl).toHaveBeenCalledOnce();
-      expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true]);
+      expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true, null, undefined]);
       expect($location.$$replace).toBe(false);
     }));
 
