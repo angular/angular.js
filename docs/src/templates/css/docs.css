@@ -88,6 +88,11 @@ img.AngularJS-small {
 
 .improve-docs {
   float: right;
+  position: relative;
+}
+
+.improve-docs {
+  z-index:100;
 }
 
 .hint {
