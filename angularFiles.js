@@ -73,7 +73,6 @@ angularFiles = {
     'src/ngRoute/routeParams.js',
     'src/ngRoute/directive/ngView.js',
     'src/ngSanitize/sanitize.js',
-    'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
     'src/ngMobile/mobile.js',
