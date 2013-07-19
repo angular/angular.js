@@ -129,9 +129,9 @@ var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
      </doc:scenario>
    </doc:example>
  */
-var $sanitize = function(html) {
+var $sanitize = function(html, linkify) {
   var buf = [];
-    htmlParser(html, htmlSanitizeWriter(buf));
+    htmlParser(html, htmlSanitizeWriter(buf), linkify);
     return buf.join('');
 };
 
@@ -146,6 +146,9 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
+
+var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/,
+  MAILTO_REGEXP = /^mailto:/;
 
 
 // Good source of info about elements and attributes
@@ -206,8 +209,8 @@ function makeMap(str) {
  * @param {string} html string
  * @param {object} handler
  */
-function htmlParser( html, handler ) {
-  var index, chars, match, stack = [], last = html;
+function htmlParser( html, handler, linkify ) {
+  var index, chars, match, stack = [], last = html, aTag = false;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
   while ( html ) {
@@ -233,6 +236,9 @@ function htmlParser( html, handler ) {
         if ( match ) {
           html = html.substring( match[0].length );
           match[0].replace( END_TAG_REGEXP, parseEndTag );
+          if (match[0][0] === '<' && match[0][1] === '/' && match[0][2] === 'a') {
+            aTag = false;
+          }
           chars = false;
         }
 
@@ -243,6 +249,9 @@ function htmlParser( html, handler ) {
         if ( match ) {
           html = html.substring( match[0].length );
           match[0].replace( START_TAG_REGEXP, parseStartTag );
+          if (match[0][0] === '<' && match[0][1] === 'a' && match[0][2] === ' ') {
+            aTag = true;
+          }
           chars = false;
         }
       }
@@ -253,7 +262,23 @@ function htmlParser( html, handler ) {
         var text = index < 0 ? html : html.substring( 0, index );
         html = index < 0 ? "" : html.substring( index );
 
-        if (handler.chars) handler.chars( decodeEntities(text) );
+        if (linkify && !aTag) {
+          var match, raw = text, url, i, properties = {};
+          while ((match = raw.match(LINKY_URL_REGEXP))) {
+            url = match[0];
+            if (match[2] == match[3]) url = 'mailto:' + url;
+            i = match.index;
+            handler.chars(raw.substr(0, i));
+            properties.href = url;
+            handler.start('a', properties);
+            handler.chars(match[0].replace(MAILTO_REGEXP, ''));
+            handler.end('a');
+            raw = raw.substring(i + match[0].length);
+          }
+          handler.chars(raw);
+        } else {
+          if (handler.chars) handler.chars( decodeEntities(text) );
+        }
       }
 
     } else {
