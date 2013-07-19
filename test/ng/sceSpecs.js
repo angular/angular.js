@@ -341,7 +341,22 @@ describe('SCE', function() {
         expect(function() { $sce.getTrustedResourceUrl('open_redirect'); }).toThrow(
           '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
     }));
+  });
 
+  describe('sanitizing html', function() {
+    describe('when $sanitize is NOT available', function() {
+      it('should throw an exception for getTrusted(string) values', inject(function($sce) {
+        expect(function() { $sce.getTrustedHtml('<b></b>'); }).toThrow(
+            '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      }));
+    });
+
+    describe('when $sanitize is available', function() {
+      beforeEach(function() { module('ngSanitize'); });
+      it('should sanitize html using $sanitize', inject(function($sce) {
+        expect($sce.getTrustedHtml('a<xxx><B>b</B></xxx>c')).toBe('a<b>b</b>c');
+      }));
+    });
   });
 });
 

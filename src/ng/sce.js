@@ -137,8 +137,17 @@ function $SceDelegateProvider() {
             (documentProtocol === "http:" && resourceProtocol === "https:"));
   }
 
-  this.$get = ['$log', '$document', '$$urlUtils', function(
-                $log,   $document,   $$urlUtils) {
+  this.$get = ['$log', '$document', '$injector', '$$urlUtils', function(
+                $log,   $document,   $injector,   $$urlUtils) {
+
+    var htmlSanitizer = function htmlSanitizer(html) {
+      throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
+    };
+
+    if ($injector.has('$sanitize')) {
+      htmlSanitizer = $injector.get('$sanitize');
+    }
+
 
     function matchUrl(matcher, parsedUrl) {
       if (matcher === 'self') {
@@ -285,6 +294,9 @@ function $SceDelegateProvider() {
       if (constructor && maybeTrusted instanceof constructor) {
         return maybeTrusted.$$unwrapTrustedValue();
       }
+      // If we get here, then we may only take one of two actions.
+      // 1. sanitize the value for the requested type, or
+      // 2. throw an exception.
       if (type === SCE_CONTEXTS.RESOURCE_URL) {
         if (isResourceUrlAllowedByPolicy(maybeTrusted)) {
           return maybeTrusted;
@@ -293,6 +305,8 @@ function $SceDelegateProvider() {
               'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: {0}', maybeTrusted.toString());
           return;
         }
+      } else if (type === SCE_CONTEXTS.HTML) {
+        return htmlSanitizer(maybeTrusted);
       }
       throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
     }
@@ -329,8 +343,8 @@ function $SceDelegateProvider() {
  *
  * Strict Contextual Escaping (SCE) is a mode in which AngularJS requires bindings in certain
  * contexts to result in a value that is marked as safe to use for that context One example of such
- * a context is binding arbitrary html controlled by the user via `ng-bind-html-unsafe`.  We refer
- * to these contexts as privileged or SCE contexts.
+ * a context is binding arbitrary html controlled by the user via `ng-bind-html`.  We refer to these
+ * contexts as privileged or SCE contexts.
  *
  * As of version 1.2, Angular ships with SCE enabled by default.
  *
@@ -347,10 +361,10 @@ function $SceDelegateProvider() {
  *
  * <pre class="prettyprint">
  *     <input ng-model="userHtml">
- *     <div ng-bind-html-unsafe="{{userHtml}}">
+ *     <div ng-bind-html="{{userHtml}}">
  * </pre>
  *
- * Notice that `ng-bind-html-unsafe` is bound to `{{userHtml}}` controlled by the user.  With SCE
+ * Notice that `ng-bind-html` is bound to `{{userHtml}}` controlled by the user.  With SCE
  * disabled, this application allows the user to render arbitrary HTML into the DIV.
  * In a more realistic example, one may be rendering user comments, blog articles, etc. via
  * bindings.  (HTML is just one example of a context where rendering user controlled input creates
@@ -384,14 +398,14 @@ function $SceDelegateProvider() {
  * ng.$sce#parse $sce.parseAs} rather than `$parse` to watch attribute bindings, which performs the
  * {@link ng.$sce#getTrusted $sce.getTrusted} behind the scenes on non-constant literals.
  *
- * As an example, {@link ng.directive:ngBindHtmlUnsafe ngBindHtmlUnsafe} uses {@link
+ * As an example, {@link ng.directive:ngBindHtml ngBindHtml} uses {@link
  * ng.$sce#parseHtml $sce.parseAsHtml(binding expression)}.  Here's the actual code (slightly
  * simplified):
  *
  * <pre class="prettyprint">
- *   var ngBindHtmlUnsafeDirective = ['$sce', function($sce) {
+ *   var ngBindHtmlDirective = ['$sce', function($sce) {
  *     return function(scope, element, attr) {
- *       scope.$watch($sce.parseAsHtml(attr.ngBindHtmlUnsafe), function(value) {
+ *       scope.$watch($sce.parseAsHtml(attr.ngBindHtml), function(value) {
  *         element.html(value || '');
  *       });
  *     };
@@ -444,7 +458,7 @@ function $SceDelegateProvider() {
  *
  * | Context             | Notes          |
  * |=====================|================|
- * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtmlUnsafe ngBindHtmlUnsafe} directive uses this context for bindings. |
+ * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. |
  * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently unused.  Feel free to use it in your own directives. |
  * | `$sce.URL`          | For URLs that are safe to follow as links.  Currently unused (`<a href=` and `<img src=` sanitize their urls and don't consititute an SCE context. |
  * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contens are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
@@ -458,61 +472,37 @@ function $SceDelegateProvider() {
  <example module="mySceApp">
   <file name="index.html">
     <div ng-controller="myAppController as myCtrl">
-      <button ng-click="myCtrl.fetchUserComments()" id="fetchBtn">Fetch Comments</button>
-      <div ng-show="myCtrl.errorMsg">Error: {{myCtrl.errorMsg}}</div>
-      <div ng-repeat="userComment in myCtrl.userComments">
-        <hr>
-        <b>{{userComment.name}}</b>:
-        <span ng-bind-html-unsafe="userComment.htmlComment" class="htmlComment"></span>
+      <i ng-bind-html="myCtrl.explicitlyTrustedHtml" id="explicitlyTrustedHtml"></i><br><br>
+      <b>User comments</b><br>
+      By default, HTML that isn't explicitly trusted (e.g. Alice's comment) is sanitized when $sanitize is available.  If $sanitize isn't available, this results in an error instead of an exploit.
+      <div class="well">
+        <div ng-repeat="userComment in myCtrl.userComments">
+          <b>{{userComment.name}}</b>:
+          <span ng-bind-html="userComment.htmlComment" class="htmlComment"></span>
+          <br>
+        </div>
       </div>
-      <div ng-bind-html-unsafe="myCtrl.someHtml" id="someHtml"></div>
     </div>
   </file>
 
   <file name="script.js">
-    // These types of functions would be in the data access layer of your application code.
-    function fetchUserCommentsFromServer($http, $q, $templateCache, $sce) {
-      var deferred = $q.defer();
-      $http({method: "GET", url: "test_data.json", cache: $templateCache}).
-        success(function(userComments, status) {
-          // The comments coming from the server have been sanitized by the server and can be
-          // trusted.
-          angular.forEach(userComments, function(userComment) {
-            userComment.htmlComment = $sce.trustAsHtml(userComment.htmlComment);
-          });
-          deferred.resolve(userComments);
-        }).
-        error(function (data, status) {
-          deferred.reject("HTTP status code " + status + ": " + data);
-        });
-      return deferred.promise;
-    };
+    var mySceApp = angular.module('mySceApp', ['ngSanitize']);
 
-    var mySceApp = angular.module('mySceApp', []);
-
-    mySceApp.controller("myAppController", function myAppController($injector) {
+    mySceApp.controller("myAppController", function myAppController($http, $templateCache, $sce) {
       var self = this;
-
-      self.someHtml = "This might have been any binding including an input element " +
-                      "controlled by the user.";
-
-      self.fetchUserComments = function() {
-        $injector.invoke(fetchUserCommentsFromServer).then(
-            function onSuccess(userComments) {
-              self.errorMsg = null;
-              self.userComments = userComments;
-            },
-            function onFailure(errorMsg) {
-              self.errorMsg = errorMsg;
-            });
-      }
+      $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
+        self.userComments = userComments;
+      });
+      self.explicitlyTrustedHtml = $sce.trustAsHtml(
+          '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
+          'sanitization.&quot;">Hover over this text.</span>');
     });
   </file>
 
   <file name="test_data.json">
     [
       { "name": "Alice",
-        "htmlComment": "Is <i>anyone</i> reading this?"
+        "htmlComment": "<span onmouseover='this.textContent=\"PWN3D!\"'>Is <i>anyone</i> reading this?</span>"
       },
       { "name": "Bob",
         "htmlComment": "<i>Yes!</i>  Am I the only other one?"
@@ -521,14 +511,15 @@ function $SceDelegateProvider() {
   </file>
 
   <file name="scenario.js">
-     describe('SCE doc demo', function() {
-       it('should bind trusted values', function() {
-         element('#fetchBtn').click();
-         expect(element('.htmlComment').html()).toBe('Is <i>anyone</i> reading this?');
-       });
-       it('should NOT bind arbitrary values', function() {
-         expect(element('#someHtml').html()).toBe('');
-       });
+    describe('SCE doc demo', function() {
+      it('should sanitize untrusted values', function() {
+        expect(element('.htmlComment').html()).toBe('<span>Is <i>anyone</i> reading this?</span>');
+      });
+      it('should NOT sanitize explicitly trusted values', function() {
+        expect(element('#explicitlyTrustedHtml').html()).toBe(
+            '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
+            'sanitization.&quot;">Hover over this text.</span>');
+      });
     });
   </file>
  </example>
