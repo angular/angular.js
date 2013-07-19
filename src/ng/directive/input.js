@@ -112,9 +112,9 @@ var inputType = {
          <form name="myForm" ng-controller="Ctrl">
            Number: <input type="number" name="input" ng-model="value"
                           min="0" max="99" required>
-           <span class="error" ng-show="myForm.list.$error.required">
+           <span class="error" ng-show="myForm.input.$error.required">
              Required!</span>
-           <span class="error" ng-show="myForm.list.$error.number">
+           <span class="error" ng-show="myForm.input.$error.number">
              Not valid number!</span>
            <tt>value = {{value}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
