@@ -1476,25 +1476,4 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
-
-  describe('isSameDomain', function() {
-    it('should support various combinations of urls', function() {
-      expect(isSameDomain('path/morepath',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('http://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'https://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com:1234')).toBe(false);
-      expect(isSameDomain('https://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.adomain.com:1234/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.anotherdomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-    });
-  });
 });
