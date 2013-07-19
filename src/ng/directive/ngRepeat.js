@@ -17,6 +17,8 @@
  * | `$first`  | {@type boolean} | true if the repeated element is first in the iterator.                      |
  * | `$middle` | {@type boolean} | true if the repeated element is between the first and last in the iterator. |
  * | `$last`   | {@type boolean} | true if the repeated element is last in the iterator.                       |
+ * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
+ * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
  * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**,
  * **leave** and **move** effects.
@@ -354,6 +356,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             childScope.$first = (index === 0);
             childScope.$last = (index === (arrayLength - 1));
             childScope.$middle = !(childScope.$first || childScope.$last);
+            childScope.$odd = !(childScope.$even = index%2==0);
 
             if (!block.startNode) {
               linker(childScope, function(clone) {
