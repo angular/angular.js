@@ -153,7 +153,6 @@ module.exports = function(grunt) {
         dest: 'build/angular-sanitize.js',
         src: util.wrap([
           'src/ngSanitize/sanitize.js',
-          'src/ngSanitize/directive/ngBindHtml.js',
           'src/ngSanitize/filter/linky.js'
         ], 'module')
       },
