@@ -344,7 +344,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:0|shyam:1|frodo:2|');
   });
 
-
   it('should expose iterator offset as $index when iterating over objects', function() {
     element = $compile(
       '<ul>' +
@@ -386,6 +385,36 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should expose iterator position as $even and $odd when iterating over arrays',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items">{{item}}:{{$even}}-{{$odd}}|</li>' +
+      '</ul>')(scope);
+    scope.items = ['misko', 'shyam', 'doug'];
+    scope.$digest();
+    expect(element.text()).
+        toEqual('misko:true-false|shyam:false-true|doug:true-false|');
+
+    scope.items.push('frodo');
+    scope.$digest();
+    expect(element.text()).
+        toEqual('misko:true-false|' +
+                'shyam:false-true|' +
+                'doug:true-false|' +
+                'frodo:false-true|');
+
+    scope.items.pop();
+    scope.items.pop();
+    scope.$digest();
+    expect(element.text()).toEqual('misko:true-false|shyam:false-true|');
+
+    scope.items.pop();
+    scope.$digest();
+    expect(element.text()).toEqual('misko:true-false|');
+  });
+
+
   it('should expose iterator position as $first, $middle and $last when iterating over objects',
       function() {
     element = $compile(
@@ -411,6 +440,31 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should expose iterator position as $even and $odd when iterating over objects',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$even}}-{{$odd}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
+    scope.$digest();
+    expect(element.text()).
+        toEqual('doug:d:true-false|' +
+                'frodo:f:false-true|' +
+                'misko:m:true-false|' +
+                'shyam:s:false-true|');
+
+    delete scope.items.doug;
+    delete scope.items.frodo;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:m:true-false|shyam:s:false-true|');
+
+    delete scope.items.shyam;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:m:true-false|');
+  });
+
+
   it('should calculate $first, $middle and $last when we filter out properties from an obj', function() {
     element = $compile(
         '<ul>' +
@@ -423,6 +477,21 @@ describe('ngRepeat', function() {
         'frodo:f:false-true-false|' +
         'misko:m:false-true-false|' +
         'shyam:s:false-false-true|');
+  });
+
+
+  it('should calculate $even and $odd when we filter out properties from an obj', function() {
+    element = $compile(
+        '<ul>' +
+            '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$even}}-{{$odd}}|</li>' +
+            '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f', '$toBeFilteredOut': 'xxxx'};
+    scope.$digest();
+    expect(element.text()).
+        toEqual('doug:d:true-false|' +
+        'frodo:f:false-true|' +
+        'misko:m:true-false|' +
+        'shyam:s:false-true|');
   });
 
 
