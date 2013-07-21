@@ -27,11 +27,9 @@
  * @example
  * Here is a simple form for editing user contact information. Adding, removing, clearing, and
  * greeting are methods declared on the controller (see source tab). These methods can
- * easily be called from the angular markup. Notice that the scope becomes the `this` for the
- * controller's instance. This allows for easy access to the view data from the controller. Also
- * notice that any changes to the data are automatically reflected in the View without the need
- * for a manual update. The example is included in two different declaration styles based on
- * your style preferences.
+ * easily be called from the angular markup. Notice that any changes to the data are automatically
+ * reflected in the View without the need for a manual update. The example is included in two
+ * different declaration styles based on your style preferences.
    <doc:example>
      <doc:source>
       <script>
