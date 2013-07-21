@@ -80,7 +80,7 @@
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
  *     is a scope expression giving the collection to enumerate.
  *
- *     For example: `track in cd.tracks`.
+ *     For example: `album in artist.albums`.
  *
  *   * `(key, value) in expression` – where `key` and `value` can be any user defined identifiers,
  *     and `expression` is the scope expression giving the collection to enumerate.
@@ -91,7 +91,8 @@
  *     which can be used to associate the objects in the collection with the DOM elements. If no tracking function
  *     is specified the ng-repeat associates elements by identity in the collection. It is an error to have
  *     more than one tracking function to resolve to the same key. (This would mean that two distinct objects are
- *     mapped to the same DOM element, which is not possible.)
+ *     mapped to the same DOM element, which is not possible.)  Filters should be applied to the expression,
+ *     before specifying a tracking expression.
  *
  *     For example: `item in items` is equivalent to `item in items track by $id(item)'. This implies that the DOM elements
  *     will be associated by item identity in the array.
@@ -101,9 +102,12 @@
  *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
  *     element in the same way ian the DOM.
  *
- *     For example: `item in items track by item.id` Is a typical pattern when the items come from the database. In this
+ *     For example: `item in items track by item.id`. Is a typical pattern when the items come from the database. In this
  *     case the object identity does not matter. Two objects are considered equivalent as long as their `id`
  *     property is same.
+ *
+ *     For example: `item in items | filter:searchText track by item.id`. Is a pattern that might be used to apply a filter
+ *     to items in conjunction with a tracking expression.
  *
  * @example
  * This example initializes the scope to a list of names and
