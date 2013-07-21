@@ -1742,7 +1742,7 @@ angular.mock.clearDataCache = function() {
 };
 
 
-window.jstestdriver && (function(window) {
+(function(window) {
   /**
    * Global method to output any number of objects into JSTD console. Useful for debugging.
    */
@@ -1751,7 +1751,6 @@ window.jstestdriver && (function(window) {
     angular.forEach(arguments, function(arg) {
       args.push(angular.mock.dump(arg));
     });
-    jstestdriver.console.log.apply(jstestdriver.console, args);
     if (window.console) {
       window.console.log.apply(window.console, args);
     }
