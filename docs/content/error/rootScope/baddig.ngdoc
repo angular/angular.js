@@ -1,0 +1,4 @@
+@ngdoc error
+@name $rootScope:baddig
+@fullName Can't complete final $digest
+@description
