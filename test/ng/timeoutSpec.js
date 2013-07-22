@@ -48,6 +48,22 @@ describe('$timeout', function() {
   }));
 
 
+  it('should call a specific scope if passed as an argument', inject(function($timeout, $rootScope) {
+    var scope = $rootScope.$new();
+    scope.$apply = function(){};
+    var applySpy = spyOn(scope, '$apply').andCallThrough();
+    var rootScopeApplySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+    $timeout(function() {}, 12, true, scope);
+    expect(applySpy).not.toHaveBeenCalled();
+    expect(rootScopeApplySpy).not.toHaveBeenCalled();
+
+    $timeout.flush();
+    expect(applySpy).toHaveBeenCalled();
+    expect(rootScopeApplySpy).not.toHaveBeenCalled();
+  }));
+
+
   it('should allow you to specify the delay time', inject(function($timeout, $browser) {
     var defer = spyOn($browser, 'defer');
     $timeout(noop, 123);

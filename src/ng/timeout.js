@@ -32,10 +32,11 @@ function $TimeoutProvider() {
       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       */
-    function timeout(fn, delay, invokeApply) {
+    function timeout(fn, delay, invokeApply, scope) {
       var deferred = $q.defer(),
           promise = deferred.promise,
           skipApply = (isDefined(invokeApply) && !invokeApply),
+          scope = scope || $rootScope,
           timeoutId, cleanup;
 
       timeoutId = $browser.defer(function() {
@@ -46,7 +47,7 @@ function $TimeoutProvider() {
           $exceptionHandler(e);
         }
 
-        if (!skipApply) $rootScope.$apply();
+        if (!skipApply) scope.$apply();
       }, delay);
 
       cleanup = function() {
