@@ -3,9 +3,9 @@
 /**
  * A future action in a spec.
  *
- * @param {string} name of the future action
- * @param {function()} future callback(error, result)
- * @param {function()} Optional. function that returns the file/line number.
+ * @param {string} name name of the future action
+ * @param {function()} behavior future callback(error, result)
+ * @param {function()} line Optional. function that returns the file/line number.
  */
 angular.scenario.Future = function(name, behavior, line) {
   this.name = name;

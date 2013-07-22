@@ -3,7 +3,7 @@
 ////////////////////////////////////
 
 /**
- * hasOwnProperty may be overriden by a property of the same name, or entirely
+ * hasOwnProperty may be overwritten by a property of the same name, or entirely
  * absent from an object that does not inherit Object.prototype; this copy is
  * used instead
  */
@@ -792,7 +792,7 @@ function toJsonReplacer(key, value) {
  *
  * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
  * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
- * @returns {string|undefined} Jsonified string representing `obj`.
+ * @returns {string|undefined} JSON-ified string representing `obj`.
  */
 function toJson(obj, pretty) {
   if (typeof obj === 'undefined') return undefined;

@@ -1308,7 +1308,7 @@ var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
 /**
  * Converts all accepted directives format into proper directive name.
  * All of these will become 'myDirective':
- *   my:DiRective
+ *   my:Directive
  *   my-directive
  *   x-my-directive
  *   data-my:directive

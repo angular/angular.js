@@ -94,7 +94,7 @@ angular.scenario.Describe.prototype.xdescribe = angular.noop;
  * Defines a test.
  *
  * @param {string} name Name of the test.
- * @param {function()} vody Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.it = function(name, body) {
   this.its.push({

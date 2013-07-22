@@ -86,7 +86,7 @@ function $InterpolateProvider() {
      *    embedded expression will return null for the interpolation function.
      * @param {boolean=} isTrustedContext when true, requires that the interpolation string does not
      *    contain any concatenations - i.e. the interpolation string is a single expression.
-     *    Interpolations for *[src] and *[ng-src] (except IMG, since itwhich sanitizes its value)
+     *    Interpolations for *[src] and *[ng-src] (except IMG, since it sanitizes its value)
      *    pass true for this parameter.  This helps avoid hunting through the template code to
      *    figure out of some iframe[src], object[src], etc. was interpolated with a concatenation
      *    that ended up introducing a XSS.
