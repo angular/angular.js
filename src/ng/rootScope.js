@@ -165,6 +165,8 @@ function $RootScopeProvider(){
         if (isolate) {
           child = new Scope();
           child.$root = this.$root;
+          // ensure that there is just one async queue per $rootScope and it's children
+          child.$$asyncQueue = this.$$asyncQueue;
         } else {
           Child = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. These will then show up as class
