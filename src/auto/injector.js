@@ -149,7 +149,7 @@ function annotate(fn) {
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @returns {*} the value returned by the invoked `fn` function.
+ * @returns {*} the value returned by the invoked `fn` function, or a promise if any injectable dependencies are themselves unresolved promises.
  */
 
 /**
@@ -556,7 +556,10 @@ function createInjector(modulesToLoad) {
       var args = [],
           $inject = annotate(fn),
           length, i,
-          key;
+          key,
+          hasPromisedDependencies = false,
+          invocationDeferredReturn,
+          dependenciesPromise;
 
       for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
@@ -568,27 +571,53 @@ function createInjector(modulesToLoad) {
           ? locals[key]
           : getService(key)
         );
+
+        // make note if we discover a dependency which is currently a promise.
+        // this will trigger a deferred return value from this function and
+        // delay the invocation until all promised dependencies have been resolved.
+        if(!hasPromisedDependencies && args[i] && args[i].then && typeof args[i].then == "function") {
+          hasPromisedDependencies = true;
+        }
       }
       if (!fn.$inject) {
         // this means that we must be an array.
         fn = fn[length];
       }
 
+      // this will either be invoked immediately or
+      // once all dependencies have been fulfilled.
+      function performInvocation(fn, self, args) {
+        // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
+        switch (self ? -1 : args.length) {
+          case  0: return fn();
+          case  1: return fn(args[0]);
+          case  2: return fn(args[0], args[1]);
+          case  3: return fn(args[0], args[1], args[2]);
+          case  4: return fn(args[0], args[1], args[2], args[3]);
+          case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
+          case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
+          case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+          case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+          case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+          case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+          default: return fn.apply(self, args);
+        }
+      }
 
-      // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-      switch (self ? -1 : args.length) {
-        case  0: return fn();
-        case  1: return fn(args[0]);
-        case  2: return fn(args[0], args[1]);
-        case  3: return fn(args[0], args[1], args[2]);
-        case  4: return fn(args[0], args[1], args[2], args[3]);
-        case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
-        case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
-        case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-        case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-        case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-        case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
-        default: return fn.apply(self, args);
+      if(hasPromisedDependencies) {
+        // wrap all args in .when() for common interface, then use .all()
+        // to perform the invocation once all are resolved.
+        for(i = 0, length = args.length; i < length; i++) {
+          args[i] = cache['$q'].when(args[i]);
+        }
+        dependenciesPromise = cache['$q'].all(args);
+        invocationDeferredReturn = cache['$q'].defer();
+        dependenciesPromise.then(function(resolvedArgs){
+          invocationDeferredReturn.resolve(performInvocation(fn, self, resolvedArgs));
+        })
+        return invocationDeferredReturn.promise;
+      } else {
+        return performInvocation(fn, self, args);
       }
     }
 
