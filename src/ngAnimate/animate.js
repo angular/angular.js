@@ -200,7 +200,7 @@ angular.module('ngAnimate', ['ng'])
   .config(['$provide', '$animateProvider', function($provide, $animateProvider) {
     var selectors = [];
 
-    var NG_ANIMATE_CONTROLLER = '$ngAnimateController';
+    var NG_ANIMATE_STATE = '$ngAnimateController';
     var rootAnimateController = {running:true};
 
     /**
@@ -242,10 +242,10 @@ angular.module('ngAnimate', ['ng'])
       $provide.factory(name, factory);
     };
 
-    $provide.decorator('$animate', ['$delegate', '$injector', '$window', '$sniffer', '$rootElement',
-      function($delegate, $injector, $window, $sniffer, $rootElement) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement',
+      function($delegate, $injector, $sniffer, $rootElement) {
 
-      $rootElement.data(NG_ANIMATE_CONTROLLER, rootAnimateController);
+      $rootElement.data(NG_ANIMATE_STATE, rootAnimateController);
 
        function lookup(name) {
         if (name) {
@@ -276,7 +276,7 @@ angular.module('ngAnimate', ['ng'])
       /**
        * @ngdoc object
        * @name ngAnimate.$animate
-       * @requires $window, $sniffer, $rootElement
+       * @requires $timeout, $sniffer, $rootElement
        * @function
        *
        * @description
@@ -479,80 +479,72 @@ angular.module('ngAnimate', ['ng'])
         and the onComplete callback will be fired once the animation is fully complete.
       */
       function performAnimation(event, className, element, parent, after, onComplete) {
-        if(!isPrimeForAnimation(className, element)) {
+        var classes = ((element.attr('class') || '') + ' ' + className),
+            animationLookup = (' ' + classes).replace(/\s+/g,'.'),
+            animations = [];
+        angular.forEach(lookup(animationLookup), function(animation, index) {
+          animations.push({
+            start : animation[event]
+          });
+        });
+
+        if (!parent) {
+          parent = after ? after.parent() : element.parent();
+        }
+        var disabledAnimation = { running : true };
+
+        //skip the animation if animations are disabled, a parent is already being animated
+        //or the element is not currently attached to the document body.
+        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running) {
+          //avoid calling done() since there is no need to remove any
+          //data or className values since this happens earlier than that
           (onComplete || angular.noop)();
-        } else {
-          var classes = ((element.attr('class') || '') + ' ' + className),
-              animationLookup = (' ' + classes).replace(/\s+/g,'.'),
-              animations = [];
-          angular.forEach(lookup(animationLookup), function(animation, index) {
-            animations.push({
-              start : animation[event],
-              done : false
-            });
-          });
+          return;
+        }
 
-          if (!parent) {
-            parent = after ? after.parent() : element.parent();
-          }
-          var disabledAnimation = { running : true };
+        var ngAnimateState = element.data(NG_ANIMATE_STATE) || {};
 
-          //skip the animation if animations are disabled, a parent is already being animated
-          //or the element is not currently attached to the document body.
-          if ((parent.inheritedData(NG_ANIMATE_CONTROLLER) || disabledAnimation).running) {
-            //avoid calling done() since there is no need to remove any
-            //data or className values since this happens earlier than that
-            (onComplete || angular.noop)();
-            return;
-          }
+        //if an animation is currently running on the element then lets take the steps
+        //to cancel that animation and fire any required callbacks
+        if(ngAnimateState.running) {
+          cancelAnimations(ngAnimateState.animations);
+          ngAnimateState.done();
+        }
 
-          var animationData = element.data(NG_ANIMATE_CONTROLLER) || {};
+        element.data(NG_ANIMATE_STATE, {
+          running:true,
+          animations:animations,
+          done:done
+        });
 
-          //if an animation is currently running on the element then lets take the steps
-          //to cancel that animation and fire any required callbacks
-          if(animationData.running) {
-            cancelAnimations(animationData.animations);
-            animationData.done();
-          }
+        if(event == 'addClass') {
+          className = suffixClasses(className, '-add');
+        } else if(event == 'removeClass') {
+          className = suffixClasses(className, '-remove');
+        }
 
-          element.data(NG_ANIMATE_CONTROLLER, {
-            running:true,
-            animations:animations,
-            done:done
-          });
+        element.addClass(className);
 
-          if(event == 'addClass') {
-            className = suffixClasses(className, '-add');
-          } else if(event == 'removeClass') {
-            className = suffixClasses(className, '-remove');
-          }
+        angular.forEach(animations, function(animation, index) {
+          var fn = function() {
+            progress(index);
+          };
 
-          element.addClass(className);
-
-          angular.forEach(animations, function(animation, index) {
-            var fn = function() {
-              progress(index);
-            };
-
-            if(animation.start) {
-              if(event == 'addClass' || event == 'removeClass') {
-                animation.cancel = animation.start(element, className, fn);
-              } else {
-                animation.cancel = animation.start(element, fn);
-              }
+          if(animation.start) {
+            if(event == 'addClass' || event == 'removeClass') {
+              animation.endFn = animation.start(element, className, fn);
             } else {
-              fn();
+              animation.endFn = animation.start(element, fn);
             }
-          });
-        }
-
-        function isPrimeForAnimation(className, element) {
-          return className && className.length > 0 && element.length > 0;
-        }
+          } else {
+            fn();
+          }
+        });
 
         function cancelAnimations(animations) {
+          var isCancelledFlag = true;
           angular.forEach(animations, function(animation) {
-            (animation.cancel || angular.noop)(element);
+            (animation.endFn || angular.noop)(isCancelledFlag);
           });
         }
 
@@ -569,6 +561,7 @@ angular.module('ngAnimate', ['ng'])
 
         function progress(index) {
           animations[index].done = true;
+          (animations[index].endFn || angular.noop)();
           for(var i=0;i<animations.length;i++) {
             if(!animations[i].done) return;
           }
@@ -579,7 +572,7 @@ angular.module('ngAnimate', ['ng'])
           if(!done.hasBeenRun) {
             done.hasBeenRun = true;
             element.removeClass(className);
-            element.removeData(NG_ANIMATE_CONTROLLER);
+            element.removeData(NG_ANIMATE_STATE);
             (onComplete || angular.noop)();
           }
         }
@@ -587,7 +580,7 @@ angular.module('ngAnimate', ['ng'])
     }]);
   }])
 
-  .animation('', ['$window','$sniffer', function($window, $sniffer) {
+  .animation('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
     return {
       enter : function(element, done) {
         return animate(element, 'ng-enter', done);
@@ -611,13 +604,13 @@ angular.module('ngAnimate', ['ng'])
         done();
       } else {
         var activeClassName = '';
-        $window.setTimeout(startAnimation, 1);
+        $timeout(startAnimation, 1, false);
 
         //this acts as the cancellation function in case
         //a new animation is triggered while another animation
         //is still going on (otherwise the active className
         //would still hang around until the timer is complete).
-        return onComplete;
+        return onEnd;
       }
 
       function parseMaxTime(str) {
@@ -678,12 +671,21 @@ angular.module('ngAnimate', ['ng'])
           }
         });
 
-        $window.setTimeout(onComplete, duration * 1000);
+        $timeout(done, duration * 1000, false);
       }
 
-      function onComplete() {
+      //this will automatically be called by $animate so
+      //there is no need to attach this internally to the
+      //timeout done method
+      function onEnd(cancelled) {
         element.removeClass(activeClassName);
-        done();
+
+        //only when the animation is cancelled is the done()
+        //function not called for this animation therefore
+        //this must be also called
+        if(cancelled) {
+          done();
+        }
       };
     };
   }]);

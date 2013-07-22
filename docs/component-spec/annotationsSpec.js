@@ -69,16 +69,16 @@ describe('Docs Annotations', function() {
     beforeEach(function() {
       module(function($provide, $animateProvider) {
         $provide.value('$window', window = angular.mock.createMockWindow());
-        $animateProvider.register('.foldout', function($window) {
+        $animateProvider.register('.foldout', function($timeout) {
           return {
             enter : function(element, done) {
-              $window.setTimeout(done, 1000);
+              $timeout(done, 1000);
             },
             removeClass : function(element, className, done) {
-              $window.setTimeout(done, 500);
+              $timeout(done, 500);
             },
             addClass : function(element, className, done) {
-              $window.setTimeout(done, 200);
+              $timeout(done, 200);
             }
           }
         });
@@ -112,41 +112,46 @@ describe('Docs Annotations', function() {
       expect(foldout.html()).toContain('loading');
     }));
 
-    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend) {
+    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend, $timeout) {
       $httpBackend.expect('GET', url).respond('hello');
 
       element.triggerHandler('click');
       $httpBackend.flush();
 
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(1000).process();
+      $timeout.flushNext(0);
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(1000);
 
       var kids = body.children();
       var foldout = angular.element(kids[kids.length-1]);
       expect(foldout.text()).toContain('hello');
     }));
 
-    it('should hide then show when clicked again', inject(function($httpBackend) {
+    it('should hide then show when clicked again', inject(function($httpBackend, $timeout) {
       $httpBackend.expect('GET', url).respond('hello');
 
       //enter
       element.triggerHandler('click');
       $httpBackend.flush();
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(1000).process();
-      window.setTimeout.expect(0).process();
+      $timeout.flushNext(0);
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(1000);
 
       //hide
       element.triggerHandler('click');
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(200).process();
-      window.setTimeout.expect(0).process();
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(200);
+      $timeout.flushNext(0);
 
       //show
       element.triggerHandler('click');
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(500).process();
-      window.setTimeout.expect(0).process();
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(500);
+      $timeout.flushNext(0);
     }));
 
   });
