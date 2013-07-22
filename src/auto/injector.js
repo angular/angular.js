@@ -149,7 +149,7 @@ function annotate(fn) {
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
- * @returns {*} the value returned by the invoked `fn` function.
+ * @returns {*} the value returned by the invoked `fn` function, or a promise if any injectable dependencies are themselves unresolved promises.
  */
 
 /**
@@ -557,8 +557,9 @@ function createInjector(modulesToLoad) {
           $inject = annotate(fn),
           length, i,
           key,
-          promisedDependencies = [],
-          invocationDeferredReturn;
+          hasPromisedDependencies = false,
+          invocationDeferredReturn,
+          dependenciesPromise;
 
       for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
@@ -570,11 +571,12 @@ function createInjector(modulesToLoad) {
           ? locals[key]
           : getService(key)
         );
-        
-        // make note of which arg indexes are promises at this point.
-        // (which service dependencies are not yet fulfilled)
-        if(args[i] && args[i].then && typeof args[i].then == "function") {
-          promisedDependencies.push(i);
+
+        // make note if we discover a dependency which is currently a promise.
+        // this will trigger a deferred return value from this function and
+        // delay the invocation until all promised dependencies have been resolved.
+        if(!hasPromisedDependencies && args[i] && args[i].then && typeof args[i].then == "function") {
+          hasPromisedDependencies = true;
         }
       }
       if (!fn.$inject) {
@@ -602,22 +604,17 @@ function createInjector(modulesToLoad) {
         }
       }
 
-      // If there are some unfulfilled dependencies, do "reference counting" so that 
-      // we can invoke the original function once they are all resolved.
-      var numPromises = promisedDependencies.length;
-      if(numPromises) {
-        invocationDeferredReturn = cache['$q'].defer();
-        for(i = 0; i< numPromises; i++){
-          var thisIndex = promisedDependencies[i];
-          var thisPromise = args[thisIndex];
-          thisPromise.then(function(serviceValue){
-            args[thisIndex] = serviceValue;
-            numPromises--;
-            if(numPromises == 0) {
-              invocationDeferredReturn.resolve(performInvocation(fn, self, args));
-            }
-          });
+      if(hasPromisedDependencies) {
+        // wrap all args in .when() for common interface, then use .all()
+        // to perform the invocation once all are resolved.
+        for(i = 0, length = args.length; i < length; i++) {
+          args[i] = cache['$q'].when(args[i]);
         }
+        dependenciesPromise = cache['$q'].all(args);
+        invocationDeferredReturn = cache['$q'].defer();
+        dependenciesPromise.then(function(resolvedArgs){
+          invocationDeferredReturn.resolve(performInvocation(fn, self, resolvedArgs));
+        })
         return invocationDeferredReturn.promise;
       } else {
         return performInvocation(fn, self, args);
