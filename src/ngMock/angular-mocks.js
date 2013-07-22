@@ -859,7 +859,7 @@ angular.mock.dump = function(object) {
   </pre>
  *
  * Now we setup the mock backend and create the test specs.
- * 
+ *
   <pre>
     // testing controller
     describe('MyController', function() {
@@ -915,7 +915,7 @@ angular.mock.dump = function(object) {
        it('should send auth header', function() {
          var controller = createController();
          $httpBackend.flush();
-         
+
          $httpBackend.expectPOST('/add-msg.py', undefined, function(headers) {
            // check if the header was send, if it wasn't the expectation won't
            // match the request and the test will fail
@@ -1741,22 +1741,6 @@ angular.mock.clearDataCache = function() {
   }
 };
 
-
-window.jstestdriver && (function(window) {
-  /**
-   * Global method to output any number of objects into JSTD console. Useful for debugging.
-   */
-  window.dump = function() {
-    var args = [];
-    angular.forEach(arguments, function(arg) {
-      args.push(angular.mock.dump(arg));
-    });
-    jstestdriver.console.log.apply(jstestdriver.console, args);
-    if (window.console) {
-      window.console.log.apply(window.console, args);
-    }
-  };
-})(window);
 
 
 (window.jasmine || window.mocha) && (function(window) {
