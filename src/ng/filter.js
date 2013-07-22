@@ -30,7 +30,7 @@
  *   }
  * </pre>
  *
- * The filter function is registered with the `$injector` under the filter name suffixe with `Filter`.
+ * The filter function is registered with the `$injector` under the filter name suffix with `Filter`.
  * <pre>
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
