@@ -353,11 +353,6 @@ describe('ngMock', function() {
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
-
-
-    it('should be published on window', function(){
-      expect(window.dump instanceof Function).toBe(true);
-    });
   });
 
 
