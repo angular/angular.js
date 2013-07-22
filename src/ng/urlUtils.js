@@ -1,6 +1,6 @@
 'use strict';
 
-function $$UrlUtilsProvider() {
+function $UrlUtilsProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var urlParsingNode = $document[0].createElement("a"),
         originUrl = resolve($window.location.href, true);
@@ -8,8 +8,6 @@ function $$UrlUtilsProvider() {
     /**
      * @description
      * Normalizes and optionally parses a URL.
-     *
-     * NOTE:  This is a private service.  The API is subject to change unpredictably in any commit.
      *
      * Implementation Notes for non-IE browsers
      * ----------------------------------------
@@ -45,8 +43,11 @@ function $$UrlUtilsProvider() {
      *   http://james.padolsey.com/javascript/parsing-urls-with-the-dom/
      *
      * @param {string} url The URL to be parsed.
-     * @param {boolean=} parse When true, returns an object for the parsed URL.  Otherwise, returns
-     *   a single string that is the normalized URL.
+     * @param {boolean|function} parse When true, returns an object for the parsed URL.
+     *   When a function, calls that function with a modifiable object for the parsed URL, the
+     *   function may modify the object and its normalized URL will be recomputed, then the
+     *   modified object for the URL is returned.
+     *   Otherwise, returns a single string that is the normalized URL.
      * @returns {object|string} When parse is true, returns the normalized URL as a string.
      * Otherwise, returns an object with the following members.
      *
@@ -55,13 +56,9 @@ function $$UrlUtilsProvider() {
      *   | href          | A normalized version of the provided URL if it was not an absolute URL |
      *   | protocol      | The protocol including the trailing colon                              |
      *   | host          | The host and port (if the port is non-default) of the normalizedUrl    |
-     *
-     * These fields from the UrlUtils interface are currently not needed and hence not returned.
-     *
-     *   | member name   | Description    |
-     *   |===============|================|
      *   | hostname      | The host without the port of the normalizedUrl                         |
      *   | pathname      | The path following the host in the normalizedUrl                       |
+     *   | port          | The port (if the port is non-default)                                  |
      *   | hash          | The URL hash if present                                                |
      *   | search        | The query string                                                       |
      *
@@ -79,17 +76,21 @@ function $$UrlUtilsProvider() {
       if (!parse) {
         return urlParsingNode.href;
       }
+
+      if (isFunction(parse)) {
+        parse(urlParsingNode);
+      }
+
       // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
       return {
         href: urlParsingNode.href,
         protocol: urlParsingNode.protocol,
-        host: urlParsingNode.host
-        // Currently unused and hence commented out.
-        // hostname: urlParsingNode.hostname,
-        // port: urlParsingNode.port,
-        // pathname: urlParsingNode.pathname,
-        // hash: urlParsingNode.hash,
-        // search: urlParsingNode.search
+        host: urlParsingNode.host,
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: urlParsingNode.pathname,
+        hash: urlParsingNode.hash,
+        search: urlParsingNode.search
       };
     }
 

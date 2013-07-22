@@ -131,8 +131,8 @@ function $HttpProvider() {
    */
   var responseInterceptorFactories = this.responseInterceptors = [];
 
-  this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector', '$$urlUtils',
-      function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector, $$urlUtils) {
+  this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector', '$urlUtils',
+      function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector, $urlUtils) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -620,7 +620,7 @@ function $HttpProvider() {
       config.headers = headers;
       config.method = uppercase(config.method);
 
-      var xsrfValue = $$urlUtils.isSameOrigin(config.url)
+      var xsrfValue = $urlUtils.isSameOrigin(config.url)
           ? $browser.cookies()[config.xsrfCookieName || defaults.xsrfCookieName]
           : undefined;
       if (xsrfValue) {
