@@ -56,7 +56,7 @@ var $AnimateProvider = ['$provide', function($provide) {
     $provide.factory(name, factory);
   };
 
-  this.$get = function() {
+  this.$get = ['$timeout', function($timeout) {
     return {
       enter : function(element, parent, after, done) {
         var afterNode = after && after[after.length - 1];
@@ -66,12 +66,12 @@ var $AnimateProvider = ['$provide', function($provide) {
         forEach(element, function(node) {
           parentNode.insertBefore(node, afterNextSibling);
         });
-        (done || noop)();
+        $timeout(done || noop, 0, false);
       },
 
       leave : function(element, done) {
         element.remove();
-        (done || noop)();
+        $timeout(done || noop, 0, false);
       },
 
       move : function(element, parent, after, done) {
@@ -85,7 +85,7 @@ var $AnimateProvider = ['$provide', function($provide) {
                       className :
                       isArray(className) ? className.join(' ') : '';
         element.addClass(className);
-        (done || noop)();
+        $timeout(done || noop, 0, false);
       },
 
       removeClass : function(element, className, done) {
@@ -93,10 +93,10 @@ var $AnimateProvider = ['$provide', function($provide) {
                       className :
                       isArray(className) ? className.join(' ') : '';
         element.removeClass(className);
-        (done || noop)();
+        $timeout(done || noop, 0, false);
       },
 
       enabled : noop
     };
-  };
+  }];
 }];
