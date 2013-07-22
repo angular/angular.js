@@ -202,7 +202,7 @@ function annotate(fn) {
  *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
  * </pre>
  *
- * This method does not work with code minfication / obfuscation. For this reason the following annotation strategies
+ * This method does not work with code minification / obfuscation. For this reason the following annotation strategies
  * are supported.
  *
  * # The `$inject` property
