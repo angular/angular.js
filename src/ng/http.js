@@ -155,7 +155,7 @@ function $HttpProvider() {
 
       /**
        * Response interceptors go before "around" interceptors (no real reason, just
-       * had to pick one.) But they are already revesed, so we can't use unshift, hence
+       * had to pick one.) But they are already reversed, so we can't use unshift, hence
        * the splice.
        */
       reversedInterceptors.splice(index, 0, {
