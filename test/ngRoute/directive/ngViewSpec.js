@@ -623,7 +623,7 @@ describe('ngView animations', function() {
       });
     });
 
-    inject(function($rootScope, $compile, $location, $route, $window, $rootElement, $sniffer, $animate) {
+    inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate) {
       element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
       $animate.enabled(true);
 
@@ -632,20 +632,12 @@ describe('ngView animations', function() {
 
       $animate.process('enter'); //ngView
 
-      if($sniffer.transitions) {
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-      }
+      $timeout.flush();
 
       $animate.process('enter'); //repeat 1
       $animate.process('enter'); //repeat 2
 
-      if($sniffer.transitions) {
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-      }
+      $timeout.flush();
 
       expect(element.text()).toEqual('12');
 
@@ -653,29 +645,17 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.process('leave'); //ngView old
-      if($sniffer.transitions) {
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-      }
+      $timeout.flush();
 
       $animate.process('enter'); //ngView new
-      if($sniffer.transitions) {
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-      }
+      $timeout.flush();
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
       $animate.process('enter'); //ngRepeat 3
       $animate.process('enter'); //ngRepeat 4
 
-
-      if($sniffer.transitions) {
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(1).process();
-        $window.setTimeout.expect(0).process();
-        $window.setTimeout.expect(0).process();
-      }
+      $timeout.flush();
 
       expect(element.text()).toEqual('34');
 
