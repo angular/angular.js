@@ -692,6 +692,19 @@ describe('Scope', function() {
       expect($rootScope.log).toBe('12');
     }));
 
+
+    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope) {
+      var childScope = $rootScope.$new();
+      var isolateScope = $rootScope.$new(true);
+
+      $rootScope.$evalAsync('rootExpression');
+      childScope.$evalAsync('childExpression');
+      isolateScope.$evalAsync('isolateExpression');
+
+      expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect($rootScope.$$asyncQueue).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
+    }));
   });
 
 
