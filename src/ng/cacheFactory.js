@@ -194,7 +194,7 @@ function $CacheFactoryProvider() {
  * @name ng.$templateCache
  *
  * @description
- * The first time a template is used, it is loaded in the tempalte cache for quick retrieval.  You can 
+ * The first time a template is used, it is loaded in the template cache for quick retrieval.  You can 
  * load templates directly into the cache in a `script` tag, or by consuming the `$templateCache` 
  * service directly.
  * 
