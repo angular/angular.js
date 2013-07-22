@@ -20,7 +20,7 @@ var $parseMinErr = minErr('$parse');
 // the expression, which is a stronger but more expensive test. Since reflective calls are expensive anyway, this is not
 // such a big deal compared to static dereferencing.
 //
-// This sandboxing techniqueue is not perfect and doesn't aim to be. The goal is to prevent exploits against the
+// This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits against the
 // expression language, but not to prevent exploits that were enabled by exposing sensitive JavaScript or browser apis
 // on Scope. Exposing such objects on a Scope is never a good practice and therefore we are not even trying to protect
 // against interaction with an object explicitly exposed in this way.

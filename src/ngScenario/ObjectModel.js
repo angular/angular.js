@@ -170,7 +170,7 @@ angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
 /**
  * Gets a spec by id.
  *
- * @param {string} The id of the spec to get the object for.
+ * @param {string} id The id of the spec to get the object for.
  * @return {Object} the Spec instance
  */
 angular.scenario.ObjectModel.prototype.getSpec = function(id) {
@@ -195,7 +195,7 @@ angular.scenario.ObjectModel.Spec = function(id, name, definitionNames) {
 /**
  * Adds a new step to the Spec.
  *
- * @param {string} step Name of the step (really name of the future)
+ * @param {string} name Name of the step (really name of the future)
  * @return {Object} the added step
  */
 angular.scenario.ObjectModel.Spec.prototype.addStep = function(name) {
@@ -229,7 +229,7 @@ angular.scenario.ObjectModel.Spec.prototype.setStatusFromStep = function(step) {
 /**
  * A single step inside a Spec.
  *
- * @param {string} step Name of the step
+ * @param {string} name Name of the step
  */
 angular.scenario.ObjectModel.Step = function(name) {
   this.name = name;
