@@ -1,9 +1,14 @@
 'use strict';
 
 function $$UrlUtilsProvider() {
-  this.$get = ['$window', '$document', function($window, $document) {
+  this.$get = ['$document', function($document) {
     var urlParsingNode = $document[0].createElement("a"),
-        originUrl = resolve($window.location.href, true);
+        // NOTE:  The usage of window instead of $window here is deliberate.  When the browser
+        // resolves a URL for XHR, it doesn't know about any mocked $window.  $$urlUtils
+        // resolves URLs just as the browser would.  Using $window here would confuse the
+        // isSameOrigin check causing unexpected failures.  We avoid that by using the real window
+        // object.
+        originUrl = resolve(window.location.href, true);
 
     /**
      * @description
