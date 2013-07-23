@@ -401,6 +401,10 @@ compiler}. The attributes are:
     controller: ['$scope', '$element', '$attrs', '$transclude', function($scope, $element, $attrs, $transclude) { ... }]
     </pre>
 
+  * `controllerAs` - Controller alias at the directive scope. An alias for the controller so it
+    can be referenced at the directive template. The directive needs to define a scope for this
+    configuration to be used.
+
   * `require` - Require another controller be passed into current directive linking function. The
     `require` takes a name of the directive controller to pass in. If no such controller can be
     found an error is raised. The name can be prefixed with:

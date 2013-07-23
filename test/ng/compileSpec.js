@@ -2208,6 +2208,51 @@ describe('$compile', function() {
     });
 
 
+    it('should support controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>{{mainCtrl.name}}</span>');
+        element = $compile('<div main></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('lucas');
+      });
+    });
+
+
+    it('should support controller alias', function() {
+      module(function($controllerProvider) {
+        $controllerProvider.register('MainCtrl', function() {
+          this.name = 'lucas';
+        });
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: 'MainCtrl as mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>{{mainCtrl.name}}</span>');
+        element = $compile('<div main></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('lucas');
+      });
+    });
+
+
+
     it('should require controller on parent element',function() {
       module(function() {
         directive('main', function(log) {

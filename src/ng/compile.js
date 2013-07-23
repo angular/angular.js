@@ -962,16 +962,25 @@ function $CompileProvider($provide) {
               $element: $element,
               $attrs: attrs,
               $transclude: boundTranscludeFn
-            };
+            }, controllerInstance;
 
             controller = directive.controller;
             if (controller == '@') {
               controller = attrs[directive.name];
             }
 
+            controllerInstance = $controller(controller, locals);
             $element.data(
                 '$' + directive.name + 'Controller',
-                $controller(controller, locals));
+                controllerInstance);
+            if (directive.controllerAs) {
+              if (typeof locals.$scope !== 'object') {
+                throw new Error('Can not export controller as "' + identifier + '". ' +
+                    'No scope object provided!');
+              }
+
+              locals.$scope[directive.controllerAs] = controllerInstance;
+            }
           });
         }
 
