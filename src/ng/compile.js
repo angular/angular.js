@@ -274,9 +274,9 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document', '$$urlUtils',
+            '$controller', '$rootScope', '$document', '$urlUtils',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document,   $$urlUtils) {
+             $controller,   $rootScope,   $document,   $urlUtils) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -324,9 +324,9 @@ function $CompileProvider($provide) {
         // sanitize a[href] and img[src] values
         if ((nodeName === 'A' && key === 'href') ||
             (nodeName === 'IMG' && key === 'src')) {
-          // NOTE: $$urlUtils.resolve() doesn't support IE < 8 so we don't sanitize for that case.
+          // NOTE: $urlUtils.resolve() doesn't support IE < 8 so we don't sanitize for that case.
           if (!msie || msie >= 8 ) {
-            normalizedVal = $$urlUtils.resolve(value);
+            normalizedVal = $urlUtils.resolve(value);
             if (normalizedVal !== '') {
               if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
                   (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {

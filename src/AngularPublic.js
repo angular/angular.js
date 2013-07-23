@@ -126,7 +126,7 @@ function publishExternalAPI(angular){
         $templateCache: $TemplateCacheProvider,
         $timeout: $TimeoutProvider,
         $window: $WindowProvider,
-        $$urlUtils: $$UrlUtilsProvider
+        $urlUtils: $UrlUtilsProvider
       });
     }
   ]);
