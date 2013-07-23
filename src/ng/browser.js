@@ -160,13 +160,14 @@ function Browser(window, document, $log, $sniffer) {
         }
       } else {
         if (replace) location.replace(url);
-        else location.href = url;
+        else if (location.href) location.href = url;
+        else location = url;
       }
       return self;
     // getter
     } else {
       // the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return location.href.replace(/%27/g,"'");
+      return (location.href || location).replace(/%27/g,"'");
     }
   };
 
