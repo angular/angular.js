@@ -302,3 +302,7 @@ element('.btn-danger').click();
     element('table tbody a');
     element('.btn-danger').click();
 </pre>
+
+# Caveats
+
+ngScenario does not work with apps that manually bootstrap using angular.bootstrap. You must use the ng-app directive.
