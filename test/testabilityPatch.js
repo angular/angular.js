@@ -283,3 +283,8 @@ function pending() {
 function trace(name) {
   dump(new Error(name).stack);
 }
+
+var karmaDump = dump;
+window.dump = function () {
+  karmaDump(angular.mock.dump.apply(undefined, arguments));
+};
