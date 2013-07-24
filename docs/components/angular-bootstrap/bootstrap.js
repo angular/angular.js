@@ -366,12 +366,12 @@ directive.foldout = ['$http', '$animate','$window', function($http, $animate, $w
               //avoid showing the element if the user has already closed it
               if(container.css('display') == 'block') {
                 container.css('display','none');
-                $animate.show(container);
+                $animate.addClass(container, 'ng-hide');
               }
             });
           }
           else {
-            container.hasClass('ng-hide') ? $animate.show(container) : $animate.hide(container);
+            container.hasClass('ng-hide') ? $animate.removeClass(container, 'ng-hide') : $animate.addClass(container, 'ng-hide');
           }
         });
       });
