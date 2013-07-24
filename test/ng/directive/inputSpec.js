@@ -876,32 +876,165 @@ describe('input', function() {
     });
 
 
-    it('should allow custom enumeration', function() {
-      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
-          'ng-false-value="n">');
+    describe('should allow custom string enumeration', function() {
+      it('with non empty strings', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
+            'ng-false-value="n">');
 
-      scope.$apply(function() {
-        scope.name = 'y';
+        scope.$apply(function() {
+          scope.name = 'y';
+        });
+        expect(inputElm[0].checked).toBe(true);
+
+        scope.$apply(function() {
+          scope.name = 'n';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual('y');
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual('n');
       });
-      expect(inputElm[0].checked).toBe(true);
 
-      scope.$apply(function() {
-        scope.name = 'n';
-      });
-      expect(inputElm[0].checked).toBe(false);
+      it('with empty strings', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="something" ' +
+            'ng-false-value="">');
 
-      scope.$apply(function() {
-        scope.name = 'something else';
-      });
-      expect(inputElm[0].checked).toBe(false);
+        scope.$apply(function() {
+          scope.name = 'something';
+        });
+        expect(inputElm[0].checked).toBe(true);
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.name).toEqual('y');
+        scope.$apply(function() {
+          scope.name = '';
+        });
+        expect(inputElm[0].checked).toBe(false);
 
-      browserTrigger(inputElm, 'click');
-      expect(scope.name).toEqual('n');
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual('something');
+
+        browserTrigger(inputElm, 'click');
+          expect(scope.name).toEqual('');
+        });
     });
 
+    describe('should allow custom numerical enumeration', function() {
+      it('with positive numbers', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="1" ' +
+            'ng-false-value="0">');
+
+        scope.$apply(function() {
+          scope.name = 1;
+        });
+        expect(inputElm[0].checked).toBe(true);
+
+        scope.$apply(function() {
+          scope.name = 0;
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual(1);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual(0);
+      });
+
+      it('with negative numbers', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="-1" ' +
+            'ng-false-value="-0">');
+
+        scope.$apply(function() {
+          scope.name = -1;
+        });
+        expect(inputElm[0].checked).toBe(true);
+
+        scope.$apply(function() {
+          scope.name = 0;
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual(-1);
+
+        browserTrigger(inputElm, 'click');
+          expect(scope.name).toEqual(0);
+      });
+
+      it('with floating point numbers', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="1.3" ' +
+            'ng-false-value="-1.3">');
+
+        scope.$apply(function() {
+          scope.name = 1.3;
+        });
+        expect(inputElm[0].checked).toBe(true);
+
+        scope.$apply(function() {
+          scope.name = -1.3;
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual(1.3);
+
+        browserTrigger(inputElm, 'click');
+          expect(scope.name).toEqual(-1.3);
+      });
+
+      it('with exponential numbers', function() {
+        compileInput('<input type="checkbox" ng-model="name" ng-true-value="1e3" ' +
+            'ng-false-value="1e-3">');
+
+        scope.$apply(function() {
+          scope.name = 1e3;
+        });
+        expect(inputElm[0].checked).toBe(true);
+
+        scope.$apply(function() {
+          scope.name = 1e-3;
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        scope.$apply(function() {
+          scope.name = 'something else';
+        });
+        expect(inputElm[0].checked).toBe(false);
+
+        browserTrigger(inputElm, 'click');
+        expect(scope.name).toEqual(1e3);
+
+        browserTrigger(inputElm, 'click');
+          expect(scope.name).toEqual(1e-3);
+      });
+    });
 
     it('should be required if false', function() {
       compileInput('<input type="checkbox" ng:model="value" required />');
