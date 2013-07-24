@@ -395,10 +395,11 @@ describe('$location', function() {
   });
 
 
-  function initService(html5Mode, hashPrefix, supportHistory) {
+  function initService(html5Mode, hashPrefix, supportHistory, queryString) {
     return module(function($provide, $locationProvider){
       $locationProvider.html5Mode(html5Mode);
       $locationProvider.hashPrefix(hashPrefix);
+      $locationProvider.queryString(queryString);
       $provide.value('$sniffer', {history: supportHistory});
     });
   }
@@ -671,6 +672,25 @@ describe('$location', function() {
           }
       );
     });
+  });
+
+
+  describe('setting a custom query string parser', function() {
+    var qs = {stringify: toJson, parse: fromJson};
+    beforeEach(initService(true, '', true, qs));
+    beforeEach(inject(initBrowser('http://domain.com/?{"foo": "bar"}', '/')));
+
+    it('should change how query string is parsed', inject(function($location) {
+      expect($location.search()).toEqual({foo: "bar"});
+    }));
+
+    it('should use parser when setting params', inject(function($location, $browser, $rootScope) {
+      $location.search('foo', ["bar"]);
+      $rootScope.$apply();
+      expect($browser.url()).toEqual('http://domain.com/?{"foo":["bar"]}')
+    }));
+
+    afterEach
   });
 
 
