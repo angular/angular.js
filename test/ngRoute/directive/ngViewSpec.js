@@ -509,6 +509,28 @@ describe('ngView', function() {
     });
   });
 
+  it('should not instantiate controller of redirected route', function() {
+      var firstController = jasmine.createSpy('first controller spy');
+      var secondController = jasmine.createSpy('second controller spy');
+      module(function($routeProvider) {
+          $routeProvider.when('/redirect', {
+              template: 'redirect view',
+              redirectTo: '/redirected',
+              controller: firstController
+          });
+          $routeProvider.when('/redirected', {
+              template: 'redirected view',
+              controller: secondController
+          });
+      });
+      inject(function($route, $location, $rootScope) {
+          $location.path('/redirect');
+          $rootScope.$digest();
+          expect(firstController).not.toHaveBeenCalled();
+          expect(secondController).toHaveBeenCalled();
+      });
+  });
+
   describe('ngAnimate ', function() {
     var window, vendorPrefix;
     var body, element, $rootElement;
