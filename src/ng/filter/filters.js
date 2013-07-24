@@ -171,6 +171,8 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     }
 
     if (fractionSize && fractionSize !== "0") formatedText += decimalSep + fraction.substr(0, fractionSize);
+  } else {
+    formatedText = number.toFixed(fractionSize);
   }
 
   parts.push(isNegative ? pattern.negPre : pattern.posPre);
