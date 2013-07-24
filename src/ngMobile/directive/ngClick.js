@@ -233,9 +233,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         }
 
         if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
-          scope.$apply(function() {
-            clickHandler(scope, {$event: event});
-          });
+          element.triggerHandler('click', event);
         }
       }
 
@@ -246,9 +244,12 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // something else nearby.
     element.onclick = function(event) { };
 
-    // Fallback click handler.
-    // Busted clicks don't get this far, and adding this handler allows ng-tap to be used on
-    // desktop as well, to allow more portable sites.
+    // Actual click handler.
+    // There are three different kinds of clicks, only two of which reach this point.
+    // - On desktop browsers without touch events, their clicks will always come here.
+    // - On mobile browsers, the simulated "fast" click will call this.
+    // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
+    // Therefore it's safe to use this directive on both mobile and desktop.
     element.on('click', function(event) {
       scope.$apply(function() {
         clickHandler(scope, {$event: event});
