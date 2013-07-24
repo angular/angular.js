@@ -80,16 +80,6 @@ var $AnimateProvider = ['$provide', function($provide) {
         this.enter(element, parent, after, done);
       },
 
-      show : function(element, done) {
-        element.removeClass('ng-hide');
-        (done || noop)();
-      },
-
-      hide : function(element, done) {
-        element.addClass('ng-hide');
-        (done || noop)();
-      },
-
       addClass : function(element, className, done) {
         className = isString(className) ?
                       className :
