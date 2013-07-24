@@ -31,22 +31,10 @@ describe("$animate", function() {
       expect(element.text()).toBe('21');
     }));
 
-    it("should animate the show animation event", inject(function($animate) {
-      element.addClass('ng-hide');
-      $animate.show(element);
-      expect(element).toBeShown();
-    }));
-
-    it("should animate the hide animation event", inject(function($animate) {
-      expect(element).toBeShown();
-      $animate.hide(element);
-      expect(element).toBeHidden();
-    }));
-
     it("should still perform DOM operations even if animations are disabled", inject(function($animate) {
       $animate.enabled(false);
       expect(element).toBeShown();
-      $animate.hide(element);
+      $animate.addClass(element, 'ng-hide');
       expect(element).toBeHidden();
     }));
   });
