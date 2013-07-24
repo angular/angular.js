@@ -1,0 +1,29 @@
+@ngdoc error
+@name ng:btstrpd
+@fullName App Already Bootstrapped with this Element
+@description
+
+Occurs when calling angular.bootstrap on an element that has already been bootstrapped.
+
+This usually happens when you accidentally use both `ng-app` and `angular.bootstrap` to bootstrap an application.
+
+```
+<html>
+...
+  <body ng-app="myApp">
+    <script>
+      angular.bootstrap(document.body, ['myApp']);
+    </script>
+  </body>
+</html>
+```
+
+Note that for bootrapping purposes, the `<html>` element is the same as `document`, so the following will also throw an error.
+```
+<html>
+...
+<script>
+  angular.bootstrap(document, ['myApp']);
+</script>
+</html>
+```
