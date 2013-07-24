@@ -74,10 +74,10 @@ describe('Docs Annotations', function() {
             enter : function(element, done) {
               $window.setTimeout(done, 1000);
             },
-            show : function(element, done) {
+            removeClass : function(element, className, done) {
               $window.setTimeout(done, 500);
             },
-            hide : function(element, done) {
+            addClass : function(element, className, done) {
               $window.setTimeout(done, 200);
             }
           }

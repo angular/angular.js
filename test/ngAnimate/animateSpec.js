@@ -81,8 +81,6 @@ describe("ngAnimate", function() {
               }
             }
             return {
-              show : animate,
-              hide : animate,
               leave : animate,
               addClass : animate,
               removeClass : animate
@@ -98,8 +96,6 @@ describe("ngAnimate", function() {
               }
             }
             return {
-              show : animate,
-              hide : animate,
               leave : animate,
               addClass : animate,
               removeClass : animate
@@ -107,7 +103,7 @@ describe("ngAnimate", function() {
           });
          $animateProvider.register('.setup-memo', function() {
             return {
-              show: function(element, done) {
+              removeClass: function(element, className, done) {
                 element.text('memento');
                 done();
               }
@@ -161,7 +157,7 @@ describe("ngAnimate", function() {
         $rootScope.$digest();
         element.addClass('ng-hide');
         expect(element).toBeHidden();
-        $animate.show(element);
+        $animate.removeClass(element, 'ng-hide');
         if($sniffer.transitions) {
           expect(element.hasClass('ng-hide-remove')).toBe(true);
           window.setTimeout.expect(1).process();
@@ -174,7 +170,7 @@ describe("ngAnimate", function() {
       it("should animate the hide animation event", inject(function($animate, $rootScope, $sniffer) {
         $rootScope.$digest();
         expect(element).toBeShown();
-        $animate.hide(element);
+        $animate.addClass(element, 'ng-hide');
         if($sniffer.transitions) {
           expect(element.hasClass('ng-hide-add')).toBe(true);
           window.setTimeout.expect(1).process();
@@ -207,14 +203,14 @@ describe("ngAnimate", function() {
         window.setTimeout.expect(0).process();
 
         //hide
-        $animate.hide(child);
+        $animate.addClass(child, 'ng-hide');
         expect(child.attr('class')).toContain('ng-hide-add');
         window.setTimeout.expect(1).process();
         expect(child.attr('class')).toContain('ng-hide-add-active');
         window.setTimeout.expect(0).process();
 
         //show
-        $animate.show(child);
+        $animate.removeClass(child, 'ng-hide');
         expect(child.attr('class')).toContain('ng-hide-remove');
         window.setTimeout.expect(1).process();
         expect(child.attr('class')).toContain('ng-hide-remove-active');
@@ -237,12 +233,12 @@ describe("ngAnimate", function() {
 
         element.text('123');
         expect(element.text()).toBe('123');
-        $animate.show(element);
+        $animate.removeClass(element, 'ng-hide');
         expect(element.text()).toBe('123');
 
         $animate.enabled(true);
 
-        $animate.show(element);
+        $animate.removeClass(element, 'ng-hide');
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
           window.setTimeout.expect(0).process();
@@ -257,7 +253,7 @@ describe("ngAnimate", function() {
         child.addClass('custom-delay');
 
         expect(element).toBeShown();
-        $animate.hide(child);
+        $animate.addClass(child, 'ng-hide');
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
         }
@@ -294,12 +290,12 @@ describe("ngAnimate", function() {
         element.append(child);
 
         child.addClass('custom-delay ng-hide');
-        $animate.show(child);
+        $animate.removeClass(child, 'ng-hide');
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
         }
 
-        $animate.hide(child);
+        $animate.addClass(child, 'ng-hide');
 
         expect(child.hasClass('animation-cancelled')).toBe(true);
       }));
@@ -311,12 +307,12 @@ describe("ngAnimate", function() {
         child.css('display','none');
         element.data('foo', 'bar');
 
-        $animate.show(element);
+        $animate.removeClass(element, 'ng-hide');
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
         }
 
-        $animate.hide(element);
+        $animate.addClass(element, 'ng-hide');
 
         expect(element.data('foo')).toEqual('bar');
       }));
@@ -358,7 +354,7 @@ describe("ngAnimate", function() {
         element.addClass('custom-delay custom-long-delay');
         $rootScope.$digest();
 
-        $animate.show(element); 
+        $animate.removeClass(element, 'ng-hide'); 
 
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
@@ -402,7 +398,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
 
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(4000).process();
@@ -424,7 +420,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
 
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(6000).process();
@@ -446,7 +442,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
 
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(2000).process();
@@ -470,7 +466,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
 
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           if ($sniffer.transitions) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(20000).process();
@@ -490,7 +486,7 @@ describe("ngAnimate", function() {
           element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
           element.addClass('ng-hide');
           expect(element).toBeHidden();
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           expect(element).toBeShown();
         }));
 
@@ -502,7 +498,7 @@ describe("ngAnimate", function() {
             element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
             element.addClass('custom');
 
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             if($sniffer.animations) {
               window.setTimeout.expect(1).process();
               expect(element.hasClass('ng-hide-remove')).toBe(true);
@@ -512,7 +508,7 @@ describe("ngAnimate", function() {
               expect(window.setTimeout.queue.length).toBe(0);
             }
 
-            $animate.hide(element);
+            $animate.addClass(element, 'ng-hide');
             expect(element.hasClass('ng-hide-remove')).toBe(false); //added right away
 
             if($sniffer.animations) { //cleanup some pending animations
@@ -534,7 +530,7 @@ describe("ngAnimate", function() {
 
           element.addClass('ng-hide');
           expect(element).toBeHidden();
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           expect(element).toBeShown();
 
           $animate.enabled(true);
@@ -542,7 +538,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
 
-          $animate.show(element);
+          $animate.removeClass(element, 'ng-hide');
           if ($sniffer.transitions) {
             window.setTimeout.expect(1).process();
             window.setTimeout.expect(1000).process();
@@ -557,7 +553,7 @@ describe("ngAnimate", function() {
           inject(function($animate, $rootScope, $compile, $sniffer) {
             element = $compile(html('<div style="' + vendorPrefix + 'transition-duration: 1s, 2000ms, 1s; ' + vendorPrefix + 'transition-property: height, left, opacity">foo</div>'))($rootScope);
             element.addClass('ng-hide');
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
               expect(element).toBeHidden();
               window.setTimeout.expect(1).process();
@@ -578,7 +574,7 @@ describe("ngAnimate", function() {
               'transition-property: height, left, opacity">foo</div>'))($rootScope);
 
             element.addClass('ng-hide');
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             expect(element).toBeShown();
 
             $animate.enabled(true);
@@ -586,7 +582,7 @@ describe("ngAnimate", function() {
             element.addClass('ng-hide');
             expect(element).toBeHidden();
 
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
               window.setTimeout.expect(1).process();
               window.setTimeout.expect(3000).process();
@@ -609,7 +605,7 @@ describe("ngAnimate", function() {
             element.addClass('ng-hide');
             expect(element).toBeHidden();
 
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
               window.setTimeout.expect(1).process();
               window.setTimeout.expect(11000).process();
@@ -628,7 +624,7 @@ describe("ngAnimate", function() {
             element = $compile(html('<div style="' + style + '">1</div>'))($rootScope);
 
             element.addClass('ng-hide');
-            $animate.show(element);
+            $animate.removeClass(element, 'ng-hide');
             if($sniffer.transitions) {
               expect(element.hasClass('ng-hide-remove')).toBe(true);
               window.setTimeout.expect(1).process();
@@ -642,7 +638,7 @@ describe("ngAnimate", function() {
             expect(element.hasClass('ng-hide-remove-active')).toBe(false);
             expect(element).toBeShown();
 
-            $animate.hide(element);
+            $animate.addClass(element, 'ng-hide');
             if($sniffer.transitions) {
               expect(element.hasClass('ng-hide-add')).toBe(true);
               window.setTimeout.expect(1).process();
@@ -724,14 +720,14 @@ describe("ngAnimate", function() {
           $provide.value('$window', window = angular.mock.createMockWindow());
           $animateProvider.register('.custom', function() {
             return {
-              show : function(element, done) {
+              removeClass : function(element, className, done) {
                 window.setTimeout(done, 2000);
               }
             }
           });
           $animateProvider.register('.other', function() {
             return {
-              start : function(element, done) {
+              enter : function(element, done) {
                 window.setTimeout(done, 10000);
               }
             }
@@ -859,7 +855,7 @@ describe("ngAnimate", function() {
         body.append($rootElement);
 
         var flag = false;
-        $animate.show(element, function() {
+        $animate.removeClass(element, 'ng-hide', function() {
           flag = true;
         });
 
@@ -884,7 +880,7 @@ describe("ngAnimate", function() {
         var element = parent.find('span');
 
         var flag = false;
-        $animate.show(element, function() {
+        $animate.removeClass(element, 'ng-hide', function() {
           flag = true;
         });
 
@@ -908,7 +904,7 @@ describe("ngAnimate", function() {
         element.addClass('custom');
 
         var flag = false;
-        $animate.show(element, function() {
+        $animate.removeClass(element, 'ng-hide', function() {
           flag = true;
         });
 
@@ -931,17 +927,17 @@ describe("ngAnimate", function() {
         var element = parent.find('span');
 
         var signature = '';
-        $animate.show(element, function() {
+        $animate.removeClass(element, 'ng-hide', function() {
           signature += 'A';
         });
-        $animate.hide(element, function() {
+        $animate.addClass(element, 'ng-hide', function() {
           signature += 'B';
         });
 
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
         }
-        $animate.hide(element); //earlier animation cancelled
+        $animate.addClass(element, 'ng-hide'); //earlier animation cancelled
         if($sniffer.transitions) {
           window.setTimeout.expect(1).process();
         }
@@ -1462,12 +1458,12 @@ describe("ngAnimate", function() {
     module(function($animateProvider) {
       $animateProvider.register('.displayer', function($window) {
         return {
-          show : function(element, done) {
+          removeClass : function(element, className, done) {
             element.removeClass('hiding');
             element.addClass('showing');
             $window.setTimeout(done, 25);
           },
-          hide : function(element, done) {
+          addClass : function(element, className, done) {
             element.removeClass('showing');
             element.addClass('hiding');
             $window.setTimeout(done, 555);
@@ -1487,7 +1483,7 @@ describe("ngAnimate", function() {
       expect(element.hasClass('showing')).toBe(false);
       expect(element.hasClass('hiding')).toBe(false);
 
-      $animate.hide(element);
+      $animate.addClass(element, 'ng-hide');
 
       if($sniffer.transitions) {
         expect(element).toBeShown(); //still showing
@@ -1503,7 +1499,7 @@ describe("ngAnimate", function() {
 
       expect(element.hasClass('showing')).toBe(false);
       expect(element.hasClass('hiding')).toBe(true);
-      $animate.show(element);
+      $animate.removeClass(element, 'ng-hide');
 
       if($sniffer.transitions) {
         expect(element).toBeHidden();

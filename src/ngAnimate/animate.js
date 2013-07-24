@@ -30,8 +30,8 @@
  * | {@link ng.directive:ngInclude#animations ngInclude}       | enter and leave                                    |
  * | {@link ng.directive:ngSwitch#animations ngSwitch}         | enter and leave                                    |
  * | {@link ng.directive:ngIf#animations ngIf}                 | enter and leave                                    |
- * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | show and hide                                      |
  * | {@link ng.directive:ngShow#animations ngClass}            | add and remove                                     |
+ * | {@link ng.directive:ngShow#animations ngShow & ngHide}    | add and remove (the ng-hide class value)           |
  *
  * You can find out more information about animations upon visiting each directive page.
  *
@@ -372,60 +372,6 @@ angular.module('ngAnimate', ['ng'])
 
         /**
          * @ngdoc function
-         * @name ngAnimate.animate#show
-         * @methodOf ngAnimate.$animate
-         * @function
-         *
-         * @description
-         * Reveals the element by removing the `ng-hide` class thus performing an animation in the process. During
-         * this animation the CSS classes present on the element will be:
-         *
-         * <pre>
-         * .ng-hide //already on the element if hidden
-         * .ng-hide-remove
-         * .ng-hide-remove-active
-         * </pre>
-         *
-         * Once the animation is complete then all three CSS classes will be removed from the element.
-         * The done callback, if provided, will be also fired once the animation is complete.
-         *
-         * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
-         * @param {function()=} done callback function that will be called once the animation is complete
-        */
-        show : function(element, done) {
-          performAnimation('show', 'ng-hide-remove', element, null, null, function() {
-            $delegate.show(element, done);
-          });
-        },
-
-        /**
-         * @ngdoc function
-         * @name ngAnimate.animate#hide
-         * @methodOf ngAnimate.$animate
-         *
-         * @description
-         * Sets the element to hidden by adding the `ng-hide` class it. However, before the class is applied
-         * the following CSS classes will be added temporarily to trigger any animation code:
-         *
-         * <pre>
-         * .ng-hide-add
-         * .ng-hide-add-active
-         * </pre>
-         *
-         * Once the animation is complete then both CSS classes will be removed and `ng-hide` will be added to the element.
-         * The done callback, if provided, will be also fired once the animation is complete.
-         *
-         * @param {jQuery/jqLite element} element the element that will be rendered visible or hidden
-         * @param {function()=} done callback function that will be called once the animation is complete
-        */
-        hide : function(element, done) {
-          performAnimation('hide', 'ng-hide-add', element, null, null, function() {
-            $delegate.hide(element, done);
-          });
-        },
-
-        /**
-         * @ngdoc function
          * @name ngAnimate.animate#addClass
          * @methodOf ngAnimate.$animate
          *
@@ -651,12 +597,6 @@ angular.module('ngAnimate', ['ng'])
       },
       move : function(element, done) {
         return animate(element, 'ng-move', done);
-      },
-      show : function(element, done) {
-        return animate(element, 'ng-hide-remove', done);
-      },
-      hide : function(element, done) {
-        return animate(element, 'ng-hide-add', done);
       },
       addClass : function(element, className, done) {
         return animate(element, className, done);
