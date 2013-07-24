@@ -599,42 +599,57 @@ function isLeafNode (node) {
  *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  */
-function copy(source, destination){
-  if (isWindow(source) || isScope(source)) {
-    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
-  }
 
-  if (!destination) {
-    destination = source;
-    if (source) {
-      if (isArray(source)) {
-        destination = copy(source, []);
-      } else if (isDate(source)) {
-        destination = new Date(source.getTime());
-      } else if (isObject(source)) {
-        destination = copy(source, {});
-      }
+var copy = function() {
+  function copy(src_stack, dst_stack, source, destination){
+    if (isWindow(source) || isScope(source)) {
+      throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
     }
-  } else {
-    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
-    if (isArray(source)) {
-      destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
-        destination.push(copy(source[i]));
+
+    if (!destination) {
+      destination = source;
+      if (source) {
+        if (isArray(source)) {
+          destination = copy(src_stack, dst_stack, source, []);
+        } else if (isDate(source)) {
+          destination = new Date(source.getTime());
+        } else if (isObject(source)) {
+          destination = copy(src_stack, dst_stack, source, {});
+        }
       }
     } else {
-      var h = destination.$$hashKey;
-      forEach(destination, function(value, key){
-        delete destination[key];
-      });
-      for ( var key in source) {
-        destination[key] = copy(source[key]);
+      var idx = src_stack.lastIndexOf(source);
+      if(idx > -1) return dst_stack[idx];
+
+      src_stack.push(source);
+      dst_stack.push(destination);
+
+      if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
+      if (isArray(source)) {
+        destination.length = 0;
+        for ( var i = 0; i < source.length; i++) {
+          destination.push(copy(src_stack, dst_stack, source[i]));
+        }
+      } else {
+        var h = destination.$$hashKey;
+        forEach(destination, function(value, key){
+          delete destination[key];
+        });
+        for ( var key in source) {
+          destination[key] = copy(src_stack, dst_stack, source[key]);
+        }
+        setHashKey(destination,h);
       }
-      setHashKey(destination,h);
+
+      src_stack.pop();
+      dst_stack.pop();
     }
+    return destination;
   }
-  return destination;
-}
+  return function (source, destination) {
+    return copy([], [], source, destination);
+  };
+}();
 
 /**
  * Create a shallow copy of an object
@@ -679,45 +694,76 @@ function shallowCopy(src, dst) {
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  */
-function equals(o1, o2) {
-  if (o1 === o2) return true;
-  if (o1 === null || o2 === null) return false;
-  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
-  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
-  if (t1 == t2) {
-    if (t1 == 'object') {
-      if (isArray(o1)) {
-        if ((length = o1.length) == o2.length) {
-          for(key=0; key<length; key++) {
-            if (!equals(o1[key], o2[key])) return false;
+
+var equals = function() {
+  function equals(stack1, stack2, o1, o2) {
+    if (o1 === o2) return true;
+    if (o1 === null || o2 === null) return false;
+    if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
+    var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+    if (t1 == t2) {
+      if (t1 == 'object') {
+        if (isArray(o1)) {
+          if ((length = o1.length) == o2.length) {
+            var idx1, idx2, equal;
+            for(key=0; key<length; key++) {
+              idx1 = stack1.lastIndexOf(o1[key]);
+              idx2 = stack2.lastIndexOf(o2[key]);
+              if (idx1 < 0 || idx1 != idx2) {
+                stack1.push(o1[key]);
+                stack2.push(o2[key]);
+
+                equal = equals(stack1, stack2, o1[key], o2[key]);
+
+                stack1.pop(); 
+                stack2.pop();              
+                if(!equal) return false;
+              }
+            }
+            return true;
           }
-          return true;
-        }
-      } else if (isDate(o1)) {
-        return isDate(o2) && o1.getTime() == o2.getTime();
-      } else if (isRegExp(o1) && isRegExp(o2)) {
-        return o1.toString() == o2.toString();
-      } else {
-        if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
-        keySet = {};
-        for(key in o1) {
-          if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-          if (!equals(o1[key], o2[key])) return false;
-          keySet[key] = true;
-        }
-        for(key in o2) {
+        } else if (isDate(o1)) {
+          return isDate(o2) && o1.getTime() == o2.getTime();
+        } else if (isRegExp(o1) && isRegExp(o2)) {
+          return o1.toString() == o2.toString();
+        } else {
+          if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
+          keySet = {};
+          var idx1, idx2, equal;
+          for(key in o1) {
+            if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
+
+            idx1 = stack1.lastIndexOf(o1[key]);
+            idx2 = stack2.lastIndexOf(o2[key]);
+            if (idx1 < 0 || idx1 != idx2) {
+              stack1.push(o1[key]);
+              stack2.push(o2[key]);
+
+              equal = equals(stack1, stack2, o1[key], o2[key]);
+
+              stack1.pop();
+              stack2.pop();              
+              if (!equal) return false;
+            }
+
+            keySet[key] = true;
+          }
+          for(key in o2) {
           if (!keySet.hasOwnProperty(key) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
               !isFunction(o2[key])) return false;
+          }
+          return true;
         }
-        return true;
       }
     }
+    return false;
   }
-  return false;
-}
-
+  return function(o1, o2) {
+    return equals([], [], o1, o2);
+  };
+}();
 
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));

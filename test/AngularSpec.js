@@ -24,6 +24,71 @@ describe('angular', function() {
       expect(copy([], arr)).toBe(arr);
     });
 
+    it("should copy a cyclic object", function () {
+      var src = {name: "value", level2:{level3:{}}};
+      src['self'] = src;
+      src['level2']['self'] = src;
+
+      var cpy = copy(src);
+      expect(cpy['name']).toEqual("value");
+      expect(cpy['self']).toEqual(cpy);
+
+      var dst = {};
+      copy(src, dst);
+      expect(dst['name']).toEqual("value");
+      expect(dst['self']).toEqual(dst);
+    });
+
+    it("should copy a cyclic array", function () {
+      var src = [0];
+      src.push(src);
+      src.push(2);
+
+      var cpy = copy(src);
+      expect(cpy[0]).toEqual(0);
+      expect(cpy[1]).toEqual(cpy);
+      expect(cpy[2]).toEqual(2);
+      expect(cpy[1][0]).toEqual(0);
+
+      var dst = [];
+      copy(src, dst);
+      expect(dst[0]).toEqual(0);
+      expect(dst[1]).toEqual(dst);
+      expect(dst[2]).toEqual(2);
+      expect(dst[1][0]).toEqual(0);
+    });
+
+    it("should copy complex cyclic objects", function () {
+      var obj = {name: "value", list:[], obj:{list:[]}};
+      obj['self'] = obj;
+
+      obj['obj']['self'] = obj;
+      obj['obj']['list'].push(obj);
+      obj['obj']['list'].push(obj['obj']['list'])
+
+      obj['list'].push(obj);
+      obj['list'].push(obj['list']);
+      obj['list'].push({list:obj['list'], self:obj});
+
+      var cpy = copy(obj);
+      expect(cpy['obj']['self']).toBe(cpy);
+      expect(cpy['obj']['list'][0]).toBe(cpy);
+      expect(cpy['obj']['list'][1]).toBe(cpy['obj']['list']);
+      expect(cpy['list'][0]).toBe(cpy);
+      expect(cpy['list'][1]).toBe(cpy['list']);
+      expect(cpy['list'][2]['list']).toBe(cpy['list']);
+      expect(cpy['list'][2]['self']).toBe(cpy);
+
+      cpy = copy(obj, {});
+      expect(cpy['obj']['self']).toBe(cpy);
+      expect(cpy['obj']['list'][0]).toBe(cpy);
+      expect(cpy['obj']['list'][1]).toBe(cpy['obj']['list']);
+      expect(cpy['list'][0]).toBe(cpy);
+      expect(cpy['list'][1]).toBe(cpy['list']);
+      expect(cpy['list'][2]['list']).toBe(cpy['list']);
+      expect(cpy['list'][2]['self']).toBe(cpy);
+    });
+
     it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
@@ -202,6 +267,54 @@ describe('angular', function() {
       expect(equals(['misko'], ['misko'])).toEqual(true);
       expect(equals(['misko'], ['adam'])).toEqual(false);
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
+    });
+
+    it("should handle cyclic objects", function () {
+      var obj = {name: "value"}
+      obj['self'] = obj;
+
+      var cpy = {name: "value"};
+      cpy['self'] = cpy;
+
+      expect(equals(obj, cpy)).toEqual(true);
+    });
+
+    it("should handle cyclic arrays", function () {
+      var obj = [0];
+      obj.push(obj);
+      obj.push(2);
+
+      var cpy = [0];
+      cpy.push(cpy);
+      cpy.push(2);
+
+      expect(equals(obj, cpy)).toEqual(true);
+    });
+
+    it("should handle complex cyclic objects", function () {
+      var obj = {name: "value", list:[], obj:{list:[]}};
+      obj['self'] = obj;
+
+      obj['obj']['self'] = obj;
+      obj['obj']['list'].push(obj);
+      obj['obj']['list'].push(obj['obj']['list'])
+
+      obj['list'].push(obj);
+      obj['list'].push(obj['list']);
+      obj['list'].push({list:obj['list'], self:obj});
+
+      var cpy = {name: "value", list:[], obj:{list:[]}};
+      cpy['self'] = cpy;
+
+      cpy['obj']['self'] = cpy;
+      cpy['obj']['list'].push(cpy);
+      cpy['obj']['list'].push(cpy['obj']['list'])
+
+      cpy['list'].push(cpy);
+      cpy['list'].push(cpy['list']);
+      cpy['list'].push({list:cpy['list'], self:cpy});
+
+      expect(equals(obj, cpy)).toEqual(true);
     });
 
     it('should ignore undefined member variables during comparison', function() {
