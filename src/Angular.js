@@ -599,42 +599,57 @@ function isLeafNode (node) {
  *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  */
-function copy(source, destination){
-  if (isWindow(source) || isScope(source)) {
-    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
-  }
 
-  if (!destination) {
-    destination = source;
-    if (source) {
-      if (isArray(source)) {
-        destination = copy(source, []);
-      } else if (isDate(source)) {
-        destination = new Date(source.getTime());
-      } else if (isObject(source)) {
-        destination = copy(source, {});
-      }
+var copy = function() {
+  function copy(src_stack, dst_stack, source, destination){
+    if (isWindow(source) || isScope(source)) {
+      throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
     }
-  } else {
-    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
-    if (isArray(source)) {
-      destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
-        destination.push(copy(source[i]));
+
+    if (!destination) {
+      destination = source;
+      if (source) {
+        if (isArray(source)) {
+          destination = copy(src_stack, dst_stack, source, []);
+        } else if (isDate(source)) {
+          destination = new Date(source.getTime());
+        } else if (isObject(source)) {
+          destination = copy(src_stack, dst_stack, source, {});
+        }
       }
     } else {
-      var h = destination.$$hashKey;
-      forEach(destination, function(value, key){
-        delete destination[key];
-      });
-      for ( var key in source) {
-        destination[key] = copy(source[key]);
+      var idx = src_stack.lastIndexOf(source);
+      if(idx > -1) return dst_stack[idx];
+
+      src_stack.push(source);
+      dst_stack.push(destination);
+
+      if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
+      if (isArray(source)) {
+        destination.length = 0;
+        for ( var i = 0; i < source.length; i++) {
+          destination.push(copy(src_stack, dst_stack, source[i]));
+        }
+      } else {
+        var h = destination.$$hashKey;
+        forEach(destination, function(value, key){
+          delete destination[key];
+        });
+        for ( var key in source) {
+          destination[key] = copy(src_stack, dst_stack, source[key]);
+        }
+        setHashKey(destination,h);
       }
-      setHashKey(destination,h);
+
+      src_stack.pop();
+      dst_stack.pop();
     }
+    return destination;
   }
-  return destination;
-}
+  return function (source, destination) {
+    return copy([], [], source, destination);
+  };
+}();
 
 /**
  * Create a shallow copy of an object
