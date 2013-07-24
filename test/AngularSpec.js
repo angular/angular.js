@@ -269,6 +269,54 @@ describe('angular', function() {
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
     });
 
+    it("should handle cyclic objects", function () {
+      var obj = {name: "value"}
+      obj['self'] = obj;
+
+      var cpy = {name: "value"};
+      cpy['self'] = cpy;
+
+      expect(equals(obj, cpy)).toEqual(true);
+    });
+
+    it("should handle cyclic arrays", function () {
+      var obj = [0];
+      obj.push(obj);
+      obj.push(2);
+
+      var cpy = [0];
+      cpy.push(cpy);
+      cpy.push(2);
+
+      expect(equals(obj, cpy)).toEqual(true);
+    });
+
+    it("should handle complex cyclic objects", function () {
+      var obj = {name: "value", list:[], obj:{list:[]}};
+      obj['self'] = obj;
+
+      obj['obj']['self'] = obj;
+      obj['obj']['list'].push(obj);
+      obj['obj']['list'].push(obj['obj']['list'])
+
+      obj['list'].push(obj);
+      obj['list'].push(obj['list']);
+      obj['list'].push({list:obj['list'], self:obj});
+
+      var cpy = {name: "value", list:[], obj:{list:[]}};
+      cpy['self'] = cpy;
+
+      cpy['obj']['self'] = cpy;
+      cpy['obj']['list'].push(cpy);
+      cpy['obj']['list'].push(cpy['obj']['list'])
+
+      cpy['list'].push(cpy);
+      cpy['list'].push(cpy['list']);
+      cpy['list'].push({list:cpy['list'], self:cpy});
+
+      expect(equals(obj, cpy)).toEqual(true);
+    });
+
     it('should ignore undefined member variables during comparison', function() {
       var obj1 = {name: 'misko'},
           obj2 = {name: 'misko', undefinedvar: undefined};
