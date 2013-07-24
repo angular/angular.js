@@ -10,6 +10,11 @@
 angular.scenario = angular.scenario || {};
 
 /**
+ * Expose jQuery (e.g. for custom dsl extensions).
+ */
+angular.scenario.jQuery = _jQuery;
+
+/**
  * Defines a new output format.
  *
  * @param {string} name the name of the new output format
