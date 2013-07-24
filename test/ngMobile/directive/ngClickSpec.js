@@ -358,4 +358,20 @@ describe('ngClick (mobile)', function() {
   });
 
 
+  describe('the normal click event', function() {
+    it('should be capturable by other handlers', inject(function($rootScope, $compile) {
+      var called = false;
+
+      element = $compile('<div ng-click="event = $event" ></div>')($rootScope);
+
+      element.on('click', function() {
+        called = true;
+      });
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+
+      expect(called).toEqual(true);
+    }));
+  });
 });
