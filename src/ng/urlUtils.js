@@ -1,13 +1,15 @@
 'use strict';
 
 function $$UrlUtilsProvider() {
-  this.$get = ['$document', function($document) {
-    var urlParsingNode = $document[0].createElement("a"),
-        // NOTE:  The usage of window instead of $window here is deliberate.  When the browser
-        // resolves a URL for XHR, it doesn't know about any mocked $window.  $$urlUtils
-        // resolves URLs just as the browser would.  Using $window here would confuse the
-        // isSameOrigin check causing unexpected failures.  We avoid that by using the real window
-        // object.
+  this.$get = [function() {
+    var urlParsingNode = document.createElement("a"),
+        // NOTE:  The usage of window and document instead of $window and $document here is
+        // deliberate.  This service depends on the specific behavior of anchor nodes created by the
+        // browser (resolving and parsing URLs) that is unlikely to be provided by mock objects and
+        // cause us to break tests.  In addition, when the browser resolves a URL for XHR, it
+        // doesn't know about mocked locations and resolves URLs to the real document - which is
+        // exactly the behavior needed here.  There is little value is mocking these our for this
+        // service.
         originUrl = resolve(window.location.href, true);
 
     /**
