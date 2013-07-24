@@ -393,6 +393,17 @@ describe('angular', function() {
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
     });
 
+    it('should iterate over regular array', function() {
+     var array = [1,2,3,4],
+         sum = 0;
+
+     forEach(array, function(value){
+        sum += value;
+     });
+
+     expect(sum).toEqual(10);
+
+    });
 
     it('should handle JQLite and jQuery objects like arrays', function() {
       var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
