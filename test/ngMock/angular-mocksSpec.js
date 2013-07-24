@@ -351,6 +351,20 @@ describe('ngMock', function() {
       $timeout.flush();
       expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
     }));
+
+
+    it('should check against the delay if provided within timeout', inject(function($timeout) {
+      $timeout(noop, 100);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+
+      $timeout(noop, 1000);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow();
+
+      $timeout.flush(900);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
   });
 
 
