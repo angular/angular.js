@@ -1220,6 +1220,11 @@ function $CompileProvider($provide) {
       if (!interpolateFn) return;
 
 
+      if (name === "multiple" && nodeName_(node) === "SELECT") {
+        throw new $compileMinErr("selmulti", "Binding to the multiple attribute is not supported. Element: {0}",
+            startingTag(node));
+      }
+
       directives.push({
         priority: 100,
         compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
