@@ -1487,9 +1487,11 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    * @description
    *
    * Flushes the queue of pending tasks.
+   *
+   * @param {number=} delay maximum timeout amount to flush up until
    */
-  $delegate.flush = function() {
-    $browser.defer.flush();
+  $delegate.flush = function(delay) {
+    $browser.defer.flush(delay);
   };
 
   /**
