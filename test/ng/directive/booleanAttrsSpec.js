@@ -65,16 +65,6 @@ describe('boolean attr directives', function() {
   }));
 
 
-  it('should bind multiple', inject(function($rootScope, $compile) {
-    element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope)
-    $rootScope.isMultiple=false;
-    $rootScope.$digest();
-    expect(element.attr('multiple')).toBeFalsy();
-    $rootScope.isMultiple='multiple';
-    $rootScope.$digest();
-    expect(element.attr('multiple')).toBeTruthy();
-  }));
-
   it('should bind open', inject(function($rootScope, $compile) {
     element = $compile('<details ng-open="isOpen"></details>')($rootScope)
     $rootScope.isOpen=false;
@@ -84,6 +74,30 @@ describe('boolean attr directives', function() {
     $rootScope.$digest();
     expect(element.attr('open')).toBeTruthy();
   }));
+
+
+  describe('multiple', function() {
+    it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {
+      element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope)
+      $rootScope.isMultiple=false;
+      $rootScope.$digest();
+      expect(element.attr('multiple')).toBeFalsy();
+      $rootScope.isMultiple='multiple';
+      $rootScope.$digest();
+      expect(element.attr('multiple')).toBeFalsy(); // ignore
+    }));
+
+
+    it('should throw an exception if binding to multiple attribute', inject(function($rootScope, $compile) {
+      if (msie < 9) return; //IE8 doesn't support biding to boolean attributes
+
+      expect(function() {
+        $compile('<select multiple="{{isMultiple}}"></select>')
+      }).toThrow('[$compile:selmulti] Binding to the multiple attribute is not supported. ' +
+                 'Element: <select multiple="{{isMultiple}}">');
+
+    }));
+  });
 });
 
 
