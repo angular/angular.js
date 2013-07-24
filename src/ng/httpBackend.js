@@ -127,8 +127,8 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       timeoutId && $browserDefer.cancel(timeoutId);
       jsonpDone = xhr = null;
 
-      // fix status code for file protocol (it's always 0)
-      status = (protocol == 'file') ? (response ? 200 : 404) : status;
+      // fix status code for file protocol and Cordova Windows Phone apps (it's always 0)
+      status = (protocol == 'file' || protocol == 'x-wmapp0') ? (response ? 200 : 404) : status;
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
       status = status == 1223 ? 204 : status;
