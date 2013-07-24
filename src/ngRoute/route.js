@@ -430,6 +430,7 @@ function $RouteProvider(){
               $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
                        .replace();
             }
+            return;//exit out and don't process current next value, wait for next location change from redirect
           }
         }
 
