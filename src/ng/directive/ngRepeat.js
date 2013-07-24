@@ -227,8 +227,16 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
-          trackByIdFn = function(key, value) {
-            return hashKey(value);
+          trackByIdFn = function(key, value, index) {
+            var valType = typeof value;
+
+            // if value is a primitive and key != index (case for arrays)
+            // then append key to value to ensure uniqueness for identical values
+            if(valType != 'object' && !(typeof key === 'number' || key === index)) {
+              return hashKey(key + ':' + value);
+            } else {
+              return hashKey(value);
+            }
           }
         }
 
