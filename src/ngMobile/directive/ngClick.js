@@ -44,7 +44,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   var TAP_DURATION = 750; // Shorter than 750ms is a tap, longer is a taphold or drag.
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
   var PREVENT_DURATION = 2500; // 2.5 seconds maximum from preventGhostClick call to click
-  var CLICKBUSTER_THRESHOLD = 25; // 25 pixels in any dimension is the limit for busting clicks.
+  var CLICKBUSTER_THRESHOLD = 0; // 25 pixels in any dimension is the limit for busting clicks. WTH ?
 
   var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
@@ -180,6 +180,12 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         touchStartX,
         touchStartY;
 
+    function disabled() {
+      // check the HTML disabled attribute
+      var domDisabled = (isDefined(attr.disabled) && attr.disabled!==false);
+      return domDisabled;
+    }
+
     function resetState() {
       tapping = false;
       element.removeClass(ACTIVE_CLASS_NAME);
@@ -234,7 +240,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
         scope.$apply(function() {
           // TODO(braden): This is sending the touchend, not a tap or click. Is that kosher?
-          clickHandler(scope, {$event: event});
+          if (!disabled()) clickHandler(scope, {$event: event});
         });
       }
 
