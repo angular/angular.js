@@ -138,7 +138,7 @@ really is that easy to set up any functional, readable, end-to-end test.
 
 * Let's see how we can get the current value of the `query` model to appear in the HTML page title.
 
-  You might think you could just add the {{query}} to the title tag element as follows:
+  You might think you could just add the `{{query}}` to the title tag element as follows:
 
           <title>Google Phone Gallery: {{query}}</title>
 
