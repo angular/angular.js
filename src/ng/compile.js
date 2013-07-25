@@ -517,7 +517,7 @@ function $CompileProvider($provide) {
           for (var attr, name, nName, value, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             attr = nAttrs[j];
-            if (attr.specified) {
+            if (!msie || msie >= 8 || attr.specified) {
               name = attr.name;
               nName = directiveNormalize(name.toLowerCase());
               attrsMap[nName] = name;
