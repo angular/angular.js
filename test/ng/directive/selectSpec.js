@@ -490,6 +490,14 @@ describe('select', function() {
       }, blank, unknown);
     }
 
+    function createNgMultiSelect(blank, unknown) {
+      createSelect({
+          'ng-model':'selected',
+          'ng-multiple':'multi',
+          'ng-options':'value.id as value.name for value in values'
+      }, blank, unknown);
+    }
+
 
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
@@ -1105,6 +1113,37 @@ describe('select', function() {
         expect(element.find('option').length).toEqual(2);
         expect(element.find('option')[0].selected).toBeTruthy();
         expect(element.find('option')[1].selected).toBeTruthy();
+      });
+
+      it('should work with ng-multiple and ng-options', function(){
+        createNgMultiSelect();
+
+        scope.$apply(function(){
+          scope.values = [{name: 'A', id: 'A'}, {name: 'B', id: 'A'}];
+          scope.selected = [];
+          scope.multi = false;
+        });
+
+        expect(element.attr('multiple')).toBeFalsy();
+
+        scope.$apply(function(){
+          scope.multi = true;
+        });
+
+        expect(element.attr('multiple')).toBeTruthy();
+
+        element.find('option')[0].selected = true;
+        element.find('option')[1].selected = true;
+        browserTrigger(element, 'change');
+
+        expect(scope.selected.length).toBe(2);
+
+        scope.$apply(function(){
+          scope.selected = ['A'];
+        });
+
+        expect(element.find('option')[0].selected).toBeTruthy();
+        expect(element.find('option')[1].selected).toBeFalsy();
       });
 
 

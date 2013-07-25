@@ -231,7 +231,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      if (optionsExp) Options(scope, element, ngModelCtrl);
+
+      if (optionsExp) {
+        scope.$watch(function() {
+          return jqLite(element).attr('multiple');
+        }, function(newMultiple) {
+          multiple = newMultiple;
+        });
+        Options(scope, element, ngModelCtrl);
+      }
       else if (multiple) Multiple(scope, element, ngModelCtrl);
       else Single(scope, element, ngModelCtrl, selectCtrl);
 
