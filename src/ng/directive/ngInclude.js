@@ -172,7 +172,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               $compile(contents)(childScope);
 
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $anchorScroll();
+                scope.$evalAsync($anchorScroll);
               }
 
               childScope.$emit('$includeContentLoaded');
