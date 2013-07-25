@@ -8,6 +8,38 @@
  * @description
  *
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
+ * 
+ * @example
+   <doc:example>
+     <doc:source>
+      <script>
+        var myApp = angular.module('App', [], function($interpolateProvider) {
+          $interpolateProvider.startSymbol('//');
+          $interpolateProvider.endSymbol('//');
+        });
+        function Controller($scope) {   
+            $scope.label = "Interpolation Provider Sample";
+        }
+      </script>
+      <div ng-app="App" ng-controller="Controller">
+          //label//
+      </div>
+     </doc:source>
+     <doc:scenario>
+       describe('provider', function() {
+          beforeEach(module(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('//');
+            $interpolateProvider.endSymbol('//');
+          }));
+
+          it('should not get confused with same markers', inject(function($interpolate) {
+            expect($interpolate('///').parts).toEqual(['///']);
+            expect($interpolate('////')()).toEqual('');
+            expect($interpolate('//1//')()).toEqual('1');
+          }));
+       });
+     </doc:scenario>
+   </doc:example>
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
