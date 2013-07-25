@@ -18,7 +18,17 @@ angular.module('ngSanitize').directive('ngBindHtml', ['$sanitize', function($san
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
     scope.$watch(attr.ngBindHtml, function ngBindHtmlWatchAction(value) {
-      value = $sanitize(value);
+      value = $sanitize(value, false);
+      element.html(value || '');
+    });
+  };
+}]);
+
+angular.module('ngSanitize').directive('ngBindHtmlLinky', ['$sanitize', function($sanitize) {
+  return function(scope, element, attr) {
+    element.addClass('ng-binding').data('$binding', attr.ngBindHtmlLinky);
+    scope.$watch(attr.ngBindHtmlLinky, function ngBindHtmlLinkyWatchAction(value) {
+      value = $sanitize(value, true);
       element.html(value || '');
     });
   };
