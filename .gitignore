@@ -13,3 +13,4 @@ angular.xcodeproj
 .idea
 .agignore
 libpeerconnection.log
+npm-debug.log
