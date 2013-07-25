@@ -207,8 +207,6 @@ Finally, we verify that the default value of `orderProp` is set correctly:
     it('should set the default value of orderProp model', function() {
       expect(scope.orderProp).toBe('age');
     });
-  });
-});
 </pre>
 
 You should now see the following output in the Karma tab:
