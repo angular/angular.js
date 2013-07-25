@@ -423,12 +423,16 @@ function $RouteProvider(){
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
+            var url = $location.url();
             if (isString(next.redirectTo)) {
               $location.path(interpolate(next.redirectTo, next.params)).search(next.params)
                        .replace();
             } else {
               $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
                        .replace();
+            }
+            if (url !== $location.url()) {
+                return;//exit out and don't process current next value, wait for next location change from redirect
             }
           }
         }
