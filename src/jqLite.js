@@ -123,10 +123,11 @@ function camelCase(name) {
 /////////////////////////////////////////////
 
 function JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments) {
-  var originalJqFn = jQuery.fn[name];
+  var binder = jQuery || Zepto,
+    originalJqFn = binder.fn[name];
   originalJqFn = originalJqFn.$original || originalJqFn;
   removePatch.$original = originalJqFn;
-  jQuery.fn[name] = removePatch;
+  binder.fn[name] = removePatch;
 
   function removePatch(param) {
     var list = filterElems && param ? [this.filter(param)] : [this],
@@ -147,7 +148,7 @@ function JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
           for(childIndex = 0, childLength = (children = element.children()).length;
               childIndex < childLength;
               childIndex++) {
-            list.push(jQuery(children[childIndex]));
+            list.push(binder(children[childIndex]));
           }
         }
       }

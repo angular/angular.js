@@ -59,8 +59,9 @@ if ('i' !== 'I'.toLowerCase()) {
 
 var /** holds major version number for IE or NaN for real browsers */
     msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
-    jqLite,           // delay binding since jQuery could be loaded after us.
+    jqLite,           // delay binding since jQuery or Zepto could be loaded after us.
     jQuery,           // delay binding
+    Zepto,            // delay binding
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,
@@ -1089,12 +1090,14 @@ function snake_case(name, separator){
 }
 
 function bindJQuery() {
-  // bind to jQuery if present;
+  // bind to jQuery or Zepto if present;
   jQuery = window.jQuery;
-  // reset to jQuery or default to us.
-  if (jQuery) {
-    jqLite = jQuery;
-    extend(jQuery.fn, {
+  Zepto = window.Zepto;
+  // reset to jQuery or Zepto or default to us.
+  if (jQuery || Zepto || false) {
+    var binder = jQuery || Zepto;
+    jqLite = binder;
+    extend(binder.fn, {
       scope: JQLitePrototype.scope,
       controller: JQLitePrototype.controller,
       injector: JQLitePrototype.injector,
