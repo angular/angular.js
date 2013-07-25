@@ -25,6 +25,11 @@
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
+ * @param {string=} ngOnloadDeep Expression to evaluate when all nested partials have been loaded.
+ *
+ * @param {string=} ngAnimateOnDeepload Whether `ngAnimate` should wait for nested partials to be loaded before
+ *                  inserting the element in the DOM
+ *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
  *                  $anchorScroll} to scroll the viewport after the content is loaded.
  *
@@ -132,15 +137,29 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator',
-                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator) {
+
+
+/**
+ * @ngdoc event
+ * @name ng.directive:ngInclude#$includeContentDeeploaded
+ * @eventOf ng.directive:ngInclude
+ * @eventType emit on the current ngInclude scope
+ * @description
+ * Emitted every time the ngInclude content and all nested partials have been loaded.
+ */
+
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator', '$timeout',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator,   $timeout) {
   return {
     restrict: 'ECA',
     terminal: true,
+    scope: true,
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
-          autoScrollExp = attr.autoscroll;
+          ngOnloadDeepExp = attr.ngOnloadDeep || '',
+          autoScrollExp = attr.autoscroll,
+          ngAnimateOnDeeploadExp = attr.ngAnimateOnDeepload;
 
       return function(scope, element, attr) {
         var animate = $animator(scope, attr);
@@ -159,6 +178,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           var thisChangeId = ++changeCounter;
 
           if (src) {
+
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
 
@@ -168,19 +188,81 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
 
               var contents = jqLite('<div/>').html(response).contents();
 
-              animate.enter(contents, element);
+              if (!attr.hasOwnProperty('ngAnimateOnDeepload') ||
+                  (ngAnimateOnDeeploadExp && !scope.$parent.$eval(ngAnimateOnDeeploadExp))) {
+                animate.enter(contents, element);
+              }
+
               $compile(contents)(childScope);
 
-              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$parent.$eval(autoScrollExp))) {
                 $anchorScroll();
               }
 
               childScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
+              scope.$parent.$eval(onloadExp);
+
+
+              // init counter
+              scope.childIncludesLeft = 0;
+
+              // increase counter for each direct child include request
+              var includeChildRequestedListener = scope.$on('$$includeChildRequested', function (e) {
+                e.stopPropagation();
+                scope.childIncludesLeft++;
+              });
+
+              // decrease counter when a direct child is ready
+              var includeChildDeeploadedListener = scope.$on('$$includeChildDeeploaded', function (e) {
+                e.stopPropagation();
+                scope.childIncludesLeft--;
+              });
+
+              // let the contained ngInclude(s) increase the counter
+              $timeout(function() {
+
+                // monitor the counter
+                var childIncludesLeftWatcher = scope.$watch('childIncludesLeft', function (newVal) {
+
+                  if (newVal === 0) {
+
+                    // enter the animation if it was delayed to deepload
+                    if (attr.hasOwnProperty('ngAnimateOnDeepload') &&
+                        (!ngAnimateOnDeeploadExp || scope.$parent.$eval(ngAnimateOnDeeploadExp))) {
+                      animate.enter(contents, element);
+                    }
+
+                    // notify everyone that this item and its nested partials are all loaded
+                    childScope.$emit('$includeContentDeeploaded');
+
+                    // eval the onload-deep expression
+                    scope.$parent.$eval(ngOnloadDeepExp);
+
+                    // notify the parent include that this item and its nested partials are all loaded
+                    // (this event is for internal use, as we'll need to stop its propagation)
+                    scope.$parent.$emit('$$includeChildDeeploaded');
+
+                    // cleanup
+                    includeChildRequestedListener();
+                    includeChildDeeploadedListener();
+                    childIncludesLeftWatcher();
+                  }
+                });
+              });
+
+
             }).error(function() {
               if (thisChangeId === changeCounter) clearContent();
             });
-            scope.$emit('$includeContentRequested');
+            scope.$parent.$emit('$includeContentRequested');
+
+            // notify the parent include that this element contains other partials
+            // (this event is for internal use, as we'll need to stop its propagation)
+            scope.$parent.$emit('$$includeChildRequested');
+
+
+
+
           } else {
             clearContent();
           }

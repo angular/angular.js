@@ -79,7 +79,7 @@ describe('ngInclude', function() {
   it('should fire $includeContentLoaded event on child scope after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
     var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function(event) {
-      expect(event.targetScope.$parent).toBe($rootScope);
+      expect(event.targetScope.$parent.$parent).toBe($rootScope);
       expect(element.text()).toBe('partial content');
     });
 
@@ -92,6 +92,45 @@ describe('ngInclude', function() {
     expect(contentLoadedSpy).toHaveBeenCalledOnce();
   }));
 
+  it('should fire $includeContentDeeploaded event on child scope straight away if content does not ' +
+     'contain additional partials', inject(
+      function($rootScope, $compile, $templateCache, $timeout) {
+    var contentDeeploadedSpy = jasmine.createSpy('content deeploaded').andCallFake(function(event) {
+      expect(event.targetScope.$parent.$parent).toBe($rootScope);
+      expect(element.text()).toBe('partial content');
+    });
+
+    $templateCache.put('url', [200, 'partial content', {}]);
+    $rootScope.$on('$includeContentDeeploaded', contentDeeploadedSpy);
+
+    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    $rootScope.$digest();
+    $timeout.flush();
+
+    expect(contentDeeploadedSpy).toHaveBeenCalledOnce();
+  }));
+
+  it('should fire $includeContentDeeploaded event on child scope after loading a nested partial', inject(
+      function($rootScope, $compile, $templateCache, $timeout) {
+    var counter = 0;
+    var contentDeeploadedSpy = jasmine.createSpy('content deeploaded').andCallFake(function(event) {
+      if (counter > 0) {
+        expect(event.targetScope.$parent.$parent).toBe($rootScope);
+        expect(element.text()).toBe('partial content');
+      }
+      counter++;
+    });
+
+    $templateCache.put('url', [200, '<ng:include src="\'url2\'"></ng:include>', {}]);
+    $templateCache.put('url2', [200, 'partial content', {}]);
+    $rootScope.$on('$includeContentDeeploaded', contentDeeploadedSpy);
+
+    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    $rootScope.$digest();
+    $timeout.flush();
+
+    expect(contentDeeploadedSpy.callCount).toBe(2);
+  }));
 
   it('should evaluate onload expression when a partial is loaded', inject(
       putIntoCache('myUrl', 'my partial'),
@@ -108,6 +147,25 @@ describe('ngInclude', function() {
     expect($rootScope.loaded).toBe(true);
   }));
 
+  it('should evaluate ngOnloadDeep expression when a partial and its nested partials are all loaded', inject(
+  putIntoCache('myUrl', 'my partial'),
+  function ($rootScope, $compile, $timeout) {
+    element = jqLite('<ng:include src="url" ng-onload-deep="deeploaded = true"></ng:include>');
+    element = $compile(element)($rootScope);
+
+    expect($rootScope.deeploaded).not.toBeDefined();
+
+    $rootScope.url = 'myUrl';
+    $rootScope.$digest();
+
+    expect($rootScope.deeploaded).not.toBeDefined();
+
+    $timeout.flush();
+
+    expect(element.text()).toEqual('my partial');
+    expect($rootScope.deeploaded).toBe(true);
+  }));
+
 
   it('should create child scope and destroy old one', inject(
         function($rootScope, $compile, $httpBackend) {
@@ -120,22 +178,22 @@ describe('ngInclude', function() {
     $rootScope.url = 'url1';
     $rootScope.$digest();
     $httpBackend.flush();
-    expect(element.children().scope().$parent).toBe($rootScope);
+    expect(element.children().scope().$parent.$parent).toBe($rootScope);
     expect(element.text()).toBe('partial url1');
 
     $rootScope.url = 'url2';
     $rootScope.$digest();
     $httpBackend.flush();
-    expect($rootScope.$$childHead).toBeFalsy();
+    expect($rootScope.$$childHead.$$childHead).toBeFalsy();
     expect(element.text()).toBe('');
 
     $rootScope.url = 'url1';
     $rootScope.$digest();
-    expect(element.children().scope().$parent).toBe($rootScope);
+    expect(element.children().scope().$parent.$parent).toBe($rootScope);
 
     $rootScope.url = null;
     $rootScope.$digest();
-    expect($rootScope.$$childHead).toBeFalsy();
+    expect($rootScope.$$childHead.$$childHead).toBeFalsy();
   }));
 
 
@@ -232,7 +290,7 @@ describe('ngInclude', function() {
   }));
 
 
-  describe('autoscoll', function() {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {
@@ -308,7 +366,7 @@ describe('ngInclude ngAnimate', function() {
   }
 
   function applyCSS(element, cssProp, cssValue) {
-    element.css(cssProp, cssValue);    
+    element.css(cssProp, cssValue);
     element.css(vendorPrefix + cssProp, cssValue);
   }
 
@@ -367,6 +425,37 @@ describe('ngInclude ngAnimate', function() {
 
       expect(child.attr('class')).not.toContain('custom-enter');
       expect(child.attr('class')).not.toContain('custom-enter-active');
+  }));
+
+  it('should delay the enter animation if ngAnimateOnDeepload is set',
+    inject(function($compile, $rootScope, $templateCache, $sniffer, $timeout) {
+
+      $templateCache.put('enter', [200, '<div>data</div>', {}]);
+      $rootScope.tpl = 'enter';
+      element = $compile(html(
+        '<div ' +
+          'ng-include="tpl" ' +
+          'ng-animate="{enter: \'custom-enter\'}" ' +
+          'ng-animate-on-deepload>' +
+        '</div>'
+      ))($rootScope);
+      $rootScope.$digest();
+
+      var child = jqLite(element.children()[0]);
+      expect(child.length).toBe(0);
+
+      $timeout.flush();
+      child = jqLite(element.children()[0]);
+      expect(child.length).toBe(1);
+
+      applyCSS(child, 'transition', '1s linear all');
+
+      if ($sniffer.transitions) {
+        expect(child.attr('class')).toContain('custom-enter');
+      } else {
+        expect(window.setTimeout.queue).toEqual([]);
+      }
+
   }));
 
   it('should fire off the leave animation + add and remove the css classes',
