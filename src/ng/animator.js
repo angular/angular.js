@@ -427,7 +427,7 @@ var $AnimatorProvider = function() {
      * @methodOf ng.$animator
      * @function
      *
-     * @param {Boolean=} If provided then set the animation on or off.
+     * @param {Boolean=} value If provided then set the animation on or off.
      * @return {Boolean} Current animation state.
      *
      * @description
