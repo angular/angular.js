@@ -3,7 +3,6 @@
 describe('ngInclude', function() {
   var element;
 
-
   afterEach(function(){
     dealoc(element);
   });
@@ -16,7 +15,29 @@ describe('ngInclude', function() {
   }
 
 
-  it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
+  it('should trust and use literal urls', inject(function(
+      $rootScope, $httpBackend, $compile) {
+    element = $compile('<div ng-include="\'url\'"></div>')($rootScope);
+    $httpBackend.expect('GET', 'url').respond('template text');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('template text');
+    dealoc($rootScope);
+  }));
+
+
+  it('should trust and use trusted urls', inject(function($rootScope, $httpBackend, $compile, $sce) {
+    element = $compile('<div ng-include="fooUrl"></div>')($rootScope);
+    $httpBackend.expect('GET', 'http://foo.bar/url').respond('template text');
+    $rootScope.fooUrl = $sce.trustAsResourceUrl('http://foo.bar/url');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('template text');
+    dealoc($rootScope);
+  }));
+
+
+  it('should include an external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
     element = jqLite('<ng:include src="url"></ng:include>');
     jqLite(document.body).append(element);
@@ -41,6 +62,29 @@ describe('ngInclude', function() {
     jqLite(document.body).html('');
   }));
 
+
+  it('should NOT use untrusted expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+      function($rootScope, $compile, $sce) {
+    element = jqLite('<ng:include src="url"></ng:include>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'chirayu';
+    $rootScope.url = 'myUrl';
+    expect($rootScope.$digest).toThrow();
+    jqLite(document.body).html('');
+  }));
+
+
+  it('should NOT use mistyped expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+      function($rootScope, $compile, $sce) {
+    element = jqLite('<ng:include src="url"></ng:include>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'chirayu';
+    $rootScope.url = $sce.trustAsUrl('myUrl');
+    expect($rootScope.$digest).toThrow();
+    jqLite(document.body).html('');
+  }));
 
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
@@ -308,7 +352,7 @@ describe('ngInclude ngAnimate', function() {
   }
 
   function applyCSS(element, cssProp, cssValue) {
-    element.css(cssProp, cssValue);    
+    element.css(cssProp, cssValue);
     element.css(vendorPrefix + cssProp, cssValue);
   }
 

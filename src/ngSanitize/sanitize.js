@@ -63,11 +63,15 @@ var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
    <doc:example module="ngSanitize">
      <doc:source>
        <script>
-         function Ctrl($scope) {
+         function Ctrl($scope, $sce) {
            $scope.snippet =
              '<p style="color:blue">an html\n' +
              '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
              'snippet</p>';
+           // ng-bind-html-unsafe requires a $sce trusted value of type $sce.HTML.
+           $scope.getSceSnippet = function() {
+             return $sce.trustAsHtml($scope.snippet);
+           };
          }
        </script>
        <div ng-controller="Ctrl">
@@ -94,8 +98,8 @@ var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
              </tr>
              <tr id="html-unsafe-filter">
                <td>unsafe html filter</td>
-               <td><pre>&lt;div ng-bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng-bind-html-unsafe="snippet"></div></td>
+               <td><pre>&lt;div ng-bind-html-unsafe="getSceSnippet()"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng-bind-html-unsafe="getSceSnippet()"></div></td>
              </tr>
            </table>
          </div>
@@ -120,11 +124,11 @@ var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
                 "snippet</p>");
        });
 
-       it('should update', function() {
+       it('should update', function($sce) {
          input('snippet').enter('new <b>text</b>');
          expect(using('#html-filter').binding('snippet')).toBe('new <b>text</b>');
          expect(using('#escaped-html').element('div').html()).toBe("new &lt;b&gt;text&lt;/b&gt;");
-         expect(using('#html-unsafe-filter').binding("snippet")).toBe('new <b>text</b>');
+         expect(using('#html-unsafe-filter').element('div').html()).toBe('new <b>text</b>');
        });
      </doc:scenario>
    </doc:example>

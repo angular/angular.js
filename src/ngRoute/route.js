@@ -56,9 +56,9 @@ function $RouteProvider(){
    *      if passed as a string.
    *    - `controllerAs` – `{string=}` – A controller alias name. If present the controller will be
    *      published to scope under the `controllerAs` name.
-   *    - `template` – `{string=|function()=}` – html template as a string or function that returns
-   *      an html template as a string which should be used by {@link ngRoute.directive:ngView ngView} or
-   *      {@link ng.directive:ngInclude ngInclude} directives.
+   *    - `template` – `{string=|function()=}` – html template as a string or a function that
+   *      returns an html template as a string which should be used by {@link
+   *      ngRoute.directive:ngView ngView} or {@link ng.directive:ngInclude ngInclude} directives.
    *      This property takes precedence over `templateUrl`.
    *
    *      If `template` is a function, it will be called with the following parameters:
@@ -149,8 +149,8 @@ function $RouteProvider(){
   };
 
 
-  this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache',
-      function( $rootScope,   $location,   $routeParams,   $q,   $injector,   $http,   $templateCache) {
+  this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache', '$sce',
+      function( $rootScope,   $location,   $routeParams,   $q,   $injector,   $http,   $templateCache,   $sce) {
 
     /**
      * @ngdoc object
@@ -437,7 +437,7 @@ function $RouteProvider(){
           then(function() {
             if (next) {
               var locals = extend({}, next.resolve),
-                  template;
+                  template, templateUrl;
 
               forEach(locals, function(value, key) {
                 locals[key] = isString(value) ? $injector.get(value) : $injector.invoke(value);
@@ -447,13 +447,14 @@ function $RouteProvider(){
                 if (isFunction(template)) {
                   template = template(next.params);
                 }
-              } else if (isDefined(template = next.templateUrl)) {
-                if (isFunction(template)) {
-                  template = template(next.params);
+              } else if (isDefined(templateUrl = next.templateUrl)) {
+                if (isFunction(templateUrl)) {
+                  templateUrl = templateUrl(next.params);
                 }
-                if (isDefined(template)) {
-                  next.loadedTemplateUrl = template;
-                  template = $http.get(template, {cache: $templateCache}).
+                templateUrl = $sce.getTrustedResourceUrl(templateUrl);
+                if (isDefined(templateUrl)) {
+                  next.loadedTemplateUrl = templateUrl;
+                  template = $http.get(templateUrl, {cache: $templateCache}).
                       then(function(response) { return response.data; });
                 }
               }

@@ -415,8 +415,8 @@ compiler}. The attributes are:
     {@link guide/directive#Components Creating Components} section below for more information.
 
     You can specify `template` as a string representing the template or as a function which takes
-    two arguments `tElement` and `tAttrs` (described in the `compile` function api below) and returns
-    a string value representing the template.
+    two arguments `tElement` and `tAttrs` (described in the `compile` function api below) and
+    returns a string value representing the template.
 
   * `templateUrl` - Same as `template` but the template is loaded from the specified URL. Because
     the template loading is asynchronous the compilation/linking is suspended until the template
@@ -424,7 +424,8 @@ compiler}. The attributes are:
 
     You can specify `templateUrl` as a string representing the URL or as a function which takes two
     arguments `tElement` and `tAttrs` (described in the `compile` function api below) and returns
-    a string value representing the url.
+    a string value representing the url.  In either case, the template URL is passed through {@link
+    api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
 
   * `replace` - if set to `true` then the template will replace the current element, rather than
     append the template to the element.
