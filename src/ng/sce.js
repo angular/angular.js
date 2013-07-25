@@ -123,7 +123,7 @@ function adjustMatchers(matchers) {
  *      // The blacklist overrides the whitelist so the open redirect here is blocked.
  *      $sceDelegateProvider.resourceUrlBlacklist([
  *        'http://myapp.example.com/clickThru**']);
- *      }); 
+ *      });
  * </pre>
  */
 
@@ -199,8 +199,8 @@ function $SceDelegateProvider() {
     return resourceUrlBlacklist;
   };
 
-  this.$get = ['$log', '$document', '$injector', '$$urlUtils', function(
-                $log,   $document,   $injector,   $$urlUtils) {
+  this.$get = ['$log', '$document', '$injector', function(
+                $log,   $document,   $injector) {
 
     var htmlSanitizer = function htmlSanitizer(html) {
       throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
@@ -213,7 +213,7 @@ function $SceDelegateProvider() {
 
     function matchUrl(matcher, parsedUrl) {
       if (matcher === 'self') {
-        return $$urlUtils.isSameOrigin(parsedUrl);
+        return urlIsSameOrigin(parsedUrl);
       } else {
         // definitely a regex.  See adjustMatchers()
         return !!matcher.exec(parsedUrl.href);
@@ -221,7 +221,7 @@ function $SceDelegateProvider() {
     }
 
     function isResourceUrlAllowedByPolicy(url) {
-      var parsedUrl = $$urlUtils.resolve(url.toString(), true);
+      var parsedUrl = urlResolve(url.toString());
       var i, n, allowed = false;
       // Ensure that at least one item from the whitelist allows this url.
       for (i = 0, n = resourceUrlWhitelist.length; i < n; i++) {
