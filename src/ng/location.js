@@ -1,7 +1,6 @@
 'use strict';
 
-var SERVER_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
+var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
 
@@ -23,39 +22,40 @@ function encodePath(path) {
   return segments.join('/');
 }
 
-function matchUrl(url, obj) {
-  var match = SERVER_MATCH.exec(url);
+function parseAbsoluteUrl(absoluteUrl, locationObj) {
+  var parsedUrl = urlResolve(absoluteUrl);
 
-  obj.$$protocol = match[1];
-  obj.$$host = match[3];
-  obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
+  locationObj.$$protocol = parsedUrl.protocol;
+  locationObj.$$host = parsedUrl.hostname;
+  locationObj.$$port = int(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
-function matchAppUrl(url, obj) {
-  var match = PATH_MATCH.exec(url);
 
-  obj.$$path = decodeURIComponent(match[1]);
-  obj.$$search = parseKeyValue(match[3]);
-  obj.$$hash = decodeURIComponent(match[5] || '');
+function parseAppUrl(relativeUrl, locationObj) {
+  var prefixed = (relativeUrl.charAt(0) !== '/');
+  if (prefixed) {
+    relativeUrl = '/' + relativeUrl;
+  }
+  var match = urlResolve(relativeUrl);
+  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname);
+  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
-  if (obj.$$path && obj.$$path.charAt(0) != '/') obj.$$path = '/' + obj.$$path;
+  if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') locationObj.$$path = '/' + locationObj.$$path;
 }
 
-
-function composeProtocolHostPort(protocol, host, port) {
-  return protocol + '://' + host + (port == DEFAULT_PORTS[protocol] ? '' : ':' + port);
-}
 
 /**
  *
  * @param {string} begin
  * @param {string} whole
- * @param {string} otherwise
- * @returns {string} returns text from whole after begin or otherwise if it does not begin with expected string.
+ * @returns {string} returns text from whole after begin or undefined if it does not begin with expected string.
  */
-function beginsWith(begin, whole, otherwise) {
-  return whole.indexOf(begin) == 0 ? whole.substr(begin.length) : otherwise;
+function beginsWith(begin, whole) {
+  if (whole.indexOf(begin) == 0) {
+    return whole.substr(begin.length);
+  }
 }
 
 
@@ -87,20 +87,22 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
+  parseAbsoluteUrl(appBase, this);
+
+
   /**
    * Parse given html5 (regular) url string into properties
    * @param {string} newAbsoluteUrl HTML5 url
    * @private
    */
   this.$$parse = function(url) {
-    var parsed = {}
-    matchUrl(url, parsed);
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
       throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
     }
-    matchAppUrl(pathUrl, parsed);
-    extend(this, parsed);
+
+    parseAppUrl(pathUrl, this);
+
     if (!this.$$path) {
       this.$$path = '/';
     }
@@ -151,7 +153,7 @@ function LocationHtml5Url(appBase, basePrefix) {
 function LocationHashbangUrl(appBase, hashPrefix) {
   var appBaseNoFile = stripFile(appBase);
 
-  matchUrl(appBase, this);
+  parseAbsoluteUrl(appBase, this);
 
 
   /**
@@ -170,7 +172,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     if (!isString(withoutHashUrl)) {
       throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
     }
-    matchAppUrl(withoutHashUrl, this);
+    parseAppUrl(withoutHashUrl, this);
     this.$$compose();
   };
 
