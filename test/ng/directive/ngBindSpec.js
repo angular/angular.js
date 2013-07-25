@@ -67,19 +67,14 @@ describe('ngBind*', function() {
   });
 
 
-  describe('ngBindHtmlUnsafe', function() {
-
-    function configureSce(enabled) {
-      module(function($provide, $sceProvider) {
-        $sceProvider.enabled(enabled);
-      });
-    };
-
+  describe('ngBindHtml', function() {
     describe('SCE disabled', function() {
-      beforeEach(function() {configureSce(false)});
+      beforeEach(function() {
+        module(function($sceProvider) { $sceProvider.enabled(false); });
+      });
 
-      it('should set unsafe html', inject(function($rootScope, $compile) {
-        element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
+      it('should set html', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
         $rootScope.$digest();
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
@@ -88,27 +83,35 @@ describe('ngBind*', function() {
 
 
     describe('SCE enabled', function() {
-      beforeEach(function() {configureSce(true)});
-
-      it('should NOT set unsafe html for untrusted values', inject(function($rootScope, $compile) {
-        element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
+      it('should NOT set html for untrusted values', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
         expect($rootScope.$digest).toThrow();
       }));
 
-      it('should NOT set unsafe html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
-        element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
+      it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
         expect($rootScope.$digest).toThrow();
       }));
 
-      it('should set unsafe html for trusted values', inject(function($rootScope, $compile, $sce) {
-        element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
+      it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsHtml('<div onclick="">hello</div>');
         $rootScope.$digest();
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
+      describe('when $sanitize is available', function() {
+        beforeEach(function() { module('ngSanitize'); });
+
+        it('should sanitize untrusted html', inject(function($rootScope, $compile) {
+          element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+          $rootScope.html = '<div onclick="">hello</div>';
+          $rootScope.$digest();
+          expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
+        }));
+      });
     });
 
   });
