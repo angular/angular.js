@@ -13,3 +13,4 @@ node_modules
 angular.xcodeproj
 .idea
 libpeerconnection.log
+npm-debug.log
