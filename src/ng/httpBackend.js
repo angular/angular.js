@@ -30,7 +30,7 @@ function $HttpBackendProvider() {
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
+function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
     var status;
@@ -102,8 +102,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     }
 
     function completeRequest(callback, status, response, headersString) {
-      // URL_MATCH is defined in src/service/location.js
-      var protocol = (url.match(SERVER_MATCH) || ['', locationProtocol])[1];
+      var protocol = urlResolve(url).protocol;
 
       // cancel timeout and subsequent timeout promise resolution
       timeoutId && $browserDefer.cancel(timeoutId);

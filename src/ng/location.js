@@ -1,7 +1,6 @@
 'use strict';
 
-var SERVER_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
+var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
 
@@ -24,19 +23,22 @@ function encodePath(path) {
 }
 
 function matchUrl(url, obj) {
-  var match = SERVER_MATCH.exec(url);
+  var match = urlResolve(url);
 
-  obj.$$protocol = match[1];
-  obj.$$host = match[3];
-  obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
+  obj.$$protocol = match.protocol ? match.protocol.replace(/:$/,'') : '';
+  obj.$$host = match.hostname;
+  obj.$$port = int(match.port) || DEFAULT_PORTS[match.protocol] || null;
 }
 
-function matchAppUrl(url, obj) {
-  var match = PATH_MATCH.exec(url);
-
-  obj.$$path = decodeURIComponent(match[1]);
-  obj.$$search = parseKeyValue(match[3]);
-  obj.$$hash = decodeURIComponent(match[5] || '');
+function matchAppUrl(path, obj) {
+  var prefixed = path.charAt(0) !== '/';
+  if (prefixed) {
+    path = '/' + path;
+  }
+  var match = urlResolve(path);
+  obj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname);
+  obj.$$search = parseKeyValue(match.search);
+  obj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
   if (obj.$$path && obj.$$path.charAt(0) != '/') obj.$$path = '/' + obj.$$path;
