@@ -365,6 +365,21 @@ describe('ngMock', function() {
       $timeout.flush(900);
       expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
     }));
+
+
+    it('should assert against the delay value', inject(function($timeout) {
+      var count = 0;
+      var iterate = function() {
+        count++;
+      };
+
+      $timeout(iterate, 100);
+      $timeout(iterate, 123);
+      $timeout.flushNext(100);
+      expect(count).toBe(1);
+      $timeout.flushNext(123);
+      expect(count).toBe(2);
+    }));
   });
 
 
