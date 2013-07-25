@@ -102,6 +102,38 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
     }));
+
+    it('should emit "swipeleft" events for left swipes', inject(function($rootScope, $compile, $rootElement) {
+      element = $compile('<div ng-swipe-left="swiped = true"></div>')($rootScope);
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      expect($rootScope.swiped).toBeUndefined();
+      var eventFired = false;
+      element.on('swipeleft', function() {
+        eventFired = true;
+      });
+
+      browserTrigger(element, startEvent, [], 100, 20);
+      browserTrigger(element, endEvent, [], 20, 20);
+      expect(eventFired).toEqual(true);
+    }));
+
+    it('should emit "swiperight" events for right swipes', inject(function($rootScope, $compile, $rootElement) {
+      element = $compile('<div ng-swipe-right="swiped = true"></div>')($rootScope);
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      expect($rootScope.swiped).toBeUndefined();
+      var eventFired = false;
+      element.on('swiperight', function() {
+        eventFired = true;
+      });
+
+      browserTrigger(element, startEvent, [], 20, 20);
+      browserTrigger(element, endEvent, [], 100, 20);
+      expect(eventFired).toEqual(true);
+    }));
   });
 }
 

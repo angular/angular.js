@@ -54,7 +54,7 @@
     </doc:example>
  */
 
-function makeSwipeDirective(directiveName, direction) {
+function makeSwipeDirective(directiveName, direction, eventName) {
   ngMobile.directive(directiveName, ['$parse', '$swipe', function($parse, $swipe) {
     // The maximum vertical delta for a swipe should be less than 75px.
     var MAX_VERTICAL_DISTANCE = 75;
@@ -98,6 +98,7 @@ function makeSwipeDirective(directiveName, direction) {
         'end': function(coords) {
           if (validSwipe(coords)) {
             scope.$apply(function() {
+              element.triggerHandler(eventName);
               swipeHandler(scope);
             });
           }
@@ -108,6 +109,6 @@ function makeSwipeDirective(directiveName, direction) {
 }
 
 // Left is negative X-coordinate, right is positive.
-makeSwipeDirective('ngSwipeLeft', -1);
-makeSwipeDirective('ngSwipeRight', 1);
+makeSwipeDirective('ngSwipeLeft', -1, 'swipeleft');
+makeSwipeDirective('ngSwipeRight', 1, 'swiperight');
 
