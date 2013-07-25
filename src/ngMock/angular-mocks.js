@@ -118,6 +118,22 @@ angular.mock.$Browser = function() {
       self.deferredFns.shift().fn();
     }
   };
+
+  /**
+   * @name ngMock.$browser#defer.flushNext
+   * @methodOf ngMock.$browser
+   *
+   * @description
+   * Flushes next pending request and compares it to the provided delay
+   *
+   * @param {number=} expectedDelay the delay value that will be asserted against the delay of the next timeout function
+   */
+  self.defer.flushNext = function(expectedDelay) {
+    var tick = self.deferredFns.shift();
+    expect(tick.time).toEqual(expectedDelay);
+    tick.fn();
+  };
+
   /**
    * @name ngMock.$browser#defer.now
    * @propertyOf ngMock.$browser
@@ -1492,6 +1508,20 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    */
   $delegate.flush = function(delay) {
     $browser.defer.flush(delay);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngMock.$timeout#flushNext
+   * @methodOf ngMock.$timeout
+   * @description
+   *
+   * Flushes the next timeout in the queue and compares it to the provided delay
+   *
+   * @param {number=} expectedDelay the delay value that will be asserted against the delay of the next timeout function
+   */
+  $delegate.flushNext = function(expectedDelay) {
+    $browser.defer.flushNext(expectedDelay);
   };
 
   /**
