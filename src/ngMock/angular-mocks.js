@@ -1486,10 +1486,12 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    * @methodOf ngMock.$timeout
    * @description
    *
+   * @param {number=} number of milliseconds to flush.
+   *
    * Flushes the queue of pending tasks.
    */
-  $delegate.flush = function() {
-    $browser.defer.flush();
+  $delegate.flush = function(delay) {
+    $browser.defer.flush(delay);
   };
 
   /**

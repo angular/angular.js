@@ -336,6 +336,21 @@ describe('ngMock', function() {
       expect(logger).toEqual(['t1', 't3', 't2']);
     }));
 
+    it('should expose flush method that will flush the pending queue of tasks up to the given time', inject(
+        function($timeout) {
+      var logger = [],
+          logFn = function(msg) { return function() { logger.push(msg) }};
+
+      $timeout(logFn('t1'));
+      $timeout(logFn('t2'), 200);
+      $timeout(logFn('t3'));
+      expect(logger).toEqual([]);
+
+      $timeout.flush(100);
+      expect(logger).toEqual(['t1', 't3']);
+      $timeout.flush(100);
+      expect(logger).toEqual(['t1', 't3', 't2']);
+    }));
 
     it('should throw an exception when not flushed', inject(function($timeout){
       $timeout(noop);
