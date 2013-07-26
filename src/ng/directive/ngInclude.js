@@ -23,12 +23,12 @@
  *      (e.g.  ngInclude won't work for cross-domain requests on all browsers and for `file://`
  *      access on some browsers)
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
+ * Additionally, you can also provide animations via the ngAnimate module to animate the **enter**
  * and **leave** effects.
  *
  * @animations
- * enter - happens just after the ngInclude contents change and a new DOM element is created and injected into the ngInclude container
- * leave - happens just after the ngInclude contents change and just before the former contents are removed from the DOM
+ * enter - happens just after the ngInclude expression value changes and a new element is created and injected after the previous ngInclude element
+ * leave - happens just after the ngInclude expression value changes and just before the former ngInclude element is removed from the DOM
  *
  * @scope
  *
@@ -52,9 +52,9 @@
        </select>
        url of the template: <tt>{{template.url}}</tt>
        <hr/>
-       <div class="example-animate-container"
-            ng-include="template.url"
-            ng-animate="{enter: 'example-enter', leave: 'example-leave'}"></div>
+       <div class="example-animate-container">
+         <div class="include-example" ng-include="template.url"></div>
+       </div>
      </div>
     </file>
     <file name="script.js">
@@ -66,17 +66,15 @@
       }
      </file>
     <file name="template1.html">
-      <div>Content of template1.html</div>
+      Content of template1.html
     </file>
     <file name="template2.html">
-      <div>Content of template2.html</div>
+      Content of template2.html
     </file>
     <file name="animations.css">
-      .example-leave,
-      .example-enter {
+      .include-example.ng-enter, .include-example.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 
@@ -85,24 +83,21 @@
         left:0;
         right:0;
         bottom:0;
-      }
-
-      .example-animate-container > * {
         display:block;
         padding:10px;
       }
 
-      .example-enter {
+      .include-example.ng-enter {
         top:-50px;
       }
-      .example-enter.example-enter-active {
+      .include-example.ng-enter.ng-enter-active {
         top:0;
       }
 
-      .example-leave {
+      .include-example.ng-leave {
         top:0;
       }
-      .example-leave.example-leave-active {
+      .include-example.ng-leave.ng-leave-active {
         top:50px;
       }
     </file>
@@ -118,7 +113,7 @@
       });
       it('should change to blank', function() {
        select('template').option('');
-       expect(element('.doc-example-live [ng-include]').text()).toEqual('');
+       expect(element('.doc-example-live [ng-include]')).toBe(undefined);
       });
     </file>
   </example>
@@ -143,27 +138,31 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animator', '$sce',
-                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animator,   $sce) {
+var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animate', '$sce',
+                  function($http,   $templateCache,   $anchorScroll,   $compile,   $animate,   $sce) {
   return {
     restrict: 'ECA',
     terminal: true,
-    compile: function(element, attr) {
+    transclude: 'element',
+    compile: function(element, attr, linker) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, element, attr) {
-        var animate = $animator(scope, attr);
+      return function(scope, $element, attr) {
         var changeCounter = 0,
-            childScope;
+            childScope,
+            previousNode;
 
-        var clearContent = function() {
+        var cleanupLastIncludeContent = function() {
           if (childScope) {
             childScope.$destroy();
             childScope = null;
           }
-          animate.leave(element.contents(), element);
+          if(previousNode) {
+            $animate.leave(previousNode);
+            previousNode = null;
+          }
         };
 
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
@@ -172,28 +171,30 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
           if (src) {
             $http.get(src, {cache: $templateCache}).success(function(response) {
               if (thisChangeId !== changeCounter) return;
+              var newScope = scope.$new();
 
-              if (childScope) childScope.$destroy();
-              childScope = scope.$new();
-              animate.leave(element.contents(), element);
+              linker(newScope, function(clone) {
+                cleanupLastIncludeContent();
+                childScope = newScope;
 
-              var contents = jqLite('<div/>').html(response).contents();
+                clone.html(response);
+                $animate.enter(clone, null, jqLite(previousNode || $element));
+                $compile(clone.contents())(childScope);
+                previousNode = clone;
 
-              animate.enter(contents, element);
-              $compile(contents)(childScope);
+                if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                  $anchorScroll();
+                }
 
-              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $anchorScroll();
-              }
-
-              childScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
+                childScope.$emit('$includeContentLoaded');
+                scope.$eval(onloadExp);
+              });
             }).error(function() {
-              if (thisChangeId === changeCounter) clearContent();
+              if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });
             scope.$emit('$includeContentRequested');
           } else {
-            clearContent();
+            cleanupLastIncludeContent();
           }
         });
       };

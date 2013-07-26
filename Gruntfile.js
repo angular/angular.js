@@ -160,6 +160,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(['src/ngResource/resource.js'], 'module')
       },
+      animate: {
+        dest: 'build/angular-animate.js',
+        src: util.wrap(['src/ngAnimate/animate.js'], 'module')
+      },
       route: {
         dest: 'build/angular-route.js',
         src: util.wrap([
@@ -182,6 +186,7 @@ module.exports = function(grunt) {
       loader: 'build/angular-loader.js',
       mobile: 'build/angular-mobile.js',
       resource: 'build/angular-resource.js',
+      animate: 'build/angular-animate.js',
       route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js'
     },

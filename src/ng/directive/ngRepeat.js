@@ -20,7 +20,7 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**,
+ * Additionally, you can also provide animations via the ng$animate attribute to $animate the **enter**,
  * **leave** and **move** effects.
  *
  *
@@ -29,6 +29,9 @@
  * the range of the repeater by defining explicit start and end points by using **ng-repeat-start** and **ng-repeat-end** respectively.
  * The **ng-repeat-start** directive works the same as **ng-repeat**, but will repeat all the HTML code (including the tag it's defined on)
  * up to and including the ending HTML tag where **ng-repeat-end** is placed.
+ *
+ * Additionally, you can also provide animations via the ngAnimate module to animate the **enter**, **leave**
+ * and **move** effects.
  *
  * The example below makes use of this feature:
  * <pre>
@@ -131,46 +134,40 @@
         I have {{friends.length}} friends. They are:
         <input type="search" ng-model="q" placeholder="filter friends..." />
         <ul>
-          <li ng-repeat="friend in friends | filter:q"
-              ng-animate="{enter: 'example-repeat-enter',
-                          leave: 'example-repeat-leave',
-                          move: 'example-repeat-move'}">
+          <li class="animate-repeat" ng-repeat="friend in friends | filter:q">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
           </li>
         </ul>
       </div>
     </file>
     <file name="animations.css">
-      .example-repeat-enter,
-      .example-repeat-leave,
-      .example-repeat-move {
+      .animate-repeat {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
-        -ms-transition:all linear 0.5s;
         -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
       }
 
-      .example-repeat-enter {
+      .animate-repeat.ng-enter {
         line-height:0;
         opacity:0;
       }
-      .example-repeat-enter.example-repeat-enter-active {
+      .animate-repeat.ng-enter.ng-enter-active {
         line-height:20px;
         opacity:1;
       }
 
-      .example-repeat-leave {
+      .animate-repeat.ng-leave {
         opacity:1;
         line-height:20px;
       }
-      .example-repeat-leave.example-repeat-leave-active {
+      .animate-repeat.ng-leave.ng-leave-active {
         opacity:0;
         line-height:0;
       }
 
-      .example-repeat-move { }
-      .example-repeat-move.example-repeat-move-active { }
+      .animate-repeat.ng-move { }
+      .animate-repeat.ng-move.ng-move-active { }
     </file>
     <file name="scenario.js">
        it('should render initial data set', function() {
@@ -195,7 +192,7 @@
       </file>
     </example>
  */
-var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
+var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
   return {
@@ -204,7 +201,6 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
     terminal: true,
     compile: function(element, attr, linker) {
       return function($scope, $element, $attr){
-        var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
           trackByExp, trackByExpGetter, trackByIdFn, trackByIdArrayFn, trackByIdObjFn, lhs, rhs, valueIdentifier, keyIdentifier,
@@ -316,7 +312,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
-              animate.leave(block.elements);
+              $animate.leave(block.elements);
               forEach(block.elements, function(element) { element[NG_REMOVED] = true});
               block.scope.$destroy();
             }
@@ -342,7 +338,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 // do nothing
               } else {
                 // existing item which got moved
-                animate.move(block.elements, null, jqLite(previousNode));
+                $animate.move(block.elements, null, jqLite(previousNode));
               }
               previousNode = block.endNode;
             } else {
@@ -360,7 +356,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
             if (!block.startNode) {
               linker(childScope, function(clone) {
-                animate.enter(clone, null, jqLite(previousNode));
+                $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 block.scope = childScope;
                 block.startNode = clone[0];

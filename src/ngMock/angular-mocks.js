@@ -118,6 +118,22 @@ angular.mock.$Browser = function() {
       self.deferredFns.shift().fn();
     }
   };
+
+  /**
+   * @name ngMock.$browser#defer.flushNext
+   * @methodOf ngMock.$browser
+   *
+   * @description
+   * Flushes next pending request and compares it to the provided delay
+   *
+   * @param {number=} expectedDelay the delay value that will be asserted against the delay of the next timeout function
+   */
+  self.defer.flushNext = function(expectedDelay) {
+    var tick = self.deferredFns.shift();
+    expect(tick.time).toEqual(expectedDelay);
+    tick.fn();
+  };
+
   /**
    * @name ngMock.$browser#defer.now
    * @propertyOf ngMock.$browser
@@ -610,6 +626,43 @@ angular.mock.$LogProvider = function() {
   //make "tzDateInstance instanceof Date" return true
   angular.mock.TzDate.prototype = Date.prototype;
 })();
+
+angular.mock.animate = angular.module('mock.animate', ['ng'])
+
+  .config(['$provide', function($provide) {
+
+    $provide.decorator('$animate', function($delegate, $window) {
+      var animate = {
+        queue : [],
+        enabled : $delegate.enabled,
+        process : function(name) {
+          var tick = animate.queue.shift();
+          expect(tick.method).toBe(name);
+          tick.fn();
+          return tick;
+        }
+      };
+
+      forEach(['enter','leave','move','show','hide','addClass','removeClass'], function(method) {
+        animate[method] = function() {
+          var params = arguments;
+          animate.queue.push({
+            method : method,
+            params : params,
+            element : angular.isElement(params[0]) && params[0],
+            parent  : angular.isElement(params[1]) && params[1],
+            after   : angular.isElement(params[2]) && params[2],
+            fn : function() {
+              $delegate[method].apply($delegate, params);
+            }
+          });
+        };
+      });
+
+      return animate;
+    }); 
+
+  }]);
 
 /**
  * @ngdoc function
@@ -1487,9 +1540,25 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
    * @description
    *
    * Flushes the queue of pending tasks.
+   *
+   * @param {number=} delay maximum timeout amount to flush up until
    */
-  $delegate.flush = function() {
-    $browser.defer.flush();
+  $delegate.flush = function(delay) {
+    $browser.defer.flush(delay);
+  };
+
+  /**
+   * @ngdoc method
+   * @name ngMock.$timeout#flushNext
+   * @methodOf ngMock.$timeout
+   * @description
+   *
+   * Flushes the next timeout in the queue and compares it to the provided delay
+   *
+   * @param {number=} expectedDelay the delay value that will be asserted against the delay of the next timeout function
+   */
+  $delegate.flushNext = function(expectedDelay) {
+    $browser.defer.flushNext(expectedDelay);
   };
 
   /**

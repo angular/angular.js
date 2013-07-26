@@ -43,6 +43,7 @@
       addTag('script', {src: path('angular-cookies.js') }, sync);
       addTag('script', {src: path('angular-sanitize.js') }, sync);
       addTag('script', {src: path('angular-mobile.js') }, sync);
+      addTag('script', {src: path('angular-animate.js') }, sync);
       addTag('script', {src: 'components/angular-bootstrap.js' }, sync);
       addTag('script', {src: 'components/angular-bootstrap-prettify.js' }, sync);
       addTag('script', {src: 'components/google-code-prettify.js' }, sync);
@@ -201,7 +202,7 @@
   </header>
 
  <div id="docs-fold-overlay" ng-show="docs_fold" ng-click="fold(null)"></div>
- <div id="docs-fold" ng-show="docs_fold" ng-animate="'fold'">
+ <div class="foldout" id="docs-fold" ng-show="docs_fold">
    <div id="docs-fold-close" ng-click="fold(null)">
      <span class="icon-remove-sign"></span>
    </div>
@@ -283,21 +284,21 @@
               <li class="nav-header section" ng-show="module.directives">
                 <a href="{{URL.directive}}" class="guide">directive</a>
               </li>
-              <li ng-repeat="page in module.directives track by page.url" ng-class="navClass(page)" ng-animate="'expand'" class="api-list-item">
+              <li ng-repeat="page in module.directives track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
               </li>
 
               <li class="nav-header section" ng-show="module.filters">
                 <a href="{{URL.filter}}" class="guide">filter</a>
               </li>
-              <li ng-repeat="page in module.filters track by page.url" ng-class="navClass(page)" ng-animate="'expand'" class="api-list-item">
+              <li ng-repeat="page in module.filters track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
               </li>
 
               <li class="nav-header section" ng-show="module.services">
                 <a href="{{URL.service}}" class="guide">service</a>
               </li>
-              <li ng-repeat="service in module.services track by service.instance.url" ng-animate="'expand'" ng-class="navClass(service.instance, service.provider)" class="api-list-item">
+              <li ng-repeat="service in module.services track by service.instance.url" ng-class="navClass(service.instance, service.provider)" class="api-list-item expand">
                 <a ng-show="service.provider" class="pull-right" href="{{service.provider.url}}" tabindex="2"><i class="icon-cog"></i></a>
                 <a href="{{service.instance.url}}" tabindex="2">{{service.name}}</a>
               </li>
@@ -305,7 +306,7 @@
               <li class="nav-header section" ng-show="module.types">
                 <a href="{{URL.type}}" class="guide">Types</a>
               </li>
-              <li ng-repeat="page in module.types track by page.url" ng-class="navClass(page)" ng-animate="'expand'" class="api-list-item">
+              <li ng-repeat="page in module.types track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
               </li>
 
@@ -334,7 +335,7 @@
 
         <div id="loading" ng-show="loading">Loading...</div>
 
-        <div ng-hide="loading" ng-include src="currentPage.partialUrl" onload="afterPartialLoaded()" autoscroll class="content" ng-animate="{enter: 'slide-reveal'}" ></div>
+        <div ng-hide="loading" ng-include src="currentPage.partialUrl" onload="afterPartialLoaded()" autoscroll class="content slide-reveal"></div>
 
         <div id="disqus" class="disqus">
           <h2>Discussion</h2>

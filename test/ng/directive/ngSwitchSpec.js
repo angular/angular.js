@@ -214,15 +214,16 @@ describe('ngSwitch', function() {
   }));
 });
 
-describe('ngSwitch ngAnimate', function() {
-  var vendorPrefix, window;
-  var body, element, $rootElement;
+describe('ngSwitch animations', function() {
+  var window, body, element, $rootElement;
 
   function html(html) {
     $rootElement.html(html);
     element = $rootElement.children().eq(0);
     return element;
   }
+
+  beforeEach(module('mock.animate'));
 
   beforeEach(module(function() {
     // we need to run animation on attached elements;
@@ -238,23 +239,19 @@ describe('ngSwitch ngAnimate', function() {
     dealoc(element);
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
+  beforeEach(module(function($provide) {
     $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
-      $animator.enabled(true);
-    };
   }));
 
-  it('should fire off the enter animation + set and remove the classes',
-    inject(function($compile, $rootScope, $sniffer) {
+  it('should fire off the enter animation',
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
-        '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
-          '<div ng-switch-when="one" style="' + style + '">one</div>' +
-          '<div ng-switch-when="two" style="' + style + '">two</div>' +
-          '<div ng-switch-when="three" style="' + style + '">three</div>' +
+        '<div ng-switch on="val">' +
+          '<div ng-switch-when="one">one</div>' +
+          '<div ng-switch-when="two">two</div>' +
+          '<div ng-switch-when="three">three</div>' +
         '</div>'
       ))($scope);
 
@@ -262,33 +259,20 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'one';
       $scope.$digest();
 
-      expect(element.children().length).toBe(1);
-      var first = element.children()[0];
-
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('cool-enter');
-        window.setTimeout.expect(1).process();
-
-        expect(first.className).toContain('cool-enter-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(first.className).not.toContain('cool-enter');
-      expect(first.className).not.toContain('cool-enter-active');
+      item = $animate.process('enter').element;
+      expect(item.text()).toBe('one');
   }));
 
 
-  it('should fire off the leave animation + set and remove the classes',
-    inject(function($compile, $rootScope, $sniffer) {
+  it('should fire off the leave animation',
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
-        '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
-          '<div ng-switch-when="one" style="' + style + '">one</div>' +
-          '<div ng-switch-when="two" style="' + style + '">two</div>' +
-          '<div ng-switch-when="three" style="' + style + '">three</div>' +
+        '<div ng-switch on="val">' +
+          '<div ng-switch-when="one">one</div>' +
+          '<div ng-switch-when="two">two</div>' +
+          '<div ng-switch-when="three">three</div>' +
         '</div>'
       ))($scope);
 
@@ -296,59 +280,17 @@ describe('ngSwitch ngAnimate', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      item = $animate.process('enter').element;
+      expect(item.text()).toBe('two');
 
       $scope.val = 'three';
       $scope.$digest();
 
-      expect(element.children().length).toBe($sniffer.transitions ? 2 : 1);
-      var first = element.children()[0];
+      item = $animate.process('leave').element;
+      expect(item.text()).toBe('two');
 
-
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('cool-leave');
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(1).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('cool-leave-active');
-        window.setTimeout.expect(1000).process();
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(first.className).not.toContain('cool-leave');
-      expect(first.className).not.toContain('cool-leave-active');
-  }));
-
-  it('should catch and use the correct duration for animation',
-    inject(function($compile, $rootScope, $sniffer) {
-      element = $compile(html(
-        '<div ng-switch on="val" ng-animate="{enter: \'cool-enter\', leave: \'cool-leave\'}">' +
-          '<div ng-switch-when="one" style="' + vendorPrefix + 'transition: 0.5s linear all">one</div>' +
-        '</div>'
-      ))($rootScope);
-
-      $rootScope.$digest(); // re-enable the animations;
-      $rootScope.val = 'one';
-      $rootScope.$digest();
-
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(500).process();
-      } else {
-       expect(window.setTimeout.queue).toEqual([]);
-      }
+      item = $animate.process('enter').element;
+      expect(item.text()).toBe('three');
   }));
 
 });
