@@ -18,7 +18,11 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  *
  * @description
  *
- * Used for configuring routes. See {@link ngRoute.$route $route} for an example.
+ * Used for configuring routes. `when` and `otherwise` are used to build a routing table. When 
+ * `$location.url()` (i.e. the address bar) is changed the routing table is consulted to determine
+ * the new contents of the ngView tag.
+ *
+ * See {@link ngRoute.$route $route} for an example.
  */
 function $RouteProvider(){
   var routes = {};
@@ -45,9 +49,15 @@ function $RouteProvider(){
    *      * `color: brown`
    *      * `largecode: code/with/slashs`.
    *
+   *    If this route matching scheme is not expressive enough, a callback function can be passed
+   *    as the `route` parameter to apply additional routing logic. Alternatively a different
+   *    module can be used to provide an alternative implementation of the `$route` service. 
    *
-   * @param {Object} route Mapping information to be assigned to `$route.current` on route
-   *    match.
+   * @param {Object|function()} route Mapping information to be assigned to `$route.current` which
+   *    determines the contents of ngView on route match.
+   *    
+   *    Usually you will provide an object containing the mapping information. However you can also
+   *    provide a callback function if you need more flexibility.
    *
    *    Object properties:
    *
@@ -111,13 +121,24 @@ function $RouteProvider(){
    *      If the option is set to `true`, then the particular route can be matched without being
    *      case sensitive
    *
+   *  Callback function: 
+   *
+   *  When a callback function is provided, it must return an object in the above format. The 
+   *  function will be called each time the route matches with the following parameters:
+   *   
+   *  - `{Object.<string>}` - route parameters extracted from the current
+   *    `$location.path()` by applying the current route templateUrl.
+   *  - `{Object}` - current `$location.search()`
+   *
    * @returns {Object} self
    *
    * @description
    * Adds a new route definition to the `$route` service.
    */
   this.when = function(path, route) {
-    routes[path] = extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
+    routes[path] = isFunction(route) 
+      ? route
+      : extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
 
     // create redirection for trailing slashes
     if (path) {
@@ -137,14 +158,14 @@ function $RouteProvider(){
    * @methodOf ngRoute.$routeProvider
    *
    * @description
-   * Sets route definition that will be used on route change when no other route definition
-   * is matched.
+   * Sets route definition that will be used when no other route matches.
    *
-   * @param {Object} params Mapping information to be assigned to `$route.current`.
+   * @param {Object} route Mapping information to be assigned to `$route.current`. See the `route`
+   * parameter of the `when` method for full details.
    * @returns {Object} self
    */
-  this.otherwise = function(params) {
-    this.when(null, params);
+  this.otherwise = function(route) {
+    this.when(null, route);
     return this;
   };
 
@@ -490,8 +511,16 @@ function $RouteProvider(){
       var params, match;
       forEach(routes, function(route, path) {
         if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
+          var search = $location.search();
+          
+          if (isFunction(route)) {
+            // route is a function, call it to get the actual route to use
+            // route function can update params or search
+            route = route(params, search);
+          }
+          
           match = inherit(route, {
-            params: extend({}, $location.search(), params),
+            params: extend({}, search, params),
             pathParams: params});
           match.$$route = route;
         }
