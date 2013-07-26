@@ -33,7 +33,6 @@ function $TimeoutProvider() {
       *   promise will be resolved with is the return value of the `fn` function.
       */
     function timeout(fn, delay, invokeApply) {
-          debugger;
       var deferred = $q.defer(),
           promise = deferred.promise,
           skipApply = (isDefined(invokeApply) && !invokeApply),
