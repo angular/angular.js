@@ -77,7 +77,27 @@ describe('ngRepeat', function() {
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('x;y;x;');
   });
+  
+  it('should iterate over an array-like class', function() {
+    function Collection() {}
+    Collection.prototype = new Array();
+    Collection.prototype.length = 0;
 
+    var collection = new Collection();
+    collection.push({ name: "x" });
+    collection.push({ name: "y" });
+    collection.push({ name: "z" });
+
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items">{{item.name}};</li>' +
+      '</ul>')(scope);
+
+    scope.items = collection;
+    scope.$digest();
+    expect(element.find('li').length).toEqual(3);
+    expect(element.text()).toEqual('x;y;z;');
+  });
 
   it('should iterate over on object/map', function() {
     element = $compile(
