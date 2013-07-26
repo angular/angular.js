@@ -185,6 +185,71 @@ describe('$route', function() {
     });
   });
 
+  it('should route and fire change event when route is a callback funtion', function() {
+    var log = '',
+        lastRoute,
+        nextRoute;
+        
+    function controller1() {}  
+    function controller2() {}  
+    function controller3() {}  
+
+    function isNumeric(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    module(function($routeProvider) {
+      $routeProvider.when('/route1/:p1/:p2',
+          function (params, search) {
+            if (search.q == 'BAZ')
+              return { controller: controller3, templateUrl: "baz.html" };            
+            else if (isNumeric(params.p1))
+              return { controller: controller1, templateUrl: "foo.html" };
+            else
+              return { controller: controller2, templateUrl: "bar.html" };             
+          });
+    });
+    
+    inject(function($route, $location, $rootScope) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        log += 'before();';
+        expect(current).toBe($route.current);
+        lastRoute = current;
+        nextRoute = next;
+      });
+      $rootScope.$on('$routeChangeSuccess', function(event, current, last) {
+        log += 'after();';
+        expect(current).toBe($route.current);
+        expect(lastRoute).toBe(last);
+        expect(nextRoute).toBe(current);
+      });
+
+      $location.path('/route1/123/b');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.controller).toEqual(controller1);
+      expect($route.current.locals.$template).toEqual('foo');
+
+      log = '';
+      $location.path('/route1/abc/b');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.controller).toEqual(controller2);
+      expect($route.current.locals.$template).toEqual('bar');
+
+      log = '';
+      $location.path('/route1/abc/b').search('q=BAZ');
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(log).toEqual('before();after();');
+      expect($route.current.controller).toEqual(controller3);
+      expect($route.current.locals.$template).toEqual('baz');
+    });
+  });
+
+
 
   it('should not change route when location is canceled', function() {
     module(function($routeProvider) {
