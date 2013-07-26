@@ -1,0 +1,4 @@
+@ngdoc error
+@name $compile:selmulti
+@fullName Binding to Multiple Attribute
+@description

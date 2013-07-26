@@ -1220,7 +1220,7 @@ function $CompileProvider($provide) {
 
 
       if (name === "multiple" && nodeName_(node) === "SELECT") {
-        throw new $compileMinErr("selmulti", "Binding to the multiple attribute is not supported. Element: {0}",
+        throw $compileMinErr("selmulti", "Binding to the multiple attribute is not supported. Element: {0}",
             startingTag(node));
       }
 
