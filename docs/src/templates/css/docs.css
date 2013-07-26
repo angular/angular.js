@@ -268,6 +268,10 @@ ul.events > li > h3 {
   width:100%;
 }
 
+.search-results.ng-hide {
+  display:none;
+}
+
 .search-results > .search-group {
   vertical-align:top;
   padding:10px 0;
