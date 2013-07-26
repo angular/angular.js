@@ -6,7 +6,6 @@ describe('ngView', function() {
   beforeEach(module('ngRoute'));
 
   beforeEach(module(function($provide) {
-    $provide.value('$window', angular.mock.createMockWindow());
     return function($rootScope, $compile, $animate) {
       element = $compile('<div><ng:view onload="load()"></ng:view></div>')($rootScope);
     };
@@ -539,7 +538,6 @@ describe('ngView animations', function() {
 
 
   beforeEach(module(function($provide, $routeProvider) {
-    $provide.value('$window', angular.mock.createMockWindow());
     $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
     $routeProvider.when('/bar', {controller: noop, templateUrl: '/bar.html'});
     return function($templateCache) {
@@ -611,7 +609,6 @@ describe('ngView animations', function() {
 
     var window;
     module(function($routeProvider, $animateProvider, $provide) {
-      $provide.value('$window', window = angular.mock.createMockWindow());
       $routeProvider.when('/foo', {template: '<div ng-repeat="i in [1,2]">{{i}}</div>'});
       $routeProvider.when('/bar', {template: '<div ng-repeat="i in [3,4]">{{i}}</div>'});
       $animateProvider.register('.my-animation', function() {
