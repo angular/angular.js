@@ -242,8 +242,8 @@ angular.module('ngAnimate', ['ng'])
       $provide.factory(name, factory);
     };
 
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement',
-      function($delegate, $injector, $sniffer, $rootElement) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
 
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateController);
 
@@ -498,7 +498,8 @@ angular.module('ngAnimate', ['ng'])
         if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running) {
           //avoid calling done() since there is no need to remove any
           //data or className values since this happens earlier than that
-          (onComplete || angular.noop)();
+          //and also use a timeout so that it won't be asynchronous
+          $timeout(onComplete || angular.noop, 0, false);
           return;
         }
 

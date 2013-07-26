@@ -259,8 +259,8 @@ describe("ngAnimate", function() {
 
         $animate.removeClass(element, 'ng-hide');
         if($sniffer.transitions) {
-          $timeout.flushNext(1);
           $timeout.flushNext(0);
+          $timeout.flushNext(1);
         }
         $timeout.flushNext(0);
         expect(element.text()).toBe('memento');
@@ -510,7 +510,7 @@ describe("ngAnimate", function() {
         }));
 
         it("should skip animations if disabled and run when enabled",
-            inject(function($animate, $rootScope, $compile, $sniffer) {
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
           $animate.enabled(false);
           var style = 'animation: some_animation 2s linear 0s 1 alternate;' +
                       vendorPrefix + 'animation: some_animation 2s linear 0s 1 alternate;'
@@ -519,6 +519,7 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
           $animate.removeClass(element, 'ng-hide');
+          $timeout.flush();
           expect(element).toBeShown();
         }));
 
@@ -563,9 +564,9 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
           $animate.removeClass(element, 'ng-hide');
-          expect(element).toBeShown();
-
           $timeout.flushNext(0);
+          $timeout.flushNext(0);
+          expect(element).toBeShown();
 
           $animate.enabled(true);
 
@@ -591,6 +592,7 @@ describe("ngAnimate", function() {
               $timeout.flushNext(1);
               $timeout.flushNext(2000);
             }
+            $timeout.flush();
             expect(element).toBeShown();
           }));
 
@@ -604,9 +606,9 @@ describe("ngAnimate", function() {
 
             element.addClass('ng-hide');
             $animate.removeClass(element, 'ng-hide');
+            $timeout.flushNext(0);
+            $timeout.flushNext(0);
             expect(element).toBeShown();
-
-            $timeout.flushNext(0); //callback which is called
 
             $animate.enabled(true);
 
@@ -618,7 +620,7 @@ describe("ngAnimate", function() {
               $timeout.flushNext(1);
               $timeout.flushNext(3000);
             }
-            $timeout.flushNext(0);
+            $timeout.flush();
             expect(element).toBeShown();
         }));
 
