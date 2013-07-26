@@ -79,8 +79,8 @@ docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', fu
       }
       if(totalSections > 0) {
         $scope.colClassName = 'cols-' + totalSections;
-        $scope.hasResults = true;
       }
+      $scope.hasResults = totalSections > 0;
       $scope.results = results;
     }
     else {
