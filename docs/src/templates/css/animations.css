@@ -10,7 +10,13 @@
   opacity:1;
 }
 
+.nav-list {
+  padding: 0;
+}
+
 .nav-list li {
+  margin:0!important;
+  padding:0 15px;
   height:20px;
   overflow:hidden;
 }
