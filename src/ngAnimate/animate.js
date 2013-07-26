@@ -203,8 +203,8 @@ angular.module('ngAnimate', ['ng'])
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var rootAnimateState = {running:true};
 
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement',
-      function($delegate, $injector, $sniffer, $rootElement) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
         
       var noop = angular.noop;
       var forEach = angular.forEach;
@@ -463,7 +463,8 @@ angular.module('ngAnimate', ['ng'])
         if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running) {
           //avoid calling done() since there is no need to remove any
           //data or className values since this happens earlier than that
-          (onComplete || noop)();
+          //and also use a timeout so that it won't be asynchronous
+          $timeout(onComplete || noop, 0, false);
           return;
         }
 
