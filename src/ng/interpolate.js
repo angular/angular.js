@@ -27,20 +27,6 @@ var $interpolateMinErr = minErr('$interpolate');
           //label//
       </div>
      </doc:source>
-     <doc:scenario>
-       describe('provider', function() {
-          beforeEach(module(function($interpolateProvider) {
-            $interpolateProvider.startSymbol('//');
-            $interpolateProvider.endSymbol('//');
-          }));
-
-          it('should not get confused with same markers', inject(function($interpolate) {
-            expect($interpolate('///').parts).toEqual(['///']);
-            expect($interpolate('////')()).toEqual('');
-            expect($interpolate('//1//')()).toEqual('1');
-          }));
-       });
-     </doc:scenario>
    </doc:example>
  */
 function $InterpolateProvider() {
