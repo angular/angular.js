@@ -91,7 +91,8 @@ function isArrayLike(obj) {
     return obj instanceof JQLite ||                      // JQLite
            (jQuery && obj instanceof jQuery) ||          // jQuery
            toString.call(obj) !== '[object Object]' ||   // some browser native object
-           typeof obj.callee === 'function';              // arguments (on IE8 looks like regular obj)
+           typeof obj.callee === 'function' ||           // arguments (on IE8 looks like regular obj)
+           obj.constructor === [].constructor;           // various one-off objects (like subclasses) of array
   }
 }
 
