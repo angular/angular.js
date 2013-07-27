@@ -134,7 +134,7 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
-The test verifies that we have three records in the phones array and the example demonstrates how
+The test instantiates our PhoneListCtrl and verifies that its phones array property contains three records. This example demonstrates how
 easy it is to create a unit test for code in Angular. Since testing is such a critical part of
 software development, we make it easy to create tests in Angular so that developers are encouraged
 to write them.
