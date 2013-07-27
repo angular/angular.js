@@ -421,7 +421,7 @@ angular.module('ngAnimate', ['ng'])
          * @methodOf ngAnimate.$animate
          * @function
          *
-         * @param {boolean=} If provided then set the animation on or off.
+         * @param {boolean=} value If provided then set the animation on or off.
          * @return {boolean} Current animation state.
          *
          * @description
