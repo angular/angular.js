@@ -183,6 +183,9 @@
  *
  */
 
+var noop = angular.noop;
+var forEach = angular.forEach;
+
 angular.module('ngAnimate', ['ng'])
 
   /**
@@ -202,26 +205,23 @@ angular.module('ngAnimate', ['ng'])
 
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var rootAnimateState = {running:true};
-
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
         
-      var noop = angular.noop;
-      var forEach = angular.forEach;
-
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       function lookup(name) {
+        var i, ii;
         if (name) {
           var classes = name.substr(1).split('.'),
               classMap = {};
 
-          for (var i = 0, ii = classes.length; i < ii; i++) {
+          for (i = 0, ii = classes.length; i < ii; i++) {
             classMap[classes[i]] = true;
           }
 
           var matches = [];
-          for (var i = 0, ii = selectors.length; i < ii; i++) {
+          for (i = 0, ii = selectors.length; i < ii; i++) {
             var selectorFactory = selectors[i];
             var found = true;
             for(var j = 0, jj = selectorFactory.selectors.length; j < jj; j++) {
@@ -236,7 +236,7 @@ angular.module('ngAnimate', ['ng'])
           }
           return matches;
         }
-      };
+      }
 
       /**
        * @ngdoc object
@@ -532,7 +532,7 @@ angular.module('ngAnimate', ['ng'])
             if(!animations[i].done) return;
           }
           done();
-        };
+        }
 
         function done() {
           if(!done.hasBeenRun) {
@@ -547,24 +547,6 @@ angular.module('ngAnimate', ['ng'])
   }])
 
   .animation('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
-    return {
-      enter : function(element, done) {
-        return animate(element, 'ng-enter', done);
-      },
-      leave : function(element, done) {
-        return animate(element, 'ng-leave', done);
-      },
-      move : function(element, done) {
-        return animate(element, 'ng-move', done);
-      },
-      addClass : function(element, className, done) {
-        return animate(element, className, done);
-      },
-      removeClass : function(element, className, done) {
-        return animate(element, className, done);
-      }
-    };
-
     function animate(element, className, done) {
       if (!($sniffer.transitions || $sniffer.animations)) {
         done();
@@ -652,6 +634,25 @@ angular.module('ngAnimate', ['ng'])
         if(cancelled) {
           done();
         }
-      };
+      }
+    }
+
+    return {
+      enter : function(element, done) {
+        return animate(element, 'ng-enter', done);
+      },
+      leave : function(element, done) {
+        return animate(element, 'ng-leave', done);
+      },
+      move : function(element, done) {
+        return animate(element, 'ng-move', done);
+      },
+      addClass : function(element, className, done) {
+        return animate(element, className, done);
+      },
+      removeClass : function(element, className, done) {
+        return animate(element, className, done);
+      }
     };
+
   }]);
