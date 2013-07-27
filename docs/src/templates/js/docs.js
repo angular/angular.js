@@ -357,32 +357,85 @@ docsApp.serviceFactory.formPostData = function($document) {
   };
 };
 
-docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angularUrls) {
-  return function(content) {
+
+
+docsApp.serviceFactory.prepareEditorAssetTags = function(angularUrls) {
+  return function(content, options) {
+    options = options || {};
+    var includeLocalFiles = options.includeLocalFiles;
+    var html = makeScriptTag(angularUrls['angular.js']);
+
     var allFiles = [].concat(content.js, content.css, content.html, content.json);
+    angular.forEach(content.deps, function(file) {
+      if (file.name !== 'angular.js') {
+        var isLocal = false;
+        for(var i=0;i<allFiles.length;i++) {
+          if(allFiles[i].name == file.name) {
+            isLocal = true;
+            break;
+          }
+        }
+        if(!(isLocal && !includeLocalFiles)) {
+          var assetUrl = angularUrls[file.name] || file.name;
+          html += makeScriptTag(assetUrl);
+        }
+      }
+    });
+
+    if(includeLocalFiles) {
+      angular.forEach(content.css, function(file, index) {
+        html += makeCssLinkTag(file.name);
+      });
+    }
+
+    return html;
+
+
+    function makeScriptTag(src) {
+      return '<script type="text/javascript" src="' + src + '"></script>\n';
+    };
+
+    function makeCssLinkTag(src) {
+      return '<link rel="stylesheet" type="text/css" href="' + src + '" />\n';
+    };
+  };
+};
+
+
+docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, prepareEditorAssetTags) {
+  return function(content) {
+    var hasRouting = false;
+    angular.forEach(content.deps, function(file) {
+      hasRouting = hasRouting || file.name == 'angular-route.js';
+    });
     var indexHtmlContent = '<!doctype html>\n' +
         '<html ng-app="{{module}}">\n' +
         '  <head>\n' +
-        '    <script src="{{angularJSUrl}}"></script>\n' +
-        '{{scriptDeps}}\n' +
-        '  </head>\n' +
-        '  <body>\n\n' +
-        '{{indexContents}}' +
-        '\n\n  </body>\n' +
-        '</html>\n';
-    var scriptDeps = '';
-    angular.forEach(content.deps, function(file) {
-      if (file.name !== 'angular.js') {
-        scriptDeps += '    <script src="' + file.name + '"></script>\n';
-      }
-    });
+        '{{scriptDeps}}';
+
+    if(hasRouting) {
+        indexHtmlContent += '<script type="text/javascript">\n' +
+                            '//this is here to make plunkr work with AngularJS routing\n' +
+                            'angular.element(document.getElementsByTagName(\'head\')).append(' +
+                              'angular.element(\'<base href="\' + window.location.pathname + \'" />\')' +
+                            ');\n' +
+                            '</script>\n';
+    }
+
+    indexHtmlContent += '</head>\n' +
+                        '  <body>\n\n' +
+                        '{{indexContents}}\n\n' +
+                        '  </body>\n' +
+                        '</html>\n';
+
     indexProp = {
       module: content.module,
-      angularJSUrl: angularUrls['angular.js'],
-      scriptDeps: scriptDeps,
+      scriptDeps: prepareEditorAssetTags(content, { includeLocalFiles : true }),
       indexContents: content.html[0].content
     };
     var postData = {};
+
+    var allFiles = [].concat(content.js, content.css, content.html, content.json);
     angular.forEach(allFiles, function(file, index) {
       if (file.content && file.name != 'index.html') {
         postData['files[' + file.name + ']'] = file.content;
@@ -399,13 +452,14 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
   };
 };
 
-docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angularUrls) {
-
+docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, prepareEditorAssetTags) {
   var HTML = '<div ng-app=\"{{module}}\">\n{{html:2}}</div>',
-      CSS = '</style> <!-- Ugly Hack due to jsFiddle issue: http://goo.gl/BUfGZ --> \n' +
+      CSS = '</style> <!-- Ugly Hack to make remote files preload in jsFiddle --> \n' +
         '{{head:0}}<style>\n​.ng-invalid { border: 1px solid red; }​\n{{css}}',
       SCRIPT = '{{script}}',
-      SCRIPT_CACHE = '\n\n<!-- {{name}} -->\n<script type="text/ng-template" id="{{name}}">\n{{content:2}}</script>';
+      SCRIPT_CACHE = '\n\n<!-- {{name}} -->\n<script type="text/ng-template" id="{{name}}">\n{{content:2}}</script>',
+      BASE_HREF_TAG = '<!--  Ugly Hack to make AngularJS routing work inside of jsFiddle -->\n' +
+                      '<base href="/" />\n\n';
 
   return function(content) {
     var prop = {
@@ -415,8 +469,6 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
           script: ''
         };
 
-    prop.head = templateMerge('<script src="{{url}}"></script>', {url: angularUrls['angular.js']});
-
     angular.forEach(content.html, function(file, index) {
       if (index) {
         prop.html += templateMerge(SCRIPT_CACHE, file);
@@ -424,6 +476,8 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
         prop.html += file.content;
       }
     });
+
+    prop.head = prepareEditorAssetTags(content, { includeLocalFiles : false });
 
     angular.forEach(content.js, function(file, index) {
       prop.script += file.content;
@@ -433,9 +487,18 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
       prop.css += file.content;
     });
 
+    var hasRouting = false;
+    angular.forEach(content.deps, function(file) {
+      hasRouting = hasRouting || file.name == 'angular-route.js';
+    });
+
+    var compiledHTML = templateMerge(HTML, prop);
+    if(hasRouting) {
+      compiledHTML = BASE_HREF_TAG + compiledHTML;
+    }
     formPostData("http://jsfiddle.net/api/post/library/pure/", {
       title: 'AngularJS Example',
-      html: templateMerge(HTML, prop),
+      html: compiledHTML,
       js: templateMerge(SCRIPT, prop),
       css: templateMerge(CSS, prop)
     });
