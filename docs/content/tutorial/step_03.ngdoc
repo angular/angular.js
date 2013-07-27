@@ -143,7 +143,7 @@ really is that easy to set up any functional, readable, end-to-end test.
           <title>Google Phone Gallery: {{query}}</title>
 
   However, when you reload the page, you won't see the expected result. This is because the "query"
-model lives in the scope defined by the body element:
+model lives in the scope defined by the body element, whose the PhoneListCtrl applies to::
 
           <body ng-controller="PhoneListCtrl">
 
