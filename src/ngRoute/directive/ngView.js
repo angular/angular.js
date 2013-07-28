@@ -99,7 +99,7 @@ ngRouteModule.directive('ngView', ngViewFactory);
       </file>
 
       <file name="script.js">
-        angular.module('ngViewExample', ['ngRoute'], function($routeProvider, $locationProvider) {
+        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'], function($routeProvider, $locationProvider) {
           $routeProvider.when('/Book/:bookId', {
             templateUrl: 'book.html',
             controller: BookCntl,

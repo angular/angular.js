@@ -190,6 +190,7 @@ Doc.prototype = {
           var example = new Example(self.scenarios);
           if(animations) {
             example.enableAnimations();
+            example.addDeps('angular-animate.js');
           }
 
           example.setModule(module);
