@@ -1,10 +1,4 @@
-/**
- * @license AngularJS v"NG_VERSION_FULL"
- * (c) 2010-2012 Google, Inc. http://angularjs.org
- * License: MIT
- *
- * TODO(vojta): wrap whole file into closure during build
- */
+'use strict';
 
 /**
  * @ngdoc overview
