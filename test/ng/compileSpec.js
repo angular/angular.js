@@ -3064,7 +3064,7 @@ describe('$compile', function() {
       element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
       expect(element.attr('test2')).toBeUndefined();
-      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test3')).toBeUndefined();
       $rootScope.$digest();
       expect(element.attr('test')).toBe('Misko');
       expect(element.attr('test2')).toBe('Misko');
