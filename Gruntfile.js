@@ -84,6 +84,7 @@ module.exports = function(grunt) {
     test: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      zepto: 'karma-zepto.conf.js',
       docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
@@ -241,7 +242,7 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
+  grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:zepto', 'test:modules']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
   grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);

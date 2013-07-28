@@ -40,8 +40,8 @@ describe('jqLite', function() {
   });
 
 
-  it('should be jqLite when jqLiteMode is on, otherwise jQuery', function() {
-    expect(jqLite).toBe(_jqLiteMode ? JQLite : _jQuery);
+  it('should be jqLite when jqLiteMode is on, otherwise jQuery or Zepto', function() {
+    expect(jqLite).toBe(_jqLiteMode ? JQLite : (angular.isDefined(_jQuery)) ? _jQuery : _Zepto);
   });
 
 

@@ -22,6 +22,10 @@ beforeEach(function() {
       jQuery = _jQuery;
     }
 
+    if (!_jqLiteMode && _Zepto !== Zepto) {
+      Zepto = _Zepto;
+    }
+
     // This resets global id counter;
     uid = ['0', '0', '0'];
 

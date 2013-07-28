@@ -1,6 +1,8 @@
 'use strict';
 
-var _jQuery = jQuery.noConflict(true),
-    _jqLiteMode;
+var _Zepto = Zepto,
+  _jqLiteMode;
+
+Zepto = false;
 
 _jqLiteMode === false ? _jqLiteMode = false : _jqLiteMode = true;

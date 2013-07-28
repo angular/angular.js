@@ -233,23 +233,24 @@ function callerFile(offset) {
  *
  * To work around this we instead use our own handler that fires a real event.
  */
-(function(fn){
-  var parentTrigger = fn.trigger;
-  fn.trigger = function(type) {
-    if (/(click|change|keydown|blur|input|mousedown|mouseup)/.test(type)) {
-      var processDefaults = [];
-      this.each(function(index, node) {
-        processDefaults.push(browserTrigger(node, type));
-      });
+if (angular.isDefined(_jQuery)) {
+  (function(fn){
+    var parentTrigger = fn.trigger;
+    fn.trigger = function(type) {
+      if (/(click|change|keydown|blur|input|mousedown|mouseup)/.test(type)) {
+        var processDefaults = [];
+        this.each(function(index, node) {
+          processDefaults.push(browserTrigger(node, type));
+        });
 
-      // this is not compatible with jQuery - we return an array of returned values,
-      // so that scenario runner know whether JS code has preventDefault() of the event or not...
-      return processDefaults;
-    }
-    return parentTrigger.apply(this, arguments);
-  };
-})(_jQuery.fn);
-
+        // this is not compatible with jQuery - we return an array of returned values,
+        // so that scenario runner know whether JS code has preventDefault() of the event or not...
+        return processDefaults;
+      }
+      return parentTrigger.apply(this, arguments);
+    };
+  })(_jQuery.fn);
+}
 /**
  * Finds all bindings with the substring match of name and returns an
  * array of their values.

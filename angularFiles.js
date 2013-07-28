@@ -117,8 +117,10 @@ angularFiles = {
   ],
 
   'karma': [
+    'components/zepto/zepto.js',
     'components/jquery/jquery.js',
     'test/jquery_remove.js',
+    'test/zepto_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
@@ -129,6 +131,7 @@ angularFiles = {
   ],
 
   'karmaExclude': [
+    'test/zepto_alias.js',
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js'
@@ -155,7 +158,9 @@ angularFiles = {
 
   'karmaJquery': [
     'components/jquery/jquery.js',
+    'components/zepto/zepto.js',
     'test/jquery_alias.js',
+    'test/zepto_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
     '@angularSrcModules',
@@ -169,7 +174,30 @@ angularFiles = {
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'test/jquery_remove.js'
+    'test/jquery_remove.js',
+    'test/zepto_alias.js'
+  ],
+
+  'karmaZepto': [
+    'components/jquery/jquery.js',
+    'components/zepto/zepto.js',
+    'test/zepto_alias.js',
+    'test/jquery_remove.js',
+    '@angularSrc',
+    'src/publishExternalApis.js',
+    '@angularSrcModules',
+    '@angularScenario',
+    '@angularTest',
+    'example/personalLog/*.js',
+
+    'example/personalLog/test/*.js'
+  ],
+
+  'karmaZeptoExclude': [
+    'src/angular-bootstrap.js',
+    'src/ngScenario/angular-bootstrap.js',
+    'test/zepto_remove.js',
+    'test/jquery_alias.js'
   ]
 };
 
