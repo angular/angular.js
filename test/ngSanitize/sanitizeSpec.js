@@ -2,19 +2,18 @@
 
 describe('HTML', function() {
 
-  var expectHTML;
+  var expectHTML, $htmlParser;
 
   beforeEach(module('ngSanitize'));
 
-  beforeEach(inject(function($sanitize) {
+  beforeEach(inject(function($sanitize, _$htmlParser_) {
     expectHTML = function(html){
       return expect($sanitize(html));
     };
+    $htmlParser = _$htmlParser_;
   }));
 
-  describe('htmlParser', function() {
-    if (angular.isUndefined(window.htmlParser)) return;
-
+  describe('$htmlParser', function() {
     var handler, start, text;
     beforeEach(function() {
       handler = {
@@ -40,31 +39,31 @@ describe('HTML', function() {
     });
 
     it('should parse basic format', function() {
-      htmlParser('<tag attr="value">text</tag>', handler);
+      $htmlParser('<tag attr="value">text</tag>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
     });
 
     it('should parse newlines in tags', function() {
-      htmlParser('<\ntag\n attr="value"\n>text<\n/\ntag\n>', handler);
+      $htmlParser('<\ntag\n attr="value"\n>text<\n/\ntag\n>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
     });
 
     it('should parse newlines in attributes', function() {
-      htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
+      $htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
     });
 
     it('should parse namespace', function() {
-      htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
+      $htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
       expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'value'}, unary:false});
       expect(text).toEqual('text');
     });
 
     it('should parse empty value attribute of node', function() {
-      htmlParser('<OPTION selected value="">abc</OPTION>', handler);
+      $htmlParser('<OPTION selected value="">abc</OPTION>', handler);
       expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}, unary:false});
       expect(text).toEqual('abc');
     });
