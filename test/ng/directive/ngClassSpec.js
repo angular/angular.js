@@ -304,3 +304,46 @@ describe('ngClass', function() {
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
 });
+
+describe('ngClass animations', function() {
+  var body, element, $rootElement;
+
+  beforeEach(module('mock.animate'));
+
+  it("should avoid calling addClass accidentally when removeClass is going on",
+    inject(function($compile, $rootScope, $animate, $timeout) {
+
+    var element = angular.element('<div ng-class="val"></div>');
+    var body = jqLite(document.body);
+    body.append(element);
+    $compile(element)($rootScope);
+
+    expect($animate.queue.length).toBe(0);
+
+    $rootScope.val = 'one';
+    $rootScope.$digest();
+    $animate.process('addClass');
+    $animate.process('addClass');
+    $timeout.flush();
+    expect($animate.queue.length).toBe(0);
+
+    $rootScope.val = '';
+    $rootScope.$digest();
+    $animate.process('removeClass'); //only removeClass is called
+    expect($animate.queue.length).toBe(0);
+    $timeout.flush();
+
+    $rootScope.val = 'one';
+    $rootScope.$digest();
+    $animate.process('addClass');
+    $timeout.flush();
+    expect($animate.queue.length).toBe(0);
+
+    $rootScope.val = 'two';
+    $rootScope.$digest();
+    $animate.process('removeClass');
+    $animate.process('addClass');
+    $timeout.flush();
+    expect($animate.queue.length).toBe(0);
+  }));
+});
