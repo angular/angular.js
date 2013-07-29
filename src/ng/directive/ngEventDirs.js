@@ -43,11 +43,9 @@ forEach(
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
       return function(scope, element, attr) {
         var fn = $parse(attr[directiveName]);
-        element.on(lowercase(name), function(event) {
-          scope.$apply(function() {
-            fn(scope, {$event:event});
-          });
-        });
+        element.on(lowercase(name), scope.$applyFn(function(event) {
+          fn(scope, {$event: event});
+        }));
       };
     }];
   }

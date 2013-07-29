@@ -253,11 +253,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // - On mobile browsers, the simulated "fast" click will call this.
     // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
     // Therefore it's safe to use this directive on both mobile and desktop.
-    element.on('click', function(event) {
-      scope.$apply(function() {
-        clickHandler(scope, {$event: event});
-      });
-    });
+    element.on('click', scope.$applyFn(function(event) {
+      clickHandler(scope, {$event: event});
+    }));
 
     element.on('mousedown', function(event) {
       element.addClass(ACTIVE_CLASS_NAME);

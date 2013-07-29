@@ -841,6 +841,145 @@ describe('Scope', function() {
   });
 
 
+  describe('$applyFn', function() {
+    it('should apply expression with full lifecycle', inject(function($rootScope) {
+      var log = '';
+      var child = $rootScope.$new();
+      $rootScope.$watch('a', function(a) { log += '1'; });
+      child.$applyFn('$parent.a=0')();
+      expect(log).toEqual('1');
+    }));
+
+
+    it('should apply function with full lifecycle', inject(function($rootScope) {
+      var log = '';
+      var child = $rootScope.$new();
+      $rootScope.$watch('a', function(a) { log += '1'; });
+      child.$applyFn(function() {
+        this.args = sliceArgs(arguments);
+      })(1, 'a', null);
+      expect(log).toEqual('1');
+      expect(child.args).toEqual([1, 'a', null]);
+    }));
+
+
+    it('should catch exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($rootScope, $exceptionHandler, $log) {
+        var log = '';
+        var child = $rootScope.$new();
+        $rootScope.$watch('a', function(a) { log += '1'; });
+        $rootScope.a = 0;
+        child.$applyFn(function() { throw new Error('MyError'); })();
+        expect(log).toEqual('1');
+        expect($exceptionHandler.errors[0].message).toEqual('MyError');
+        $log.error.logs.shift();
+      });
+    });
+
+
+    it('should log exceptions from $digest', function() {
+      module(function($rootScopeProvider, $exceptionHandlerProvider) {
+        $rootScopeProvider.digestTtl(2);
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($rootScope, $exceptionHandler) {
+        $rootScope.$watch('a', function() {$rootScope.b++;});
+        $rootScope.$watch('b', function() {$rootScope.a++;});
+        $rootScope.a = $rootScope.b = 0;
+
+        expect($rootScope.$applyFn()).toThrow();
+
+        expect($exceptionHandler.errors[0]).toBeDefined();
+
+        expect($rootScope.$$phase).toBeNull();
+      });
+    });
+
+
+    describe('exceptions', function() {
+      var log;
+      beforeEach(module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      }));
+      beforeEach(inject(function($rootScope) {
+        log = '';
+        $rootScope.$watch(function() { log += '$digest;'; });
+        $rootScope.$digest();
+        log = '';
+      }));
+
+
+      it('should execute and return value and update', inject(
+          function($rootScope, $exceptionHandler) {
+        $rootScope.name = 'abc';
+        expect($rootScope.$applyFn(function() {
+          return this.name;
+        })()).toEqual('abc');
+        expect(log).toEqual('$digest;');
+        expect($exceptionHandler.errors).toEqual([]);
+      }));
+
+
+      it('should catch exception and update', inject(function($rootScope, $exceptionHandler) {
+        var error = new Error('MyError');
+        $rootScope.$applyFn(function() { throw error; })();
+        expect(log).toEqual('$digest;');
+        expect($exceptionHandler.errors).toEqual([error]);
+      }));
+    });
+
+
+    describe('recursive $apply protection', function() {
+      it('should throw an exception if $apply is called while an $apply is in progress', inject(
+          function($rootScope) {
+        expect($rootScope.$applyFn(function() {
+          $rootScope.$apply();
+        })).toThrow('[$rootScope:inprog] $apply already in progress');
+      }));
+
+
+      it('should throw an exception if $apply is called while flushing evalAsync queue', inject(
+          function($rootScope) {
+        expect($rootScope.$applyFn(function() {
+          $rootScope.$evalAsync(function() {
+            $rootScope.$apply();
+          });
+        })).toThrow('[$rootScope:inprog] $digest already in progress');
+      }));
+
+
+      it('should throw an exception if $apply is called while a watch is being initialized', inject(
+          function($rootScope) {
+        var childScope1 = $rootScope.$new();
+        childScope1.$watch('x', function() {
+          childScope1.$apply();
+        });
+        expect(childScope1.$applyFn()).toThrow('[$rootScope:inprog] $digest already in progress');
+      }));
+
+
+      it('should thrown an exception if $apply in called from a watch fn (after init)', inject(
+          function($rootScope) {
+        var childScope2 = $rootScope.$new();
+        childScope2.$apply(function() {
+          childScope2.$watch('x', function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+              childScope2.$apply();
+            }
+          });
+        });
+
+        expect(childScope2.$applyFn(function() {
+          childScope2.x = 'something';
+        })).toThrow('[$rootScope:inprog] $digest already in progress');
+      }));
+    });
+  });
+
+
   describe('events', function() {
 
     describe('$on', function() {
