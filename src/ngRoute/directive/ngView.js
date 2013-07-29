@@ -61,10 +61,21 @@ ngRouteModule.directive('ngView', ngViewFactory);
       </file>
 
       <file name="animations.css">
-        .view-example {
+        .example-animate-container {
+          position:relative;
+          background:white;
+          border:1px solid black;
+          height:40px;
+          overflow:hidden;
+        }
+
+        .example-animate-container > div {
+          padding:10px;
+        }
+
+        .view-example.ng-enter, .view-example.ng-leave {
           -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
           -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
           -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
           transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
 

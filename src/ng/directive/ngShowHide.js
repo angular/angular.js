@@ -27,55 +27,41 @@
       Click me: <input type="checkbox" ng-model="checked"><br/>
       <div>
         Show:
-        <span class="check-element example-show-hide" ng-show="checked">
+        <div class="check-element animate-show" ng-show="checked">
           <span class="icon-thumbs-up"></span> I show up when your checkbox is checked.
-        </span>
+        </div>
       </div>
       <div>
         Hide:
-        <span class="check-element example-show-hide" ng-hide="checked">
+        <div class="check-element animate-show" ng-hide="checked">
           <span class="icon-thumbs-down"></span> I hide when your checkbox is checked.
-        </span>
+        </div>
       </div>
     </file>
     <file name="animations.css">
-      .example-show-hide {
+      .animate-show.ng-hide-add, 
+      .animate-show.ng-hide-remove {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
-        -ms-transition:all linear 0.5s;
         -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
-        display:block;
-      }
-      .example-show-hide.ng-hide {
-        display:none;
+        display:block!important;
       }
 
-      .example-show-hide.ng-hide-remove {
-        display:block;
+      .animate-show.ng-hide-add.ng-hide-add-active,
+      .animate-show.ng-hide-remove {
         line-height:0;
         opacity:0;
         padding:0 10px;
       }
-      .example-show-hide.ng-hide-remove.ng-hide-remove-active {
+
+      .animate-show.ng-hide-add,
+      .animate-show.ng-hide-remove.ng-hide-remove-active {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
-      }
-
-      .example-show-hide.ng-hide-add {
-        line-height:20px;
-        opacity:1;
-        padding:10px;
-        border:1px solid black;
-        background:white;
-      }
-      .example-show-hide.ng-hide-add.ng-hide-add-active {
-        line-height:0;
-        opacity:0;
-        padding:0 10px;
       }
 
       .check-element {
@@ -132,54 +118,41 @@ var ngShowDirective = ['$animate', function($animate) {
       Click me: <input type="checkbox" ng-model="checked"><br/>
       <div>
         Show:
-        <span class="check-element example-show-hide" ng-show="checked">
+        <div class="check-element animate-hide" ng-show="checked">
           <span class="icon-thumbs-up"></span> I show up when your checkbox is checked.
-        </span>
+        </div>
       </div>
       <div>
         Hide:
-        <span class="check-element example-show-hide" ng-hide="checked">
+        <div class="check-element animate-hide" ng-hide="checked">
           <span class="icon-thumbs-down"></span> I hide when your checkbox is checked.
-        </span>
+        </div>
       </div>
     </file>
     <file name="animations.css">
-      .example-show-hide {
+      .animate-hide.ng-hide-add, 
+      .animate-hide.ng-hide-remove {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
-        display:block;
-      }
-      .example-show-hide.ng-hide {
-        display:none;
+        display:block!important;
       }
 
-      .example-show-hide.ng-hide-remove {
-        display:block;
+      .animate-hide.ng-hide-add.ng-hide-add-active,
+      .animate-hide.ng-hide-remove {
         line-height:0;
         opacity:0;
         padding:0 10px;
       }
-      .example-show-hide.ng-hide-remove.ng-hide-remove-active {
+
+      .animate-hide.ng-hide-add,
+      .animate-hide.ng-hide-remove.ng-hide-remove-active {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
-      }
-
-      .example-show-hide.ng-hide-add {
-        line-height:20px;
-        opacity:1;
-        padding:10px;
-        border:1px solid black;
-        background:white;
-      }
-      .example-show-hide.ng-hide-add.ng-hide-add-active {
-        line-height:0;
-        opacity:0;
-        padding:0 10px;
       }
 
       .check-element {
