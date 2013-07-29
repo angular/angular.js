@@ -79,16 +79,16 @@ function writeTheRest(writesFuture) {
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
-  writesFuture.push(writer.copyDir('components/components-font-awesome/css', 'components/font-awesome/css'));
-  writesFuture.push(writer.copyDir('components/components-font-awesome/font', 'components/font-awesome/font'));
-  writesFuture.push(writer.copyDir('components/bootstrap', 'components/bootstrap'));
+  writesFuture.push(writer.copyDir('bower_components/components-font-awesome/css', 'components/font-awesome/css'));
+  writesFuture.push(writer.copyDir('bower_components/components-font-awesome/font', 'components/font-awesome/font'));
+  writesFuture.push(writer.copyDir('bower_components/bootstrap', 'components/bootstrap'));
 
   writesFuture.push(writer.copy('node_modules/marked/lib/marked.js', 'components/marked.js'));
-  writesFuture.push(writer.copy('components/lunr.js/lunr.js', 'components/lunr.js'));
-  writesFuture.push(writer.copy('components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
-  writesFuture.push(writer.copy('components/jquery/jquery.js', 'components/jquery.js'));
-  writesFuture.push(writer.copy('components/jquery/jquery.min.js', 'components/jquery.min.js'));
-  writesFuture.push(writer.copy('components/google-code-prettify/src/prettify.js', 'components/google-code-prettify.js'));
+  writesFuture.push(writer.copy('bower_components/lunr.js/lunr.js', 'components/lunr.js'));
+  writesFuture.push(writer.copy('bower_components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
+  writesFuture.push(writer.copy('bower_components/jquery/jquery.js', 'components/jquery.js'));
+  writesFuture.push(writer.copy('bower_components/jquery/jquery.min.js', 'components/jquery.min.js'));
+  writesFuture.push(writer.copy('bower_components/google-code-prettify/src/prettify.js', 'components/google-code-prettify.js'));
   writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap.js', 'components/angular-bootstrap.js'));
   writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap-prettify.js', 'components/angular-bootstrap-prettify.js'));
 

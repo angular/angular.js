@@ -117,7 +117,7 @@ angularFiles = {
   ],
 
   'karma': [
-    'components/jquery/jquery.js',
+    'bower_components/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -154,7 +154,7 @@ angularFiles = {
   ],
 
   'karmaJquery': [
-    'components/jquery/jquery.js',
+    'bower_components/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',

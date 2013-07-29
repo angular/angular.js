@@ -106,7 +106,9 @@ module.exports = function(grunt) {
       bower: {
         command: 'node ./node_modules/bower/bin/bower install',
         options: {
-            stdout: false
+            stdout: true,
+            stderr: true,
+            failOnError: true
         }
       }
     },
@@ -116,7 +118,7 @@ module.exports = function(grunt) {
       scenario: {
         dest: 'build/angular-scenario.js',
         src: [
-          'components/jquery/jquery.js',
+          'bower_components/jquery/jquery.js',
           util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
         ],
         styles: {
