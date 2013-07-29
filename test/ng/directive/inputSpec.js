@@ -380,6 +380,14 @@ describe('input', function() {
   });
 
 
+  it('should perform an $apply on input change', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+    var applySpy = spyOn(scope, '$apply').andCallThrough();
+
+    changeInputValueTo('adam');
+    expect(applySpy).toHaveBeenCalled();
+  });
+
   it('should update the model on "blur" event', function() {
     compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
