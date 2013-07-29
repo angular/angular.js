@@ -42,12 +42,18 @@ function classDirective(name, selector) {
 
 
         function removeClass(classVal) {
-          $animate.removeClass(element, flattenClasses(classVal));
+          classVal = flattenClasses(classVal);
+          if(classVal && classVal.length > 0) {
+            $animate.removeClass(element, classVal);
+          }
         }
 
 
         function addClass(classVal) {
-          $animate.addClass(element, flattenClasses(classVal));
+          classVal = flattenClasses(classVal);
+          if(classVal && classVal.length > 0) {
+            $animate.addClass(element, classVal);
+          }
         }
 
         function flattenClasses(classVal) {
