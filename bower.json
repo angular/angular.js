@@ -1,5 +1,6 @@
 {
   "name": "AngularJS",
+  "directory": "components",
   "devDependencies": {
     "jquery": "git://github.com/components/jquery.git#v1.8.3",
     "lunr.js": "0.4.0",
