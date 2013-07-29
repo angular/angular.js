@@ -64,18 +64,6 @@
   height:0;
 }
 
-.example-animate-container {
-  position:relative;
-  background:white;
-  border:1px solid black;
-  height:40px;
-  overflow:hidden;
-}
-
-.example-animate-container > div {
-  padding:1em;
-}
-
 .animate-container.animations-off * {
   -webkit-transition: none;
   -moz-transition: none;

@@ -51,8 +51,7 @@
         </select>
         <tt>selection={{selection}}</tt>
         <hr/>
-        <div
-          class="example-animate-container animate-switch"
+        <div class="animate-switch-container"
           ng-switch on="selection">
             <div ng-switch-when="settings">Settings Div</div>
             <div ng-switch-when="home">Home Span</div>
@@ -67,7 +66,20 @@
       }
     </file>
     <file name="animations.css">
-      .animate-switch > * {
+      .animate-switch-container {
+        position:relative;
+        background:white;
+        border:1px solid black;
+        height:40px;
+        overflow:hidden;
+      }
+
+      .animate-switch-container > div {
+        padding:10px;
+      }
+
+      .animate-switch-container > .ng-enter,
+      .animate-switch-container > .ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -80,22 +92,17 @@
         bottom:0;
       }
 
-      .example-animate-container > * {
-        display:block;
-        padding:10px;
-      }
-
-      .animate-switch > .ng-enter {
+      .animate-switch-container > .ng-enter {
         top:-50px;
       }
-      .animate-switch > .ng-enter.ng-enter-active {
+      .animate-switch-container > .ng-enter.ng-enter-active {
         top:0;
       }
 
-      .animate-switch > .ng-leave {
+      .animate-switch-container > .ng-leave {
         top:0;
       }
-      .animate-switch > .ng-leave.ng-leave-active {
+      .animate-switch-container > .ng-leave.ng-leave-active {
         top:50px;
       }
     </file>

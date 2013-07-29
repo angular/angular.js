@@ -47,26 +47,31 @@
     <file name="index.html">
       Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
       Show when checked:
-      <span ng-if="checked" class="example-if">
+      <span ng-if="checked" class="animate-if">
         I'm removed when the checkbox is unchecked.
       </span>
     </file>
     <file name="animations.css">
-      .example-if.ng-enter,
-      .example-if.ng-leave {
+      .animate-if {
+        background:white;
+        border:1px solid black;
+        padding:10px;
+      }
+
+      .animate-if.ng-enter, .animate-if.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
       }
 
-      .example-if.ng-enter,
-      .example-if.ng-leave.ng-leave-active {
+      .animate-if.ng-enter,
+      .animate-if.ng-leave.ng-leave-active {
         opacity:0;
       }
 
-      .example-if.ng-enter.ng-enter-active,
-      .example-if.ng-leave {
+      .animate-if.ng-enter.ng-enter-active,
+      .animate-if.ng-leave {
         opacity:1;
       }
     </file>

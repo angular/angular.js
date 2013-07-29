@@ -109,8 +109,7 @@ function classDirective(name, selector) {
       <span ng-class="myVar">Sample Text</span>
      </file>
      <file name="style.css">
-       .my-class-add,
-       .my-class-remove {
+       .my-class-add, .my-class-remove {
          -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
          -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
          -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
