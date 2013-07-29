@@ -90,6 +90,31 @@ describe('$controller', function() {
   });
 
 
+  it('should instantiate controller referenced in scope', function() {
+    var FooCtrl = function($scope) {};
+    $controllerProvider.register('FooCtrl', FooCtrl);
+    var scope = {
+      foo: 'FooCtrl'
+    };
+
+    var ctrl = $controller('foo', {$scope: scope});
+    expect(ctrl instanceof FooCtrl).toBe(true);
+  });
+
+
+  it('should instantiate controller defined on window and referenced in scope', inject(function($window) {
+    var scope = {
+      foo: 'a.Foo'
+    };
+    var Foo = function() {};
+    $window.a = {Foo: Foo};
+
+    var foo = $controller('foo', {$scope: scope});
+    expect(foo).toBeDefined();
+    expect(foo instanceof Foo).toBe(true);
+  }));
+
+
   it('should instantiate controller defined on window', inject(function($window) {
     var scope = {};
     var Foo = function() {};

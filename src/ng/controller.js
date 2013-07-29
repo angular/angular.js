@@ -58,15 +58,24 @@ function $ControllerProvider() {
      * BC version}.
      */
     return function(expression, locals) {
-      var instance, match, constructor, identifier;
+      var instance, match, constructor, identifier, constructorObject;
 
       if(isString(expression)) {
         match = expression.match(CNTRL_REG),
         constructor = match[1],
         identifier = match[3];
-        expression = controllers.hasOwnProperty(constructor)
-            ? controllers[constructor]
-            : getter(locals.$scope, constructor, true) || getter($window, constructor, true);
+        if(controllers.hasOwnProperty(constructor)) {
+          expression = controllers[constructor];
+        }
+        else {
+          constructorObject = getter(locals.$scope, constructor, true);
+          if(isString(constructorObject)) {
+            expression = controllers[constructorObject] || getter($window, constructorObject, true);
+          }
+          else {
+            expression = constructorObject || getter($window, constructor, true);
+          }
+        }
 
         assertArgFn(expression, constructor, true);
       }
