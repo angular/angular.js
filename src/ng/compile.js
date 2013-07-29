@@ -152,6 +152,7 @@ function $CompileProvider($provide) {
   var hasDirectives = {},
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
+      COMMENT_END_DIRECTIVE_REGEXP = /^\s*(?:directive\:)?\s*([\d\w\-_]+)\s*$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
       aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|file):/,
       imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file):|data:image\//;
@@ -601,20 +602,21 @@ function $CompileProvider($provide) {
       var nodeType = node.nodeType,
           attrsMap = attrs.$attr,
           match,
-          className;
+          className,
+          name, nName,
+          startName, endName;
 
       switch(nodeType) {
         case 1: /* Element */
           // use the node name: <directive>
-          addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
+          name = nodeName_(node).toLowerCase();
+          nName = directiveNormalize(name);
+          handleStartEndName(name, nName);
+          addDirective(directives, nName, 'E', maxPriority, ignoreDirective, startName, endName);
 
           // iterate over the attributes
-          for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
+          for (var attr, ngAttrName, value, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
-            var attrStartName;
-            var attrEndName;
-            var index;
 
             attr = nAttrs[j];
             if (!msie || msie >= 8 || attr.specified) {
@@ -624,12 +626,8 @@ function $CompileProvider($provide) {
               if (NG_ATTR_BINDING.test(ngAttrName)) {
                 name = ngAttrName.substr(6).toLowerCase();
               }
-              if ((index = ngAttrName.lastIndexOf('Start')) != -1 && index == ngAttrName.length - 5) {
-                attrStartName = name;
-                attrEndName = name.substr(0, name.length - 5) + 'end';
-                name = name.substr(0, name.length - 6);
-              }
               nName = directiveNormalize(name.toLowerCase());
+              handleStartEndName(name, nName);
               attrsMap[nName] = name;
               attrs[nName] = value = trim((msie && name == 'href')
                 ? decodeURIComponent(node.getAttribute(name, 2))
@@ -638,7 +636,7 @@ function $CompileProvider($provide) {
                 attrs[nName] = true; // presence means true
               }
               addAttrInterpolateDirective(node, directives, value, nName);
-              addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName, attrEndName);
+              addDirective(directives, nName, 'A', maxPriority, ignoreDirective, startName, endName);
             }
           }
 
@@ -646,8 +644,10 @@ function $CompileProvider($provide) {
           className = node.className;
           if (isString(className) && className !== '') {
             while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
-              nName = directiveNormalize(match[2]);
-              if (addDirective(directives, nName, 'C', maxPriority, ignoreDirective)) {
+              name = match[2];
+              nName = directiveNormalize(name);
+              handleStartEndName(name, nName);
+              if (addDirective(directives, nName, 'C', maxPriority, ignoreDirective, startName, endName)) {
                 attrs[nName] = trim(match[3]);
               }
               className = className.substr(match.index + match[0].length);
@@ -661,8 +661,10 @@ function $CompileProvider($provide) {
           try {
             match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
             if (match) {
-              nName = directiveNormalize(match[1]);
-              if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective)) {
+              name = match[1];
+              nName = directiveNormalize(name);
+              handleStartEndName(name, nName);
+              if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective, startName, endName)) {
                 attrs[nName] = trim(match[2]);
               }
             }
@@ -675,48 +677,115 @@ function $CompileProvider($provide) {
 
       directives.sort(byPriority);
       return directives;
+
+      // takes care of populating (or emptying) startName and endName
+      // Also changes `name` and `nName` in the external scope if necessary
+      function handleStartEndName(_name, _nName) {
+        var index;
+        if ((index = _nName.lastIndexOf('Start')) != -1 && index == _nName.length - 5) {
+          startName = _name;
+          endName = _name.substr(0, _name.length - 5) + 'end';
+          name = _name.substr(0, _name.length - 6);
+          nName = directiveNormalize(name);
+        } else {
+            startName = endName = undefined;
+        }
+        return name;
+      }
     }
 
     /**
      * Given a node with an directive-start it collects all of the siblings until it find directive-end.
      * @param node
-     * @param attrStart
-     * @param attrEnd
+     * @param nameStart
+     * @param nameEnd
+     * @param location
      * @returns {*}
      */
-    function groupScan(node, attrStart, attrEnd) {
-      var nodes = [];
-      var depth = 0;
-      if (attrStart && node.hasAttribute && node.hasAttribute(attrStart)) {
-        var startNode = node;
-        do {
-          if (!node) {
-            throw $compileMinErr('uterdir', "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
-          }
-          if (node.nodeType == 1 /** Element **/) {
-            if (node.hasAttribute(attrStart)) depth++;
-            if (node.hasAttribute(attrEnd)) depth--;
-          }
-          nodes.push(node);
-          node = node.nextSibling;
-        } while (depth > 0);
-      } else {
-        nodes.push(node);
+    function groupScan(node, nameStart, nameEnd, location) {
+      var nodes = [],
+          depth = 0,
+          $node, name;
+      if (nameStart) {
+        switch (location) {
+          case 'E': /* Element */
+            do {
+              if (!node) {
+                throw $compileMinErr('uterdir', "Unterminated directive, found '{0}' but no matching '{1}' found.", nameStart, nameEnd);
+              }
+              if (node.nodeType == 1 /** Element **/) {
+                name = nodeName_(node).toLowerCase();
+                if (name == nameStart) depth++;
+                if (name == nameEnd) depth--;
+              }
+              nodes.push(node);
+              node = node.nextSibling;
+            } while (depth > 0);
+            break;
+
+          case 'A': /* Attribute */
+            if (node.hasAttribute && node.hasAttribute(nameStart)) {
+              do {
+                if (!node) {
+                  throw $compileMinErr('uterdir', "Unterminated directive, found '{0}' but no matching '{1}' found.", nameStart, nameEnd);
+                }
+                if (node.nodeType == 1 /** Element **/) {
+                  if (node.hasAttribute(nameStart)) depth++;
+                  if (node.hasAttribute(nameEnd)) depth--;
+                }
+                nodes.push(node);
+                node = node.nextSibling;
+              } while (depth > 0);
+            }
+            break;
+
+          case 'C': /* Class */
+            do {
+              if (!node) {
+                throw $compileMinErr('uterdir', "Unterminated directive, found '{0}' but no matching '{1}' found.", nameStart, nameEnd);
+              }
+              if (node.nodeType == 1 /** Element **/) {
+                $node = jqLite(node);
+                if ($node.hasClass(nameStart) || $node.hasClass(nameStart + ":")) depth++;
+                if ($node.hasClass(nameEnd)) depth--;
+              }
+              nodes.push(node);
+              node = node.nextSibling;
+            } while (depth > 0);
+            break;
+
+          case 'M': /* Comment */
+            do {
+              if (!node) {
+                throw $compileMinErr('uterdir', "Unterminated directive, found '{0}' but no matching '{1}' found.", nameStart, nameEnd);
+              }
+              if (node.nodeType == 8 /** Comment **/) {
+                name = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
+                if (name && name[1] == nameStart) depth++;
+                name = COMMENT_END_DIRECTIVE_REGEXP.exec(node.nodeValue);
+                if (name && name[1] == nameEnd) depth--;
+              }
+              nodes.push(node);
+              node = node.nextSibling;
+            } while (depth > 0);
+            break;
+        }
       }
-      return jqLite(nodes);
+      return jqLite(nodes.length ? nodes : node);
     }
 
     /**
      * Wrapper for linking function which converts normal linking function into a grouped
      * linking function.
      * @param linkFn
-     * @param attrStart
-     * @param attrEnd
+     * @param nameStart
+     * @param nameEnd
+     * @param location
      * @returns {Function}
      */
-    function groupElementsLinkFnWrapper(linkFn, attrStart, attrEnd) {
+    function groupElementsLinkFnWrapper(linkFn, nameStart, nameEnd, location) {
       return function(scope, element, attrs, controllers) {
-        element = groupScan(element[0], attrStart, attrEnd);
+        element = groupScan(element[0], nameStart, nameEnd, location);
         return linkFn(scope, element, attrs, controllers);
       }
     }
@@ -757,12 +826,12 @@ function $CompileProvider($provide) {
       // executes all directives on the current element
       for(var i = 0, ii = directives.length; i < ii; i++) {
         directive = directives[i];
-        var attrStart = directive.$$start;
-        var attrEnd = directive.$$end;
+        var nameStart = directive.$$start;
+        var nameEnd = directive.$$end;
 
         // collect multiblock sections
-        if (attrStart) {
-          $compileNode = groupScan(compileNode, attrStart, attrEnd)
+        if (nameStart) {
+          $compileNode = groupScan(compileNode, nameStart, nameEnd, directive.$$location)
         }
         $template = undefined;
 
@@ -794,7 +863,7 @@ function $CompileProvider($provide) {
           transcludeDirective = directive;
           terminalPriority = directive.priority;
           if (directiveValue == 'element') {
-            $template = groupScan(compileNode, attrStart, attrEnd)
+            $template = groupScan(compileNode, nameStart, nameEnd, directive.$$location);
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
@@ -868,9 +937,9 @@ function $CompileProvider($provide) {
           try {
             linkFn = directive.compile($compileNode, templateAttrs, childTranscludeFn);
             if (isFunction(linkFn)) {
-              addLinkFns(null, linkFn, attrStart, attrEnd);
+              addLinkFns(null, linkFn, nameStart, nameEnd, directive.$$location);
             } else if (linkFn) {
-              addLinkFns(linkFn.pre, linkFn.post, attrStart, attrEnd);
+              addLinkFns(linkFn.pre, linkFn.post, nameStart, nameEnd, directive.$$location);
             }
           } catch (e) {
             $exceptionHandler(e, startingTag($compileNode));
@@ -892,14 +961,14 @@ function $CompileProvider($provide) {
 
       ////////////////////
 
-      function addLinkFns(pre, post, attrStart, attrEnd) {
+      function addLinkFns(pre, post, nameStart, nameEnd, location) {
         if (pre) {
-          if (attrStart) pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
+          if (nameStart) pre = groupElementsLinkFnWrapper(pre, nameStart, nameEnd, location);
           pre.require = directive.require;
           preLinkFns.push(pre);
         }
         if (post) {
-          if (attrStart) post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
+          if (nameStart) post = groupElementsLinkFnWrapper(post, nameStart, nameEnd, location);
           post.require = directive.require;
           postLinkFns.push(post);
         }
@@ -1082,7 +1151,7 @@ function $CompileProvider($provide) {
      *   * `M`: comment
      * @returns true if directive was added.
      */
-    function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName, endAttrName) {
+    function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startName, endName) {
       if (name === ignoreDirective) return null;
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
@@ -1092,8 +1161,8 @@ function $CompileProvider($provide) {
             directive = directives[i];
             if ( (maxPriority === undefined || maxPriority > directive.priority) &&
                  directive.restrict.indexOf(location) != -1) {
-              if (startAttrName) {
-                directive = inherit(directive, {$$start: startAttrName, $$end: endAttrName});
+              if (startName) {
+                directive = inherit(directive, {$$start: startName, $$end: endName, $$location: location});
               }
               tDirectives.push(directive);
               match = directive;
