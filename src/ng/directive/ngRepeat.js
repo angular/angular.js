@@ -127,7 +127,7 @@
       ]">
         I have {{friends.length}} friends. They are:
         <input type="search" ng-model="q" placeholder="filter friends..." />
-        <ul>
+        <ul class="example-animate-container">
           <li class="animate-repeat" ng-repeat="friend in friends | filter:q">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
           </li>
@@ -135,7 +135,22 @@
       </div>
     </file>
     <file name="animations.css">
-      .animate-repeat {
+      .example-animate-container {
+        background:white;
+        border:1px solid black;
+        list-style:none;
+        margin:0;
+        padding:0;
+      }
+
+      .example-animate-container > li {
+        padding:10px;
+        list-style:none;
+      }
+
+      .animate-repeat.ng-enter,
+      .animate-repeat.ng-leave,
+      .animate-repeat.ng-move {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
         -o-transition:all linear 0.5s;
@@ -145,19 +160,25 @@
       .animate-repeat.ng-enter {
         line-height:0;
         opacity:0;
+        padding-top:0;
+        padding-bottom:0;
       }
       .animate-repeat.ng-enter.ng-enter-active {
         line-height:20px;
         opacity:1;
+        padding:10px;
       }
 
       .animate-repeat.ng-leave {
         opacity:1;
         line-height:20px;
+        padding:10px;
       }
       .animate-repeat.ng-leave.ng-leave-active {
         opacity:0;
         line-height:0;
+        padding-top:0;
+        padding-bottom:0;
       }
 
       .animate-repeat.ng-move { }
