@@ -10,7 +10,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine-node');
   grunt.loadNpmTasks('grunt-ddescribe-iit');
   grunt.loadNpmTasks('grunt-merge-conflict');
-  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-parallel');
   grunt.loadTasks('lib/grunt');
 
@@ -100,18 +99,6 @@ module.exports = function(grunt) {
 
 
     clean: {build: ['build']},
-
-
-    shell: {
-      bower: {
-        command: 'node ./node_modules/bower/bin/bower install',
-        options: {
-            stdout: true,
-            stderr: true,
-            failOnError: true
-        }
-      }
-    },
 
 
     build: {
@@ -245,10 +232,10 @@ module.exports = function(grunt) {
   //alias tasks
   grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
-  grunt.registerTask('minify', ['shell:bower','clean', 'build', 'minall']);
+  grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
   grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['shell:bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict']);
   grunt.registerTask('default', ['package']);
 };
