@@ -361,51 +361,62 @@ function $RouteProvider(){
     /////////////////////////////////////////////////////
 
     /**
+     * @param when {string} route when template to match the url against
+     * @param whenProperties {Object} properties to define when's matching behavior
+     * @return {function} a function that takes a route and returns the route params
+     *   or null if the route does not match
+     */
+    function compileRoute(when, whenProperties) {
+      // Escape regexp special characters.
+      when = '^' + when.replace(/[-\/\\^$:*+?.()|[\]{}]/g, "\\$&") + '$';
+
+      var regexString = '',
+        params = [],
+        re = /\\([:*])(\w+)/g,
+        paramMatch,
+        lastMatchedIndex = 0,
+        regex;
+
+      while ((paramMatch = re.exec(when)) !== null) {
+        // Find each :param in `when` and replace it with a capturing group.
+        // Append all other sections of when unchanged.
+        regexString += when.slice(lastMatchedIndex, paramMatch.index);
+        switch(paramMatch[1]) {
+        case ':':
+          regexString += '([^\\/]*)';
+          break;
+        case '*':
+          regexString += '(.*)';
+          break;
+        }
+        params.push(paramMatch[2]);
+        lastMatchedIndex = re.lastIndex;
+      }
+      // Append trailing path part.
+      regexString += when.substr(lastMatchedIndex);
+      regex = new RegExp(regexString, whenProperties.caseInsensitiveMatch ? 'i' : '');
+      return function(on) {
+        var match = on.match(regex),
+          dst = {};
+        if (match) {
+          forEach(params, function(name, index) {
+            dst[name] = match[index + 1];
+          });
+        }
+        return match ? dst : null;
+      };
+    }
+
+
+    /**
      * @param on {string} current url
      * @param when {string} route when template to match the url against
      * @param whenProperties {Object} properties to define when's matching behavior
      * @return {?Object}
      */
     function switchRouteMatcher(on, when, whenProperties) {
-      // TODO(i): this code is convoluted and inefficient, we should construct the route matching
-      //   regex only once and then reuse it
-
-      // Escape regexp special characters.
-      when = '^' + when.replace(/[-\/\\^$:*+?.()|[\]{}]/g, "\\$&") + '$';
-
-      var regex = '',
-          params = [],
-          dst = {};
-
-      var re = /\\([:*])(\w+)/g,
-          paramMatch,
-          lastMatchedIndex = 0;
-
-      while ((paramMatch = re.exec(when)) !== null) {
-        // Find each :param in `when` and replace it with a capturing group.
-        // Append all other sections of when unchanged.
-        regex += when.slice(lastMatchedIndex, paramMatch.index);
-        switch(paramMatch[1]) {
-          case ':':
-            regex += '([^\\/]*)';
-            break;
-          case '*':
-            regex += '(.*)';
-            break;
-        }
-        params.push(paramMatch[2]);
-        lastMatchedIndex = re.lastIndex;
-      }
-      // Append trailing path part.
-      regex += when.substr(lastMatchedIndex);
-
-      var match = on.match(new RegExp(regex, whenProperties.caseInsensitiveMatch ? 'i' : ''));
-      if (match) {
-        forEach(params, function(name, index) {
-          dst[name] = match[index + 1];
-        });
-      }
-      return match ? dst : null;
+      return (whenProperties.routeMatcherFn ||
+              (whenProperties.routeMatcherFn = compileRoute(when, whenProperties)))(on);
     }
 
     function updateRoute() {
