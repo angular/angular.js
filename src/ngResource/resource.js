@@ -473,6 +473,10 @@ angular.module('ngResource', ['ng']).
                 promise = value.$promise;
 
             if (data) {
+              if ( angular.isArray(data) != !!action.isArray ) {
+                return $q.reject("Error in resource configuration. Expected response to contain an " +
+                  (action.isArray?'array':'object') + " but got an " + (angular.isArray(data)?'array':'object'));
+              }
               if (action.isArray) {
                 value.length = 0;
                 forEach(data, function(item) {

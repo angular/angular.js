@@ -807,6 +807,27 @@ describe("resource", function() {
     });
   });
 
+  it('should fail if action expects an object but response is an array', function() {
+    var successHandler = jasmine.createSpy('successHandler');
+    var failureHandler = jasmine.createSpy('failureHandler');
+    $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+    $resource('/Customer/123').query().$promise.then(successHandler, failureHandler);
+    $httpBackend.flush();
+    expect(successHandler).not.toHaveBeenCalled();
+    expect(failureHandler).toHaveBeenCalledWith(
+      'Error in resource configuration. Expected response to contain an array but got an object');
+  });
+
+  it('should fail if action expects an array but response is an object', function() {
+    var successHandler = jasmine.createSpy('successHandler');
+    var failureHandler = jasmine.createSpy('failureHandler');
+    $httpBackend.expect('GET', '/Customer/123').respond([1,2,3]);
+    $resource('/Customer/123').get().$promise.then(successHandler, failureHandler);
+    $httpBackend.flush();
+    expect(successHandler).not.toHaveBeenCalled();
+    expect(failureHandler).toHaveBeenCalledWith(
+      'Error in resource configuration. Expected response to contain an object but got an array');
+  });
 
   it('should transform request/response', function() {
     var Person = $resource('/Person/:id', {}, {
