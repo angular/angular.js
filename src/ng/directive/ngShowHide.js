@@ -5,17 +5,77 @@
  * @name ng.directive:ngShow
  *
  * @description
- * The `ngShow` and `ngHide` directives show or hide a portion of the DOM tree (HTML)
- * conditionally based on **"truthy"** values evaluated within an {expression}. In other
- * words, if the expression assigned to **ngShow evaluates to a true value** then **the element is set to visible**
- * (via `display:block` in css) and **if false** then **the element is set to hidden** (so display:none).
- * With ngHide this is the reverse whereas true values cause the element itself to become
- * hidden.
+ * The `ngShow` directive shows and hides the given HTML element conditionally based on the expression
+ * provided to the ngShow attribute. The show and hide mechanism is a achieved by removing and adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
+ * in AngularJS which sets the display style to none (using an !important flag).
  *
+ * <pre>
+ * <!-- when $scope.myValue is truthy (element is visible) -->
+ * <div ng-show="myValue"></div>
+ *
+ * <!-- when $scope.myValue is falsy (element is hidden) -->
+ * <div ng-show="myValue" class="ng-hide"></div>
+ * </pre>
+ *
+ * When the ngShow expression evaluates to false then the ng-hide CSS class is added to the class attribute
+ * on the element causing it to become hidden. When true, the ng-hide CSS class is removed
+ * from the element causing the element not to appear hidden.
+ *
+ * ## Why is !important used?
+ *
+ * You may be wondering why !important is used for the .ng-hide CSS class. This is because the `.ng-hide` selector
+ * can be easily overridden by heavier selectors. For example, something as simple
+ * as changing the display style on a HTML list item would make hidden elements appear visible.
+ * This also becomes a bigger issue when dealing with CSS frameworks.
+ *
+ * By using !important, the show and hide behavior will work as expected despite any clash between CSS selector
+ * specificity (when !important isn't used with any conflicting styles). If a developer chooses to override the
+ * styling to change how to hide an element then it is just a matter of using !important in their own CSS code.
+ *
+ * ### Overriding .ng-hide
+ *
+ * If you wish to change the hide behavior with ngShow/ngHide then this can be achieved by
+ * restating the styles for the .ng-hide class in CSS:
+ * <pre>
+ * .ng-hide {
+ *   //!annotate CSS Specificity|Not to worry, this will override the AngularJS default...
+ *   display:block!important;
+ *
+ *   //this is just another form of hiding an element
+ *   position:absolute;
+ *   top:-9999px;
+ *   left:-9999px;
+ * }
+ * </pre>
+ *
+ * Just remember to include the important flag so the CSS override will function.
+ *
+ * ## A note about animations with ngShow
+ *
+ * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
+ * is true and false. This system works similar to the animation system present with ngClass, however, the
+ * only difference is that you must also include the !important flag to override the display property so
+ * that you can perform an animation when the element is hidden during the time of the animation.
+ *
+ * <pre>
+ * //
+ * //a working example can be found at the bottom of this page
+ * //
+ * .my-element.ng-hide-add, .my-element.ng-hide-remove {
+ *   transition:0.5s linear all;
+ *   display:block!important;
+ * }
+ *
+ * .my-element.ng-hide-add { ... }
+ * .my-element.ng-hide-add.ng-hide-add-active { ... }
+ * .my-element.ng-hide-remove { ... }
+ * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
+ * </pre>
  *
  * @animations
- * show - happens after the ngShow expression evaluates to a truthy value and the contents are set to visible
- * hide - happens before the ngShow expression evaluates to a non truthy value and just before the contents are set to hidden
+ * addClass: .ng-hide - happens after the ngShow expression evaluates to a truthy value and the just before contents are set to visible
+ * removeClass: .ng-hide - happens after the ngShow expression evaluates to a non truthy value and just before the contents are set to hidden
  *
  * @element ANY
  * @param {expression} ngShow If the {@link guide/expression expression} is truthy
@@ -97,16 +157,77 @@ var ngShowDirective = ['$animate', function($animate) {
  * @name ng.directive:ngHide
  *
  * @description
- * The `ngShow` and `ngHide` directives show or hide a portion of the DOM tree (HTML)
- * conditionally based on **"truthy"** values evaluated within an {expression}. In other
- * words, if the expression assigned to **ngShow evaluates to a true value** then **the element is set to visible**
- * (via `display:block` in css) and **if false** then **the element is set to hidden** (so display:none).
- * With ngHide this is the reverse whereas true values cause the element itself to become
- * hidden.
+ * The `ngHide` directive shows and hides the given HTML element conditionally based on the expression
+ * provided to the ngHide attribute. The show and hide mechanism is a achieved by removing and adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
+ * in AngularJS which sets the display style to none (using an !important flag).
+ *
+ * <pre>
+ * <!-- when $scope.myValue is truthy (element is hidden) -->
+ * <div ng-hide="myValue"></div>
+ *
+ * <!-- when $scope.myValue is falsy (element is visible) -->
+ * <div ng-hide="myValue" class="ng-hide"></div>
+ * </pre>
+ *
+ * When the ngHide expression evaluates to true then the .ng-hide CSS class is added to the class attribute
+ * on the element causing it to become hidden. When false, the ng-hide CSS class is removed
+ * from the element causing the element not to appear hidden.
+ *
+ * ## Why is !important used?
+ *
+ * You may be wondering why !important is used for the .ng-hide CSS class. This is because the `.ng-hide` selector
+ * can be easily overridden by heavier selectors. For example, something as simple
+ * as changing the display style on a HTML list item would make hidden elements appear visible.
+ * This also becomes a bigger issue when dealing with CSS frameworks.
+ *
+ * By using !important, the show and hide behavior will work as expected despite any clash between CSS selector
+ * specificity (when !important isn't used with any conflicting styles). If a developer chooses to override the
+ * styling to change how to hide an element then it is just a matter of using !important in their own CSS code.
+ *
+ * ### Overriding .ng-hide
+ *
+ * If you wish to change the hide behavior with ngShow/ngHide then this can be achieved by
+ * restating the styles for the .ng-hide class in CSS:
+ * <pre>
+ * .ng-hide {
+ *   //!annotate CSS Specificity|Not to worry, this will override the AngularJS default...
+ *   display:block!important;
+ *
+ *   //this is just another form of hiding an element
+ *   position:absolute;
+ *   top:-9999px;
+ *   left:-9999px;
+ * }
+ * </pre>
+ *
+ * Just remember to include the important flag so the CSS override will function.
+ *
+ * ## A note about animations with ngHide
+ *
+ * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
+ * is true and false. This system works similar to the animation system present with ngClass, however, the
+ * only difference is that you must also include the !important flag to override the display property so
+ * that you can perform an animation when the element is hidden during the time of the animation.
+ *
+ * <pre>
+ * //
+ * //a working example can be found at the bottom of this page
+ * //
+ * .my-element.ng-hide-add, .my-element.ng-hide-remove {
+ *   transition:0.5s linear all;
+ *   display:block!important;
+ * }
+ *
+ * .my-element.ng-hide-add { ... }
+ * .my-element.ng-hide-add.ng-hide-add-active { ... }
+ * .my-element.ng-hide-remove { ... }
+ * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
+ * </pre>
  *
  * @animations
- * show - happens after the ngHide expression evaluates to a non truthy value and the contents are set to visible
- * hide - happens after the ngHide expression evaluates to a truthy value and just before the contents are set to hidden
+ * removeClass: .ng-hide - happens after the ngHide expression evaluates to a truthy value and just before the contents are set to hidden
+ * addClass: .ng-hide - happens after the ngHide expression evaluates to a non truthy value and just before the contents are set to visible
  *
  * @element ANY
  * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
