@@ -473,6 +473,11 @@ angular.module('ngResource', ['ng']).
                 promise = value.$promise;
 
             if (data) {
+              if ( angular.isArray(data) != !!action.isArray ) {
+                throw ngResourceMinErr('badcfg', 'Error in resource configuration. Expected response' +
+                  ' to contain an {0} but got an {1}', 
+                  action.isArray?'array':'object', angular.isArray(data)?'array':'object');
+              }
               if (action.isArray) {
                 value.length = 0;
                 forEach(data, function(item) {

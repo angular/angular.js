@@ -807,7 +807,6 @@ describe("resource", function() {
     });
   });
 
-
   it('should transform request/response', function() {
     var Person = $resource('/Person/:id', {}, {
       save: {
@@ -1033,4 +1032,52 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
   });
+});
+
+describe('resource', function() {
+  var $httpBackend, $resource;
+  
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
+  
+  beforeEach(module('ngResource'));
+  
+  beforeEach(inject(function($injector) {
+    $httpBackend = $injector.get('$httpBackend');
+    $resource = $injector.get('$resource');
+  }));
+
+
+  it('should fail if action expects an object but response is an array', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+    
+    $resource('/Customer/123').query()
+      .$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalledWith(
+      '[ngResource:badcfg] Error in resource configuration. Expected response to contain an array but got an object');
+  });
+
+  it('should fail if action expects an array but response is an object', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Customer/123').respond([1,2,3]);
+    
+    $resource('/Customer/123').get()
+      .$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalledWith(
+      '[ngResource:badcfg] Error in resource configuration. Expected response to contain an object but got an array');
+  });
+
+
 });

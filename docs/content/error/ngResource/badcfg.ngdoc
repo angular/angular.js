@@ -1,0 +1,4 @@
+@ngdoc error
+@name ngResource:badcfg
+@fullName Response does not match configured parameter
+@description
