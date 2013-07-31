@@ -4,6 +4,9 @@
 <!--[if IE 8]>    <html class="no-js lt-ie9 ng-app: docsApp;" lang="en" ng-controller="DocsController"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js ng-app: docsApp;" lang="en" ng-controller="DocsController"> <!--<![endif]-->
 <head>
+  <style>
+    .ng-hide { display:none!important; }
+  </style>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="Description"
@@ -201,8 +204,8 @@
     </div>
   </header>
 
- <div id="docs-fold-overlay" ng-show="docs_fold" ng-click="fold(null)"></div>
- <div class="foldout" id="docs-fold" ng-show="docs_fold">
+ <div class="ng-hide" id="docs-fold-overlay" ng-show="docs_fold" ng-click="fold(null)"></div>
+ <div class="foldout ng-hide" id="docs-fold" ng-show="docs_fold">
    <div id="docs-fold-close" ng-click="fold(null)">
      <span class="icon-remove-sign"></span>
    </div>
