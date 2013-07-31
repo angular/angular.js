@@ -74,16 +74,6 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name ng.$log#warn
-       * @methodOf ng.$log
-       *
-       * @description
-       * Write a warning message
-       */
-      warn: consoleLog('warn'),
-
-      /**
-       * @ngdoc method
        * @name ng.$log#info
        * @methodOf ng.$log
        *
@@ -91,6 +81,16 @@ function $LogProvider(){
        * Write an information message
        */
       info: consoleLog('info'),
+
+      /**
+       * @ngdoc method
+       * @name ng.$log#warn
+       * @methodOf ng.$log
+       *
+       * @description
+       * Write a warning message
+       */
+      warn: consoleLog('warn'),
 
       /**
        * @ngdoc method
