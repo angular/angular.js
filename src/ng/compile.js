@@ -869,10 +869,10 @@ function $CompileProvider($provide) {
       }
 
 
-      function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
+      function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn, forceSameAttrs) {
         var attrs, $element, i, ii, linkFn, controller;
 
-        if (compileNode === linkNode) {
+        if (forceSameAttrs || compileNode === linkNode) {
           attrs = templateAttrs;
         } else {
           attrs = shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
@@ -1151,9 +1151,14 @@ function $CompileProvider($provide) {
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
+            // When a node is cloned above this would cause the link functions to create a new attrs object,
+            // but by setting their last argument to "true" below we force them to keep the same attrs object.
+            // Without this flag the $$observers is put on the afterTemplateNodeLinkFn version of attrs and the $set
+            // is called on the beforeTemplateNodeLinkFn version of the attrs whenever we
+            // make a cloned linkNode above, thus breaking $observe. See github issue #1941
             afterTemplateNodeLinkFn(function() {
-              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
-            }, scope, linkNode, $rootElement, controller);
+              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller, true);
+            }, scope, linkNode, $rootElement, controller, true);
           }
           linkQueue = null;
         }).
@@ -1169,8 +1174,8 @@ function $CompileProvider($provide) {
           linkQueue.push(controller);
         } else {
           afterTemplateNodeLinkFn(function() {
-            beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, controller);
-          }, scope, node, rootElement, controller);
+            beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, controller, true);
+          }, scope, node, rootElement, controller, true);
         }
       };
     }
