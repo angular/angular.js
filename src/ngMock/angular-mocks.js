@@ -664,7 +664,7 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
       var animate = {
         queue : [],
         enabled : $delegate.enabled,
-        process : function(name) {
+        flushNext : function(name) {
           var tick = animate.queue.shift();
           expect(tick.method).toBe(name);
           tick.fn();

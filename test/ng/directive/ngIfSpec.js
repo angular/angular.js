@@ -119,7 +119,7 @@ describe('ngIf animations', function () {
       $rootScope.$digest();
       $scope.$apply('value = true');
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('Hi');
 
       expect(element.children().length).toBe(1);
@@ -136,13 +136,13 @@ describe('ngIf animations', function () {
       ))($scope);
       $scope.$apply('value = true');
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('Hi');
 
       $scope.$apply('value = false');
       expect(element.children().length).toBe(1);
 
-      item = $animate.process('leave').element;
+      item = $animate.flushNext('leave').element;
       expect(item.text()).toBe('Hi');
 
       expect(element.children().length).toBe(0);

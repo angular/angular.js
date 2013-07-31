@@ -255,7 +255,7 @@ describe('ngSwitch animations', function() {
       $scope.val = 'one';
       $scope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('one');
   }));
 
@@ -276,16 +276,16 @@ describe('ngSwitch animations', function() {
       $scope.val = 'two';
       $scope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('two');
 
       $scope.val = 'three';
       $scope.$digest();
 
-      item = $animate.process('leave').element;
+      item = $animate.flushNext('leave').element;
       expect(item.text()).toBe('two');
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('three');
   }));
 
