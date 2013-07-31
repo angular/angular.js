@@ -388,7 +388,7 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('data');
   }));
 
@@ -404,13 +404,13 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('data');
 
       $rootScope.tpl = '';
       $rootScope.$digest();
 
-      item = $animate.process('leave').element;
+      item = $animate.flushNext('leave').element;
       expect(item.text()).toBe('data');
   }));
 
@@ -427,14 +427,14 @@ describe('ngInclude animations', function() {
       ))($rootScope);
       $rootScope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('one');
 
       $rootScope.tpl = 'two';
       $rootScope.$digest();
 
-      var itemA = $animate.process('leave').element;
-      var itemB = $animate.process('enter').element;
+      var itemA = $animate.flushNext('leave').element;
+      var itemB = $animate.flushNext('enter').element;
       expect(itemA.attr('ng-include')).toBe('tpl');
       expect(itemB.attr('ng-include')).toBe('tpl');
       expect(itemA).not.toEqual(itemB);
