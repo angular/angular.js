@@ -135,6 +135,9 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // If we didn't find an allowable region, bust the click.
     event.stopPropagation();
     event.preventDefault();
+    
+    // Blur focused form elements
+    event.target && event.target.blur();
   }
 
 
