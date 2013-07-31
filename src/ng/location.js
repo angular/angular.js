@@ -363,7 +363,7 @@ LocationHashbangInHtml5Url.prototype =
         this.$$search[search] = paramValue;
       }
     } else {
-      this.$$search = isString(search) ? parseKeyValue(search) : search;
+      this.$$search = isString(search) ? parseKeyValue(search) : search || {};
     }
 
     this.$$compose();
