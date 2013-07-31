@@ -309,18 +309,28 @@ angular.mock.$ExceptionHandlerProvider = function() {
  *
  */
 angular.mock.$LogProvider = function() {
+  var debug = true;
 
   function concat(array1, array2, index) {
     return array1.concat(Array.prototype.slice.call(array2, index));
   }
 
+  this.debugEnabled = function(flag) {
+  	if (flag) {
+			debug = flag;
+			return this;
+		} else {
+			return debug;
+		}
+	};
 
   this.$get = function () {
     var $log = {
       log: function() { $log.log.logs.push(concat([], arguments, 0)); },
       warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
       info: function() { $log.info.logs.push(concat([], arguments, 0)); },
-      error: function() { $log.error.logs.push(concat([], arguments, 0)); }
+      error: function() { $log.error.logs.push(concat([], arguments, 0)); },
+      debug: function() { $log.debug.logs.push(concat([], arguments, 0)); }
     };
 
     /**
@@ -392,6 +402,21 @@ angular.mock.$LogProvider = function() {
        * </pre>
        */
       $log.error.logs = [];
+        /**
+       * @ngdoc property
+       * @name ngMock.$log#debug.logs
+       * @propertyOf ngMock.$log
+       *
+       * @description
+       * Array of messages logged using {@link ngMock.$log#debug}.
+       *
+       * @example
+       * <pre>
+       * $log.debug('Some Error');
+       * var first = $log.debug.logs.unshift();
+       * </pre>
+       */
+      $log.debug.logs = []
     };
 
     /**
@@ -404,7 +429,7 @@ angular.mock.$LogProvider = function() {
      */
     $log.assertEmpty = function() {
       var errors = [];
-      angular.forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
+      angular.forEach(['error', 'warn', 'info', 'log', 'debug'], function(logLevel) {
         angular.forEach($log[logLevel].logs, function(log) {
           angular.forEach(log, function (logItem) {
             errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' + (logItem.stack || ''));
