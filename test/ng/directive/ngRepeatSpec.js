@@ -907,13 +907,13 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('1');
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('2');
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('3');
   }));
 
@@ -932,19 +932,19 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('1');
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('2');
 
-    item = $animate.process('enter').element;
+    item = $animate.flushNext('enter').element;
     expect(item.text()).toBe('3');
 
     $rootScope.items = ['1','3'];
     $rootScope.$digest();
 
-    item = $animate.process('leave').element;
+    item = $animate.flushNext('leave').element;
     expect(item.text()).toBe('2');
   }));
 
@@ -964,22 +964,22 @@ describe('ngRepeat animations', function() {
       $rootScope.items = ['1','2','3'];
       $rootScope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('1');
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('2');
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('3');
 
       $rootScope.items = ['2','3','1'];
       $rootScope.$digest();
 
-      item = $animate.process('move').element;
+      item = $animate.flushNext('move').element;
       expect(item.text()).toBe('2');
 
-      item = $animate.process('move').element;
+      item = $animate.flushNext('move').element;
       expect(item.text()).toBe('1');
   }));
 

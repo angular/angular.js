@@ -556,7 +556,7 @@ describe('ngView animations', function() {
           $location.path('/foo');
           $rootScope.$digest();
 
-          var item = $animate.process('enter').element;
+          var item = $animate.flushNext('enter').element;
           expect(item.text()).toBe('data');
         }));
 
@@ -570,13 +570,13 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      item = $animate.process('enter').element;
+      item = $animate.flushNext('enter').element;
       expect(item.text()).toBe('foo');
 
       $location.path('/');
       $rootScope.$digest();
 
-      item = $animate.process('leave').element;
+      item = $animate.flushNext('leave').element;
       expect(item.text()).toBe('foo');
     }));
 
@@ -590,15 +590,15 @@ describe('ngView animations', function() {
         $location.path('/foo');
         $rootScope.$digest();
 
-        item = $animate.process('enter').element;
+        item = $animate.flushNext('enter').element;
         expect(item.text()).toBe('data');
 
         $location.path('/bar');
         $rootScope.$digest();
 
-        var itemA = $animate.process('leave').element;
+        var itemA = $animate.flushNext('leave').element;
         expect(itemA).not.toEqual(itemB);
-        var itemB = $animate.process('enter').element;
+        var itemB = $animate.flushNext('enter').element;
     }));
   });
 
@@ -627,12 +627,12 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      $animate.process('enter'); //ngView
+      $animate.flushNext('enter'); //ngView
 
       $timeout.flush();
 
-      $animate.process('enter'); //repeat 1
-      $animate.process('enter'); //repeat 2
+      $animate.flushNext('enter'); //repeat 1
+      $animate.flushNext('enter'); //repeat 2
 
       $timeout.flush();
 
@@ -641,16 +641,16 @@ describe('ngView animations', function() {
       $location.path('/bar');
       $rootScope.$digest();
 
-      $animate.process('leave'); //ngView old
+      $animate.flushNext('leave'); //ngView old
       $timeout.flush();
 
-      $animate.process('enter'); //ngView new
+      $animate.flushNext('enter'); //ngView new
       $timeout.flush();
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
-      $animate.process('enter'); //ngRepeat 3
-      $animate.process('enter'); //ngRepeat 4
+      $animate.flushNext('enter'); //ngRepeat 3
+      $animate.flushNext('enter'); //ngRepeat 4
 
       $timeout.flush();
 
