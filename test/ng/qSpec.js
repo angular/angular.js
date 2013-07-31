@@ -160,6 +160,7 @@ describe('q', function() {
       mockNextTick.queue.push(task);
     },
     queue: [],
+    logExceptions: true,
     flush: function() {
       if (!mockNextTick.queue.length) throw new Error('Nothing to be flushed!');
       while (mockNextTick.queue.length) {
@@ -169,7 +170,9 @@ describe('q', function() {
           try {
             task();
           } catch(e) {
-            dump('exception in mockNextTick:', e, e.name, e.message, task);
+            if ( mockNextTick.logExceptions ) {
+              dump('exception in mockNextTick:', e, e.name, e.message, task);
+            }
           }
         });
       }
@@ -1391,6 +1394,52 @@ describe('q', function() {
         expect(logStr()).toBe('error1(sorry)->{}; error2(rejected)->reject(rejected)');
         expect(mockExceptionLogger.log).toEqual([]);
       });
+    });
+  });
+
+
+  describe('when exceptionHandler rethrows exceptions, ', function() {
+    var originalLogExceptions, deferred, errorSpy, exceptionExceptionSpy;
+
+    beforeEach(function() {
+      // Turn off exception logging for these particular tests
+      originalLogExceptions = mockNextTick.logExceptions;
+      mockNextTick.logExceptions = false;
+
+      // Set up spies
+      exceptionExceptionSpy = jasmine.createSpy('rethrowExceptionHandler')
+      .andCallFake(function rethrowExceptionHandler(e) {
+        throw e;
+      });
+      errorSpy = jasmine.createSpy('errorSpy');
+
+
+      q = qFactory(mockNextTick.nextTick, exceptionExceptionSpy);
+      deferred = q.defer();
+    });
+
+    
+    afterEach(function() {
+      // Restore the original exception logging mode
+      mockNextTick.logExceptions = originalLogExceptions;
+    });
+
+
+    it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
+      deferred.promise.then(function() { throw 'reject'; }).then(null, errorSpy);
+      deferred.resolve('resolve');
+      mockNextTick.flush();
+      expect(exceptionExceptionSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+    });
+    
+
+    it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
+      deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
+      deferred.reject('reject');
+      mockNextTick.flush();
+      expect(exceptionExceptionSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
     });
   });
 });
