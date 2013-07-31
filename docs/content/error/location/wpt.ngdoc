@@ -1,0 +1,4 @@
+@ngdoc error
+@name $location:wpt
+@fullName Wrong parameter type
+@description
