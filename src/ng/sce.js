@@ -303,7 +303,6 @@ function $SceDelegateProvider() {
         } else {
           throw $sceMinErr('isecrurl',
               'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: {0}', maybeTrusted.toString());
-          return;
         }
       } else if (type === SCE_CONTEXTS.HTML) {
         return htmlSanitizer(maybeTrusted);
