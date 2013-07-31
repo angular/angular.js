@@ -66,6 +66,35 @@ describe('$location', function() {
     });
 
 
+    it('search() should handle multiple value', function() {
+      url.search('a&b');
+      expect(url.search()).toEqual({a: true, b: true});
+
+      url.search('a', null);
+
+      expect(url.search()).toEqual({b: true});
+
+      url.search('b', undefined);
+      expect(url.search()).toEqual({});
+    });
+
+
+    it('search() should handle single value', function() {
+      url.search('ignore');
+      expect(url.search()).toEqual({ignore: true});
+    });
+
+
+    it('search() should throw error an incorrect argument', function() {
+      expect(function() {
+        url.search(null);
+      }).toThrow('[$location:wpt] First parameter of function must be string or an object.');
+      expect(function() {
+        url.search(undefined);
+      }).toThrow('[$location:wpt] First parameter of function must be string or an object.');
+    });
+
+
     it('hash() should change hash fragment', function() {
       url.hash('new-hash');
       expect(url.hash()).toBe('new-hash');

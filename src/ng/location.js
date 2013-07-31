@@ -353,17 +353,24 @@ LocationHashbangInHtml5Url.prototype =
    * @return {string} search
    */
   search: function(search, paramValue) {
-    if (isUndefined(search))
-      return this.$$search;
-
-    if (isDefined(paramValue)) {
-      if (paramValue === null) {
-        delete this.$$search[search];
-      } else {
-        this.$$search[search] = paramValue;
-      }
-    } else {
-      this.$$search = isString(search) ? parseKeyValue(search) : search;
+    switch (arguments.length) {
+      case 0:
+        return this.$$search;
+      case 1:
+        if (isString(search)) {
+          this.$$search = parseKeyValue(search);
+        } else if (isObject(search)) {
+          this.$$search = search;
+        } else {
+          throw $locationMinErr('wpt', 'First parameter of function must be string or an object.');
+        }
+        break;
+      default:
+        if (paramValue == undefined || paramValue == null) {
+          delete this.$$search[search];
+        } else {
+          this.$$search[search] = paramValue;
+        }
     }
 
     this.$$compose();
