@@ -672,7 +672,7 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
         }
       };
 
-      forEach(['enter','leave','move','show','hide','addClass','removeClass'], function(method) {
+      forEach(['enter','leave','move','addClass','removeClass'], function(method) {
         animate[method] = function() {
           var params = arguments;
           animate.queue.push({
