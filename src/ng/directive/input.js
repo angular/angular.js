@@ -1253,6 +1253,8 @@ var requiredDirective = function() {
  * @element input
  * @param {string=} ngList optional delimiter that should be used to split the value. If
  *   specified in form `/something/` then the value will be converted into a regular expression.
+ * @param {string=} ngListJoin optional string to use when joining elements of the array.
+ * This is especially useful when the delimeter is a regular expression. The default value is ', '.
  *
  * @example
     <doc:example>
@@ -1294,8 +1296,20 @@ var ngListDirective = function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
-      var match = /\/(.*)\//.exec(attr.ngList),
-          separator = match && new RegExp(match[1]) || attr.ngList || ',';
+      // Get the attribute values directly from the element rather than the
+      // attr map otherwise the attribute values will be trimmed of whitespace
+      var separatorAttribute = element[0].getAttribute(attr.$attr['ngList'])
+      var joinAttribute = element[0].getAttribute(attr.$attr['ngListJoin'])
+      var separator, joinedby;
+      var match = /\/(.*)\//.exec(separatorAttribute);
+      if (match) {
+        // This is a regex pattern - always use ', ' to join elements when ngListJoin is undefined
+        separator = new RegExp(match[1])
+        joinedby = joinAttribute || ', ';
+      }else{
+        separator = separatorAttribute || ','
+        joinedby = joinAttribute || separatorAttribute || ', ';
+      }
 
       var parse = function(viewValue) {
         var list = [];
@@ -1312,7 +1326,7 @@ var ngListDirective = function() {
       ctrl.$parsers.push(parse);
       ctrl.$formatters.push(function(value) {
         if (isArray(value)) {
-          return value.join(', ');
+          return value.join(joinedby);
         }
 
         return undefined;

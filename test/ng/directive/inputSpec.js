@@ -1001,9 +1001,62 @@ describe('input', function() {
     it('should allow custom separator', function() {
       compileInput('<input type="text" ng-model="list" ng-list=":" />');
 
-      changeInputValueTo('a,a');
-      expect(scope.list).toEqual(['a,a']);
+      // model -> view
+      scope.$apply(function() {
+        scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x:y:z'); //Should use the separator as the join string
 
+      // view -> model
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
+    });
+
+
+    it('should allow custom separator with whitespace', function() {
+      compileInput('<input type="text" ng-model="list" ng-list=" or " />');
+
+      changeInputValueTo('House or Door or Chair');
+      expect(scope.list).toEqual(['House', 'Door', 'Chair']);
+    });
+
+
+    it('should allow custom join string', function() {
+      compileInput('<input type="text" ng-model="list" ng-list ng-list-join=" and "/>');
+
+      // model -> view
+      scope.$apply(function() {
+        scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x and y and z');
+    });
+
+
+    it('should allow custom separator and custom join string', function() {
+      compileInput('<input type="text" ng-model="list" ng-list=":" ng-list-join=" and "/>');
+
+      // model -> view
+      scope.$apply(function() {
+        scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x and y and z');
+
+      // view -> model
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
+    });
+
+
+    it('should allow custom separator and custom join string in alternative attribute form', function() {
+      compileInput('<input type="text" ng-model="list" ng:list=":" data-ng-list-join=" and "/>');
+
+      // model -> view
+      scope.$apply(function() {
+          scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x and y and z');
+
+      // view -> model
       changeInputValueTo('a:b');
       expect(scope.list).toEqual(['a', 'b']);
     });
@@ -1012,11 +1065,29 @@ describe('input', function() {
     it('should allow regexp as a separator', function() {
       compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
 
+      // model -> view
+      scope.$apply(function() {
+        scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x, y, z'); //Should use ', ' as the default join string
+
+      // view -> model
       changeInputValueTo('a,b');
       expect(scope.list).toEqual(['a', 'b']);
 
       changeInputValueTo('a,b: c');
       expect(scope.list).toEqual(['a', 'b', 'c']);
+    });
+
+
+    it('should allow regexp as a separator and custom join string', function() {
+      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" ng-list-join="; " />');
+
+      // model -> view
+      scope.$apply(function() {
+        scope.list = ['x', 'y', 'z'];
+      });
+      expect(inputElm.val()).toBe('x; y; z');
     });
   });
 
