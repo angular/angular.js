@@ -7,7 +7,7 @@ describe("errorDisplay", function () {
   beforeEach(inject(function ($injector) {
     var $rootScope = $injector.get('$rootScope'),
       $compile = $injector.get('$compile');
-    
+
     $location = $injector.get('$location');
 
     compileHTML = function (code) {
@@ -35,7 +35,7 @@ describe("errorDisplay", function () {
   });
 
   it('should interpolate a template with no parameters when search parameters are present', function () {
-    var elm;    
+    var elm;
 
     spyOn($location, 'search').andReturn({ p0: 'foobaz' });
     elm = compileHTML('<div error-display="This is a test"></div>');
@@ -43,7 +43,7 @@ describe("errorDisplay", function () {
   });
 
   it('should correctly interpolate search parameters', function () {
-    var elm;    
+    var elm;
 
     spyOn($location, 'search').andReturn({ p0: '42' });
     elm = compileHTML('<div error-display="The answer is {0}"></div>');
@@ -64,5 +64,13 @@ describe("errorDisplay", function () {
     spyOn($location, 'search').andReturn({ p0: 'Fooooo' });
     elm = compileHTML('<div error-display="This {0} is {1} on {2}"></div>');
     expect(elm).toInterpolateTo('This Fooooo is {1} on {2}');
+  });
+
+  it('should correctly handle the empty string as an interpolation parameter', function () {
+    var elm;
+
+    spyOn($location, 'search').andReturn({ p0: 'test', p1: '' });
+    elm = compileHTML('<div error-display="This {0} is a {1}"></div>');
+    expect(elm).toInterpolateTo('This test is a ');
   });
 });

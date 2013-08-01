@@ -7,7 +7,7 @@ var docsApp = {
 docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', function($scope, $window, NG_VERSIONS) {
   $scope.versions = expandVersions(NG_VERSIONS);
   $scope.version  = ($scope.version || angular.version.full).match(/^([\d\.]+\d+)/)[1]; //match only the number
-  
+
   $scope.jumpToDocsVersion = function(value) {
     var isLastStable,
         version,
@@ -320,7 +320,7 @@ docsApp.directive.errorDisplay = ['$location', function ($location) {
         formatArgs = [attrs.errorDisplay],
         i;
 
-      for (i = 0; search['p'+i]; i++) {
+      for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
       element.text(interpolate.apply(null, formatArgs));
