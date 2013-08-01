@@ -2,3 +2,28 @@
 @name $compile:tplrt
 @fullName Invalid Template Root
 @description
+When a directive is declared with template and replace mode on, it must have exactly one root element. Otherwise the
+replacement would cause the containing element to grow in number of children which would then break directive
+offsets.
+
+<pre>
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    replace: true,
+    templateUrl: 'someUrl'
+    ...
+  }
+});
+</pre>
+
+This template is OK as it has one root element `<div>`.
+<pre>
+  <div><b>Hello</b> World!</div>
+</pre>
+
+This template will cause an error since it has multiple roots. (The `<b>` element and the `#text` nodes are the two
+top level nodes.
+<pre>
+  <b>Hello</b> World!
+</pre>
