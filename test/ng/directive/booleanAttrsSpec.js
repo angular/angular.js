@@ -93,7 +93,7 @@ describe('boolean attr directives', function() {
 
       expect(function() {
         $compile('<select multiple="{{isMultiple}}"></select>')
-      }).toThrow('[$compile:selmulti] Binding to the multiple attribute is not supported. ' +
+      }).toThrow('[$compile:selmulti] Binding to the \'multiple\' attribute is not supported. ' +
                  'Element: <select multiple="{{isMultiple}}">');
 
     }));
