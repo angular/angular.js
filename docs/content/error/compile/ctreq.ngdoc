@@ -2,3 +2,12 @@
 @name $compile:ctreq
 @fullName Missing Required Controller
 @description
+
+This error occurs when a directive specifies the `require` option in a
+{@link guide/directive#directivedefinitionobject directive definition}, but the required parent
+controlle is not present when {@link api/ng.$compile $compile} tries to compile the directive.
+
+Resolve this error by ensuring the controller is instantiated on an ancestor scope of the directive
+through {@link api/ ngController}, 
+{@link guide/directive#directivedefinitionobject a controller in a directive definition}, or
+{@link api/ng.$routeProvider#when configuring a controller in `$routeProvider`}.
