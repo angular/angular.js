@@ -2,26 +2,12 @@
 @name ngOptions:iexp
 @fullName Invalid Expression
 @description 
-This error occurs when 'ngOptions' is passed an expression that isn't in an expected form.  'ngOptions' expects the expression to be in one of the following forms:
+This error occurs when 'ngOptions' is passed an expression that isn't in an expected form.
 
-   * for array data sources:
-      * `label` **`for`** `value` **`in`** `array`
-      * `select` **`as`** `label` **`for`** `value` **`in`** `array`
-      * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
-      * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array` **`track by`** `trackexpr`
-   * for object data sources:
-      * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
-      * `select` **`as`** `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
-      * `label` **`group by`** `group` **`for (`**`key`**`,`** `value`**`) in`** `object`
-      * `select` **`as`** `label` **`group by`** `group`
-          **`for` `(`**`key`**`,`** `value`**`) in`** `object`
- 
-  Where:
+Here's an example of correct syntax: 
 
-   * `array` / `object`: an expression which evaluates to an array / object to iterate over.
-   * `value`: local variable which will refer to each item in the `array` or each property value of `object` during iteration.
-   * `key`: local variable which will refer to a property name in `object` during iteration.
-   * `label`: The result of this expression will be the label for `<option>` element. The `expression` will most likely refer to the `value` variable (e.g. `value.propertyName`).
-   * `select`: The result of this expression will be bound to the model of the parent `<select>` element. If not specified, `select` expression will default to `value`.
-   * `group`: The result of this expression will be used to group options using the `<optgroup>` DOM element.
-   * `trackexpr`: Used when working with an array of objects. The result of this expression will be used to identify the objects in the array. The `trackexpr` will most likely refer to the `value` variable (e.g. `value.propertyName`).
+```
+<select ng-model="color" ng-options="c.name for c in colors">
+```
+
+For more information on valid expression syntax, see 'ngOptions' under {@link api/ng.directive:select ng.directive:select}.
