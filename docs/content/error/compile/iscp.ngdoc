@@ -2,3 +2,21 @@
 @name $compile:iscp
 @fullName Invalid Isolate Scope
 @description
+When {@link guide/directive#directivedefinitionobject declaring isolate scope} the scope definition object must
+be in specific format which starts with mode character (`@&=`) with an optional local name.
+
+<pre>
+myModule.directive('directiveName', function factory() {
+  return {
+    ...
+    scope: {
+      'attrName': '@', // OK
+      'attrName2': '=localName', // OK
+      'attrName3': 'name',    // ERROR: missing mode @&=
+      'attrName4': ' = name', // ERROR: extra spaces
+      'attrName5': 'name=',   // ERROR: must be prefixed with @&=
+    }
+    ...
+  }
+});
+</pre>
