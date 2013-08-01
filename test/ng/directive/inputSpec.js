@@ -43,7 +43,7 @@ describe('NgModelController', function() {
     }
 
     expect(exception.message).
-        toMatch(/^\[ngModel:noass\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
+        toMatch(/^\[ngModel:nonassign\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
   }));
 
 
