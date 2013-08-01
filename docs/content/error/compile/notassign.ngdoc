@@ -1,0 +1,30 @@
+@ngdoc error
+@name $compile:notassign
+@fullName Non-Assignable Expression
+@description
+
+When {@link guide/directive#directivedefinitionobject declaring isolate scope} using the `=` mode the expression
+must be assignable.
+
+<pre>
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    scope: {
+      'bind': '@localValue'
+    }
+    ...
+  }
+});
+</pre>
+
+Example which does not cause error:
+<pre>
+  <my-directive bind="some.property">
+</pre>
+
+Examples which will cause errors when the `myDirective` attempts to change the value of `localValue`.
+<pre>
+  <my-directive bind="1+2"> ERROR: this statement makes no sense: 1+2=localValue
+  <my-directive bind="myFn()"> ERROR: this statement makes no sense: myFn()=localValue
+</pre>
