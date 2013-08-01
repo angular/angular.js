@@ -940,7 +940,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       ngModelSet = ngModelGet.assign;
 
   if (!ngModelSet) {
-    throw minErr('ngModel')('noass', "Expression '{0}' is non-assignable. Element: {1}",
+    throw minErr('ngModel')('notassign', "Expression '{0}' is non-assignable. Element: {1}",
         $attr.ngModel, startingTag($element));
   }
 
