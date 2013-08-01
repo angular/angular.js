@@ -76,6 +76,8 @@ var ngResourceMinErr = angular.$$minErr('ngResource');
  *     for the resource-level urls.
  *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
+ *   - **`isExtendable`** – {boolean=} – If true then the returned object is extend rather then copied.
+ *      Is not compatible `isArray`.
  *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
  *     request body and headers and returns its transformed (typically serialized) version.
@@ -484,7 +486,11 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                copy(data, value);
+                if (action.isExtendable) {
+                  extend(value, data);
+                } else {
+                  copy(data, value);
+                }
                 value.$promise = promise;
               }
             }

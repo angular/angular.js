@@ -261,6 +261,24 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
+  it('should extend a response over copy via isExtendable', function() {
+    $httpBackend.expect('POST', '/CreditCard').respond({id: 321, number: '1234'});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      save: {
+        method: 'post',
+        isExtendable: true
+      }
+    });
+
+    var cc = new CreditCard({name: 'Jojo'});
+    expect(cc).toEqualData({name: 'Jojo'});
+
+    cc.$save();
+    $httpBackend.flush();
+
+    expect(cc).toEqualData({name: 'Jojo', id: 321, number: '1234'});
+  });
 
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
