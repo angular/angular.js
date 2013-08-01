@@ -134,10 +134,10 @@ Returns an array with the values in the column with the given `binding` in the r
 the given jQuery `selector`. The `label` is used for test output.
 
 ## select(name).option(value)
-Picks the option with the given `value` on the select with the given `name`.
+Picks the option with the given `value` on the select with the given ng-model `name`.
 
 ## select(name).options(value1, value2...)
-Picks the options with the given `values` on the multi select with the given `name`.
+Picks the options with the given `values` on the multi select with the given ng-model `name`.
 
 ## element(selector, label).count()
 Returns the number of elements that match the given jQuery `selector`. The `label` is used for test
