@@ -2,3 +2,12 @@
 @name $compile:multidir
 @fullName Multiple Directive Resource Contention
 @description
+When multiple directives are triggered on a single DOM element, they may request incompatible/unsupported configuration
+which results in this error. The solution is to remove one of the directives which is causing the colsion.
+
+Examples are:
+
+* Multiple `isolated scopes` per element.
+* Same `controller name` published more then one directive.
+* Multiple directives declared with `transclusion`.
+* Multiple directives attempting to defined a `template` or `templateURL`.
