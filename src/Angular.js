@@ -636,10 +636,28 @@ function copy(source, destination){
   return destination;
 }
 
+
 /**
- * Create a shallow copy of an object
+ * Shallow copy an object.
  */
 function shallowCopy(src, dst) {
+  dst = dst || {};
+  var h = dst.$$hashKey;
+  forEach(dst, function(value, key){
+    delete dst[key];
+  });
+  for (var key in src) {
+    dst[key] = src[key];
+  }
+  setHashKey(dst,h)
+  return dst;
+}
+
+
+/**
+ * Adds properties from src to dst by reference.  Skips Angular's private properties.
+ */
+function shallowAddProperties(src, dst) {
   dst = dst || {};
 
   for(var key in src) {

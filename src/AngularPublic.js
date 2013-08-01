@@ -45,6 +45,7 @@ function publishExternalAPI(angular){
     'isElement': isElement,
     'isArray': isArray,
     '$$minErr': minErr,
+    'shallowCopy': shallowCopy,
     'version': version,
     'isDate': isDate,
     'lowercase': lowercase,

@@ -875,7 +875,7 @@ function $CompileProvider($provide) {
         if (compileNode === linkNode) {
           attrs = templateAttrs;
         } else {
-          attrs = shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
+          attrs = shallowAddProperties(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
         }
         $element = attrs.$$element;
 
