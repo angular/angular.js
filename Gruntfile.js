@@ -31,11 +31,11 @@ module.exports = function(grunt) {
           stream: true
         },
         tasks: [
-          util.parallelTask('test:docs'),
-          util.parallelTask('test:modules'),
-          util.parallelTask('test:jquery'),
-          util.parallelTask('test:jqlite'),
-          util.parallelTask('test:e2e')
+          util.parallelTask('tests:docs'),
+          util.parallelTask('tests:modules'),
+          util.parallelTask('tests:jquery'),
+          util.parallelTask('tests:jqlite'),
+          util.parallelTask('tests:end2end')
         ]
       }
     },
@@ -80,7 +80,7 @@ module.exports = function(grunt) {
     },
 
 
-    test: {
+    tests: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
       docs: 'karma-docs.conf.js',
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
       modules: 'karma-modules.conf.js',
-      docs: 'karma-docs.conf.js',
+      docs: 'karma-docs.conf.js'
     },
 
 
@@ -230,10 +230,16 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test:unit', ['test:jqlite', 'test:jquery', 'test:modules']);
+  grunt.registerTask('test', ['package','test:unit', 'tests:docs', 'test:e2e']);
+  grunt.registerTask('test:jqlite', ['tests:jqlite']);
+  grunt.registerTask('test:jquery', ['tests:jquery']);
+  grunt.registerTask('test:modules', ['tests:modules']);
+  grunt.registerTask('test:docs', ['package', 'tests:docs']);
+  grunt.registerTask('test:unit', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
+  grunt.registerTask('test:e2e', ['connect:testserver', 'tests:end2end']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
+
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
-  grunt.registerTask('test:e2e', ['connect:testserver', 'test:end2end']);
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict']);
