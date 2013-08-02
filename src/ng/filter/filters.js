@@ -37,6 +37,7 @@
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
+         expect(binding('amount | currency:"$":0')).toBe('(USD$1,234)');
        });
      </doc:scenario>
    </doc:example>
@@ -44,9 +45,10 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+  return function(amount, currencySymbol, fractionSize){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    if (isUndefined(fractionSize) || isNaN(fractionSize) fractionSize = 2;
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, fractionSize).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
