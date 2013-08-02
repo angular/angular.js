@@ -390,7 +390,12 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function ResourceFactory(url, paramDefaults, actions) {
+    function ResourceFactory(url, paramDefaults, model, actions) {
+      if( !actions){
+            actions  = model;
+            model = undefined;
+      }
+        
       var route = new Route(url);
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
@@ -410,7 +415,8 @@ angular.module('ngResource', ['ng']).
       }
 
       function Resource(value){
-        copy(value || {}, this);
+        var m = extend( copy(model),value ) ;
+        copy(m || {}, this);
       }
 
       forEach(actions, function(action, name) {
@@ -530,7 +536,7 @@ angular.module('ngResource', ['ng']).
       });
 
       Resource.bind = function(additionalParamDefaults){
-        return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+        return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), model, actions);
       };
 
       return Resource;
