@@ -779,6 +779,9 @@ function setter(obj, path, setValue, fullExp) {
     }
   }
   key = ensureSafeMemberName(element.shift(), fullExp);
+  while (i == 0 && isScope(obj) && obj !== obj.$root && (key in obj) && !obj.hasOwnProperty(key)) {
+    obj = obj.$parent;
+  }
   obj[key] = setValue;
   return setValue;
 }
