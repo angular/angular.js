@@ -274,9 +274,9 @@ function $CompileProvider($provide) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document', '$sce', '$$urlUtils',
+            '$controller', '$rootScope', '$document', '$sce', '$$urlUtils', '$animate',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document,   $sce,   $$urlUtils) {
+             $controller,   $rootScope,   $document,   $sce,   $$urlUtils, $animate) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -288,6 +288,42 @@ function $CompileProvider($provide) {
 
 
       /**
+       * @ngdoc function
+       * @name ng.$compile.directive.Attributes#$addClass
+       * @methodOf ng.$compile.directive.Attributes
+       * @function
+       *
+       * @description
+       * Adds the CSS class value specified by the classVal parameter to the element. If animations
+       * are enabled then an animation will be triggered for the class addition.  
+       *
+       * @param {string} classVal The className value that will be added to the element
+       */
+      $addClass : function(classVal) {
+        if(classVal && classVal.length > 0) {
+          $animate.addClass(this.$$element, classVal);
+        }
+      },
+
+      /**
+       * @ngdoc function
+       * @name ng.$compile.directive.Attributes#$removeClass
+       * @methodOf ng.$compile.directive.Attributes
+       * @function
+       *
+       * @description
+       * Removes the CSS class value specified by the classVal parameter from the element. If animations
+       * are enabled then an animation will be triggered for the class removal.  
+       *
+       * @param {string} classVal The className value that will be removed from the element
+       */
+      $removeClass : function(classVal) {
+        if(classVal && classVal.length > 0) {
+          $animate.removeClass(this.$$element, classVal);
+        }
+      },
+
+      /**
        * Set a normalized attribute on the element in a way such that all directives
        * can share the attribute. This function properly handles boolean attributes.
        * @param {string} key Normalized key. (ie ngAttribute)
@@ -297,54 +333,65 @@ function $CompileProvider($provide) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        var booleanKey = getBooleanAttrName(this.$$element[0], key),
-            $$observers = this.$$observers,
-            normalizedVal,
-            nodeName;
-
-        if (booleanKey) {
-          this.$$element.prop(key, value);
-          attrName = booleanKey;
+        //special case for class attribute addition + removal
+        //so that class changes can tap into the animation
+        //hooks provided by the $animate service
+        if(key == 'class') {
+          value = value || '';
+          var current = this.$$element.attr('class') || '';
+          this.$removeClass(tokenDifference(current, value).join(' '));
+          this.$addClass(tokenDifference(value, current).join(' '));
         }
+        else {
+          var booleanKey = getBooleanAttrName(this.$$element[0], key),
+              normalizedVal,
+              nodeName;
 
-        this[key] = value;
-
-        // translate normalized key to actual key
-        if (attrName) {
-          this.$attr[key] = attrName;
-        } else {
-          attrName = this.$attr[key];
-          if (!attrName) {
-            this.$attr[key] = attrName = snake_case(key, '-');
+          if (booleanKey) {
+            this.$$element.prop(key, value);
+            attrName = booleanKey;
           }
-        }
 
-        nodeName = nodeName_(this.$$element);
+          this[key] = value;
 
-        // sanitize a[href] and img[src] values
-        if ((nodeName === 'A' && key === 'href') ||
-            (nodeName === 'IMG' && key === 'src')) {
-          // NOTE: $$urlUtils.resolve() doesn't support IE < 8 so we don't sanitize for that case.
-          if (!msie || msie >= 8 ) {
-            normalizedVal = $$urlUtils.resolve(value);
-            if (normalizedVal !== '') {
-              if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
-                  (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
-                this[key] = value = 'unsafe:' + normalizedVal;
+          // translate normalized key to actual key
+          if (attrName) {
+            this.$attr[key] = attrName;
+          } else {
+            attrName = this.$attr[key];
+            if (!attrName) {
+              this.$attr[key] = attrName = snake_case(key, '-');
+            }
+          }
+
+          nodeName = nodeName_(this.$$element);
+
+          // sanitize a[href] and img[src] values
+          if ((nodeName === 'A' && key === 'href') ||
+              (nodeName === 'IMG' && key === 'src')) {
+            // NOTE: $$urlUtils.resolve() doesn't support IE < 8 so we don't sanitize for that case.
+            if (!msie || msie >= 8 ) {
+              normalizedVal = $$urlUtils.resolve(value);
+              if (normalizedVal !== '') {
+                if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
+                    (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
+                  this[key] = value = 'unsafe:' + normalizedVal;
+                }
               }
+            }
+          }
+
+          if (writeAttr !== false) {
+            if (value === null || value === undefined) {
+              this.$$element.removeAttr(attrName);
+            } else {
+              this.$$element.attr(attrName, value);
             }
           }
         }
 
-        if (writeAttr !== false) {
-          if (value === null || value === undefined) {
-            this.$$element.removeAttr(attrName);
-          } else {
-            this.$$element.attr(attrName, value);
-          }
-        }
-
         // fire observers
+        var $$observers = this.$$observers;
         $$observers && forEach($$observers[key], function(fn) {
           try {
             fn(value);
@@ -352,6 +399,22 @@ function $CompileProvider($provide) {
             $exceptionHandler(e);
           }
         });
+
+        function tokenDifference(str1, str2) {
+          var values = [],
+              tokens1 = str1.split(/\s+/),
+              tokens2 = str2.split(/\s+/);
+
+          outer:
+          for(var i=0;i<tokens1.length;i++) {
+            var token = tokens1[i];
+            for(var j=0;j<tokens2.length;j++) {
+              if(token == tokens2[j]) continue outer;
+            }
+            values.push(token);
+          }
+          return values;
+        };
       },
 
 
