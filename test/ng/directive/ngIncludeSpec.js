@@ -280,6 +280,31 @@ describe('ngInclude', function() {
     dealoc(element);
   }));
 
+  it('should compile only the inner content once', function() {
+    var log = [];
+
+    module(function($compileProvider) {
+      $compileProvider.directive('compileLog', function() {
+        return {
+          compile: function() {
+            log.push('compile');
+          }
+        };
+      });
+    });
+
+    inject(function($compile, $rootScope, $templateCache) {
+      $templateCache.put('tpl.html', [200, '<div compile-log>123</div>', {}]);
+      element = $compile('<div><div ng-include="exp"></div></div>')($rootScope);
+
+      $rootScope.exp = 'tpl.html';
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('123');
+      expect(log).toEqual(['compile']);
+    });
+  });
+
 
   describe('autoscoll', function() {
     var autoScrollSpy;
