@@ -2,3 +2,6 @@
 @name ngSanitize:badparse
 @fullName Parsing Error
 @description
+This error occurs when the HTML string passed to 'ngSanitize' can't be parsed by the sanitizer. The
+parser is more strict than a typical browser parser, so it's possible that some obscure input would
+produce this error despite the string being recognized as valid HTML by a browser.
