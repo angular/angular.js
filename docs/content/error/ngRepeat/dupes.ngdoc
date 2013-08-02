@@ -2,3 +2,11 @@
 @name ngRepeat:dupes
 @fullName Duplicate Repeater Key
 @description
+
+Occurs if there are duplicate keys in an ng-repeat expression.  Duplicate keys are banned because AngularJS uses keys to associate DOM nodes with items.
+
+By default, collections are keyed by value, so ng-repeat="value in [4, 4]" will trigger this error.
+
+To resolve this error, use the 'track by' syntax for ng-repeat.
+e.g. ng-repeat="value in [4, 4] track by $index" will cause the items to be
+keyed by their position in the array instead of their value.
