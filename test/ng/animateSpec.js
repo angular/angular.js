@@ -1,9 +1,11 @@
 describe("$animate", function() {
 
   describe("without animation", function() {
-    beforeEach(inject(function($compile, _$rootElement_, $rootScope) {
-      element = $compile('<div></div>')($rootScope);
-      $rootElement = _$rootElement_;
+    beforeEach(module(function() {
+      return function($compile, _$rootElement_, $rootScope) {
+        element = $compile('<div></div>')($rootScope);
+        $rootElement = _$rootElement_;
+      };
     }));
 
     it("should add element at the start of enter animation", inject(function($animate, $compile, $rootScope) {
@@ -37,5 +39,14 @@ describe("$animate", function() {
       $animate.addClass(element, 'ng-hide');
       expect(element).toBeHidden();
     }));
+
+    it("should throw error on wrong selector", function() {
+      module(function($animateProvider) {
+        expect(function() {
+          $animateProvider.register('abc', null);
+        }).toThrow("[$animate:notcsel] Expecting class selector starting with '.' got 'abc'.");
+      });
+      inject();
+    });
   });
 });
