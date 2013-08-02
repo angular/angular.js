@@ -656,6 +656,48 @@ angular.mock.$LogProvider = function() {
   angular.mock.TzDate.prototype = Date.prototype;
 })();
 
+
+/**
+ * @ngdoc object
+ * @name angular.mock.animate
+ * @description
+ *
+ * The animate.mock module decorates the $animate service to enable unit tests to capture animations
+ * in a synchronous fashion. When the `mock.animate` module is included
+ * within a test, the $animate service will queue all successive animations until the
+ * flushNext() function is called for each queued animation. This applies all animation methods
+ * present on the $animate service.
+ *  
+ *
+ * @example
+ *
+ * <pre>
+ *  beforeEach(module('mock.animate'));
+ *
+ *  it('should mock and queue animations', inject(function($animate) {
+ *    var element = angular.element('<div>...</div>');
+ *    $animate.addClass(element, 'my-class');
+ *    $animate.addClass(element, 'my-class-2');
+ *    $animate.removeClass(element, 'my-class');
+ *
+ *    //the 1st captured animation
+ *    var capture = $animate.flushNext('addClass');
+ *    expect(capture.element).toBe(element);
+ *    expect(capture.className).toBe('my-class');
+ *
+ *    //the 2nd captured animation
+ *    var capture2 = $animate.flushNext('addClass');
+ *    expect(capture.element).toBe(element);
+ *    expect(capture.className).toBe('my-class');
+ *
+ *    //the 3rd captured animation
+ *    var capture3 = $animate.flushNext('removeClass');
+ *    expect(capture3.element).toBe(element);
+ *    expect(capture3.className).toBe('my-class');
+ *  }));
+ * </pre>
+ *
+ */
 angular.mock.animate = angular.module('mock.animate', ['ng'])
 
   .config(['$provide', function($provide) {
@@ -664,7 +706,32 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
       var animate = {
         queue : [],
         enabled : $delegate.enabled,
-        process : function(name) {
+
+        /**
+         * @ngdoc function
+         * @name $animate.flushNext
+         * @methodOf angular.mock.animate
+         * @function
+         *
+         * @description
+         * The `$animate.flushNext()` will execute the earliest animation present within the animation queue.
+         * Depending on what animation was called on the $animate service, the animation will be executed and
+         * then the next animation in the queue (if present) will be triggered next when flushNext function is
+         * called again.
+         * 
+         * @return {object} An object containing the parameters present when the animation was first called:
+         * <pre>
+         * {
+         *    element : someElement,
+         *    method : 'enter|leave|move|addClass|removeClass',
+         *    parent : someParentElement,
+         *    after : someAfterElement,
+         *    className : 'some-class'
+         * }
+         * </pre>
+         *
+         */
+        flushNext : function(name) {
           var tick = animate.queue.shift();
           expect(tick.method).toBe(name);
           tick.fn();
@@ -672,7 +739,7 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
         }
       };
 
-      forEach(['enter','leave','move','show','hide','addClass','removeClass'], function(method) {
+      forEach(['enter','leave','move','addClass','removeClass'], function(method) {
         animate[method] = function() {
           var params = arguments;
           animate.queue.push({
@@ -681,6 +748,7 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
             element : angular.isElement(params[0]) && params[0],
             parent  : angular.isElement(params[1]) && params[1],
             after   : angular.isElement(params[2]) && params[2],
+            className : angular.isString(params[1]) && params[1],
             fn : function() {
               $delegate[method].apply($delegate, params);
             }

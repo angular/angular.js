@@ -81,14 +81,14 @@ describe('ngShow / ngHide animations', function() {
       ))($scope);
       $scope.$digest();
 
-      item = $animate.process('removeClass').element;
+      item = $animate.flushNext('removeClass').element;
       expect(item.text()).toBe('data');
       expect(item).toBeShown();
 
       $scope.on = false;
       $scope.$digest();
 
-      item = $animate.process('addClass').element;
+      item = $animate.flushNext('addClass').element;
       expect(item.text()).toBe('data');
       expect(item).toBeHidden();
     }));
@@ -104,14 +104,14 @@ describe('ngShow / ngHide animations', function() {
       ))($scope);
       $scope.$digest();
 
-      item = $animate.process('addClass').element;
+      item = $animate.flushNext('addClass').element;
       expect(item.text()).toBe('datum');
       expect(item).toBeHidden();
 
       $scope.off = false;
       $scope.$digest();
 
-      item = $animate.process('removeClass').element;
+      item = $animate.flushNext('removeClass').element;
       expect(item.text()).toBe('datum');
       expect(item).toBeShown();
     }));
