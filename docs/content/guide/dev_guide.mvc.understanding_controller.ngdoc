@@ -75,10 +75,9 @@ you have to perform your own manual DOM manipulation, encapsulate the presentati
 {@link guide/directive directives}.
 - Input formatting — Use {@link forms angular form controls} instead.
 - Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
-- To run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
+- Stateless or stateful code sharing across controllers — Use {@link dev_guide.services angular
 services} instead.
-- To instantiate or manage the life-cycle of other components (for example, to create service
-instances).
+- Managing the life-cycle of other components (for example, to create service instances).
 
 
 # Associating Controllers with Angular Scope Objects
