@@ -174,7 +174,7 @@
  * a javascript callback function. When an animation is triggered, $animate will look for a matching animation which fits
  * the element's CSS class attribute value and then run the matching animation event function (if found).
  * In other words, if the CSS classes present on the animated element match any of the JavaScript animations then the callback function
- * be executed. It should be also noted that only simple or compound class selectors are allowed.
+ * be executed. It should be also noted that only simple class selectors are allowed.
  *
  * Within a JavaScript animation, an object containing various event callback animation functions is expected to be returned.
  * As explained above, these callbacks are triggered based on the animation event. Therefore if an enter animation is run,
@@ -211,27 +211,23 @@ angular.module('ngAnimate', ['ng'])
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       function lookup(name) {
-        var i, ii;
         if (name) {
-          var classes = name.substr(1).split('.'),
-              classMap = {};
+          var matches = [],
+              flagMap = {},
+              classes = name.substr(1).split('.');
 
-          for (i = 0, ii = classes.length; i < ii; i++) {
-            classMap[classes[i]] = true;
-          }
+          //the empty string value is the default animation
+          //operation which performs CSS transition and keyframe
+          //animations sniffing. This is always included for each
+          //element animation procedure
+          classes.push('');
 
-          var matches = [];
-          for (i = 0, ii = selectors.length; i < ii; i++) {
-            var selectorFactory = selectors[i];
-            var found = true;
-            for(var j = 0, jj = selectorFactory.selectors.length; j < jj; j++) {
-              var klass = selectorFactory.selectors[j];
-              if(klass.length > 0) {
-                found = found && classMap[klass];
-              }
-            }
-            if(found) {
-              matches.push($injector.get(selectorFactory.name));
+          for(var i=0; i < classes.length; i++) {
+            var klass = classes[i],
+                selectorFactoryName = selectors[klass];
+            if(selectorFactoryName && !flagMap[klass]) {
+              matches.push($injector.get(selectorFactoryName));
+              flagMap[klass] = true;
             }
           }
           return matches;
@@ -444,8 +440,8 @@ angular.module('ngAnimate', ['ng'])
         and the onComplete callback will be fired once the animation is fully complete.
       */
       function performAnimation(event, className, element, parent, after, onComplete) {
-        var classes = ((element.attr('class') || '') + ' ' + className),
-            animationLookup = (' ' + classes).replace(/\s+/g,'.'),
+        var classes = (element.attr('class') || '') + ' ' + className;
+        var animationLookup = (' ' + classes).replace(/\s+/g,'.'),
             animations = [];
         forEach(lookup(animationLookup), function(animation, index) {
           animations.push({

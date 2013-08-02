@@ -1,5 +1,7 @@
 'use strict';
 
+var $animateMinErr = minErr('$animate');
+
 /**
  * @ngdoc object
  * @name ng.$animateProvider
@@ -14,7 +16,7 @@
  */
 var $AnimateProvider = ['$provide', function($provide) {
 
-  this.$$selectors = [];
+  this.$$selectors = {};
 
 
   /**
@@ -47,13 +49,11 @@ var $AnimateProvider = ['$provide', function($provide) {
    * @param {function} factory The factory function that will be executed to return the animation object.
    */
   this.register = function(name, factory) {
-    var classes = name.substr(1).split('.');
-    name += '-animation';
-    this.$$selectors.push({
-      selectors : classes,
-      name : name
-    });
-    $provide.factory(name, factory);
+    var key = name + '-animation';
+    if (name && name.charAt(0) != '.') throw $animateMinErr('notcsel',
+        "Expecting class selector starting with '.' got '{0}'.", name);
+    this.$$selectors[name.substr(1)] = key;
+    $provide.factory(key, factory);
   };
 
   this.$get = ['$timeout', function($timeout) {
