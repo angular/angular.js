@@ -241,6 +241,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         embedRootScope.$destroy();
       });
 
+      element.data('$injector', null);
       angular.bootstrap(element, modules);
     }
   };
