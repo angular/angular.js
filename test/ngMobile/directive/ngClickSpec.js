@@ -93,7 +93,7 @@ describe('ngClick (mobile)', function() {
     expect($rootScope.tapped).toEqual(true);
   }));
 
-  it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
+   it('should click if a touchmove comes before touchend, and the touchmove is inside the radius', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
@@ -101,13 +101,40 @@ describe('ngClick (mobile)', function() {
     expect($rootScope.tapped).toBeUndefined();
 
     browserTrigger(element, 'touchstart', [], 10, 10);
-    browserTrigger(element, 'touchmove');
-    browserTrigger(element, 'touchend', [], 400, 400);
+    browserTrigger(element, 'touchmove', [], 13, 13);
+    browserTrigger(element, 'touchend', [], 15, 15);
+
+    expect($rootScope.tapped).toEqual(true);
+  }));
+
+  it('should not click if there is a touchmove outside the radius, but touchend is inside the radius', inject(function($rootScope, $compile, $rootElement) {
+    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger(element, 'touchmove', [], 25, 25);
+    browserTrigger(element, 'touchend', [], 15, 15);
 
     expect($rootScope.tapped).toBeUndefined();
   }));
 
-  it('should click if the touchend is within mvoe tolerance, even there is a touchmove before touchend', inject(function($rootScope, $compile, $rootElement) {
+  it('should not click if touchmoves are inside the radius, but touchend is outside the radius', inject(function($rootScope, $compile, $rootElement) {    element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
+    $rootElement.append(element);
+    $rootScope.$digest();
+
+    expect($rootScope.tapped).toBeUndefined();
+
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger(element, 'touchmove', [], 20, 20);
+    browserTrigger(element, 'touchend', [], 25, 25);
+
+    expect($rootScope.tapped).toBeUndefined();
+  }));
+
+  it('should not click if touchmoves and touchend are all outside the radius', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
@@ -115,10 +142,10 @@ describe('ngClick (mobile)', function() {
     expect($rootScope.tapped).toBeUndefined();
 
     browserTrigger(element, 'touchstart', [], 10, 10);
-    browserTrigger(element, 'touchmove');
-    browserTrigger(element, 'touchend', [], 15, 15);
+    browserTrigger(element, 'touchmove', [], 25, 25);
+    browserTrigger(element, 'touchend', [], 30, 30);
 
-    expect($rootScope.tapped).toEqual(true);
+    expect($rootScope.tapped).toBeUndefined();
   }));
 
   it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $rootElement) {
