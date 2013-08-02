@@ -3268,4 +3268,55 @@ describe('$compile', function() {
       expect(spans.eq(3)).toBeHidden();
     }));
   });
+
+  describe('$animate animation hooks', function() {
+
+    beforeEach(module('mock.animate'));
+
+    it('should automatically fire the addClass and removeClass animation hooks',
+      inject(function($compile, $animate, $rootScope) {
+
+        var data, element = jqLite('<div class="{{val1}} {{val2}} fire"></div>');
+        $compile(element)($rootScope);
+
+        $rootScope.$digest();
+        data = $animate.flushNext('removeClass');
+
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val1 = 'ice';
+        $rootScope.val2 = 'rice';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('addClass');
+        expect(data.params[1]).toBe('ice rice');
+
+        expect(element.hasClass('ice')).toBe(true);
+        expect(element.hasClass('rice')).toBe(true);
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val2 = 'dice';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('removeClass');
+        expect(data.params[1]).toBe('rice');
+        data = $animate.flushNext('addClass');
+        expect(data.params[1]).toBe('dice');
+
+        expect(element.hasClass('ice')).toBe(true);
+        expect(element.hasClass('dice')).toBe(true);
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val1 = '';
+        $rootScope.val2 = '';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('removeClass');
+        expect(data.params[1]).toBe('ice dice');
+
+        expect(element.hasClass('ice')).toBe(false);
+        expect(element.hasClass('dice')).toBe(false);
+        expect(element.hasClass('fire')).toBe(true);
+      }));
+  });
 });
