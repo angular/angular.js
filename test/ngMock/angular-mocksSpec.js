@@ -1036,6 +1036,15 @@ describe('ngMock', function() {
         expect(exp.match('POST', '/url', '{"one"')).toBe(false);
       });
 
+      
+      it('should accept data as function', function() {
+        var exp = new MockHttpExpectation('POST', '/url', function(d) {
+          return d.indexOf('a') >= 0;
+        });
+
+        expect(exp.match('POST', '/url', 'bbabb')).toBe(true);
+        expect(exp.match('POST', '/url', 'bbbbb')).toBe(false);
+      });
 
       it('should ignore data only if undefined (not null or false)', function() {
         var exp = new MockHttpExpectation('POST', '/url', null);
