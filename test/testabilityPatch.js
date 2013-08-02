@@ -56,7 +56,7 @@ afterEach(function() {
   forEachSorted(cache, function(expando, key){
     angular.forEach(expando.data, function(value, key){
       count ++;
-      if (value.$element) {
+      if (value && value.$element) {
         dump('LEAK', key, value.$id, sortedHtml(value.$element));
       } else {
         dump('LEAK', key, angular.toJson(value));

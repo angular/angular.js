@@ -126,6 +126,20 @@ describe('jqLite', function() {
         dealoc(doc);
       }
     );
+
+    it('should return null values', function () {
+      var ul = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>'),
+          li = ul.find('li'),
+          b = li.find('b');
+
+      ul.data('foo', 'bar');
+      li.data('foo', null);
+      expect(b.inheritedData('foo')).toBe(null);
+      expect(li.inheritedData('foo')).toBe(null);
+      expect(ul.inheritedData('foo')).toBe('bar');
+
+      dealoc(ul);
+    });
   });
 
 
