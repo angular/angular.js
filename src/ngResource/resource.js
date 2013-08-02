@@ -287,6 +287,7 @@ angular.module('ngResource', ['ng']).
         forEach = angular.forEach,
         extend = angular.extend,
         copy = angular.copy,
+        shallowCopy = angular.shallowCopy,
         isFunction = angular.isFunction,
         getter = function(obj, path) {
           return $parse(path)(obj);
@@ -410,7 +411,7 @@ angular.module('ngResource', ['ng']).
       }
 
       function Resource(value){
-        copy(value || {}, this);
+        shallowCopy(value || {}, this);
       }
 
       forEach(actions, function(action, name) {
@@ -484,7 +485,7 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                copy(data, value);
+                shallowCopy(data, value);
                 value.$promise = promise;
               }
             }

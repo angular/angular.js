@@ -159,10 +159,10 @@ describe('angular', function() {
     });
   });
 
-  describe('shallow copy', function() {
+  describe('shallow add properties', function() {
     it('should make a copy', function() {
       var original = {key:{}};
-      var copy = shallowCopy(original);
+      var copy = shallowAddProperties(original);
       expect(copy).toEqual(original);
       expect(copy.key).toBe(original.key);
     });
@@ -171,9 +171,59 @@ describe('angular', function() {
       var original = {$$some: true, $$: true};
       var clone = {};
 
-      expect(shallowCopy(original, clone)).toBe(clone);
+      expect(shallowAddProperties(original, clone)).toBe(clone);
       expect(clone.$$some).toBeUndefined();
       expect(clone.$$).toBeUndefined();
+    });
+
+    it('should not delete existing properties', function() {
+      var original = {key:{}};
+      var existing = {foo: 'bar'};
+
+      shallowAddProperties(original, existing);
+      expect(existing.foo).toBe('bar');
+      expect(existing.key).toBe(original.key);
+    });
+  });
+
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+
+    it('should delete existing properties on destination', function() {
+      var source = {key:{}};
+      var destination = {foo: 'bar'};
+
+      shallowCopy(source, destination);
+      expect(destination.hasOwnProperty('foo')).toBe(false);
+      expect(destination.key).toBe(source.key);
+    });
+
+    it('should not copy the private $$hashKey', function() {
+      var src,dst;
+      src = {};
+      hashKey(src);
+      dst = shallowCopy(src);
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+    });
+
+    it('should retain the previous $$hashKey', function() {
+      var src,dst,h;
+      src = {};
+      dst = {};
+      // force creation of a hashkey
+      h = hashKey(dst);
+      hashKey(src);
+      dst = shallowCopy(src,dst);
+
+      // make sure we don't copy the key
+      expect(hashKey(dst)).not.toEqual(hashKey(src));
+      // make sure we retain the old key
+      expect(hashKey(dst)).toEqual(h);
     });
   });
 

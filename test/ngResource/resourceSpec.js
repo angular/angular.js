@@ -414,6 +414,17 @@ describe("resource", function() {
   });
 
 
+  it('should not deep copy the response object', function() {
+    var data = {id:{key:123}, foo:{}};
+    $httpBackend.expect('GET', '/CreditCard/123').respond(data);
+
+    var cc = CreditCard.get({id:123});
+    $httpBackend.flush();
+    expect(cc instanceof CreditCard).toBe(true);
+    expect(cc.foo).toBe(data.foo);
+  });
+
+
   it('should bind default parameters', function() {
     $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
     var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
