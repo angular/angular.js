@@ -205,7 +205,7 @@ function JQLiteUnbind(element, type, fn) {
       removeEventListenerFn(element, type, events[type]);
       delete events[type];
     } else {
-      arrayRemove(events[type], fn);
+      arrayRemove(events[type] || [], fn);
     }
   }
 }

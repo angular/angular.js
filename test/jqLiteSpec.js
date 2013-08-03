@@ -843,6 +843,12 @@ describe('jqLite', function() {
       aElem.unbind('click', function() {});
     });
 
+    it('should do nothing when a specific listener was not registered', function () {
+      var aElem = jqLite(a);
+      aElem.bind('click', function() {});
+
+      aElem.unbind('mouseenter', function() {});
+    });
 
     it('should deregister all listeners', function() {
       var aElem = jqLite(a),
