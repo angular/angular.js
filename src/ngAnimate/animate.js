@@ -183,9 +183,6 @@
  *
  */
 
-var noop = angular.noop;
-var forEach = angular.forEach;
-
 angular.module('ngAnimate', ['ng'])
 
   /**
@@ -201,6 +198,8 @@ angular.module('ngAnimate', ['ng'])
    *
    */
   .config(['$provide', '$animateProvider', function($provide, $animateProvider) {
+    var noop = angular.noop;
+    var forEach = angular.forEach;
     var selectors = $animateProvider.$$selectors;
 
     var NG_ANIMATE_STATE = '$$ngAnimateState';
@@ -543,6 +542,8 @@ angular.module('ngAnimate', ['ng'])
   }])
 
   .animation('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
+    var noop = angular.noop;
+    var forEach = angular.forEach;
     function animate(element, className, done) {
       if (!($sniffer.transitions || $sniffer.animations)) {
         done();
