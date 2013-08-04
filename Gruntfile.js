@@ -230,13 +230,13 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', ['package','test:unit', 'tests:docs', 'test:e2e']);
-  grunt.registerTask('test:jqlite', ['tests:jqlite']);
-  grunt.registerTask('test:jquery', ['tests:jquery']);
-  grunt.registerTask('test:modules', ['tests:modules']);
-  grunt.registerTask('test:docs', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
-  grunt.registerTask('test:e2e', ['connect:testserver', 'tests:end2end']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['package','test:unit', 'tests:docs', 'test:e2e']);
+  grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
+  grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
+  grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
+  grunt.registerTask('test:e2e', 'Run the end to end tests with Karma and keep a test server running in the background', ['connect:testserver', 'tests:end2end']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
 
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
