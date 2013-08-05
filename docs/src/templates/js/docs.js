@@ -793,6 +793,8 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
           } else {
             globalErrors.push(page);
           }
+        } else {
+          otherPages.push(page);
         }
       } else if (id == 'angular.Module') {
         module('ng').types.push(page);
