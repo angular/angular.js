@@ -1037,6 +1037,19 @@ describe('ngMock', function() {
       });
 
 
+      it('should accept data as function', function() {
+        var dataValidator = function(data) {
+          var json = angular.fromJson(data);
+          return !!json.id && json.status === 'N';
+        };
+        var exp = new MockHttpExpectation('POST', '/url', dataValidator);
+
+        expect(exp.matchData({})).toBe(false);
+        expect(exp.match('POST', '/url', '{"id": "xxx", "status": "N"}')).toBe(true);
+        expect(exp.match('POST', '/url', {"id": "xxx", "status": "N"})).toBe(true);
+      });
+
+
       it('should ignore data only if undefined (not null or false)', function() {
         var exp = new MockHttpExpectation('POST', '/url', null);
         expect(exp.matchData(null)).toBe(true);
