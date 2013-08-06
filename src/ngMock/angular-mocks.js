@@ -1123,7 +1123,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *
    * @param {string} method HTTP method.
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {(Object|function(Object))=} headers HTTP headers or function that receives http header
    *   object and returns true if the headers match the current definition.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
@@ -1199,7 +1200,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Creates a new backend definition for POST requests. For more info see `when()`.
    *
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {(Object|function(Object))=} headers HTTP headers.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
    * request is handled.
@@ -1213,7 +1215,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Creates a new backend definition for PUT requests.  For more info see `when()`.
    *
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {(Object|function(Object))=} headers HTTP headers.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
    * request is handled.
@@ -1242,7 +1245,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    *
    * @param {string} method HTTP method.
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {(Object|function(Object))=} headers HTTP headers or function that receives http header
    *   object and returns true if the headers match the current expectation.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
@@ -1311,7 +1315,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Creates a new request expectation for POST requests. For more info see `expect()`.
    *
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {Object=} headers HTTP headers.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
    *   request is handled.
@@ -1325,7 +1330,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Creates a new request expectation for PUT requests. For more info see `expect()`.
    *
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {Object=} headers HTTP headers.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
    *   request is handled.
@@ -1339,7 +1345,8 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * Creates a new request expectation for PATCH requests. For more info see `expect()`.
    *
    * @param {string|RegExp} url HTTP url.
-   * @param {(string|RegExp)=} data HTTP request body.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
    * @param {Object=} headers HTTP headers.
    * @returns {requestHandler} Returns an object with `respond` method that control how a matched
    *   request is handled.
@@ -1492,6 +1499,7 @@ function MockHttpExpectation(method, url, data, headers) {
   this.matchData = function(d) {
     if (angular.isUndefined(data)) return true;
     if (data && angular.isFunction(data.test)) return data.test(d);
+    if (data && angular.isFunction(data)) return data(d);
     if (data && !angular.isString(data)) return angular.toJson(data) == d;
     return data == d;
   };
