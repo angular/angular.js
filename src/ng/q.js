@@ -91,6 +91,8 @@
  *   This method *returns a new promise* which is resolved or rejected via the return value of the
  *   `successCallback` or `errorCallback`.
  *
+ * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
+ *
  * - `always(callback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
@@ -128,25 +130,25 @@
  *   you can treat promises attached to a scope as if they were the resulting values.
  * - Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
- * 
+ *
  *  # Testing
- * 
+ *
  *  <pre>
  *    it('should simulate promise', inject(function($q, $rootScope) {
  *      var deferred = $q.defer();
  *      var promise = deferred.promise;
  *      var resolvedValue;
- * 
+ *
  *      promise.then(function(value) { resolvedValue = value; });
  *      expect(resolvedValue).toBeUndefined();
- * 
+ *
  *      // Simulate resolving of promise
  *      deferred.resolve(123);
  *      // Note that the 'then' function does not get called synchronously.
  *      // This is because we want the promise API to always be async, whether or not
  *      // it got called synchronously or asynchronously.
  *      expect(resolvedValue).toBeUndefined();
- * 
+ *
  *      // Propagate promise resolution to 'then' functions using $apply().
  *      $rootScope.$apply();
  *      expect(resolvedValue).toEqual(123);
@@ -267,8 +269,13 @@ function qFactory(nextTick, exceptionHandler) {
 
           return result.promise;
         },
+
+        "catch": function(callback) {
+          return this.then(null, callback);
+        },
+
         always: function(callback) {
-          
+
           function makePromise(value, resolved) {
             var result = defer();
             if (resolved) {
@@ -278,14 +285,14 @@ function qFactory(nextTick, exceptionHandler) {
             }
             return result.promise;
           }
-          
+
           function handleCallback(value, isResolved) {
-            var callbackOutput = null;            
+            var callbackOutput = null;
             try {
               callbackOutput = (callback ||defaultCallback)();
             } catch(e) {
               return makePromise(e, false);
-            }            
+            }
             if (callbackOutput && callbackOutput.then) {
               return callbackOutput.then(function() {
                 return makePromise(value, isResolved);
@@ -296,7 +303,7 @@ function qFactory(nextTick, exceptionHandler) {
               return makePromise(value, isResolved);
             }
           }
-          
+
           return this.then(function(value) {
             return handleCallback(value, true);
           }, function(error) {
