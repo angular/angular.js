@@ -31,6 +31,29 @@ describe('angular', function() {
       expect(copy(date) === date).toBeFalsy();
     });
 
+    it("should copy RegExp", function() {
+      var re = new RegExp(".*");
+      expect(copy(re) instanceof RegExp).toBeTruthy();
+      expect(copy(re).source).toBe(".*");
+      expect(copy(re) === re).toBe(false);
+    });
+
+    it("should copy literal RegExp", function() {
+      var re = /.*/;
+      expect(copy(re) instanceof RegExp).toBeTruthy();
+      expect(copy(re).source).toEqual(".*");
+      expect(copy(re) === re).toBeFalsy();
+    });
+
+    it("should deeply copy literal RegExp", function() {
+      var objWithRegExp = {
+        re: /.*/
+      };
+      expect(copy(objWithRegExp).re instanceof RegExp).toBeTruthy();
+      expect(copy(objWithRegExp).re.source).toEqual(".*");
+      expect(copy(objWithRegExp.re) === objWithRegExp.re).toBeFalsy();
+    });
+
     it("should deeply copy an array into an existing array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
