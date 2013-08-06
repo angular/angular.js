@@ -516,6 +516,10 @@ describe('q', function() {
         expect(typeof promise.then).toBe('function');
       });
 
+      it('should have a catch method', function() {
+        expect(typeof promise['catch']).toBe('function');
+      });
+
       it('should have a always method', function() {
         expect(typeof promise.always).toBe('function');
       });
@@ -879,6 +883,14 @@ describe('q', function() {
 
           });
 
+        });
+      });
+
+      describe('catch', function() {
+        it('should be a shorthand for defining promise error handlers', function() {
+          promise['catch'](error(1)).then(null, error(2))
+          syncReject(deferred, 'foo');
+          expect(logStr()).toBe('error1(foo)->reject(foo); error2(foo)->reject(foo)');
         });
       });
     });
