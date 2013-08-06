@@ -177,7 +177,9 @@ function $RouteProvider(){
           + (optional ? '' : slash)
           + '(?:'
           + (optional ? slash : '')
-          + (star && '(.+)?' || '([^/]+)?') + ')'
+          + (star && '(.+?)' || '([^/]+)')
+          + (optional || '')
+          + ')'
           + (optional || '');
       })
       .replace(/([\/$\*])/g, '\\$1');
