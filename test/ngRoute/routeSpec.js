@@ -331,6 +331,50 @@ describe('$route', function() {
   });
 
 
+  it('should skip routes with incomplete params', function() {
+    module(function($routeProvider) {
+      $routeProvider
+        .otherwise({template: 'other'})
+        .when('/pages/:page/:comment*', {template: 'comment'})
+        .when('/pages/:page', {template: 'page'})
+        .when('/pages', {template: 'index'})
+        .when('/foo/', {template: 'foo'})
+        .when('/foo/:bar', {template: 'bar'})
+        .when('/foo/:bar*/:baz', {template: 'baz'});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.url('/pages/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('index');
+
+      $location.url('/pages/page/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('page');
+
+      $location.url('/pages/page/1/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('comment');
+
+      $location.url('/foo/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('foo');
+
+      $location.url('/foo/bar/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('bar');
+
+      $location.url('/foo/bar/baz/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('baz');
+
+      $location.url('/something/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('other');
+    });
+  });
+
+
   describe('otherwise', function() {
 
     it('should handle unknown routes with "otherwise" route definition', function() {
