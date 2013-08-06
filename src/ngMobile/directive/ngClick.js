@@ -108,6 +108,19 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     return false; // No allowable region; bust it.
   }
 
+  // get the touch location for the first touch object in touch event
+  function getSingleTouchLocation (event) {
+    // retrieve original event if it is wrapped by jquery
+    // the original event will have an array of touches
+    event = event.originalEvent || event;
+
+    // get the first touch object in the event
+    var touches = event.touches && event.touches.length ? event.touches : [event];
+    var e = touches[0].originalEvent || touches[0];
+    
+    return { x: e.clientX, y: e.clientY }
+  }
+
   // Global click handler that prevents the click if it's in a bustable zone and preventGhostClick
   // was called recently.
   function onClick(event) {
@@ -115,20 +128,19 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
-    var touches = event.touches && event.touches.length ? event.touches : [event];
-    var x = touches[0].clientX;
-    var y = touches[0].clientY;
+    var p = getSingleTouchLocation(event);
+
     // Work around desktop Webkit quirk where clicking a label will fire two clicks (on the label
     // and on the input element). Depending on the exact browser, this second click we don't want
     // to bust has either (0,0) or negative coordinates.
-    if (x < 1 && y < 1) {
+    if (p.x < 1 && p.y < 1) {
       return; // offscreen
     }
 
     // Look for an allowable region containing this click.
     // If we find one, that means it was created by touchstart and not removed by
     // preventGhostClick, so we don't bust it.
-    if (checkAllowableRegions(touchCoordinates, x, y)) {
+    if (checkAllowableRegions(touchCoordinates, p.x, p.y)) {
       return;
     }
 
@@ -144,15 +156,14 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
   function onTouchStart(event) {
-    var touches = event.touches && event.touches.length ? event.touches : [event];
-    var x = touches[0].clientX;
-    var y = touches[0].clientY;
-    touchCoordinates.push(x, y);
+    
+    var p = getSingleTouchLocation(event);
+    touchCoordinates.push(p.x, p.y);
 
     $timeout(function() {
       // Remove the allowable region.
       for (var i = 0; i < touchCoordinates.length; i += 2) {
-        if (touchCoordinates[i] == x && touchCoordinates[i+1] == y) {
+        if (touchCoordinates[i] == p.x && touchCoordinates[i+1] == p.y) {
           touchCoordinates.splice(i, i + 2);
           return;
         }
@@ -190,6 +201,7 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('touchstart', function(event) {
       tapping = true;
+      
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
       if(tapElement.nodeType == 3) {
@@ -200,14 +212,23 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
       startTime = Date.now();
 
-      var touches = event.touches && event.touches.length ? event.touches : [event];
-      var e = touches[0].originalEvent || touches[0];
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
+      var p = getSingleTouchLocation(event);
+      touchStartX = p.x;
+      touchStartY = p.y;
     });
 
     element.on('touchmove', function(event) {
-      resetState();
+      event = event.originalEvent || event;
+
+      // calculate the distance to touch start location
+      var p = getSingleTouchLocation(event);
+      var dist = Math.sqrt( Math.pow(p.x - touchStartX, 2) + Math.pow(p.y - touchStartY, 2) );
+
+      // if current position is not far away from touch start
+      // we still consider it as a tap event
+      // if it is farther than the MOVE_TOLERANCE, then resetState to cancel tapping
+      if (dist >= MOVE_TOLERANCE)
+        resetState();
     });
 
     element.on('touchcancel', function(event) {
@@ -217,16 +238,12 @@ ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
 
-      var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
-          ((event.touches && event.touches.length) ? event.touches : [event]);
-      var e = touches[0].originalEvent || touches[0];
-      var x = e.clientX;
-      var y = e.clientY;
-      var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
+      var p = getSingleTouchLocation(event);
+      var dist = Math.sqrt( Math.pow(p.x - touchStartX, 2) + Math.pow(p.y - touchStartY, 2) );
 
-      if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
+      if (tapping && dist < MOVE_TOLERANCE && diff < TAP_DURATION) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.
-        preventGhostClick(x, y);
+        preventGhostClick(p.x, p.y);
 
         // Blur the focused element (the button, probably) before firing the callback.
         // This doesn't work perfectly on Android Chrome, but seems to work elsewhere.
