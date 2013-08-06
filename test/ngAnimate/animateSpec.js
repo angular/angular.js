@@ -1513,4 +1513,36 @@ describe("ngAnimate", function() {
     });
   });
 
+  it("should provide the correct CSS class to the addClass and removeClass callbacks within a JS animation", function() {
+    module(function($animateProvider) {
+      $animateProvider.register('.classify', function($timeout) {
+        return {
+          removeClass : function(element, className, done) {
+            element.data('classify','remove-' + className);
+            done();
+          },
+          addClass : function(element, className, done) {
+            element.data('classify','add-' + className);
+            done();
+          }
+        }
+      });
+    })
+    inject(function($compile, $rootScope, $animate, $timeout) {
+      var element = html($compile('<div class="classify"></div>')($rootScope));
+
+      $animate.addClass(element, 'super');
+      expect(element.data('classify')).toBe('add-super');
+      $timeout.flush();
+
+      $animate.removeClass(element, 'super');
+      expect(element.data('classify')).toBe('remove-super');
+      $timeout.flush();
+
+      $animate.addClass(element, 'superguy');
+      expect(element.data('classify')).toBe('add-superguy');
+      $timeout.flush();
+    });
+  });
+
 });
