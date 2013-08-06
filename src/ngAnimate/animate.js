@@ -489,6 +489,7 @@ angular.module('ngAnimate', ['ng'])
           done:done
         });
 
+        var baseClassName = className;
         if(event == 'addClass') {
           className = suffixClasses(className, '-add');
         } else if(event == 'removeClass') {
@@ -504,7 +505,7 @@ angular.module('ngAnimate', ['ng'])
 
           if(animation.start) {
             if(event == 'addClass' || event == 'removeClass') {
-              animation.endFn = animation.start(element, className, fn);
+              animation.endFn = animation.start(element, baseClassName, fn);
             } else {
               animation.endFn = animation.start(element, fn);
             }
@@ -518,17 +519,6 @@ angular.module('ngAnimate', ['ng'])
           forEach(animations, function(animation) {
             (animation.endFn || noop)(isCancelledFlag);
           });
-        }
-
-        function suffixClasses(classes, suffix) {
-          var className = '';
-          classes = angular.isArray(classes) ? classes : classes.split(/\s+/);
-          forEach(classes, function(klass, i) {
-            if(klass && klass.length > 0) {
-              className += (i > 0 ? ' ' : '') + klass + suffix;
-            }
-          });
-          return className;
         }
 
         function progress(index) {
@@ -550,117 +540,128 @@ angular.module('ngAnimate', ['ng'])
         }
       }
     }]);
-  }])
 
-  .animation('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
-    var noop = angular.noop;
-    var forEach = angular.forEach;
-    function animate(element, className, done) {
-      if (!($sniffer.transitions || $sniffer.animations)) {
-        done();
-      } else {
-        var activeClassName = '';
-        $timeout(startAnimation, 1, false);
-
-        //this acts as the cancellation function in case
-        //a new animation is triggered while another animation
-        //is still going on (otherwise the active className
-        //would still hang around until the timer is complete).
-        return onEnd;
-      }
-
-      function parseMaxTime(str) {
-        var total = 0, values = angular.isString(str) ? str.split(/\s*,\s*/) : [];
-        forEach(values, function(value) {
-          total = Math.max(parseFloat(value) || 0, total);
-        });
-        return total;
-      }
-
-      function startAnimation() {
-        var duration = 0;
-        forEach(className.split(' '), function(klass, i) {
-          activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
-        });
-
-        element.addClass(activeClassName);
-
-        //one day all browsers will have these properties
-        var w3cAnimationProp = 'animation';
-        var w3cTransitionProp = 'transition';
-
-        //but some still use vendor-prefixed styles
-        var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
-        var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-
-        var durationKey = 'Duration',
-            delayKey = 'Delay',
-            animationIterationCountKey = 'IterationCount';
-
-        //we want all the styles defined before and after
-        var ELEMENT_NODE = 1;
-        forEach(element, function(element) {
-          if (element.nodeType == ELEMENT_NODE) {
-            var elementStyles = $window.getComputedStyle(element) || {};
-
-            var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
-                                               parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
-
-            var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
-                                               parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
-
-            var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
-                                               parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
-
-            var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
-                                               parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
-
-            if(animationDuration > 0) {
-              animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp   + animationIterationCountKey]) || 0,
-                                           parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
-                                           1);
-            }
-
-            duration = Math.max(animationDelay  + animationDuration,
-                                transitionDelay + transitionDuration,
-                                duration);
-          }
-        });
-
-        $timeout(done, duration * 1000, false);
-      }
-
-      //this will automatically be called by $animate so
-      //there is no need to attach this internally to the
-      //timeout done method
-      function onEnd(cancelled) {
-        element.removeClass(activeClassName);
-
-        //only when the animation is cancelled is the done()
-        //function not called for this animation therefore
-        //this must be also called
-        if(cancelled) {
+    $animateProvider.register('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
+      var noop = angular.noop;
+      var forEach = angular.forEach;
+      function animate(element, className, done) {
+        if (!($sniffer.transitions || $sniffer.animations)) {
           done();
+        } else {
+          var activeClassName = '';
+          $timeout(startAnimation, 1, false);
+
+          //this acts as the cancellation function in case
+          //a new animation is triggered while another animation
+          //is still going on (otherwise the active className
+          //would still hang around until the timer is complete).
+          return onEnd;
+        }
+
+        function parseMaxTime(str) {
+          var total = 0, values = angular.isString(str) ? str.split(/\s*,\s*/) : [];
+          forEach(values, function(value) {
+            total = Math.max(parseFloat(value) || 0, total);
+          });
+          return total;
+        }
+
+        function startAnimation() {
+          var duration = 0;
+          forEach(className.split(' '), function(klass, i) {
+            activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
+          });
+
+          element.addClass(activeClassName);
+
+          //one day all browsers will have these properties
+          var w3cAnimationProp = 'animation';
+          var w3cTransitionProp = 'transition';
+
+          //but some still use vendor-prefixed styles
+          var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
+          var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+
+          var durationKey = 'Duration',
+              delayKey = 'Delay',
+              animationIterationCountKey = 'IterationCount';
+
+          //we want all the styles defined before and after
+          var ELEMENT_NODE = 1;
+          forEach(element, function(element) {
+            if (element.nodeType == ELEMENT_NODE) {
+              var elementStyles = $window.getComputedStyle(element) || {};
+
+              var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                                 parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+              var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                                 parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
+              var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
+                                                 parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+
+              var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
+                                                 parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+
+              if(animationDuration > 0) {
+                animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp   + animationIterationCountKey]) || 0,
+                                             parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
+                                             1);
+              }
+
+              duration = Math.max(animationDelay  + animationDuration,
+                                  transitionDelay + transitionDuration,
+                                  duration);
+            }
+          });
+
+          $timeout(done, duration * 1000, false);
+        }
+
+        //this will automatically be called by $animate so
+        //there is no need to attach this internally to the
+        //timeout done method
+        function onEnd(cancelled) {
+          element.removeClass(activeClassName);
+
+          //only when the animation is cancelled is the done()
+          //function not called for this animation therefore
+          //this must be also called
+          if(cancelled) {
+            done();
+          }
         }
       }
+
+      return {
+        enter : function(element, done) {
+          return animate(element, 'ng-enter', done);
+        },
+        leave : function(element, done) {
+          return animate(element, 'ng-leave', done);
+        },
+        move : function(element, done) {
+          return animate(element, 'ng-move', done);
+        },
+        addClass : function(element, className, done) {
+          return animate(element, suffixClasses(className, '-add'), done);
+        },
+        removeClass : function(element, className, done) {
+          return animate(element, suffixClasses(className, '-remove'), done);
+        }
+      };
+
+    }]);
+
+    function suffixClasses(classes, suffix) {
+      var className = '';
+      classes = angular.isArray(classes) ? classes : classes.split(/\s+/);
+      forEach(classes, function(klass, i) {
+        if(klass && klass.length > 0) {
+          className += (i > 0 ? ' ' : '') + klass + suffix;
+        }
+      });
+      return className;
     }
-
-    return {
-      enter : function(element, done) {
-        return animate(element, 'ng-enter', done);
-      },
-      leave : function(element, done) {
-        return animate(element, 'ng-leave', done);
-      },
-      move : function(element, done) {
-        return animate(element, 'ng-move', done);
-      },
-      addClass : function(element, className, done) {
-        return animate(element, className, done);
-      },
-      removeClass : function(element, className, done) {
-        return animate(element, className, done);
-      }
-    };
-
   }]);
