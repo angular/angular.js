@@ -1,9 +1,10 @@
 'use strict';
 
 describe('$controller', function() {
-  var $controllerProvider, $controller;
+  var $provide, $controllerProvider, $controller;
 
-  beforeEach(module(function(_$controllerProvider_) {
+  beforeEach(module(function(_$provide_, _$controllerProvider_) {
+    $provide = _$provide_;
     $controllerProvider = _$controllerProvider_;
   }));
 
@@ -100,6 +101,25 @@ describe('$controller', function() {
     expect(foo).toBeDefined();
     expect(foo instanceof Foo).toBe(true);
   }));
+
+
+  it('should resolve named controllers using $injector', function() {
+    var FooCtrl,
+        scope = {},
+        ctrl;
+
+    $provide.factory("Ctrl", function() {
+      return FooCtrl = function($scope, name) {
+        $scope.name = name;
+      };
+    });
+
+    ctrl = $controller("Ctrl as c", {$scope: scope, name: "foo"});
+    expect(ctrl).toBeDefined();
+    expect(ctrl instanceof FooCtrl).toBe(true);
+    expect(scope.c).toBe(ctrl);
+    expect(scope.name).toBe("foo");
+  });
 
 
   describe('ctrl as syntax', function() {

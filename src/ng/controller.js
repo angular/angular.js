@@ -43,7 +43,8 @@ function $ControllerProvider() {
      *    controller constructor function. Otherwise it's considered to be a string which is used
      *    to retrieve the controller constructor using the following steps:
      *
-     *    * check if a controller with given name is registered via `$controllerProvider`
+     *    * check if a controller of the given name is registered with `$controllerProvider`
+     *    * check if a provider of the given name is registered with `$provide`.
      *    * check if evaluating the string on the current scope returns a constructor
      *    * check `window[constructor]` on the global `window` object
      *
@@ -67,6 +68,10 @@ function $ControllerProvider() {
         expression = controllers.hasOwnProperty(constructor)
             ? controllers[constructor]
             : getter(locals.$scope, constructor, true) || getter($window, constructor, true);
+
+        if (!expression && $injector.has(constructor)) {
+          expression = $injector.get(constructor);
+        }
 
         assertArgFn(expression, constructor, true);
       }
