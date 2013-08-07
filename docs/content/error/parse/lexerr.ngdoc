@@ -2,3 +2,10 @@
 @name $parse:lexerr
 @fullName Lexer Error
 @description
+
+Occurs when an expression has a lexical error, for example a
+malformed number (0.5e-) or an invalid unicode escape.
+
+The error message contains a more precise error.
+
+To resolve, identify and correct the lexical error in the expression.
