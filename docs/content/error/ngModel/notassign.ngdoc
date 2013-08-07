@@ -1,0 +1,26 @@
+@ngdoc error
+@name ngModel:notassign
+@fullName Non-Assignable Expression
+@description
+
+This error occurs when setting the value of an `ng-model` attribute to a
+non-assignable expression. Examples of assignable expressions include:
+
+```
+namedVariable
+myObj.someProperty
+indexedArray[0]
+```
+
+Examples of non-assignable expressions include:
+
+```
+foo + bar
+42
+'oops'
+myFunc()
+```
+
+Always make sure that the expression value of an `ng-model` attribute can be
+assigned to. For more information, see the {@link api/ng.directive:ngModel ngModel
+API doc}.
