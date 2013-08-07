@@ -2110,7 +2110,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("[$compile:noass] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrow("[$compile:notassign] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;

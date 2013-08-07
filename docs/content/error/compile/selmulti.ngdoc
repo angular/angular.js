@@ -2,3 +2,13 @@
 @name $compile:selmulti
 @fullName Binding to Multiple Attribute
 @description
+
+Binding to `multiple` on select is not allowed since switching between multiple and single mode changes the `ng-model`
+object type from instance to array of instances which breaks the model semantics. Use
+{@link api/ng.directive:ngSwitch ng-switch} directive to work around this issue and allow different `ng-model`
+definitions for single and multiple mode.
+
+<pre>
+<select ng-model="" multiple="{{mode}}" ng-options="..."></select>
+</pre>
+

@@ -2,3 +2,13 @@
 @name $compile:nodomevents
 @fullName Interpolated Event Attributes
 @description
+
+In this example the `onclick` binding will be ignored. There is no practical value in binding the user input to the
+`onclick` event and could result in script injection if the user would enter `javascript:alert('PWND')` into the input
+field.
+<pre>
+<input ng-mode="username">
+<div onclick="{{username}}">click me</div>
+</pre>
+
+For this reasons we prevent `{{}}` bindings on `formaction` and all attributes which start with `on`.
