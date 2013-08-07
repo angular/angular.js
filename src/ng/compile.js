@@ -1036,7 +1036,7 @@ function $CompileProvider($provide) {
                 controllerInstance);
             if (directive.controllerAs) {
               if (typeof locals.$scope !== 'object') {
-                throw new Error('Can not export controller as "' + identifier + '". ' +
+                throw new Error('Can not export controller as "' + directive.controllerAs + '". ' +
                     'No scope object provided!');
               }
 
