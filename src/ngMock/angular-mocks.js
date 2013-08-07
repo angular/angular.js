@@ -787,6 +787,7 @@ angular.mock.dump = function(object) {
       } else if (object instanceof Error) {
         out = object.stack || ('' + object.name + ': ' + object.message);
       } else {
+        // TODO(i): this prevents methods to be logged, we should have a better way to serialize objects
         out = angular.toJson(object, true);
       }
     } else {
