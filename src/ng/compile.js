@@ -942,13 +942,14 @@ function $CompileProvider($provide) {
         $element = attrs.$$element;
 
         if (newIsolateScopeDirective) {
-          var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
+          var LOCAL_REGEXP = /^\s*([@=&])(\??)(\*?)\s*(\w*)\s*$/;
 
           var parentScope = scope.$parent || scope;
 
           forEach(newIsolateScopeDirective.scope, function(definition, scopeName) {
             var match = definition.match(LOCAL_REGEXP) || [],
-                attrName = match[3] || scopeName,
+                attrName = match[4] || scopeName,
+                eq = (match[3] == '*'),
                 optional = (match[2] == '?'),
                 mode = match[1], // @, =, or &
                 lastValue,
@@ -995,6 +996,11 @@ function $CompileProvider($provide) {
                       parentSet(parentScope, parentValue = lastValue = scope[scopeName]);
                     }
                   }
+
+                  if (eq) {
+                    this.eq = true;
+                  }
+
                   return parentValue;
                 });
                 break;

@@ -2004,6 +2004,8 @@ describe('$compile', function() {
             optref: '=?',
             optrefAlias: '=? optref',
             optreference: '=?',
+            eqref: '=*',
+            eqrefAlias: '=* eqref',
             expr: '&',
             exprAlias: '&expr'
           },
@@ -2166,6 +2168,30 @@ describe('$compile', function() {
       }));
     });
 
+    describe('equality object reference', function() {
+      it('should update local reference to array when origin changes without $digest errors', inject(function() {
+        $rootScope.list = [{
+          name: 'Mark',
+          value: 45
+        }, {
+          name: 'Misko',
+          value: 52
+        }];
+        $rootScope.query = "";
+        $rootScope.$apply();
+
+        compile('<div><span my-component eqref="list | filter:query">');
+
+        expect(componentScope.eqref).toEqual($rootScope.list);
+        expect(componentScope.eqrefAlias).toEqual(componentScope.eqref);
+
+        $rootScope.query = "Ma";
+        $rootScope.$apply();
+
+        expect(componentScope.eqref).toEqual([$rootScope.list[0]]);
+        expect(componentScope.eqrefAlias).toEqual([$rootScope.list[0]]);
+      }));
+    });
 
     describe('executable expression', function() {
       it('should allow expression execution with locals', inject(function() {
