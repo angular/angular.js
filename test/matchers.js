@@ -40,11 +40,13 @@ beforeEach(function() {
     toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
     toBeShown: function() {
-      this.message = valueFn("Expected element to not have 'ng-hide' class");
+      this.message = valueFn(
+          "Expected element " + (this.isNot ? "": "not ") + "to have 'ng-hide' class");
       return !isNgElementHidden(this.actual);
     },
     toBeHidden: function() {
-      this.message = valueFn("Expected element to have 'ng-hide' class");
+      this.message = valueFn(
+          "Expected element " + (this.isNot ? "not ": "") + "to have 'ng-hide' class");
       return isNgElementHidden(this.actual);
     },
 
