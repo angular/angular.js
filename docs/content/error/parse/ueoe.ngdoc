@@ -2,3 +2,9 @@
 @name $parse:ueoe
 @fullName Unexpected End of Expression
 @description
+
+Occurs when an expression is missing tokens at the end of the expression.
+For example, forgetting a closing bracket in an expression will trigger
+this error.
+
+To resolve, identify and fix the expression's syntax.
