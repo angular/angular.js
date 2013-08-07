@@ -173,8 +173,27 @@ Doc.prototype = {
             '</a>';
         });
     });
+
     text = parts.join('');
-    text = new Showdown.converter({ extensions : ['table'] }).makeHtml(text);
+
+    function prepareClassName(text) {
+      return text.toLowerCase().replace(/[_\W]+/g, '-');
+    };
+
+    var pageClassName, suffix = '-page';
+    if(this.name) {
+      var split = this.name.match(/^\s*(.+?)\s*:\s*(.+)/);
+      if(split && split.length > 1) {
+        var before = prepareClassName(split[1]);
+        var after = prepareClassName(split[2]);
+        pageClassName = before + suffix + ' ' + before + '-' + after + suffix;
+      }
+    }
+    pageClassName = pageClassName || prepareClassName(this.name || 'docs') + suffix;
+
+    text = '<div class="' + pageClassName + '">' + 
+             (new Showdown.converter({ extensions : ['table'] }).makeHtml(text)) +
+           '</div>';
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
       return placeholderMap[id];
     });

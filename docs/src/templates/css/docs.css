@@ -203,13 +203,16 @@ ul.events > li > h3 {
   clear: both;
 }
 
+.tutorial-index-page,
+.tutorial-the-end-page {
+  padding-top:50px;
+}
+
 .tutorial-page {
   position:relative;
 }
-.tutorial-page-no-nav {
-  padding-top:50px;
-}
-.tutorial-page-no-nav .improve-docs {
+
+.tutorial-page .improve-docs {
   position:absolute;
   top:0;
   right:0;
