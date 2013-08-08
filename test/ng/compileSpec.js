@@ -3228,7 +3228,7 @@ describe('$compile', function() {
               '<div>' +
                 '<span foo-start></span>' +
               '</div>');
-        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -3246,7 +3246,7 @@ describe('$compile', function() {
               '<div>' +
                   '<span foo-start><span foo-end></span></span>' +
               '</div>');
-        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
