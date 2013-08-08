@@ -2,3 +2,7 @@
 @name ngResource:badcfg
 @fullName Response does not match configured parameter
 @description
+
+This error occurs when the {@link api/ngResource.$resource `$resource`} service expects an array response but receives an object, or vice versa. By default, all resource actions expect objects, except `query` which expects arrays.
+
+To avoid this error, make sure your `$resource` configuration matches the actual format of the data returned from the source. For more information, see the {@link api/ngResource.$resource `$resource`} API reference documentation.
