@@ -163,7 +163,7 @@ describe('ngSrc', function() {
       });
       element.attr('src');
     }).toThrow(
-            "[$interpolate:interr] Can't interpolate: {{id}}\nError: [$sce:isecrurl] Blocked " +
+            "[$interpolate:interr] Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
                 "loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere");
   }));
 

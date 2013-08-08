@@ -748,7 +748,7 @@ describe('$compile', function() {
               expect(function() {
                 $templateCache.put('http://example.com/should-not-load.html', 'Should not load even if in cache.');
                 $compile('<div class="crossDomainTemplate"></div>')($rootScope);
-              }).toThrow('[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
+              }).toThrow('[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
         }));
 
         it('should load cross domain templates when trusted', inject(
@@ -3063,7 +3063,7 @@ describe('$compile', function() {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "http://a.different.domain.example.com";
       expect(function() { $rootScope.$apply() }).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "http://a.different.domain.example.com");
     }));
@@ -3072,7 +3072,7 @@ describe('$compile', function() {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "javascript:alert(1);";
       expect(function() { $rootScope.$apply() }).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "javascript:alert(1);");
     }));
@@ -3081,7 +3081,7 @@ describe('$compile', function() {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
       expect($rootScope.$apply).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:isecrurl] Blocked " +
+          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
     }));
 

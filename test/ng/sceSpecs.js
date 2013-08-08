@@ -280,7 +280,7 @@ describe('SCE', function() {
         blackList: []
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('#'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
     }));
 
     it('should match against normalized urls', runTest(
@@ -289,7 +289,7 @@ describe('SCE', function() {
         blackList: []
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should support custom regex', runTest(
@@ -299,7 +299,7 @@ describe('SCE', function() {
       }, function($sce) {
         expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
         expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
     }));
 
     it('should support the special string "self" in whitelist', runTest(
@@ -316,7 +316,7 @@ describe('SCE', function() {
         blackList: ['self']
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should have blacklist override the whitelist', runTest(
@@ -325,7 +325,7 @@ describe('SCE', function() {
         blackList: ['self']
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should support multiple items in both lists', runTest(
@@ -337,9 +337,9 @@ describe('SCE', function() {
         expect($sce.getTrustedResourceUrl('http://example.com/1')).toEqual('http://example.com/1');
         expect($sce.getTrustedResourceUrl('http://example.com/2')).toEqual('http://example.com/2');
         expect(function() { $sce.getTrustedResourceUrl('http://example.com/3'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/3');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/3');
         expect(function() { $sce.getTrustedResourceUrl('open_redirect'); }).toThrow(
-          '[$sce:isecrurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
+          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
     }));
   });
 
