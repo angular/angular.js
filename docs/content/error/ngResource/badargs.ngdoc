@@ -2,3 +2,8 @@
 @name ngResource:badargs
 @fullName Too Many Arguments
 @description
+
+This error occurs when specifying too many arguments to a {@link api/ngResource.$resource `$resource`} action, such as `get`, `query` or any user-defined custom action.
+These actions may take up to 4 arguments.
+
+For more information, refer to the {@link api/ngResource.$resource `$resource`} API reference documentation.
