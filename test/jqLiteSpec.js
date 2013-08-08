@@ -901,7 +901,7 @@ describe('jqLite', function() {
   });
 
 
-  describe('unbind', function() {
+  describe('off', function() {
     it('should do nothing when no listener was registered with bound', function() {
       var aElem = jqLite(a);
 
@@ -1051,6 +1051,17 @@ describe('jqLite', function() {
       expect(masterSpy).not.toHaveBeenCalled();
       expect(extraSpy).toHaveBeenCalledOnce();
     });
+
+    // Only run this test for jqLite and not normal jQuery
+    if ( _jqLiteMode ) {
+      it('should throw an error if a selector is passed', function () {
+        var aElem = jqLite(a);
+        aElem.on('click', noop);
+        expect(function () {
+          aElem.off('click', noop, '.test');
+        }).toThrowMatching(/\[jqLite:off_args\]/);
+      });
+    }
   });
 
 
