@@ -1,5 +1,5 @@
 @ngdoc error
-@name $sce:isecrurl
+@name $sce:insecurl
 @fullName Blocked loading an untrusted resource
 @description
 
