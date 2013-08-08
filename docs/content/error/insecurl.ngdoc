@@ -1,22 +1,18 @@
 @ngdoc error
 @name $sce:insecurl
-@fullName Blocked loading an untrusted resource
+@fullName Processing of a Resource from Untrusted Source Blocked
 @description
 
-AngularJS' {@link api/ng.$sce#strictcontextualescaping Strict Contextual Escaping
-(SCE)} mode (enabled by default) has blocked loading a resource from an insecure URL.
+AngularJS' {@link api/ng.$sce#strictcontextualescaping Strict Contextual Escaping (SCE)} mode (enabled by default) has blocked loading a resource from an insecure URL.
 
-Typically, this would occur if you're attempting to load an Angular template from a different
-domain.  It's also possible that a custom directive threw this error for a similar reason.
+Typically, this would occur if you're attempting to load an Angular template from an untrusted source.
+It's also possible that a custom directive threw this error for a similar reason.
 
-Angular only loads templates from trusted URLs (by calling {@link api/ng.$sce#getTrustedResourceUrl
-$sce.getTrustedResourceUrl} on the template URL.).
+Angular only loads templates from trusted URLs (by calling {@link api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
 
-By default, only URLs to the same domain with the same protocol as the application document are
-considered to be trusted.
+By default, only URLs that belong to the same origin are trusted. These are urls with the same domain and protocol as the application document.
 
-The {@link api/ng.directive:ngInclude ng-include} directive and {@link guide/directive directives}
-that specify a `templateUrl` require a trusted resource URL.
+The {@link api/ng.directive:ngInclude ngInclude} directive and {@link guide/directive directives} that specify a `templateUrl` require a trusted resource URL.
 
 To load templates from other domains and/or protocols, either adjust the {@link
 api/ng.$sceDelegateProvider#resourceUrlWhitelist whitelist}/ {@link
