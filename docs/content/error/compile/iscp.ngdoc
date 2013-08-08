@@ -1,11 +1,11 @@
 @ngdoc error
 @name $compile:iscp
-@fullName Invalid Isolate Scope
+@fullName Invalid Isolate Scope Definition
 @description
-When {@link guide/directive#directivedefinitionobject declaring isolate scope} the scope definition object must
-be in specific format which starts with mode character (`@&=`) with an optional local name.
 
-<pre>
+When declaring isolate scope the scope definition object must be in specific format which starts with mode character (`@&=`) with an optional local name.
+
+```
 myModule.directive('directiveName', function factory() {
   return {
     ...
@@ -19,4 +19,6 @@ myModule.directive('directiveName', function factory() {
     ...
   }
 });
-</pre>
+```
+
+Please refer to the {@link guide/directive#directivedefinitionobject directive definition docs} to learn more about the api.
