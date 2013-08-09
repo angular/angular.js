@@ -125,7 +125,7 @@ function Browser(window, document, $log, $sniffer) {
 
   var lastBrowserUrl = location.href,
       baseElement = document.find('base'),
-      replacedUrl = null;
+      newLocation = null;
 
   /**
    * @name ng.$browser#url
@@ -163,21 +163,20 @@ function Browser(window, document, $log, $sniffer) {
           baseElement.attr('href', baseElement.attr('href'));
         }
       } else {
+        newLocation = url;
         if (replace) {
           location.replace(url);
-          replacedUrl = url;
         } else {
           location.href = url;
-          replacedUrl = null;
         }
       }
       return self;
     // getter
     } else {
-      // - the replacedUrl is a workaround for an IE8-9 issue with location.replace method that doesn't update
-      //   location.href synchronously
+      // - newLocation is a workaround for an IE7-9 issue with location.replace and location.href
+      //   methods not updating location.href synchronously.
       // - the replacement is a workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=407172
-      return replacedUrl || location.href.replace(/%27/g,"'");
+      return newLocation || location.href.replace(/%27/g,"'");
     }
   };
 
@@ -185,6 +184,7 @@ function Browser(window, document, $log, $sniffer) {
       urlChangeInit = false;
 
   function fireUrlChange() {
+    newLocation = null;
     if (lastBrowserUrl == self.url()) return;
 
     lastBrowserUrl = self.url();

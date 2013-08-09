@@ -287,7 +287,7 @@ describe('browser', function() {
       it('should default path in cookie to "" (empty string)', function () {
         browser.cookies('cookie', 'bender');
         // This only fails in Safari and IE when cookiePath returns undefined
-        // Where it now succeeds since baseHref return '' instead of undefined         
+        // Where it now succeeds since baseHref return '' instead of undefined
         expect(document.cookie).toEqual('cookie=bender');
       });
     });
@@ -535,9 +535,32 @@ describe('browser', function() {
       fakeWindow.setTimeout.flush();
       expect(callback).toHaveBeenCalledWith('http://server.new');
 
+      callback.reset();
+
       fakeWindow.fire('popstate');
       fakeWindow.fire('hashchange');
-      expect(callback).toHaveBeenCalledOnce();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    describe('after an initial location change by browser.url method when neither history nor hashchange supported', function() {
+      beforeEach(function() {
+        sniffer.history = false;
+        sniffer.hashchange = false;
+        browser.url("http://server.current");
+      });
+
+      it('should fire callback with the correct URL on location change outside of angular', function() {
+        browser.onUrlChange(callback);
+
+        fakeWindow.location.href = 'http://server.new';
+        fakeWindow.setTimeout.flush();
+        expect(callback).toHaveBeenCalledWith('http://server.new');
+
+        fakeWindow.fire('popstate');
+        fakeWindow.fire('hashchange');
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
     });
 
     it('should not fire urlChange if changed by browser.url method (polling)', function() {
