@@ -16,6 +16,7 @@ trap "warn SIGHUP" SIGHUP
 export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 ./lib/sauce/sauce_connect_setup.sh
 npm install -g grunt-cli
+./node_modules/bower/bin/bower install
 grunt ci-checks package
 
 echo ">>> grunt exited with code: $?"
