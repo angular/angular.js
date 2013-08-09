@@ -1653,9 +1653,9 @@ angular.module('ngMock', ['ng']).provider({
   $log: angular.mock.$LogProvider,
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider
-}).config(function($provide) {
+}).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
-});
+}]);
 
 /**
  * @ngdoc overview
