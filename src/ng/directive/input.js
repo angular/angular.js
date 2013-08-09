@@ -794,8 +794,12 @@ var VALID_CLASS = 'ng-valid',
  * @property {string} $viewValue Actual string value in the view.
  * @property {*} $modelValue The value in the model, that the control is bound to.
  * @property {Array.<Function>} $parsers Array of functions to execute, as a pipeline, whenever
- *     the control reads value from the DOM.  Each function is called, in turn, passing the value
- *     through to the next. Used to sanitize / convert the value as well as validation.
+       the control reads value from the DOM.  Each function is called, in turn, passing the value
+       through to the next. Used to sanitize / convert the value as well as validation.
+
+       For validation, the parsers should update the validity state using
+       {@link ng.directive:ngModel.NgModelController#$setValidity $setValidity()},
+       and return `undefined` for invalid values.
  *
  * @property {Array.<Function>} $formatters Array of functions to execute, as a pipeline, whenever
  *     the model value changes. Each function is called, in turn, passing the value through to the
@@ -1005,10 +1009,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * For example {@link ng.directive:input input} or
    * {@link ng.directive:select select} directives call it.
    *
-   * It internally calls all `parsers` (including validators) and updates the `$modelValue` and the actual model path.
+   * It internally calls all `$parsers` (including validators) and updates the `$modelValue` and the actual model path.
    * Lastly it calls all registered change listeners.
-   *
-   * If validators determine the value is invalid, the `$modelValue` and the model path will be set to `undefined`.
    *
    * @param {string} value Value from the view.
    */
