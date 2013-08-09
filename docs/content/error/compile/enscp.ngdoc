@@ -1,0 +1,28 @@
+@ngdoc error
+@name $compile:enscp
+@fullName Can not export controller as no scope object is provided
+@description
+If the directive doesn't have a local scope or is not a valid object, you can not export
+the controller. Please specify the scope element the defining the directive, even if its
+empty.
+
+<pre>
+myModule.directive('directiveName', function factory() {
+  return {
+    ...
+    controllerAs: 'DirCtrl'; // ERROR: no local scope specified
+    ...
+  }
+});
+</pre>
+
+<pre>
+myModule.directive('directiveName', function factory() {
+  return {
+    ...
+    scope: {},
+    controllerAs: 'DirCtrl'; // OK: local scope is a valid object
+    ...
+  }
+});
+</pre>

@@ -1036,8 +1036,8 @@ function $CompileProvider($provide) {
                 controllerInstance);
             if (directive.controllerAs) {
               if (typeof locals.$scope !== 'object') {
-                throw new Error('Can not export controller as "' + identifier + '". ' +
-                    'No scope object provided!');
+                throw $compileMinErr('enscp', "Can not export controller as '{0}' as no scope object is provided!'",
+                    identifier);
               }
 
               locals.$scope[directive.controllerAs] = controllerInstance;
