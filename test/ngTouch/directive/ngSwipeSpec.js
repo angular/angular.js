@@ -23,7 +23,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
     }
 
     beforeEach(function() {
-      module('ngMobile');
+      module('ngTouch');
     });
 
     afterEach(function() {

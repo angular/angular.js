@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ngClick (mobile)', function() {
+describe('ngClick (touch)', function() {
   var element, time, orig_now;
 
   // TODO(braden): Once we have other touch-friendly browsers on CI, allow them here.
@@ -16,7 +16,7 @@ describe('ngClick (mobile)', function() {
 
 
   beforeEach(function() {
-    module('ngMobile');
+    module('ngTouch');
     orig_now = Date.now;
     time = 0;
     Date.now = mockTime;
