@@ -1,5 +1,5 @@
 @ngdoc error
-@name ngResource:badcfg
+@name $resource:badcfg
 @fullName Response does not match configured parameter
 @description
 
