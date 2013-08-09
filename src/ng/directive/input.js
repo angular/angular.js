@@ -1042,8 +1042,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * For example {@link ng.directive:input input} or
    * {@link ng.directive:select select} directives call it.
    *
-   * It internally calls all `parsers` and if resulted value is valid, updates the model and
-   * calls all registered change listeners.
+   * It internally calls all `parsers` (including validators) and updates the `$modelValue` and the actual model path.
+   * Lastly it calls all registered change listeners.
+   *
+   * If validators determine the value is invalid, the `$modelValue` and the model path will be set to `undefined`.
    *
    * @param {string} value Value from the view.
    */
