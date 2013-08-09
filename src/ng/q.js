@@ -93,11 +93,12 @@
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
- * - `always(callback)` – allows you to observe either the fulfillment or rejection of a promise,
+ * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
  *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
- *   more information.
+ *   more information. Because `finally` is a reserved word, you'll need to invoke the method like
+ *   this to support IE: `promise['finally'](callback)`.
  *
  * # Chaining promises
  *
@@ -274,7 +275,7 @@ function qFactory(nextTick, exceptionHandler) {
           return this.then(null, callback);
         },
 
-        always: function(callback) {
+        "finally": function(callback) {
 
           function makePromise(value, resolved) {
             var result = defer();
