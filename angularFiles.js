@@ -75,10 +75,10 @@ angularFiles = {
     'src/ngSanitize/sanitize.js',
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
-    'src/ngMobile/mobile.js',
-    'src/ngMobile/swipe.js',
-    'src/ngMobile/directive/ngClick.js',
-    'src/ngMobile/directive/ngSwipe.js',
+    'src/ngTouch/touch.js',
+    'src/ngTouch/swipe.js',
+    'src/ngTouch/directive/ngClick.js',
+    'src/ngTouch/directive/ngSwipe.js',
     'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
@@ -113,7 +113,7 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js'
   ],
 
   'karma': [
@@ -150,7 +150,7 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js'
   ],
 
   'karmaJquery': [
