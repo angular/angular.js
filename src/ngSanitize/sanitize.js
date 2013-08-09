@@ -1,6 +1,6 @@
 'use strict';
 
-var ngSanitizeMinErr = angular.$$minErr('ngSanitize');
+var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
  * @ngdoc overview
@@ -274,7 +274,7 @@ function htmlParser( html, handler ) {
     }
 
     if ( html == last ) {
-      throw ngSanitizeMinErr('badparse', "The sanitizer was unable to parse the following block of html: {0}", html);
+      throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block of html: {0}", html);
     }
     last = html;
   }
