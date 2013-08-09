@@ -886,15 +886,15 @@ describe('jqLite', function() {
 
         expect(function() {
           elm.on('click', anObj, callback);
-        }).toThrow();
+        }).toThrowMatching(/\[jqLite\:onargs\]/);
 
         expect(function() {
           elm.on('click', null, aString, callback);
-        }).toThrow();
+        }).toThrowMatching(/\[jqLite\:onargs\]/);
 
         expect(function() {
           elm.on('click', aValue, callback);
-        }).toThrow();
+        }).toThrowMatching(/\[jqLite\:onargs\]/);
 
       });
     }
@@ -1059,7 +1059,7 @@ describe('jqLite', function() {
         aElem.on('click', noop);
         expect(function () {
           aElem.off('click', noop, '.test');
-        }).toThrowMatching(/\[jqLite:off_args\]/);
+        }).toThrowMatching(/\[jqLite:offargs\]/);
       });
     }
   });
