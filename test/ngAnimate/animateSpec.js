@@ -1485,18 +1485,14 @@ describe("ngAnimate", function() {
       expect(element.hasClass('hiding')).toBe(false);
 
       $animate.addClass(element, 'ng-hide');
-      return
 
       if($sniffer.transitions) {
         expect(element).toBeShown(); //still showing
         $timeout.flush();
         expect(element).toBeShown();
+        $timeout.flushNext(5555);
       }
-      $timeout.flushNext(555);
-      if($sniffer.transitions) {
-        expect(element).toBeShown();
-        $timeout.flushNext(5000);
-      }
+      $timeout.flush();
       expect(element).toBeHidden();
 
       expect(element.hasClass('showing')).toBe(false);
@@ -1507,12 +1503,9 @@ describe("ngAnimate", function() {
         expect(element).toBeHidden();
         $timeout.flush();
         expect(element).toBeHidden();
+        $timeout.flushNext(5580);
       }
-      $timeout.flushNext(25);
-      if($sniffer.transitions) {
-        expect(element).toBeHidden();
-        $timeout.flushNext(5000);
-      }
+      $timeout.flush();
       expect(element).toBeShown();
 
       expect(element.hasClass('showing')).toBe(true);
