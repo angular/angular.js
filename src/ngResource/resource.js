@@ -1,6 +1,6 @@
 'use strict';
 
-var ngResourceMinErr = angular.$$minErr('ngResource');
+var $resourceMinErr = angular.$$minErr('$resource');
 
 /**
  * @ngdoc overview
@@ -449,7 +449,7 @@ angular.module('ngResource', ['ng']).
             break;
           case 0: break;
           default:
-            throw ngResourceMinErr('badargs',
+            throw $resourceMinErr('badargs',
               "Expected up to 4 arguments [params, data, success, error], got {0} arguments", arguments.length);
           }
 
@@ -474,8 +474,8 @@ angular.module('ngResource', ['ng']).
 
             if (data) {
               if ( angular.isArray(data) != !!action.isArray ) {
-                throw ngResourceMinErr('badcfg', 'Error in resource configuration. Expected response' +
-                  ' to contain an {0} but got an {1}', 
+                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected response' +
+                  ' to contain an {0} but got an {1}',
                   action.isArray?'array':'object', angular.isArray(data)?'array':'object');
               }
               if (action.isArray) {
