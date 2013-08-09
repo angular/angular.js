@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ngMobile.directive:ngSwipeLeft
+ * @name ngTouch.directive:ngSwipeLeft
  *
  * @description
  * Specify custom behavior when an element is swiped to the left on a touchscreen device.
@@ -29,7 +29,7 @@
 
 /**
  * @ngdoc directive
- * @name ngMobile.directive:ngSwipeRight
+ * @name ngTouch.directive:ngSwipeRight
  *
  * @description
  * Specify custom behavior when an element is swiped to the right on a touchscreen device.
@@ -55,7 +55,7 @@
  */
 
 function makeSwipeDirective(directiveName, direction, eventName) {
-  ngMobile.directive(directiveName, ['$parse', '$swipe', function($parse, $swipe) {
+  ngTouch.directive(directiveName, ['$parse', '$swipe', function($parse, $swipe) {
     // The maximum vertical delta for a swipe should be less than 75px.
     var MAX_VERTICAL_DISTANCE = 75;
     // Vertical distance should not be more than a fraction of the horizontal distance.

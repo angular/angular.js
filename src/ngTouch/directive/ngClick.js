@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ngMobile.directive:ngClick
+ * @name ngTouch.directive:ngClick
  *
  * @description
  * A more powerful replacement for the default ngClick designed to be used on touchscreen
@@ -31,7 +31,7 @@
     </doc:example>
  */
 
-ngMobile.config(['$provide', function($provide) {
+ngTouch.config(['$provide', function($provide) {
   $provide.decorator('ngClickDirective', ['$delegate', function($delegate) {
     // drop the default ngClick directive
     $delegate.shift();
@@ -39,7 +39,7 @@ ngMobile.config(['$provide', function($provide) {
   }]);
 }]);
 
-ngMobile.directive('ngClick', ['$parse', '$timeout', '$rootElement',
+ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     function($parse, $timeout, $rootElement) {
   var TAP_DURATION = 750; // Shorter than 750ms is a tap, longer is a taphold or drag.
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
