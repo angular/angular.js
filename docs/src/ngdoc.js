@@ -112,6 +112,10 @@ Doc.prototype = {
     this.methods.forEach(function(method) {
       extractWords(method.text || method.description || '');
     });
+    if (this.ngdoc === 'error') {
+      words.push(this.getMinerrNamespace());
+      words.push(this.getMinerrCode());
+    }
     words.sort();
     return words.join(' ');
   },
