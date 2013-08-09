@@ -825,7 +825,7 @@ var VALID_CLASS = 'ng-valid',
  * Note that you cannot use `NgModelController` in a directive with an isolated scope,
  * as, in that case, the `ng-model` value gets put into the isolated scope and does not get
  * propogated to the parent scope.
- * 
+ *
  *
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
@@ -1005,8 +1005,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * For example {@link ng.directive:input input} or
    * {@link ng.directive:select select} directives call it.
    *
-   * It internally calls all `parsers` and if resulted value is valid, updates the model and
-   * calls all registered change listeners.
+   * It internally calls all `parsers` (including validators) and updates the `$modelValue` and the actual model path.
+   * Lastly it calls all registered change listeners.
+   *
+   * If validators determine the value is invalid, the `$modelValue` and the model path will be set to `undefined`.
    *
    * @param {string} value Value from the view.
    */
