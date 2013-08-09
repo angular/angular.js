@@ -42,11 +42,19 @@ function ensureSafeObject(obj, fullExpression) {
   if (obj && obj.constructor === obj) {
     throw $parseMinErr('isecfn',
         'Referencing Function in Angular expressions is disallowed! Expression: {0}', fullExpression);
+  // 
+  } else if (// isWindow(obj)
+      obj && obj.document && obj.location && obj.alert && obj.setInterval) {
+    throw $parseMinErr('isecwindow',
+        'Referencing the Window in Angular expressions is disallowed! Expression: {0}', fullExpression);
+  } else if (// isElement(obj)
+      obj && (obj.nodeName || (obj.on && obj.find))) {
+    throw $parseMinErr('isecdom',
+        'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}', fullExpression);
   } else {
     return obj;
   }
 }
-
 
 var OPERATORS = {
     'null':function(){return null;},
@@ -688,6 +696,9 @@ function parser(text, json, $filter, csp){
         args.push(argsFn[i](scope, locals));
       }
       var fnPtr = fn(scope, locals, context) || noop;
+
+      ensureSafeObject(fnPtr, text);
+
       // IE stupidity!
       var v = fnPtr.apply
           ? fnPtr.apply(context, args)
@@ -703,7 +714,7 @@ function parser(text, json, $filter, csp){
         v = v.$$v;
       }
 
-      return v;
+      return ensureSafeObject(v, text);
     };
   }
 
