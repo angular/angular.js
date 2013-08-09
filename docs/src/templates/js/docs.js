@@ -247,7 +247,7 @@ docsApp.directive.docTutorialNav = function(templateMerge) {
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
     'step_05', 'step_06', 'step_07', 'step_08', 'step_09',
-    'step_10', 'step_11', 'the_end'
+    'step_10', 'step_11', 'step_12', 'the_end'
   ];
   return {
     compile: function(element, attrs) {
