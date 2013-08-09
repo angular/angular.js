@@ -2,13 +2,13 @@
 
     /**
      * @ngdoc object
-     * @name ngMobile.$swipe
+     * @name ngTouch.$swipe
      *
      * @description
      * The `$swipe` service is a service that abstracts the messier details of hold-and-drag swipe
      * behavior, to make implementing swipe-related directives more convenient.
      *
-     * It is used by the `ngSwipeLeft` and `ngSwipeRight` directives in `ngMobile`, and by
+     * It is used by the `ngSwipeLeft` and `ngSwipeRight` directives in `ngTouch`, and by
      * `ngCarousel` in a separate component.
      *
      * # Usage
@@ -17,7 +17,7 @@
      * documentation for `bind` below.
      */
 
-ngMobile.factory('$swipe', [function() {
+ngTouch.factory('$swipe', [function() {
   // The total distance in any direction before we make the call on swipe vs. scroll.
   var MOVE_BUFFER_RADIUS = 10;
 
@@ -37,8 +37,8 @@ ngMobile.factory('$swipe', [function() {
   return {
     /**
      * @ngdoc method
-     * @name ngMobile.$swipe#bind
-     * @methodOf ngMobile.$swipe
+     * @name ngTouch.$swipe#bind
+     * @methodOf ngTouch.$swipe
      *
      * @description
      * The main method of `$swipe`. It takes an element to be watched for swipe motions, and an
