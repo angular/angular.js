@@ -1,0 +1,16 @@
+@ngdoc error
+@name $parse:isecdom
+@fullName Referencing a DOM node in Expression
+@description
+
+Occurs when an expression attempts to access a DOM node.
+
+AngularJS restricts access to DOM nodes from within expressions since it's a known way to
+execute arbitrary Javascript code.
+
+This check is only performed on object index and function calls in Angular expressions.  These are
+places that are harder for the developer to guard.  Dotted member access (such as a.b.c) does not
+perform this check - it's up to the developer to not expose such sensitive and powerful objects
+directly on the scope chain.
+
+To resolve this error, avoid access to DOM nodes.
