@@ -194,7 +194,7 @@ function JQLiteDealoc(element){
 }
 
 function JQLiteOff(element, type, fn, unsupported) {
-  if (isDefined(unsupported)) throw jqLiteMinErr('off_args', 'jqLite#off() does not support the `selector` argument');
+  if (isDefined(unsupported)) throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
 
   var events = JQLiteExpandoStore(element, 'events'),
       handle = JQLiteExpandoStore(element, 'handle');
@@ -633,7 +633,7 @@ forEach({
   dealoc: JQLiteDealoc,
 
   on: function onFn(element, type, fn, unsupported){
-    if (isDefined(unsupported)) throw jqLiteMinErr('on_args', 'jqLite#on() does not support the `selector` or `eventData` parameters');
+    if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
 
     var events = JQLiteExpandoStore(element, 'events'),
         handle = JQLiteExpandoStore(element, 'handle');
