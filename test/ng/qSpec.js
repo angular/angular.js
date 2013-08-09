@@ -43,7 +43,7 @@ describe('q', function() {
     return map(sliceArgs(args), _argToString).join(',');
   }
 
-  // Help log invocation of success(), always(), progress() and error()
+  // Help log invocation of success(), finally(), progress() and error()
   function _logInvocation(funcName, args, returnVal, throwReturnVal) {
     var logPrefix = funcName + '(' +  _argumentsToString(args) + ')';
     if (throwReturnVal) {
@@ -78,14 +78,14 @@ describe('q', function() {
   /**
    * Creates a callback that logs its invocation in `log`.
    *
-   * @param {(number|string)} name Suffix for 'always' name. e.g. always(1) => always
+   * @param {(number|string)} name Suffix for 'finally' name. e.g. finally(1) => finally
    * @param {*=} returnVal Value that the callback should return. If unspecified, the passed in
    *     value is returned.
    * @param {boolean=} throwReturnVal If true, the `returnVal` will be thrown rather than returned.
    */
-  function always(name, returnVal, throwReturnVal) {
+  function fin(name, returnVal, throwReturnVal) {
     var returnValDefined = (arguments.length >= 2);
-    name = 'always' + (name || '');
+    name = 'finally' + (name || '');
     return function() {
       return _logInvocation(name, arguments, (returnValDefined ? returnVal : arguments[0]), throwReturnVal);
     }
@@ -520,8 +520,8 @@ describe('q', function() {
         expect(typeof promise['catch']).toBe('function');
       });
 
-      it('should have a always method', function() {
-        expect(typeof promise.always).toBe('function');
+      it('should have a finally method', function() {
+        expect(typeof promise['finally']).toBe('function');
       });
 
 
@@ -733,31 +733,30 @@ describe('q', function() {
       });
 
 
-      describe('always', function() {
+      describe('finally', function() {
 
         it('should not take an argument',
             function() {
-          promise.always(always(1))
+          promise['finally'](fin(1))
           syncResolve(deferred, 'foo');
-          expect(logStr()).toBe('always1()');
+          expect(logStr()).toBe('finally1()');
         });
 
         describe("when the promise is fulfilled", function () {
 
           it('should call the callback',
               function() {
-            promise.then(success(1))
-                   .always(always(1))
+            promise.then(success(1))['finally'](fin(1))
             syncResolve(deferred, 'foo');
-            expect(logStr()).toBe('success1(foo)->foo; always1()');
+            expect(logStr()).toBe('success1(foo)->foo; finally1()');
           });
 
           it('should fulfill with the original value',
               function() {
-            promise.always(always('B', 'b'), error('B')).
+            promise['finally'](fin('B', 'b'), error('B')).
                     then(success('BB', 'bb'), error('BB'));
             syncResolve(deferred, 'RESOLVED_VAL');
-            expect(log).toEqual(['alwaysB()->b',
+            expect(log).toEqual(['finallyB()->b',
                                  'successBB(RESOLVED_VAL)->bb']);
           });
 
@@ -765,19 +764,18 @@ describe('q', function() {
           it('should fulfill with the original value (larger test)',
               function() {
             promise.then(success('A', 'a'), error('A'));
-            promise.always(always('B', 'b'), error('B')).
+            promise['finally'](fin('B', 'b'), error('B')).
                     then(success('BB', 'bb'), error('BB'));
-            promise.then(success('C', 'c'), error('C'))
-                   .always(always('CC', 'IGNORED'))
+            promise.then(success('C', 'c'), error('C'))['finally'](fin('CC', 'IGNORED'))
                    .then(success('CCC', 'cc'), error('CCC'))
                    .then(success('CCCC', 'ccc'), error('CCCC'))
             syncResolve(deferred, 'RESOLVED_VAL');
 
             expect(log).toEqual(['successA(RESOLVED_VAL)->a',
-                                 'alwaysB()->b',
+                                 'finallyB()->b',
                                  'successC(RESOLVED_VAL)->c',
                                  'successBB(RESOLVED_VAL)->bb',
-                                 'alwaysCC()->IGNORED',
+                                 'finallyCC()->IGNORED',
                                  'successCCC(c)->cc',
                                  'successCCCC(cc)->ccc']);
           });
@@ -791,12 +789,12 @@ describe('q', function() {
                 var returnedDef = defer();
                 returnedDef.resolve('bar');
 
-                promise.always(always(1, returnedDef.promise))
+                promise['finally'](fin(1, returnedDef.promise))
                        .then(success(2))
 
                 syncResolve(deferred, 'foo');
 
-                expect(logStr()).toBe('always1()->{}; success2(foo)->foo');
+                expect(logStr()).toBe('finally1()->{}; success2(foo)->foo');
               });
             });
 
@@ -805,10 +803,10 @@ describe('q', function() {
                 function () {
                 var returnedDef = defer()
                 returnedDef.reject('bar');
-                promise.always(always(1, returnedDef.promise))
+                promise['finally'](fin(1, returnedDef.promise))
                        .then(success(2), error(1))
                 syncResolve(deferred, 'foo');
-                expect(logStr()).toBe('always1()->{}; error1(bar)->reject(bar)');
+                expect(logStr()).toBe('finally1()->{}; error1(bar)->reject(bar)');
               });
             });
 
@@ -816,10 +814,10 @@ describe('q', function() {
 
           describe("when the callback throws an exception", function() {
             it("should reject with this new exception", function() {
-              promise.always(always(1, "exception", true))
+              promise['finally'](fin(1, "exception", true))
                      .then(success(1), error(2))
               syncResolve(deferred, 'foo');
-              expect(logStr()).toBe('always1()->throw(exception); error2(exception)->reject(exception)');
+              expect(logStr()).toBe('finally1()->throw(exception); error2(exception)->reject(exception)');
             });
           });
 
@@ -829,17 +827,17 @@ describe('q', function() {
         describe("when the promise is rejected", function () {
 
           it("should call the callback", function () {
-            promise.always(always(1))
+            promise['finally'](fin(1))
                    .then(success(2), error(1))
             syncReject(deferred, 'foo');
-            expect(logStr()).toBe('always1(); error1(foo)->reject(foo)');
+            expect(logStr()).toBe('finally1(); error1(foo)->reject(foo)');
           });
 
           it('should reject with the original reason', function() {
-            promise.always(always(1), "hello")
+            promise['finally'](fin(1), "hello")
                    .then(success(2), error(2))
             syncReject(deferred, 'original');
-            expect(logStr()).toBe('always1(); error2(original)->reject(original)');
+            expect(logStr()).toBe('finally1(); error2(original)->reject(original)');
           });
 
           describe("when the callback returns a promise", function() {
@@ -849,10 +847,10 @@ describe('q', function() {
               it("should reject with the original reason after that promise resolves", function () {
                 var returnedDef = defer()
                 returnedDef.resolve('bar');
-                promise.always(always(1, returnedDef.promise))
+                promise['finally'](fin(1, returnedDef.promise))
                        .then(success(2), error(2))
                 syncReject(deferred, 'original');
-                expect(logStr()).toBe('always1()->{}; error2(original)->reject(original)');
+                expect(logStr()).toBe('finally1()->{}; error2(original)->reject(original)');
               });
 
             });
@@ -862,10 +860,10 @@ describe('q', function() {
               it("should reject with the new reason", function() {
                 var returnedDef = defer()
                 returnedDef.reject('bar');
-                promise.always(always(1, returnedDef.promise))
+                promise['finally'](fin(1, returnedDef.promise))
                        .then(success(2), error(1))
                 syncResolve(deferred, 'foo');
-                expect(logStr()).toBe('always1()->{}; error1(bar)->reject(bar)');
+                expect(logStr()).toBe('finally1()->{}; error1(bar)->reject(bar)');
               });
 
             });
@@ -875,10 +873,10 @@ describe('q', function() {
           describe("when the callback throws an exception", function() {
 
             it("should reject with this new exception", function() {
-              promise.always(always(1, "exception", true))
+              promise['finally'](fin(1, "exception", true))
                      .then(success(1), error(2))
               syncResolve(deferred, 'foo');
-              expect(logStr()).toBe('always1()->throw(exception); error2(exception)->reject(exception)');
+              expect(logStr()).toBe('finally1()->throw(exception); error2(exception)->reject(exception)');
             });
 
           });
