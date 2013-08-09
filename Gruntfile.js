@@ -85,6 +85,7 @@ module.exports = function(grunt) {
       jquery: 'karma-jquery.conf.js',
       docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js',
+      promises: 'karma-promisea.conf.js',
       //NOTE run grunt test:e2e instead and it will start a webserver for you
       end2end: 'karma-e2e.conf.js'
     },
@@ -93,6 +94,7 @@ module.exports = function(grunt) {
     autotest: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      promises: 'karma-promisea.conf.js',
       modules: 'karma-modules.conf.js',
       docs: 'karma-docs.conf.js'
     },
@@ -233,9 +235,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['package','test:unit', 'tests:docs', 'test:e2e']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:promises','Run the Promises/A+ Test Suite against $q',['tests:promises']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery','tests:promises', 'tests:modules']);
   grunt.registerTask('test:e2e', 'Run the end to end tests with Karma and keep a test server running in the background', ['connect:testserver', 'tests:end2end']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
 
