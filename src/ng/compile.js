@@ -172,7 +172,7 @@ function $CompileProvider($provide) {
    *
    * @param {string} name Name of the directive in camel-case. (ie <code>ngBind</code> which will match as
    *                <code>ng-bind</code>).
-   * @param {function} directiveFactory An injectable directive factory function. See {@link guide/directive} for more
+   * @param {function|Array} directiveFactory An injectable directive factory function. See {@link guide/directive} for more
    *                info.
    * @returns {ng.$compileProvider} Self for chaining.
    */
@@ -1035,11 +1035,6 @@ function $CompileProvider($provide) {
                 '$' + directive.name + 'Controller',
                 controllerInstance);
             if (directive.controllerAs) {
-              if (typeof locals.$scope !== 'object') {
-                throw new Error('Can not export controller as "' + directive.controllerAs + '". ' +
-                    'No scope object provided!');
-              }
-
               locals.$scope[directive.controllerAs] = controllerInstance;
             }
           });

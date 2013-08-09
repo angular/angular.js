@@ -1485,18 +1485,14 @@ describe("ngAnimate", function() {
       expect(element.hasClass('hiding')).toBe(false);
 
       $animate.addClass(element, 'ng-hide');
-      return
 
       if($sniffer.transitions) {
         expect(element).toBeShown(); //still showing
         $timeout.flush();
         expect(element).toBeShown();
+        $timeout.flushNext(5555);
       }
-      $timeout.flushNext(555);
-      if($sniffer.transitions) {
-        expect(element).toBeShown();
-        $timeout.flushNext(5000);
-      }
+      $timeout.flush();
       expect(element).toBeHidden();
 
       expect(element.hasClass('showing')).toBe(false);
@@ -1507,16 +1503,45 @@ describe("ngAnimate", function() {
         expect(element).toBeHidden();
         $timeout.flush();
         expect(element).toBeHidden();
+        $timeout.flushNext(5580);
       }
-      $timeout.flushNext(25);
-      if($sniffer.transitions) {
-        expect(element).toBeHidden();
-        $timeout.flushNext(5000);
-      }
+      $timeout.flush();
       expect(element).toBeShown();
 
       expect(element.hasClass('showing')).toBe(true);
       expect(element.hasClass('hiding')).toBe(false);
+    });
+  });
+
+  it("should provide the correct CSS class to the addClass and removeClass callbacks within a JS animation", function() {
+    module(function($animateProvider) {
+      $animateProvider.register('.classify', function($timeout) {
+        return {
+          removeClass : function(element, className, done) {
+            element.data('classify','remove-' + className);
+            done();
+          },
+          addClass : function(element, className, done) {
+            element.data('classify','add-' + className);
+            done();
+          }
+        }
+      });
+    })
+    inject(function($compile, $rootScope, $animate, $timeout) {
+      var element = html($compile('<div class="classify"></div>')($rootScope));
+
+      $animate.addClass(element, 'super');
+      expect(element.data('classify')).toBe('add-super');
+      $timeout.flush();
+
+      $animate.removeClass(element, 'super');
+      expect(element.data('classify')).toBe('remove-super');
+      $timeout.flush();
+
+      $animate.addClass(element, 'superguy');
+      expect(element.data('classify')).toBe('add-superguy');
+      $timeout.flush();
     });
   });
 

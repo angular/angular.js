@@ -656,6 +656,32 @@ describe('angular', function() {
         /\[\$injector:modulerr] Failed to instantiate module doesntexist due to:\n.*\[\$injector:nomod] Module 'doesntexist' is not available! You either misspelled the module name or forgot to load it\./
       );
     });
+
+
+    it('should complain if an element has already been bootstrapped', function () {
+      var element = jqLite('<div>bootstrap me!</div>');
+      angular.bootstrap(element);
+
+      expect(function () {
+        angular.bootstrap(element);
+      }).toThrowMatching(
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element '<div class="?ng\-scope"?( ng\-[0-9]+="?[0-9]+"?)?>'/i
+      );
+
+      dealoc(element);
+    });
+
+
+    it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function () {
+      angular.bootstrap(document.getElementsByTagName('html')[0]);
+      expect(function () {
+        angular.bootstrap(document);
+      }).toThrowMatching(
+        /\[ng:btstrpd\] App Already Bootstrapped with this Element 'document'/i
+      );
+
+      dealoc(document);
+    })
   });
 
 

@@ -1061,7 +1061,7 @@ describe('resource', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalledWith(
-      '[ngResource:badcfg] Error in resource configuration. Expected response to contain an array but got an object');
+      '[$resource:badcfg] Error in resource configuration. Expected response to contain an array but got an object');
   });
 
   it('should fail if action expects an array but response is an object', function() {
@@ -1076,7 +1076,7 @@ describe('resource', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalledWith(
-      '[ngResource:badcfg] Error in resource configuration. Expected response to contain an object but got an array');
+      '[$resource:badcfg] Error in resource configuration. Expected response to contain an object but got an array');
   });
 
 

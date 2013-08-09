@@ -1,5 +1,5 @@
 @ngdoc error
-@name ngSanitize:badparse
+@name $sanitize:badparse
 @fullName Parsing Error while Sanitizing
 @description
 
