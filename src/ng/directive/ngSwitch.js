@@ -37,7 +37,9 @@
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
  *   case will be displayed. If the same match appears multiple times, all the
- *   elements will be displayed.
+ *   elements will be displayed. You can also use an array, which allows
+ *   specifying multiple values for the same element. Values will be evaluated
+ *   within the scope when using the array notation.
  * * `ngSwitchDefault`: the default case when no other case match. If there
  *   are multiple default cases, all of them will be displayed when no other
  *   case match.
@@ -54,7 +56,8 @@
         <div class="animate-switch-container"
           ng-switch on="selection">
             <div ng-switch-when="settings">Settings Div</div>
-            <div ng-switch-when="home">Home Span</div>
+            <div ng-switch-when="home">Home Div</div>
+            <div ng-switch-when="['home', 'settings']">Settings &amp; Home</div>
             <div ng-switch-default>default</div>
         </div>
       </div>
@@ -163,14 +166,31 @@ var ngSwitchDirective = ['$animate', function($animate) {
   }
 }];
 
+var SIMPLEARRAY_TEST = /^\s*?\[(.*)\]\s*?$/;
+
 var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
   priority: 500,
   require: '^ngSwitch',
   compile: function(element, attrs, transclude) {
     return function(scope, element, attr, ctrl) {
-      ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
-      ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: transclude, element: element });
+      var a = attrs.ngSwitchWhen,
+          prev = [],
+          addValue = function(when) {
+            // avoid multiple matches for the same element
+            if (!prev[when]) {
+              ctrl.cases['!' + when] = (ctrl.cases['!' + when] || []);
+              ctrl.cases['!' + when].push({ transclude: transclude, element: element });
+              prev[when] = true;
+            }
+          }
+      if (SIMPLEARRAY_TEST.test(a)) {
+        var whenValue = scope.$eval(a);
+        forEach(whenValue, addValue);
+      }
+      else {
+        addValue(a);
+      }
     };
   }
 });

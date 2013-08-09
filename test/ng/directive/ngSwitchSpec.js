@@ -66,6 +66,38 @@ describe('ngSwitch', function() {
   }));
 
 
+  it('should allow multiple switch-whens when using array notation', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when="1">first:{{name}}</li>' +
+        '<li ng-switch-when="[1,8-6]"> both:{{name}}</li>' +
+        '<li ng-switch-when="2"> second:{{name}}</li>' +
+        '<li ng-switch-when="true">true:{{name}}</li>' +
+      '</ul>')($rootScope);
+    $rootScope.select = 1;
+    $rootScope.name="pete";
+    $rootScope.$apply();
+    expect(element.text()).toEqual('first:pete both:pete');
+    $rootScope.select = 2;
+    $rootScope.$apply();
+    expect(element.text()).toEqual(' both:pete second:pete');
+  }));
+
+
+  it('should switch only once even if multiple whens matches the same element when using array notation', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when="1">first:{{name}}</li>' +
+        '<li ng-switch-when="[2,8-6]"> both:{{name}}</li>' +
+        '<li ng-switch-when="2"> second:{{name}}</li>' +
+        '<li ng-switch-when="true">true:{{name}}</li>' +
+      '</ul>')($rootScope);
+    $rootScope.name="pete";
+    $rootScope.select = 2;
+    $rootScope.$apply();
+    expect(element.text()).toEqual(' both:pete second:pete');
+  }));
+
   it('should switch on switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="select">' +
