@@ -621,6 +621,13 @@ function $CompileProvider($provide) {
 
         directiveName = directive.name;
 
+        if (directiveValue = directive.controller) {
+          controllerDirectives = controllerDirectives || {};
+          assertNoDuplicate("'" + directiveName + "' controller",
+              controllerDirectives[directiveName], directive, $compileNode);
+          controllerDirectives[directiveName] = directive;
+        }
+
         if (directiveValue = directive.transclude) {
           assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
           transcludeDirective = directive;
@@ -696,13 +703,6 @@ function $CompileProvider($provide) {
           } catch (e) {
             $exceptionHandler(e, startingTag($compileNode));
           }
-        }
-
-        if (!directive.templateUrl && directive.controller) {
-          controllerDirectives = controllerDirectives || {};
-          assertNoDuplicate("'" + directiveName + "' controller",
-              controllerDirectives[directiveName], directive, $compileNode);
-          controllerDirectives[directiveName] = directive;
         }
 
         if (directive.terminal) {
@@ -962,7 +962,7 @@ function $CompileProvider($provide) {
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
-            templateUrl: null, transclude: null, scope: null
+            controller: null, templateUrl: null, transclude: null, scope: null
           });
 
       $compileNode.html('');
@@ -1008,9 +1008,10 @@ function $CompileProvider($provide) {
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
-            afterTemplateNodeLinkFn(function() {
-              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
-            }, scope, linkNode, $rootElement, controller);
+            afterTemplateNodeLinkFn(
+              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller),
+              scope, linkNode, $rootElement, controller
+            );
           }
           linkQueue = null;
         }).
