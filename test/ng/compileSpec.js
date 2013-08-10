@@ -2455,6 +2455,61 @@ describe('$compile', function() {
     });
 
 
+    it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function () {
+      module(function () {
+        var Ctrl = function ($scope, log) {
+          log('myFoo=' + $scope.myFoo);
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: {
+              myFoo: "="
+            },
+            template: '<p>Hello</p>',
+            controller: Ctrl
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $rootScope.foo = "bar";
+
+        element = $compile('<div my-directive my-foo="foo"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('myFoo=bar');
+      });
+    });
+
+
+    it('should instantiate the controller after the isolate scope bindings are initialized (with templateUrl)', function () {
+      module(function () {
+        var Ctrl = function ($scope, log) {
+          log('myFoo=' + $scope.myFoo);
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: {
+              myFoo: "="
+            },
+            templateUrl: 'hello.html',
+            controller: Ctrl
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $templateCache.put('hello.html', '<p>Hello</p>');
+        $rootScope.foo = "bar";
+
+        element = $compile('<div my-directive my-foo="foo"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('myFoo=bar');
+      });
+    });
+
+
     it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
         'replacement are in the mix', function() {
       // similar to the test above, except that we have one more layer of nesting and nested transclusion
