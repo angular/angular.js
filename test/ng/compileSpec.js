@@ -2455,6 +2455,34 @@ describe('$compile', function() {
     });
 
 
+    it('should instantiate the controller after the isolate scope bindings are initialized', function () {
+      module(function () {
+        var Ctrl = function ($scope, log) {
+          log($scope.foo);
+          // $scope.$evalAsync(function() { log($scope.foo); });
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: {
+              foo: "=attrFoo",
+            },
+            templateUrl: 'hello.html',
+            controller: Ctrl
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $templateCache.put('hello.html', '<p>Hello</p>');
+        $rootScope.foo = "bar";
+        element = $compile('<div my-directive attr-foo="foo"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('bar');
+      });
+    });
+
+
     it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
         'replacement are in the mix', function() {
       // similar to the test above, except that we have one more layer of nesting and nested transclusion
