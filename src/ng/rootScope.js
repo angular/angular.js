@@ -497,6 +497,7 @@ function $RootScopeProvider(){
             length,
             dirty, ttl = TTL,
             next, current, target = this,
+            nextIteration,
             watchLog = [],
             logIdx, logMsg;
 
@@ -547,14 +548,9 @@ function $RootScopeProvider(){
               }
             }
 
-            // Insanity Warning: scope depth-first traversal
-            // yes, this code is a bit crazy, but it works and we have tests to prove it!
-            // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
-              while(current !== target && !(next = current.$$nextSibling)) {
-                current = current.$parent;
-              }
-            }
+            nextIteration = prepareNextScope(current, target);
+            next = nextIteration.next;
+            current = nextIteration.current;
           } while ((current = next));
 
           if(dirty && !(ttl--)) {
@@ -876,6 +872,7 @@ function $RootScopeProvider(){
         var target = this,
             current = target,
             next = target,
+            nextIteration,
             event = {
               name: name,
               targetScope: target,
@@ -908,14 +905,9 @@ function $RootScopeProvider(){
             }
           }
 
-          // Insanity Warning: scope depth-first traversal
-          // yes, this code is a bit crazy, but it works and we have tests to prove it!
-          // this piece should be kept in sync with the traversal in $digest
-          if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
-            while(current !== target && !(next = current.$$nextSibling)) {
-              current = current.$parent;
-            }
-          }
+          nextIteration = prepareNextScope(current, target);
+          next = nextIteration.next;
+          current = nextIteration.current;
         } while ((current = next));
 
         return event;
@@ -926,6 +918,23 @@ function $RootScopeProvider(){
 
     return $rootScope;
 
+
+    function prepareNextScope(current, target){
+      var next;
+      
+      // Insanity Warning: scope depth-first traversal
+      // yes, this code is a bit crazy, but it works and we have tests to prove it!
+      if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+        while(current !== target && !(next = current.$$nextSibling)) {
+          current = current.$parent;
+        }
+      }
+
+      return {
+        next: next,
+        current: current
+      }
+    }
 
     function beginPhase(phase) {
       if ($rootScope.$$phase) {
