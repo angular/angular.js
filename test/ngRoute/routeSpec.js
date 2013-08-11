@@ -121,6 +121,64 @@ describe('$route', function() {
   });
 
 
+  it('should match overlapping routes in the order orginally specified', function() {
+
+    module(function($routeProvider) {
+      $routeProvider.when('/Book1/:book/Chapter/myFavoriteChapter',
+          {controller: noop, templateUrl: 'Chapter.html', isStaticPath: true});
+      $routeProvider.when('/Book1/:book/Chapter/:chapter',
+          {controller: noop, templateUrl: 'Chapter.html'});
+
+      $routeProvider.when('/Book2/:book/Chapter/:chapter',
+          {controller: noop, templateUrl: 'Chapter.html'});
+      $routeProvider.when('/Book1/:book/Chapter/neverMatchedHere',
+          {controller: noop, templateUrl: 'Chapter.html', isStaticPath: true});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.path('/Book1/Moby/Chapter/myFavoriteChapter');
+      $rootScope.$digest();
+      expect($route.current.params).toEqual({book:'Moby'});
+      expect($route.current.isStaticPath).toBeTruthy();
+
+      $location.path('/Book1/Moby/Chapter/chapterX');
+      $rootScope.$digest();
+      expect($route.current.params).toEqual({book:'Moby', chapter:'chapterX'});
+      expect($route.current.isStaticPath).toBeFalsy();
+
+      $location.path('/Book2/Moby/Chapter/myFavoriteChapter');
+      $rootScope.$digest();
+      expect($route.current.params).toEqual({book:'Moby', chapter: 'myFavoriteChapter'});
+      expect($route.current.isStaticPath).toBeFalsy();
+
+      $location.path('/Book2/Moby/Chapter/neverMatchedHere');
+      $rootScope.$digest();
+      expect($route.current.params).toEqual({book:'Moby', chapter: 'neverMatchedHere'});
+      expect($route.current.isStaticPath).toBeFalsy();
+    });
+  });
+
+
+  it('should allow routes to be redefined', function() {
+
+    module(function($routeProvider) {
+      $routeProvider.when('/route1',
+          {controller: noop, templateUrl: 'foo.html'});
+      $routeProvider.when('/route2',
+          {controller: noop, templateUrl: 'bar.html'});
+      $routeProvider.when('/route1',
+          {controller: noop, templateUrl: 'baz.html'});
+
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.path('/route1');
+      $rootScope.$digest();
+      expect($route.current.templateUrl).toEqual('baz.html');
+    });
+  });
+  
+
   it('should route and fire change event correctly whenever the case insensitive flag is utilized', function() {
     var log = '',
         lastRoute,

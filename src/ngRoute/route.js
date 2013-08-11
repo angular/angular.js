@@ -21,7 +21,8 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  * Used for configuring routes. See {@link ngRoute.$route $route} for an example.
  */
 function $RouteProvider(){
-  var routes = {};
+  var routes = {},
+      routeOrder = [];
 
   /**
    * @ngdoc method
@@ -45,6 +46,12 @@ function $RouteProvider(){
    *      * `color: brown`
    *      * `largecode: code/with/slashs`.
    *
+   *    Routes are checked in the order they were originally specified, so routes with fixed
+   *    paths should be specified before overlapping routes containing variables. For example,
+   *    specifying a route for `/color/red` before a route for `/color/:color` will ensure
+   *    that `/color/red` will match the first route, and any other color the second. If
+   *    `/color/:color` were specified first, it would extract `:color` as `red` and the
+   *    explicit `/color/red` route would never be matched. 
    *
    * @param {Object} route Mapping information to be assigned to `$route.current` on route
    *    match.
@@ -119,11 +126,16 @@ function $RouteProvider(){
   this.when = function(path, route) {
     routes[path] = extend({reloadOnSearch: true, caseInsensitiveMatch: false}, route);
 
-    // create redirection for trailing slashes
+    // create redirection for trailing slashes and note the order it was specified in
     if (path) {
       var redirectPath = (path[path.length-1] == '/')
           ? path.substr(0, path.length-1)
           : path +'/';
+
+      // Record the order, if it wasn't already defined earlier
+      if (!routes[redirectPath]) {
+        routeOrder.push(path, redirectPath);
+      }
 
       routes[redirectPath] = {redirectTo: path};
     }
@@ -488,14 +500,19 @@ function $RouteProvider(){
     function parseRoute() {
       // Match a route
       var params, match;
-      forEach(routes, function(route, path) {
-        if (!match && (params = switchRouteMatcher($location.path(), path, route))) {
+      for (var i = 0; i < routeOrder.length; i++) {
+        var path  = routeOrder[i],
+            route = routes[path];
+        
+        if ((params = switchRouteMatcher($location.path(), path, route))) {
           match = inherit(route, {
             params: extend({}, $location.search(), params),
             pathParams: params});
           match.$$route = route;
+          break;
         }
-      });
+      }
+
       // No route matched; fallback to "otherwise" route
       return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
     }
