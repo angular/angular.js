@@ -168,7 +168,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
           : '';
 
     if (!isString(withoutHashUrl)) {
-      throw $locationMinErr('nohash', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
+      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
     }
     matchAppUrl(withoutHashUrl, this);
     this.$$compose();
