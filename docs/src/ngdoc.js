@@ -456,7 +456,7 @@ Doc.prototype = {
         minerrMsg = lookupMinerrMsg(self);
         dom.tag('pre', {
           class:'minerr-errmsg',
-          'error-display': minerrMsg
+          'error-display': minerrMsg.replace(/"/g, '&quot;')
         }, minerrMsg);
       }
       if (self.ngdoc != 'overview') {
