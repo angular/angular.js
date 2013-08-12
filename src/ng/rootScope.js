@@ -501,7 +501,7 @@ function $RootScopeProvider(){
             dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
-            logIdx, logMsg;
+            logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
 
@@ -511,7 +511,8 @@ function $RootScopeProvider(){
 
           while(asyncQueue.length) {
             try {
-              current.$eval(asyncQueue.shift());
+              asyncTask = asyncQueue.shift();
+              asyncTask.scope.$eval(asyncTask.expression);
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -704,7 +705,7 @@ function $RootScopeProvider(){
           });
         }
 
-        this.$$asyncQueue.push(expr);
+        this.$$asyncQueue.push({scope: this, expression: expr});
       },
 
       $$postDigest : function(fn) {
