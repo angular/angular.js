@@ -147,6 +147,8 @@ of service names to inject.
   MyController.$inject = ['$scope', 'greeter'];
 </pre>
 
+In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
+Using above code snippet as an example, '$scope' will be injected into 'renamed$scope' and 'greeter' into 'renamedGreeter'.
 Care must be taken that the `$inject` annotation is kept in sync with the actual arguments in the
 function declaration.
 
