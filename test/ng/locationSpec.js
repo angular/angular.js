@@ -341,7 +341,7 @@ describe('$location', function() {
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('[$location:nohash] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrow('[$location:ihshprfx] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
