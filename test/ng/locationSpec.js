@@ -219,7 +219,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('[$location:nopp] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:ipthprfx] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -228,7 +228,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('[$location:nopp] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrow('[$location:ipthprfx] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
