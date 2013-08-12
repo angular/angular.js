@@ -161,9 +161,6 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    */
   this.$$parse = function(url) {
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
-    if (!isString(withoutBaseUrl)) {
-      throw $locationMinErr('istart', 'Invalid url "{0}", does not start with "{1}".', url, appBase);
-    }
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#'
         ? beginsWith(hashPrefix, withoutBaseUrl)
         : (this.$$html5)
