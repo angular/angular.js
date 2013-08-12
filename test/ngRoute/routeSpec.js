@@ -68,9 +68,9 @@ describe('$route', function() {
         nextRoute;
 
     module(function($routeProvider) {
-      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
           {controller: noop, templateUrl: 'Chapter.html'});
-      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+      $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
@@ -127,9 +127,9 @@ describe('$route', function() {
         nextRoute;
 
     module(function($routeProvider) {
-      $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+      $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
           {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
-      $routeProvider.when('/Book2/:book/*highlight/Chapter/:chapter',
+      $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
           {controller: noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
@@ -723,6 +723,8 @@ describe('$route', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+        $routeProvider.when('/baz/:id/:path*', {redirectTo: '/path/:path/:id'});
+        $routeProvider.when('/path/:path*/:id', {templateUrl: 'foo.html'});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -732,6 +734,11 @@ describe('$route', function() {
         expect($location.path()).toEqual('/bar/id1/subid3/23');
         expect($location.search()).toEqual({extraId: 'gah'});
         expect($route.current.templateUrl).toEqual('bar.html');
+
+        $location.path('/baz/1/foovalue/barvalue');
+        $rootScope.$digest();
+        expect($location.path()).toEqual('/path/foovalue/barvalue/1');
+        expect($route.current.templateUrl).toEqual('foo.html');
       });
     });
 
