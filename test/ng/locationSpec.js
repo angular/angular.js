@@ -627,7 +627,7 @@ describe('$location', function() {
       );
     });
 
-   it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
+    it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
       initService(true, '!', false);
       inject(
         initBrowser('http://domain.com/base/index.html', '/base/index.html'),
@@ -1422,15 +1422,38 @@ describe('$location', function() {
   describe('LocationHashbangUrl', function() {
     var location;
 
-    beforeEach(function() {
-      location = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/#/path');
-    });
-
     it('should rewrite URL', function() {
+      location = new LocationHashbangUrl('http://server/pre/', '#');
+
       expect(location.$$rewrite('http://other')).toEqual(undefined);
       expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
       expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
       expect(location.$$rewrite('javascript:void(0)')).toEqual(undefined);
+    });
+
+    it("should not set hash if one was not originally specified", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html')
+      expect(location.url()).toBe('');
+      expect(location.absUrl()).toBe('http://server/pre/index.html');
+    });
+
+    it("should parse hash if one was specified", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html#/foo/bar')
+      expect(location.url()).toBe('/foo/bar');
+      expect(location.absUrl()).toBe('http://server/pre/index.html#/foo/bar');
+    });
+
+
+    it("should prefix hash url with / if one was originally missing", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html#not-starting-with-slash')
+      expect(location.url()).toBe('/not-starting-with-slash');
+      expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
   });
 
