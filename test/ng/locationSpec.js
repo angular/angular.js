@@ -88,10 +88,10 @@ describe('$location', function() {
     it('search() should throw error an incorrect argument', function() {
       expect(function() {
         url.search(null);
-      }).toThrow('[$location:wpt] First parameter of function must be string or an object.');
+      }).toThrow('[$location:isrcharg] The first argument of the `$location#search()` call must be a string or an object.');
       expect(function() {
         url.search(undefined);
-      }).toThrow('[$location:wpt] First parameter of function must be string or an object.');
+      }).toThrow('[$location:isrcharg] The first argument of the `$location#search()` call must be a string or an object.');
     });
 
 
