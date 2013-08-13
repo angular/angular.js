@@ -322,6 +322,14 @@ reload to the original link.
 - Links starting with '/' that lead to a different base path when base is defined<br>
   Example: `<a href="/not-my-base/link">link</a>`
 
+When running Angular in the root of a domain, along side perhaps a normal application in the same
+directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
+to static files.
+
+To prevent this, you can set your base href for the app to `<base href=".">` and then prefix links
+to URLs that should be handled with `.`. Now, links to locations, which are not to be routed by Angular,
+are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
+
 
 ### Server side
 
