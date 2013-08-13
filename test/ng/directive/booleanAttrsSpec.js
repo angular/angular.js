@@ -93,7 +93,7 @@ describe('boolean attr directives', function() {
 
       expect(function() {
         $compile('<select multiple="{{isMultiple}}"></select>')
-      }).toThrow('[$compile:selmulti] Binding to the \'multiple\' attribute is not supported. ' +
+      }).toThrowMinErr('$compile', 'selmulti', 'Binding to the \'multiple\' attribute is not supported. ' +
                  'Element: <select multiple="{{isMultiple}}">');
 
     }));
@@ -137,8 +137,8 @@ describe('ngSrc', function() {
     expect(function() {
       var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
       dealoc(element);
-    }).toThrow(
-          "[$interpolate:noconcat] Error while interpolating: some/{{id}}\nStrict " +
+    }).toThrowMinErr(
+          "$interpolate", "noconcat", "Error while interpolating: some/{{id}}\nStrict " +
           "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
           "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
   }));
@@ -162,8 +162,8 @@ describe('ngSrc', function() {
         $rootScope.id = $sce.trustAsUrl('http://somewhere');
       });
       element.attr('src');
-    }).toThrow(
-            "[$interpolate:interr] Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
+    }).toThrowMinErr(
+            "$interpolate", "interr", "Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
                 "loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere");
   }));
 

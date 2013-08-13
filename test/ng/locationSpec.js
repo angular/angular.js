@@ -88,10 +88,10 @@ describe('$location', function() {
     it('search() should throw error an incorrect argument', function() {
       expect(function() {
         url.search(null);
-      }).toThrow('[$location:isrcharg] The first argument of the `$location#search()` call must be a string or an object.');
+      }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
       expect(function() {
         url.search(undefined);
-      }).toThrow('[$location:isrcharg] The first argument of the `$location#search()` call must be a string or an object.');
+      }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
     });
 
 
@@ -219,7 +219,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('[$location:ipthprfx] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -228,7 +228,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('[$location:ipthprfx] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -341,7 +341,7 @@ describe('$location', function() {
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('[$location:ihshprfx] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrowMinErr('$location', 'ihshprfx', 'Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 

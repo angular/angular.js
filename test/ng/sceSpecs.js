@@ -41,8 +41,8 @@ describe('SCE', function() {
         try {
           $window.msie = true;
           if (expectException) {
-            expect(constructSce).toThrow(
-                '[$sce:iequirks] Strict Contextual Escaping does not support Internet Explorer ' +
+            expect(constructSce).toThrowMinErr(
+                '$sce', 'iequirks', 'Strict Contextual Escaping does not support Internet Explorer ' +
                 'version < 9 in quirks mode.  You can fix this by adding the text <!doctype html> to ' +
                 'the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more ' +
                 'information.');
@@ -88,13 +88,13 @@ describe('SCE', function() {
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
       expect(typeof wrappedValue).toBe('object');
       expect($sce.getTrusted($sce.HTML, wrappedValue)).toBe('original_value');
-      expect(function() { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      expect(function() { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
       wrappedValue = $sce.trustAs($sce.CSS, originalValue);
       expect(typeof wrappedValue).toBe('object');
       expect($sce.getTrusted($sce.CSS, wrappedValue)).toBe('original_value');
-      expect(function() { $sce.getTrusted($sce.HTML, wrappedValue); }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      expect(function() { $sce.getTrusted($sce.HTML, wrappedValue); }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
       wrappedValue = $sce.trustAs($sce.URL, originalValue);
       expect(typeof wrappedValue).toBe('object');
       expect($sce.getTrusted($sce.URL, wrappedValue)).toBe('original_value');
@@ -104,19 +104,19 @@ describe('SCE', function() {
     }));
 
     it('should NOT wrap non-string values', inject(function($sce) {
-      expect(function() { $sce.trustAsCss(123); }).toThrow(
-          '[$sce:itype] Attempted to trust a non-string value in a content requiring a string: ' +
+      expect(function() { $sce.trustAsCss(123); }).toThrowMinErr(
+          '$sce', 'itype', 'Attempted to trust a non-string value in a content requiring a string: ' +
           'Context: css');
     }));
 
     it('should NOT wrap unknown contexts', inject(function($sce) {
-      expect(function() { $sce.trustAs('unknown1' , '123'); }).toThrow(
-          '[$sce:icontext] Attempted to trust a value in invalid context. Context: unknown1; Value: 123');
+      expect(function() { $sce.trustAs('unknown1' , '123'); }).toThrowMinErr(
+          '$sce', 'icontext', 'Attempted to trust a value in invalid context. Context: unknown1; Value: 123');
     }));
 
     it('should NOT wrap undefined context', inject(function($sce) {
-      expect(function() { $sce.trustAs(undefined, '123'); }).toThrow(
-          '[$sce:icontext] Attempted to trust a value in invalid context. Context: undefined; Value: 123');
+      expect(function() { $sce.trustAs(undefined, '123'); }).toThrowMinErr(
+          '$sce', 'icontext', 'Attempted to trust a value in invalid context. Context: undefined; Value: 123');
     }));
 
     it('should wrap undefined into undefined', inject(function($sce) {
@@ -156,8 +156,8 @@ describe('SCE', function() {
     it('should NOT unwrap values when the type is different', inject(function($sce) {
       var originalValue = "originalValue";
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
-      expect(function () { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      expect(function () { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
     it('should NOT unwrap values that had not been wrapped', inject(function($sce) {
@@ -167,8 +167,8 @@ describe('SCE', function() {
         };
       }
       var wrappedValue = new TrustedValueHolder("originalValue");
-      expect(function() { return $sce.getTrusted($sce.HTML, wrappedValue) }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      expect(function() { return $sce.getTrusted($sce.HTML, wrappedValue) }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
     it('should implement toString on trusted values', inject(function($sce) {
@@ -224,16 +224,16 @@ describe('SCE', function() {
       var exprFn = $sce.parseAs($sce.HTML, 'foo');
       expect(function() {
         return exprFn({}, {'foo': true})
-      }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
     it('should NOT return trusted values of the wrong type from expression function', inject(function($sce) {
       var exprFn = $sce.parseAs($sce.HTML, 'foo');
       expect(function() {
         return exprFn({}, {'foo': $sce.trustAs($sce.JS, '123')})
-      }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
     it('should return trusted values from expression function', inject(function($sce) {
@@ -249,8 +249,8 @@ describe('SCE', function() {
       expect(function() {
         // mismatched types.
         $sce.parseAsCss('foo')({}, {'foo': $sce.trustAsHtml('1')});
-      }).toThrow(
-          '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+      }).toThrowMinErr(
+          '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
 
   });
@@ -279,8 +279,8 @@ describe('SCE', function() {
         whiteList: [],
         blackList: []
       }, function($sce) {
-        expect(function() { $sce.getTrustedResourceUrl('#'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
+        expect(function() { $sce.getTrustedResourceUrl('#'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
     }));
 
     it('should match against normalized urls', runTest(
@@ -288,8 +288,8 @@ describe('SCE', function() {
         whiteList: [/^foo$/],
         blackList: []
       }, function($sce) {
-        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should support custom regex', runTest(
@@ -298,8 +298,8 @@ describe('SCE', function() {
         blackList: []
       }, function($sce) {
         expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
-        expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
+        expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
     }));
 
     it('should support the special string "self" in whitelist', runTest(
@@ -315,8 +315,8 @@ describe('SCE', function() {
         whiteList: [/.*/],
         blackList: ['self']
       }, function($sce) {
-        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should have blacklist override the whitelist', runTest(
@@ -324,8 +324,8 @@ describe('SCE', function() {
         whiteList: ['self'],
         blackList: ['self']
       }, function($sce) {
-        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
     it('should support multiple items in both lists', runTest(
@@ -336,18 +336,18 @@ describe('SCE', function() {
         expect($sce.getTrustedResourceUrl('same_domain')).toEqual('same_domain');
         expect($sce.getTrustedResourceUrl('http://example.com/1')).toEqual('http://example.com/1');
         expect($sce.getTrustedResourceUrl('http://example.com/2')).toEqual('http://example.com/2');
-        expect(function() { $sce.getTrustedResourceUrl('http://example.com/3'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/3');
-        expect(function() { $sce.getTrustedResourceUrl('open_redirect'); }).toThrow(
-          '[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
+        expect(function() { $sce.getTrustedResourceUrl('http://example.com/3'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/3');
+        expect(function() { $sce.getTrustedResourceUrl('open_redirect'); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: open_redirect');
     }));
   });
 
   describe('sanitizing html', function() {
     describe('when $sanitize is NOT available', function() {
       it('should throw an exception for getTrusted(string) values', inject(function($sce) {
-        expect(function() { $sce.getTrustedHtml('<b></b>'); }).toThrow(
-            '[$sce:unsafe] Attempting to use an unsafe value in a safe context.');
+        expect(function() { $sce.getTrustedHtml('<b></b>'); }).toThrowMinErr(
+            '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
       }));
     });
 
