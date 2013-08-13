@@ -38,4 +38,4 @@ fi
 
 echo "Starting Sauce Connect in the background"
 echo "Logging into $CONNECT_LOG"
-java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY > $CONNECT_LOG &
+java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY 2>&1 > $CONNECT_LOG &

@@ -35,6 +35,9 @@ module.exports = function(grunt) {
           util.parallelTask('tests:modules'),
           util.parallelTask('tests:jquery'),
           util.parallelTask('tests:jqlite'),
+          // We use end2end task (which does not start the webserver)
+          // and start the webserver as a separate process (in travis_build.sh)
+          // to avoid https://github.com/joyent/libuv/issues/826
           util.parallelTask('tests:end2end')
         ]
       }
@@ -61,6 +64,7 @@ module.exports = function(grunt) {
       },
       testserver: {
         options: {
+          keepalive: true,
           middleware: function(connect, options){
             return [
               function(req, resp, next) {
