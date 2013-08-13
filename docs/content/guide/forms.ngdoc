@@ -2,8 +2,8 @@
 @name Forms
 @description
 
-Controls (`input`, `select`, `textarea`) are a way for user to enter data.
-Form is a collection of controls for the purpose of grouping related controls together.
+Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
+A Form is a collection of controls for the purpose of grouping related controls together.
 
 Form and controls provide validation services, so that the user can be notified of invalid input.
 This provides a better user experience, because the user gets instant feedback on how to correct the error.
