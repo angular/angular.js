@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.0rc1",
-  "cdnVersion": "1.1.4",
-  "codename": "spooky-giraffe",
+  "version": "1.2.0-snapshot",
+  "cdnVersion": "1.2.0rc1",
+  "codename": "barehand-atomspliting",
   "devDependencies": {
     "grunt": "0.4.0",
     "bower": "1.0.3",
