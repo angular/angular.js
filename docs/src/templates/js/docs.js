@@ -4,9 +4,9 @@ var docsApp = {
   serviceFactory: {}
 };
 
-docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', function($scope, $window, NG_VERSIONS) {
+docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
   $scope.versions = expandVersions(NG_VERSIONS);
-  $scope.version  = ($scope.version || angular.version.full).match(/^([\d\.]+\d+)/)[1]; //match only the number
+  $scope.version  = ($scope.version || NG_VERSION).match(/^([\d\.]+\d+\S+)/)[1]; //match only the number
 
   $scope.jumpToDocsVersion = function(value) {
     var isLastStable,
