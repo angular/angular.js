@@ -16,7 +16,6 @@ var $parseMinErr = minErr('$parse');
 // access to any member named "constructor".
 //
 // For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor while evaluating
-// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor while evaluating
 // the expression, which is a stronger but more expensive test. Since reflective calls are expensive anyway, this is not
 // such a big deal compared to static dereferencing.
 //
