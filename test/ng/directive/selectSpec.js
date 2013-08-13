@@ -494,7 +494,7 @@ describe('select', function() {
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
           compile('<select ng-model="selected" ng-options="i dont parse"></select>');
-        }).toThrowMatching(/^\[ngOptions:iexp\] Expected expression in form of/);
+        }).toThrowMinErr('ngOptions', 'iexp', /Expected expression in form of/);
     });
 
 
