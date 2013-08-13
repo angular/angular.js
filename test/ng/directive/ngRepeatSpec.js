@@ -77,7 +77,7 @@ describe('ngRepeat', function() {
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('x;y;x;');
   });
-  
+
   it('should iterate over an array-like class', function() {
     function Collection() {}
     Collection.prototype = new Array();
@@ -350,7 +350,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[ngRepeat:iexp] Expected expression in form of '_item_ in _collection_[ track by _id_]' but got 'i dont parse'.");
+        toMatch(/^\[ngRepeat:iexp\] Expected expression in form of '_item_ in _collection_\[ track by _id_\]' but got 'i dont parse'\./);
   });
 
 
@@ -358,7 +358,7 @@ describe('ngRepeat', function() {
       element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
       $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toBe("[ngRepeat:iidexp] '_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got 'i dont parse'.");
+        toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
   });
 
 
@@ -773,7 +773,7 @@ describe('ngRepeat', function() {
       scope.items = [a, a, a];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:003");
+          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:003/);
 
       // recover
       scope.items = [a];
@@ -793,7 +793,7 @@ describe('ngRepeat', function() {
       scope.items = [d, d, d];
       scope.$digest();
       expect($exceptionHandler.errors.shift().message).
-          toEqual("[ngRepeat:dupes] Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: item in items, Duplicate key: object:009");
+          toMatch(/^\[ngRepeat:dupes\] Duplicates in a repeater are not allowed\. Use 'track by' expression to specify unique keys\. Repeater: item in items, Duplicate key: object:009/);
 
       // recover
       scope.items = [a];

@@ -632,11 +632,11 @@ describe('$compile', function() {
           inject(function($compile) {
             expect(function() {
               $compile('<p no-root-elem></p>');
-            }).toThrow("[$compile:tplrt] Template for directive 'noRootElem' must have exactly one root element. ");
+            }).toThrowMinErr("$compile", "tplrt", "Template for directive 'noRootElem' must have exactly one root element. ");
 
             expect(function() {
               $compile('<p multi-root-elem></p>');
-            }).toThrow("[$compile:tplrt] Template for directive 'multiRootElem' must have exactly one root element. ");
+            }).toThrowMinErr("$compile", "tplrt", "Template for directive 'multiRootElem' must have exactly one root element. ");
 
             // ws is ok
             expect(function() {
@@ -748,7 +748,7 @@ describe('$compile', function() {
               expect(function() {
                 $templateCache.put('http://example.com/should-not-load.html', 'Should not load even if in cache.');
                 $compile('<div class="crossDomainTemplate"></div>')($rootScope);
-              }).toThrow('[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
+              }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
         }));
 
         it('should load cross domain templates when trusted', inject(
@@ -1011,7 +1011,7 @@ describe('$compile', function() {
 
               expect(function() {
                 $httpBackend.flush();
-              }).toThrow('[$compile:tpload] Failed to load template: hello.html');
+              }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: hello.html');
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
@@ -1031,7 +1031,7 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [sync, async] asking for template on: '+
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [sync, async] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1215,14 +1215,14 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
+                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
+                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -1482,7 +1482,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1492,7 +1492,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -2110,7 +2110,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("[$compile:nonassign] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrowMinErr("$compile", "nonassign", "Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -2186,7 +2186,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow("[$compile:iscp] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
+      }).toThrowMinErr("$compile", "iscp", "Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
     }));
 
     it('should expose a $$isolateBindings property onto the scope', inject(function() {
@@ -2329,7 +2329,7 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         expect(function() {
           $compile('<div main><div dep></div></div>')($rootScope);
-        }).toThrow("[$compile:ctreq] Controller 'main', required by directive 'dep', can't be found!");
+        }).toThrowMinErr("$compile", "ctreq", "Controller 'main', required by directive 'dep', can't be found!");
       });
     });
 
@@ -2724,7 +2724,7 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('[$compile:multidir] Multiple directives [first, second] asking for transclusion on: ' +
+        }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
             '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
@@ -3147,18 +3147,18 @@ describe('$compile', function() {
       $rootScope.onClickJs = "";
       expect(function() {
           $compile('<button onclick="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
           $compile('<button ONCLICK="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
           $compile('<button ng-attr-onclick="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
     }));
 
@@ -3181,8 +3181,8 @@ describe('$compile', function() {
     it('should clear out src attributes for a different domain', inject(function($compile, $rootScope, $sce) {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "http://a.different.domain.example.com";
-      expect(function() { $rootScope.$apply() }).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "http://a.different.domain.example.com");
     }));
@@ -3190,8 +3190,8 @@ describe('$compile', function() {
     it('should clear out JS src attributes', inject(function($compile, $rootScope, $sce) {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "javascript:alert(1);";
-      expect(function() { $rootScope.$apply() }).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: " +
           "javascript:alert(1);");
     }));
@@ -3199,8 +3199,8 @@ describe('$compile', function() {
     it('should clear out non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
-      expect($rootScope.$apply).toThrow(
-          "[$interpolate:interr] Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+      expect($rootScope.$apply).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
           "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
     }));
 
@@ -3347,7 +3347,7 @@ describe('$compile', function() {
               '<div>' +
                 '<span foo-start></span>' +
               '</div>');
-        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrowMinErr("$compile", "uterdir", "Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -3365,7 +3365,7 @@ describe('$compile', function() {
               '<div>' +
                   '<span foo-start><span foo-end></span></span>' +
               '</div>');
-        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrowMinErr("$compile", "uterdir", "Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
