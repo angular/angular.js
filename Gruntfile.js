@@ -204,7 +204,7 @@ module.exports = function(grunt) {
 
     compress: {
       build: {
-        options: {archive: 'build/' + dist +'.zip'},
+        options: {archive: 'build/' + dist +'.zip', mode: 'zip'},
         src: ['**'], cwd: 'build', expand: true, dot: true, dest: dist + '/'
       }
     },
