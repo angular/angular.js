@@ -108,20 +108,20 @@ describe('angular', function() {
 
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).
-          toThrow("[ng:cpws] Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     }));
 
     it('should throw an exception if a Window is being copied', function() {
       expect(function() { copy(window); }).
-          toThrow("[ng:cpws] Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     });
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
 	    src = dst = {key: 'value'};
-      expect(function() { copy(src, dst); }).toThrow("[ng:cpi] Can't copy! Source and destination are identical.");
+      expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
       src = dst = [2, 4];
-      expect(function() { copy(src, dst); }).toThrow("[ng:cpi] Can't copy! Source and destination are identical.");
+      expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
     });
 
     it('should not copy the private $$hashKey', function() {
@@ -901,7 +901,7 @@ describe('angular', function() {
 
         expect(function() {
           element.injector().get('foo');
-        }).toThrow('[$injector:unpr] Unknown provider: fooProvider <- foo');
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: fooProvider <- foo');
 
         expect(element.injector().get('$http')).toBeDefined();
       });

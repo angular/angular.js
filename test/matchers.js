@@ -165,6 +165,53 @@ beforeEach(function() {
 
     toThrowMatching: function(expected) {
       return jasmine.Matchers.prototype.toThrow.call(this, expected);
+    },
+
+    toThrowMinErr: function(namespace, code, content) {
+      var result,
+        exception,
+        exceptionMessage = '',
+        escapeRegexp = function (str) {
+          // This function escapes all special regex characters.
+          // We use it to create matching regex from arbitrary strings.
+          // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+          return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        },
+        codeRegex = new RegExp('^\\[' + escapeRegexp(namespace) + ':' + escapeRegexp(code) + '\\]'),
+        not = this.isNot ? "not " : "",
+        regex = jasmine.isA_("RegExp", content) ? content :
+                  isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
+
+      if(!isFunction(this.actual)) {
+        throw new Error('Actual is not a function');
+      }
+
+      try {
+        this.actual();
+      } catch (e) {
+        exception = e;
+      }
+
+      if (exception) {
+        exceptionMessage = exception.message || exception;
+      }
+
+      this.message = function () {
+        return "Expected function " + not + "to throw " +
+          namespace + "MinErr('" + code + "')" +
+          (regex ? " matching " + regex.toString() : "") +
+          (exception ? ", but it threw " + exceptionMessage : ".");
+      };
+
+      result = codeRegex.test(exceptionMessage);
+      if (!result) {
+        return result;
+      }
+
+      if (isDefined(regex)) {
+        return regex.test(exceptionMessage);
+      }
+      return result;
     }
   });
 });

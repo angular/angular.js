@@ -545,7 +545,8 @@ describe('$route', function() {
         $location.path('/foo');
         expect(function() {
           $rootScope.$digest();
-        }).toThrow('[$sce:insecurl] Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/foo.html');
+        }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by ' +
+          '$sceDelegate policy.  URL: http://example.com/foo.html');
       });
     });
 
