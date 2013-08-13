@@ -1,5 +1,7 @@
 <a name="1.2.0-rc1"></a>
-# 1.2.0-rc1 spooky-giraffe (2013-08-12)
+# 1.2.0-rc1 spooky-giraffe (2013-08-13)
+
+[Full Commit Log](https://github.com/angular/angular.js/compare/v1.1.5...master)
 
 
 ## Features
@@ -71,9 +73,9 @@
    [#2454](https://github.com/angular/angular.js/issues/2454))
 
 - **ngMobile/ngTouch:**
-  - emit 'swipeleft' and 'swiperight' events
+  - emit `swipeleft` and `swiperight` events
   ([ab189142](https://github.com/angular/angular.js/commit/ab189142988043d0513bb796c3b54ca7d07f242d))
-  - refactor swipe logic from ngSwipe to $swipe service.
+  - refactor swipe logic from `ngSwipe` directive to `$swipe` service.
   ([f4c6b2c7](https://github.com/angular/angular.js/commit/f4c6b2c7894cb2d82ac69a1500a27785360b81c3))
 
 - **ngMock:**
@@ -315,7 +317,7 @@
   - due to [38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262bb43f26d47245f6c2739),
   binding more than a single expression to `*[src]` or `*[ng-src]` with the exception of `<a>` and `<img>` elements is not supported.
 
-    Concatenating expressions makes it hard to understand whether some combination of concatenated values are unsafe to use and potentially subject to XSS vulnerabilities. To simplify the task of auditing for XSS issues, we now require that a single expression be used for '*[src/ng-src]' bindings such as bindings for 'iframe[src]', 'object[src]', etc. (but not 'img[src/ng-src]' since that value is sanitized).
+    Concatenating expressions makes it hard to understand whether some combination of concatenated values are unsafe to use and potentially subject to XSS vulnerabilities. To simplify the task of auditing for XSS issues, we now require that a single expression be used for `*[src/ng-src]` bindings such as bindings for `iframe[src]`, `object[src]`, etc. (but not `img[src/ng-src]` since that value is sanitized).
 
    This change ensures that the possible pool of values that are used for data-binding is easier to trace down.
 
@@ -351,7 +353,7 @@
   - due to [39841f2e](https://github.com/angular/angular.js/commit/39841f2ec9b17b3b2920fd1eb548d444251f4f56),
   Interpolations inside DOM event handlers are disallowed.
 
-    DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers means that the interpolated value is a JS string that is evaluated.  Storing or generating such strings is error prone and leads to an XSS. On the other hand, `ngClick` and other Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which makes them much safer.
+    DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers means that the interpolated value is a JS string that is evaluated.  Storing or generating such strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which makes them much safer.
 
     To migrate the code follow the example below:
 
@@ -394,7 +396,7 @@
 
 - **$resource:**
   - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d),
-  resource instance does not have `$then` function anymore. Use the `$promise.then` instead.
+  resource instance does not have a `$then` function anymore. Use the `$promise.then` instead.
 
     Before:
 
@@ -423,9 +425,9 @@
     resource.chaining = true;
     ```
 
-  - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d), on success, promise is resolved with the resource instance rather than http response object.
+  - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d), on success, the resource promise is resolved with the resource instance rather than http response object.
 
-    Use interceptor to access the http response object.
+    Use interceptor api to access the http response object.
 
     Before:
 
@@ -451,7 +453,7 @@
 
 - **$route:**
   - due to [04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac5f72ed19f3631778142b),
-  the syntax for named wildcard parameters in routes has changed from *wildcard to :wildcard*
+  the syntax for named wildcard parameters in routes has changed from `*wildcard` to `:wildcard*`
 
     To migrate the code, follow the example below.  Here, `*highlight` becomes
     `:highlight*`:
@@ -471,7 +473,7 @@
     ```
 
   - due to [5599b55b](https://github.com/angular/angular.js/commit/5599b55b04788c2e327d7551a4a699d75516dd21),
-  applications that use $route will now need to load angular-route.js file and define dependency on ngRoute module.
+  applications that use `$route` will now need to load an angular-route.js file and define a dependency on the ngRoute module.
 
     Before:
 
@@ -501,11 +503,11 @@
     - `parseKeyValue` only took the last key overwriting all the previous keys;
     - `toKeyValue` joined the keys together in a comma delimited string.
 
-    This was deemed buggy behavior. If your server relied on this behavior then either the server should be fixed or a simple serialization of the array should be done on the client before passing it to $location.
+    This was deemed buggy behavior. If your server relied on this behavior then either the server should be fixed, or a simple serialization of the array should be done on the client before passing it to $location.
 
 - **ngBindHtml, sce:** due to [dae69473](https://github.com/angular/angular.js/commit/dae694739b9581bea5dbc53522ec00d87b26ae55),
 
-    ng-html-bind-unsafe has been removed and replaced by ng-html-bind (which has been removed from ngSanitize.)  ng-bind-html provides ng-html-bind-unsafe like behavior (innerHTML's the result without sanitization) when bound to the result of $sce.trustAsHtml(string). When bound to a plain string, the string is sanitized via $sanitize before being innerHTML'd.  If $sanitize isn't available, it's logs an exception.
+    `ngHtmlBindUnsafe` has been removed and replaced by `ngHtmlBind` (which has been moved from `ngSanitize` module to the core `ng` module).  `ngBindHtml` provides `ngHtmlBindUnsafe` like behavior (evaluate an expression and innerHTML the result into the DOM) when bound to the result of `$sce.trustAsHtml(string)`. When bound to a plain string, the string is sanitized via `$sanitize` before being innerHTML'd.  If the `$sanitize` service isn't available (`ngSanitize` module is not loaded) and the bound expression evaluates to a value that is not trusted an exception is thrown.
 
 - **ngForm:** due to [8ea802a1](https://github.com/angular/angular.js/commit/8ea802a1d23ad8ecacab892a3a451a308d9c39d7),
 
