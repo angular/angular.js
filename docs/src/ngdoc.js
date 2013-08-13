@@ -39,7 +39,7 @@ exports.merge = merge;
 exports.Doc = Doc;
 
 exports.ngVersions = function() {
-  var line, versions = [], regex = /^v([1-9]\d*(?:\.\d+)+)$/; //only fetch >= 1.0.0 versions
+  var versions = [], regex = /^v([1-9]\d*(?:\.\d+\S+)+)$/; //only fetch >= 1.0.0 versions
   shell.exec('git tag', {silent: true}).output.split(/\s*\n\s*/)
     .forEach(function(line) {
       var matches = regex.exec(line);
@@ -47,7 +47,7 @@ exports.ngVersions = function() {
         versions.push(matches[1]);
       }
     });
-  versions.push(exports.ngCurrentVersion().number);
+  versions.push(exports.ngCurrentVersion().full);
   return versions;
 };
 
@@ -295,7 +295,7 @@ Doc.prototype = {
     }
     pageClassName = pageClassName || prepareClassName(this.name || 'docs') + suffix;
 
-    text = '<div class="' + pageClassName + '">' + 
+    text = '<div class="' + pageClassName + '">' +
              marked(text) +
            '</div>';
     text = text.replace(/(?:<p>)?(REPLACEME\d+)(?:<\/p>)?/g, function(_, id) {
@@ -318,8 +318,8 @@ Doc.prototype = {
           text = content;
         }
         return "\n" + line.replace(pattern, function(match) {
-          return '<div class="nocode nocode-content" data-popover ' + 
-                   'data-content="' + text + '" ' + 
+          return '<div class="nocode nocode-content" data-popover ' +
+                   'data-content="' + text + '" ' +
                    'data-title="' + title + '">' +
                       match +
                  '</div>';
