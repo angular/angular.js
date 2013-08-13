@@ -693,60 +693,6 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
 
   }]);
 
-/**
- * @ngdoc function
- * @name angular.mock.createMockWindow
- * @description
- *
- * This function creates a mock window object useful for controlling access ot setTimeout, but mocking out
- * sufficient window's properties to allow Angular to execute.
- *
- * @example
- *
- * <pre>
-    beforeEach(module(function($provide) {
-      $provide.value('$window', window = angular.mock.createMockWindow());
-    }));
-
-    it('should do something', inject(function($window) {
-      var val = null;
-      $window.setTimeout(function() { val = 123; }, 10);
-      expect(val).toEqual(null);
-      window.setTimeout.expect(10).process();
-      expect(val).toEqual(123);
-    });
- * </pre>
- *
- */
-angular.mock.createMockWindow = function() {
-  var mockWindow = {};
-  var setTimeoutQueue = [];
-
-  mockWindow.location = window.location;
-  mockWindow.document = window.document;
-  mockWindow.getComputedStyle = angular.bind(window, window.getComputedStyle);
-  mockWindow.scrollTo = angular.bind(window, window.scrollTo);
-  mockWindow.navigator = window.navigator;
-  mockWindow.setTimeout = function(fn, delay) {
-    setTimeoutQueue.push({fn: fn, delay: delay});
-  };
-  mockWindow.setTimeout.queue = setTimeoutQueue;
-  mockWindow.setTimeout.expect = function(delay) {
-    if (setTimeoutQueue.length > 0) {
-      return {
-        process: function() {
-          var tick = setTimeoutQueue.shift();
-          expect(tick.delay).toEqual(delay);
-          tick.fn();
-        }
-      };
-    } else {
-      expect('SetTimoutQueue empty. Expecting delay of ').toEqual(delay);
-    }
-  };
-
-  return mockWindow;
-};
 
 /**
  * @ngdoc function
