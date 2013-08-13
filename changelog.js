@@ -192,7 +192,7 @@ var getPreviousTag = function() {
 var generate = function(version, file) {
   getPreviousTag().then(function(tag) {
     console.log('Reading git log since', tag);
-    readGitLog('^fix|^feat|Breaks', tag).then(function(commits) {
+    readGitLog('^fix|^feat|BREAKING', tag).then(function(commits) {
       console.log('Parsed', commits.length, 'commits');
       console.log('Generating changelog to', file || 'stdout', '(', version, ')');
       writeChangelog(file ? fs.createWriteStream(file) : process.stdout, commits, version);
