@@ -128,8 +128,8 @@ function $RouteProvider(){
     // create redirection for trailing slashes
     if (path) {
       var redirectPath = (path[path.length-1] == '/')
-          ? path.substr(0, path.length-1)
-          : path +'/';
+        ? path.substr(0, path.length-1)
+        : path +'/';
 
       routes[redirectPath] = extend(
         {redirectTo: path},
@@ -428,7 +428,6 @@ function $RouteProvider(){
       var m = route.regexp.exec(on);
       if (!m) return null;
 
-      var N = 0;
       for (var i = 1, len = m.length; i < len; ++i) {
         var key = keys[i - 1];
 
@@ -541,7 +540,7 @@ function $RouteProvider(){
     function interpolate(string, params) {
       var result = [];
       forEach((string||'').split(':'), function(segment, i) {
-        if (i == 0) {
+        if (i === 0) {
           result.push(segment);
         } else {
           var segmentMatch = segment.match(/(\w+)(.*)/);
