@@ -118,6 +118,7 @@ describe("ngAnimate", function() {
 
         expect(element.contents().length).toBe(0);
         $animate.enter(child, element);
+        $rootScope.$digest();
         $timeout.flush($sniffer.transitions ? 1 : 0);
 
         expect(element.contents().length).toBe(1);
@@ -129,6 +130,7 @@ describe("ngAnimate", function() {
         element.append(child);
         expect(element.contents().length).toBe(1);
         $animate.leave(child);
+        $rootScope.$digest();
         $timeout.flush($sniffer.transitions ? 1 : 0);
 
         expect(element.contents().length).toBe(0);
@@ -144,6 +146,7 @@ describe("ngAnimate", function() {
         element.append(child2);
         expect(element.text()).toBe('12');
         $animate.move(child1, element, child2);
+        $rootScope.$digest();
         expect(element.text()).toBe('21');
         if($sniffer.transitions) {
           $timeout.flushNext(0);
@@ -194,6 +197,7 @@ describe("ngAnimate", function() {
 
         //enter
         $animate.enter(child, element);
+        $rootScope.$digest();
         $timeout.flushNext(0);
         expect(child.attr('class')).toContain('ng-enter');
         $timeout.flushNext(1);
@@ -203,6 +207,7 @@ describe("ngAnimate", function() {
         //move
         element.append(after);
         $animate.move(child, element, after);
+        $rootScope.$digest();
         $timeout.flushNext(0);
         expect(child.attr('class')).toContain('ng-move');
         $timeout.flushNext(1);
@@ -227,6 +232,7 @@ describe("ngAnimate", function() {
 
         //leave
         $animate.leave(child);
+        $rootScope.$digest();
         expect(child.attr('class')).toContain('ng-leave');
         $timeout.flushNext(1);
         expect(child.attr('class')).toContain('ng-leave-active');
@@ -274,6 +280,7 @@ describe("ngAnimate", function() {
         expect(child).toBeShown();
 
         $animate.leave(child);
+        $rootScope.$digest();
         expect(child).toBeHidden(); //hides instantly
 
         //lets change this to prove that done doesn't fire anymore for the previous hide() operation
@@ -679,6 +686,7 @@ describe("ngAnimate", function() {
 
         element[0].className = 'abc';
         $animate.enter(element, parent);
+        $rootScope.$digest();
         $timeout.flushNext(0);
 
         if ($sniffer.transitions) {
@@ -691,6 +699,7 @@ describe("ngAnimate", function() {
 
         element[0].className = 'xyz';
         $animate.enter(element, parent);
+        $rootScope.$digest();
         $timeout.flushNext(0);
 
         if ($sniffer.transitions) {
@@ -713,6 +722,7 @@ describe("ngAnimate", function() {
         element.attr('class','one two');
 
         $animate.enter(element, parent);
+        $rootScope.$digest();
         $timeout.flushNext(0);
         if($sniffer.transitions) {
           expect(element.hasClass('one two ng-enter')).toBe(true);
@@ -764,6 +774,7 @@ describe("ngAnimate", function() {
         $animate.enter(element, parent, null, function() {
           flag = true;
         });
+        $rootScope.$digest();
 
         $timeout.flushNext(0);
         if($sniffer.transitions) {
@@ -785,6 +796,7 @@ describe("ngAnimate", function() {
         $animate.leave(element, function() {
           flag = true;
         });
+        $rootScope.$digest();
 
         if($sniffer.transitions) {
           $timeout.flushNext(1);
@@ -807,6 +819,7 @@ describe("ngAnimate", function() {
         $animate.move(element, parent, parent2, function() {
           flag = true;
         });
+        $rootScope.$digest();
 
         $timeout.flushNext(0);
         if($sniffer.transitions) {
@@ -1268,6 +1281,7 @@ describe("ngAnimate", function() {
     var child = $compile('<div style="' + style + '">...</div>')($rootScope);
 
     $animate.enter(child, element);
+    $rootScope.$digest();
     $timeout.flushNext(0);
 
     if($sniffer.transitions) {
@@ -1291,6 +1305,7 @@ describe("ngAnimate", function() {
     var child = $compile('<div style="' + style + '">...</div>')($rootScope);
 
     $animate.enter(child, element);
+    $rootScope.$digest();
     $timeout.flushNext(0);
 
     if($sniffer.transitions) {
@@ -1317,6 +1332,7 @@ describe("ngAnimate", function() {
 
     expect(child.hasClass('ng-enter')).toBe(false);
     $animate.enter(child, element);
+    $rootScope.$digest();
     expect(child.hasClass('ng-enter')).toBe(false);
   }));
 
@@ -1342,6 +1358,7 @@ describe("ngAnimate", function() {
 
       child.addClass('custom');
       $animate.enter(child, element);
+      $rootScope.$digest();
       $timeout.flushNext(0);
 
       if($sniffer.transitions) {
@@ -1374,8 +1391,6 @@ describe("ngAnimate", function() {
         }
       });
     });
-    inject(function($compile, $rootScope, $animate, $sniffer) {
-    })
     inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
       var vendorPrefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
       var style = 'transition: 2s linear all;' +
@@ -1384,6 +1399,7 @@ describe("ngAnimate", function() {
       var child = $compile('<div style="' + style + '">...</div>')($rootScope);
 
       $animate.enter(child, element);
+      $rootScope.$digest();
       $timeout.flushNext(0); //initial callback
 
       //this is added/removed right away otherwise
@@ -1395,6 +1411,7 @@ describe("ngAnimate", function() {
       expect(child.hasClass('this-is-mine-now')).toBe(false);
       child.addClass('usurper');
       $animate.leave(child);
+      $rootScope.$digest();
 
       expect(child.hasClass('ng-enter')).toBe(false);
       expect(child.hasClass('ng-enter-active')).toBe(false);

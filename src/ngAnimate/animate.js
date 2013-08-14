@@ -204,8 +204,8 @@ angular.module('ngAnimate', ['ng'])
 
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var rootAnimateState = {running:true};
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
         
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
@@ -283,7 +283,9 @@ angular.module('ngAnimate', ['ng'])
         */
         enter : function(element, parent, after, done) {
           $delegate.enter(element, parent, after);
-          performAnimation('enter', 'ng-enter', element, parent, after, done);
+          $rootScope.$evalAsync(function() {
+            performAnimation('enter', 'ng-enter', element, parent, after, done);
+          }, false);
         },
 
         /**
@@ -314,9 +316,11 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         leave : function(element, done) {
-          performAnimation('leave', 'ng-leave', element, null, null, function() {
-            $delegate.leave(element, done);
-          });
+          $rootScope.$evalAsync(function() {
+            performAnimation('leave', 'ng-leave', element, null, null, function() {
+              $delegate.leave(element, done);
+            });
+          }, false);
         },
 
         /**
@@ -351,7 +355,9 @@ angular.module('ngAnimate', ['ng'])
         */
         move : function(element, parent, after, done) {
           $delegate.move(element, parent, after);
-          performAnimation('move', 'ng-move', element, null, null, done);
+          $rootScope.$evalAsync(function() {
+            performAnimation('move', 'ng-move', element, null, null, done);
+          }, false);
         },
 
         /**
