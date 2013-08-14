@@ -64,8 +64,7 @@ and follow the instructions for setting up your computer.
       <pre>npm install -g karma</pre>
       <li><p>You'll also need Git, which you can get from
          <a href="http://git-scm.com/download">the Git site</a>.</p></li>
-      <li><p>Clone the angular-phonecat repository located at <a
-href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
+      <li><p>Clone the angular-phonecat repository located at <a href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
       <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
       <p>This command creates the <code>angular-phonecat</code> directory in your current
 directory.</p></li>
