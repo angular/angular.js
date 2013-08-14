@@ -31,6 +31,7 @@ module.exports = function(grunt) {
           stream: true
         },
         tasks: [
+          {grunt: true, args: ['test:docgen']},
           util.parallelTask('tests:docs'),
           util.parallelTask('tests:modules'),
           util.parallelTask('tests:jquery'),
