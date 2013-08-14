@@ -22,7 +22,7 @@ describe('DocsApp', function() {
           '1.1.4',
           '2.1.3'
         ]);
-        $provide.value('$window', window = angular.mock.createMockWindow());
+        $provide.value('$window', window = createMockWindow());
       });
       inject(function($controller, $rootScope) {
         $scope = $rootScope.$new();

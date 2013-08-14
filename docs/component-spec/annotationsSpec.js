@@ -68,7 +68,7 @@ describe('Docs Annotations', function() {
     var $scope, parent, element, url, window;
     beforeEach(function() {
       module(function($provide, $animateProvider) {
-        $provide.value('$window', window = angular.mock.createMockWindow());
+        $provide.value('$window', window = createMockWindow());
         $animateProvider.register('.foldout', function($timeout) {
           return {
             enter : function(element, done) {
@@ -161,7 +161,7 @@ describe('Docs Annotations', function() {
     var window, $scope, ctrl;
     beforeEach(function() {
       module(function($provide, $animateProvider) {
-        $provide.value('$window', window = angular.mock.createMockWindow());
+        $provide.value('$window', window = createMockWindow());
       });
       inject(function($rootScope, $controller, $location, $cookies, sections) {
         $scope = $rootScope.$new();
