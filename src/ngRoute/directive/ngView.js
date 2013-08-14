@@ -203,12 +203,14 @@ var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$a
               template = locals && locals.$template;
 
           if (template) {
+            var previousElement = currentElement && currentElement.parentNode || anchor;
             cleanupLastView();
 
             currentScope = scope.$new();
             currentElement = element.clone();
             currentElement.html(template);
-            $animate.enter(currentElement, null, anchor);
+            $animate.enter(currentElement, null, previousElement);
+            previousElement = null;
 
             var link = $compile(currentElement, false, NG_VIEW_PRIORITY - 1),
                 current = $route.current;
