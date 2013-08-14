@@ -3252,6 +3252,150 @@ describe('$compile', function() {
 
 
   describe('multi-element directive', function() {
+
+    function expectNodesToBe(nodes, description) {
+      expect(nodes.length).toBe(description.length);
+      forEach(nodes, function (node, i) {
+        forEach(description[i], function (value, key) {
+          switch (key) {
+            case "nodeType":
+              expect(node.nodeType).toBe(value);
+              break;
+            case "tagName":
+              expect(node.tagName.toLowerCase()).toBe(value);
+              break;
+            case "nodeValue":
+              expect(node.nodeValue).toBe(value);
+              break;
+            case "className":
+              expect(node.className).toBe(value);
+              break;
+            case "html":
+              expect(node.innerHTML).toBe(value);
+              break;
+            case "attr":
+              forEach(value, function (attrValue, attrName) {
+                expect(node.getAttribute(attrName)).toBe(attrValue);
+              });
+              break;
+          }
+        });
+      });
+    }
+
+    describe('should group elements and pass them correctly to directives', function () {
+      var compileEl, linkEl;
+      beforeEach(module(function($compileProvider) {
+        compileEl = linkEl = undefined;
+        $compileProvider.directive('foo', valueFn({
+          restrict: 'ECMA',
+          compile: function (_compileEl) {
+            compileEl = _compileEl;
+            return function (scope, _linkEl) {
+              linkEl = _linkEl;
+            }
+          }
+        }));
+      }));
+
+      //element, attributes, classes and comments
+      it('if the X-start/X-end are declared as attributes', inject(function ($compile, $rootScope) {
+        $rootScope.test = "middle";
+        element = $compile(
+          '<div>' +
+            '<span foo-start></span>' +
+            '<span>{{ test }}</span>' +
+            '<span foo-end></span>'+
+            '</div>'
+        )($rootScope);
+
+        var expectedNodes = [
+            {tagName: "span", attr: {"foo-start": ""}, nodeType: 1},
+            {tagName: "span", html: "{{ test }}", nodeType: 1},
+            {tagName: "span", attr: {"foo-end": ""}, nodeType: 1}
+        ];
+
+        expectNodesToBe(compileEl, expectedNodes);
+        $rootScope.$digest();
+        expectedNodes[1].html = "middle";
+        expectNodesToBe(linkEl, expectedNodes);
+      }));
+
+      it('if the X-start/X-end are declared as comments', inject(function ($compile, $rootScope) {
+        $rootScope.test = "middle";
+        element = $compile(
+          '<div>' +
+            '<!-- directive: foo-start -->' +
+            '<span>{{ test }}1</span>' +
+            '<span>{{ test }}2</span>' +
+            '<!-- foo-end -->' +
+            '</div>'
+        )($rootScope);
+
+        var expectedNodes = [
+          {nodeValue: " directive: foo-start ", nodeType: 8},
+          {tagName: "span", html: "{{ test }}1", nodeType: 1},
+          {tagName: "span", html: "{{ test }}2", nodeType: 1},
+          {nodeValue: " foo-end ", nodeType: 8}
+        ];
+
+        expectNodesToBe(compileEl, expectedNodes);
+        $rootScope.$digest();
+        expectedNodes[1].html = "middle1";
+        expectedNodes[2].html = "middle2";
+        expectNodesToBe(compileEl, expectedNodes);
+      }));
+
+      it('if the X-start/X-end are declared as classes', inject(function ($compile, $rootScope) {
+        $rootScope.test = "middle";
+        element = $compile(
+          '<div>' +
+            '<span class="foo-start"></span>' +
+            '<span>{{ test }}</span>' +
+            '<span class="foo-end"></span>'+
+            '</div>'
+        )($rootScope);
+
+        var expectedNodes = [
+          {tagName: "span", className: "foo-start", nodeType: 1},
+          {tagName: "span", html: "{{ test }}", nodeType: 1},
+          {tagName: "span", className: "foo-end", nodeType: 1}
+        ];
+
+        expectNodesToBe(compileEl, expectedNodes);
+        $rootScope.$digest();
+        expectedNodes[1].html = "middle";
+        expectNodesToBe(linkEl, expectedNodes);
+      }));
+
+
+      it('if the X-start/X-end are declared as elements', inject(function ($compile, $rootScope) {
+        // Creating elements using DOM methods allows us to avoid
+        // IE's HTML parser problems with custom tagNames
+        var div = document.createElement("div"),
+            span = document.createElement("span");
+        div.appendChild(document.createElement("foo-start")); // <foo-start></foo-start>
+        span.innerHTML = "{{ test }}";
+        div.appendChild(span); // <span>{{ test }}</span>
+        div.appendChild(document.createElement("foo-end")); // <foo-end></foo-end>
+
+        $rootScope.test = "middle";
+        element = $compile(div)($rootScope);
+
+        var expectedNodes = [
+          {tagName: "foo-start", nodeType: 1},
+          {tagName: "span", html: "{{ test }}", nodeType: 1},
+          {tagName: "foo-end", nodeType: 1}
+        ];
+
+        expectNodesToBe(compileEl, expectedNodes);
+        $rootScope.$digest();
+        expectedNodes[1].html = "middle";
+        expectNodesToBe(linkEl, expectedNodes);
+      }));
+
+    });
+
     it('should group on link function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
@@ -3336,36 +3480,29 @@ describe('$compile', function() {
 
     it('should throw error if unterminated', function () {
       module(function($compileProvider) {
-        $compileProvider.directive('foo', function() {
-          return {
-          };
-        });
-      });
-      inject(function($compile, $rootScope) {
-        expect(function() {
-          element = $compile(
-              '<div>' +
-                '<span foo-start></span>' +
-              '</div>');
-        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
-      });
-    });
-
-
-    it('should throw error if unterminated', function () {
-      module(function($compileProvider) {
-        $compileProvider.directive('foo', function() {
-          return {
-          };
-        });
+        $compileProvider.directive('foo', valueFn({restrict: 'ECMA'}));
       });
       inject(function($compile) {
-        expect(function() {
-          element = $compile(
+        forEach([
+          '<span foo-start></span>',
+          '<foo-start></foo-start>',
+          '<span class="foo-start"></span>',
+          '<!-- directive: foo-start -->',
+
+          '<span foo-start><span foo-start></span></span>',
+          '<foo-start><foo-start></foo-start></foo-start>',
+          '<span class="foo-start"><span class="foo-start"></span></span>',
+          '<!-- directive: foo-start --><!-- directive: foo-start -->'
+        ], function (node) {
+
+          expect(function () {
+            element = $compile(
               '<div>' +
-                  '<span foo-start><span foo-end></span></span>' +
-              '</div>');
-        }).toThrow("[$compile:uterdir] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+                node +
+                '</div>');
+          }).toThrow("[$compile:uterdir] Unterminated directive, found 'foo-start' but no matching 'foo-end' found.");
+
+        });
       });
     });
 
@@ -3386,6 +3523,7 @@ describe('$compile', function() {
       expect(spans.eq(2)).toBeHidden();
       expect(spans.eq(3)).toBeHidden();
     }));
+
   });
 
   describe('$animate animation hooks', function() {
