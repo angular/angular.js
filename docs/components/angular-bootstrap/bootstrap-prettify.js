@@ -226,9 +226,13 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         }]);
         $provide.decorator('$rootScope', ['$delegate', function($delegate) {
           embedRootScope = $delegate;
+          var embedded$digest = embedRootScope.$digest;
           deregisterEmbedRootScope = docsRootScope.$watch(function embedRootScopeDigestWatch() {
-            embedRootScope.$digest();
+            embedded$digest.call(embedRootScope);
           });
+          embedRootScope.constructor.prototype.$digest = function() {
+            return docsRootScope.$digest();
+          };
 
           return embedRootScope;
         }]);
