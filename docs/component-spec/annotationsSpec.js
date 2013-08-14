@@ -65,10 +65,9 @@ describe('Docs Annotations', function() {
 
   describe('foldout directive', function() {
 
-    var $scope, parent, element, url, window;
+    var $scope, parent, element, url;
     beforeEach(function() {
       module(function($provide, $animateProvider) {
-        $provide.value('$window', window = createMockWindow());
         $animateProvider.register('.foldout', function($timeout) {
           return {
             enter : function(element, done) {
@@ -158,17 +157,13 @@ describe('Docs Annotations', function() {
 
   describe('DocsController fold', function() {
 
-    var window, $scope, ctrl;
+    var $scope, ctrl;
     beforeEach(function() {
-      module(function($provide, $animateProvider) {
-        $provide.value('$window', window = createMockWindow());
-      });
       inject(function($rootScope, $controller, $location, $cookies, sections) {
         $scope = $rootScope.$new();
         ctrl = $controller('DocsController',{
           $scope : $scope,
           $location : $location,
-          $window : window,
           $cookies : $cookies,
           sections : sections
         });
