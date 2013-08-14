@@ -829,11 +829,12 @@ function $RootScopeProvider(){
             }
             try {
               namedListeners[i].apply(null, listenerArgs);
-              if (stopPropagation) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
           }
+          //prevent propagation to upward scopes
+          if (stopPropagation) return event;
           //traverse upwards
           scope = scope.$parent;
         } while (scope);

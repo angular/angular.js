@@ -878,12 +878,18 @@ describe('Scope', function() {
         child.$on('myEvent', logger);
         grandChild.$on('myEvent', logger);
         greatGrandChild.$on('myEvent', logger);
+        greatGrandChild.$on('myEvent', logger);
       }));
 
       it('should bubble event up to the root scope', function() {
         grandChild.$emit('myEvent');
         expect(log).toEqual('2>1>0>');
       });
+
+        it('should execute 2 handlers', function() {
+            greatGrandChild.$emit('myEvent');
+            expect(log).toEqual('3>3>2>1>0>');
+        });
 
 
       it('should dispatch exceptions to the $exceptionHandler',
@@ -901,6 +907,11 @@ describe('Scope', function() {
         expect(log).toEqual('2>1>');
       });
 
+        it('should allow stopping event propagation after all scope handlers have executed', function() {
+            greatGrandChild.$on('myEvent', function(event) { event.stopPropagation(); });
+            greatGrandChild.$emit('myEvent');
+            expect(log).toEqual('3>3>');
+        });
 
       it('should forward method arguments', function() {
         child.$on('abc', function(event, arg1, arg2) {
