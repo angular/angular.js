@@ -5,7 +5,18 @@
  * @name ngRoute
  * @description
  *
- * Module that provides routing and deeplinking services and directives for angular apps.
+ * ngRoute
+ * =========
+ *
+ * The ngRoute module provides routing and deeplinking services and directives for angular apps.
+ *
+ * To make use of routing with AngularJS, the `angular-route.js` JavaScript file must be included into your application
+ * and the `ngRoute` module must be included as a dependency.
+ *
+ * <pre>
+ * angular.module('App', ['ngRoute']);
+ * </pre>
+ * 
  */
 
 var ngRouteModule = angular.module('ngRoute', ['ng']).
