@@ -10,23 +10,32 @@ var $interpolateMinErr = minErr('$interpolate');
  * @description
  *
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
- * 
+ *
  * @example
-   <doc:example>
+   <doc:example module="customInterpolationApp">
      <doc:source>
       <script>
-        var myApp = angular.module('App', [], function($interpolateProvider) {
+        var customInterpolationApp = angular.module('customInterpolationApp', []);
+
+        customInterpolationApp.config(function($interpolateProvider) {
           $interpolateProvider.startSymbol('//');
           $interpolateProvider.endSymbol('//');
         });
-        function Controller($scope) {   
-            $scope.label = "Interpolation Provider Sample";
-        }
+
+
+        customInterpolationApp.controller('DemoController', function DemoController() {
+            this.label = "This bindings is brought you you by // interpolation symbols.";
+        });
       </script>
-      <div ng-app="App" ng-controller="Controller">
-          //label//
+      <div ng-app="App" ng-controller="DemoController as demo">
+          //demo.label//
       </div>
      </doc:source>
+     <doc:scenario>
+       it('should interpolate binding with custom symbols', function() {
+         expect(binding('demo.label')).toBe('This bindings is brought you you by // interpolation symbols.');
+       });
+ </doc:scenario>
    </doc:example>
  */
 function $InterpolateProvider() {
