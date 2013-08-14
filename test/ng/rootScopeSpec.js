@@ -12,6 +12,12 @@ describe('Scope', function() {
     }));
 
 
+    it('should expose the constructor', inject(function($rootScope) {
+      if (msie) return;
+      expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
+    }));
+
+
     it('should not have $root on children, but should inherit', inject(function($rootScope) {
       var child = $rootScope.$new();
       expect(child.$root).toEqual($rootScope);
@@ -670,6 +676,74 @@ describe('Scope', function() {
       child.$watch('value', function() { log += 'child.$digest;'; });
       $rootScope.$digest();
       expect(log).toEqual('parent.async;child.async;parent.$digest;child.$digest;');
+    }));
+
+    it('should not run another digest for an $$postDigest call', inject(function($rootScope) {
+      var internalWatchCount = 0;
+      var externalWatchCount = 0;
+
+      $rootScope.internalCount = 0;
+      $rootScope.externalCount = 0;
+
+      $rootScope.$evalAsync(function(scope) {
+        $rootScope.internalCount++;
+      });
+
+      $rootScope.$$postDigest(function(scope) {
+        $rootScope.externalCount++;
+      });
+
+      $rootScope.$watch('internalCount', function(value) {
+        internalWatchCount = value;
+      });
+      $rootScope.$watch('externalCount', function(value) {
+        externalWatchCount = value;
+      });
+
+      $rootScope.$digest();
+
+      expect(internalWatchCount).toEqual(1);
+      expect(externalWatchCount).toEqual(0);
+    }));
+
+    it('should run a $$postDigest call on all child scopes when a parent scope is digested', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new(),
+          count = 0;
+
+      $rootScope.$$postDigest(function() {
+        count++;
+      });
+
+      parent.$$postDigest(function() {
+        count++;
+      });
+
+      child.$$postDigest(function() {
+        count++;
+      });
+
+      expect(count).toBe(0);
+      $rootScope.$digest();
+      expect(count).toBe(3);
+    }));
+
+    it('should run a $$postDigest call even if the child scope is isolated', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new(true),
+          signature = '';
+
+      parent.$$postDigest(function() {
+        signature += 'A';
+      });
+
+      child.$$postDigest(function() {
+        signature += 'B';
+      });
+
+      expect(signature).toBe('');
+      $rootScope.$digest();
+      expect(signature).toBe('AB');
     }));
 
     it('should cause a $digest rerun', inject(function($rootScope) {
