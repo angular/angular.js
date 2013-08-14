@@ -84,7 +84,7 @@ describe('DocsApp', function() {
 
         $scope.jumpToDocsVersion('2.1.3');
         expect(window.location).toBe('http://code.angularjs.org/2.1.3/docs');
-      }); 
+      });
 
       it('should jump to the older versions of current docs for version >= 1.0.2', function() {
         $scope.jumpToDocsVersion('1.0.1');
