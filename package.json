@@ -5,7 +5,7 @@
   "codename": "barehand-atomspliting",
   "devDependencies": {
     "grunt": "0.4.0",
-    "bower": "1.0.3",
+    "bower": "1.1.2",
     "grunt-contrib-clean": "0.4.0",
     "grunt-contrib-compress": "0.4.1",
     "grunt-contrib-connect": "0.1.2",
