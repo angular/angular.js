@@ -126,7 +126,7 @@ exports.Example.prototype.toHtmlTabs = function() {
           '<pre class="prettyprint linenums" ng-set-text="' + source.id + '"' + wrap + '></pre>\n' +
           (isCss
              ? ('<style type="text/css" id="' + source.id + '">' + source.content + '</style>\n')
-             : ('<script type="text/ng-template" id="' + source.id + '">' + source.content + '</script>\n') ) +
+             : ('<script type="text/ng-template" id="' + source.id + '">' + source.content + '&lt;/script>\n') ) +
         '</div>\n');
     });
   }
