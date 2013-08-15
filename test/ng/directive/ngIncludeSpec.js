@@ -306,6 +306,26 @@ describe('ngInclude', function() {
   });
 
 
+  it('should allow ngInclude on the same element as ngRepeat', function() {
+    inject(function($compile, $rootScope, $templateCache) {
+      $templateCache.put('a.html', '<div>a</div>');
+      $templateCache.put('b.html', '<div>b</div>');
+      $templateCache.put('c.html', '<div>c</div>');
+      element = $compile(
+        '<div>' +
+          '<div ng-repeat="item in items" ng-include="item + \'.html\'">no!</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.item = 'x';
+      $rootScope.items = [ 'a', 'b', 'c' ];
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('abc');
+    });
+  });
+
+
   describe('autoscoll', function() {
     var autoScrollSpy;
 
