@@ -183,7 +183,7 @@ function filterFilter() {
             })();
           } else {
             (function() {
-              if (!expression[key]) return;
+              if (typeof(expression[key]) == 'undefined') { return; }
               var path = key;
               predicates.push(function(value) {
                 return search(getter(value,path), expression[path]);
