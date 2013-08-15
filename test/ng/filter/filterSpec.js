@@ -60,6 +60,17 @@ describe('Filter: filter', function() {
     expect(filter(items, {first:'misko', last:'hevery'})[0]).toEqual(items[0]);
   });
 
+  it('should support boolean properties', function() {
+    var items = [{name: 'tom', current: true},
+	             {name: 'demi', current: false},
+	             {name: 'sofia'}];
+
+    expect(filter(items, {current:true}).length).toBe(1);
+    expect(filter(items, {current:true})[0].name).toBe('tom');
+    expect(filter(items, {current:false}).length).toBe(1);
+    expect(filter(items, {current:false})[0].name).toBe('demi');
+  });
+
   it('should support negation operator', function() {
     var items = ['misko', 'adam'];
 
