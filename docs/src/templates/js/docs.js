@@ -5,60 +5,10 @@ var docsApp = {
 };
 
 docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
-  $scope.versions = expandVersions(NG_VERSIONS);
-  $scope.version  = ($scope.version || NG_VERSION).match(/^([\d\.]+\d+\S+)/)[1]; //match only the number
-
-  $scope.jumpToDocsVersion = function(value) {
-    var isLastStable,
-        version,
-        versions = $scope.versions;
-    for(var i=versions.length-1;i>=0;i--) {
-      var v = versions[i];
-      if(v.version == value) {
-        var next = versions[i - 1];
-        isLastStable = v.stable && (!next || next && !next.stable);
-        version = v;
-        break;
-      }
-    };
-
-    if(version && version.version >= '1.0.0') {
-      //the older versions have a different path to the docs within their repo directory
-      var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
-
-      //the last stable version should redirect to docs.angularjs.org instead of code.angularjs.org
-      var url = 'http://' +
-                  (isLastStable ?
-                    'docs.angularjs.org' :
-                    'code.angularjs.org/' + version.version + '/' + docsPath);
-
-      $window.location = url;
-    }
-  };
-
-  function expandVersions(angularVersions) {
-    var unstableVersionStart = 0;
-    angularVersions.forEach(function(version) {
-      var split = version.split('.');
-      unstableVersionStart = split[1] % 2 == 1 ?
-                        Math.max(unstableVersionStart, parseInt(split[0] + '' + split[1])) :
-                        unstableVersionStart;
-    });
-
-    var versions = [];
-    for(var i=angularVersions.length-1;i>=0;i--) {
-      var version = angularVersions[i];
-      var split = version.split('.');
-      var stable = parseInt(split[0] + '' + split[1]) < unstableVersionStart;
-      versions.push({
-        version : version,
-        stable : stable,
-        title : 'AngularJS - v' + version,
-        group : (stable ? 'Stable' : 'Unstable')
-      });
-    };
-
-    return versions;
+  $scope.docs_versions = NG_VERSIONS;
+  $scope.docs_version  = NG_VERSIONS[0];
+  $scope.jumpToDocsVersion = function(version) {
+    $window.location = version.url;
   };
 }];
 

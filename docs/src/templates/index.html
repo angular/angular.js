@@ -250,9 +250,9 @@
       <div class="span3">
         <div class="well">
           <div ng-controller="DocsVersionsCtrl">
-            <select ng-options="v.version as v.title group by v.group for v in versions"
-                    ng-model="version"
-                    ng-change="jumpToDocsVersion(version)"
+            <select ng-options="v as v.title group by v.group for v in docs_versions"
+                    ng-model="docs_version"
+                    ng-change="jumpToDocsVersion(docs_version)"
                     class="docs-version-jump">
             </select>
           </div>
