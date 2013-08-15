@@ -82,7 +82,7 @@ var ngIfDirective = ['$animate', function($animate) {
     transclude: 'element',
     priority: 1000,
     terminal: true,
-    restrict: 'A',
+    restrict: 'AM',
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
         var childElement, childScope;

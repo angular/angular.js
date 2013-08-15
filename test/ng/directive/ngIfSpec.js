@@ -73,6 +73,38 @@ describe('ngIf', function () {
     expect(element.children()[0].className).toContain('my-class');
   });
 
+  it('should work with multi-nodes declared as attributes', function () {
+    $scope.value = false;
+    element.append($compile(
+      '<div ng-if-start="value"></div>' +
+        '<div></div>' +
+        '<div></div>' +
+        '<div ng-if-end></div>'
+    )($scope));
+    $scope.$apply();
+    expect(element.children().length).toBe(0);
+    $scope.$apply('value = true');
+    expect(element.children().length).toBe(4);
+    $scope.$apply('value = false');
+    expect(element.children().length).toBe(0);
+  });
+
+  it('should work with multi-nodes declared as comments', function () {
+    $scope.value = false;
+    element.append($compile(
+      '<!-- directive: ng-if-start value -->' +
+        '<div></div>' +
+        '<div></div>' +
+        '<!-- ng-if-end -->'
+    )($scope));
+    $scope.$apply();
+    expect(element.children().length).toBe(0);
+    $scope.$apply('value = true');
+    expect(element.children().length).toBe(2);
+    $scope.$apply('value = false');
+    expect(element.children().length).toBe(0);
+  });
+
 });
 
 describe('ngIf animations', function () {
