@@ -755,6 +755,26 @@ describe('Scope', function() {
       expect(isolateScope.$$internalAsyncQueue).toBe($rootScope.$$internalAsyncQueue);
       expect($rootScope.$$internalAsyncQueue).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
     }));
+
+    it('should include $evalAsync(fn, false) callbacks added during $apply() in the queue dispatched after the DOM is updated', function () {
+      inject(function ($compile, $rootScope) {
+        var element = $compile(
+          '<div><div ng-repeat="item in items">{{item}}</div></div>')($rootScope);
+
+        var executed = false;
+        $rootScope.items = [ 'a;', 'b;' ];
+        $rootScope.$apply(function () {
+          $rootScope.$evalAsync(function () {
+            executed = true;
+            expect(element.text()).toBe('a;b;');
+          }, false);
+        });
+
+        expect(executed).toBe(true);
+
+        dealoc(element);
+      });
+    });
   });
 
 
