@@ -1735,8 +1735,40 @@ window.jasmine && (function(window) {
    * instance of {@link AUTO.$injector $injector} per test, which is then used for
    * resolving references.
    *
-   * See also {@link angular.mock.module module}
    *
+   * ## Resolving References (Underscore Wrapping)
+   * Often, we would like to inject a reference once, in a `beforeEach()` block and reuse this
+   * in multiple `it()` clauses. To be able to do this we must assign the reference to a variable
+   * that is declared in the scope of the `describe()` block. Since we would, most likely, want 
+   * the variable to have the same name of the reference we have a problem, since the parameter
+   * to the `inject()` function would hide the outer variable.
+   *
+   * To help with this, the injected parameters can, optionally, beenclosing with underscores.
+   * These are ignored by the injector when the reference name is resolved.
+   * 
+   * For example, the parameter `_myService_` would be resolved as the reference `myService`.
+   * Since it is available in the function body as _myService_, we can then assign it to a variable
+   * defined in an outer scope.
+   * 
+   * ```
+   * // Defined out reference variable outside
+   * var myService;
+   *
+   * // Wrap the parameter in underscores
+   * beforeEach( inject( function(_myService_){
+   *   myService = _myService_;
+   * })); 
+   *
+   * // Use myService in a series of tests.
+   * it('makes use of myService', function() {
+   *   myService.doStuff();
+   * });
+   * 
+   * ```
+   * 
+   * See also {@link angular.mock.module angular.mock.module}
+   *
+   * ## Example
    * Example of what a typical jasmine tests looks like with the inject method.
    * <pre>
    *
@@ -1773,7 +1805,7 @@ window.jasmine && (function(window) {
    *   });
    *
    * </pre>
-   *
+   * 
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
   window.inject = angular.mock.inject = function() {
