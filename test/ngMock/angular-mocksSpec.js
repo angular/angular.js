@@ -422,6 +422,14 @@ describe('ngMock', function() {
       $timeout.flushNext(123);
       expect(count).toBe(2);
     }));
+    
+    it('should not require a delay value for flushNext', function() {
+      $timeout(function() {}, 100);
+      $timeout(function() {}, 200);
+      
+      $timeout.flushNext();
+      $timeout.flushNext();
+    });
   });
 
 
