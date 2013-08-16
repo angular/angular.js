@@ -52,13 +52,15 @@ function annotate(fn) {
   if (typeof fn == 'function') {
     if (!($inject = fn.$inject)) {
       $inject = [];
-      fnText = fn.toString().replace(STRIP_COMMENTS, '');
-      argDecl = fnText.match(FN_ARGS);
-      forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-        arg.replace(FN_ARG, function(all, underscore, name){
-          $inject.push(name);
+      if (fn.length) {
+        fnText = fn.toString().replace(STRIP_COMMENTS, '');
+        argDecl = fnText.match(FN_ARGS);
+        forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
+          arg.replace(FN_ARG, function(all, underscore, name){
+            $inject.push(name);
+          });
         });
-      });
+      }
       fn.$inject = $inject;
     }
   } else if (isArray(fn)) {

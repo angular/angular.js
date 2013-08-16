@@ -20,6 +20,11 @@
     // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
     // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
     (function() {
+      if (window.name.indexOf('NG_DEFER_BOOTSTRAP!') == 0) {
+        //TODO(i): super ugly hack to temporarily speed up our e2e tests until we move to protractor + extracted examples
+        window.RUNNING_IN_NG_TEST_RUNNER = true;
+      }
+
       var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
           rUrl = /(#!\/|api|guide|misc|tutorial|cookbook|error|index[^\.]*\.html).*$/,
           baseUrl = location.href.replace(rUrl, indexFile),
@@ -49,8 +54,10 @@
       addTag('script', {src: path('angular-animate.js') }, sync);
       addTag('script', {src: 'components/angular-bootstrap.js' }, sync);
       addTag('script', {src: 'components/angular-bootstrap-prettify.js' }, sync);
-      addTag('script', {src: 'components/google-code-prettify.js' }, sync);
-      addTag('script', {src: 'components/' + (debug ? 'lunr.js' : 'lunr.min.js') }, sync);
+      if (!window.RUNNING_IN_NG_TEST_RUNNER) {
+        addTag('script', {src: 'components/google-code-prettify.js' }, sync);
+        addTag('script', {src: 'components/' + (debug ? 'lunr.js' : 'lunr.min.js') }, sync);
+      }
       addTag('script', {src: 'components/marked.js' }, sync);
       addTag('script', {src: 'docs-data.js'}, sync);
       addTag('script', {src: 'js/docs.js'}, sync);
@@ -112,11 +119,13 @@
     _gaq.push(['_setAccount', 'UA-8594346-3']);
     _gaq.push(['_setDomainName', '.angularjs.org']);
 
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+    if (!window.RUNNING_IN_NG_TEST_RUNNER) {
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    }
   </script>
 </head>
 
