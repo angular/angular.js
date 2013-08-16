@@ -1881,7 +1881,25 @@ angular.mock.clearDataCache = function() {
    * The inject function wraps a function into an injectable function. The inject() creates new
    * instance of {@link AUTO.$injector $injector} per test, which is then used for
    * resolving references.
-   *
+   * 
+   * The injected references can optionally be named with enclosing underscores, which are ignored by
+   * the injector when the reference name is resolved. 
+   * 
+   * For example, _myService_ would be resolved as myService, and available in the function 
+   * body as _myService_. This is useful if you want to provide a dependency to multiple 
+   * tests without injecting it each time.
+   * 
+   * <pre>
+   * 
+   *    var myService = undefined;
+   *    beforeEach( inject( function(_myService_){
+   *      myService = _myService;
+   *    })); 
+   * 
+   *    // ... use myService in a series of tests.
+   * 
+   * </pre>
+   * 
    * See also {@link angular.mock.module module}
    *
    * Example of what a typical jasmine tests looks like with the inject method.
@@ -1920,7 +1938,7 @@ angular.mock.clearDataCache = function() {
    *   });
    *
    * </pre>
-   *
+   * 
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
   window.inject = angular.mock.inject = function() {
