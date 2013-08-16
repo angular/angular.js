@@ -3,7 +3,6 @@
 describe('ngShow / ngHide', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
@@ -28,6 +27,22 @@ describe('ngShow / ngHide', function() {
       $rootScope.$digest();
       expect(element).toBeShown();
     }));
+
+    it('should work with multi-nodes declared as attributes', multiNodeTests(
+      'ngShow',
+      '<div ng-show-start="exp"></div>' +
+        '<div></div>' +
+        '<div></div>' +
+        '<div ng-show-end></div>'
+    ));
+
+    it('should work with multi-nodes declared as comment', multiNodeTests(
+      'ngShow',
+      '<!-- directive: ng-show-start exp -->' +
+        '<div></div>' +
+        '<div></div>' +
+        '<!-- ng-show-end -->'
+    ));
   });
 
   describe('ngHide', function() {
@@ -39,7 +54,39 @@ describe('ngShow / ngHide', function() {
       $rootScope.$digest();
       expect(element).toBeHidden();
     }));
+
+    it('should work with multi-nodes declared as attributes', multiNodeTests(
+      'ngHide',
+      '<div ng-hide-start="exp"></div>' +
+        '<div></div>' +
+        '<div></div>' +
+        '<div ng-hide-end></div>'
+    ));
+
+    it('should work with multi-nodes declared as comment', multiNodeTests(
+      'ngHide',
+      '<!-- directive: ng-hide-start exp -->' +
+        '<div></div>' +
+        '<div></div>' +
+        '<!-- ng-hide-end -->'
+    ));
   });
+
+  function multiNodeTests(directive, html) {
+    return inject(function($rootScope, $compile) {
+      element = jqLite('<div></div>').html(html);
+      element = $compile(element)($rootScope);
+      $rootScope.$digest();
+      forEach(element.children(), function (element) {
+        expect(element)[directive == 'ngShow' ? 'toBeHidden' : 'toBeShown']();
+      });
+      $rootScope.exp = true;
+      $rootScope.$digest();
+      forEach(element.children(), function (element) {
+        expect(element)[directive == 'ngShow' ? 'toBeShown' : 'toBeHidden']();
+      });
+    })
+  }
 });
 
 describe('ngShow / ngHide animations', function() {
