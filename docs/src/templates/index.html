@@ -54,8 +54,8 @@
       addTag('script', {src: path('angular-animate.js') }, sync);
       addTag('script', {src: 'components/angular-bootstrap.js' }, sync);
       addTag('script', {src: 'components/angular-bootstrap-prettify.js' }, sync);
-      addTag('script', {src: 'components/google-code-prettify.js' }, sync);
       if (!window.RUNNING_IN_NG_TEST_RUNNER) {
+        addTag('script', {src: 'components/google-code-prettify.js' }, sync);
         addTag('script', {src: 'components/' + (debug ? 'lunr.js' : 'lunr.min.js') }, sync);
       }
       addTag('script', {src: 'components/marked.js' }, sync);
