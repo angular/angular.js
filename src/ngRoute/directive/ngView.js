@@ -1,5 +1,7 @@
 'use strict';
 
+ngRouteModule.directive('ngView', ngViewFactory);
+
 /**
  * @ngdoc directive
  * @name ngRoute.directive:ngView
@@ -167,22 +169,17 @@
  * @description
  * Emitted every time the ngView content is reloaded.
  */
-var NG_VIEW_PRIORITY = 500;
-var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$animate', 
-               function($route,   $anchorScroll,   $compile,   $controller,   $animate) {
+ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animate'];
+function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animate) {
   return {
     restrict: 'ECA',
     terminal: true,
-    priority: NG_VIEW_PRIORITY,
-    compile: function(element, attr) {
-      var onloadExp = attr.onload || '';
-
-      element.html('');
-      var anchor = jqLite(document.createComment(' ngView '));
-      element.replaceWith(anchor);
-
-      return function(scope) {
-        var currentScope, currentElement;
+    transclude: 'element',
+    compile: function(element, attr, linker) {
+      return function(scope, $element, attr) {
+        var currentScope,
+            currentElement,
+            onloadExp = attr.onload || '';
 
         scope.$on('$routeChangeSuccess', update);
         update();
@@ -203,35 +200,36 @@ var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$a
               template = locals && locals.$template;
 
           if (template) {
-            cleanupLastView();
+            var newScope = scope.$new();
+            linker(newScope, function(clone) {
+              cleanupLastView();
 
-            currentScope = scope.$new();
-            currentElement = element.clone();
-            currentElement.html(template);
-            $animate.enter(currentElement, null, anchor);
+              clone.html(template);
+              $animate.enter(clone, null, $element);
 
-            var link = $compile(currentElement, false, NG_VIEW_PRIORITY - 1),
-                current = $route.current;
+              var link = $compile(clone.contents()),
+                  current = $route.current;
 
-            if (current.controller) {
-              locals.$scope = currentScope;
-              var controller = $controller(current.controller, locals);
-              if (current.controllerAs) {
-                currentScope[current.controllerAs] = controller;
+              currentScope = current.scope = newScope;
+              currentElement = clone;
+
+              if (current.controller) {
+                locals.$scope = currentScope;
+                var controller = $controller(current.controller, locals);
+                if (current.controllerAs) {
+                  currentScope[current.controllerAs] = controller;
+                }
+                clone.data('$ngControllerController', controller);
+                clone.contents().data('$ngControllerController', controller);
               }
-              currentElement.data('$ngControllerController', controller);
-              currentElement.children().data('$ngControllerController', controller);
-            }
 
-            current.scope = currentScope;
+              link(currentScope);
+              currentScope.$emit('$viewContentLoaded');
+              currentScope.$eval(onloadExp);
 
-            link(currentScope);
-
-            currentScope.$emit('$viewContentLoaded');
-            currentScope.$eval(onloadExp);
-
-            // $anchorScroll might listen on event...
-            $anchorScroll();
+              // $anchorScroll might listen on event...
+              $anchorScroll();
+            });
           } else {
             cleanupLastView();
           }
@@ -239,6 +237,4 @@ var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$a
       }
     }
   };
-}];
-
-ngRouteModule.directive('ngView', ngViewDirective);
+}
