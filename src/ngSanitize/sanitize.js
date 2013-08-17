@@ -221,9 +221,10 @@ function htmlParser( html, handler ) {
 
       // Comment
       if ( html.indexOf("<!--") === 0 ) {
-        index = html.indexOf("-->");
+        // comments containing -- are not allowed unless they terminate the comment
+        index = html.indexOf("--",4);
 
-        if ( index >= 0 ) {
+        if ( index >= 0 && html.lastIndexOf("-->",index) === index) {
           if (handler.comment) handler.comment( html.substring( 4, index ) );
           html = html.substring( index + 3 );
           chars = false;
