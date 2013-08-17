@@ -752,7 +752,8 @@ function $CompileProvider($provide) {
           childTranscludeFn = transcludeFn,
           controllerDirectives,
           linkFn,
-          directiveValue;
+          directiveValue,
+          directiveValueTrimmed;
 
       // executes all directives on the current element
       for(var i = 0, ii = directives.length; i < ii; i++) {
@@ -821,11 +822,25 @@ function $CompileProvider($provide) {
 
           if (directive.replace) {
             replaceDirective = directive;
-            $template = jqLite('<div>' +
-                                 trim(directiveValue) +
-                               '</div>').contents();
-            compileNode = $template[0];
 
+            directiveValueTrimmed = trim(directiveValue);
+
+            // Special case for table elements that cannot be wrapped in a div
+            if (directiveValueTrimmed.indexOf('<tr') === 0) {
+                $template = jqLite('<table><tbody>' + directiveValueTrimmed + '</tbody></table>').children().contents();
+            }
+            else if (['<tbody', '<thead', '<tfoot'].indexOf(directiveValueTrimmed.substr(0, 6)) !== -1 ||
+                     directiveValueTrimmed.substr(0, 8) == '<caption') {
+                $template = jqLite('<table>' + directiveValueTrimmed + '</table>').contents();
+            }
+            else if (['<td', '<th'].indexOf(directiveValueTrimmed.substr(0, 3)) !== -1) {
+                $template = jqLite('<table><tbody><tr>' + directiveValueTrimmed + '</tr></tbody></table>').children().children().contents();
+            }
+            else {
+                $template = jqLite('<div>' + directiveValueTrimmed + '</div>').contents();
+            }
+
+            compileNode = $template[0];
             if ($template.length != 1 || compileNode.nodeType !== 1) {
               throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}", directiveName, '');
             }

@@ -489,8 +489,114 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+
+          directive('replaceTr', valueFn({
+            replace: true,
+            template: '<tr class="replaced"><td>Replace!</td></tr>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceTd', valueFn({
+            replace: true,
+            template: '<td>Replace!</td>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceTh', valueFn({
+            replace: true,
+            template: '<th>Replace!</th>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceThead', valueFn({
+            replace: true,
+            template: '<thead><tr><td>Replace!</td></tr></thead>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceTbody', valueFn({
+            replace: true,
+            template: '<tbody><tr><td>Replace!</td></tr></tbody>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceTfoot', valueFn({
+            replace: true,
+            template: '<tfoot><tr><td>Replace!</td></tr></tfoot>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+          directive('replaceCaption', valueFn({
+            replace: true,
+            template: '<caption>Replace!</caption>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
+
+
         }));
 
+        it('should replace tr element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><tr replace-tr></tr></table>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
+          expect(element.find('tr').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace td element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><tr><td replace-td></td></tr></table>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
+          expect(element.find('td').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace th element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><tr><th replace-th></th></tr></table>')($rootScope);
+          expect(element.text()).toEqual('Replace!');
+          expect(element.find('th').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace thead element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><thead replace-thead></thead></table>')($rootScope);
+          expect(element.find('td').text()).toEqual('Replace!');
+          expect(element.find('thead').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace tbody element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><tbody replace-tbody></tbody></table>')($rootScope);
+          expect(element.find('td').text()).toEqual('Replace!');
+          expect(element.find('tbody').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace tfoot element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><tfoot replace-tfoot></tfoot></table>')($rootScope);
+          expect(element.find('td').text()).toEqual('Replace!');
+          expect(element.find('tfoot').attr('compiled')).toEqual('COMPILED');
+        }));
+
+        it('should replace caption element with template', inject(function($compile, $rootScope) {
+          element = $compile('<table><caption replace-caption></caption></table>')($rootScope);
+          expect(element.find('caption').text()).toEqual('Replace!');
+          expect(element.find('caption').attr('compiled')).toEqual('COMPILED');
+        }));
 
         it('should replace element with template', inject(function($compile, $rootScope) {
           element = $compile('<div><div replace>ignore</div><div>')($rootScope);
