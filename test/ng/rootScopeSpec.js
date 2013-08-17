@@ -922,6 +922,14 @@ describe('Scope', function() {
         expect(log).toEqual('2>1>0>');
       });
 
+      it('should allow all events on the same scope to run even if stopPropagation is called', function(){
+        child.$on('myEvent', logger);
+        grandChild.$on('myEvent', function(e) { e.stopPropagation(); });
+        grandChild.$on('myEvent', logger);
+        grandChild.$on('myEvent', logger);
+        grandChild.$emit('myEvent');
+        expect(log).toEqual('2>2>2>');
+      });
 
       it('should dispatch exceptions to the $exceptionHandler',
           inject(function($exceptionHandler) {
