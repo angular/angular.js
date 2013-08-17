@@ -5,7 +5,18 @@
  * @name ngRoute
  * @description
  *
- * Module that provides routing and deeplinking services and directives for angular apps.
+ * ngRoute
+ * =========
+ *
+ * The ngRoute module provides routing and deeplinking services and directives for angular apps.
+ *
+ * To make use of routing with AngularJS, the `angular-route.js` JavaScript file must be included into your application
+ * and the `ngRoute` module must be included as a dependency.
+ *
+ * <pre>
+ * angular.module('App', ['ngRoute']);
+ * </pre>
+ *
  */
 
 var ngRouteModule = angular.module('ngRoute', ['ng']).
@@ -36,8 +47,8 @@ function $RouteProvider(){
    *      * `path` can contain named groups starting with a colon (`:name`). All characters up
    *        to the next slash are matched and stored in `$routeParams` under the given `name`
    *        when the route matches.
-   *      * `path` can contain named groups starting with a colon and ending with a star (`:name*`). 
-   *        All characters are eagerly stored in `$routeParams` under the given `name` 
+   *      * `path` can contain named groups starting with a colon and ending with a star (`:name*`).
+   *        All characters are eagerly stored in `$routeParams` under the given `name`
    *        when the route matches.
    *      * `path` can contain optional named groups with a question mark (`:name?`).
    *
@@ -128,8 +139,8 @@ function $RouteProvider(){
     // create redirection for trailing slashes
     if (path) {
       var redirectPath = (path[path.length-1] == '/')
-          ? path.substr(0, path.length-1)
-          : path +'/';
+            ? path.substr(0, path.length-1)
+            : path +'/';
 
       routes[redirectPath] = extend(
         {redirectTo: path},
@@ -428,13 +439,12 @@ function $RouteProvider(){
       var m = route.regexp.exec(on);
       if (!m) return null;
 
-      var N = 0;
       for (var i = 1, len = m.length; i < len; ++i) {
         var key = keys[i - 1];
 
         var val = 'string' == typeof m[i]
-          ? decodeURIComponent(m[i])
-          : m[i];
+              ? decodeURIComponent(m[i])
+              : m[i];
 
         if (key && val) {
           params[key.name] = val;
@@ -541,7 +551,7 @@ function $RouteProvider(){
     function interpolate(string, params) {
       var result = [];
       forEach((string||'').split(':'), function(segment, i) {
-        if (i == 0) {
+        if (i === 0) {
           result.push(segment);
         } else {
           var segmentMatch = segment.match(/(\w+)(.*)/);

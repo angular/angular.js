@@ -109,6 +109,8 @@ docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', fu
 
 docsApp.serviceFactory.lunrSearch = function() {
   return function(properties) {
+    if (window.RUNNING_IN_NG_TEST_RUNNER) return null;
+
     var engine = lunr(properties);
     return {
       store : function(values) {
@@ -122,7 +124,10 @@ docsApp.serviceFactory.lunrSearch = function() {
 };
 
 docsApp.serviceFactory.docsSearch = ['$rootScope','lunrSearch', 'NG_PAGES',
-  function($rootScope, lunrSearch, NG_PAGES) {
+    function($rootScope, lunrSearch, NG_PAGES) {
+  if (window.RUNNING_IN_NG_TEST_RUNNER) {
+    return null;
+  }
 
   var index = lunrSearch(function() {
     this.ref('id');

@@ -900,15 +900,15 @@ describe('jqLite', function() {
 
         expect(function() {
           elm.on('click', anObj, callback);
-        }).toThrowMatching(/\[jqLite\:onargs\]/);
+        }).toThrowMinErr('jqLite', 'onargs');
 
         expect(function() {
           elm.on('click', null, aString, callback);
-        }).toThrowMatching(/\[jqLite\:onargs\]/);
+        }).toThrowMinErr('jqLite', 'onargs');
 
         expect(function() {
           elm.on('click', aValue, callback);
-        }).toThrowMatching(/\[jqLite\:onargs\]/);
+        }).toThrowMinErr('jqLite', 'onargs');
 
       });
     }

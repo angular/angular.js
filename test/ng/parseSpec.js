@@ -156,11 +156,11 @@ describe('parser', function() {
     it('should throws exception for invalid exponent', function() {
       expect(function() {
         lex("0.5E-");
-      }).toThrow(new Error('[$parse:lexerr] Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
+      }).toThrowMinErr('$parse', 'lexerr', 'Lexer Error: Invalid exponent at column 4 in expression [0.5E-].');
 
       expect(function() {
         lex("0.5E-A");
-      }).toThrow(new Error('[$parse:lexerr] Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
+      }).toThrowMinErr('$parse', 'lexerr', 'Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].');
     });
 
     it('should tokenize number starting with a dot', function() {
@@ -171,7 +171,7 @@ describe('parser', function() {
     it('should throw error on invalid unicode', function() {
       expect(function() {
         lex("'\\u1''bla'");
-      }).toThrow(new Error("[$parse:lexerr] Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
+      }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla'].");
     });
   });
 
@@ -304,7 +304,7 @@ describe('parser', function() {
 
         expect(function() {
           scope.$eval("1|nonexistent");
-        }).toThrow(new Error("[$injector:unpr] Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
 
         scope.offset =  3;
         expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
@@ -492,7 +492,7 @@ describe('parser', function() {
       it('should throw exception on non-closed bracket', function() {
         expect(function() {
           scope.$eval('[].count(');
-        }).toThrow('[$parse:ueoe] Unexpected end of expression: [].count(');
+        }).toThrowMinErr('$parse', 'ueoe', 'Unexpected end of expression: [].count(');
       });
 
       it('should evaluate double negation', function() {
@@ -558,86 +558,86 @@ describe('parser', function() {
         it('should NOT allow access to Function constructor in getter', function() {
           expect(function() {
             scope.$eval('{}.toString.constructor');
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString.constructor');
 
           expect(function() {
             scope.$eval('{}.toString.constructor("alert(1)")');
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor("alert(1)")'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString.constructor("alert(1)")');
 
           expect(function() {
             scope.$eval('[].toString.constructor.foo');
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: [].toString.constructor.foo'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: [].toString.constructor.foo');
 
           expect(function() {
             scope.$eval('{}.toString["constructor"]');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString["constructor"]');
           expect(function() {
             scope.$eval('{}["toString"]["constructor"]');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}["toString"]["constructor"]'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: {}["toString"]["constructor"]');
 
           scope.a = [];
           expect(function() {
             scope.$eval('a.toString.constructor', scope);
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: a.toString.constructor'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: a.toString.constructor');
           expect(function() {
             scope.$eval('a.toString["constructor"]', scope);
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: a.toString["constructor"]'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: a.toString["constructor"]');
         });
 
         it('should NOT allow access to Function constructor in setter', function() {
           expect(function() {
             scope.$eval('{}.toString.constructor = 1');
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString.constructor = 1');
 
           expect(function() {
             scope.$eval('{}.toString.constructor.a = 1');
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor.a = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString.constructor.a = 1');
 
           expect(function() {
             scope.$eval('{}.toString["constructor"]["constructor"] = 1');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]["constructor"] = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString["constructor"]["constructor"] = 1');
 
 
           scope.key1 = "const";
           scope.key2 = "ructor";
           expect(function() {
             scope.$eval('{}.toString[key1 + key2].foo = 1');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                      'Expression: {}.toString[key1 + key2].foo = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                      'Expression: {}.toString[key1 + key2].foo = 1');
 
           expect(function() {
             scope.$eval('{}.toString["constructor"]["a"] = 1');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]["a"] = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: {}.toString["constructor"]["a"] = 1');
 
           scope.a = [];
           expect(function() {
             scope.$eval('a.toString.constructor = 1', scope);
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: a.toString.constructor = 1'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: a.toString.constructor = 1');
         });
 
 
@@ -645,9 +645,9 @@ describe('parser', function() {
           scope.foo = { "bar": Function };
           expect(function() {
             scope.$eval('foo["bar"]');
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: foo["bar"]'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: foo["bar"]');
 
         });
       });
@@ -661,14 +661,14 @@ describe('parser', function() {
           // index operator.
           expect(function() {
             scope.$eval('foo.constructor()', scope)
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: foo.constructor()'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: foo.constructor()');
           expect(function() {
             scope.$eval('foo["constructor"]()', scope)
-          }).toThrow(new Error(
-                  '[$parse:isecfn] Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: foo["constructor"]()'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                  'Expression: foo["constructor"]()');
 
           // User defined value assigned to constructor.
           scope.foo.constructor = function constructor() {
@@ -677,9 +677,9 @@ describe('parser', function() {
           // Dot operator should still block it.
           expect(function() {
             scope.$eval('foo.constructor()', scope)
-          }).toThrow(new Error(
-                  '[$parse:isecfld] Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: foo.constructor()'));
+          }).toThrowMinErr(
+                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                  'Expression: foo.constructor()');
           // However, the index operator should allow it.
           expect(scope.$eval('foo["constructor"]()', scope)).toBe('custom constructor');
         });
@@ -846,6 +846,18 @@ describe('parser', function() {
             expect(scope.$eval('greeting')).toBe(undefined);
           });
 
+          it('should evaluate a function call returning a promise and eventually get its return value', function() {
+            scope.greetingFn = function() { return promise; };
+            expect(scope.$eval('greetingFn()')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greetingFn()')).toBe(undefined);
+
+            deferred.resolve('hello!');
+            expect(scope.$eval('greetingFn()')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greetingFn()')).toBe('hello!');
+          });
 
           describe('assignment into promises', function() {
             // This behavior is analogous to assignments to non-promise values
@@ -864,10 +876,10 @@ describe('parser', function() {
             }));
 
 
-            it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {            
+            it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {
               scope.greeting = promise;
               deferred.resolve('Salut!');
-              
+
               var getter = $parse('greeting');
               expect(getter(scope)).toBe(undefined);
 

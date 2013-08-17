@@ -44,7 +44,7 @@ describe("$animate", function() {
       module(function($animateProvider) {
         expect(function() {
           $animateProvider.register('abc', null);
-        }).toThrow("[$animate:notcsel] Expecting class selector starting with '.' got 'abc'.");
+        }).toThrowMinErr("$animate", "notcsel", "Expecting class selector starting with '.' got 'abc'.");
       });
       inject();
     });
