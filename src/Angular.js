@@ -238,7 +238,9 @@ function extend(dst) {
   forEach(arguments, function(obj){
     if (obj !== dst) {
       forEach(obj, function(value, key){
-        dst[key] = value;
+        if(value !== undefined) {
+          dst[key] = value;
+        }
       });
     }
   });
