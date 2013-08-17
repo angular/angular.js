@@ -377,7 +377,7 @@ var inputType = {
    */
   'checkbox': checkboxInputType,
 
-  'hidden': textInputType,
+  'hidden': noop,
   'button': noop,
   'submit': noop,
   'reset': noop
