@@ -117,7 +117,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
         angular.forEach(args, function(value, index) {
           selector = selector.replace('$' + (index + 1), value);
         });
-        var result = angular.element(selector);
+        var result = $document.find(selector);
         if (selector.match(NG)) {
           angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index){
             result = result.add(selector.replace(NG, value), $document);
