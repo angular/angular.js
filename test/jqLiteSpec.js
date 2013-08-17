@@ -126,6 +126,20 @@ describe('jqLite', function() {
         dealoc(doc);
       }
     );
+
+    it('should return null values', function () {
+      var ul = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>'),
+          li = ul.find('li'),
+          b = li.find('b');
+
+      ul.data('foo', 'bar');
+      li.data('foo', null);
+      expect(b.inheritedData('foo')).toBe(null);
+      expect(li.inheritedData('foo')).toBe(null);
+      expect(ul.inheritedData('foo')).toBe('bar');
+
+      dealoc(ul);
+    });
   });
 
 
@@ -684,6 +698,26 @@ describe('jqLite', function() {
       expect(input[0].value).toEqual('abc');
       expect(input.val()).toEqual('abc');
     });
+
+    it('should get an array of selected elements from a multi select', function () {
+      expect(jqLite(
+        '<select multiple>' +
+          '<option selected>test 1</option>' +
+          '<option selected>test 2</option>' +
+        '</select>').val()).toEqual(['test 1', 'test 2']);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<option selected>test 1</option>' +
+          '<option>test 2</option>' +
+        '</select>').val()).toEqual(['test 1']);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<option>test 1</option>' +
+          '<option>test 2</option>' +
+        '</select>').val()).toEqual(null);
+    });
   });
 
 
@@ -866,22 +900,22 @@ describe('jqLite', function() {
 
         expect(function() {
           elm.on('click', anObj, callback);
-        }).toThrow();
+        }).toThrowMinErr('jqLite', 'onargs');
 
         expect(function() {
           elm.on('click', null, aString, callback);
-        }).toThrow();
+        }).toThrowMinErr('jqLite', 'onargs');
 
         expect(function() {
           elm.on('click', aValue, callback);
-        }).toThrow();
+        }).toThrowMinErr('jqLite', 'onargs');
 
       });
     }
   });
 
 
-  describe('unbind', function() {
+  describe('off', function() {
     it('should do nothing when no listener was registered with bound', function() {
       var aElem = jqLite(a);
 
@@ -890,6 +924,12 @@ describe('jqLite', function() {
       aElem.off('click', function() {});
     });
 
+    it('should do nothing when a specific listener was not registered', function () {
+      var aElem = jqLite(a);
+      aElem.on('click', function() {});
+
+      aElem.off('mouseenter', function() {});
+    });
 
     it('should deregister all listeners', function() {
       var aElem = jqLite(a),
@@ -947,6 +987,31 @@ describe('jqLite', function() {
     });
 
 
+    it('should deregister all listeners for types separated by spaces', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.on('click', clickSpy);
+      aElem.on('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.off('click mouseover');
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
     it('should deregister specific listener', function() {
       var aElem = jqLite(a),
           clickSpy1 = jasmine.createSpy('click1'),
@@ -974,6 +1039,43 @@ describe('jqLite', function() {
       browserTrigger(a, 'click');
       expect(clickSpy2).not.toHaveBeenCalled();
     });
+
+
+    it('should deregister specific listener for multiple types separated by spaces', function() {
+      var aElem = jqLite(a),
+          masterSpy = jasmine.createSpy('master'),
+          extraSpy = jasmine.createSpy('extra');
+
+      aElem.on('click', masterSpy);
+      aElem.on('click', extraSpy);
+      aElem.on('mouseover', masterSpy);
+
+      browserTrigger(a, 'click');
+      browserTrigger(a, 'mouseover');
+      expect(masterSpy.callCount).toBe(2);
+      expect(extraSpy).toHaveBeenCalledOnce();
+
+      masterSpy.reset();
+      extraSpy.reset();
+
+      aElem.off('click mouseover', masterSpy);
+
+      browserTrigger(a, 'click');
+      browserTrigger(a, 'mouseover');
+      expect(masterSpy).not.toHaveBeenCalled();
+      expect(extraSpy).toHaveBeenCalledOnce();
+    });
+
+    // Only run this test for jqLite and not normal jQuery
+    if ( _jqLiteMode ) {
+      it('should throw an error if a selector is passed', function () {
+        var aElem = jqLite(a);
+        aElem.on('click', noop);
+        expect(function () {
+          aElem.off('click', noop, '.test');
+        }).toThrowMatching(/\[jqLite:offargs\]/);
+      });
+    }
   });
 
 
@@ -1074,6 +1176,18 @@ describe('jqLite', function() {
       var root = jqLite('<div>text</div>');
       expect(root.prepend('abc')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('abctext');
+    });
+    it('should prepend array to empty in the right order', function() {
+      var root = jqLite('<div>');
+      expect(root.prepend([a, b, c])).toBe(root);
+      expect(sortedHtml(root)).
+        toBe('<div><div>A</div><div>B</div><div>C</div></div>');
+    });
+    it('should prepend array to content in the right order', function() {
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend([a, b, c])).toBe(root);
+      expect(sortedHtml(root)).
+        toBe('<div><div>A</div><div>B</div><div>C</div>text</div>');
     });
   });
 

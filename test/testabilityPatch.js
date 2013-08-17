@@ -56,7 +56,7 @@ afterEach(function() {
   forEachSorted(cache, function(expando, key){
     angular.forEach(expando.data, function(value, key){
       count ++;
-      if (value.$element) {
+      if (value && value.$element) {
         dump('LEAK', key, value.$id, sortedHtml(value.$element));
       } else {
         dump('LEAK', key, angular.toJson(value));
@@ -107,7 +107,12 @@ function dealoc(obj) {
 
   function cleanup(element) {
     element.off().removeData();
-    for ( var i = 0, children = element.contents() || []; i < children.length; i++) {
+    // Note:  We aren't using element.contents() here.  Under jQuery, element.contents() can fail
+    // for IFRAME elements.  jQuery explicitly uses (element.contentDocument ||
+    // element.contentWindow.document) and both properties are null for IFRAMES that aren't attached
+    // to a document.
+    var children = element[0].childNodes || [];
+    for ( var i = 0; i < children.length; i++) {
       cleanup(angular.element(children[i]));
     }
   }
@@ -228,7 +233,7 @@ function sortedHtml(element, showNgClass) {
  */
 function isCssVisible(node) {
   var display = node.css('display');
-  return display != 'none';
+  return !node.hasClass('ng-hide') && display != 'none';
 }
 
 function assertHidden(node) {
@@ -283,3 +288,10 @@ function pending() {
 function trace(name) {
   dump(new Error(name).stack);
 }
+
+var karmaDump = dump;
+window.dump = function () {
+  karmaDump.apply(undefined, map(arguments, function(arg) {
+    return angular.mock.dump(arg);
+  }));
+};

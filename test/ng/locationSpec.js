@@ -66,6 +66,35 @@ describe('$location', function() {
     });
 
 
+    it('search() should handle multiple value', function() {
+      url.search('a&b');
+      expect(url.search()).toEqual({a: true, b: true});
+
+      url.search('a', null);
+
+      expect(url.search()).toEqual({b: true});
+
+      url.search('b', undefined);
+      expect(url.search()).toEqual({});
+    });
+
+
+    it('search() should handle single value', function() {
+      url.search('ignore');
+      expect(url.search()).toEqual({ignore: true});
+    });
+
+
+    it('search() should throw error an incorrect argument', function() {
+      expect(function() {
+        url.search(null);
+      }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
+      expect(function() {
+        url.search(undefined);
+      }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
+    });
+
+
     it('hash() should change hash fragment', function() {
       url.hash('new-hash');
       expect(url.hash()).toBe('new-hash');
@@ -190,7 +219,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://other.server.org/path#/path');
-      }).toThrow('[$location:nopp] Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -199,7 +228,7 @@ describe('$location', function() {
 
       expect(function() {
         url.$$parse('http://server.org/path#/path');
-      }).toThrow('[$location:nopp] Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
+      }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
 
@@ -309,17 +338,10 @@ describe('$location', function() {
     });
 
 
-    it('should throw error when invalid server url given', function() {
-      expect(function() {
-        url.$$parse('http://server.org/path#/path');
-      }).toThrow('[$location:istart] Invalid url "http://server.org/path#/path", does not start with "http://www.server.org:1234/base".');
-    });
-
-
     it('should throw error when invalid hashbang prefix given', function() {
       expect(function() {
         url.$$parse('http://www.server.org:1234/base#/path');
-      }).toThrow('[$location:nohash] Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
+      }).toThrowMinErr('$location', 'ihshprfx', 'Invalid url "http://www.server.org:1234/base#/path", missing hash prefix "#!".');
     });
 
 
@@ -367,6 +389,29 @@ describe('$location', function() {
         locationUrl.$$parse('http://host.com/')
         locationUrl.search('q', '1/2 3');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
+      });
+
+      it('should return an array for duplicate params', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search('q', ['1/2 3','4/5 6']);
+        expect(locationUrl.search()).toEqual({'q': ['1/2 3','4/5 6']});
+      });
+
+      it('should encode an array correctly from search and add to url', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': ['1/2 3','4/5 6']});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
+      });
+
+      it('should rewrite params when specifing a single param in search', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com');
+        locationUrl.$$parse('http://host.com')
+        locationUrl.search({'q': '1/2 3'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
+        locationUrl.search({'q': '4/5 6'});
+        expect(locationUrl.absUrl()).toEqual('http://host.com?q=4%2F5%206');
       });
     });
   });
@@ -575,7 +620,7 @@ describe('$location', function() {
       );
     });
 
-   it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
+    it('should correctly convert html5 url with path matching basepath to hashbang url', function () {
       initService(true, '!', false);
       inject(
         initBrowser('http://domain.com/base/index.html', '/base/index.html'),
@@ -1370,15 +1415,38 @@ describe('$location', function() {
   describe('LocationHashbangUrl', function() {
     var location;
 
-    beforeEach(function() {
-      location = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/#/path');
-    });
-
     it('should rewrite URL', function() {
+      location = new LocationHashbangUrl('http://server/pre/', '#');
+
       expect(location.$$rewrite('http://other')).toEqual(undefined);
       expect(location.$$rewrite('http://server/pre/')).toEqual('http://server/pre/');
       expect(location.$$rewrite('http://server/pre/#otherPath')).toEqual('http://server/pre/#otherPath');
       expect(location.$$rewrite('javascript:void(0)')).toEqual(undefined);
+    });
+
+    it("should not set hash if one was not originally specified", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html')
+      expect(location.url()).toBe('');
+      expect(location.absUrl()).toBe('http://server/pre/index.html');
+    });
+
+    it("should parse hash if one was specified", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html#/foo/bar')
+      expect(location.url()).toBe('/foo/bar');
+      expect(location.absUrl()).toBe('http://server/pre/index.html#/foo/bar');
+    });
+
+
+    it("should prefix hash url with / if one was originally missing", function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/pre/index.html#not-starting-with-slash')
+      expect(location.url()).toBe('/not-starting-with-slash');
+      expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
   });
 

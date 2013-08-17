@@ -17,7 +17,7 @@
  *
  * <pre>
  * [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
- *   display: none;
+ *   display: none !important;
  * }
  * </pre>
  *

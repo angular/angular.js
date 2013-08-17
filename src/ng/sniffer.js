@@ -37,6 +37,11 @@ function $SnifferProvider() {
       }
       transitions = !!(('transition' in bodyStyle) || (vendorPrefix + 'Transition' in bodyStyle));
       animations  = !!(('animation' in bodyStyle) || (vendorPrefix + 'Animation' in bodyStyle));
+      
+      if (android && (!transitions||!animations)) {
+        transitions = isString(document.body.style.webkitTransition); 
+        animations = isString(document.body.style.webkitAnimation); 
+      }
     }
 
 

@@ -3,7 +3,6 @@
 describe('ngInclude', function() {
   var element;
 
-
   afterEach(function(){
     dealoc(element);
   });
@@ -16,22 +15,45 @@ describe('ngInclude', function() {
   }
 
 
-  it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
+  it('should trust and use literal urls', inject(function(
+      $rootScope, $httpBackend, $compile) {
+    element = $compile('<div><div ng-include="\'url\'"></div></div>')($rootScope);
+    $httpBackend.expect('GET', 'url').respond('template text');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('template text');
+    dealoc($rootScope);
+  }));
+
+
+  it('should trust and use trusted urls', inject(function($rootScope, $httpBackend, $compile, $sce) {
+    element = $compile('<div><div ng-include="fooUrl"></div></div>')($rootScope);
+    $httpBackend.expect('GET', 'http://foo.bar/url').respond('template text');
+    $rootScope.fooUrl = $sce.trustAsResourceUrl('http://foo.bar/url');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('template text');
+    dealoc($rootScope);
+  }));
+
+
+  it('should include an external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url"></ng:include>');
-    jqLite(document.body).append(element);
+    element = jqLite('<div><ng:include src="url"></ng:include></div>');
+    var body = jqLite(document.body);
+    body.append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'misko';
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
-    expect(element.text()).toEqual('misko');
-    jqLite(document.body).html('');
+    expect(body.text()).toEqual('misko');
+    body.html('');
   }));
 
 
   it('should support ng-include="src" syntax', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
-    element = jqLite('<div ng-include="url"></div>');
+    element = jqLite('<div><div ng-include="url"></div></div>');
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'Alibaba';
@@ -42,10 +64,33 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should NOT use untrusted expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+      function($rootScope, $compile, $sce) {
+    element = jqLite('<ng:include src="url"></ng:include>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'chirayu';
+    $rootScope.url = 'myUrl';
+    expect($rootScope.$digest).toThrow();
+    jqLite(document.body).html('');
+  }));
+
+
+  it('should NOT use mistyped expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+      function($rootScope, $compile, $sce) {
+    element = jqLite('<ng:include src="url"></ng:include>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'chirayu';
+    $rootScope.url = $sce.trustAsUrl('myUrl');
+    expect($rootScope.$digest).toThrow();
+    jqLite(document.body).html('');
+  }));
+
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
         function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url"></ng:include>');
+    element = jqLite('<div><ng:include src="url"></ng:include></div>');
     element = $compile(element)($rootScope);
     $rootScope.name = 'igor';
     $rootScope.url = 'myUrl';
@@ -68,7 +113,7 @@ describe('ngInclude', function() {
     $httpBackend.whenGET('url').respond('my partial');
     $rootScope.$on('$includeContentRequested', contentRequestedSpy);
 
-    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    element = $compile('<div><div><ng:include src="\'url\'"></ng:include></div></div>')($rootScope);
     $rootScope.$digest();
 
     expect(contentRequestedSpy).toHaveBeenCalledOnce();
@@ -86,7 +131,7 @@ describe('ngInclude', function() {
     $templateCache.put('url', [200, 'partial content', {}]);
     $rootScope.$on('$includeContentLoaded', contentLoadedSpy);
 
-    element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+    element = $compile('<div><div><ng:include src="\'url\'"></ng:include></div></div>')($rootScope);
     $rootScope.$digest();
 
     expect(contentLoadedSpy).toHaveBeenCalledOnce();
@@ -96,7 +141,7 @@ describe('ngInclude', function() {
   it('should evaluate onload expression when a partial is loaded', inject(
       putIntoCache('myUrl', 'my partial'),
       function($rootScope, $compile) {
-    element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
+    element = jqLite('<div><div><ng:include src="url" onload="loaded = true"></ng:include></div></div>');
     element = $compile(element)($rootScope);
 
     expect($rootScope.loaded).not.toBeDefined();
@@ -114,7 +159,7 @@ describe('ngInclude', function() {
     $httpBackend.whenGET('url1').respond('partial {{$parent.url}}');
     $httpBackend.whenGET('url2').respond(404);
 
-    element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+    element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
     expect(element.children().scope()).toBeFalsy();
 
     $rootScope.url = 'url1';
@@ -141,7 +186,7 @@ describe('ngInclude', function() {
 
   it('should do xhr request and cache it',
       inject(function($rootScope, $httpBackend, $compile) {
-    element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+    element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
     $httpBackend.expect('GET', 'myUrl').respond('my partial');
 
     $rootScope.url = 'myUrl';
@@ -162,7 +207,7 @@ describe('ngInclude', function() {
 
   it('should clear content when error during xhr request',
       inject(function($httpBackend, $compile, $rootScope) {
-    element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
+    element = $compile('<div><ng:include src="url">content</ng:include></div>')($rootScope);
     $httpBackend.expect('GET', 'myUrl').respond(404, '');
 
     $rootScope.url = 'myUrl';
@@ -176,7 +221,7 @@ describe('ngInclude', function() {
   it('should be async even if served from cache', inject(
         putIntoCache('myUrl', 'my partial'),
         function($rootScope, $compile) {
-    element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+    element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
 
     $rootScope.url = 'myUrl';
 
@@ -193,7 +238,7 @@ describe('ngInclude', function() {
 
   it('should discard pending xhr callbacks if a new template is requested before the current ' +
       'finished loading', inject(function($rootScope, $compile, $httpBackend) {
-    element = jqLite("<ng:include src='templateUrl'></ng:include>");
+    element = jqLite("<div><ng:include src='templateUrl'></ng:include></div>");
     var log = {};
 
     $rootScope.templateUrl = 'myUrl1';
@@ -229,7 +274,36 @@ describe('ngInclude', function() {
       $rootScope.tpl = 'tpl.html';
     });
     expect(onload).toHaveBeenCalledOnce();
+
+    $rootScope.tpl = '';
+    $rootScope.$digest();
+    dealoc(element);
   }));
+
+  it('should compile only the inner content once', function() {
+    var log = [];
+
+    module(function($compileProvider) {
+      $compileProvider.directive('compileLog', function() {
+        return {
+          compile: function() {
+            log.push('compile');
+          }
+        };
+      });
+    });
+
+    inject(function($compile, $rootScope, $templateCache) {
+      $templateCache.put('tpl.html', [200, '<div compile-log>123</div>', {}]);
+      element = $compile('<div><div ng-include="exp"></div></div>')($rootScope);
+
+      $rootScope.exp = 'tpl.html';
+      $rootScope.$digest();
+
+      expect(element.text()).toBe('123');
+      expect(log).toEqual(['compile']);
+    });
+  });
 
 
   describe('autoscoll', function() {
@@ -264,14 +338,14 @@ describe('ngInclude', function() {
 
 
     it('should call $anchorScroll if autoscroll attribute is present', inject(
-        compileAndLink('<ng:include src="tpl" autoscroll></ng:include>'),
+        compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
         changeTplAndValueTo('template.html'), function() {
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
 
     it('should call $anchorScroll if autoscroll evaluates to true', inject(
-        compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
+        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
         changeTplAndValueTo('template.html', true),
         changeTplAndValueTo('another.html', 'some-string'),
         changeTplAndValueTo('template.html', 100), function() {
@@ -281,14 +355,14 @@ describe('ngInclude', function() {
 
 
     it('should not call $anchorScroll if autoscroll attribute is not present', inject(
-        compileAndLink('<ng:include src="tpl"></ng:include>'),
+        compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
         changeTplAndValueTo('template.html'), function() {
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
 
     it('should not call $anchorScroll if autoscroll evaluates to false', inject(
-        compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
+        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
         changeTplAndValueTo('template.html', false),
         changeTplAndValueTo('template.html', undefined),
         changeTplAndValueTo('template.html', null), function() {
@@ -297,132 +371,98 @@ describe('ngInclude', function() {
   });
 });
 
-describe('ngInclude ngAnimate', function() {
-  var vendorPrefix, window;
-  var body, element;
+describe('ngInclude animations', function() {
+  var body, element, $rootElement;
 
   function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
-  function applyCSS(element, cssProp, cssValue) {
-    element.css(cssProp, cssValue);    
-    element.css(vendorPrefix + cssProp, cssValue);
-  }
-
-  beforeEach(function() {
+  beforeEach(module(function() {
     // we need to run animation on attached elements;
-    body = jqLite(document.body);
-  });
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+      body = jqLite(document.body);
+      body.append($rootElement);
+    };
+  }));
 
   afterEach(function(){
     dealoc(body);
     dealoc(element);
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
-    $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
-      $animator.enabled(true);
-    };
-  }));
+  beforeEach(module('mock.animate'));
 
   afterEach(function(){
     dealoc(element);
   });
 
-  it('should fire off the enter animation + add and remove the css classes',
-    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+  it('should fire off the enter animation',
+    inject(function($compile, $rootScope, $templateCache, $animate) {
+      var item;
 
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
       element = $compile(html(
-        '<div ' +
-          'ng-include="tpl" ' +
-          'ng-animate="{enter: \'custom-enter\'}">' +
-        '</div>'
+        '<div><div ' +
+          'ng-include="tpl">' +
+        '</div></div>'
       ))($rootScope);
       $rootScope.$digest();
 
-      //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var child = jqLite(element.children()[0]);
-      applyCSS(child, 'transition', '1s linear all');
-
-      if ($sniffer.transitions) {
-        expect(child.attr('class')).toContain('custom-enter');
-        window.setTimeout.expect(1).process();
-
-        expect(child.attr('class')).toContain('custom-enter-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-       expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(child.attr('class')).not.toContain('custom-enter');
-      expect(child.attr('class')).not.toContain('custom-enter-active');
+      item = $animate.flushNext('enter').element;
+      expect(item.text()).toBe('data');
   }));
 
-  it('should fire off the leave animation + add and remove the css classes',
-    inject(function($compile, $rootScope, $templateCache, $sniffer) {
+  it('should fire off the leave animation',
+    inject(function($compile, $rootScope, $templateCache, $animate) {
+      var item;
       $templateCache.put('enter', [200, '<div>data</div>', {}]);
       $rootScope.tpl = 'enter';
       element = $compile(html(
-        '<div ' +
-          'ng-include="tpl" ' +
-          'ng-animate="{leave: \'custom-leave\'}">' +
-        '</div>'
+        '<div><div ' +
+          'ng-include="tpl">' +
+        '</div></div>'
       ))($rootScope);
       $rootScope.$digest();
 
-      //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var child = jqLite(element.children()[0]);
-      applyCSS(child, 'transition', '1s linear all');
+      item = $animate.flushNext('enter').element;
+      expect(item.text()).toBe('data');
 
       $rootScope.tpl = '';
       $rootScope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(child.attr('class')).toContain('custom-leave');
-        window.setTimeout.expect(1).process();
-
-        expect(child.attr('class')).toContain('custom-leave-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-       expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(child.attr('class')).not.toContain('custom-leave');
-      expect(child.attr('class')).not.toContain('custom-leave-active');
+      item = $animate.flushNext('leave').element;
+      expect(item.text()).toBe('data');
   }));
 
-  it('should catch and use the correct duration for animation',
-    inject(function($compile, $rootScope, $templateCache, $sniffer) {
-      $templateCache.put('enter', [200, '<div>data</div>', {}]);
-      $rootScope.tpl = 'enter';
+  it('should animate two separate ngInclude elements',
+    inject(function($compile, $rootScope, $templateCache, $animate) {
+      var item;
+      $templateCache.put('one', [200, 'one', {}]);
+      $templateCache.put('two', [200, 'two', {}]);
+      $rootScope.tpl = 'one';
       element = $compile(html(
-        '<div ' +
-          'ng-include="tpl" ' +
-          'ng-animate="{enter: \'custom-enter\'}">' +
-        '</div>'
+        '<div><div ' +
+          'ng-include="tpl">' +
+        '</div></div>'
       ))($rootScope);
       $rootScope.$digest();
 
-      //if we add the custom css stuff here then it will get picked up before the animation takes place
-      var child = jqLite(element.children()[0]);
-      applyCSS(child, 'transition', '0.5s linear all');
+      item = $animate.flushNext('enter').element;
+      expect(item.text()).toBe('one');
 
-      $rootScope.tpl = 'enter';
+      $rootScope.tpl = 'two';
       $rootScope.$digest();
 
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(500).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      var itemA = $animate.flushNext('leave').element;
+      var itemB = $animate.flushNext('enter').element;
+      expect(itemA.attr('ng-include')).toBe('tpl');
+      expect(itemB.attr('ng-include')).toBe('tpl');
+      expect(itemA).not.toEqual(itemB);
   }));
 
 });

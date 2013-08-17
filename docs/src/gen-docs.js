@@ -3,7 +3,8 @@ var reader = require('./reader.js'),
     writer = require('./writer.js'),
     SiteMap = require('./SiteMap.js').SiteMap,
     appCache = require('./appCache.js').appCache,
-    Q = require('qq');
+    Q = require('qq'),
+    errorsJson = require('../../build/errors.json').errors;
 
 var start = now();
 var docs;
@@ -22,10 +23,35 @@ writer.makeDir('build/docs/', true).then(function() {
 }).then(function generateHtmlDocPartials(docs_) {
   docs = docs_;
   ngdoc.merge(docs);
-  var fileFutures = [];
+  var fileFutures = [], namespace;
+
+  var isErrorDocPresent = function (search) {
+    return docs.some(function (doc) {
+      return doc.ngdoc === 'error' && doc.name === search;
+    });
+  };
+
+  // Check that each generated error code has a doc file.
+  Object.keys(errorsJson).forEach(function (prop) {
+    if (typeof errorsJson[prop] === 'object') {
+      namespace = errorsJson[prop];
+      Object.keys(namespace).forEach(function (code) {
+        var search = prop + ':' + code;
+        if (!isErrorDocPresent(search)) {
+          throw new Error('Missing ngdoc file for error code: ' + search);
+        }
+      });
+    } else {
+      if (!isErrorDocPresent(prop)) {
+        throw new Error('Missing ngdoc file for error code: ' + prop);
+      }
+    }
+  });
+
   docs.forEach(function(doc){
     // this hack is here because on OSX angular.module and angular.Module map to the same file.
     var id = doc.id.replace('angular.Module', 'angular.IModule');
+
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 
@@ -53,17 +79,16 @@ function writeTheRest(writesFuture) {
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
-  writesFuture.push(writer.copyDir('components/components-font-awesome/css', 'components/font-awesome/css'));
-  writesFuture.push(writer.copyDir('components/components-font-awesome/font', 'components/font-awesome/font'));
-  writesFuture.push(writer.copyDir('components/bootstrap', 'components/bootstrap'));
+  writesFuture.push(writer.copyDir('bower_components/components-font-awesome/css', 'components/font-awesome/css'));
+  writesFuture.push(writer.copyDir('bower_components/components-font-awesome/font', 'components/font-awesome/font'));
+  writesFuture.push(writer.copyDir('bower_components/bootstrap', 'components/bootstrap'));
 
-  writesFuture.push(writer.copy('node_modules/showdown/src/showdown.js', 'components/showdown.js'));
-  writesFuture.push(writer.copy('node_modules/showdown/compressed/showdown.js', 'components/showdown.min.js'));
-  writesFuture.push(writer.copy('components/lunr.js/lunr.js', 'components/lunr.js'));
-  writesFuture.push(writer.copy('components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
-  writesFuture.push(writer.copy('components/jquery/jquery.js', 'components/jquery.js'));
-  writesFuture.push(writer.copy('components/jquery/jquery.min.js', 'components/jquery.min.js'));
-  writesFuture.push(writer.copy('components/google-code-prettify/src/prettify.js', 'components/google-code-prettify.js'));
+  writesFuture.push(writer.copy('node_modules/marked/lib/marked.js', 'components/marked.js'));
+  writesFuture.push(writer.copy('bower_components/lunr.js/lunr.js', 'components/lunr.js'));
+  writesFuture.push(writer.copy('bower_components/lunr.js/lunr.min.js', 'components/lunr.min.js'));
+  writesFuture.push(writer.copy('bower_components/jquery/jquery.js', 'components/jquery.js'));
+  writesFuture.push(writer.copy('bower_components/jquery/jquery.min.js', 'components/jquery.min.js'));
+  writesFuture.push(writer.copy('bower_components/google-code-prettify/src/prettify.js', 'components/google-code-prettify.js'));
   writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap.js', 'components/angular-bootstrap.js'));
   writesFuture.push(writer.copy('docs/components/angular-bootstrap/bootstrap-prettify.js', 'components/angular-bootstrap-prettify.js'));
 

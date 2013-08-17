@@ -32,7 +32,7 @@ describe('$interpolate', function() {
     };
     expect(function () {
       $interpolate('{{err()}}')($rootScope);
-    }).toThrow("[$interpolate:interr] Can't interpolate: {{err()}}\nError: oops");
+    }).toThrowMinErr("$interpolate", "interr", "Can't interpolate: {{err()}}\nError: oops");
   }));
 
   it('should stop interpolation when encountering an exception', inject(function($interpolate, $compile, $rootScope) {
@@ -43,7 +43,7 @@ describe('$interpolate', function() {
     $compile(dom)($rootScope);
     expect(function () {
       $rootScope.$apply();
-    }).toThrow("[$interpolate:interr] Can't interpolate: {{err()}}\nError: oops");
+    }).toThrowMinErr("$interpolate", "interr", "Can't interpolate: {{err()}}\nError: oops");
     expect(dom[0].innerHTML).toEqual('2');
     expect(dom[1].innerHTML).toEqual('{{err()}}');
     expect(dom[2].innerHTML).toEqual('{{1 + 2}}');
@@ -65,6 +65,55 @@ describe('$interpolate', function() {
     $rootScope.foo = function() {return undefined};
     expect($interpolate("Hello {{'World' + foo()}}")($rootScope)).toEqual('Hello World');
   }));
+
+
+  describe('interpolating in a trusted context', function() {
+    var sce;
+    beforeEach(function() {
+      function log() {};
+      var fakeLog = {log: log, warn: log, info: log, error: log};
+      module(function($provide, $sceProvider) {
+        $provide.value('$log', fakeLog);
+        $sceProvider.enabled(true);
+      });
+      inject(['$sce', function($sce) { sce = $sce; }]);
+    });
+
+    it('should NOT interpolate non-trusted expressions', inject(function($interpolate) {
+      var foo = "foo";
+      expect($interpolate('{{foo}}', true, sce.CSS)({}, {foo: foo})).toEqual('');
+    }));
+
+    it('should NOT interpolate mistyped expressions', inject(function($interpolate) {
+      var foo = sce.trustAsCss("foo");
+      expect($interpolate('{{foo}}', true, sce.HTML)({}, {foo: foo})).toEqual('');
+    }));
+
+    it('should interpolate trusted expressions in a regular context', inject(function($interpolate) {
+      var foo = sce.trustAsCss("foo");
+      expect($interpolate('{{foo}}', true)({foo: foo})).toEqual('foo');
+    }));
+
+    it('should interpolate trusted expressions in a specific trustedContext', inject(function($interpolate) {
+      var foo = sce.trustAsCss("foo");
+      expect($interpolate('{{foo}}', true, sce.CSS)({foo: foo})).toEqual('foo');
+    }));
+
+    // The concatenation of trusted values does not necessarily result in a trusted value.  (For
+    // instance, you can construct evil JS code by putting together pieces of JS strings that are by
+    // themselves safe to execute in isolation.)
+    it('should NOT interpolate trusted expressions with multiple parts', inject(function($interpolate) {
+      var foo = sce.trustAsCss("foo");
+      var bar = sce.trustAsCss("bar");
+      expect(function() {
+        return $interpolate('{{foo}}{{bar}}', true, sce.CSS)(
+             {foo: foo, bar: bar}); }).toThrowMinErr(
+                "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
+                "Strict Contextual Escaping disallows interpolations that concatenate multiple " +
+                "expressions when a trusted value is required.  See " +
+                "http://docs.angularjs.org/api/ng.$sce");
+    }));
+  });
 
 
   describe('provider', function() {
@@ -154,14 +203,16 @@ describe('$interpolate', function() {
       var isTrustedContext = true;
       expect(function() {
           $interpolate('constant/{{var}}', true, isTrustedContext);
-        }).toThrow(
-            "[$interpolate:noconcat] Error while interpolating: constant/{{var}}\nYou may not use " +
-            "multiple expressions when interpolating this expression.");
+        }).toThrowMinErr(
+            "$interpolate", "noconcat", "Error while interpolating: constant/{{var}}\nStrict " +
+            "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
+            "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
       expect(function() {
           $interpolate('{{foo}}{{bar}}', true, isTrustedContext);
-        }).toThrow(
-            "[$interpolate:noconcat] Error while interpolating: {{foo}}{{bar}}\nYou may not use " +
-            "multiple expressions when interpolating this expression.");
+        }).toThrowMinErr(
+            "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\nStrict " +
+            "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
+            "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
     }));
 
     it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {

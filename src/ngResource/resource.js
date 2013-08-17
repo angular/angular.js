@@ -1,5 +1,7 @@
 'use strict';
 
+var $resourceMinErr = angular.$$minErr('$resource');
+
 /**
  * @ngdoc overview
  * @name ngResource
@@ -31,8 +33,7 @@
  *
  * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
- *   `http://example.com:8080/api`), you'll need to escape the colon character before the port
- *   number, like this: `$resource('http://example.com\\:8080/api')`.
+ *   `http://example.com:8080/api`), it will be respected.
  *
  *   If you are using a url with a suffix, just add the suffix, like this:
  *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')
@@ -345,7 +346,7 @@ angular.module('ngResource', ['ng']).
 
         var urlParams = self.urlParams = {};
         forEach(url.split(/\W/), function(param){
-          if (param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
+          if (!(new RegExp("^\\d+$").test(param)) && param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
               urlParams[param] = true;
           }
         });
@@ -448,8 +449,8 @@ angular.module('ngResource', ['ng']).
             break;
           case 0: break;
           default:
-            throw "Expected up to 4 arguments [params, data, success, error], got " +
-              arguments.length + " arguments.";
+            throw $resourceMinErr('badargs',
+              "Expected up to 4 arguments [params, data, success, error], got {0} arguments", arguments.length);
           }
 
           var isInstanceCall = data instanceof Resource;
@@ -472,6 +473,11 @@ angular.module('ngResource', ['ng']).
                 promise = value.$promise;
 
             if (data) {
+              if ( angular.isArray(data) != !!action.isArray ) {
+                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected response' +
+                  ' to contain an {0} but got an {1}',
+                  action.isArray?'array':'object', angular.isArray(data)?'array':'object');
+              }
               if (action.isArray) {
                 value.length = 0;
                 forEach(data, function(item) {

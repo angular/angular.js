@@ -9,6 +9,9 @@ performance/temp*.html
 angular.js.tmproj
 /node_modules/
 /components/
+/bower_components/
 angular.xcodeproj
 .idea
 .agignore
+libpeerconnection.log
+npm-debug.log

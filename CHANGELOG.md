@@ -1,3 +1,559 @@
+<a name="1.2.0-rc1"></a>
+# 1.2.0-rc1 spooky-giraffe (2013-08-13)
+
+[Full Commit Log](https://github.com/angular/angular.js/compare/v1.1.5...master)
+
+
+## Features
+
+- **ngAnimate:** complete rewrite of animations
+  ([81923f1e](https://github.com/angular/angular.js/commit/81923f1e41560327f7de6e8fddfda0d2612658f3))
+
+- **$sce:** new $sce service for Strict Contextual Escaping and lots of other security enhancements
+  ([bea9422e](https://github.com/angular/angular.js/commit/bea9422ebfc8e80ee28ad81afc62d2e432c85cbb))
+
+- **minErr:** add error message minification and better error messages
+  ([c8fcf3b3](https://github.com/angular/angular.js/commit/c8fcf3b369dbe866815e18e0fa4d71f3e679bc5f),
+   [09fa0656](https://github.com/angular/angular.js/commit/09fa0656b49321681f28453abef566d0cbe0eb22),
+   [b8ea7f6a](https://github.com/angular/angular.js/commit/b8ea7f6aba2e675b85826b0bee1f21ddd7b866a5))
+
+- **$compile:**
+  - support animation hooks bindings to class attributes
+  ([f2dfa891](https://github.com/angular/angular.js/commit/f2dfa8916f8ed855d55187f5400c4c2566ce9a1b))
+  - support multi-element directive
+  ([e46100f7](https://github.com/angular/angular.js/commit/e46100f7097d9a8f174bdb9e15d4c6098395c3f2))
+  - support "Controller as" instance syntax for directives
+  ([b3777f27](https://github.com/angular/angular.js/commit/b3777f275c6bd2bd4a88963fd03828eb7cf3aca8))
+
+- **$http:** accept function as headers value
+  ([a7150f12](https://github.com/angular/angular.js/commit/a7150f1256f2a97a931b3c0d16eab70f45e81cae))
+
+- **$q:**
+  - add `.catch()` as shorthand for defining promise error handlers
+  ([a207665d](https://github.com/angular/angular.js/commit/a207665dad69248139b150cd3fe8ba13059bffb4),
+   [#2048](https://github.com/angular/angular.js/issues/2048),
+   [#3476](https://github.com/angular/angular.js/issues/3476))
+  - added support for promise notification
+  ([2a5c3555](https://github.com/angular/angular.js/commit/2a5c3555829da51f55abd810a828c73b420316d3))
+
+- **$resource:**
+  - support an unescaped URL port in the url template
+  ([b94ca12f](https://github.com/angular/angular.js/commit/b94ca12fa0b027d8592f5717e038b7b116c59384),
+   [#2778](https://github.com/angular/angular.js/issues/2778))
+  - expose promise as `$promise` instead of only `$then`
+  ([05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d))
+
+- **$route:** express style route matching (support for optional params and new wildcard syntax)
+  ([04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac5f72ed19f3631778142b))
+
+- **jqLite:** switch bind/unbind to more recent jQuery on/off
+  ([f1b94b4b](https://github.com/angular/angular.js/commit/f1b94b4b599ab701bc75b55bbbbb73c5ef329a93))
+
+- **Misc:**
+  - add source maps to all min files
+  ([908071af](https://github.com/angular/angular.js/commit/908071afbf32c46fe9110e4a67e104bbd4b3a56b),
+   [#1714](https://github.com/angular/angular.js/issues/1714))
+
+- **Directives:**
+  - add `ngFocus` and `ngBlur` directives
+  ([2bb27d49](https://github.com/angular/angular.js/commit/2bb27d4998805fd89db25192f53d26d259ae615f),
+   [#1277](https://github.com/angular/angular.js/issues/1277))
+
+  - **ngRepeat:** add $even and $odd props to iterator
+  ([52b8211f](https://github.com/angular/angular.js/commit/52b8211fd0154b9d6b771a83573a161f5580d92c))
+
+  - **ngForm:** supports namespaces in form names
+  ([8ea802a1](https://github.com/angular/angular.js/commit/8ea802a1d23ad8ecacab892a3a451a308d9c39d7))
+
+  - **ngBindHtml:** combine ng-bind-html and ng-bind-html-unsafe
+  ([dae69473](https://github.com/angular/angular.js/commit/dae694739b9581bea5dbc53522ec00d87b26ae55))
+
+  - **ngPluralize:** add alternative mapping using attributes
+  ([a170fc1a](https://github.com/angular/angular.js/commit/a170fc1a749effa98bfd1c2e1b30297ed47b451b),
+   [#2454](https://github.com/angular/angular.js/issues/2454))
+
+- **ngMobile/ngTouch:**
+  - emit `swipeleft` and `swiperight` events
+  ([ab189142](https://github.com/angular/angular.js/commit/ab189142988043d0513bb796c3b54ca7d07f242d))
+  - refactor swipe logic from `ngSwipe` directive to `$swipe` service.
+  ([f4c6b2c7](https://github.com/angular/angular.js/commit/f4c6b2c7894cb2d82ac69a1500a27785360b81c3))
+
+- **ngMock:**
+  - $timeout.flushNext can expect specific timeout delays
+  ([462ed033](https://github.com/angular/angular.js/commit/462ed033d512ae94cb188efc9453de84ace4e17e))
+  - support delay limit for $timeout.flush
+  ([b7fdabc4](https://github.com/angular/angular.js/commit/b7fdabc4bf2a9dd11a57f98c5229d834c4589bab))
+  - support a matching function for data param
+  ([08daa779](https://github.com/angular/angular.js/commit/08daa7797bce5207916251d4a0ab3d5c93e5529a))
+
+
+
+
+- **scenario:** expose jQuery for usage outside of angular scenario
+  ([3fdbe81a](https://github.com/angular/angular.js/commit/3fdbe81a337c39027929c415e719493755cd8583))
+
+- **ngDocs:**
+  - provide support for user to jump between different versions of the angularjs doc
+  ([46dfb92a](https://github.com/angular/angular.js/commit/46dfb92afd185c93f60ca90a72653f33d7cb18e8))
+  - add links to source for API
+  ([52d6a599](https://github.com/angular/angular.js/commit/52d6a5990225439ac9141398d83e0d4e6134b576))
+  - support popover, foldouts and foldover annotations
+  ([ef229688](https://github.com/angular/angular.js/commit/ef22968810d555f78d3bbf7b5428757690c8cc70))
+  - provide documentation for the new ngRepeat repeater syntax
+  ([b3650457](https://github.com/angular/angular.js/commit/b36504577c538b745e6270e77d86af90285e2ae6))
+  - provide support for inline variable hinting
+  ([21c70729](https://github.com/angular/angular.js/commit/21c70729d9269de85df3434c431c2f18995b0f7b))
+
+
+## Bug Fixes
+
+- **$compile:**
+  - correct controller instantiation for async directives
+  ([c173ca41](https://github.com/angular/angular.js/commit/c173ca412878d537b18df01f39e400ea48a4b398),
+   [#3493](https://github.com/angular/angular.js/issues/3493),
+   [#3482](https://github.com/angular/angular.js/issues/3482),
+   [#3537](https://github.com/angular/angular.js/issues/3537),
+   [#3540](https://github.com/angular/angular.js/issues/3540))
+  - always instantiate controllers before pre-link fns run
+  ([5c560117](https://github.com/angular/angular.js/commit/5c560117425e7b3f7270389274476e843d6f69ec),
+   [#3493](https://github.com/angular/angular.js/issues/3493),
+   [#3482](https://github.com/angular/angular.js/issues/3482),
+   [#3514](https://github.com/angular/angular.js/issues/3514))
+  - always instantiate controllers in parent->child order
+  ([45f9f623](https://github.com/angular/angular.js/commit/45f9f62367221b2aa097ba1d87d744e50140ddc7),
+   [#2738](https://github.com/angular/angular.js/issues/2738))
+  - don't check attr.specified on non-ie7
+  ([f9ea69f6](https://github.com/angular/angular.js/commit/f9ea69f6567c22ff328fd1f7b07847883757bfa6),
+   [#3231](https://github.com/angular/angular.js/issues/3231),
+   [#2160](https://github.com/angular/angular.js/issues/2160))
+  - allow `data:` image URIs in `img[src]` bindings
+  ([3e39ac7e](https://github.com/angular/angular.js/commit/3e39ac7e1b10d4812a44dad2f959a93361cd823b))
+  - empty normalized href url should pass sanitation check
+  ([fc8c9baa](https://github.com/angular/angular.js/commit/fc8c9baa399c33956133cdb6892fc7007430d299),
+   [#2219](https://github.com/angular/angular.js/issues/2219))
+  - prevent infinite loop w/ replace+transclude directives
+  ([69f42b76](https://github.com/angular/angular.js/commit/69f42b76548d00f52b231ec91150e4f0b008c730),
+   [#2155](https://github.com/angular/angular.js/issues/2155))
+  - reject multi-expression interpolations for `src` attribute
+  ([38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262bb43f26d47245f6c2739))
+  - disallow interpolations for DOM event handlers
+  ([39841f2e](https://github.com/angular/angular.js/commit/39841f2ec9b17b3b2920fd1eb548d444251f4f56))
+  - sanitize values bound to `img[src]`
+  ([1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d61286840177607edd552a9df97))
+  - support multi-element group over text nodes
+  ([b28f9694](https://github.com/angular/angular.js/commit/b28f96949ac477b1fe43c81df7cedc21c7ab184c))
+  - correct component transclusion on compilation root.
+  ([15e1a29c](https://github.com/angular/angular.js/commit/15e1a29cd08993b599f390e83a249ec17f753972))
+
+- **$http:**
+  - allow interceptors to completely override headers
+  ([514dc0eb](https://github.com/angular/angular.js/commit/514dc0eb16a8fe3fa7c44094d743714f73754321),
+   [#2770](https://github.com/angular/angular.js/issues/2770))
+  - treat headers as case-insensitive when overriding defaults
+  ([53359d54](https://github.com/angular/angular.js/commit/53359d549e364759d5b382c229f7d326799bf418))
+
+- **$location:**
+  - don't initialize url hash in hashbang mode unnecessarily
+  ([d4d34aba](https://github.com/angular/angular.js/commit/d4d34aba6efbd98050235f5b264899bb788117df))
+  - prevent infinite digest error due to IE bug
+  ([dca23173](https://github.com/angular/angular.js/commit/dca23173e25a32cb740245ca7f7b01a84805f43f),
+   [#2802](https://github.com/angular/angular.js/issues/2802))
+  - in html5 mode, default to / for the url base if no `base[href]`
+  ([aef09800](https://github.com/angular/angular.js/commit/aef098006302689d2d75673be828e31903ee7c3c),
+   [#2762](https://github.com/angular/angular.js/issues/2762))
+  - fix parameter handling on search()
+  ([705c9d95](https://github.com/angular/angular.js/commit/705c9d95bc3157547ac6008d2f0a6a0c0e0ca60a))
+
+- **$parse:**
+  - unwrap promise when setting a field
+  ([61906d35](https://github.com/angular/angular.js/commit/61906d3517428b6d52d3284b8d26d1a46e01dad7),
+   [#1827](https://github.com/angular/angular.js/issues/1827))
+  - disallow access to Function constructor
+  ([5349b200](https://github.com/angular/angular.js/commit/5349b20097dc5cdff0216ee219ac5f6e6ef8c219))
+
+- **$q:** call `reject()` even if `$exceptionHandler` rethrows
+  ([664526d6](https://github.com/angular/angular.js/commit/664526d69c927370c93a06745ca38de7cd03a7be))
+
+- **$resource:** check whether response matches action.isArray
+  ([a644ca7b](https://github.com/angular/angular.js/commit/a644ca7b4e6ba84a467bcabed8f99386eda7fb14),
+   [#2255](https://github.com/angular/angular.js/issues/2255))
+
+- **$sanitize:** match URI schemes case-insensitively
+  ([7fef06fe](https://github.com/angular/angular.js/commit/7fef06fef9b6af4436f9fed10bd29d0a63707614),
+   [#3210](https://github.com/angular/angular.js/issues/3210))
+
+- **Scope:**
+  - ensure that isolate scopes use the main evalAsync queue
+  ([3967f5f7](https://github.com/angular/angular.js/commit/3967f5f7d6c8aa7b41a5352b12f457e2fbaa251a))
+  - watches can now be safely unregistered inside watch handlers
+  ([8bd6619b](https://github.com/angular/angular.js/commit/8bd6619b7efa485b020fec96c76047e480469871),
+   [#2915](https://github.com/angular/angular.js/issues/2915))
+
+- **jqLite:**
+  - properly detect unsupported calls for on()/off()
+  ([3824e400](https://github.com/angular/angular.js/commit/3824e40011df1c0fdf5964d78776f1a12a29c144),
+   [4f5dfbc3](https://github.com/angular/angular.js/commit/4f5dfbc362d9683177708ebcc00c98cf594d1287),
+   [#3501](https://github.com/angular/angular.js/issues/3501))
+  - return array from multi select in val()
+  ([306a6134](https://github.com/angular/angular.js/commit/306a613440175c7fd61d1d6eb249d1e53a46322e))
+  - forgive unregistration of a non-registered handler
+  ([ab59cc6c](https://github.com/angular/angular.js/commit/ab59cc6c44705b1244a77eba999d736f9eb3c6ae))
+  - support space-separated events in off
+  ([bdd4e982](https://github.com/angular/angular.js/commit/bdd4e982b7fee9811b40b545c21a74711686875c),
+   [#3256](https://github.com/angular/angular.js/issues/3256))
+  - prepend array in correct order
+  ([fd87eb0c](https://github.com/angular/angular.js/commit/fd87eb0ca5e14f213d8b31280d444dbc29c20c50))
+  - allow override of jqLite.triggerHandler event object
+  ([0cac8729](https://github.com/angular/angular.js/commit/0cac8729fb3824ebb07cee84ef78b43900c7e75d))
+  - added optional name arg in removeData
+  ([e1a050e6](https://github.com/angular/angular.js/commit/e1a050e6b26aca4d0e6e7125d3f6c1c8fc1d92cb))
+  - correctly monkey-patch core jQuery methods
+  ([da5f537c](https://github.com/angular/angular.js/commit/da5f537ccdb0a7b4155f13f7a70ca7981ad6f689))
+
+
+- **i18n:** Do not transform arrays into objects
+  ([b3d7a038](https://github.com/angular/angular.js/commit/b3d7a038d774d823ef861b76fb8bfa22e60a3df5))
+
+- **ngMobile/ngTouch:**
+  - emit click event for touchy clicks
+  ([fb7d891d](https://github.com/angular/angular.js/commit/fb7d891dacdcb9f799061d5fbb96cdd2dd912196),
+   [#3219](https://github.com/angular/angular.js/issues/3219),
+   [#3218](https://github.com/angular/angular.js/issues/3218),
+   [#3137](https://github.com/angular/angular.js/issues/3137))
+  - prevent ngClick when item disabled
+  ([e0340243](https://github.com/angular/angular.js/commit/e03402433d2524fd3a74bbfce984f843794996ce),
+   [#3124](https://github.com/angular/angular.js/issues/3124),
+   [#3132](https://github.com/angular/angular.js/issues/3132))
+  - ngClick should prevent unwanted opening of the soft keyboard
+  ([0bbd20f2](https://github.com/angular/angular.js/commit/0bbd20f255b2954b5c41617fe718cf6eca36a972))
+
+- **ngMock:**
+  - keep withCredentials on passThrough
+  ([3079a6f4](https://github.com/angular/angular.js/commit/3079a6f4e097a777414b8c3a8a87b8e1e20b55b5))
+  - keep mock.$log the api in sync with $log
+  ([f274c0a6](https://github.com/angular/angular.js/commit/f274c0a66b28711d3b9cc7b0775e97755dd971e8),
+   [#2343](https://github.com/angular/angular.js/issues/2343))
+
+- **ngScenario:** select().option(val) should prefer exact value match
+  ([22a9b1ac](https://github.com/angular/angular.js/commit/22a9b1ac07f98d07e1e5d71ce961411b5fa9b42d),
+   [#2856](https://github.com/angular/angular.js/issues/2856))
+
+- **Directives:**
+  - **ngRepeat:**
+      - handle iteration over identical obj values
+   ([47a2a982](https://github.com/angular/angular.js/commit/47a2a9829f0a847bbee61cd142c43000d73ea98b),
+   [#2787](https://github.com/angular/angular.js/issues/2787),
+   [#2806](https://github.com/angular/angular.js/issues/2806))
+      - support growing over multi-element groups
+  ([4953b497](https://github.com/angular/angular.js/commit/4953b49761a791d9ea74bcbe78769fec15d91083))
+
+  - **ngShowHide:** change the .ng-hide CSS class to use an !important flag
+  ([246c1439](https://github.com/angular/angular.js/commit/246c1439b502b06823650505cbe4a3848b6fa5a3))
+
+  - **ngSubmit:** expose $event to ngSubmit callback
+  ([3371fc25](https://github.com/angular/angular.js/commit/3371fc254a9698eae35bb6f8f1ee9c434ae761e2))
+
+  - **ngValue:** made ngValue to write value attribute to element
+  ([09a1e7af](https://github.com/angular/angular.js/commit/09a1e7af129880cab89a2f709f22a7286f52371e))
+
+  - **ngView:** ensure ngView is terminal and uses its own manual transclusion system
+  ([87405e25](https://github.com/angular/angular.js/commit/87405e25ae935eefd673e70ffd6144a5f455b662))
+
+  - **ngCloak:** hide ngCloak-ed element even when CSS 'display' is set
+  ([3ffddad1](https://github.com/angular/angular.js/commit/3ffddad100e993403d13137387d0685466b46b2b))
+
+  - **`input[email]`:** fix the email regex to accept TLDs up to 6 characters long
+  ([af731354](https://github.com/angular/angular.js/commit/af731354b0b600f87f15e1573e64a7f7acc70f3d))
+
+  - **form:** pick the right attribute name for ngForm
+  ([0fcd1e3b](https://github.com/angular/angular.js/commit/0fcd1e3b1fa6244d02f08631d9ef81bf79996fab),
+   [#2997](https://github.com/angular/angular.js/issues/2997))
+
+  - **select:** don't support binding to `select[multiple]`
+  ([d87fa004](https://github.com/angular/angular.js/commit/d87fa0042375b025b98c40bff05e5f42c00af114),
+   [#3230](https://github.com/angular/angular.js/issues/3230))
+
+- **Filters:**
+  - **numberFilter:** always convert scientific notation to decimal
+  ([a13c01a8](https://github.com/angular/angular.js/commit/a13c01a8e48ea4a0d59394eb94f1b12c50cfef61))
+
+- **Misc:**
+  - detect transition/animation on older Android browsers
+  ([ef5bc6c7](https://github.com/angular/angular.js/commit/ef5bc6c7c3336a64bae64fe9739cb1789907c906))
+  - handle duplicate params in parseKeyValue/toKeyValue
+  ([80739409](https://github.com/angular/angular.js/commit/807394095b991357225a03d5fed81fea5c9a1abe))
+  - don't crash on invalid query parameters
+  ([8264d080](https://github.com/angular/angular.js/commit/8264d08085adc2ab57f6598b9fc9f6e263c8b4f3))
+  - change angular.copy to correctly clone RegExp
+  ([f80730f4](https://github.com/angular/angular.js/commit/f80730f497cb1ecb78a814f01df79b69223ad633),
+   [#3473](https://github.com/angular/angular.js/issues/3473),
+   [#3474](https://github.com/angular/angular.js/issues/3474))
+  - angular.equals now supports for regular expressions
+  ([724819e3](https://github.com/angular/angular.js/commit/724819e3cfd8aeda1f724fb527db2b57494be9b7),
+   [#2685](https://github.com/angular/angular.js/issues/2685))
+  - angular.equals should not match keys defined in the prototype chain
+  ([7829c50f](https://github.com/angular/angular.js/commit/7829c50f9e89e779980f6d60a397aedfc7eaec61))
+  - angular.equals should not consider {} and [] to be equivalent
+  ([1dcafd18](https://github.com/angular/angular.js/commit/1dcafd18afed4465ee13db91cedc8fecc3aa2c96))
+  - angular.bootstrap should throw an error when bootstrapping a bootstrapped element
+  ([3ee744cc](https://github.com/angular/angular.js/commit/3ee744cc63a24b127d6a5f632934bb6ed2de275a))
+  - angular.toJson should skip JSON.stringify for undefined
+  ([5a294c86](https://github.com/angular/angular.js/commit/5a294c8646452d6e49339d145faeae4f31dcd0fc))
+  - change css wrapping in grunt to prepend styles to the top of the head tag
+  ([fbad068a](https://github.com/angular/angular.js/commit/fbad068aeb229fd3dd2a3004879584c728fed735))
+
+
+## Breaking Changes
+
+- **ngAnimate:** due to [81923f1e](https://github.com/angular/angular.js/commit/81923f1e41560327f7de6e8fddfda0d2612658f3),
+  too many things changed, we'll write up a separate doc with migration instructions and will publish it at <http://yearofmoo.com>. Please check out the [ngAnimate module docs](http://ci.angularjs.org/job/angular.js-angular-master/lastSuccessfulBuild/artifact/build/docs/api/ngAnimate) and [$animate api docs](http://ci.angularjs.org/job/angular.js-angular-master/lastSuccessfulBuild/artifact/build/docs/api/ng.$animate) in the meantime.
+
+- **$compile:**
+  - due to [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d61286840177607edd552a9df97) and [3e39ac7e](https://github.com/angular/angular.js/commit/3e39ac7e1b10d4812a44dad2f959a93361cd823b),
+  `img[src]` URLs are now being sanitized and a whitelist configured via `$compileProvider` can be used to configure what safe urls look like.
+
+    By default all common protocol prefixes are whitelisted including `data:` URIs with mime types `image/*`. Therefore this change is expected to have no impact on apps that don't contain malicious image links.
+
+  - due to [38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262bb43f26d47245f6c2739),
+  binding more than a single expression to `*[src]` or `*[ng-src]` with the exception of `<a>` and `<img>` elements is not supported.
+
+    Concatenating expressions makes it hard to understand whether some combination of concatenated values are unsafe to use and potentially subject to XSS vulnerabilities. To simplify the task of auditing for XSS issues, we now require that a single expression be used for `*[src/ng-src]` bindings such as bindings for `iframe[src]`, `object[src]`, etc. (but not `img[src/ng-src]` since that value is sanitized).
+
+   This change ensures that the possible pool of values that are used for data-binding is easier to trace down.
+
+    To migrate your code, follow the example below:
+
+        Before:
+            JS:
+                scope.baseUrl = 'page';
+                scope.a = 1;
+                scope.b = 2;
+            HTML:
+                <!-- Are a and b properly escaped here? Is baseUrl
+                     controlled by user? -->
+                <iframe src="{{baseUrl}}?a={{a}&b={{b}}">
+
+        After:
+            JS:
+                var baseUrl = "page";
+                scope.getIframeSrc = function() {
+                  // There are obviously better ways to do this.  The
+                  // key point is that one will think about this and do
+                  // it the right way.
+                  var qs = ["a", "b"].map(function(value, name) {
+                      return encodeURIComponent(name) + "=" +
+                             encodeURIComponent(value);
+                    }).join("&");
+                  // baseUrl isn't on scope so it isn't bound to a user
+                  // controlled value.
+                  return baseUrl + "?" + qs;
+                }
+            HTML: <iframe src="{{getIframeSrc()}}">
+
+  - due to [39841f2e](https://github.com/angular/angular.js/commit/39841f2ec9b17b3b2920fd1eb548d444251f4f56),
+  Interpolations inside DOM event handlers are disallowed.
+
+    DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers means that the interpolated value is a JS string that is evaluated.  Storing or generating such strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which makes them much safer.
+
+    To migrate the code follow the example below:
+
+    Before:
+
+        JS:   scope.foo = 'alert(1)';
+        HTML: <div onclick="{{foo}}">
+
+    After:
+
+        JS:   scope.foo = function() { alert(1); }
+        HTML: <div ng-click="foo()">
+
+- **$q:** due to [f078762d](https://github.com/angular/angular.js/commit/f078762d48d0d5d9796dcdf2cb0241198677582c),
+  the `always` method is now exposed as `finally`.
+
+    The reason for this change is to align `$q` with the Q promise library, despite the fact that this makes it a bit more difficult to use with non-ES5 browsers, like IE8.
+
+    `finally` also goes well together with `catch` api that was added to $q recently and is part of the DOM promises standard.
+
+    To migrate the code follow the example below:
+
+    Before:
+
+    ```
+    $http.get('/foo').always(doSomething);
+    ```
+
+    After:
+
+    ```
+    $http.get('/foo').finally(doSomething);
+    ```
+
+    or for IE8 compatible code:
+
+    ```
+    $http.get('/foo')['finally'](doSomething);
+    ```
+
+- **$resource:**
+  - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d),
+  resource instance does not have a `$then` function anymore. Use the `$promise.then` instead.
+
+    Before:
+
+    ```
+    Resource.query().$then(callback);
+    ```
+
+    After:
+
+    ```
+    Resource.query().$promise.then(callback);
+    ```
+
+  - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d), instance methods return the promise rather than the instance itself.
+
+    Before:
+
+    ```
+    resource.$save().chaining = true;
+    ```
+
+    After:
+
+    ```
+    resource.$save();
+    resource.chaining = true;
+    ```
+
+  - due to [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d), on success, the resource promise is resolved with the resource instance rather than http response object.
+
+    Use interceptor api to access the http response object.
+
+    Before:
+
+    ```
+    Resource.query().$then(function(response) {...});
+    ```
+
+    After:
+
+    ```
+    var Resource = $resource('/url', {}, {
+      get: {
+        method: 'get',
+        interceptor: {
+          response: function(response) {
+            // expose response
+            return response;
+          }
+        }
+      }
+    });
+    ```
+
+- **$route:**
+  - due to [04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac5f72ed19f3631778142b),
+  the syntax for named wildcard parameters in routes has changed from `*wildcard` to `:wildcard*`
+
+    To migrate the code, follow the example below.  Here, `*highlight` becomes
+    `:highlight*`:
+
+    Before:
+
+    ```
+    $routeProvider.when('/Book1/:book/Chapter/:chapter/*highlight/edit',
+              {controller: noop, templateUrl: 'Chapter.html'});
+    ```
+
+    After:
+
+    ```
+    $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
+            {controller: noop, templateUrl: 'Chapter.html'});
+    ```
+
+  - due to [5599b55b](https://github.com/angular/angular.js/commit/5599b55b04788c2e327d7551a4a699d75516dd21),
+  applications that use `$route` will now need to load an angular-route.js file and define a dependency on the ngRoute module.
+
+    Before:
+
+    ```
+    ...
+    <script src="angular.js"></script>
+    ...
+    var myApp = angular.module('myApp', ['someOtherModule']);
+    ...
+    ```
+
+    After:
+
+    ```
+    ...
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+    ...
+    var myApp = angular.module('myApp', ['ngRoute', 'someOtherModule']);
+    ...
+    ```
+
+- **$location:** due to [80739409](https://github.com/angular/angular.js/commit/807394095b991357225a03d5fed81fea5c9a1abe),
+  `$location.search` now supports multiple keys with the same value provided that the values are stored in an array in `$location.search`.
+
+    Before this change:
+    - `parseKeyValue` only took the last key overwriting all the previous keys;
+    - `toKeyValue` joined the keys together in a comma delimited string.
+
+    This was deemed buggy behavior. If your server relied on this behavior then either the server should be fixed, or a simple serialization of the array should be done on the client before passing it to $location.
+
+- **ngBindHtml, sce:** due to [dae69473](https://github.com/angular/angular.js/commit/dae694739b9581bea5dbc53522ec00d87b26ae55),
+
+    `ngHtmlBindUnsafe` has been removed and replaced by `ngHtmlBind` (which has been moved from `ngSanitize` module to the core `ng` module).  `ngBindHtml` provides `ngHtmlBindUnsafe` like behavior (evaluate an expression and innerHTML the result into the DOM) when bound to the result of `$sce.trustAsHtml(string)`. When bound to a plain string, the string is sanitized via `$sanitize` before being innerHTML'd.  If the `$sanitize` service isn't available (`ngSanitize` module is not loaded) and the bound expression evaluates to a value that is not trusted an exception is thrown.
+
+- **ngForm:** due to [8ea802a1](https://github.com/angular/angular.js/commit/8ea802a1d23ad8ecacab892a3a451a308d9c39d7),
+
+    If you have form names that will evaluate as an expression:
+
+    ```
+    <form name="ctrl.form">
+    ```
+
+    And if you are accessing the form from your controller:
+
+    Before:
+
+    ```
+    function($scope) {
+      $scope['ctrl.form'] // form controller instance
+    }
+    ```
+
+    After:
+
+    ```
+    function($scope) {
+      $scope.ctrl.form // form controller instance
+    }
+    ```
+
+    This makes it possible to access a form from a controller using the new "controller as" syntax. Supporting the previous behavior offers no benefit.
+
+- **ngView:** due to [7d69d52a](https://github.com/angular/angular.js/commit/7d69d52acff8578e0f7d6fe57a6c45561a05b182),
+  previously ngView only updated its content, after this change ngView will recreate itself every time a new content is included. This ensures that a single rootElement for all the included contents always exists, which makes definition of css styles for animations much easier.
+
+- **ngInclude:** due to [aa2133ad](https://github.com/angular/angular.js/commit/aa2133ad818d2e5c27cbd3933061797096356c8a),
+  previously ngInclude only updated its content, after this change ngInclude will recreate itself every time a new content is included. This ensures that a single rootElement for all the included contents always exists, which makes definition of css styles for animations much easier.
+
+- **select:** due to [d87fa004](https://github.com/angular/angular.js/commit/d87fa0042375b025b98c40bff05e5f42c00af114),
+  binding to `select[multiple]` directly or via ngMultiple (ng-multiple) directive is not supported. This feature never worked with two-way data-binding, so it's not expected that anybody actually depends on it.
+
+- **ngMobile:** due to [94ec84e7](https://github.com/angular/angular.js/commit/94ec84e7b9c89358dc00e4039009af9e287bbd05),
+  since all the code in the ngMobile module is touch related, we are renaming the module to ngTouch.
+
+    To migrate, please replace all references to "ngMobile" with "ngTouch" and "angular-mobile.js" to "angular-touch.js".
+
+
+
+
 <a name="1.1.5"></a>
 # 1.1.5 triangle-squarification (2013-05-22)
 

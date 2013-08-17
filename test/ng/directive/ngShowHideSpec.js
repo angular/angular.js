@@ -13,20 +13,20 @@ describe('ngShow / ngHide', function() {
       element = jqLite('<div ng-show="exp"></div>');
       element = $compile(element)($rootScope);
       $rootScope.$digest();
-      expect(isCssVisible(element)).toEqual(false);
+      expect(element).toBeHidden();
       $rootScope.exp = true;
       $rootScope.$digest();
-      expect(isCssVisible(element)).toEqual(true);
+      expect(element).toBeShown();
     }));
 
 
     it('should make hidden element visible', inject(function($rootScope, $compile) {
-      element = jqLite('<div style="display: none" ng-show="exp"></div>');
+      element = jqLite('<div class="ng-hide" ng-show="exp"></div>');
       element = $compile(element)($rootScope);
-      expect(isCssVisible(element)).toBe(false);
+      expect(element).toBeHidden();
       $rootScope.exp = true;
       $rootScope.$digest();
-      expect(isCssVisible(element)).toBe(true);
+      expect(element).toBeShown();
     }));
   });
 
@@ -34,17 +34,15 @@ describe('ngShow / ngHide', function() {
     it('should hide an element', inject(function($rootScope, $compile) {
       element = jqLite('<div ng-hide="exp"></div>');
       element = $compile(element)($rootScope);
-      expect(isCssVisible(element)).toBe(true);
+      expect(element).toBeShown();
       $rootScope.exp = true;
       $rootScope.$digest();
-      expect(isCssVisible(element)).toBe(false);
+      expect(element).toBeHidden();
     }));
   });
 });
 
-describe('ngShow / ngHide - ngAnimate', function() {
-  var window;
-  var vendorPrefix;
+describe('ngShow / ngHide animations', function() {
   var body, element, $rootElement;
 
   function html(html) {
@@ -65,152 +63,57 @@ describe('ngShow / ngHide - ngAnimate', function() {
     body.removeAttr('ng-animation-running');
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
-    $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, _$rootElement_, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
+  beforeEach(module('mock.animate'));
+
+  beforeEach(module(function($animateProvider, $provide) {
+    return function(_$rootElement_) {
       $rootElement = _$rootElement_;
-      $animator.enabled(true);
     };
   }));
 
   describe('ngShow', function() {
-    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer) {
+    it('should fire off the $animate.show and $animate.hide animation', inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
       $scope.on = true;
       element = $compile(html(
-        '<div ' +
-          'style="'+vendorPrefix+'transition: 1s linear all"' +
-          'ng-show="on" ' +
-          'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst: true}">' +
-        '</div>'
+        '<div ng-show="on">data</div>'
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show');
-        window.setTimeout.expect(1).process();
-
-        expect(element.attr('class')).toContain('custom-show-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-show-active');
-      expect(element.attr('class')).not.toContain('custom-show');
+      item = $animate.flushNext('removeClass').element;
+      expect(item.text()).toBe('data');
+      expect(item).toBeShown();
 
       $scope.on = false;
       $scope.$digest();
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide');
-        window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-hide-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
 
-      expect(element.attr('class')).not.toContain('custom-hide-active');
-      expect(element.attr('class')).not.toContain('custom-hide');
+      item = $animate.flushNext('addClass').element;
+      expect(item.text()).toBe('data');
+      expect(item).toBeHidden();
     }));
-
-    it('should skip animation if parent animation running', function() {
-      var fired = false;
-      inject(function($animator, $compile, $rootScope, $sniffer) {
-        $animator.enabled(true);
-        $rootScope.$digest();
-        $rootScope.val = true;
-        var element = $compile(html('<div ng-show="val" ng-animate="\'animation\'">123</div>'))($rootScope);
-        $rootElement.controller('ngAnimate').running = true;
-        element.css('display','none');
-        expect(element.css('display')).toBe('none');
-
-        $rootScope.$digest();
-        expect(element[0].style.display).toBe('');
-        expect(fired).toBe(false);
-
-        $rootElement.controller('ngAnimate').running = false;
-        $rootScope.val = false;
-        $rootScope.$digest();
-        if ($sniffer.transitions) {
-          window.setTimeout.expect(1).process();
-          window.setTimeout.expect(0).process();
-        } else {
-          expect(window.setTimeout.queue).toEqual([]);
-        }
-        expect(element[0].style.display).toBe('none');
-      });
-    });
   });
 
   describe('ngHide', function() {
-    it('should fire off the animator.show and animator.hide animation', inject(function($compile, $rootScope, $sniffer) {
+    it('should fire off the $animate.show and $animate.hide animation', inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
       $scope.off = true;
       element = $compile(html(
-          '<div ' +
-              'style="'+vendorPrefix+'transition: 1s linear all"' +
-              'ng-hide="off" ' +
-              'ng-animate="{show: \'custom-show\', hide: \'custom-hide\', animateFirst: true}">' +
-          '</div>'
+          '<div ng-hide="off">datum</div>'
       ))($scope);
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-hide');
-        window.setTimeout.expect(1).process();
-
-        expect(element.attr('class')).toContain('custom-hide-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-hide-active');
-      expect(element.attr('class')).not.toContain('custom-hide');
+      item = $animate.flushNext('addClass').element;
+      expect(item.text()).toBe('datum');
+      expect(item).toBeHidden();
 
       $scope.off = false;
       $scope.$digest();
 
-      if ($sniffer.transitions) {
-        expect(element.attr('class')).toContain('custom-show');
-        window.setTimeout.expect(1).process();
-        expect(element.attr('class')).toContain('custom-show-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(element.attr('class')).not.toContain('custom-show-active');
-      expect(element.attr('class')).not.toContain('custom-show');
+      item = $animate.flushNext('removeClass').element;
+      expect(item.text()).toBe('datum');
+      expect(item).toBeShown();
     }));
-
-    it('should disable animation when parent animation is running', function() {
-      var fired = false;
-      module(function($animationProvider) {
-        $animationProvider.register('destructive-animation', function() {
-          return {
-            setup : function() {},
-            start : function(element, done) {
-              fired = true;
-            }
-          };
-        });
-      });
-      inject(function($compile, $rootScope) {
-        $rootScope.val = false;
-        var element = $compile(html('<div ng-hide="val" ng-animate="{ hide:\'destructive-animation\' }">123</div>'))($rootScope);
-        $rootElement.controller('ngAnimate').running = true;
-        element.css('display','block');
-        expect(element.css('display')).toBe('block');
-
-        $rootScope.val = true;
-        $rootScope.$digest();
-
-        expect(element.css('display')).toBe('none');
-        expect(fired).toBe(false);
-      });
-    });
   });
 });

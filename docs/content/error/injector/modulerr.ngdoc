@@ -1,0 +1,7 @@
+@ngdoc error
+@name $injector:modulerr
+@fullName Module Error
+@description
+
+This error occurs when a module fails to load due to some exception. The error
+message above should provide additional context.

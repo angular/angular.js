@@ -57,7 +57,7 @@ describe('Docs Annotations', function() {
       $scope.$apply();
       element.triggerHandler('click');
       expect(popoverElement.title()).toBe('#title_text');
-      expect(popoverElement.content()).toBe('<h1 id="heading">heading</h1>');
+      expect(popoverElement.content()).toBe('<h1>heading</h1>\n');
     }));
 
   });
@@ -65,39 +65,38 @@ describe('Docs Annotations', function() {
 
   describe('foldout directive', function() {
 
-    var $scope, parent, element, url, window;
+    var $scope, parent, element, url;
     beforeEach(function() {
-      module(function($provide, $animationProvider) {
-        $provide.value('$window', window = angular.mock.createMockWindow());
-        $animationProvider.register('foldout-enter', function($window) {
+      module(function($provide, $animateProvider) {
+        $animateProvider.register('.foldout', function($timeout) {
           return {
-            start : function(element, done) {
-              $window.setTimeout(done, 1000);
-            }
-          }
-        });
-        $animationProvider.register('foldout-hide', function($window) {
-          return {
-            start : function(element, done) {
-              $window.setTimeout(done, 500);
-            }
-          }
-        });
-        $animationProvider.register('foldout-show', function($window) {
-          return {
-            start : function(element, done) {
-              $window.setTimeout(done, 200);
+            enter : function(element, done) {
+              $timeout(done, 1000);
+            },
+            removeClass : function(element, className, done) {
+              $timeout(done, 500);
+            },
+            addClass : function(element, className, done) {
+              $timeout(done, 200);
             }
           }
         });
       });
-      inject(function($rootScope, $compile, $templateCache) {
+      inject(function($rootScope, $compile, $templateCache, $rootElement, $animate) {
+        $animate.enabled(true);
         url = '/page.html';
         $scope = $rootScope.$new();
         parent = angular.element('<div class="parent"></div>');
-        element = angular.element('<div data-url="' + url + '" foldout></div>');
-        body.append(parent);
+
+        //we're injecting the element to the $rootElement since the changes in
+        //$animate only detect and perform animations if the root element has
+        //animations enabled. If the element is not apart of the DOM
+        //then animations are skipped.
+        element = angular.element('<div data-url="' + url + '" class="foldout" foldout></div>');
         parent.append(element);
+        $rootElement.append(parent);
+        body.append($rootElement);
+
         $compile(parent)($scope);
         $scope.$apply();
       });
@@ -112,55 +111,59 @@ describe('Docs Annotations', function() {
       expect(foldout.html()).toContain('loading');
     }));
 
-    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend) {
+    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend, $timeout) {
       $httpBackend.expect('GET', url).respond('hello');
 
       element.triggerHandler('click');
       $httpBackend.flush();
 
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(1000).process();
+      $timeout.flushNext(0);
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(1000);
 
       var kids = body.children();
       var foldout = angular.element(kids[kids.length-1]);
       expect(foldout.text()).toContain('hello');
     }));
 
-    it('should hide then show when clicked again', inject(function($httpBackend) {
+    it('should hide then show when clicked again', inject(function($httpBackend, $timeout) {
       $httpBackend.expect('GET', url).respond('hello');
 
       //enter
       element.triggerHandler('click');
       $httpBackend.flush();
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(1000).process();
+      $timeout.flushNext(0);
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(1000);
 
       //hide
       element.triggerHandler('click');
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(500).process();
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(200);
+      $timeout.flushNext(0);
 
       //show
       element.triggerHandler('click');
-      window.setTimeout.expect(1).process();
-      window.setTimeout.expect(200).process();
+      $timeout.flushNext(1);
+      $timeout.flushNext(0);
+      $timeout.flushNext(500);
+      $timeout.flushNext(0);
     }));
 
   });
 
   describe('DocsController fold', function() {
 
-    var window, $scope, ctrl;
+    var $scope, ctrl;
     beforeEach(function() {
-      module(function($provide, $animationProvider) {
-        $provide.value('$window', window = angular.mock.createMockWindow());
-      });
       inject(function($rootScope, $controller, $location, $cookies, sections) {
         $scope = $rootScope.$new();
         ctrl = $controller('DocsController',{
           $scope : $scope,
           $location : $location,
-          $window : window,
           $cookies : $cookies,
           sections : sections
         });

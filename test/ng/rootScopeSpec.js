@@ -215,7 +215,7 @@ describe('Scope', function() {
 
         expect(function() {
           $rootScope.$digest();
-        }).toThrow('[$rootScope:infdig] 100 $digest() iterations reached. Aborting!\n'+
+        }).toThrowMinErr('$rootScope', 'infdig', '100 $digest() iterations reached. Aborting!\n'+
             'Watchers fired in the last 5 iterations: ' +
             '[["a; newVal: 96; oldVal: 95","b; newVal: 97; oldVal: 96"],' +
             '["a; newVal: 97; oldVal: 96","b; newVal: 98; oldVal: 97"],' +
@@ -299,7 +299,7 @@ describe('Scope', function() {
       $rootScope.$watch('name', function() {
         expect(function() {
           $rootScope.$digest();
-        }).toThrow('[$rootScope:inprog] $digest already in progress');
+        }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
         callCount++;
       });
       $rootScope.name = 'a';
@@ -330,6 +330,30 @@ describe('Scope', function() {
       expect(listener).not.toHaveBeenCalled();
     }));
 
+    it('should allow a watch to be unregistered while in a digest', inject(function($rootScope) {
+      var remove1, remove2;
+      $rootScope.$watch('remove', function() {
+        remove1();
+        remove2();
+      });
+      remove1 = $rootScope.$watch('thing', function() {});
+      remove2 = $rootScope.$watch('thing', function() {});
+      expect(function() {
+        $rootScope.$apply('remove = true');
+      }).not.toThrow();
+    }));
+
+    it('should allow a watch to be added while in a digest', inject(function($rootScope) {
+      var watch1 = jasmine.createSpy('watch1'),
+          watch2 = jasmine.createSpy('watch2');
+      $rootScope.$watch('foo', function() {
+        $rootScope.$watch('foo', watch1);
+        $rootScope.$watch('foo', watch2);
+      });
+      $rootScope.$apply('foo = true');
+      expect(watch1).toHaveBeenCalled();
+      expect(watch2).toHaveBeenCalled();
+    }));
 
     it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
       $rootScope.$watch(function() { return NaN;});
@@ -668,6 +692,19 @@ describe('Scope', function() {
       expect($rootScope.log).toBe('12');
     }));
 
+
+    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope) {
+      var childScope = $rootScope.$new();
+      var isolateScope = $rootScope.$new(true);
+
+      $rootScope.$evalAsync('rootExpression');
+      childScope.$evalAsync('childExpression');
+      isolateScope.$evalAsync('isolateExpression');
+
+      expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
+      expect($rootScope.$$asyncQueue).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
+    }));
   });
 
 
@@ -759,7 +796,7 @@ describe('Scope', function() {
           $rootScope.$apply(function() {
             $rootScope.$apply();
           });
-        }).toThrow('[$rootScope:inprog] $apply already in progress');
+        }).toThrowMinErr('$rootScope', 'inprog', '$apply already in progress');
       }));
 
 
@@ -771,7 +808,7 @@ describe('Scope', function() {
               $rootScope.$apply();
             });
           });
-        }).toThrow('[$rootScope:inprog] $digest already in progress');
+        }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
       }));
 
 
@@ -781,7 +818,7 @@ describe('Scope', function() {
         childScope1.$watch('x', function() {
           childScope1.$apply();
         });
-        expect(function() { childScope1.$apply(); }).toThrow('[$rootScope:inprog] $digest already in progress');
+        expect(function() { childScope1.$apply(); }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
       }));
 
 
@@ -798,7 +835,7 @@ describe('Scope', function() {
 
         expect(function() { childScope2.$apply(function() {
           childScope2.x = 'something';
-        }); }).toThrow('[$rootScope:inprog] $digest already in progress');
+        }); }).toThrowMinErr('$rootScope', 'inprog', '$digest already in progress');
       }));
     });
   });

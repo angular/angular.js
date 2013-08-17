@@ -30,7 +30,7 @@
  * jQuery's `.addClass()` method, and the element is later removed. When `ngIf` recreates the element
  * the added class will be lost because the original compiled state is used to regenerate the element.
  *
- * Additionally, you can provide animations via the ngAnimate attribute to animate the **enter**
+ * Additionally, you can provide animations via the ngAnimate module to animate the **enter**
  * and **leave** effects.
  *
  * @animations
@@ -47,36 +47,37 @@
     <file name="index.html">
       Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
       Show when checked:
-      <span ng-if="checked" ng-animate="'example'">
+      <span ng-if="checked" class="animate-if">
         I'm removed when the checkbox is unchecked.
       </span>
     </file>
     <file name="animations.css">
-      .example-leave, .example-enter {
+      .animate-if {
+        background:white;
+        border:1px solid black;
+        padding:10px;
+      }
+
+      .animate-if.ng-enter, .animate-if.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
       }
 
-      .example-enter {
+      .animate-if.ng-enter,
+      .animate-if.ng-leave.ng-leave-active {
         opacity:0;
-      }
-      .example-enter.example-enter-active {
-        opacity:1;
       }
 
-      .example-leave {
+      .animate-if.ng-enter.ng-enter-active,
+      .animate-if.ng-leave {
         opacity:1;
-      }
-      .example-leave.example-leave-active {
-        opacity:0;
       }
     </file>
   </example>
  */
-var ngIfDirective = ['$animator', function($animator) {
+var ngIfDirective = ['$animate', function($animate) {
   return {
     transclude: 'element',
     priority: 1000,
@@ -84,11 +85,10 @@ var ngIfDirective = ['$animator', function($animator) {
     restrict: 'A',
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
-        var animate = $animator($scope, $attr);
         var childElement, childScope;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
           if (childElement) {
-            animate.leave(childElement);
+            $animate.leave(childElement);
             childElement = undefined;
           }
           if (childScope) {
@@ -99,7 +99,7 @@ var ngIfDirective = ['$animator', function($animator) {
             childScope = $scope.$new();
             transclude(childScope, function (clone) {
               childElement = clone;
-              animate.enter(clone, $element.parent(), $element);
+              $animate.enter(clone, $element.parent(), $element);
             });
           }
         });

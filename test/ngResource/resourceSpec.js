@@ -106,6 +106,13 @@ describe("resource", function() {
     R.get({a: 'foo', b: 'bar'});
   });
 
+  it('should support an unescaped url', function() {
+    var R = $resource('http://localhost:8080/Path/:a');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo').respond();
+    R.get({a: 'foo'});
+  });
+
 
   it('should correctly encode url params', function() {
     var R = $resource('/Path/:a');
@@ -800,7 +807,6 @@ describe("resource", function() {
     });
   });
 
-
   it('should transform request/response', function() {
     var Person = $resource('/Person/:id', {}, {
       save: {
@@ -871,8 +877,8 @@ describe("resource", function() {
         expect(user).toEqualData([ {id: 1, name: 'user1'} ]);
       });
     });
-    
-    describe('get', function(){ 
+
+    describe('get', function(){
       it('should add them to the id', function() {
         $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});
@@ -902,7 +908,7 @@ describe("resource", function() {
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           get: {
             method: 'GET',
-            url: '/users/:user_id.json' 
+            url: '/users/:user_id.json'
           }
         });
         var user = UserService.get({user_id: 1});
@@ -1026,4 +1032,56 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
   });
+});
+
+describe('resource', function() {
+  var $httpBackend, $resource;
+
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
+
+  beforeEach(module('ngResource'));
+
+  beforeEach(inject(function($injector) {
+    $httpBackend = $injector.get('$httpBackend');
+    $resource = $injector.get('$resource');
+  }));
+
+
+  it('should fail if action expects an object but response is an array', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
+
+    $resource('/Customer/123').query()
+      .$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalled();
+    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+        /^\[\$resource:badcfg\] Error in resource configuration\. Expected response to contain an array but got an object/
+      );
+  });
+
+  it('should fail if action expects an array but response is an object', function() {
+    var successSpy = jasmine.createSpy('successSpy');
+    var failureSpy = jasmine.createSpy('failureSpy');
+
+    $httpBackend.expect('GET', '/Customer/123').respond([1,2,3]);
+
+    $resource('/Customer/123').get()
+      .$promise.then(successSpy, function(e) { failureSpy(e.message); });
+    $httpBackend.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect(failureSpy).toHaveBeenCalled();
+    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+        /^\[\$resource:badcfg\] Error in resource configuration. Expected response to contain an object but got an array/
+      )
+  });
+
+
 });

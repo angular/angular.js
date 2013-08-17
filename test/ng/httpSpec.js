@@ -284,6 +284,27 @@ describe('$http', function() {
         });
       });
 
+
+      it('should allow replacement of the headers object', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                config.headers = {foo: 'intercepted'};
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('GET', '/url', null, function (headers) {
+            return angular.equals(headers, {foo: 'intercepted'});
+          }).respond('');
+          $http.get('/url');
+          $rootScope.$apply();
+        });
+      });
+
       it('should reject the http promise if an interceptor fails', function() {
         var reason = new Error('interceptor failed');
         module(function($httpProvider) {
@@ -752,7 +773,7 @@ describe('$http', function() {
         $httpBackend.expect('POST', '/url2', undefined, function(headers) {
           return !headers.hasOwnProperty('content-type');
         }).respond('');
-        
+
         $http({url: '/url', method: 'POST'});
         $http({url: '/url2', method: 'POST', headers: {'content-type': 'Rewritten'}});
         $httpBackend.flush();
@@ -781,6 +802,28 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: {}});
         $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'})
         $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'})
+
+        $httpBackend.flush();
+      }));
+
+      it('should send execute result if header value is function', inject(function() {
+        var headerConfig = {'Accept': function() { return 'Rewritten'; }};
+
+        function checkHeaders(headers) {
+          return headers['Accept'] == 'Rewritten';
+        }
+
+        $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('POST', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PUT', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PATCH', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('DELETE', '/url', undefined, checkHeaders).respond('');
+
+        $http({url: '/url', method: 'GET', headers: headerConfig});
+        $http({url: '/url', method: 'POST', headers: headerConfig});
+        $http({url: '/url', method: 'PUT', headers: headerConfig});
+        $http({url: '/url', method: 'PATCH', headers: headerConfig});
+        $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
       }));
@@ -1432,26 +1475,5 @@ describe('$http', function() {
     });
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
-  });
-
-  describe('isSameDomain', function() {
-    it('should support various combinations of urls', function() {
-      expect(isSameDomain('path/morepath',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('http://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'https://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com:1234')).toBe(false);
-      expect(isSameDomain('https://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.adomain.com:1234/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.anotherdomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-    });
   });
 });

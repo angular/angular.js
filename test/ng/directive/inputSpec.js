@@ -43,7 +43,7 @@ describe('NgModelController', function() {
     }
 
     expect(exception.message).
-        toMatch(/^\[ngModel:noass\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">$/);
+        toMatch(/^\[ngModel:nonassign\] Expression '1\+2' is non\-assignable\. Element: <input( value="")? ng-model="1\+2">/);
   }));
 
 
@@ -457,7 +457,7 @@ describe('input', function() {
     expect(function() {
       compileInput('<input type="text" ng-model="throw \'\'">');
       scope.$digest();
-    }).toThrow("[$parse:syntax] Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
+    }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
   });
 
 
@@ -748,6 +748,7 @@ describe('input', function() {
 
       it('should validate email', function() {
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
         expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
       });
     });
@@ -990,14 +991,6 @@ describe('input', function() {
     });
 
 
-    xit('should require at least one item', function() {
-      compileInput('<input type="text" ng-model="list" ng-list required />');
-
-      changeInputValueTo(' , ');
-      expect(inputElm).toBeInvalid();
-    });
-
-
     it('should convert empty string to an empty array', function() {
       compileInput('<input type="text" ng-model="list" ng-list />');
 
@@ -1143,6 +1136,18 @@ describe('input', function() {
 
 
   describe('ngValue', function() {
+
+    it('should update the dom "value" property and attribute', function() {
+      compileInput('<input type="submit" ng-value="value">');
+
+      scope.$apply(function() {
+        scope.value = 'something';
+      });
+
+      expect(inputElm[0].value).toBe('something');
+      expect(inputElm[0].getAttribute('value')).toBe('something');
+    });
+
 
     it('should evaluate and set constant expressions', function() {
       compileInput('<input type="radio" ng-model="selected" ng-value="true">' +

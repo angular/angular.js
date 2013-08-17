@@ -75,117 +75,77 @@ describe('ngIf', function () {
 
 });
 
-describe('ngIf ngAnimate', function () {
-  var vendorPrefix, window;
-  var body, element;
+describe('ngIf animations', function () {
+  var body, element, $rootElement;
 
   function html(html) {
-    body.html(html);
-    element = body.children().eq(0);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
     return element;
   }
 
-  beforeEach(function() {
+  beforeEach(module('mock.animate'));
+
+  beforeEach(module(function() {
     // we need to run animation on attached elements;
-    body = jqLite(document.body);
-  });
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+      body = jqLite(document.body);
+      body.append($rootElement);
+    };
+  }));
 
   afterEach(function(){
     dealoc(body);
     dealoc(element);
   });
 
-  beforeEach(module(function($animationProvider, $provide) {
-    $provide.value('$window', window = angular.mock.createMockWindow());
-    return function($sniffer, $animator) {
-      vendorPrefix = '-' + $sniffer.vendorPrefix + '-';
-      $animator.enabled(true);
+  beforeEach(module(function($animateProvider, $provide) {
+    return function($animate) {
+      $animate.enabled(true);
     };
   }));
 
-  it('should fire off the enter animation + add and remove the css classes',
-    inject(function($compile, $rootScope, $sniffer) {
+  it('should fire off the enter animation',
+    inject(function($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
         '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
+          '<div ng-if="value"><div>Hi</div></div>' +
         '</div>'
       ))($scope);
 
       $rootScope.$digest();
       $scope.$apply('value = true');
 
+      item = $animate.flushNext('enter').element;
+      expect(item.text()).toBe('Hi');
 
       expect(element.children().length).toBe(1);
-      var first = element.children()[0];
-
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('custom-enter');
-        window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-enter-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
-
-      expect(first.className).not.toContain('custom-enter');
-      expect(first.className).not.toContain('custom-enter-active');
   }));
 
-  it('should fire off the leave animation + add and remove the css classes',
-    inject(function ($compile, $rootScope, $sniffer) {
+  it('should fire off the leave animation',
+    inject(function ($compile, $rootScope, $animate) {
+      var item;
       var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 1s linear all';
       element = $compile(html(
         '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
+          '<div ng-if="value"><div>Hi</div></div>' +
         '</div>'
       ))($scope);
       $scope.$apply('value = true');
 
-      expect(element.children().length).toBe(1);
-      var first = element.children()[0];
-
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      item = $animate.flushNext('enter').element;
+      expect(item.text()).toBe('Hi');
 
       $scope.$apply('value = false');
-      expect(element.children().length).toBe($sniffer.transitions ? 1 : 0);
+      expect(element.children().length).toBe(1);
 
-      if ($sniffer.transitions) {
-        expect(first.className).toContain('custom-leave');
-        window.setTimeout.expect(1).process();
-        expect(first.className).toContain('custom-leave-active');
-        window.setTimeout.expect(1000).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
+      item = $animate.flushNext('leave').element;
+      expect(item.text()).toBe('Hi');
 
       expect(element.children().length).toBe(0);
-  }));
-
-  it('should catch and use the correct duration for animation',
-    inject(function ($compile, $rootScope, $sniffer) {
-      var $scope = $rootScope.$new();
-      var style = vendorPrefix + 'transition: 0.5s linear all';
-      element = $compile(html(
-        '<div>' +
-          '<div ng-if="value" style="' + style + '" ng-animate="{enter: \'custom-enter\', leave: \'custom-leave\'}"><div>Hi</div></div>' +
-        '</div>'
-      ))($scope);
-      $scope.$apply('value = true');
-
-      if ($sniffer.transitions) {
-        window.setTimeout.expect(1).process();
-        window.setTimeout.expect(500).process();
-      } else {
-        expect(window.setTimeout.queue).toEqual([]);
-      }
   }));
 
 });

@@ -1,3 +1,18 @@
+/* Logo */
+
+.header .brand {
+  padding-top: 6px;
+  padding-bottom: 0px;
+}
+
+.header .brand img {
+  height: 25px;
+  width: 92px;
+}
+
+/* end: Logo */
+
+
 /* this is here to avoid the display=block shuffling of ngShow */
 .breadcrumb li > * {
   float:left;
@@ -95,8 +110,14 @@
 /*            Content              */
 /* =============================== */
 
-.improve-docs {
+.improve-docs, .view-source {
   float: right;
+  margin: 0 5px;
+  position: relative;
+}
+
+.improve-docs {
+  z-index:100;
 }
 
 .hint {
@@ -262,6 +283,10 @@ ul.events > li > h3 {
   width:100%;
 }
 
+.search-results.ng-hide {
+  display:none;
+}
+
 .search-results > .search-group {
   vertical-align:top;
   padding:10px 0;
@@ -292,13 +317,16 @@ ul.events > li > h3 {
   z-index:1031;
 }
 
+.tutorial-index-page,
+.tutorial-the-end-page {
+  padding-top:50px;
+}
+
 .tutorial-page {
   position:relative;
 }
-.tutorial-page-no-nav {
-  padding-top:50px;
-}
-.tutorial-page-no-nav .improve-docs {
+
+.tutorial-page .improve-docs {
   position:absolute;
   top:0;
   right:0;
@@ -343,7 +371,7 @@ ul.events > li > h3 {
   opacity:1;
 }
 
-.popover-incode code, 
+.popover-incode code,
 .popover-incode pre {
   white-space:nowrap;
 }
@@ -371,7 +399,7 @@ ul.events > li > h3 {
   content:"";
   position:absolute;
   left:50%;
-  top:0px;
+  top:0;
   margin-left:-10px;
   border-width:10px;
   border-style:solid;
@@ -466,4 +494,12 @@ pre ol li {
 .docs-version-jump {
   width:180px;
   margin-bottom:20px;
+}
+
+.minerr-errmsg {
+  clear: both;
+  position: relative;
+  top: 10px;
+  font-size: 16px;
+  word-break: normal;
 }

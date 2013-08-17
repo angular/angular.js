@@ -12,14 +12,13 @@
  * Special properties are exposed on the local scope of each template instance, including:
  *
  * | Variable  | Type            | Details                                                                     |
- * |===========|=================|=============================================================================|
+ * |-----------|-----------------|-----------------------------------------------------------------------------|
  * | `$index`  | {@type number}  | iterator offset of the repeated element (0..length-1)                       |
  * | `$first`  | {@type boolean} | true if the repeated element is first in the iterator.                      |
  * | `$middle` | {@type boolean} | true if the repeated element is between the first and last in the iterator. |
  * | `$last`   | {@type boolean} | true if the repeated element is last in the iterator.                       |
- *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**,
- * **leave** and **move** effects.
+ * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
+ * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
  *
  * # Special repeat start and end points
@@ -80,7 +79,7 @@
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
  *     is a scope expression giving the collection to enumerate.
  *
- *     For example: `track in cd.tracks`.
+ *     For example: `album in artist.albums`.
  *
  *   * `(key, value) in expression` – where `key` and `value` can be any user defined identifiers,
  *     and `expression` is the scope expression giving the collection to enumerate.
@@ -91,7 +90,8 @@
  *     which can be used to associate the objects in the collection with the DOM elements. If no tracking function
  *     is specified the ng-repeat associates elements by identity in the collection. It is an error to have
  *     more than one tracking function to resolve to the same key. (This would mean that two distinct objects are
- *     mapped to the same DOM element, which is not possible.)
+ *     mapped to the same DOM element, which is not possible.)  Filters should be applied to the expression,
+ *     before specifying a tracking expression.
  *
  *     For example: `item in items` is equivalent to `item in items track by $id(item)'. This implies that the DOM elements
  *     will be associated by item identity in the array.
@@ -101,9 +101,12 @@
  *     with the corresponding item in the array by identity. Moving the same object in array would move the DOM
  *     element in the same way ian the DOM.
  *
- *     For example: `item in items track by item.id` Is a typical pattern when the items come from the database. In this
+ *     For example: `item in items track by item.id` is a typical pattern when the items come from the database. In this
  *     case the object identity does not matter. Two objects are considered equivalent as long as their `id`
  *     property is same.
+ *
+ *     For example: `item in items | filter:searchText track by item.id` is a pattern that might be used to apply a filter
+ *     to items in conjunction with a tracking expression.
  *
  * @example
  * This example initializes the scope to a list of names and
@@ -124,47 +127,62 @@
       ]">
         I have {{friends.length}} friends. They are:
         <input type="search" ng-model="q" placeholder="filter friends..." />
-        <ul>
-          <li ng-repeat="friend in friends | filter:q"
-              ng-animate="{enter: 'example-repeat-enter',
-                          leave: 'example-repeat-leave',
-                          move: 'example-repeat-move'}">
+        <ul class="example-animate-container">
+          <li class="animate-repeat" ng-repeat="friend in friends | filter:q">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
           </li>
         </ul>
       </div>
     </file>
     <file name="animations.css">
-      .example-repeat-enter,
-      .example-repeat-leave,
-      .example-repeat-move {
+      .example-animate-container {
+        background:white;
+        border:1px solid black;
+        list-style:none;
+        margin:0;
+        padding:0;
+      }
+
+      .example-animate-container > li {
+        padding:10px;
+        list-style:none;
+      }
+
+      .animate-repeat.ng-enter,
+      .animate-repeat.ng-leave,
+      .animate-repeat.ng-move {
         -webkit-transition:all linear 0.5s;
         -moz-transition:all linear 0.5s;
-        -ms-transition:all linear 0.5s;
         -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
       }
 
-      .example-repeat-enter {
+      .animate-repeat.ng-enter {
         line-height:0;
         opacity:0;
+        padding-top:0;
+        padding-bottom:0;
       }
-      .example-repeat-enter.example-repeat-enter-active {
+      .animate-repeat.ng-enter.ng-enter-active {
         line-height:20px;
         opacity:1;
+        padding:10px;
       }
 
-      .example-repeat-leave {
+      .animate-repeat.ng-leave {
         opacity:1;
         line-height:20px;
+        padding:10px;
       }
-      .example-repeat-leave.example-repeat-leave-active {
+      .animate-repeat.ng-leave.ng-leave-active {
         opacity:0;
         line-height:0;
+        padding-top:0;
+        padding-bottom:0;
       }
 
-      .example-repeat-move { }
-      .example-repeat-move.example-repeat-move-active { }
+      .animate-repeat.ng-move { }
+      .animate-repeat.ng-move.ng-move-active { }
     </file>
     <file name="scenario.js">
        it('should render initial data set', function() {
@@ -189,7 +207,7 @@
       </file>
     </example>
  */
-var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
+var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
   return {
@@ -198,10 +216,9 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
     terminal: true,
     compile: function(element, attr, linker) {
       return function($scope, $element, $attr){
-        var animate = $animator($scope, $attr);
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdFn, lhs, rhs, valueIdentifier, keyIdentifier,
+          trackByExp, trackByExpGetter, trackByIdFn, trackByIdArrayFn, trackByIdObjFn, lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
         if (!match) {
@@ -223,8 +240,11 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
-          trackByIdFn = function(key, value) {
+          trackByIdArrayFn = function(key, value) {
             return hashKey(value);
+          }
+          trackByIdObjFn = function(key) {
+            return key;
           }
         }
 
@@ -262,7 +282,9 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
 
           if (isArrayLike(collection)) {
             collectionKeys = collection;
+            trackByIdFn = trackByIdFn || trackByIdArrayFn;
           } else {
+            trackByIdFn = trackByIdFn || trackByIdObjFn;
             // if object, extract keys, sort them and use to determine order of iteration over obj props
             collectionKeys = [];
             for (key in collection) {
@@ -305,7 +327,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
-              animate.leave(block.elements);
+              $animate.leave(block.elements);
               forEach(block.elements, function(element) { element[NG_REMOVED] = true});
               block.scope.$destroy();
             }
@@ -331,7 +353,7 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
                 // do nothing
               } else {
                 // existing item which got moved
-                animate.move(block.elements, null, jqLite(previousNode));
+                $animate.move(block.elements, null, jqLite(previousNode));
               }
               previousNode = block.endNode;
             } else {
@@ -345,10 +367,11 @@ var ngRepeatDirective = ['$parse', '$animator', function($parse, $animator) {
             childScope.$first = (index === 0);
             childScope.$last = (index === (arrayLength - 1));
             childScope.$middle = !(childScope.$first || childScope.$last);
+            childScope.$odd = !(childScope.$even = index%2==0);
 
             if (!block.startNode) {
               linker(childScope, function(clone) {
-                animate.enter(clone, null, jqLite(previousNode));
+                $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 block.scope = childScope;
                 block.startNode = clone[0];

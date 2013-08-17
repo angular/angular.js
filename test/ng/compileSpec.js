@@ -534,7 +534,7 @@ describe('$compile', function() {
           expect(div.hasClass('log')).toBe(true);
           expect(div.css('width')).toBe('10px');
           expect(div.css('height')).toBe('20px');
-          expect(div.attr('replace')).toEqual(undefined);
+          expect(div.attr('replace')).toEqual('');
           expect(div.attr('high-log')).toEqual('');
         }));
 
@@ -632,11 +632,11 @@ describe('$compile', function() {
           inject(function($compile) {
             expect(function() {
               $compile('<p no-root-elem></p>');
-            }).toThrow("[$compile:tplrt] Template for directive 'noRootElem' must have exactly one root element. ");
+            }).toThrowMinErr("$compile", "tplrt", "Template for directive 'noRootElem' must have exactly one root element. ");
 
             expect(function() {
               $compile('<p multi-root-elem></p>');
-            }).toThrow("[$compile:tplrt] Template for directive 'multiRootElem' must have exactly one root element. ");
+            }).toThrowMinErr("$compile", "tplrt", "Template for directive 'multiRootElem' must have exactly one root element. ");
 
             // ws is ok
             expect(function() {
@@ -681,9 +681,17 @@ describe('$compile', function() {
               restrict: 'CAM', templateUrl: 'hello.html', transclude: true
             }));
             directive('cau', valueFn({
-              restrict: 'CAM', templateUrl:'cau.html'
+              restrict: 'CAM', templateUrl: 'cau.html'
             }));
-
+            directive('crossDomainTemplate', valueFn({
+              restrict: 'CAM', templateUrl: 'http://example.com/should-not-load.html'
+            }));
+            directive('trustedTemplate', function($sce) { return {
+              restrict: 'CAM',
+              templateUrl: function() {
+                return $sce.trustAsResourceUrl('http://example.com/trusted-template.html');
+              }};
+            });
             directive('cError', valueFn({
               restrict: 'CAM',
               templateUrl:'error.html',
@@ -735,6 +743,24 @@ describe('$compile', function() {
           }
         ));
 
+        it('should not load cross domain templates by default', inject(
+            function($compile, $rootScope, $templateCache, $sce) {
+              expect(function() {
+                $templateCache.put('http://example.com/should-not-load.html', 'Should not load even if in cache.');
+                $compile('<div class="crossDomainTemplate"></div>')($rootScope);
+              }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
+        }));
+
+        it('should load cross domain templates when trusted', inject(
+            function($compile, $httpBackend, $rootScope, $sce) {
+              $httpBackend.expect('GET', 'http://example.com/trusted-template.html').respond('<span>example.com/trusted_template_contents</span>');
+              element = $compile('<div class="trustedTemplate"></div>')($rootScope);
+              expect(sortedHtml(element)).
+                  toEqual('<div class="trustedTemplate"></div>');
+              $httpBackend.flush();
+              expect(sortedHtml(element)).
+                  toEqual('<div class="trustedTemplate"><span>example.com/trusted_template_contents</span></div>');
+        }));
 
         it('should append template via $http and cache it in $templateCache', inject(
             function($compile, $httpBackend, $templateCache, $rootScope, $browser) {
@@ -856,7 +882,7 @@ describe('$compile', function() {
           $rootScope.$digest();
 
           expect(sortedHtml(element)).
-            toEqual('<div><b class="hello"><span>Hello, Elvis!</span></b></div>');
+            toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
         }));
 
 
@@ -868,7 +894,7 @@ describe('$compile', function() {
               $rootScope.$digest();
 
               expect(sortedHtml(element)).
-                  toEqual('<span>Hello, Elvis!</span>');
+                  toEqual('<span replace="">Hello, Elvis!</span>');
             }));
 
 
@@ -985,7 +1011,7 @@ describe('$compile', function() {
 
               expect(function() {
                 $httpBackend.flush();
-              }).toThrow('[$compile:tpload] Failed to load template: hello.html');
+              }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: hello.html');
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
@@ -1005,7 +1031,7 @@ describe('$compile', function() {
           inject(function($compile){
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [sync, async] asking for template on: '+
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [sync, async] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1077,7 +1103,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual(undefined);
+            expect(div.attr('i-second')).toEqual('');
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
@@ -1127,7 +1153,7 @@ describe('$compile', function() {
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
-            expect(div.attr('i-second')).toEqual(undefined);
+            expect(div.attr('i-second')).toEqual('');
             expect(div.attr('i-third')).toEqual('');
             expect(div.attr('i-last')).toEqual('');
 
@@ -1189,14 +1215,14 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
+                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
             expect($exceptionHandler.errors.pop().message).
-                toBe("[$compile:tplrt] Template for directive 'template' must have exactly one root element. template.html");
+                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -1456,7 +1482,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1466,7 +1492,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrow('[$compile:multidir] Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
                 '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -1521,6 +1547,16 @@ describe('$compile', function() {
           expect(element.attr('name')).toEqual('attr: angular');
         }));
 
+    describe('SCE values', function() {
+      it('should resolve compile and link both attribute and text bindings', inject(
+          function($rootScope, $compile, $sce) {
+            $rootScope.name = $sce.trustAsHtml('angular');
+            element = $compile('<div name="attr: {{name}}">text: {{name}}</div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('text: angular');
+            expect(element.attr('name')).toEqual('attr: angular');
+          }));
+    });
 
     it('should decorate the binding with ng-binding and interpolation function', inject(
         function($compile, $rootScope) {
@@ -2074,7 +2110,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect($rootScope.$apply).
-            toThrow("[$compile:noass] Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrowMinErr("$compile", "nonassign", "Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -2150,7 +2186,7 @@ describe('$compile', function() {
     it('should throw on unknown definition', inject(function() {
       expect(function() {
         compile('<div><span bad-declaration>');
-      }).toThrow("[$compile:iscp] Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
+      }).toThrowMinErr("$compile", "iscp", "Invalid isolate scope definition for directive 'badDeclaration'. Definition: {... attr: 'xxx' ...}");
     }));
 
     it('should expose a $$isolateBindings property onto the scope', inject(function() {
@@ -2208,6 +2244,52 @@ describe('$compile', function() {
     });
 
 
+    it('should support controllerAs', function() {
+      module(function() {
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            transclude: true,
+            scope: {},
+            controller: function() {
+              this.name = 'lucas';
+            },
+            controllerAs: 'mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>template:{{mainCtrl.name}} <div ng-transclude></div></span>');
+        element = $compile('<div main>transclude:{{mainCtrl.name}}</div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('template:lucas transclude:');
+      });
+    });
+
+
+    it('should support controller alias', function() {
+      module(function($controllerProvider) {
+        $controllerProvider.register('MainCtrl', function() {
+          this.name = 'lucas';
+        });
+        directive('main', function() {
+          return {
+            templateUrl: 'main.html',
+            scope: {},
+            controller: 'MainCtrl as mainCtrl'
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('main.html', '<span>{{mainCtrl.name}}</span>');
+        element = $compile('<div main></div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toBe('lucas');
+      });
+    });
+
+
+
     it('should require controller on parent element',function() {
       module(function() {
         directive('main', function(log) {
@@ -2247,7 +2329,7 @@ describe('$compile', function() {
       inject(function(log, $compile, $rootScope) {
         expect(function() {
           $compile('<div main><div dep></div></div>')($rootScope);
-        }).toThrow("[$compile:ctreq] Controller 'main', required by directive 'dep', can't be found!");
+        }).toThrowMinErr("$compile", "ctreq", "Controller 'main', required by directive 'dep', can't be found!");
       });
     });
 
@@ -2329,6 +2411,214 @@ describe('$compile', function() {
 
         //expect(syncCtrlSpy).toHaveBeenCalledOnce();
         expect(asyncCtrlSpy).toHaveBeenCalledOnce();
+      });
+    });
+
+
+
+    it('should instantiate controllers in the parent->child order when transluction, templateUrl and replacement ' +
+        'are in the mix', function() {
+      // When a child controller is in the transclusion that replaces the parent element that has a directive with
+      // a controller, we should ensure that we first instantiate the parent and only then stuff that comes from the
+      // transclusion.
+      //
+      // The transclusion moves the child controller onto the same element as parent controller so both controllers are
+      // on the same level.
+
+      module(function() {
+        directive('parentDirective', function() {
+          return {
+            transclude: true,
+            replace: true,
+            templateUrl: 'parentDirective.html',
+            controller: function (log) { log('parentController'); }
+          };
+        });
+        directive('childDirective', function() {
+          return {
+            require: '^parentDirective',
+            templateUrl: 'childDirective.html',
+            controller : function(log) { log('childController'); }
+          };
+        });
+      });
+
+      inject(function($templateCache, log, $compile, $rootScope) {
+        $templateCache.put('parentDirective.html', '<div ng-transclude>parentTemplateText;</div>');
+        $templateCache.put('childDirective.html', '<span>childTemplateText;</span>');
+
+        element = $compile('<div parent-directive><div child-directive></div>childContentText;</div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('parentController; childController');
+        expect(element.text()).toBe('parentTemplateText;childTemplateText;childContentText;')
+      });
+    });
+
+
+    it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function () {
+      module(function () {
+        var Ctrl = function ($scope, log) {
+          log('myFoo=' + $scope.myFoo);
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: {
+              myFoo: "="
+            },
+            template: '<p>Hello</p>',
+            controller: Ctrl
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $rootScope.foo = "bar";
+
+        element = $compile('<div my-directive my-foo="foo"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('myFoo=bar');
+      });
+    });
+
+
+    it('should instantiate the controller after the isolate scope bindings are initialized (with templateUrl)', function () {
+      module(function () {
+        var Ctrl = function ($scope, log) {
+          log('myFoo=' + $scope.myFoo);
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: {
+              myFoo: "="
+            },
+            templateUrl: 'hello.html',
+            controller: Ctrl
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $templateCache.put('hello.html', '<p>Hello</p>');
+        $rootScope.foo = "bar";
+
+        element = $compile('<div my-directive my-foo="foo"></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('myFoo=bar');
+      });
+    });
+
+
+    it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
+        'replacement are in the mix', function() {
+      // similar to the test above, except that we have one more layer of nesting and nested transclusion
+
+      module(function() {
+        directive('parentDirective', function() {
+          return {
+            transclude: true,
+            replace: true,
+            templateUrl: 'parentDirective.html',
+            controller: function (log) { log('parentController'); }
+          };
+        });
+        directive('childDirective', function() {
+          return {
+            require: '^parentDirective',
+            transclude: true,
+            replace: true,
+            templateUrl: 'childDirective.html',
+            controller : function(log) { log('childController'); }
+          };
+        });
+        directive('babyDirective', function() {
+          return {
+            require: '^childDirective',
+            templateUrl: 'babyDirective.html',
+            controller : function(log) { log('babyController'); }
+          };
+        });
+      });
+
+      inject(function($templateCache, log, $compile, $rootScope) {
+        $templateCache.put('parentDirective.html', '<div ng-transclude>parentTemplateText;</div>');
+        $templateCache.put('childDirective.html', '<span ng-transclude>childTemplateText;</span>');
+        $templateCache.put('babyDirective.html', '<span>babyTemplateText;</span>');
+
+        element = $compile('<div parent-directive>' +
+                             '<div child-directive>' +
+                               'childContentText;' +
+                               '<div baby-directive>babyContent;</div>' +
+                              '</div>' +
+                            '</div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('parentController; childController; babyController');
+        expect(element.text()).toBe('parentTemplateText;childTemplateText;childContentText;babyTemplateText;')
+      });
+    });
+
+
+    it('should allow controller usage in pre-link directive functions with templateUrl', function () {
+      module(function () {
+        var Ctrl = function (log) {
+          log('instance');
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: true,
+            templateUrl: 'hello.html',
+            controller: Ctrl,
+            compile: function () {
+              return {
+                pre: function (scope, template, attr, ctrl) {},
+                post: function () {}
+              };
+            }
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        $templateCache.put('hello.html', '<p>Hello</p>');
+
+        element = $compile('<div my-directive></div>')($rootScope);
+        $rootScope.$apply();
+
+        expect(log).toEqual('instance');
+        expect(element.text()).toBe('Hello');
+      });
+    });
+
+
+    it('should allow controller usage in pre-link directive functions with a template', function () {
+      module(function () {
+        var Ctrl = function (log) {
+          log('instance');
+        };
+
+        directive('myDirective', function () {
+          return {
+            scope: true,
+            template: '<p>Hello</p>',
+            controller: Ctrl,
+            compile: function () {
+              return {
+                pre: function (scope, template, attr, ctrl) {},
+                post: function () {}
+              };
+            }
+          };
+        });
+      });
+
+      inject(function ($templateCache, $compile, $rootScope, log) {
+        element = $compile('<div my-directive></div>')($rootScope);
+        $rootScope.$apply();
+
+        expect(log).toEqual('instance');
+        expect(element.text()).toBe('Hello');
       });
     });
   });
@@ -2434,7 +2724,7 @@ describe('$compile', function() {
       inject(function($compile) {
         expect(function() {
           $compile('<div class="first second"></div>');
-        }).toThrow('[$compile:multidir] Multiple directives [first, second] asking for transclusion on: ' +
+        }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
             '<div class="first second ng-isolate-scope ng-scope">');
       });
     });
@@ -2536,12 +2826,16 @@ describe('$compile', function() {
   });
 
 
-  describe('img[src] sanitization', function() {
-    it('should NOT require trusted values for img src', inject(function($rootScope, $compile) {
+  describe('img[src] sanitization', function($sce) {
+    it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = 'http://example.com/image.png';
       $rootScope.$digest();
       expect(element.attr('src')).toEqual('http://example.com/image.png');
+      // But it should accept trusted values anyway.
+      $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.png');
+      $rootScope.$digest();
+      expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
     it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
@@ -2551,14 +2845,37 @@ describe('$compile', function() {
       expect(element.attr('src')).toBe('unsafe:javascript:doEvilStuff()');
     }));
 
-    it('should sanitize data: urls', inject(function($compile, $rootScope) {
+    it('should sanitize non-image data: urls', inject(function($compile, $rootScope) {
       element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "data:evilPayload";
+      $rootScope.testUrl = "data:application/javascript;charset=US-ASCII,alert('evil!');";
       $rootScope.$apply();
-
-      expect(element.attr('src')).toBe('unsafe:data:evilPayload');
+      expect(element.attr('src')).toBe("unsafe:data:application/javascript;charset=US-ASCII,alert('evil!');");
+      $rootScope.testUrl = "data:,foo";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe("unsafe:data:,foo");
     }));
 
+
+    it('should not sanitize data: URIs for images', inject(function($compile, $rootScope) {
+      element = $compile('<img src="{{dataUri}}"></img>')($rootScope);
+
+      // image data uri
+      // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
+      $rootScope.dataUri = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+      $rootScope.$apply();
+      expect(element.attr('src')).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+    }));
+
+
+    // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
+    if (!msie || msie > 10) {
+      it('should sanitize mailto: urls', inject(function($compile, $rootScope) {
+        element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
+          $rootScope.testUrl = "mailto:foo@bar.com";
+          $rootScope.$apply();
+          expect(element.attr('src')).toBe('unsafe:mailto:foo@bar.com');
+      }));
+    }
 
     it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
@@ -2636,13 +2953,6 @@ describe('$compile', function() {
       $rootScope.$apply();
       expect(element.attr('src')).toBe('ftp://foo.com/bar');
 
-      // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
-      if (!msie || msie > 10) {
-        $rootScope.testUrl = "mailto:foo@bar.com";
-        $rootScope.$apply();
-        expect(element.attr('src')).toBe('mailto:foo@bar.com');
-      }
-
       $rootScope.testUrl = "file:///foo/bar.html";
       $rootScope.$apply();
       expect(element.attr('src')).toBe('file:///foo/bar.html');
@@ -2660,8 +2970,8 @@ describe('$compile', function() {
 
     it('should allow reconfiguration of the src whitelist', function() {
       module(function($compileProvider) {
-        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect($compileProvider.imgSrcSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.imgSrcSanitizationWhitelist(/javascript:/);
         expect(returnVal).toBe($compileProvider);
       });
 
@@ -2812,8 +3122,8 @@ describe('$compile', function() {
 
     it('should allow reconfiguration of the href whitelist', function() {
       module(function($compileProvider) {
-        expect($compileProvider.urlSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.urlSanitizationWhitelist(/javascript:/);
+        expect($compileProvider.aHrefSanitizationWhitelist() instanceof RegExp).toBe(true);
+        var returnVal = $compileProvider.aHrefSanitizationWhitelist(/javascript:/);
         expect(returnVal).toBe($compileProvider);
       });
 
@@ -2837,18 +3147,18 @@ describe('$compile', function() {
       $rootScope.onClickJs = "";
       expect(function() {
           $compile('<button onclick="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
           $compile('<button ONCLICK="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
           $compile('<button ng-attr-onclick="{{onClickJs}}"></script>')($rootScope);
-        }).toThrow(
-          "[$compile:nodomevents] Interpolations for HTML DOM event attributes are disallowed.  " +
+        }).toThrowMinErr(
+          "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
     }));
 
@@ -2860,6 +3170,48 @@ describe('$compile', function() {
     }));
   });
 
+  describe('iframe[src]', function() {
+    it('should pass through src attributes for the same domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "different_page";
+      $rootScope.$apply();
+      expect(element.attr('src')).toEqual('different_page');
+    }));
+
+    it('should clear out src attributes for a different domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "http://a.different.domain.example.com";
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "http://a.different.domain.example.com");
+    }));
+
+    it('should clear out JS src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = "javascript:alert(1);";
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "javascript:alert(1);");
+    }));
+
+    it('should clear out non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
+      expect($rootScope.$apply).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
+    }));
+
+    it('should pass through $sce.trustAs() values in src attributes', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
+      $rootScope.$apply();
+
+      expect(element.attr('src')).toEqual('javascript:doTrustedStuff()');
+    }));
+  });
 
   describe('ngAttr* attribute binding', function() {
 
@@ -2877,7 +3229,7 @@ describe('$compile', function() {
       element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
       expect(element.attr('test2')).toBeUndefined();
-      expect(element.attr('test2')).toBeUndefined();
+      expect(element.attr('test3')).toBeUndefined();
       $rootScope.$digest();
       expect(element.attr('test')).toBe('Misko');
       expect(element.attr('test2')).toBe('Misko');
@@ -2909,8 +3261,8 @@ describe('$compile', function() {
           '</div>')($rootScope);
       $rootScope.$digest();
       var spans = element.find('span');
-      expect(spans.eq(0).css('display')).toBe('none');
-      expect(spans.eq(1).css('display')).toBe('none');
+      expect(spans.eq(0)).toBeHidden();
+      expect(spans.eq(1)).toBeHidden();
     }));
 
 
@@ -2995,7 +3347,7 @@ describe('$compile', function() {
               '<div>' +
                 '<span foo-start></span>' +
               '</div>');
-        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrowMinErr("$compile", "uterdir", "Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -3007,13 +3359,13 @@ describe('$compile', function() {
           };
         });
       });
-      inject(function($compile, $rootScope) {
+      inject(function($compile) {
         expect(function() {
           element = $compile(
               '<div>' +
                   '<span foo-start><span foo-end></span></span>' +
               '</div>');
-        }).toThrow("[$compile:utrat] Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
+        }).toThrowMinErr("$compile", "uterdir", "Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
 
@@ -3029,10 +3381,61 @@ describe('$compile', function() {
           '</div>')($rootScope);
       $rootScope.$digest();
       var spans = element.find('span');
-      expect(spans.eq(0).css('display')).toBe('none');
-      expect(spans.eq(1).css('display')).toBe('none');
-      expect(spans.eq(2).css('display')).toBe('none');
-      expect(spans.eq(3).css('display')).toBe('none');
+      expect(spans.eq(0)).toBeHidden();
+      expect(spans.eq(1)).toBeHidden();
+      expect(spans.eq(2)).toBeHidden();
+      expect(spans.eq(3)).toBeHidden();
     }));
+  });
+
+  describe('$animate animation hooks', function() {
+
+    beforeEach(module('mock.animate'));
+
+    it('should automatically fire the addClass and removeClass animation hooks',
+      inject(function($compile, $animate, $rootScope) {
+
+        var data, element = jqLite('<div class="{{val1}} {{val2}} fire"></div>');
+        $compile(element)($rootScope);
+
+        $rootScope.$digest();
+        data = $animate.flushNext('removeClass');
+
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val1 = 'ice';
+        $rootScope.val2 = 'rice';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('addClass');
+        expect(data.params[1]).toBe('ice rice');
+
+        expect(element.hasClass('ice')).toBe(true);
+        expect(element.hasClass('rice')).toBe(true);
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val2 = 'dice';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('removeClass');
+        expect(data.params[1]).toBe('rice');
+        data = $animate.flushNext('addClass');
+        expect(data.params[1]).toBe('dice');
+
+        expect(element.hasClass('ice')).toBe(true);
+        expect(element.hasClass('dice')).toBe(true);
+        expect(element.hasClass('fire')).toBe(true);
+
+        $rootScope.val1 = '';
+        $rootScope.val2 = '';
+        $rootScope.$digest();
+
+        data = $animate.flushNext('removeClass');
+        expect(data.params[1]).toBe('ice dice');
+
+        expect(element.hasClass('ice')).toBe(false);
+        expect(element.hasClass('dice')).toBe(false);
+        expect(element.hasClass('fire')).toBe(true);
+      }));
   });
 });

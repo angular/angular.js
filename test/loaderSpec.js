@@ -68,6 +68,8 @@ describe('module loader', function() {
   it('should complain of no module', function() {
     expect(function() {
       window.angular.module('dontExist');
-    }).toThrow("[$injector:nomod] Module 'dontExist' is not available! You either misspelled the module name or forgot to load it.");
+    }).toThrowMinErr("$injector", "nomod", "Module 'dontExist' is not available! You either misspelled the module name " +
+            "or forgot to load it. If registering a module ensure that you specify the dependencies as the second " +
+            "argument.");
   });
 });

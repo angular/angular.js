@@ -25,8 +25,17 @@ unzip $CONNECT_DOWNLOAD
 rm $CONNECT_DOWNLOAD
 
 
+
+ARGS=""
+
+# Set tunnel-id only on Travis, to make local testing easier.
+if [ ! -z "$TRAVIS_JOB_NUMBER" ]; then
+  ARGS="$ARGS --tunnel-identifier $TRAVIS_JOB_NUMBER"
+fi
+if [ ! -z "$SAUCE_CONNECT_READY_FILE" ]; then
+  ARGS="$ARGS --readyfile $SAUCE_CONNECT_READY_FILE"
+fi
+
 echo "Starting Sauce Connect in the background"
 echo "Logging into $CONNECT_LOG"
-java -jar Sauce-Connect.jar --readyfile $SAUCE_CONNECT_READY_FILE \
-    --tunnel-identifier $TRAVIS_JOB_NUMBER \
-    $SAUCE_USERNAME $SAUCE_ACCESS_KEY > $CONNECT_LOG &
+java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY > $CONNECT_LOG &

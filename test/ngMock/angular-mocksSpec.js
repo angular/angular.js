@@ -158,83 +158,125 @@ describe('ngMock', function() {
 
 
   describe('$log', function() {
-    var $log;
-    beforeEach(inject(['$log', function(log) {
-      $log = log;
-    }]));
+    forEach([true, false], function(debugEnabled) {
+      describe('debug ' + debugEnabled, function() {
+        beforeEach(module(function($logProvider) {
+          $logProvider.debugEnabled(debugEnabled);
+        }));
 
-    afterEach(inject(function($log){
-      $log.reset();
-    }));
+        afterEach(inject(function($log){
+          $log.reset();
+        }));
 
-    it('should provide log method', function() {
-      expect(function() { $log.log(''); }).not.toThrow();
+        it("should skip debugging output if disabled", inject(function($log) {
+            $log.log('fake log');
+            $log.info('fake log');
+            $log.warn('fake log');
+            $log.error('fake log');
+            $log.debug('fake log');
+            expect($log.log.logs).toContain(['fake log']);
+            expect($log.info.logs).toContain(['fake log']);
+            expect($log.warn.logs).toContain(['fake log']);
+            expect($log.error.logs).toContain(['fake log']);
+            if (debugEnabled) {
+              expect($log.debug.logs).toContain(['fake log']);
+            } else {
+              expect($log.debug.logs).toEqual([]);
+            }
+          }));
+      });
     });
 
-    it('should provide info method', function() {
-      expect(function() { $log.info(''); }).not.toThrow();
-    });
+    describe('debug enabled (default)', function() {
+      var $log;
+      beforeEach(inject(['$log', function(log) {
+        $log = log;
+      }]));
 
-    it('should provide warn method', function() {
-      expect(function() { $log.warn(''); }).not.toThrow();
-    });
+      afterEach(inject(function($log){
+        $log.reset();
+      }));
 
-    it('should provide error method', function() {
-      expect(function() { $log.error(''); }).not.toThrow();
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.log(''); }).not.toThrow();
+      });
 
-    it('should store log messages', function() {
-      $log.log('fake log');
-      expect($log.log.logs).toContain(['fake log']);
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.info(''); }).not.toThrow();
+      });
 
-    it('should store info messages', function() {
-      $log.info('fake log');
-      expect($log.info.logs).toContain(['fake log']);
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.warn(''); }).not.toThrow();
+      });
 
-    it('should store warn messages', function() {
-      $log.warn('fake log');
-      expect($log.warn.logs).toContain(['fake log']);
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.error(''); }).not.toThrow();
+      });
 
-    it('should store error messages', function() {
-      $log.error('fake log');
-      expect($log.error.logs).toContain(['fake log']);
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.debug(''); }).not.toThrow();
+      });
 
-    it('should assertEmpty', function(){
-      try {
+      it('should store log messages', function() {
+        $log.log('fake log');
+        expect($log.log.logs).toContain(['fake log']);
+      });
+
+      it('should store info messages', function() {
+        $log.info('fake log');
+        expect($log.info.logs).toContain(['fake log']);
+      });
+
+      it('should store warn messages', function() {
+        $log.warn('fake log');
+        expect($log.warn.logs).toContain(['fake log']);
+      });
+
+      it('should store error messages', function() {
+        $log.error('fake log');
+        expect($log.error.logs).toContain(['fake log']);
+      });
+
+      it('should store debug messages', function() {
+        $log.debug('fake log');
+        expect($log.debug.logs).toContain(['fake log']);
+      });
+
+      it('should assertEmpty', function(){
+        try {
+          $log.error(Error('MyError'));
+          $log.warn(Error('MyWarn'));
+          $log.info(Error('MyInfo'));
+          $log.log(Error('MyLog'));
+          $log.debug(Error('MyDebug'));
+          $log.assertEmpty();
+        } catch (error) {
+          error = error.message || error;
+          expect(error).toMatch(/Error: MyError/m);
+          expect(error).toMatch(/Error: MyWarn/m);
+          expect(error).toMatch(/Error: MyInfo/m);
+          expect(error).toMatch(/Error: MyLog/m);
+          expect(error).toMatch(/Error: MyDebug/m);
+        } finally {
+          $log.reset();
+        }
+      });
+
+      it('should reset state', function(){
         $log.error(Error('MyError'));
         $log.warn(Error('MyWarn'));
         $log.info(Error('MyInfo'));
         $log.log(Error('MyLog'));
-        $log.assertEmpty();
-      } catch (error) {
-        error = error.message || error;
-        expect(error).toMatch(/Error: MyError/m);
-        expect(error).toMatch(/Error: MyWarn/m);
-        expect(error).toMatch(/Error: MyInfo/m);
-        expect(error).toMatch(/Error: MyLog/m);
-      } finally {
         $log.reset();
-      }
-    });
-
-    it('should reset state', function(){
-      $log.error(Error('MyError'));
-      $log.warn(Error('MyWarn'));
-      $log.info(Error('MyInfo'));
-      $log.log(Error('MyLog'));
-      $log.reset();
-      var passed = false;
-      try {
-        $log.assertEmpty(); // should not throw error!
-        passed = true;
-      } catch (e) {
-        passed = e;
-      }
-      expect(passed).toBe(true);
+        var passed = false;
+        try {
+          $log.assertEmpty(); // should not throw error!
+          passed = true;
+        } catch (e) {
+          passed = e;
+        }
+        expect(passed).toBe(true);
+      });
     });
   });
 
@@ -351,6 +393,35 @@ describe('ngMock', function() {
       $timeout.flush();
       expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
     }));
+
+
+    it('should check against the delay if provided within timeout', inject(function($timeout) {
+      $timeout(noop, 100);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+
+      $timeout(noop, 1000);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow();
+
+      $timeout.flush(900);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
+
+
+    it('should assert against the delay value', inject(function($timeout) {
+      var count = 0;
+      var iterate = function() {
+        count++;
+      };
+
+      $timeout(iterate, 100);
+      $timeout(iterate, 123);
+      $timeout.flushNext(100);
+      expect(count).toBe(1);
+      $timeout.flushNext(123);
+      expect(count).toBe(2);
+    }));
   });
 
 
@@ -377,11 +448,6 @@ describe('ngMock', function() {
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
-
-
-    it('should be published on window', function(){
-      expect(window.dump instanceof Function).toBe(true);
-    });
   });
 
 
@@ -971,6 +1037,19 @@ describe('ngMock', function() {
       });
 
 
+      it('should accept data as function', function() {
+        var dataValidator = function(data) {
+          var json = angular.fromJson(data);
+          return !!json.id && json.status === 'N';
+        };
+        var exp = new MockHttpExpectation('POST', '/url', dataValidator);
+
+        expect(exp.matchData({})).toBe(false);
+        expect(exp.match('POST', '/url', '{"id": "xxx", "status": "N"}')).toBe(true);
+        expect(exp.match('POST', '/url', {"id": "xxx", "status": "N"})).toBe(true);
+      });
+
+
       it('should ignore data only if undefined (not null or false)', function() {
         var exp = new MockHttpExpectation('POST', '/url', null);
         expect(exp.matchData(null)).toBe(true);
@@ -1022,10 +1101,10 @@ describe('ngMockE2E', function() {
     describe('passThrough()', function() {
       it('should delegate requests to the real backend when passThrough is invoked', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
-        hb('GET', '/passThrough/23', null, callback);
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, undefined, undefined);
+            'GET', '/passThrough/23', null, callback, {}, null, true);
       });
     });
 

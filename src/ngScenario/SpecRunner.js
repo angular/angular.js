@@ -18,7 +18,7 @@ angular.scenario.SpecRunner = function() {
  * based on the describe nesting.
  *
  * @param {Object} spec A spec object
- * @param {function()} specDone function that is called when the spec finshes. Function(error, index)
+ * @param {function()} specDone function that is called when the spec finishes. Function(error, index)
  */
 angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
   var self = this;
@@ -117,7 +117,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
         angular.forEach(args, function(value, index) {
           selector = selector.replace('$' + (index + 1), value);
         });
-        var result = $document.find(selector);
+        var result = angular.element(selector);
         if (selector.match(NG)) {
           angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index){
             result = result.add(selector.replace(NG, value), $document);

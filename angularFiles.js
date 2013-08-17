@@ -10,26 +10,27 @@ angularFiles = {
     'src/auto/injector.js',
 
     'src/ng/anchorScroll.js',
-    'src/ng/animation.js',
-    'src/ng/animator.js',
+    'src/ng/animate.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
+    'src/ng/http.js',
+    'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
+    'src/ng/locale.js',
     'src/ng/location.js',
     'src/ng/log.js',
     'src/ng/parse.js',
     'src/ng/q.js',
     'src/ng/rootScope.js',
+    'src/ng/sce.js',
     'src/ng/sniffer.js',
-    'src/ng/window.js',
-    'src/ng/http.js',
-    'src/ng/httpBackend.js',
-    'src/ng/locale.js',
     'src/ng/timeout.js',
+    'src/ng/urlUtils.js',
+    'src/ng/window.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -64,6 +65,7 @@ angularFiles = {
   ],
 
   'angularSrcModules': [
+    'src/ngAnimate/animate.js',
     'src/ngCookies/cookies.js',
     'src/ngResource/resource.js',
     'src/ngRoute/routeUtils.js',
@@ -71,13 +73,12 @@ angularFiles = {
     'src/ngRoute/routeParams.js',
     'src/ngRoute/directive/ngView.js',
     'src/ngSanitize/sanitize.js',
-    'src/ngSanitize/directive/ngBindHtml.js',
     'src/ngSanitize/filter/linky.js',
     'src/ngMock/angular-mocks.js',
-    'src/ngMobile/mobile.js',
-    'src/ngMobile/swipe.js',
-    'src/ngMobile/directive/ngClick.js',
-    'src/ngMobile/directive/ngSwipe.js',
+    'src/ngTouch/touch.js',
+    'src/ngTouch/swipe.js',
+    'src/ngTouch/directive/ngClick.js',
+    'src/ngTouch/directive/ngSwipe.js',
     'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
@@ -106,16 +107,17 @@ angularFiles = {
     'test/*.js',
     'test/auto/*.js',
     'test/ng/**/*.js',
+    'test/ngAnimate/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js'
   ],
 
   'karma': [
-    'components/jquery/jquery.js',
+    'bower_components/jquery/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     'src/publishExternalApis.js',
@@ -148,11 +150,11 @@ angularFiles = {
     'test/ngRoute/**/*.js',
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
-    'test/ngMobile/**/*.js'
+    'test/ngTouch/**/*.js'
   ],
 
   'karmaJquery': [
-    'components/jquery/jquery.js',
+    'bower_components/jquery/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     'src/publishExternalApis.js',

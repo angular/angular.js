@@ -257,5 +257,10 @@ describe("serializeContent", function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo());
     expect((/[^\u0001-\u007f]/).test(serializedContent)).toBe(false);
   });
+  it("should not transform arrays into objects", function() {
+    var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo().fr_CA);
+    var deserializedLocale = eval("(" + serializedContent + ")");
+    expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBe(undefined);
+  });
 });
 

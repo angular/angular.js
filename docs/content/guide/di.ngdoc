@@ -24,7 +24,7 @@ There are only three ways an object or a function can get a hold of its dependen
 
 
 The first two options of creating or looking up dependencies are not optimal because they hard
-code the dependency. This make it difficult, if not impossible, to modify the dependencies.
+code the dependency. This makes it difficult, if not impossible, to modify the dependencies.
 This is especially problematic in tests, where it is often desirable to provide mock dependencies
 for test isolation.
 
@@ -196,17 +196,19 @@ DI is pervasive throughout Angular. It is typically used in controllers and fact
 ### DI in controllers
 
 Controllers are classes which are responsible for application behavior. The recommended way of 
-declaring controllers is:
+declaring controllers is using the array notation:
 
 <pre>
-  var MyController = function($scope, dep1, dep2) {
+  someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
     ...
     $scope.aMethod = function() {
       ...
     }
-  }
-  MyController.$inject = ['$scope', 'dep1', 'dep2'];
+    ...
+  }]);
 </pre>
+
+This avoids the creation of global functions for controllers and also protects against minification.
 
 
 ### Factory methods

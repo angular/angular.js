@@ -1,7 +1,5 @@
 'use strict';
 
-ngRouteModule.directive('ngView', ngViewFactory);
-
 /**
  * @ngdoc directive
  * @name ngRoute.directive:ngView
@@ -14,12 +12,11 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * Additionally, you can also provide animations via the ngAnimate attribute to animate the **enter**
- * and **leave** effects.
- *
  * @animations
- * enter - happens just after the ngView contents are changed (when the new view DOM element is inserted into the DOM)
- * leave - happens just after the current ngView contents change and just before the former contents are removed from the DOM
+ * enter - animation is used to bring new content into the browser.
+ * leave - animation is used to animate existing content away.
+ *
+ * The enter and leave animation occur concurrently.
  *
  * @scope
  * @example
@@ -33,10 +30,9 @@ ngRouteModule.directive('ngView', ngViewFactory);
           <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
           <a href="Book/Scarlet">Scarlet Letter</a><br/>
 
-          <div
-            ng-view
-            class="example-animate-container"
-            ng-animate="{enter: 'example-enter', leave: 'example-leave'}"></div>
+          <div class="example-animate-container">
+            <div ng-view class="view-example"></div>
+          </div>
           <hr />
 
           <pre>$location.path() = {{main.$location.path()}}</pre>
@@ -63,20 +59,24 @@ ngRouteModule.directive('ngView', ngViewFactory);
       </file>
 
       <file name="animations.css">
-        .example-leave, .example-enter {
-          -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -ms-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-        }
-
         .example-animate-container {
           position:relative;
-          height:100px;
+          background:white;
+          border:1px solid black;
+          height:40px;
+          overflow:hidden;
         }
 
-        .example-animate-container > * {
+        .example-animate-container > div {
+          padding:10px;
+        }
+
+        .view-example.ng-enter, .view-example.ng-leave {
+          -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
+          -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
+          -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
+          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
+
           display:block;
           width:100%;
           border-left:1px solid black;
@@ -89,21 +89,26 @@ ngRouteModule.directive('ngView', ngViewFactory);
           padding:10px;
         }
 
-        .example-enter {
+        .example-animate-container {
+          position:relative;
+          height:100px;
+        }
+
+        .view-example.ng-enter {
           left:100%;
         }
-        .example-enter.example-enter-active {
+        .view-example.ng-enter.ng-enter-active {
           left:0;
         }
 
-        .example-leave { }
-        .example-leave.example-leave-active {
+        .view-example.ng-leave { }
+        .view-example.ng-leave.ng-leave-active {
           left:-100%;
         }
       </file>
 
       <file name="script.js">
-        angular.module('ngViewExample', ['ngRoute'], function($routeProvider, $locationProvider) {
+        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'], function($routeProvider, $locationProvider) {
           $routeProvider.when('/Book/:bookId', {
             templateUrl: 'book.html',
             controller: BookCntl,
@@ -162,65 +167,78 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * @description
  * Emitted every time the ngView content is reloaded.
  */
-ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animator'];
-function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animator) {
+var NG_VIEW_PRIORITY = 500;
+var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$animate', 
+               function($route,   $anchorScroll,   $compile,   $controller,   $animate) {
   return {
     restrict: 'ECA',
     terminal: true,
-    link: function(scope, element, attr) {
-      var lastScope,
-          onloadExp = attr.onload || '',
-          animate = $animator(scope, attr);
+    priority: NG_VIEW_PRIORITY,
+    compile: function(element, attr) {
+      var onloadExp = attr.onload || '';
 
-      scope.$on('$routeChangeSuccess', update);
-      update();
+      element.html('');
+      var anchor = jqLite(document.createComment(' ngView '));
+      element.replaceWith(anchor);
 
+      return function(scope) {
+        var currentScope, currentElement;
 
-      function destroyLastScope() {
-        if (lastScope) {
-          lastScope.$destroy();
-          lastScope = null;
-        }
-      }
+        scope.$on('$routeChangeSuccess', update);
+        update();
 
-      function clearContent() {
-        animate.leave(element.contents(), element);
-        destroyLastScope();
-      }
-
-      function update() {
-        var locals = $route.current && $route.current.locals,
-            template = locals && locals.$template;
-
-        if (template) {
-          clearContent();
-          var enterElements = jqLite('<div></div>').html(template).contents();
-          animate.enter(enterElements, element);
-
-          var link = $compile(enterElements),
-              current = $route.current,
-              controller;
-
-          lastScope = current.scope = scope.$new();
-          if (current.controller) {
-            locals.$scope = lastScope;
-            controller = $controller(current.controller, locals);
-            if (current.controllerAs) {
-              lastScope[current.controllerAs] = controller;
-            }
-            element.children().data('$ngControllerController', controller);
+        function cleanupLastView() {
+          if (currentScope) {
+            currentScope.$destroy();
+            currentScope = null;
           }
+          if(currentElement) {
+            $animate.leave(currentElement);
+            currentElement = null;
+          }
+        }
 
-          link(lastScope);
-          lastScope.$emit('$viewContentLoaded');
-          lastScope.$eval(onloadExp);
+        function update() {
+          var locals = $route.current && $route.current.locals,
+              template = locals && locals.$template;
 
-          // $anchorScroll might listen on event...
-          $anchorScroll();
-        } else {
-          clearContent();
+          if (template) {
+            cleanupLastView();
+
+            currentScope = scope.$new();
+            currentElement = element.clone();
+            currentElement.html(template);
+            $animate.enter(currentElement, null, anchor);
+
+            var link = $compile(currentElement, false, NG_VIEW_PRIORITY - 1),
+                current = $route.current;
+
+            if (current.controller) {
+              locals.$scope = currentScope;
+              var controller = $controller(current.controller, locals);
+              if (current.controllerAs) {
+                currentScope[current.controllerAs] = controller;
+              }
+              currentElement.data('$ngControllerController', controller);
+              currentElement.children().data('$ngControllerController', controller);
+            }
+
+            current.scope = currentScope;
+
+            link(currentScope);
+
+            currentScope.$emit('$viewContentLoaded');
+            currentScope.$eval(onloadExp);
+
+            // $anchorScroll might listen on event...
+            $anchorScroll();
+          } else {
+            cleanupLastView();
+          }
         }
       }
     }
   };
-}
+}];
+
+ngRouteModule.directive('ngView', ngViewDirective);
