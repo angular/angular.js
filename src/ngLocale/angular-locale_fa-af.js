@@ -65,6 +65,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Rial",
     "DECIMAL_SEP": "\u066b",
+    "DEFAULT_PRECISION": 0,
     "GROUP_SEP": "\u066c",
     "PATTERNS": [
       {

@@ -11,6 +11,7 @@
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
+ * @param {number=} number of digits after dot after rounding.
  * @returns {string} Formatted number.
  *
  *
@@ -44,9 +45,11 @@
 currencyFilter.$inject = ['$locale'];
 function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(amount, currencySymbol){
+  return function(amount, currencySymbol, meanNumbers){
+    meanNumbers = isNumber(meanNumbers) ? meanNumbers : formats.DEFAULT_PRECISION;
+    meanNumbers = meanNumbers || 2;
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, meanNumbers).
                 replace(/\u00A4/g, currencySymbol);
   };
 }

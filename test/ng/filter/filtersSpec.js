@@ -95,6 +95,7 @@ describe('filters', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(currency(-999)).toEqual('($999.00)');
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
+      expect(currency(1234.5678, "rub", 3)).toEqual('rub1,234.568');
     });
 
 
