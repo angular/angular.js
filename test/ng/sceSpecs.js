@@ -60,6 +60,10 @@ describe('SCE', function() {
     it('should throw an exception when sce is enabled in quirks mode', function() {
       runTest(true, 5, true);
     });
+    
+    it('should NOT throw an exception when sce is enabled and in IE7 standards mode', function() {
+      runTest(true, 7, false);
+    });
 
     it('should NOT throw an exception when sce is enabled and in standards mode', function() {
       runTest(true, 8, false);
@@ -71,6 +75,10 @@ describe('SCE', function() {
 
     it('should NOT throw an exception when sce is disabled even when in quirks mode', function() {
       runTest(false, 5, false);
+    });
+    
+    it('should NOT throw an exception when sce is disabled and in IE7 standards mode', function() {
+      runTest(false, 7, false);
     });
 
     it('should NOT throw an exception when sce is disabled and in standards mode', function() {
