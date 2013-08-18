@@ -62,7 +62,7 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
 
 Angular modules solve the problem of removing global state from the application and provide a way
 of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try to
-solve the problem of script load ordering or lazy script fetching. These goals are orthogonal and
+solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
 both module systems can live side by side and fulfil their goals.
 
 ## The App Module
