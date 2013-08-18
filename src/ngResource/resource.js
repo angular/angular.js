@@ -358,9 +358,9 @@ angular.module('ngResource', ['ng']).
           if (angular.isDefined(val) && val !== null) {
             if(encoding) {
             	encodedVal = encodeUriSegment(val);
-		    } else {
-		    	encodedVal = val;
-		    }
+	    } else {
+	    	encodedVal = val;
+	    }
             url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");
           } else {
             url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match,
