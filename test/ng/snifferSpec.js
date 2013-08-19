@@ -122,6 +122,22 @@ describe('$sniffer', function() {
       });
     });
 
+    it('should still work for an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.vendorPrefix).toBe('webkit');
+      });
+    });
+
   });
 
   describe('animations', function() {
@@ -201,6 +217,23 @@ describe('$sniffer', function() {
         expect($sniffer.animations).toBe(true);
       });
     });
+
+    it('should be true when an older version of Webkit is used', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
   });
 
   describe('transitions', function() {
