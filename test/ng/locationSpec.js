@@ -755,6 +755,14 @@ describe('$location', function() {
       match = SERVER_MATCH.exec('app://}foo{')
       expect(match).toBe(null);
     });
+
+    it('should parse urls in Cordova on Windows Phone', function() {
+      var match = SERVER_MATCH.exec('x-wmapp0:www/index.html');
+
+      expect(match[1]).toBe('x-wmapp0');
+      expect(match[3]).toBe('www');
+      expect(match[6]).toBe('/index.html');
+    });
   });
 
 

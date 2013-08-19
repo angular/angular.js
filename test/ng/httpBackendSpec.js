@@ -385,6 +385,16 @@ describe('$httpBackend', function() {
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
     });
+
+    it('should convert 0 to 200 for x-wmapp0 protocol (Cordova apps on Windows Phone) as well', function() {
+      $backend = createHttpBackend($browser, MockXhr);
+
+      $backend('GET', 'x-wmapp0:www/index.html', null, callback);
+      respond(0, 'SOME CONTENT');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(200);
+    });
   });
 });
 
