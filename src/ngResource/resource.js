@@ -36,7 +36,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *   `http://example.com:8080/api`), it will be respected.
  *
  *   If you are using a url with a suffix, just add the suffix, like this:
- *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')
+ *   `$resource('http://example.com/resource.json')` or `$resource('http://example.com/:id.json')`
  *   or even `$resource('http://example.com/resource/:resource_id.:format')`
  *   If the parameter before the suffix is empty, :resource_id in this case, then the `/.` will be
  *   collapsed down to a single `.`.  If you need this sequence to appear and not collapse then you
