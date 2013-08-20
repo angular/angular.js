@@ -18,6 +18,10 @@ describe('Docs Links', function() {
       expect(doc.html()).
         toContain('<a href="http://github.com/angular/angular.js/edit/master/test.js" class="improve-docs btn btn-primary"><i class="icon-edit"> </i> Improve this doc</a>');
     });
+    
+    it("should have a defined gruntUtil cdnVersion", function () {  
+      expect(gruntUtil.getVersion().cdnVersion).toBeDefined();
+    }); 
 
     it('should have an "view source" button', function() {
       expect(doc.html()).
