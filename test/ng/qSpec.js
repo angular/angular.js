@@ -193,6 +193,18 @@ describe('q', function() {
   afterEach(function() {
     expect(mockNextTick.queue.length).toBe(0);
   });
+  
+  it( 'should allow decorators to work properly on promises', function() {
+    var defer = q.defer;
+    q.defer = function() {
+        var retValue = defer.apply( this, arguments );
+        retValue.promise.foo = 1;
+        return retValue;
+    };
+    
+    var thenned = q.defer().promise.then(function() {});
+    expect(thenned.foo).toBe(1);
+  });
 
 
   describe('defer', function() {
