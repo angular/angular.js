@@ -88,9 +88,9 @@ describe('angular', function() {
       expect(dst.a).not.toBe(src.a);
     });
 
-    it("should deeply copy an object into an existing object", function() {
+    it("should deeply copy an object into a non-existing object", function() {
       var src = {a:{name:"value"}};
-      var dst = copy(src, dst);
+      var dst = copy(src, undefined);
       expect(src).toEqual({a:{name:"value"}});
       expect(dst).toEqual(src);
       expect(dst).not.toBe(src);
