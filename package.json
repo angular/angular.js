@@ -31,7 +31,7 @@
     "marked": "~0.2.9",
     "rewire": "1.1.3",
     "grunt-contrib-jasmine-node": "~0.1.1",
-    "grunt-parallel": "~0.3.0",
+    "grunt-parallel": "git://github.com/vojtajina/grunt-parallel.git#streaming-per-task",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-merge-conflict": "~0.0.1"
   },
