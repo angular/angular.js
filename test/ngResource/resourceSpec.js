@@ -797,7 +797,7 @@ describe("resource", function() {
     });
 
 
-    it('should call the error callback if provided on non 2xx response', function() {
+    it('should call the error callback if provided on non 2xx response (without data)', function() {
       $httpBackend.expect('GET', '/CreditCard').respond(ERROR_CODE, ERROR_RESPONSE);
 
       CreditCard.get(callback, errorCB);

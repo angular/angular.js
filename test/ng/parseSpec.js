@@ -717,17 +717,6 @@ describe('parser', function() {
       });
 
 
-      it('should call the function once when it is not part of the context', function() {
-        var count = 0;
-        scope.fn = function() {
-          count++;
-          return function() { return 'lucas'; };
-        };
-        expect(scope.$eval('fn()()')).toBe('lucas');
-        expect(count).toBe(1);
-      });
-
-
       it('should call the function once when it is part of the context on assignments', function() {
         var count = 0;
         var element = {};
@@ -766,7 +755,7 @@ describe('parser', function() {
       });
 
 
-      it('should call the function once when it is part of the context on array lookup function', function() {
+      it('should call the function once when it is part of the context on property lookup function', function() {
         var count = 0;
         var element = {name: {anotherFn: function() { return 'lucas';} } };
         scope.fn = function() {

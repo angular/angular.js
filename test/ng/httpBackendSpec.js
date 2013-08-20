@@ -376,7 +376,7 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should convert 0 to 200 if content - relative url', function() {
+    it('should convert 0 to 404 if no content - relative url', function() {
       $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
