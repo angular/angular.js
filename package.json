@@ -3,6 +3,10 @@
   "version": "1.0.8-snapshot",
   "cdnVersion": "1.0.6",
   "codename": "bubble-burst",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.js.git"
+  },
   "devDependencies": {
     "grunt": "0.4.0",
     "grunt-contrib-clean": "0.4.0",
