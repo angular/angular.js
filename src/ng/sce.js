@@ -456,7 +456,7 @@ function $SceDelegateProvider() {
  * ## What trusted context types are supported?<a name="contexts"></a>
  *
  * | Context             | Notes          |
- * |=====================|================|
+ * |---------------------|----------------|
  * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. |
  * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently unused.  Feel free to use it in your own directives. |
  * | `$sce.URL`          | For URLs that are safe to follow as links.  Currently unused (`<a href=` and `<img src=` sanitize their urls and don't consititute an SCE context. |

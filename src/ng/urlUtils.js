@@ -58,7 +58,7 @@ function $$UrlUtilsProvider() {
      * Otherwise, returns an object with the following members.
      *
      *   | member name   | Description    |
-     *   |===============|================|
+     *   |---------------|----------------|
      *   | href          | A normalized version of the provided URL if it was not an absolute URL |
      *   | protocol      | The protocol including the trailing colon                              |
      *   | host          | The host and port (if the port is non-default) of the normalizedUrl    |
@@ -66,7 +66,7 @@ function $$UrlUtilsProvider() {
      * These fields from the UrlUtils interface are currently not needed and hence not returned.
      *
      *   | member name   | Description    |
-     *   |===============|================|
+     *   |---------------|----------------|
      *   | hostname      | The host without the port of the normalizedUrl                         |
      *   | pathname      | The path following the host in the normalizedUrl                       |
      *   | hash          | The URL hash if present                                                |
