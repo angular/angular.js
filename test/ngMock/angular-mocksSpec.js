@@ -168,7 +168,7 @@ describe('ngMock', function() {
           $log.reset();
         }));
 
-        it("should skip debugging output if disabled", inject(function($log) {
+        it("should skip debugging output if disabled (" + debugEnabled + ")", inject(function($log) {
             $log.log('fake log');
             $log.info('fake log');
             $log.warn('fake log');
@@ -197,19 +197,19 @@ describe('ngMock', function() {
         $log.reset();
       }));
 
-      it('should provide the debug method', function() {
+      it('should provide the log method', function() {
         expect(function() { $log.log(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the info method', function() {
         expect(function() { $log.info(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the warn method', function() {
         expect(function() { $log.warn(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the error method', function() {
         expect(function() { $log.error(''); }).not.toThrow();
       });
 

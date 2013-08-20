@@ -1488,16 +1488,6 @@ describe('$compile', function() {
         );
 
 
-        it('should not allow more then one isolate scope creation per element', inject(
-          function($rootScope, $compile) {
-            expect(function(){
-              $compile('<div class="iscope-a; iscope-b"></div>');
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, iscopeB] asking for isolated scope on: ' +
-                '<div class="iscope-a; iscope-b ng-isolate-scope ng-scope">');
-          })
-        );
-
-
         it('should create new scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div scope-a></div>')($rootScope);
@@ -1824,24 +1814,6 @@ describe('$compile', function() {
       });
     });
 
-    it('should allow setting of attributes', function() {
-      module(function() {
-        directive({
-          setter: valueFn(function(scope, element, attr) {
-            attr.$set('name', 'abc');
-            attr.$set('disabled', true);
-            expect(attr.name).toBe('abc');
-            expect(attr.disabled).toBe(true);
-          })
-        });
-      });
-      inject(function($rootScope, $compile) {
-        element = $compile('<div setter></div>')($rootScope);
-        expect(element.attr('name')).toEqual('abc');
-        expect(element.attr('disabled')).toEqual('disabled');
-      });
-    });
-
 
     it('should create new instance of attr for each template stamping', function() {
       module(function($provide) {
@@ -2055,32 +2027,15 @@ describe('$compile', function() {
 
         $rootScope.name = 'misko';
         $rootScope.$apply();
-        expect(componentScope.ref).toBe($rootScope.name);
-        expect(componentScope.refAlias).toBe($rootScope.name);
+
+        expect($rootScope.name).toBe('misko');
+        expect(componentScope.ref).toBe('misko');
+        expect(componentScope.refAlias).toBe('misko');
 
         $rootScope.name = {};
         $rootScope.$apply();
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
-      }));
-
-
-      it('should update local when origin changes', inject(function() {
-        compile('<div><span my-component ref="name">');
-        expect(componentScope.ref).toBe(undefined);
-        expect(componentScope.refAlias).toBe(componentScope.ref);
-
-        componentScope.ref = 'misko';
-        $rootScope.$apply();
-        expect($rootScope.name).toBe('misko');
-        expect(componentScope.ref).toBe('misko');
-        expect($rootScope.name).toBe(componentScope.ref);
-        expect(componentScope.refAlias).toBe(componentScope.ref);
-
-        componentScope.name = {};
-        $rootScope.$apply();
-        expect($rootScope.name).toBe(componentScope.ref);
-        expect(componentScope.refAlias).toBe(componentScope.ref);
       }));
 
 
@@ -3379,7 +3334,7 @@ describe('$compile', function() {
     }));
 
 
-    it('should group on nested groups', inject(function($compile, $rootScope) {
+    it('should group on nested groups of same directive', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
           '<div></div>' +
@@ -3427,7 +3382,7 @@ describe('$compile', function() {
     });
 
 
-    it('should throw error if unterminated', function () {
+    it('should throw error if unterminated (containing termination as a child)', function () {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
