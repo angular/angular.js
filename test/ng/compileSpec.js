@@ -2823,10 +2823,67 @@ describe('$compile', function() {
         expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
       });
     });
+
+
+    it('should make the result of a transclusion available to the parent directive in post-linking phase (template)',
+        function() {
+      module(function() {
+        directive('trans', function(log) {
+          return {
+            transclude: true,
+            template: '<div ng-transclude></div>',
+            link: {
+              pre: function($scope, $element) {
+                log('pre(' + $element.text() + ')');
+              },
+              post: function($scope, $element) {
+                log('post(' + $element.text() + ')');
+              }
+            }
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile) {
+        element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('pre(); post(unicorn!)');
+      });
+    });
+
+
+    it('should make the result of a transclusion available to the parent directive in pre- and post- linking phase (templateUrl)',
+        function() {
+          // when compiling an async directive the transclusion is always processed before the directive
+          // this is different compared to sync directive. delaying the transclusion makes little sense.
+
+      module(function() {
+        directive('trans', function(log) {
+          return {
+            transclude: true,
+            templateUrl: 'trans.html',
+            link: {
+              pre: function($scope, $element) {
+                log('pre(' + $element.text() + ')');
+              },
+              post: function($scope, $element) {
+                log('post(' + $element.text() + ')');
+              }
+            }
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile, $templateCache) {
+        $templateCache.put('trans.html', '<div ng-transclude></div>');
+
+        element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('pre(unicorn!); post(unicorn!)');
+      });
+    });
   });
 
 
-  describe('img[src] sanitization', function($sce) {
+  describe('img[src] sanitization', function() {
     it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = 'http://example.com/image.png';
