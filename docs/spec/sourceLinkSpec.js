@@ -19,13 +19,13 @@ describe('Docs Links', function() {
         toContain('<a href="http://github.com/angular/angular.js/edit/master/test.js" class="improve-docs btn btn-primary"><i class="icon-edit"> </i> Improve this doc</a>');
     });
     
-    it("should have a defined gruntUtil cdnVersion", function () {  
-      expect(gruntUtil.getVersion().cdnVersion).toBeDefined();
+    it("should have a defined gruntUtil.getVersion().cdn property", function () {  
+      expect(gruntUtil.getVersion().cdn).toBeDefined();
     }); 
 
     it('should have an "view source" button', function() {
       expect(doc.html()).
-        toContain('<a href="http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().cdnVersion + '/test.js#L42" class="view-source btn btn-action"><i class="icon-zoom-in"> </i> View source</a>');
+        toContain('<a href="http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().cdn + '/test.js#L42" class="view-source btn btn-action"><i class="icon-zoom-in"> </i> View source</a>');
     });
 
   });
