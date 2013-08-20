@@ -27,16 +27,9 @@ module.exports = function(grunt) {
 
     parallel: {
       travis: {
-        options: {
-          stream: true
-        },
         tasks: [
-          {grunt: true, args: ['test:docgen']},
-          util.parallelTask('tests:docs'),
-          util.parallelTask('tests:modules'),
-          util.parallelTask('tests:jquery'),
-          util.parallelTask('tests:jqlite'),
-          util.parallelTask('test:e2e')
+          util.parallelTask(['test:unit', 'test:docgen', 'tests:docs'], {stream: true}),
+          util.parallelTask(['test:e2e'])
         ]
       }
     },
