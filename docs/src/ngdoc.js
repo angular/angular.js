@@ -437,7 +437,7 @@ Doc.prototype = {
     if (this.section === 'api') {
       dom.tag('a', {
           href: 'http://github.com/angular/angular.js/tree/v' +
-            gruntUtil.getVersion().cdnVersion + '/' + self.file + '#L' + self.line,
+            gruntUtil.getVersion().cdn + '/' + self.file + '#L' + self.line,
           class: 'view-source btn btn-action' }, function(dom) {
         dom.tag('i', {class:'icon-zoom-in'}, ' ');
         dom.text(' View source');
