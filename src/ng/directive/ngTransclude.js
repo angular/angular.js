@@ -58,6 +58,7 @@ var ngTranscludeDirective = ngDirective({
 
   link: function($scope, $element, $attrs, controller) {
     controller.$transclude(function(clone) {
+      $element.html('');
       $element.append(clone);
     });
   }
