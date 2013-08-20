@@ -21,7 +21,7 @@ describe('Docs Links', function() {
 
     it('should have an "view source" button', function() {
       expect(doc.html()).
-        toContain('<a href="http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().number + '/test.js#L42" class="view-source btn btn-action"><i class="icon-zoom-in"> </i> View source</a>');
+        toContain('<a href="http://github.com/angular/angular.js/tree/v' + gruntUtil.getVersion().cdnVersion + '/test.js#L42" class="view-source btn btn-action"><i class="icon-zoom-in"> </i> View source</a>');
     });
 
   });
