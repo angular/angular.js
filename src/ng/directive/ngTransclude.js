@@ -5,7 +5,9 @@
  * @name ng.directive:ngTransclude
  *
  * @description
- * Insert the transcluded DOM here.
+ * Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.
+ *
+ * Any existing content of the element that this directive is placed on will be removed before the transcluded content is inserted.
  *
  * @element ANY
  *
@@ -58,6 +60,7 @@ var ngTranscludeDirective = ngDirective({
 
   link: function($scope, $element, $attrs, controller) {
     controller.$transclude(function(clone) {
+      $element.html('');
       $element.append(clone);
     });
   }
