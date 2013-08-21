@@ -1008,10 +1008,9 @@ function $CompileProvider($provide) {
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
-            afterTemplateNodeLinkFn(
-              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller),
-              scope, linkNode, $rootElement, controller
-            );
+            afterTemplateNodeLinkFn(function() {
+              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller);
+            }, scope, linkNode, $rootElement, controller);
           }
           linkQueue = null;
         }).
