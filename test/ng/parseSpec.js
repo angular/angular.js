@@ -460,6 +460,8 @@ describe('parser', function() {
           expect(scope.$eval("[1, 2]").length).toEqual(2);
           expect(scope.$eval("[1, 2]")[0]).toEqual(1);
           expect(scope.$eval("[1, 2]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]")[1]).toEqual(2);
+          expect(scope.$eval("[1, 2,]").length).toEqual(2);
         });
 
         it('should evaluate array access', function() {
@@ -474,6 +476,9 @@ describe('parser', function() {
           expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
           expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{a:'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{'a':'b',}"))).toEqual('{"a":"b"}');
+          expect(toJson(scope.$eval("{\"a\":'b',}"))).toEqual('{"a":"b"}');
         });
 
         it('should evaluate object access', function() {
