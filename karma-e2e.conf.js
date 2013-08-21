@@ -1,7 +1,7 @@
 var sharedConfig = require('./karma-shared.conf');
 
 module.exports = function(config) {
-  sharedConfig(config);
+  sharedConfig(config, {testName: 'AngularJS: e2e', logFile: 'karma-e2e.log'});
 
   config.set({
     frameworks: [],
@@ -22,6 +22,4 @@ module.exports = function(config) {
       suite: 'E2E'
     }
   });
-
-  config.sauceLabs.testName = 'AngularJS: e2e';
 };
