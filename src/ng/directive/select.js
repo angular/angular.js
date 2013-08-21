@@ -257,12 +257,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         };
 
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            if (unknownOption.parent()) unknownOption.remove();
-            ngModelCtrl.$setViewValue(selectElement.val());
-          });
-        });
+        selectElement.on('change', scope.$applyFn(function() {
+          if (unknownOption.parent()) unknownOption.remove();
+          ngModelCtrl.$setViewValue(selectElement.val());
+        }));
       }
 
       function Multiple(scope, selectElement, ctrl) {
@@ -283,17 +281,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           }
         });
 
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            var array = [];
-            forEach(selectElement.find('option'), function(option) {
-              if (option.selected) {
-                array.push(option.value);
-              }
-            });
-            ctrl.$setViewValue(array);
+        selectElement.on('change', scope.$applyFn(function() {
+          var array = [];
+          forEach(selectElement.find('option'), function(option) {
+            if (option.selected) {
+              array.push(option.value);
+            }
           });
-        });
+          ctrl.$setViewValue(array);
+        }));
       }
 
       function Options(scope, selectElement, ctrl) {
@@ -334,62 +330,60 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         // clear contents, we'll add what's needed based on the model
         selectElement.html('');
 
-        selectElement.on('change', function() {
-          scope.$apply(function() {
-            var optionGroup,
-                collection = valuesFn(scope) || [],
-                locals = {},
-                key, value, optionElement, index, groupIndex, length, groupLength;
+        selectElement.on('change', scope.$applyFn(function() {
+          var optionGroup,
+              collection = valuesFn(scope) || [],
+              locals = {},
+              key, value, optionElement, index, groupIndex, length, groupLength;
 
-            if (multiple) {
-              value = [];
-              for (groupIndex = 0, groupLength = optionGroupsCache.length;
-                   groupIndex < groupLength;
-                   groupIndex++) {
-                // list of options for that group. (first item has the parent)
-                optionGroup = optionGroupsCache[groupIndex];
+          if (multiple) {
+            value = [];
+            for (groupIndex = 0, groupLength = optionGroupsCache.length;
+                 groupIndex < groupLength;
+                 groupIndex++) {
+              // list of options for that group. (first item has the parent)
+              optionGroup = optionGroupsCache[groupIndex];
 
-                for(index = 1, length = optionGroup.length; index < length; index++) {
-                  if ((optionElement = optionGroup[index].element)[0].selected) {
-                    key = optionElement.val();
-                    if (keyName) locals[keyName] = key;
-                    if (trackFn) {
-                      for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                        locals[valueName] = collection[trackIndex];
-                        if (trackFn(scope, locals) == key) break;
-                      }
-                    } else {
-                      locals[valueName] = collection[key];
-                    }
-                    value.push(valueFn(scope, locals));
-                  }
-                }
-              }
-            } else {
-              key = selectElement.val();
-              if (key == '?') {
-                value = undefined;
-              } else if (key == ''){
-                value = null;
-              } else {
-                if (trackFn) {
-                  for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
-                    locals[valueName] = collection[trackIndex];
-                    if (trackFn(scope, locals) == key) {
-                      value = valueFn(scope, locals);
-                      break;
-                    }
-                  }
-                } else {
-                  locals[valueName] = collection[key];
+              for(index = 1, length = optionGroup.length; index < length; index++) {
+                if ((optionElement = optionGroup[index].element)[0].selected) {
+                  key = optionElement.val();
                   if (keyName) locals[keyName] = key;
-                  value = valueFn(scope, locals);
+                  if (trackFn) {
+                    for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                      locals[valueName] = collection[trackIndex];
+                      if (trackFn(scope, locals) == key) break;
+                    }
+                  } else {
+                    locals[valueName] = collection[key];
+                  }
+                  value.push(valueFn(scope, locals));
                 }
               }
             }
-            ctrl.$setViewValue(value);
-          });
-        });
+          } else {
+            key = selectElement.val();
+            if (key == '?') {
+              value = undefined;
+            } else if (key == ''){
+              value = null;
+            } else {
+              if (trackFn) {
+                for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                  locals[valueName] = collection[trackIndex];
+                  if (trackFn(scope, locals) == key) {
+                    value = valueFn(scope, locals);
+                    break;
+                  }
+                }
+              } else {
+                locals[valueName] = collection[key];
+                if (keyName) locals[keyName] = key;
+                value = valueFn(scope, locals);
+              }
+            }
+          }
+          ctrl.$setViewValue(value);
+        }));
 
         ctrl.$render = render;
 

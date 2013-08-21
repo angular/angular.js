@@ -134,6 +134,15 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       browserTrigger(element, endEvent, [], 100, 20);
       expect(eventFired).toEqual(true);
     }));
+
+    it('should perform an $apply', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-swipe-left="swiped = true"></div>')($rootScope);
+      var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+      browserTrigger(element, startEvent, [], 100, 20);
+      browserTrigger(element, endEvent, [], 20, 20);
+      expect(applySpy).toHaveBeenCalled();
+    }));
   });
 }
 

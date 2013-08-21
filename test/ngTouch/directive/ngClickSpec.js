@@ -343,7 +343,7 @@ describe('ngClick (touch)', function() {
       expect($rootScope.event).toBeUndefined();
     }));
     it('should not trigger click if regular disabled is present', inject(function($rootScope, $compile) {
-      element = $compile('<button ng-click="event = $event" disabled ></button>')($rootScope);
+      element = $compile('<button ng-click="event = $event" disabled></button>')($rootScope);
 
       browserTrigger(element, 'touchstart', [], 10, 10);
       browserTrigger(element, 'touchend', [], 10, 10);
@@ -351,7 +351,7 @@ describe('ngClick (touch)', function() {
       expect($rootScope.event).toBeUndefined();
     }));
     it('should trigger click if regular disabled is not present', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-click="event = $event" ></div>')($rootScope);
+      element = $compile('<div ng-click="event = $event"></div>')($rootScope);
 
       browserTrigger(element, 'touchstart', [], 10, 10);
       browserTrigger(element, 'touchend', [], 10, 10);
@@ -365,7 +365,7 @@ describe('ngClick (touch)', function() {
     it('should be capturable by other handlers', inject(function($rootScope, $compile) {
       var called = false;
 
-      element = $compile('<div ng-click="event = $event" ></div>')($rootScope);
+      element = $compile('<div ng-click="event = $event"></div>')($rootScope);
 
       element.on('click', function() {
         called = true;
@@ -375,6 +375,15 @@ describe('ngClick (touch)', function() {
       browserTrigger(element, 'touchend', [], 10, 10);
 
       expect(called).toEqual(true);
+    }));
+
+    it('should perform an $apply', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event"></div>')($rootScope);
+      var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
+      expect(applySpy).toHaveBeenCalled();
     }));
   });
 });

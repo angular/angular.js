@@ -647,11 +647,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
 
-  element.on('click', function() {
-    scope.$apply(function() {
-      ctrl.$setViewValue(element[0].checked);
-    });
-  });
+  element.on('click', scope.$applyFn(function() {
+    ctrl.$setViewValue(element[0].checked);
+  }));
 
   ctrl.$render = function() {
     element[0].checked = ctrl.$viewValue;
@@ -884,9 +882,7 @@ var VALID_CLASS = 'ng-valid',
               };
 
               // Listen for change events to enable binding
-              element.on('blur keyup change', function() {
-                scope.$apply(read);
-              });
+              element.on('blur keyup change', scope.$applyFn(read));
               read(); // initialize
 
               // Write data to the model

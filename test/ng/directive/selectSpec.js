@@ -109,6 +109,20 @@ describe('select', function() {
     });
 
 
+    it('should perform an $apply on change', function() {
+      compile(
+        '<select name="select" ng-model="selection" required ng-change="change()">' +
+          '<option value=""></option>' +
+          '<option value="c">C</option>' +
+        '</select>');
+      var applySpy = spyOn(scope, '$apply').andCallThrough();
+
+      element[0].value = 'c';
+      browserTrigger(element, 'change');
+      expect(applySpy).toHaveBeenCalled();
+    });
+
+
     it('should not be invalid if no require', function() {
       compile(
         '<select name="select" ng-model="selection">' +
@@ -453,6 +467,19 @@ describe('select', function() {
       browserTrigger(element, 'change');
       expect(element).toBeValid();
       expect(element).toBeDirty();
+    });
+
+    it('should perform an $apply on change', function() {
+      compile(
+        '<select name="select" ng-model="selection" multiple required>' +
+          '<option>A</option>' +
+          '<option>B</option>' +
+        '</select>');
+      var applySpy = spyOn(scope, '$apply').andCallThrough();
+
+      element[0].value = 'B';
+      browserTrigger(element, 'change');
+      expect(applySpy).toHaveBeenCalled();
     });
   });
 

@@ -28,7 +28,7 @@ function $TimeoutProvider() {
       * @param {function()} fn A function, whose execution should be delayed.
       * @param {number=} [delay=0] Delay in milliseconds.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
-      *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
+      *   will wrap `fn` with {@link ng.$rootScope.Scope#$applyFn $applyFn}.
       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
       *   promise will be resolved with is the return value of the `fn` function.
       */
@@ -36,22 +36,20 @@ function $TimeoutProvider() {
       var deferred = $q.defer(),
           promise = deferred.promise,
           skipApply = (isDefined(invokeApply) && !invokeApply),
-          timeoutId, cleanup;
+          callback, timeoutId;
 
-      timeoutId = $browser.defer(function() {
+      callback = function() {
         try {
           deferred.resolve(fn());
         } catch(e) {
           deferred.reject(e);
           $exceptionHandler(e);
-        }
-        finally {
+        } finally {
           delete deferreds[promise.$$timeoutId];
         }
+      };
 
-        if (!skipApply) $rootScope.$apply();
-      }, delay);
-
+      timeoutId = $browser.defer(skipApply ? callback : $rootScope.$applyFn(callback), delay);
       promise.$$timeoutId = timeoutId;
       deferreds[timeoutId] = deferred;
 

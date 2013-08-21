@@ -722,7 +722,7 @@ function $RootScopeProvider(){
        *    was executed using the {@link ng.$rootScope.Scope#$digest $digest()} method.
        *
        *
-       * @param {(string|function())=} exp An angular expression to be executed.
+       * @param {(string|function())=} expr An angular expression to be executed.
        *
        *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with current `scope` parameter.
@@ -744,6 +744,49 @@ function $RootScopeProvider(){
             throw e;
           }
         }
+      },
+
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$applyFn
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Similar to {@link ng.$rootScope.Scope#$apply $apply()}, but returns a wrapper function.
+       * This is useful in cases where a function is required as a parameter/callback outside of the
+       * angular framework. If `expr` is a function, it is bound to `scope` (`scope` becomes the
+       * `this` for the function) and any arguments will be passed along from the wrapper function.
+       *
+       * # Example
+       * <pre>
+           element.bind('click', scope.$applyFn(function(event) {
+             var scope = this;
+             scope.target = event.target;
+           }));
+       * </pre>
+       *
+       * @param {(string|function())=} expr An angular expression to be executed.
+       *
+       *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
+       *    - `function()`: execute the function bound to the current `scope`.
+       *
+       * @returns {function()} Function that is wrapped with {@link ng.$rootScope.Scope#$apply $apply()}.
+       */
+      $applyFn: function(expr) {
+        var scope = this;
+        return (isFunction(expr) && !(expr instanceof RegExp))
+          ? function() {
+              var args = arguments;
+              return scope.$apply(function() {
+                return args.length
+                  ? expr.apply(scope, args)
+                  : expr.call(scope);
+              });
+            }
+          : function() {
+              return scope.$apply(expr);
+            };
       },
 
       /**
