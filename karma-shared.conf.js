@@ -1,4 +1,4 @@
-module.exports = function(config) {
+module.exports = function(config, specificOptions) {
   config.set({
     frameworks: ['jasmine'],
     autoWatch: true,
@@ -9,11 +9,13 @@ module.exports = function(config) {
 
     // config for Travis CI
     sauceLabs: {
-      testName: 'AngularJS',
+      testName: specificOptions.testName || 'AngularJS',
       startConnect: false,
       tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
     },
 
+    // For more browsers on Sauce Labs see:
+    // https://saucelabs.com/docs/platforms/webdriver
     customLaunchers: {
       'SL_Chrome': {
         base: 'SauceLabs',
@@ -51,9 +53,16 @@ module.exports = function(config) {
   });
 
 
-  // TODO(vojta): remove once SauceLabs supports websockets.
-  // This speeds up the capturing a bit, as browsers don't even try to use websocket.
   if (process.env.TRAVIS) {
+    // TODO(vojta): remove once SauceLabs supports websockets.
+    // This speeds up the capturing a bit, as browsers don't even try to use websocket.
     config.transports = ['xhr-polling'];
+
+    // Debug logging into a file, that we print out at the end of the build.
+    config.loggers.push({
+      type: 'file',
+      filename: process.env.LOGS_DIR + '/' + (specificOptions.logFile || 'karma.log'),
+      level: config.LOG_DEBUG
+    });
   }
 };
