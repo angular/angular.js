@@ -49,4 +49,11 @@ module.exports = function(config) {
       }
     }
   });
+
+
+  // TODO(vojta): remove once SauceLabs supports websockets.
+  // This speeds up the capturing a bit, as browsers don't even try to use websocket.
+  if (process.env.TRAVIS) {
+    config.transports = ['xhr-polling'];
+  }
 };
