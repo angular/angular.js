@@ -26,6 +26,7 @@ module.exports = function(config) {
       'build/docs/js/docs.js',
       'build/docs/docs-data.js',
 
+      'docs/component-spec/mocks.js',
       'docs/component-spec/*.js'
     ],
 
