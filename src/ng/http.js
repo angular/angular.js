@@ -963,22 +963,38 @@ function $HttpProvider() {
       }
     }
 
+		function is(type, obj) {
+		    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+		    return obj !== undefined && obj !== null && clas === type;
+		}
+		
+		function toQueryString(params, parts, pk) {
+      forEachSorted(params, function(value, key) {
+	      if (value == null || value == undefined) return;
+				if (pk) key = pk+'['+key+']'
+	      if (is('Array',value)) {
+		      forEach(value, function(v,i) {
+						if(is('Object', v)){
+							key = key+'['+i+']'
+			      	toQueryString(v, parts, key)
+						} else {
+				      parts.push(encodeUriQuery(key) + '=' +
+				                 encodeUriQuery(v));
+						}
+		      });
+					return;
+	      } else if (is('Object',value)) {
+					return toQueryString(value, parts, key)
+	      }
+	      parts.push(encodeUriQuery(key) + '=' +
+	                 encodeUriQuery(value));
+      });
+		}
 
     function buildUrl(url, params) {
           if (!params) return url;
           var parts = [];
-          forEachSorted(params, function(value, key) {
-            if (value == null || value == undefined) return;
-            if (!isArray(value)) value = [value];
-
-            forEach(value, function(v) {
-              if (isObject(v)) {
-                v = toJson(v);
-              }
-              parts.push(encodeUriQuery(key) + '=' +
-                         encodeUriQuery(v));
-            });
-          });
+					toQueryString(params, parts)
           return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
         }
 
