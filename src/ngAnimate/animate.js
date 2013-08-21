@@ -282,7 +282,9 @@ angular.module('ngAnimate', ['ng'])
         */
         enter : function(element, parent, after, done) {
           $delegate.enter(element, parent, after);
-          performAnimation('enter', 'ng-enter', element, parent, after, done);
+          performAnimation('enter', 'ng-enter', element, parent, after, function() {
+            $timeout(done || noop, 0, false);
+          });
         },
 
         /**
@@ -350,7 +352,9 @@ angular.module('ngAnimate', ['ng'])
         */
         move : function(element, parent, after, done) {
           $delegate.move(element, parent, after);
-          performAnimation('move', 'ng-move', element, null, null, done);
+          performAnimation('move', 'ng-move', element, null, null, function() {
+            $timeout(done || noop, 0, false);
+          });
         },
 
         /**
@@ -361,7 +365,8 @@ angular.module('ngAnimate', ['ng'])
          * @description
          * Triggers a custom animation event based off the className variable and then attaches the className value to the element as a CSS class.
          * Unlike the other animation methods, the animate service will suffix the className value with {@type -add} in order to provide
-         * the animate service the setup and active CSS classes in order to trigger the animation.
+         * the animate service the setup and active CSS classes in order to trigger the animation (this will be skipped if no CSS transitions
+         * or keyframes are defined on the -add CSS class).
          *
          * Below is a breakdown of each step that occurs during addClass animation:
          *
@@ -395,7 +400,8 @@ angular.module('ngAnimate', ['ng'])
          * @description
          * Triggers a custom animation event based off the className variable and then removes the CSS class provided by the className value
          * from the element. Unlike the other animation methods, the animate service will suffix the className value with {@type -remove} in
-         * order to provide the animate service the setup and active CSS classes in order to trigger the animation.
+         * order to provide the animate service the setup and active CSS classes in order to trigger the animation (this will be skipped if
+         * no CSS transitions or keyframes are defined on the -remove CSS class).
          *
          * Below is a breakdown of each step that occurs during removeClass animation:
          *
@@ -546,15 +552,81 @@ angular.module('ngAnimate', ['ng'])
       function animate(element, className, done) {
         if (!($sniffer.transitions || $sniffer.animations)) {
           done();
-        } else {
-          var activeClassName = '';
-          $timeout(startAnimation, 1, false);
+          return;
+        }
 
-          //this acts as the cancellation function in case
-          //a new animation is triggered while another animation
-          //is still going on (otherwise the active className
-          //would still hang around until the timer is complete).
-          return onEnd;
+        //one day all browsers will have these properties
+        var w3cAnimationProp = 'animation';
+        var w3cTransitionProp = 'transition';
+
+        //but some still use vendor-prefixed styles
+        var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
+        var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+
+        var durationKey = 'Duration',
+            delayKey = 'Delay',
+            animationIterationCountKey = 'IterationCount';
+
+        //we want all the styles defined before and after
+        var duration = 0, ELEMENT_NODE = 1;
+        forEach(element, function(element) {
+          if (element.nodeType == ELEMENT_NODE) {
+            var elementStyles = $window.getComputedStyle(element) || {};
+
+            var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                               parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+            var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                               parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
+            var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
+                                               parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+
+            var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
+                                               parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+
+            if(animationDuration > 0) {
+              animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp   + animationIterationCountKey]) || 0,
+                                           parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
+                                           1);
+            }
+
+            duration = Math.max(animationDelay  + animationDuration,
+                                transitionDelay + transitionDuration,
+                                duration);
+          }
+        });
+
+        /* there is no point in performing a reflow if the animation
+           timeout is empty (this would cause a flicker bug normally
+           in the page */
+        if(duration > 0) {
+          var activeClassName = '';
+          forEach(className.split(' '), function(klass, i) {
+            activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
+          });
+
+          $timeout(function() {
+            element.addClass(activeClassName);
+            $timeout(done, duration * 1000, false);
+          },0,false);
+
+          //this will automatically be called by $animate so
+          //there is no need to attach this internally to the
+          //timeout done method
+          return function onEnd(cancelled) {
+            element.removeClass(activeClassName);
+
+            //only when the animation is cancelled is the done()
+            //function not called for this animation therefore
+            //this must be also called
+            if(cancelled) {
+              done();
+            }
+          }
+        }
+        else {
+          done();
         }
 
         function parseMaxTime(str) {
@@ -563,73 +635,6 @@ angular.module('ngAnimate', ['ng'])
             total = Math.max(parseFloat(value) || 0, total);
           });
           return total;
-        }
-
-        function startAnimation() {
-          var duration = 0;
-          forEach(className.split(' '), function(klass, i) {
-            activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
-          });
-
-          element.addClass(activeClassName);
-
-          //one day all browsers will have these properties
-          var w3cAnimationProp = 'animation';
-          var w3cTransitionProp = 'transition';
-
-          //but some still use vendor-prefixed styles
-          var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
-          var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-
-          var durationKey = 'Duration',
-              delayKey = 'Delay',
-              animationIterationCountKey = 'IterationCount';
-
-          //we want all the styles defined before and after
-          var ELEMENT_NODE = 1;
-          forEach(element, function(element) {
-            if (element.nodeType == ELEMENT_NODE) {
-              var elementStyles = $window.getComputedStyle(element) || {};
-
-              var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
-                                                 parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
-
-              var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
-                                                 parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
-
-              var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
-                                                 parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
-
-              var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
-                                                 parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
-
-              if(animationDuration > 0) {
-                animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp   + animationIterationCountKey]) || 0,
-                                             parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
-                                             1);
-              }
-
-              duration = Math.max(animationDelay  + animationDuration,
-                                  transitionDelay + transitionDuration,
-                                  duration);
-            }
-          });
-
-          $timeout(done, duration * 1000, false);
-        }
-
-        //this will automatically be called by $animate so
-        //there is no need to attach this internally to the
-        //timeout done method
-        function onEnd(cancelled) {
-          element.removeClass(activeClassName);
-
-          //only when the animation is cancelled is the done()
-          //function not called for this animation therefore
-          //this must be also called
-          if(cancelled) {
-            done();
-          }
         }
       }
 
