@@ -2,7 +2,7 @@ var angularFiles = require('./angularFiles');
 var sharedConfig = require('./karma-shared.conf');
 
 module.exports = function(config) {
-  sharedConfig(config);
+  sharedConfig(config, {testName: 'AngularJS: jqLite', logFile: 'karma-jqlite.log'});
 
   config.set({
     files: angularFiles.mergeFilesFor('karma'),
@@ -13,6 +13,4 @@ module.exports = function(config) {
       suite: 'jqLite'
     }
   });
-
-  config.sauceLabs.testName = 'AngularJS: jqLite';
 };

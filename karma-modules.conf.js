@@ -2,7 +2,7 @@ var angularFiles = require('./angularFiles');
 var sharedConfig = require('./karma-shared.conf');
 
 module.exports = function(config) {
-  sharedConfig(config);
+  sharedConfig(config, {testName: 'AngularJS: modules', logFile: 'karma-modules.log'});
 
   config.set({
     files: angularFiles.mergeFilesFor('karmaModules', 'angularSrcModules'),
@@ -12,6 +12,4 @@ module.exports = function(config) {
       suite: 'modules'
     }
   });
-
-  config.sauceLabs.testName = 'AngularJS: modules';
 };
