@@ -316,4 +316,30 @@ describe('$sniffer', function() {
     });
 
   });
+
+
+  describe('history', function() {
+    it('should be true on Boxee box with an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        var win = {
+          history: {
+            pushState: noop
+          },
+          navigator: {
+            userAgent: 'boxee (alpha/Darwin 8.7.1 i386 - 0.9.11.5591)'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.history).toBe(false);
+      });
+    });
+  });
 });
