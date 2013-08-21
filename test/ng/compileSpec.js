@@ -2218,46 +2218,6 @@ describe('$compile', function() {
     });
 
 
-
-    it('should instantiate controllers in the parent->child order when transluction, templateUrl and replacement ' +
-        'are in the mix', function() {
-      // When a child controller is in the transclusion that replaces the parent element that has a directive with
-      // a controller, we should ensure that we first instantiate the parent and only then stuff that comes from the
-      // transclusion.
-      //
-      // The transclusion moves the child controller onto the same element as parent controller so both controllers are
-      // on the same level.
-
-      module(function() {
-        directive('parentDirective', function() {
-          return {
-            transclude: true,
-            replace: true,
-            templateUrl: 'parentDirective.html',
-            controller: function (log) { log('parentController'); }
-          };
-        });
-        directive('childDirective', function() {
-          return {
-            require: '^parentDirective',
-            templateUrl: 'childDirective.html',
-            controller : function(log) { log('childController'); }
-          };
-        });
-      });
-
-      inject(function($templateCache, log, $compile, $rootScope) {
-        $templateCache.put('parentDirective.html', '<div ng-transclude>parentTemplateText;</div>');
-        $templateCache.put('childDirective.html', '<span>childTemplateText;</span>');
-
-        element = $compile('<div parent-directive><div child-directive></div>childContentText;</div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('parentController; childController');
-        expect(element.text()).toBe('parentTemplateText;childTemplateText;childContentText;')
-      });
-    });
-
-
     it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function () {
       module(function () {
         var Ctrl = function ($scope, log) {
@@ -2309,55 +2269,6 @@ describe('$compile', function() {
         element = $compile('<div my-directive my-foo="foo"></div>')($rootScope);
         $rootScope.$apply();
         expect(log).toEqual('myFoo=bar');
-      });
-    });
-
-
-    it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
-        'replacement are in the mix', function() {
-      // similar to the test above, except that we have one more layer of nesting and nested transclusion
-
-      module(function() {
-        directive('parentDirective', function() {
-          return {
-            transclude: true,
-            replace: true,
-            templateUrl: 'parentDirective.html',
-            controller: function (log) { log('parentController'); }
-          };
-        });
-        directive('childDirective', function() {
-          return {
-            require: '^parentDirective',
-            transclude: true,
-            replace: true,
-            templateUrl: 'childDirective.html',
-            controller : function(log) { log('childController'); }
-          };
-        });
-        directive('babyDirective', function() {
-          return {
-            require: '^childDirective',
-            templateUrl: 'babyDirective.html',
-            controller : function(log) { log('babyController'); }
-          };
-        });
-      });
-
-      inject(function($templateCache, log, $compile, $rootScope) {
-        $templateCache.put('parentDirective.html', '<div ng-transclude>parentTemplateText;</div>');
-        $templateCache.put('childDirective.html', '<span ng-transclude>childTemplateText;</span>');
-        $templateCache.put('babyDirective.html', '<span>babyTemplateText;</span>');
-
-        element = $compile('<div parent-directive>' +
-                             '<div child-directive>' +
-                               'childContentText;' +
-                               '<div baby-directive>babyContent;</div>' +
-                              '</div>' +
-                            '</div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('parentController; childController; babyController');
-        expect(element.text()).toBe('parentTemplateText;childTemplateText;childContentText;babyTemplateText;')
       });
     });
 
