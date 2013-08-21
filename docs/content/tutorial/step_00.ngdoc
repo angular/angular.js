@@ -24,18 +24,15 @@ angular-seed, and run the application in the browser.
         <ul>
           <li><b>For node.js users:</b>
             <ol>
-              <li>In a <i>separate</i> terminal tab or window, run
-<code>node ./scripts/web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a 
+              <li>In a <i>separate</i> terminal tab or window, run <code>node ./scripts/web-server.js</code> to start the web server.</li>
+              <li>Open a browser window for the app and navigate to <a
               href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
             </ol>
           </li>
           <li><b>For other http servers:</b>
             <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code>
-directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
+              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
+              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
             </ol>
           </li>
         </ul>
@@ -56,18 +53,14 @@ directory.</li>
         <ul>
           <li><b>For node.js users:</b>
             <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node
-scripts\web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
+              <li>In a <i>separate</i> terminal tab or window, run <code>node scripts\web-server.js</code> to start the web server.</li>
+              <li>Open a browser window for the app and navigate to <a href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
             </ol>
           </li>
           <li><b>For other http servers:</b>
             <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code>
-directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
+              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
+              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
             </ol>
           </li>
         </ul>
