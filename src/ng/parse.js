@@ -713,6 +713,10 @@ function parser(text, json, $filter, csp){
     var allConstant = true;
     if (peekToken().text != ']') {
       do {
+        if (peek(']')) {
+          // Support trailing commas per ES5.1.
+          break;
+        }
         var elementFn = expression();
         elementFns.push(elementFn);
         if (!elementFn.constant) {
@@ -738,6 +742,10 @@ function parser(text, json, $filter, csp){
     var allConstant = true;
     if (peekToken().text != '}') {
       do {
+        if (peek('}')) {
+          // Support trailing commas per ES5.1.
+          break;
+        }
         var token = expect(),
         key = token.string || token.text;
         consume(":");
@@ -751,7 +759,7 @@ function parser(text, json, $filter, csp){
     consume('}');
     return extend(function(self, locals){
       var object = {};
-      for ( var i = 0; i < keyValues.length; i++) {
+      for (var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
         object[keyValue.key] = keyValue.value(self, locals);
       }
