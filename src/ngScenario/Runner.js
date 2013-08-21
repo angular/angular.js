@@ -199,6 +199,20 @@ angular.scenario.Runner.prototype.run = function(application) {
         });
 
         // Make these methods work on the current chain
+        scope.resolveFuture = function(future) {
+          if(future instanceof angular.scenario.Future) {
+            if(! future.fulfilled) {
+              future.execute(function(error) {
+                if(error) {
+                  this.emit('StepFailure', this.spec, future, error);
+                }
+              });
+            }
+            future = future.value;
+          }
+          return future;
+        };
+
         scope.addFuture = function() {
           Array.prototype.push.call(arguments, line);
           return angular.scenario.SpecRunner.

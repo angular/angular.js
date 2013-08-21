@@ -27,6 +27,19 @@ describe('angular.scenario.matchers', function () {
         matchers.error = error;
       });
     };
+    matchers.resolveFuture = function(future) {
+      if(future instanceof angular.scenario.Future) {
+        if(! future.fulfilled) {
+          future.execute(function(error) {
+            if(error) {
+              this.emit('StepFailure', this.spec, future, error);
+            }
+          });
+        }
+        future = future.value;
+      }
+      return future;
+    };
     angular.extend(matchers, angular.scenario.matcher);
   });
 

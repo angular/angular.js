@@ -28,6 +28,21 @@ describe("angular.scenario.dsl", function() {
     $root.futures = [];
     $root.futureLog = [];
     $root.$window = $window;
+
+    $root.resolveFuture = function(future) {
+      if(future instanceof angular.scenario.Future) {
+        if(! future.fulfilled) {
+          future.execute(function(error) {
+            if(error) {
+              this.emit('StepFailure', this.spec, future, error);
+            }
+          });
+        }
+        future = future.value;
+      }
+      return future;
+    };
+
     $root.addFuture = function(name, fn) {
       this.futures.push(name);
       fn.call(this, function(error, result) {
