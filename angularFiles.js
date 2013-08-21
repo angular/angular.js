@@ -128,6 +128,15 @@ angularFiles = {
     'example/personalLog/test/*.js'
   ],
 
+  'promises':[
+      'bower_components/jquery/jquery.js',
+      'test/jquery_remove.js',
+      '@angularSrc',
+      'src/publishExternalApis.js',
+      'promises-aplus-tests.js',
+      'promises-aplus-adapter.js'
+  ],
+
   'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',

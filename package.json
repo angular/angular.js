@@ -33,7 +33,8 @@
     "grunt-contrib-jasmine-node": "~0.1.1",
     "grunt-parallel": "~0.3.0",
     "grunt-ddescribe-iit": "~0.0.1",
-    "grunt-merge-conflict": "~0.0.1"
+    "grunt-merge-conflict": "~0.0.1",
+    "karma-mocha": "~0.1.0"
   },
   "licenses": [
     {
