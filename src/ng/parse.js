@@ -785,6 +785,10 @@ Parser.prototype = {
     var allConstant = true;
     if (this.peekToken().text !== ']') {
       do {
+        if (this.peek(']')) {
+          // Support trailing commas per ES5.1.
+          break;
+        }
         var elementFn = this.expression();
         elementFns.push(elementFn);
         if (!elementFn.constant) {
@@ -811,6 +815,10 @@ Parser.prototype = {
     var allConstant = true;
     if (this.peekToken().text !== '}') {
       do {
+        if (this.peek('}')) {
+          // Support trailing commas per ES5.1.
+          break;
+        }
         var token = this.expect(),
         key = token.string || token.text;
         this.consume(':');
