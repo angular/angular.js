@@ -95,7 +95,7 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$parse = function(url) {
     var parsed = {}
     matchUrl(url, parsed);
-    var pathUrl = beginsWith(appBaseNoFile, url);
+    var pathUrl = beginsWith(serverBase(url), url);
     if (!isString(pathUrl)) {
       throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
     }
