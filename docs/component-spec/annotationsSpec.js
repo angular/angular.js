@@ -111,14 +111,12 @@ describe('Docs Annotations', function() {
       expect(foldout.html()).toContain('loading');
     }));
 
-    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend, $timeout) {
+    it('should download a foldout HTML page and animate the contents', inject(function($httpBackend, $timeout, $sniffer) {
       $httpBackend.expect('GET', url).respond('hello');
 
       element.triggerHandler('click');
       $httpBackend.flush();
 
-      $timeout.flushNext(0);
-      $timeout.flushNext(1);
       $timeout.flushNext(0);
       $timeout.flushNext(1000);
 
@@ -127,27 +125,22 @@ describe('Docs Annotations', function() {
       expect(foldout.text()).toContain('hello');
     }));
 
-    it('should hide then show when clicked again', inject(function($httpBackend, $timeout) {
+    it('should hide then show when clicked again', inject(function($httpBackend, $timeout, $sniffer) {
       $httpBackend.expect('GET', url).respond('hello');
 
       //enter
       element.triggerHandler('click');
       $httpBackend.flush();
       $timeout.flushNext(0);
-      $timeout.flushNext(1);
-      $timeout.flushNext(0);
       $timeout.flushNext(1000);
 
       //hide
       element.triggerHandler('click');
-      $timeout.flushNext(1);
       $timeout.flushNext(0);
       $timeout.flushNext(200);
-      $timeout.flushNext(0);
 
       //show
       element.triggerHandler('click');
-      $timeout.flushNext(1);
       $timeout.flushNext(0);
       $timeout.flushNext(500);
       $timeout.flushNext(0);
