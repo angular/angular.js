@@ -15,3 +15,4 @@ angular.xcodeproj
 .agignore
 libpeerconnection.log
 npm-debug.log
+/tmp/

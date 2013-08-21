@@ -11,6 +11,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ddescribe-iit');
   grunt.loadNpmTasks('grunt-merge-conflict');
   grunt.loadNpmTasks('grunt-parallel');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
@@ -28,7 +29,7 @@ module.exports = function(grunt) {
     parallel: {
       travis: {
         tasks: [
-          util.parallelTask(['test:unit', 'test:docgen', 'tests:docs'], {stream: true}),
+          util.parallelTask(['test:unit', 'test:docgen', 'test:promises-aplus', 'tests:docs'], {stream: true}),
           util.parallelTask(['test:e2e'])
         ]
       }
@@ -97,7 +98,10 @@ module.exports = function(grunt) {
     },
 
 
-    clean: {build: ['build']},
+    clean: {
+      build: ['build'],
+      tmp: ['tmp']
+    },
 
 
     build: {
@@ -164,6 +168,10 @@ module.exports = function(grunt) {
       cookies: {
         dest: 'build/angular-cookies.js',
         src: util.wrap(['src/ngCookies/cookies.js'], 'module')
+      },
+      "promises-aplus-adapter": {
+        dest:'tmp/promises-aplus-adapter++.js',
+        src:['src/ng/q.js','lib/promises-aplus/promises-aplus-test-adapter.js']
       }
     },
 
@@ -220,6 +228,17 @@ module.exports = function(grunt) {
       }
     },
 
+    shell:{
+      "promises-aplus-tests":{
+        options:{
+          //stdout:true,
+          stderr:true,
+          failOnError:true
+        },
+        command:'./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js'
+      }
+    },
+
 
     write: {
       versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
@@ -229,7 +248,7 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['package','test:unit', 'tests:docs', 'test:e2e']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['package','test:unit','test:promises-aplus', 'tests:docs', 'test:e2e']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
@@ -237,6 +256,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
   grunt.registerTask('test:e2e', 'Run the end to end tests with Karma and keep a test server running in the background', ['connect:testserver', 'tests:end2end']);
   grunt.registerTask('test:docgen', ['jasmine-node']);
+  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
 
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
