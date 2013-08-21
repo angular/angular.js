@@ -730,6 +730,38 @@ describe('q', function() {
           mockNextTick.flush();
           expect(log).toEqual(['error(oops!)->reject(oops!)']);
         });
+
+        it('should forward success resolution when success callbacks are not functions', function() {
+          deferred.resolve('yay!');
+
+          promise.then(1).
+                  then(null).
+                  then({}).
+                  then('gah!').
+                  then([]).
+                  then(success());
+
+          expect(logStr()).toBe('');
+
+          mockNextTick.flush();
+          expect(log).toEqual(['success(yay!)->yay!']);
+        });
+
+        it('should forward error resolution when error callbacks are not functions', function() {
+          deferred.reject('oops!');
+
+          promise.then(null, 1).
+                  then(null, null).
+                  then(null, {}).
+                  then(null, 'gah!').
+                  then(null, []).
+                  then(null, error());
+
+          expect(logStr()).toBe('');
+
+          mockNextTick.flush();
+          expect(log).toEqual(['error(oops!)->reject(oops!)']);
+        });
       });
 
 
