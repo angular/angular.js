@@ -2,6 +2,15 @@
 
 describe('parser', function() {
   describe('lexer', function() {
+    var lex;
+
+    beforeEach(function () {
+      lex = function () {
+        var lexer = new Lexer();
+        return lexer.lex.apply(lexer, arguments);
+      };
+    });
+
     it('should tokenize a string', function() {
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
       var i = 0;
