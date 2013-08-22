@@ -83,11 +83,10 @@ describe('form', function() {
   });
 
 
-  it('should support expression in form name', function() {
+  it('should allow form name to be an expression', function() {
     doc = $compile('<form name="obj.myForm"></form>')(scope);
 
-    expect(scope.obj).toBeDefined();
-    expect(scope.obj.myForm).toBeTruthy();
+    expect(scope['obj.myForm']).toBeTruthy();
   });
 
 
@@ -322,30 +321,6 @@ describe('form', function() {
 
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
-      expect(parent.$error.required).toBe(false);
-    });
-
-
-    it('should deregister a child form whose name is an expression when its DOM is removed', function() {
-      doc = jqLite(
-        '<form name="parent">' +
-          '<div class="ng-form" name="child.form">' +
-          '<input ng:model="modelA" name="inputA" required>' +
-          '</div>' +
-          '</form>');
-      $compile(doc)(scope);
-      scope.$apply();
-
-      var parent = scope.parent,
-        child = scope.child.form;
-
-      expect(parent).toBeDefined();
-      expect(child).toBeDefined();
-      expect(parent.$error.required).toEqual([child]);
-      doc.children().remove(); //remove child
-
-      expect(parent.child).toBeUndefined();
-      expect(scope.child.form).toBeUndefined();
       expect(parent.$error.required).toBe(false);
     });
 

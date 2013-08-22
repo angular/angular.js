@@ -306,13 +306,13 @@ var formDirectiveFactory = function(isNgForm) {
                 alias = attr.name || attr.ngForm;
 
             if (alias) {
-              setter(scope, alias, controller, alias);
+              scope[alias] = controller;
             }
             if (parentFormCtrl) {
               formElement.bind('$destroy', function() {
                 parentFormCtrl.$removeControl(controller);
                 if (alias) {
-                  setter(scope, alias, undefined, alias);
+                  scope[alias] = undefined;
                 }
                 extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
               });
