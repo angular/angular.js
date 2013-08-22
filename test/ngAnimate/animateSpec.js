@@ -1584,4 +1584,33 @@ describe("ngAnimate", function() {
     });
   });
 
+  it("should skip ngAnimate animations when any pre-existing CSS transitions are present on the element", function() {
+    inject(function($compile, $rootScope, $animate, $timeout, $sniffer) {
+      if(!$sniffer.transitions) return;
+
+      var element = html($compile('<div class="animated parent"></div>')($rootScope));
+      var child   = html($compile('<div class="animated child"></div>')($rootScope));
+
+      ss.addRule('.animated',  'transition:1s linear all;' +
+               vendorPrefix +  'transition:1s linear all');
+      ss.addRule('.super-add', 'transition:2s linear all;' +
+               vendorPrefix +  'transition:2s linear all');
+
+      $rootElement.append(element);
+      jqLite(document.body).append($rootElement);
+
+      $animate.addClass(element, 'super');
+      $timeout.flush(0);
+
+      var empty = true;
+      try {
+        $timeout.flush();
+        empty = false;
+      }
+      catch(e) {}
+
+      expect(empty).toBe(true);
+    });
+  });
+
 });
