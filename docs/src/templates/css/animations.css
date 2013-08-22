@@ -64,13 +64,6 @@
   height:0;
 }
 
-.animate-container.animations-off * {
-  -webkit-transition: none;
-  -moz-transition: none;
-  -o-transition: color 0 ease-in; /* opera is special :) */
-  transition: none;
-}
-
 .foldout.ng-enter,
 .foldout.ng-hide-add,
 .foldout.ng-hide-remove {
