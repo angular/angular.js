@@ -87,22 +87,21 @@ if (isNaN(msie)) {
 /**
  * @private
  * @param {*} obj
- * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, String ...)
  */
 function isArrayLike(obj) {
   if (obj == null || isWindow(obj)) {
     return false;
   }
-  
+
   var length = obj.length;
 
   if (obj.nodeType === 1 && length) {
     return true;
   }
 
-  return isArray(obj) || !isFunction(obj) && (
-    length === 0 || typeof length === "number" && length > 0 && (length - 1) in obj
-  );
+  return isString(obj) || isArray(obj) || length === 0 ||
+         typeof length === 'number' && length > 0 && (length - 1) in obj;
 }
 
 /**
@@ -599,7 +598,7 @@ function isLeafNode (node) {
  * * If a destination is provided, all of its elements (for array) or properties (for objects)
  *   are deleted and then all elements/properties from the source are copied to it.
  * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
- * * If `source` is identical to 'destination' an exception will be thrown. 
+ * * If `source` is identical to 'destination' an exception will be thrown.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
  * {@link ng.$filter} for more information about Angular arrays.
