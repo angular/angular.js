@@ -90,9 +90,12 @@ function isArrayLike(obj) {
     return true;
   }
 
-  return isArray(obj) || !isFunction(obj) && (
-    length === 0 || typeof length === "number" && length > 0 && (length - 1) in obj
-  );
+  if (typeof obj !== 'object') {
+    return typeof obj === 'string';
+  }
+
+  return isArray(obj) || length === 0 ||
+         typeof length === "number" && length > 0 && (length - 1) in obj;
 }
 
 /**
