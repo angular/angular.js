@@ -1,7 +1,8 @@
 var docsApp = {
   controller: {},
   directive: {},
-  serviceFactory: {}
+  serviceFactory: {},
+  filter: {}
 };
 
 docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
@@ -255,7 +256,40 @@ docsApp.directive.docTutorialReset = function() {
 };
 
 
-docsApp.directive.errorDisplay = ['$location', function ($location) {
+docsApp.filter.errorLink = ['$sanitize', function ($sanitize) {
+  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/g,
+      MAILTO_REGEXP = /^mailto:/,
+      STACK_TRACE_REGEXP = /:\d+:\d+$/;
+
+  var truncate = function (text, nchars) {
+    if (text.length > nchars) {
+      return text.substr(0, nchars - 3) + '...';
+    }
+    return text;
+  };
+
+  return function (text, target) {
+    var targetHtml = target ? ' target="' + target + '"' : '';
+
+    if (!text) return text;
+
+    return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
+      if (STACK_TRACE_REGEXP.test(url)) {
+        return url;
+      }
+
+      // if we did not match ftp/http/mailto then assume mailto
+      if (!/^((ftp|https?):\/\/|mailto:)/.test(url)) url = 'mailto:' + url;
+
+      return '<a' + targetHtml + ' href="' + url +'">' +
+                truncate(url.replace(MAILTO_REGEXP, ''), 60) +
+              '</a>';
+    }));
+  };
+}];
+
+
+docsApp.directive.errorDisplay = ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
   var interpolate = function (formatString) {
     var formatArgs = arguments;
     return formatString.replace(/\{\d+\}/g, function (match) {
@@ -278,7 +312,7 @@ docsApp.directive.errorDisplay = ['$location', function ($location) {
       for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
-      element.text(interpolate.apply(null, formatArgs));
+      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
     }
   };
 }];
@@ -873,3 +907,7 @@ angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', '
   factory(docsApp.serviceFactory).
   directive(docsApp.directive).
   controller(docsApp.controller);
+
+angular.forEach(docsApp.filter, function (docsAppFilter, filterName) {
+  angular.module('docsApp').filter(filterName, docsAppFilter);
+});
