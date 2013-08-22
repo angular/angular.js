@@ -6,6 +6,16 @@ var $resourceMinErr = angular.$$minErr('$resource');
  * @ngdoc overview
  * @name ngResource
  * @description
+ *
+ * # ngResource
+ *
+ * `ngResource` is the name of the optional Angular module that adds support for interacting with
+ * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
+ * `ngReource` provides the {@link ngResource.$resource `$resource`} serivce.
+ *
+ * {@installModule resource}
+ *
+ * See {@link ngResource.$resource `$resource`} for usage.
  */
 
 /**
@@ -20,16 +30,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
  * The returned resource object has action methods which provide high-level behaviors without
  * the need to interact with the low level {@link ng.$http $http} service.
  *
- * # Installation
- * To use $resource make sure you have included the `angular-resource.js` that comes in Angular
- * package. You can also find this file on Google CDN, bower as well as at
- * {@link http://code.angularjs.org/ code.angularjs.org}.
- *
- * Finally load the module in your application:
- *
- *        angular.module('app', ['ngResource']);
- *
- * and you are ready to get started!
+ * Requires the {@link ngResource `ngResource`} module to be installed.
  *
  * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.

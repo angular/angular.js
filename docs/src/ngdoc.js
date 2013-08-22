@@ -276,6 +276,9 @@ Doc.prototype = {
         replace(/{@type\s+(\S+)(?:\s+(\S+))?}/g, function(_, type, url) {
           url = url || '#';
           return '<a href="' + url + '" class="' + self.prepare_type_hint_class_name(type) + '">' + type + '</a>';
+        }).
+        replace(/{@installModule\s+(\S+)?}/g, function(_, module) {
+          return explainModuleInstallation(module);
         });
     });
     text = parts.join('');
@@ -450,7 +453,6 @@ Doc.prototype = {
       dom.text(' Improve this doc');
     });
     dom.h(title(this), function() {
-
       notice('deprecated', 'Deprecated API', self.deprecated);
       if (self.ngdoc === 'error') {
         minerrMsg = lookupMinerrMsg(self);
@@ -1168,4 +1170,29 @@ function dashCase(name){
   return name.replace(DASH_CASE_REGEXP, function(letter, pos) {
     return (pos ? '-' : '') + letter.toLowerCase();
   });
+}
+//////////////////////////////////////////////////////////
+
+function explainModuleInstallation(moduleName){
+  var ngMod = ngModule(moduleName),
+    modulePackage = 'angular-' + moduleName,
+    modulePackageFile = modulePackage + '.js';
+
+  return '<h1>Installation</h1>' +
+    '<p>First include <code>' + modulePackageFile +'</code> in your HTML:</p><pre><code>' +
+    '    &lt;script src=&quot;angular.js&quot;&gt;\n' +
+    '    &lt;script src=&quot;' + modulePackageFile + '&quot;&gt;</pre></code>' +
+
+    '<p>You can also find this file on the [Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs), ' +
+    '<a href="http://bower.io/">Bower</a> (as <code>' + modulePackage + '</code>), ' +
+    'and on <a href="http://code.angularjs.org/">code.angularjs.org</a>.</p>' +
+
+    '<p>Then load the module in your application by adding it as a dependant module:</p><pre><code>' +
+    '    angular.module(\'app\', [\'' + ngMod + '\']);</pre></code>' +
+
+    '<p>With that you\'re ready to get started!</p>';
+}
+
+function ngModule(moduleName) {
+  return 'ng' + moduleName[0].toUpperCase() + moduleName.substr(1);
 }
