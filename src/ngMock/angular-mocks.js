@@ -656,6 +656,96 @@ angular.mock.$LogProvider = function() {
   angular.mock.TzDate.prototype = Date.prototype;
 })();
 
+/**
+ * @ngdoc function
+ * @name angular.mock.createMockStyleSheet
+ * @description
+ *
+ * This function creates a style sheet object useful for dynamically adding and removing CSS styles bound to a selector.
+ * Dynamic style sheets are useful when testing animations and for mocking CSS styling.
+ *
+ * @param {document=} document - the document object where the style sheet will be placed
+ * @param {window=} window - the window object where the styles will be computed from
+ * @return {object} the style sheet object wrapper for defining styles
+ *
+ * @example
+ *
+ * <pre>
+    it('should do something', inject(function($window, $document, $rootElement) {
+      if($window.getComputedStyle) {
+        var stylesheet = angular.mock.createMockStyleSheet($document, $window);
+
+        //this is required so that the application element is apart of the body
+        jqLite($document[0].body).append($rootElement);
+
+        var elm = $compile('<div class="my-bg">...</div>')($rootScope);
+        $rootElement.append(elm);
+
+        expect($window.getComputedStyle(elm[0]).paddingTop).toBe('0px');
+
+        stylesheet.style('.my-bg', 'padding-top', '10px');
+
+        expect($window.getComputedStyle(elm[0]).paddingTop).toBe('10px');
+
+        stylesheet.destroy();
+      }
+    });
+ * </pre>
+ *
+ */
+angular.mock.createMockStyleSheet = (function(doc, wind) {
+  doc = doc ? doc[0] : document;
+  wind = wind || window;
+
+  var node = doc.createElement('style');
+  var head = doc.getElementsByTagName('head')[0];
+  head.appendChild(node);
+
+  var ss = doc.styleSheets[doc.styleSheets.length - 1];
+
+  return {
+    /**
+      * @ngdoc function
+      * @name angular.mock.createMockStyleSheet#addRule
+      * @methodOf angular.mock.createMockStyleSheet
+      * @function
+      *
+      * @param {string} selector a valid CSS selector
+      * @param {string} styles a series of CSS properties and values
+      *
+      * @description
+      * Creates a CSS new rule with the given selector and the styles associated with it
+      *
+      */
+    addRule : function(selector, styles) {
+      try {
+        ss.insertRule(selector + '{ ' + styles + '}', 0);
+      }
+      catch(e) {
+        try {
+          ss.addRule(selector, styles);
+        }
+        catch(e) {}
+      }
+    },
+
+    /**
+      * @ngdoc function
+      * @name angular.mock.createMockStyleSheet#destroy
+      * @methodOf angular.mock.createMockStyleSheet
+      * @function
+      *
+      * @description
+      * Removes all the styles defined in the style sheet as well as the style sheet itself
+      *
+      */
+    destroy : function() {
+      head.removeChild(node);
+    }
+  };
+
+});
+
 angular.mock.animate = angular.module('mock.animate', ['ng'])
 
   .config(['$provide', function($provide) {
