@@ -19,7 +19,7 @@ function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
         android = int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
-        boxee = $window.navigator.userAgent.indexOf('boxee') == -1,
+        boxee = $window.navigator.userAgent.indexOf('Boxee') != -1,
         document = $document[0] || {},
         vendorPrefix,
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
