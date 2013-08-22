@@ -21,7 +21,7 @@
  * @scope
  * @param {expression} ngController Name of a globally accessible constructor function or an
  *     {@link guide/expression expression} that on the current scope evaluates to a
- *     constructor function. The controller instance can further be published into the scope
+ *     constructor function or a string that references the constructor function. The controller instance can further be published into the scope
  *     by adding `as localName` the controller name attribute.
  *
  * @example

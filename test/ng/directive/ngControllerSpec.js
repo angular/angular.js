@@ -1,9 +1,10 @@
 'use strict';
 
 describe('ngController', function() {
-  var element;
+  var element, $controllerProvider;
 
-  beforeEach(module(function($controllerProvider) {
+  beforeEach(module(function(_$controllerProvider_) {
+    $controllerProvider = _$controllerProvider_;
     $controllerProvider.register('PublicModule', function() {
       this.mark = 'works';
     });
@@ -84,5 +85,18 @@ describe('ngController', function() {
     element = $compile('<div ng-controller="Greeter">{{name}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
+  }));
+
+
+  it('should instantiate a controller reference defined on scope', inject(function($compile, $rootScope) {
+    var Ctrl = function($scope) { $scope.name = 'Wes'; };
+    $controllerProvider.register('Ctrl', Ctrl);
+    $rootScope.foo = {
+      bar: 'Ctrl'
+    };
+
+    element = $compile('<div ng-controller="foo.bar">{{name}}</div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.text()).toBe('Wes');
   }));
 });
