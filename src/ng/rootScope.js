@@ -118,7 +118,8 @@ function $RootScopeProvider(){
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
       this.$$destroyed = false;
-      this.$$asyncQueue = [];
+      this.$$internalAsyncQueue = [];
+      this.$$externalAsyncQueue = [];
       this.$$listeners = {};
       this.$$isolateBindings = {};
     }
@@ -166,7 +167,8 @@ function $RootScopeProvider(){
           child = new Scope();
           child.$root = this.$root;
           // ensure that there is just one async queue per $rootScope and it's children
-          child.$$asyncQueue = this.$$asyncQueue;
+          child.$$internalAsyncQueue = this.$$internalAsyncQueue;
+          child.$$externalAsyncQueue = this.$$externalAsyncQueue;
         } else {
           Child = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. These will then show up as class
@@ -493,7 +495,8 @@ function $RootScopeProvider(){
       $digest: function() {
         var watch, value, last,
             watchers,
-            asyncQueue = this.$$asyncQueue,
+            internalAsyncQueue = this.$$internalAsyncQueue,
+            externalAsyncQueue = this.$$externalAsyncQueue,
             length,
             dirty, ttl = TTL,
             next, current, target = this,
@@ -506,9 +509,9 @@ function $RootScopeProvider(){
           dirty = false;
           current = target;
 
-          while(asyncQueue.length) {
+          while(internalAsyncQueue.length) {
             try {
-              current.$eval(asyncQueue.shift());
+              current.$eval(internalAsyncQueue.shift());
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -563,9 +566,17 @@ function $RootScopeProvider(){
                 '{0} $digest() iterations reached. Aborting!\nWatchers fired in the last 5 iterations: {1}',
                 TTL, toJson(watchLog));
           }
-        } while (dirty || asyncQueue.length);
+        } while (dirty || internalAsyncQueue.length);
 
         clearPhase();
+
+        while(externalAsyncQueue.length) {
+          try {
+            target.$eval(externalAsyncQueue.shift());
+          } catch (e) {
+            $exceptionHandler(e);
+          }
+        }
       },
 
 
@@ -678,9 +689,10 @@ function $RootScopeProvider(){
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
+       * @param {boolean} runDigest Whether or not to skip the next digest cycle after the expr is evaluated
        */
-      $evalAsync: function(expr) {
-        this.$$asyncQueue.push(expr);
+      $evalAsync: function(expr, runDigest) {
+        (runDigest === false ? this.$$externalAsyncQueue : this.$$internalAsyncQueue).push(expr);
       },
 
       /**
