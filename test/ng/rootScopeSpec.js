@@ -705,6 +705,57 @@ describe('Scope', function() {
       expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect($rootScope.$$asyncQueue).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
     }));
+
+
+    describe('auto-flushing when queueing outside of an $apply', function() {
+      var log, $rootScope, $browser;
+
+      beforeEach(inject(function(_log_, _$rootScope_, _$browser_) {
+        log = _log_;
+        $rootScope = _$rootScope_;
+        $browser = _$browser_;
+      }));
+
+
+      it('should auto-flush the queue asynchronously and trigger digest', function() {
+        $rootScope.$evalAsync(log.fn('eval-ed!'));
+        $rootScope.$watch(log.fn('digesting'));
+        expect(log).toEqual([]);
+
+        $browser.defer.flush(0);
+
+        expect(log).toEqual(['eval-ed!', 'digesting', 'digesting']);
+      });
+
+
+      it('should not trigger digest asynchronously if the queue is empty in the next tick', function() {
+        $rootScope.$evalAsync(log.fn('eval-ed!'));
+        $rootScope.$watch(log.fn('digesting'));
+        expect(log).toEqual([]);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['eval-ed!', 'digesting', 'digesting']);
+        log.reset();
+
+        $browser.defer.flush(0);
+
+        expect(log).toEqual([]);
+      });
+
+
+      it('should not schedule more than one auto-flush task', function() {
+        $rootScope.$evalAsync(log.fn('eval-ed 1!'));
+        $rootScope.$evalAsync(log.fn('eval-ed 2!'));
+
+        $browser.defer.flush(0);
+        expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
+
+        expect(function() {
+          $browser.defer.flush(0);
+        }).toThrow('No deferred tasks with delay up to 0ms to be flushed!');
+      });
+    });
   });
 
 
