@@ -3,20 +3,13 @@
  * @name ngAnimate
  * @description
  *
- * ngAnimate
- * =========
+ * `ngAnimate` is an optional module that provides CSS and JavaScript animation hooks.
  *
- * The ngAnimate module is an optional module that comes packed with AngularJS that can be included within an AngularJS
- * application to provide support for CSS and JavaScript animation hooks.
+ * {@install animate}
  *
- * To make use of animations with AngularJS, the `angular-animate.js` JavaScript file must be included into your application
- * and the `ngAnimate` module must be included as a dependency.
+ * # Usage
  *
- * <pre>
- * angular.module('App', ['ngAnimate']);
- * </pre>
- *
- * Then, to see animations in action, all that is required is to define the appropriate CSS classes
+ * To see animations in action, all that is required is to define the appropriate CSS classes
  * or to register a JavaScript animation via the $animation service. The directives that support animation automatically are:
  * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView`. Custom directives can take advantage of animation
  * by using the `$animate` service.
@@ -46,7 +39,7 @@
  *   -o-transition:0.5s linear all;
  *   transition:0.5s linear all;
  * }
- * 
+ *
  * .slide.ng-enter { }        /&#42; starting animations for enter &#42;/
  * .slide.ng-enter-active { } /&#42; terminal animations for enter &#42;/
  * .slide.ng-leave { }        /&#42; starting animations for leave &#42;/
@@ -190,11 +183,13 @@ angular.module('ngAnimate', ['ng'])
    * @name ngAnimate.$animateProvider
    * @description
    *
-   * The $AnimationProvider provider allows developers to register and access custom JavaScript animations directly inside
+   * The `$AnimationProvider` allows developers to register and access custom JavaScript animations directly inside
    * of a module. When an animation is triggered, the $animate service will query the $animation function to find any
    * animations that match the provided name value.
    *
-   * Please visit the {@link ngAnimate ngAnimate} module overview page learn more about how to use animations in your application.
+   * Requires the {@link ngAnimate `ngAnimate`} module to be installed.
+   *
+   * Please visit the {@link ngAnimate `ngAnimate`} module overview page learn more about how to use animations in your application.
    *
    */
   .config(['$provide', '$animateProvider', function($provide, $animateProvider) {
@@ -206,7 +201,7 @@ angular.module('ngAnimate', ['ng'])
     var rootAnimateState = {running:true};
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
-        
+
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       function lookup(name) {
@@ -248,7 +243,9 @@ angular.module('ngAnimate', ['ng'])
        * The `$animate` service is used behind the scenes with pre-existing directives and animation with these directives
        * will work out of the box without any extra configuration.
        *
-       * Please visit the {@link ngAnimate ngAnimate} module overview page learn more about how to use animations in your application.
+       * Requires the {@link ngAnimate `ngAnimate`} module to be installed.
+       *
+       * Please visit the {@link ngAnimate `ngAnimate`} module overview page learn more about how to use animations in your application.
        *
        */
       return {

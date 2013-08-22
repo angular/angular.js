@@ -3,6 +3,15 @@
 /**
  * @ngdoc overview
  * @name ngCookies
+ * @description
+ *
+ * Provides the {@link ngCookies.$cookies `$cookies`} and
+ * {@link ngCookies.$cookieStore `$cookieStore`} services.
+ *
+ * {@install cookies}
+ *
+ * See {@link ngCookies.$cookies `$cookies`} and
+ * {@link ngCookies.$cookieStore `$cookieStore`} for usage.
  */
 
 
@@ -18,16 +27,7 @@ angular.module('ngCookies', ['ng']).
    * Only a simple Object is exposed and by adding or removing properties to/from
    * this object, new cookies are created/deleted at the end of current $eval.
    *
-   * # Installation
-   * To use $cookies make sure you have included the `angular-cookies.js` that comes in Angular
-   * package. You can also find this file on Google CDN, bower as well as at
-   * {@link http://code.angularjs.org/ code.angularjs.org}.
-   *
-   * Finally load the module in your application:
-   *
-   *        angular.module('app', ['ngCookies']);
-   *
-   * and you are ready to get started!
+   * Requires the {@link ngCookies `ngCookies`} module to be installed.
    *
    * @example
    <doc:example>
@@ -133,6 +133,9 @@ angular.module('ngCookies', ['ng']).
    * Provides a key-value (string-object) storage, that is backed by session cookies.
    * Objects put or retrieved from this storage are automatically serialized or
    * deserialized by angular's toJson/fromJson.
+   *
+   * Requires the {@link ngCookies `ngCookies`} module to be installed.
+   *
    * @example
    */
    factory('$cookieStore', ['$cookies', function($cookies) {
