@@ -136,7 +136,7 @@ user enters text into the text field.
 </example>
 
 <a name="scope"></a>
-#Scope
+# Scope
 
 The {@link guide/scope scope} is responsible for detecting changes to the model section and
 provides the execution context for expressions. The scopes are nested in a hierarchical structure
