@@ -1118,11 +1118,15 @@ describe("ngAnimate", function() {
       }));
 
       it("should properly execute CSS animations/transitions and use callbacks when using addClass / removeClass",
-        inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout) {
+        inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $window, $document) {
 
-        var transition = 'transition:11s linear all;';
-        var style = transition + ' ' + vendorPrefix + transition;
-        var parent = jqLite('<div><span style="' + style + '"></span></div>');
+        var ss = angular.mock.createMockStyleSheet($document, $window);
+        ss.addRule('.klass-add', 'transition:11s linear all');
+        ss.addRule('.klass-add', vendorPrefix  + 'transition:11s linear all');
+        ss.addRule('.klass-remove', 'transition:11s linear all');
+        ss.addRule('.klass-remove', vendorPrefix + 'transition:11s linear all');
+
+        var parent = jqLite('<div><span></span></div>');
         $rootElement.append(parent);
         body.append($rootElement);
         var element = jqLite(parent.find('span'));

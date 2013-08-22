@@ -1120,4 +1120,34 @@ describe('ngMockE2E', function() {
       }));
     });
   });
+
+  describe('StyleSheet', function() {
+
+    it('should allow custom styles to be created and removed when the stylesheet is destroyed',
+      inject(function($compile, $document, $window, $rootElement, $rootScope) {
+
+      if(!$window.getComputedStyle) return; //Why IE8??? WHY???!
+
+      var doc = $document[0];
+      var count = doc.styleSheets.length;
+      var stylesheet = angular.mock.createMockStyleSheet($document, $window);
+      expect(doc.styleSheets.length).toBe(count + 1);
+
+      jqLite(doc.body).append($rootElement);
+
+      var elm = $compile('<div class="redbg">...</div>')($rootScope);
+      $rootElement.append(elm);
+
+      expect($window.getComputedStyle(elm[0]).paddingTop).toBe('0px');
+
+      stylesheet.addRule('.redbg', 'padding-top:2px');
+
+      expect($window.getComputedStyle(elm[0]).paddingTop).toBe('2px');
+
+      stylesheet.destroy();
+
+      expect($window.getComputedStyle(elm[0]).paddingTop).toBe('0px');
+    }));
+
+  });
 });
