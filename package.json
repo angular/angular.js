@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.0.8",
-  "cdnVersion": "1.0.6",
-  "codename": "bubble-burst",
+  "version": "1.0.9-snapshot",
+  "cdnVersion": "1.0.7",
+  "codename": "marc-todo",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
