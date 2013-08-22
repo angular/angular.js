@@ -14,6 +14,8 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
+ * Requires the {@link ngRoute `ngRoute`} module to be installed.
+ *
  * @animations
  * enter - animation is used to bring new content into the browser.
  * leave - animation is used to animate existing content away.
