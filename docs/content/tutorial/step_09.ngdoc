@@ -107,7 +107,7 @@ describe('filter', function() {
 </pre>
 
 Note that you need to configure our test injector with the `phonecatFilters` module before any of
-our filter tests execute.
+our filter tests execute. Please note also the naming convention to inject the filter.
 
 You should now see the following output in the Karma tab:
 
