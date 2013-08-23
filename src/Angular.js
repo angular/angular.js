@@ -855,6 +855,16 @@ function startingTag(element) {
 
 }
 
+/**
+ * @name angular.msieVersion
+ * @function
+ * 
+ * @description Returns version of IE or NaN if not IE
+ * @returns {int} or NaN
+ */
+function msieVersion() {
+	return msie;
+}
 
 /////////////////////////////////////////////////
 
