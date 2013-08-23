@@ -119,6 +119,7 @@ function $RootScopeProvider(){
       this['this'] = this.$root =  this;
       this.$$destroyed = false;
       this.$$asyncQueue = [];
+      this.$$postDigestQueue = [];
       this.$$listeners = {};
       this.$$isolateBindings = {};
     }
@@ -133,6 +134,7 @@ function $RootScopeProvider(){
 
 
     Scope.prototype = {
+      constructor: Scope,
       /**
        * @ngdoc function
        * @name ng.$rootScope.Scope#$new
@@ -167,6 +169,7 @@ function $RootScopeProvider(){
           child.$root = this.$root;
           // ensure that there is just one async queue per $rootScope and it's children
           child.$$asyncQueue = this.$$asyncQueue;
+          child.$$postDigestQueue = this.$$postDigestQueue;
         } else {
           Child = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. These will then show up as class
@@ -494,6 +497,7 @@ function $RootScopeProvider(){
         var watch, value, last,
             watchers,
             asyncQueue = this.$$asyncQueue,
+            postDigestQueue = this.$$postDigestQueue,
             length,
             dirty, ttl = TTL,
             next, current, target = this,
@@ -566,6 +570,14 @@ function $RootScopeProvider(){
         } while (dirty || asyncQueue.length);
 
         clearPhase();
+
+        while(postDigestQueue.length) {
+          try {
+            postDigestQueue.shift()();
+          } catch (e) {
+            $exceptionHandler(e);
+          }
+        }
       },
 
 
@@ -681,6 +693,10 @@ function $RootScopeProvider(){
        */
       $evalAsync: function(expr) {
         this.$$asyncQueue.push(expr);
+      },
+
+      $$postDigest : function(expr) {
+        this.$$postDigestQueue.push(expr);
       },
 
       /**

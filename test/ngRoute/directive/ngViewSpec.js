@@ -642,7 +642,8 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('leave'); //ngView old
-      $timeout.flush();
+
+      $rootScope.$digest(); //this is required
 
       $animate.flushNext('enter'); //ngView new
       $timeout.flush();
@@ -652,6 +653,7 @@ describe('ngView animations', function() {
       $animate.flushNext('enter'); //ngRepeat 3
       $animate.flushNext('enter'); //ngRepeat 4
 
+      $rootScope.$digest();
       $timeout.flush();
 
       expect(element.text()).toEqual('34');
