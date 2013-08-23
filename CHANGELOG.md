@@ -1,7 +1,7 @@
 <a name="1.0.8"></a>
 # 1.0.8 bubble-burst (2013-08-22)
 
-Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
+Contains only these fixes cherry-picked from [v1.2.0rc1](#120-rc1-spooky-giraffe-2013-08-13).
 
 ## Bug Fixes
 
