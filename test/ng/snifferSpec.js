@@ -316,4 +316,27 @@ describe('$sniffer', function() {
     });
 
   });
+
+  describe('history', function() {
+      it('should be true on Boxee box with an older version of Webkit', function() {
+          module(function($provide) {
+              var doc = {
+                  body : {
+                      style : {}
+                  }
+              };
+              var win = {
+                  navigator: {
+                      userAgent: 'Boxee'
+                  }
+              };
+              $provide.value('$document', jqLite(doc));
+              $provide.value('$window', win);
+          });
+          inject(function($sniffer) {
+              expect($sniffer.history).toBe(false);
+          });
+      });
+
+  });
 });
