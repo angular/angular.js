@@ -8,6 +8,10 @@ describe('Docs Annotations', function() {
     body.html('');
   });
 
+  var normalizeHtml = function(html) {
+    return html.toLowerCase().replace(/\s*$/, '');
+  };
+
   describe('popover directive', function() {
 
     var $scope, element;
@@ -57,13 +61,16 @@ describe('Docs Annotations', function() {
       $scope.$apply();
       element.triggerHandler('click');
       expect(popoverElement.title()).toBe('#title_text');
-      expect(popoverElement.content()).toBe('<h1>heading</h1>\n');
+      expect(normalizeHtml(popoverElement.content())).toMatch('<h1>heading</h1>');
     }));
 
   });
 
 
   describe('foldout directive', function() {
+
+    // Do not run this suite on Internet Explorer.
+    if (msie < 10) return;
 
     var $scope, parent, element, url;
     beforeEach(function() {

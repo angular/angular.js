@@ -1468,15 +1468,6 @@ describe('q', function() {
 
 
     it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
-      deferred.promise.then(function() { throw 'reject'; }).then(null, errorSpy);
-      deferred.resolve('resolve');
-      mockNextTick.flush();
-      expect(exceptionExceptionSpy).toHaveBeenCalled();
-      expect(errorSpy).toHaveBeenCalled();
-    });
-    
-
-    it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
       deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
       deferred.reject('reject');
       mockNextTick.flush();

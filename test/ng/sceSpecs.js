@@ -139,10 +139,6 @@ describe('SCE', function() {
       expect($sce.trustAsHtml("")).toBe("");
     }));
 
-    it('should unwrap null into null', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, null)).toBe(null);
-    }));
-
     it('should unwrap "" into ""', inject(function($sce) {
       expect($sce.getTrusted($sce.HTML, "")).toBe("");
     }));

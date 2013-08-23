@@ -1,7 +1,7 @@
 var sharedConfig = require('./karma-shared.conf');
 
 module.exports = function(config) {
-  sharedConfig(config);
+  sharedConfig(config, {testName: 'AngularJS: docs', logFile: 'karma-docs.log'});
 
   config.set({
     files: [
@@ -26,6 +26,7 @@ module.exports = function(config) {
       'build/docs/js/docs.js',
       'build/docs/docs-data.js',
 
+      'docs/component-spec/mocks.js',
       'docs/component-spec/*.js'
     ],
 
@@ -34,6 +35,4 @@ module.exports = function(config) {
       suite: 'Docs'
     }
   });
-
-  config.sauceLabs.testName = 'AngularJS: docs';
 };
