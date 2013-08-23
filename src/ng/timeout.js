@@ -2,10 +2,13 @@
 
 
 function $TimeoutProvider() {
-  this.$get = ['$rootScope', '$browser', '$q', '$exceptionHandler',
-       function($rootScope,   $browser,   $q,   $exceptionHandler) {
+  this.$get = ['$rootScope', '$browser', '$exceptionHandler',
+       function($rootScope,   $browser,    $exceptionHandler) {
     var deferreds = {};
 
+     var $q = qFactory(function(callback){
+         $rootScope.$evalAsync(callback);
+     },$exceptionHandler);
 
      /**
       * @ngdoc function

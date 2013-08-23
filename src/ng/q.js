@@ -161,13 +161,28 @@
  */
 function $QProvider() {
 
-  this.$get = ['$rootScope', '$exceptionHandler', function($rootScope, $exceptionHandler) {
-    return qFactory(function(callback) {
-      $rootScope.$evalAsync(callback);
+  this.$get = ['$rootScope', '$exceptionHandler','$browser', function($rootScope, $exceptionHandler,$browser) {
+    return qFactory(function (callback) {
+        if($rootScope.$$phase){
+            $rootScope.$evalAsync(callback);
+        }
+        else {
+            var timeoutId = $browser.defer(function(){
+                timeoutId = false;
+                $rootScope.$apply();
+            });
+            $rootScope.$evalAsync(function(){
+                if(timeoutId){
+                    //$digest was called before
+                    $browser.defer.cancel(timeoutId);
+                    timeoutId = null;
+                }
+                $rootScope.$eval(callback);
+            });
+        }
     }, $exceptionHandler);
   }];
 }
-
 
 /**
  * Constructs a promise manager.
