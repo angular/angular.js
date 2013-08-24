@@ -104,18 +104,27 @@ angular.mock.$Browser = function() {
    * @param {number=} number of milliseconds to flush. See {@link #defer.now}
    */
   self.defer.flush = function(delay) {
+    var flushedSomething = false;
+
     if (angular.isDefined(delay)) {
       self.defer.now += delay;
     } else {
       if (self.deferredFns.length) {
         self.defer.now = self.deferredFns[self.deferredFns.length-1].time;
-      } else {
-        throw Error('No deferred tasks to be flushed');
       }
     }
 
     while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
+      flushedSomething = true;
       self.deferredFns.shift().fn();
+    }
+
+    if (!flushedSomething) {
+      if (angular.isUndefined(delay)) {
+        throw Error('No deferred tasks to be flushed!');
+      } else {
+        throw Error('No deferred tasks with delay up to ' + delay + 'ms to be flushed!')
+      }
     }
   };
 
