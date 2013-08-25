@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "stu",
       "pro"
     ],
+    "STANDALONEMONTH": [
+      "sije\u010danj",
+      "velja\u010da",
+      "o\u017eujak",
+      "travanj",
+      "svibanj",
+      "lipanj",
+      "srpanj",
+      "kolovoz",
+      "rujan",
+      "listopad",
+      "studeni",
+      "prosinac"
+    ],
     "fullDate": "EEEE, d. MMMM y.",
     "longDate": "d. MMMM y.",
     "medium": "d. M. y. HH:mm:ss",

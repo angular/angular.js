@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "marraskuuta",
       "joulukuuta"
     ],
+    "STANDALONEMONTH": [
+      "tammikuu",
+      "helmikuu",
+      "maaliskuu",
+      "huhtikuu",
+      "toukokuu",
+      "kes\u00e4kuu",
+      "hein\u00e4kuu",
+      "elokuu",
+      "syyskuu",
+      "lokakuu",
+      "marraskuu",
+      "joulukuu"
+    ],
     "fullDate": "cccc, d. MMMM y",
     "longDate": "d. MMMM y",
     "medium": "d.M.yyyy H.mm.ss",

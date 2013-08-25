@@ -180,6 +180,8 @@ describe("extractDateTimeSymbols", function () {
               DATETIME_FORMATS: {
                   MONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
                       'octobre', 'novembre', 'décembre'],
+                  STANDALONEMONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
+                      'octobre', 'novembre', 'décembre'],
                   SHORTMONTH: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.',
                       'nov.', 'déc.'],
                   DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],

@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "Lapkr.",
       "Gruod."
     ],
+    "STANDALONEMONTH": [
+      "Sausis",
+      "Vasaris",
+      "Kovas",
+      "Balandis",
+      "Gegu\u017e\u0117",
+      "Bir\u017eelis",
+      "Liepa",
+      "Rugpj\u016btis",
+      "Rugs\u0117jis",
+      "Spalis",
+      "Lapkritis",
+      "Gruodis"
+    ],
     "fullDate": "y 'm'. MMMM d 'd'., EEEE",
     "longDate": "y 'm'. MMMM d 'd'.",
     "medium": "y MMM d HH:mm:ss",

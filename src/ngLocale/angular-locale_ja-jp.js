@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "11\u6708",
       "12\u6708"
     ],
+    "STANDALONEMONTH": [
+      "1\u6708",
+      "2\u6708",
+      "3\u6708",
+      "4\u6708",
+      "5\u6708",
+      "6\u6708",
+      "7\u6708",
+      "8\u6708",
+      "9\u6708",
+      "10\u6708",
+      "11\u6708",
+      "12\u6708"
+    ],
     "fullDate": "y\u5e74M\u6708d\u65e5EEEE",
     "longDate": "y\u5e74M\u6708d\u65e5",
     "medium": "yyyy/MM/dd H:mm:ss",
