@@ -105,16 +105,17 @@ angular.mock.$Browser = function() {
    */
   self.defer.flush = function(delay) {
     var flushedSomething = false;
+        now = self.defer.now;
 
     if (angular.isDefined(delay)) {
-      self.defer.now += delay;
+      now += delay;
     } else {
       if (self.deferredFns.length) {
-        self.defer.now = self.deferredFns[self.deferredFns.length-1].time;
+        now = self.deferredFns[self.deferredFns.length-1].time;
       }
     }
 
-    while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
+    while (self.deferredFns.length && self.deferredFns[0].time <= now) {
       flushedSomething = true;
       self.deferredFns.shift().fn();
     }
@@ -126,6 +127,8 @@ angular.mock.$Browser = function() {
         throw Error('No deferred tasks with delay up to ' + delay + 'ms to be flushed!')
       }
     }
+
+    self.defer.now = now;
   };
 
   /**
