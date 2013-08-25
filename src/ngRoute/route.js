@@ -26,6 +26,7 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  * Used for configuring routes. See {@link ngRoute.$route $route} for an example.
  *
  * Requires the {@link ngRoute `ngRoute`} module to be installed.
+ * Requires an ng-view element in the HTML
  */
 function $RouteProvider(){
   var routes = {};
