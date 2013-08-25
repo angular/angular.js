@@ -299,7 +299,7 @@ describe("ngAnimate", function() {
         expect(child).toBeHidden(); //hides instantly
 
         //lets change this to prove that done doesn't fire anymore for the previous hide() operation
-        child.css('display','block'); 
+        child.css('display','block');
         child.removeClass('ng-hide');
 
         $timeout.flushNext(0);
@@ -389,7 +389,7 @@ describe("ngAnimate", function() {
         element.addClass('custom-delay custom-long-delay');
         $rootScope.$digest();
 
-        $animate.removeClass(element, 'ng-hide'); 
+        $animate.removeClass(element, 'ng-hide');
 
         if($sniffer.transitions) {
           $timeout.flushNext(0);
@@ -446,9 +446,9 @@ describe("ngAnimate", function() {
         it("should properly detect and make use of CSS Animations with multiple iterations",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
-          var style = 'animation-duration: 2s;' + 
+          var style = 'animation-duration: 2s;' +
                       'animation-iteration-count: 3;' +
-                      vendorPrefix + 'animation-duration: 2s;' + 
+                      vendorPrefix + 'animation-duration: 2s;' +
                       vendorPrefix + 'animation-iteration-count: 3;';
 
           ss.addRule('.ng-hide-add', style);
@@ -470,9 +470,9 @@ describe("ngAnimate", function() {
         it("should fallback to the animation duration if an infinite iteration is provided",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
-          var style = 'animation-duration: 2s;' + 
+          var style = 'animation-duration: 2s;' +
                       'animation-iteration-count: infinite;' +
-                      vendorPrefix + 'animation-duration: 2s;' + 
+                      vendorPrefix + 'animation-duration: 2s;' +
                       vendorPrefix + 'animation-iteration-count: infinite;';
 
           ss.addRule('.ng-hide-add', style);
@@ -494,10 +494,10 @@ describe("ngAnimate", function() {
         it("should consider the animation delay is provided",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
-          var style = 'animation-duration: 2s;' + 
+          var style = 'animation-duration: 2s;' +
                       'animation-delay: 10s;' +
                       'animation-iteration-count: 5;' +
-                      vendorPrefix + 'animation-duration: 2s;' + 
+                      vendorPrefix + 'animation-duration: 2s;' +
                       vendorPrefix + 'animation-delay: 10s;' +
                       vendorPrefix + 'animation-iteration-count: 5;';
 
@@ -572,7 +572,7 @@ describe("ngAnimate", function() {
         it("should skip transitions if disabled and run when enabled",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
-          var style = 'transition: 1s linear all;' + 
+          var style = 'transition: 1s linear all;' +
                       vendorPrefix + 'transition: 1s linear all';
 
           ss.addRule('.ng-hide-add', style);
@@ -662,9 +662,9 @@ describe("ngAnimate", function() {
 
         it("should select the highest duration and delay",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
-            var style = 'transition:1s linear all 2s;' + 
-                         vendorPrefix + 'transition:1s linear all 2s;' + 
-                         'animation:my_ani 10s 1s;' + 
+            var style = 'transition:1s linear all 2s;' +
+                         vendorPrefix + 'transition:1s linear all 2s;' +
+                         'animation:my_ani 10s 1s;' +
                          vendorPrefix + 'animation:my_ani 10s 1s;';
 
             ss.addRule('.ng-hide-add', style);
@@ -1272,7 +1272,7 @@ describe("ngAnimate", function() {
       }));
     });
   });
-    
+
   var $rootElement, $document, vendorPrefix;
   beforeEach(module(function($provide) {
     return function(_$rootElement_, _$document_, $animate, $sniffer) {
@@ -1293,7 +1293,7 @@ describe("ngAnimate", function() {
   it("should properly animate and parse CSS3 transitions",
     inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
 
-    ss.addRule('.ng-enter', 'transition:1s linear all;' + 
+    ss.addRule('.ng-enter', 'transition:1s linear all;' +
              vendorPrefix + 'transition:1s linear all');
 
     var element = html($compile('<div>...</div>')($rootScope));
@@ -1341,7 +1341,7 @@ describe("ngAnimate", function() {
     $sniffer.animations = false;
     $sniffer.transitions = false;
 
-    ss.addRule('.ng-enter',     'some_animation 4s linear 1s 2 alternate;' + 
+    ss.addRule('.ng-enter',     'some_animation 4s linear 1s 2 alternate;' +
       vendorPrefix + 'animation: some_animation 4s linear 1s 2 alternate');
 
     var element = html($compile('<div>...</div>')($rootScope));
@@ -1365,7 +1365,7 @@ describe("ngAnimate", function() {
     })
     inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
 
-      ss.addRule('.ng-enter', 'transition: 1s linear all;' + 
+      ss.addRule('.ng-enter', 'transition: 1s linear all;' +
                vendorPrefix + 'transition: 1s linear all');
 
       var element = html($compile('<div>...</div>')($rootScope));
