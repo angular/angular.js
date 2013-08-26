@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "Kas",
       "Ara"
     ],
+    "STANDALONEMONTH": [
+      "Ocak",
+      "\u015eubat",
+      "Mart",
+      "Nisan",
+      "May\u0131s",
+      "Haziran",
+      "Temmuz",
+      "A\u011fustos",
+      "Eyl\u00fcl",
+      "Ekim",
+      "Kas\u0131m",
+      "Aral\u0131k"
+    ],
     "fullDate": "d MMMM y EEEE",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",

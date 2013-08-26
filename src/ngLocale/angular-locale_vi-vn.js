@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "thg 11",
       "thg 12"
     ],
+    "STANDALONEMONTH": [
+      "th\u00e1ng m\u1ed9t",
+      "th\u00e1ng hai",
+      "th\u00e1ng ba",
+      "th\u00e1ng t\u01b0",
+      "th\u00e1ng n\u0103m",
+      "th\u00e1ng s\u00e1u",
+      "th\u00e1ng b\u1ea3y",
+      "th\u00e1ng t\u00e1m",
+      "th\u00e1ng ch\u00edn",
+      "th\u00e1ng m\u01b0\u1eddi",
+      "th\u00e1ng m\u01b0\u1eddi m\u1ed9t",
+      "th\u00e1ng m\u01b0\u1eddi hai"
+    ],
     "fullDate": "EEEE, 'ng\u00e0y' dd MMMM 'n\u0103m' y",
     "longDate": "'Ng\u00e0y' dd 'th\u00e1ng' M 'n\u0103m' y",
     "medium": "dd-MM-yyyy HH:mm:ss",

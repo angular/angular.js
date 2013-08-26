@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "N\u00ebn",
       "Dhj"
     ],
+    "STANDALONEMONTH": [
+      "janar",
+      "shkurt",
+      "mars",
+      "prill",
+      "maj",
+      "qershor",
+      "korrik",
+      "gusht",
+      "shtator",
+      "tetor",
+      "n\u00ebntor",
+      "dhjetor"
+    ],
     "fullDate": "EEEE, dd MMMM y",
     "longDate": "dd MMMM y",
     "medium": "yyyy-MM-dd h.mm.ss.a",

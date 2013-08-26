@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "Lis",
       "Pro"
     ],
+    "STANDALONEMONTH": [
+      "leden",
+      "\u00fanor",
+      "b\u0159ezen",
+      "duben",
+      "kv\u011bten",
+      "\u010derven",
+      "\u010dervenec",
+      "srpen",
+      "z\u00e1\u0159\u00ed",
+      "\u0159\u00edjen",
+      "listopad",
+      "prosinec"
+    ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
     "medium": "d. M. yyyy H:mm:ss",

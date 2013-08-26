@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "Nov",
       "Des"
     ],
+    "STANDALONEMONTH": [
+      "Januarie",
+      "Februarie",
+      "Maart",
+      "April",
+      "Mei",
+      "Junie",
+      "Julie",
+      "Augustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember"
+    ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",

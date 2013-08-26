@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "aza",
       "abe"
     ],
+    "STANDALONEMONTH": [
+      "urtarrila",
+      "otsaila",
+      "martxoa",
+      "apirila",
+      "maiatza",
+      "ekaina",
+      "uztaila",
+      "abuztua",
+      "iraila",
+      "urria",
+      "azaroa",
+      "abendua"
+    ],
     "fullDate": "EEEE, y'eko' MMMM'ren' dd'a'",
     "longDate": "y'eko' MMM'ren' dd'a'",
     "medium": "y MMM d HH:mm:ss",

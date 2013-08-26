@@ -52,6 +52,20 @@ $provide.value("$locale", {
       "lis",
       "gru"
     ],
+    "STANDALONEMONTH": [
+      "stycze\u0144",
+      "luty",
+      "marzec",
+      "kwiecie\u0144",
+      "maj",
+      "czerwiec",
+      "lipiec",
+      "sierpie\u0144",
+      "wrzesie\u0144",
+      "pa\u017adziernik",
+      "listopad",
+      "grudzie\u0144"
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
