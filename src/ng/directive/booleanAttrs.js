@@ -195,6 +195,7 @@
       </doc:scenario>
     </doc:example>
  *
+ * @element INPUT
  * @param {expression} ngChecked If the {@link guide/expression expression} is truthy, 
  *     then special attribute "checked" will be set on the element
  */
@@ -225,6 +226,7 @@
       </doc:scenario>
     </doc:example>
  *
+ * @element INPUT
  * @param {expression} ngReadonly If the {@link guide/expression expression} is truthy, 
  *     then special attribute "readonly" will be set on the element
  */
