@@ -2942,7 +2942,7 @@ describe('$compile', function() {
     }));
 
 
-    // Fails on IE < 10 with "TypeError: Access is denied" when trying to set img[src]
+    // Fails on IE <= 10 with "TypeError: Access is denied" when trying to set img[src]
     if (!msie || msie > 10) {
       it('should sanitize mailto: urls', inject(function($compile, $rootScope) {
         element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
@@ -3053,9 +3053,9 @@ describe('$compile', function() {
       inject(function($compile, $rootScope) {
         element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
 
-        // Fails on IE < 10 with "TypeError: Object doesn't support this property or method" when
+        // Fails on IE <= 11 with "TypeError: Object doesn't support this property or method" when
         // trying to set img[src]
-        if (!msie || msie > 10) {
+        if (!msie || msie > 11) {
           $rootScope.testUrl = "javascript:doEvilStuff()";
           $rootScope.$apply();
           expect(element.attr('src')).toBe('javascript:doEvilStuff()');
