@@ -98,7 +98,8 @@
  *   provide a progress indication, before the promise is resolved or rejected.
  *
  *   This method *returns a new promise* which is resolved or rejected via the return value of the
- *   `successCallback`, `errorCallback`, or `notifyCallback`.
+ *   `successCallback`, `errorCallback`. It also notifies via the return value of the `notifyCallback`
+ *   method. The promise can not be resolved or rejected from the notifyCallback method.
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
