@@ -405,10 +405,6 @@ compiler}. The attributes are:
     can be referenced at the directive template. The directive needs to define a scope for this
     configuration to be used. Useful in the case when directive is used as component.
   
-  * `require` - Require another controller be passed into current directive linking function. The
-    `require` takes a name of the directive controller to pass in. If no such controller can be
-    found an error is raised. The name can be prefixed with:
-
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
     declaration style. If omitted, the default (attributes only) is used.
 
