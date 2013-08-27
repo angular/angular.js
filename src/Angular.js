@@ -645,7 +645,7 @@ function shallowCopy(src, dst) {
   dst = dst || {};
 
   for(var key in src) {
-    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+    if (src.hasOwnProperty(key) && key.lastIndexOf('$$',0) !== 0) {
       dst[key] = src[key];
     }
   }

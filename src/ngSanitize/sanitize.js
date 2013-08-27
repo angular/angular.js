@@ -209,7 +209,7 @@ function htmlParser( html, handler ) {
     if ( !stack.last() || !specialElements[ stack.last() ] ) {
 
       // Comment
-      if ( html.indexOf("<!--") === 0 ) {
+      if ( html.lastIndexOf("<!--",0) === 0 ) {
         index = html.indexOf("-->");
 
         if ( index >= 0 ) {

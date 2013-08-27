@@ -55,7 +55,7 @@ function composeProtocolHostPort(protocol, host, port) {
  * @returns {string} returns text from whole after begin or otherwise if it does not begin with expected string.
  */
 function beginsWith(begin, whole, otherwise) {
-  return whole.indexOf(begin) == 0 ? whole.substr(begin.length) : otherwise;
+  return whole.lastIndexOf(begin,0) === 0 ? whole.substr(begin.length) : otherwise;
 }
 
 
