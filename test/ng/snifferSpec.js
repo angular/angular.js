@@ -112,7 +112,7 @@ describe('$sniffer', function() {
         else if(/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
         }
-        else if(/ie/i.test(ua)) {
+        else if(/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         else if(/opera/i.test(ua)) {
