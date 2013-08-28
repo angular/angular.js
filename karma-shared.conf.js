@@ -5,7 +5,8 @@ module.exports = function(config, specificOptions) {
     logLevel: config.LOG_INFO,
     logColors: true,
     browsers: ['Chrome'],
-    runnerPort: 0,
+    browserDisconnectTimeout: 5000,
+
 
     // config for Travis CI
     sauceLabs: {
