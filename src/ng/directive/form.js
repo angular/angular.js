@@ -454,7 +454,8 @@ var formDirectiveFactory = function(isNgForm) {
 
         return {
           pre: function ngFormPreLink(scope, formElement, attr, controller) {
-            if (!attr.action) {
+            // if `action` attr is not present on the form, prevent the default action (submission)
+            if (!('action' in attr)) {
               // we can't use jq events because if a form is destroyed during submission the default
               // action is not prevented. see #1238
               //
