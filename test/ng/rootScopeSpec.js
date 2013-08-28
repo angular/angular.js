@@ -751,9 +751,8 @@ describe('Scope', function() {
         $browser.defer.flush(0);
         expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
 
-        expect(function() {
-          $browser.defer.flush(0);
-        }).toThrow('No deferred tasks with delay up to 0ms to be flushed!');
+        $browser.defer.flush(100000);
+        expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
       });
     });
   });
