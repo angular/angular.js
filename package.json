@@ -8,12 +8,12 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "devDependencies": {
-    "grunt": "0.4.0",
-    "grunt-contrib-clean": "0.4.0",
-    "grunt-contrib-compress": "0.4.1",
-    "grunt-contrib-connect": "0.1.2",
-    "grunt-contrib-copy": "0.4.1",
-    "grunt-parallel": "~0.2.0",
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-parallel": "git://github.com/vojtajina/grunt-parallel.git#streaming-per-task",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-merge-conflict": "~0.0.1",
     "jasmine-node": "1.2.3",
