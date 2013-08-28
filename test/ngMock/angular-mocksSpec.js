@@ -319,7 +319,7 @@ describe('ngMock', function() {
       browser.defer(logFn('B'), 2);
       browser.defer(logFn('C'), 3);
 
-      expect(function() {browser.defer.flush(0);}).toThrow('No deferred tasks with delay up to 0ms to be flushed!');
+      browser.defer.flush(0);
       expect(browser.defer.now).toEqual(0);
       expect(log).toEqual('');
 
@@ -333,15 +333,7 @@ describe('ngMock', function() {
     });
 
     it('should throw an exception if there is nothing to be flushed', function() {
-      expect(function() {browser.defer.flush();}).toThrow('No deferred tasks to be flushed!');
-    });
-
-    it('should throw an exception if there is nothing to be flushed within the delay provided', function() {
-      browser.defer(logFn('A'), 1);
-      expect(function() {browser.defer.flush(0);}).toThrow('No deferred tasks with delay up to 0ms to be flushed!');
-
-      browser.defer.flush(1);
-      expect(log).toEqual('A;');
+      expect(function() {browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
     });
   });
 
@@ -372,45 +364,52 @@ describe('ngMock', function() {
 
 
   describe('$timeout', function() {
-    var log, $timeout;
+    it('should expose flush method that will flush the pending queue of tasks', inject(
+        function($timeout) {
+      var logger = [],
+          logFn = function(msg) { return function() { logger.push(msg) }};
 
-    beforeEach(module(provideLog));
+      $timeout(logFn('t1'));
+      $timeout(logFn('t2'), 200);
+      $timeout(logFn('t3'));
+      expect(logger).toEqual([]);
 
-    beforeEach(inject(function(_log_, _$timeout_) {
-      log = _log_;
-      $timeout = _$timeout_;
+      $timeout.flush();
+      expect(logger).toEqual(['t1', 't3', 't2']);
     }));
 
 
-    it('should expose flush method that will flush the pending queue of tasks', function() {
+    it('should throw an exception when not flushed', inject(function($timeout){
+      $timeout(noop);
+
+      var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow(expectedError);
+    }));
 
 
-      $timeout(log.fn('t1'));
-      $timeout(log.fn('t2'), 200);
-      $timeout(log.fn('t3'));
-      expect(log).toEqual([]);
+    it('should do nothing when all tasks have been flushed', inject(function($timeout) {
+      $timeout(noop);
 
       $timeout.flush();
-      expect(log).toEqual(['t1', 't3', 't2']);
-    });
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
 
 
-    it('should flush tasks only up to a delay if flush delay is provided', function() {
-      $timeout(log.fn('t1'), 100);
+    it('should check against the delay if provided within timeout', inject(function($timeout) {
+      $timeout(noop, 100);
       $timeout.flush(100);
-      expect(log).toEqual(['t1']);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
 
-      $timeout(log.fn('t2'), 1000);
-      expect(function() {$timeout.flush(100);}).toThrow();
-      expect(log).toEqual(['t1']);
+      $timeout(noop, 1000);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow();
 
       $timeout.flush(900);
-      expect(log).toEqual(['t1', 't2']);
-      expect(function() {$timeout.flush();}).toThrow();
-    });
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
 
 
-    it('should assert against the delay value', function() {
+    it('should assert against the delay value', inject(function($timeout) {
       var count = 0;
       var iterate = function() {
         count++;
@@ -422,26 +421,7 @@ describe('ngMock', function() {
       expect(count).toBe(1);
       $timeout.flushNext(123);
       expect(count).toBe(2);
-    });
-
-
-    describe('verifyNoPendingTasks', function() {
-
-      it('should throw an exception when not flushed', function() {
-        $timeout(noop);
-
-        var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
-        expect(function() {$timeout.verifyNoPendingTasks();}).toThrow(expectedError);
-      });
-
-
-      it('should do nothing when all tasks have been flushed', function() {
-        $timeout(noop);
-
-        $timeout.flush();
-        expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
-      });
-    });
+    }));
   });
 
 

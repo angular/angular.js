@@ -14,7 +14,7 @@ describe('$timeout', function() {
     $browser.defer.flush();
     expect(counter).toBe(1);
 
-    expect(function() {$browser.defer.flush();}).toThrow('No deferred tasks to be flushed!');
+    expect(function() {$browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
     expect(counter).toBe(1);
   }));
 
