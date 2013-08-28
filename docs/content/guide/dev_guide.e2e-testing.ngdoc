@@ -151,6 +151,9 @@ Executes the function `fn(selectedElements, done)`, where selectedElements are t
 match the given jQuery `selector` and `done` is a function that is called at the end of the `fn`
 function.  The `label` is used for test output.
 
+## element(selector, label).{hasClass | addClass | removeClass}(className)
+Checks/adds/removes class on the element matching the given jQuery `selector`. The `label` is used for test output.
+
 ## element(selector, label).{method}()
 Returns the result of calling `method` on the element matching the given jQuery `selector`, where
 `method` can be any of the following jQuery methods: `val`, `text`, `html`, `height`,

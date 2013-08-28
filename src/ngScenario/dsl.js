@@ -421,6 +421,29 @@ angular.scenario.dsl('element', function() {
     });
   };
 
+  chain.hasClass = function(value) {
+    return this.addFutureAction("element has class '" + value + "'", function($window, $document, done) {
+      var elements = $document.elements();
+      done(null, elements.hasClass(value));
+    });
+  };
+
+  chain.addClass = function(value) {
+    return this.addFutureAction("element add class '" + value + "'", function($window, $document, done) {
+      var elements = $document.elements();
+      elements.addClass(value);
+      done();
+    });
+  };
+
+  chain.removeClass = function(value) {
+    return this.addFutureAction("element remove class '" + value + "'", function($window, $document, done) {
+      var elements = $document.elements();
+      elements.removeClass(value);
+      done();
+    });
+  };
+
   angular.forEach(KEY_VALUE_METHODS, function(methodName) {
     chain[methodName] = function(name, value) {
       var args = arguments,
