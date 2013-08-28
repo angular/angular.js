@@ -637,12 +637,17 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('leave'); //ngView old
+
+      $rootScope.$digest();
+
       $animate.flushNext('enter'); //ngView new
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
       $animate.flushNext('enter'); //ngRepeat 3
       $animate.flushNext('enter'); //ngRepeat 4
+
+      $rootScope.$digest();
 
       expect(element.text()).toEqual('34');
 
