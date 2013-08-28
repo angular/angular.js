@@ -307,7 +307,7 @@ var formDirectiveFactory = function(isNgForm) {
       compile: function() {
         return {
           pre: function(scope, formElement, attr, controller) {
-            if (!attr.action) {
+            if (!attr.action && attr.action !== '') {
               // we can't use jq events because if a form is destroyed during submission the default
               // action is not prevented. see #1238
               //
