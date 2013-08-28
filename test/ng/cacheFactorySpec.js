@@ -142,7 +142,7 @@ describe('$cacheFactory', function() {
       it('should return all keys', inject(function($cacheFactory) {
         cache.put('foo', 'bar');
         cache.put('baz', 'boo');
-        expect(cache.peek().size).toBe(2);
+        expect(cache.peek().length).toBe(2);
         expect(cache.peek()).toEqual(['foo', 'baz']);
       }));
     });
