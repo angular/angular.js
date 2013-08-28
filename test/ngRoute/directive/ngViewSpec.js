@@ -628,13 +628,8 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('enter'); //ngView
-
-      $timeout.flush();
-
       $animate.flushNext('enter'); //repeat 1
       $animate.flushNext('enter'); //repeat 2
-
-      $timeout.flush();
 
       expect(element.text()).toEqual('12');
 
@@ -642,17 +637,12 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('leave'); //ngView old
-      $timeout.flush();
-
       $animate.flushNext('enter'); //ngView new
-      $timeout.flush();
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
       $animate.flushNext('enter'); //ngRepeat 3
       $animate.flushNext('enter'); //ngRepeat 4
-
-      $timeout.flush();
 
       expect(element.text()).toEqual('34');
 

@@ -98,7 +98,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         forEach(element, function(node) {
           parentNode.insertBefore(node, afterNextSibling);
         });
-        $timeout(done || noop, 0, false);
+        done && $timeout(done, 0, false);
       },
 
       /**
@@ -115,7 +115,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        */
       leave : function(element, done) {
         element.remove();
-        $timeout(done || noop, 0, false);
+        done && $timeout(done, 0, false);
       },
 
       /**
@@ -157,7 +157,7 @@ var $AnimateProvider = ['$provide', function($provide) {
                       className :
                       isArray(className) ? className.join(' ') : '';
         element.addClass(className);
-        $timeout(done || noop, 0, false);
+        done && $timeout(done, 0, false);
       },
 
       /**
@@ -178,7 +178,7 @@ var $AnimateProvider = ['$provide', function($provide) {
                       className :
                       isArray(className) ? className.join(' ') : '';
         element.removeClass(className);
-        $timeout(done || noop, 0, false);
+        done && $timeout(done, 0, false);
       },
 
       enabled : noop

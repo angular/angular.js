@@ -283,7 +283,7 @@ angular.module('ngAnimate', ['ng'])
         enter : function(element, parent, after, done) {
           $delegate.enter(element, parent, after);
           performAnimation('enter', 'ng-enter', element, parent, after, function() {
-            $timeout(done || noop, 0, false);
+            done && $timeout(done, 0, false);
           });
         },
 
@@ -353,7 +353,7 @@ angular.module('ngAnimate', ['ng'])
         move : function(element, parent, after, done) {
           $delegate.move(element, parent, after);
           performAnimation('move', 'ng-move', element, null, null, function() {
-            $timeout(done || noop, 0, false);
+            done && $timeout(done, 0, false);
           });
         },
 
@@ -615,10 +615,11 @@ angular.module('ngAnimate', ['ng'])
             activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
           });
 
-          $timeout(function() {
-            element.addClass(activeClassName);
-            $timeout(done, duration * 1000, false);
-          },0,false);
+          //this triggers a reflow which allows for the transition animation to kick in
+          element.prop('clientWidth');
+          element.addClass(activeClassName);
+
+          $timeout(done, duration * 1000, false);
 
           //this will automatically be called by $animate so
           //there is no need to attach this internally to the

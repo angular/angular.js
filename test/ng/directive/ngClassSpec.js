@@ -321,29 +321,27 @@ describe('ngClass animations', function() {
     expect($animate.queue.length).toBe(0);
 
     $rootScope.val = 'one';
+    $timeout.flush();
+
     $rootScope.$digest();
     $animate.flushNext('addClass');
     $animate.flushNext('addClass');
-    $timeout.flush();
     expect($animate.queue.length).toBe(0);
 
     $rootScope.val = '';
     $rootScope.$digest();
     $animate.flushNext('removeClass'); //only removeClass is called
     expect($animate.queue.length).toBe(0);
-    $timeout.flush();
 
     $rootScope.val = 'one';
     $rootScope.$digest();
     $animate.flushNext('addClass');
-    $timeout.flush();
     expect($animate.queue.length).toBe(0);
 
     $rootScope.val = 'two';
     $rootScope.$digest();
     $animate.flushNext('removeClass');
     $animate.flushNext('addClass');
-    $timeout.flush();
     expect($animate.queue.length).toBe(0);
   }));
 });
