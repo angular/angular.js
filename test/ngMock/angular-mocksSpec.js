@@ -404,7 +404,7 @@ describe('ngMock', function() {
       expect(function() {$timeout.flush(100);}).toThrow();
       expect(log).toEqual(['t1']);
 
-      $timeout.flush(1000);
+      $timeout.flush(900);
       expect(log).toEqual(['t1', 't2']);
       expect(function() {$timeout.flush();}).toThrow();
     });
@@ -422,21 +422,6 @@ describe('ngMock', function() {
       expect(count).toBe(1);
       $timeout.flushNext(123);
       expect(count).toBe(2);
-    });
-
-
-    it('should not update the current time if an exception is thrown during a flush', function() {
-      $timeout(log.fn('t1'), 100);
-      $timeout(log.fn('t2'), 101);
-
-      expect(function() { $timeout.flush(90); }).toThrow();
-      expect(function() { $timeout.flush(90); }).toThrow();
-
-      $timeout.flush(100);
-      expect(log).toEqual(['t1']);
-
-      $timeout.flush(1);
-      expect(log).toEqual(['t1', 't2']);
     });
 
 
