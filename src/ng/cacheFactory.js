@@ -32,7 +32,7 @@
  * - `{void}` `remove({string} key)` — Removes a key-value pair from the cache.
  * - `{void}` `removeAll()` — Removes all cached values.
  * - `{void}` `destroy()` — Removes references to this cache from $cacheFactory.
- * - `{void}` `peek()` — Return all keys in the cache.
+ * - `{void}` `peek()` — Returns all keys in the cache.
  * -
  */
 function $CacheFactoryProvider() {
