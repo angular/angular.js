@@ -2,71 +2,71 @@ angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
-    "AMPMS": {
-      "0": "上午",
-      "1": "下午"
-    },
-    "DAY": {
-      "0": "星期日",
-      "1": "星期一",
-      "2": "星期二",
-      "3": "星期三",
-      "4": "星期四",
-      "5": "星期五",
-      "6": "星期六"
-    },
-    "MONTH": {
-      "0": "一月",
-      "1": "二月",
-      "2": "三月",
-      "3": "四月",
-      "4": "五月",
-      "5": "六月",
-      "6": "七月",
-      "7": "八月",
-      "8": "九月",
-      "9": "十月",
-      "10": "十一月",
-      "11": "十二月"
-    },
-    "SHORTDAY": {
-      "0": "周日",
-      "1": "周一",
-      "2": "周二",
-      "3": "周三",
-      "4": "周四",
-      "5": "周五",
-      "6": "周六"
-    },
-    "SHORTMONTH": {
-      "0": "1月",
-      "1": "2月",
-      "2": "3月",
-      "3": "4月",
-      "4": "5月",
-      "5": "6月",
-      "6": "7月",
-      "7": "8月",
-      "8": "9月",
-      "9": "10月",
-      "10": "11月",
-      "11": "12月"
-    },
-    "fullDate": "y年M月d日EEEE",
-    "longDate": "y年M月d日",
-    "medium": "y年M月d日 ah:mm:ss",
-    "mediumDate": "y年M月d日",
+    "AMPMS": [
+      "\u4e0a\u5348",
+      "\u4e0b\u5348"
+    ],
+    "DAY": [
+      "\u661f\u671f\u65e5",
+      "\u661f\u671f\u4e00",
+      "\u661f\u671f\u4e8c",
+      "\u661f\u671f\u4e09",
+      "\u661f\u671f\u56db",
+      "\u661f\u671f\u4e94",
+      "\u661f\u671f\u516d"
+    ],
+    "MONTH": [
+      "\u4e00\u6708",
+      "\u4e8c\u6708",
+      "\u4e09\u6708",
+      "\u56db\u6708",
+      "\u4e94\u6708",
+      "\u516d\u6708",
+      "\u4e03\u6708",
+      "\u516b\u6708",
+      "\u4e5d\u6708",
+      "\u5341\u6708",
+      "\u5341\u4e00\u6708",
+      "\u5341\u4e8c\u6708"
+    ],
+    "SHORTDAY": [
+      "\u5468\u65e5",
+      "\u5468\u4e00",
+      "\u5468\u4e8c",
+      "\u5468\u4e09",
+      "\u5468\u56db",
+      "\u5468\u4e94",
+      "\u5468\u516d"
+    ],
+    "SHORTMONTH": [
+      "1\u6708",
+      "2\u6708",
+      "3\u6708",
+      "4\u6708",
+      "5\u6708",
+      "6\u6708",
+      "7\u6708",
+      "8\u6708",
+      "9\u6708",
+      "10\u6708",
+      "11\u6708",
+      "12\u6708"
+    ],
+    "fullDate": "y\u5e74M\u6708d\u65e5EEEE",
+    "longDate": "y\u5e74M\u6708d\u65e5",
+    "medium": "y\u5e74M\u6708d\u65e5 ah:mm:ss",
+    "mediumDate": "y\u5e74M\u6708d\u65e5",
     "mediumTime": "ah:mm:ss",
     "short": "dd/MM/yy ahh:mm",
     "shortDate": "dd/MM/yy",
     "shortTime": "ahh:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "¥",
+    "CURRENCY_SYM": "\u00a5",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
-    "PATTERNS": {
-      "0": {
+    "PATTERNS": [
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -78,19 +78,19 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": ""
       },
-      "1": {
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
-    }
+    ]
   },
   "id": "zh-hans-sg",
   "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}

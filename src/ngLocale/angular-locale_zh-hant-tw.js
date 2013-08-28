@@ -2,58 +2,58 @@ angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
-    "AMPMS": {
-      "0": "上午",
-      "1": "下午"
-    },
-    "DAY": {
-      "0": "星期日",
-      "1": "星期一",
-      "2": "星期二",
-      "3": "星期三",
-      "4": "星期四",
-      "5": "星期五",
-      "6": "星期六"
-    },
-    "MONTH": {
-      "0": "1月",
-      "1": "2月",
-      "2": "3月",
-      "3": "4月",
-      "4": "5月",
-      "5": "6月",
-      "6": "7月",
-      "7": "8月",
-      "8": "9月",
-      "9": "10月",
-      "10": "11月",
-      "11": "12月"
-    },
-    "SHORTDAY": {
-      "0": "週日",
-      "1": "週一",
-      "2": "週二",
-      "3": "週三",
-      "4": "週四",
-      "5": "週五",
-      "6": "週六"
-    },
-    "SHORTMONTH": {
-      "0": "1月",
-      "1": "2月",
-      "2": "3月",
-      "3": "4月",
-      "4": "5月",
-      "5": "6月",
-      "6": "7月",
-      "7": "8月",
-      "8": "9月",
-      "9": "10月",
-      "10": "11月",
-      "11": "12月"
-    },
-    "fullDate": "y年M月d日EEEE",
-    "longDate": "y年M月d日",
+    "AMPMS": [
+      "\u4e0a\u5348",
+      "\u4e0b\u5348"
+    ],
+    "DAY": [
+      "\u661f\u671f\u65e5",
+      "\u661f\u671f\u4e00",
+      "\u661f\u671f\u4e8c",
+      "\u661f\u671f\u4e09",
+      "\u661f\u671f\u56db",
+      "\u661f\u671f\u4e94",
+      "\u661f\u671f\u516d"
+    ],
+    "MONTH": [
+      "1\u6708",
+      "2\u6708",
+      "3\u6708",
+      "4\u6708",
+      "5\u6708",
+      "6\u6708",
+      "7\u6708",
+      "8\u6708",
+      "9\u6708",
+      "10\u6708",
+      "11\u6708",
+      "12\u6708"
+    ],
+    "SHORTDAY": [
+      "\u9031\u65e5",
+      "\u9031\u4e00",
+      "\u9031\u4e8c",
+      "\u9031\u4e09",
+      "\u9031\u56db",
+      "\u9031\u4e94",
+      "\u9031\u516d"
+    ],
+    "SHORTMONTH": [
+      "1\u6708",
+      "2\u6708",
+      "3\u6708",
+      "4\u6708",
+      "5\u6708",
+      "6\u6708",
+      "7\u6708",
+      "8\u6708",
+      "9\u6708",
+      "10\u6708",
+      "11\u6708",
+      "12\u6708"
+    ],
+    "fullDate": "y\u5e74M\u6708d\u65e5EEEE",
+    "longDate": "y\u5e74M\u6708d\u65e5",
     "medium": "yyyy/M/d ah:mm:ss",
     "mediumDate": "yyyy/M/d",
     "mediumTime": "ah:mm:ss",
@@ -62,11 +62,11 @@ $provide.value("$locale", {
     "shortTime": "ah:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "¥",
+    "CURRENCY_SYM": "\u00a5",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
-    "PATTERNS": {
-      "0": {
+    "PATTERNS": [
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
@@ -78,19 +78,19 @@ $provide.value("$locale", {
         "posPre": "",
         "posSuf": ""
       },
-      "1": {
+      {
         "gSize": 3,
         "lgSize": 3,
         "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00A4",
+        "negPre": "(\u00a4",
         "negSuf": ")",
-        "posPre": "\u00A4",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
-    }
+    ]
   },
   "id": "zh-hant-tw",
   "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
