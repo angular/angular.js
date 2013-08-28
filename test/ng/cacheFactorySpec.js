@@ -136,6 +136,16 @@ describe('$cacheFactory', function() {
         expect(cache.info().id).toBe('test');
       }));
     });
+    
+    describe('peek', function() {
+
+      it('should return all keys', inject(function($cacheFactory) {
+        cache.put('foo', 'bar');
+        cache.put('baz', 'boo');
+        expect(cache.peek().size).toBe(2);
+        expect(cache.peek()).toBe(['foo', 'baz']);
+      }));
+    });
 
 
     describe('removeAll', function() {
