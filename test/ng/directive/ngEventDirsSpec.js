@@ -12,10 +12,14 @@ describe('event directives', function() {
   describe('ngSubmit', function() {
 
     it('should get called on form submit', inject(function($rootScope, $compile) {
-      element = $compile('<form action="" ng-submit="submitted = true">' +
+      element = $compile('<form action="/foo" ng-submit="submitted = true">' +
         '<input type="submit"/>' +
         '</form>')($rootScope);
       $rootScope.$digest();
+
+      // prevent submit within the test harness
+      element.on('submit', function(e) { e.preventDefault(); });
+
       expect($rootScope.submitted).not.toBeDefined();
 
       browserTrigger(element.children()[0]);
@@ -29,10 +33,14 @@ describe('event directives', function() {
         }
       };
 
-      element = $compile('<form action="" ng-submit="formSubmission($event)">' +
+      element = $compile('<form action="/foo" ng-submit="formSubmission($event)">' +
         '<input type="submit"/>' +
         '</form>')($rootScope);
       $rootScope.$digest();
+
+      // prevent submit within the test harness
+      element.on('submit', function(e) { e.preventDefault(); });
+
       expect($rootScope.formSubmitted).not.toBeDefined();
 
       browserTrigger(element.children()[0]);
