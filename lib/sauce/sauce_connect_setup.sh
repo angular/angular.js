@@ -27,6 +27,7 @@ curl $CONNECT_URL -o $CONNECT_DOWNLOAD 2> /dev/null 1> /dev/null
 unzip $CONNECT_DOWNLOAD > /dev/null
 rm $CONNECT_DOWNLOAD
 
+SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
 
 ARGS=""
