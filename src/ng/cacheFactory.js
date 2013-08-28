@@ -116,7 +116,7 @@ function $CacheFactoryProvider() {
 
         info: function() {
           return extend({}, stats, {size: size});
-        }
+        },
         
         peek: function() {
           keys = [];
