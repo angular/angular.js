@@ -622,7 +622,7 @@ function $CompileProvider($provide) {
               // support ngAttr attribute binding
               ngAttrName = directiveNormalize(name);
               if (NG_ATTR_BINDING.test(ngAttrName)) {
-                name = ngAttrName.substr(6).toLowerCase();
+                name = ngAttrName.substr(6).replace(/(\w)([A-Z])/g, '$1-$2').toLowerCase();
               }
               if ((index = ngAttrName.lastIndexOf('Start')) != -1 && index == ngAttrName.length - 5) {
                 attrStartName = name;
