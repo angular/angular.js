@@ -1,15 +1,21 @@
 'use strict';
 
 describe('$controller', function() {
-  var $controllerProvider, $controller;
+  var $controllerProvider, $controller, $s1, $s2, $s3;
 
-  beforeEach(module(function(_$controllerProvider_) {
+  beforeEach(module(function(_$controllerProvider_, $provide) {
     $controllerProvider = _$controllerProvider_;
+    $provide.service('s1', function() { this.foo = 'wat'; });
+    $provide.service('s2', function() { this.foo = 'bat'; });
+    $provide.service('s3', function() { this.foo = 'cat'; });
   }));
 
 
-  beforeEach(inject(function(_$controller_) {
+  beforeEach(inject(function(_$controller_, s1, s2, s3) {
     $controller = _$controller_;
+    $s1 = s1;
+    $s2 = s2;
+    $s3 = s3;
   }));
 
 
@@ -56,6 +62,43 @@ describe('$controller', function() {
 
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+    it('should allow array-registered controllers to reuse previously-defined controllers with different injectables', function() {
+      var FooCtrl = function(s1) { s1.foo = 'bar'; },
+          scope = {},
+          ctrl;
+
+      $controllerProvider.register('FooCtrl', ['s1', FooCtrl]);
+      $controllerProvider.register('BarCtrl', ['s2', 'FooCtrl']);
+      ctrl = $controller('BarCtrl', {s2: $s2});
+
+      expect($s2.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+    it('should not matter how many controllers are in the chain', function() {
+      var FooCtrl = function(s1) { s1.foo = 'bar'; },
+          ctrl;
+
+      $controllerProvider.register('FooCtrl', ['s1', FooCtrl]);
+      $controllerProvider.register('BarCtrl', ['s2', 'FooCtrl']);
+      $controllerProvider.register('BazCtrl', ['s3', 'BarCtrl']);
+      ctrl = $controller('BazCtrl', {s3: $s3});
+
+      expect($s3.foo).toBe('bar');
+      expect(ctrl instanceof FooCtrl).toBe(true);
+    });
+
+    it('should fail if circular declarations are detected', function() {
+      var FooCtrl = function(s1) { s1.foo = 'bar'; },
+          ctrl;
+
+      $controllerProvider.register('FooCtrl', ['s1', 'BazCtrl']);
+      $controllerProvider.register('BarCtrl', ['s2', 'FooCtrl']);
+      $controllerProvider.register('BazCtrl', ['s3', 'BarCtrl']);
+      
+      expect(function() {$controller('BazCtrl', {s3: $s3});}).toThrowMinErr("$controller", "noscp", "Circular declaration found with controller 'FooCtrl' -> 'BazCtrl'");
     });
   });
 

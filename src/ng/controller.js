@@ -21,7 +21,9 @@ function $ControllerProvider() {
    * @methodOf ng.$controllerProvider
    * @param {string} name Controller name
    * @param {Function|Array} constructor Controller constructor fn (optionally decorated with DI
-   *    annotations in the array notation).
+   *    annotations in the array notation.  Array notation for controllers will allow for another
+   *    registered controller to be given by name as the constructor, and the injector will 
+   *    instantiate the proper piece of code).
    */
   this.register = function(name, constructor) {
     if (isObject(name)) {
@@ -60,6 +62,34 @@ function $ControllerProvider() {
     return function(expression, locals) {
       var instance, match, constructor, identifier;
 
+      function resolveControllerCode(expression, topControllerName) {
+
+        function findRealController(controllerName) {
+          var _controller = controllers[controllerName],
+              _nextController = _controller[_controller.length -1];
+          searchedControllers[controllerName] = true;
+
+          if(searchedControllers[_nextController]) {
+            throw minErr('$controller')('noscp', "Circular declaration found with controller '{0}' -> '{1}'", controllerName, _nextController);
+          }
+          if(isString(_controller[_controller.length - 1])) {
+            _controller[_controller.length - 1] = findRealController(_nextController);
+          }
+
+          return _controller[_controller.length - 1];
+        }
+
+        var lastArg = expression.length - 1,
+            expressionLastArg = expression[lastArg],
+            searchedControllers = {};
+
+        if(isString(expressionLastArg)) {
+          searchedControllers[topControllerName] = true;
+          expression[lastArg] = findRealController(expressionLastArg);
+        }
+        return expression;
+      }
+
       if(isString(expression)) {
         match = expression.match(CNTRL_REG),
         constructor = match[1],
@@ -67,6 +97,8 @@ function $ControllerProvider() {
         expression = controllers.hasOwnProperty(constructor)
             ? controllers[constructor]
             : getter(locals.$scope, constructor, true) || getter($window, constructor, true);
+
+        expression = resolveControllerCode(expression, constructor);
 
         assertArgFn(expression, constructor, true);
       }
