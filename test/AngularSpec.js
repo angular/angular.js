@@ -1003,4 +1003,19 @@ describe('angular', function() {
     });
   });
 
+  describe('msie UA parsing', function() {
+    if (/ Trident\/.*; rv:/.test(window.navigator.userAgent)) {
+      it('should fail when the Trident and the rv versions disagree for IE11+', function() {
+        // When this test fails, we can think about whether we want to use the version from the
+        // Trident token in the UA string or stick with the version from rv: as we currently do.
+        // Refer https://github.com/angular/angular.js/pull/3758#issuecomment-23529245 for the
+        // discussion.
+        var UA = window.navigator.userAgent;
+        var tridentVersion = parseInt((/Trident\/(\d+)/.exec(UA) || [])[1], 10) + 4;
+        var rvVersion = parseInt((/Trident\/.*; rv:(\d+)/.exec(UA) || [])[1], 10);
+        expect(tridentVersion).toBe(rvVersion);
+      });
+    }
+  });
+
 });
