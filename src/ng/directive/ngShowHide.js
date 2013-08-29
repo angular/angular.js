@@ -6,7 +6,7 @@
  *
  * @description
  * The `ngShow` directive shows and hides the given HTML element conditionally based on the expression
- * provided to the ngShow attribute. The show and hide mechanism is a achieved by removing and adding
+ * provided to the ngShow attribute. The show and hide mechanism is achieved by removing and adding
  * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
  * in AngularJS which sets the display style to none (using an !important flag).
  *
