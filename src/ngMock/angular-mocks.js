@@ -316,7 +316,7 @@ angular.mock.$LogProvider = function() {
   }
 
   this.debugEnabled = function(flag) {
-	  if (isDefined(flag)) {
+	  if (angular.isDefined(flag)) {
 		  debug = flag;
 		  return this;
 	  } else {
