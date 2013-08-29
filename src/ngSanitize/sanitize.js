@@ -121,11 +121,13 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
      </doc:scenario>
    </doc:example>
  */
-var $sanitize = function(html) {
-  var buf = [];
-    htmlParser(html, htmlSanitizeWriter(buf));
+var $sanitizeFactory = ['$htmlParser', function($htmlParser) {
+  return function $sanitize(html) {
+    var buf = [];
+    $htmlParser(html, htmlSanitizeWriter(buf));
     return buf.join('');
-};
+  };
+}];
 
 
 // Regular Expressions for parsing tags and attributes
@@ -187,8 +189,12 @@ function makeMap(str) {
 
 
 /**
+ * @ngdoc service
+ * @name ngSanitize.$htmlParser
+ * @function
+ *
  * @example
- * htmlParser(htmlString, {
+ * $htmlParser(htmlString, {
  *     start: function(tag, attrs, unary) {},
  *     end: function(tag) {},
  *     chars: function(text) {},
@@ -198,7 +204,7 @@ function makeMap(str) {
  * @param {string} html string
  * @param {object} handler
  */
-function htmlParser( html, handler ) {
+function $htmlParser( html, handler ) {
   var index, chars, match, stack = [], last = html;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
@@ -405,4 +411,6 @@ function htmlSanitizeWriter(buf){
 
 
 // define ngSanitize module and register $sanitize service
-angular.module('ngSanitize', []).value('$sanitize', $sanitize);
+angular.module('ngSanitize', []).
+  factory('$sanitize', $sanitizeFactory).
+  value('$htmlParser', $htmlParser);
