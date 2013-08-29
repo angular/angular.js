@@ -13,7 +13,9 @@ before_script:
   - mkdir -p $LOGS_DIR
   - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
-  - grunt package
+  - grunt bower
+  - grunt bower
+  - grunt package-without-bower
   - grunt ci-checks
   - ./lib/sauce/sauce_connect_block.sh
 
