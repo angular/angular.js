@@ -75,7 +75,7 @@ describe('$anchorScroll', function() {
 
 
   it('should not scroll to other than anchor element with name', inject(
-    addElements('input name=xxl', 'select name=xxl', 'form name=xxl'),
+    addElements('input name=xxl', 'select name=xxl'),
     changeHashAndScroll('xxl'),
     expectNoScrolling()));
 
