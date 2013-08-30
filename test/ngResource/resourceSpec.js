@@ -630,6 +630,38 @@ describe("resource", function() {
 
         expect(cc.url).toBe('/new-id');
       });
+
+      it('should pass the same transformed value to success callbacks and to promises', function() {
+        $httpBackend.expect('GET', '/CreditCard').respond(200, { value: 'original' });
+
+        var transformResponse = function (response) {
+          return { value: 'transformed' };
+        };
+
+        var CreditCard = $resource('/CreditCard', {}, {
+          call: {
+            method: 'get',
+            interceptor: { response: transformResponse }
+          }
+        });
+
+        var successValue,
+            promiseValue;
+
+        var cc = new CreditCard({ name: 'Me' });
+
+        var req = cc.$call({}, function (result) {
+          successValue = result;
+        });
+        req.then(function (result) {
+          promiseValue = result;
+        });
+
+        $httpBackend.flush();
+        expect(successValue).toEqual({ value: 'transformed' });
+        expect(promiseValue).toEqual({ value: 'transformed' });
+        expect(successValue).toBe(promiseValue);
+      });
     });
 
 
