@@ -16,3 +16,4 @@ angular.xcodeproj
 libpeerconnection.log
 npm-debug.log
 /tmp/
+*.iml
