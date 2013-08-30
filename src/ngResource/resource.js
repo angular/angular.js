@@ -492,9 +492,11 @@ angular.module('ngResource', ['ng']).
 
             value.$resolved = true;
 
-            (success||noop)(value, response.headers);
-
             response.resource = value;
+
+            response = (responseInterceptor)(response);
+
+            (success||noop)(response, response.headers);
 
             return response;
           }, function(response) {
