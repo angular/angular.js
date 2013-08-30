@@ -87,7 +87,7 @@ describe('$anchorScroll', function() {
 
 
   it('should scroll to element with id with precedence over name', inject(
-    addElements('name=abc', 'id=abc'),
+    addElements('name=abc', 'id=abc', 'name=abc'),
     changeHashAndScroll('abc'),
     expectScrollingTo('id=abc')));
 
