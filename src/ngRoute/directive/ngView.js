@@ -176,6 +176,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
   return {
     restrict: 'ECA',
     terminal: true,
+    priority: 1000,
     transclude: 'element',
     compile: function(element, attr, linker) {
       return function(scope, $element, attr) {
