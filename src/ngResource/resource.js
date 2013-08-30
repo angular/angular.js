@@ -491,8 +491,6 @@ angular.module('ngResource', ['ng']).
 
             value.$resolved = true;
 
-            (success||noop)(value, response.headers);
-
             response.resource = value;
 
             return response;
@@ -502,8 +500,15 @@ angular.module('ngResource', ['ng']).
             (error||noop)(response);
 
             return $q.reject(response);
-          }).then(responseInterceptor, responseErrorInterceptor);
+          });
 
+          promise = promise.then(
+              function(response) {
+                var value = responseInterceptor(response);
+                (success||noop)(value, response.headers);
+                return value;
+              },
+              responseErrorInterceptor);
 
           if (!isInstanceCall) {
             // we are creating instance / collection
