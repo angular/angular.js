@@ -46,6 +46,7 @@
  * - [next()](http://api.jquery.com/next/) - Does not support selectors
  * - [on()](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
  * - [off()](http://api.jquery.com/off/) - Does not support namespaces or selectors
+ * - [offset()](http://api.jquery.com/offset/) - Does not support setter
  * - [parent()](http://api.jquery.com/parent/) - Does not support selectors
  * - [prepend()](http://api.jquery.com/prepend/)
  * - [prop()](http://api.jquery.com/prop/)
@@ -438,6 +439,27 @@ forEach({
 
       return  val;
     }
+  },
+  
+  offset: function(element, name, value) {
+    var documentElem,
+      box = { top: 0, left: 0 },
+  		doc = element && element.ownerDocument;
+  
+  	if (!doc || isDefined(name)) { 
+  		return;
+  	}
+  
+  	documentElem = doc.documentElement;
+  
+  	if ( typeof element.getBoundingClientRect !== undefined ) {
+  		box = element.getBoundingClientRect();
+  	}
+  	
+  	return {
+  		top: box.top + (window.pageYOffset || documentElem.scrollTop) - (documentElem.clientTop || 0),
+  		left: box.left + (window.pageXOffset || documentElem.scrollLeft) - (documentElem.clientLeft || 0)
+  	};
   },
 
   attr: function(element, name, value){
