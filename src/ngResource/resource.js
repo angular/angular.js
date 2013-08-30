@@ -496,7 +496,7 @@ angular.module('ngResource', ['ng']).
 
             response = (responseInterceptor)(response);
 
-            (success||noop)(response);
+            (success||noop)(response, response.headers);
 
             return response;
           }, function(response) {
