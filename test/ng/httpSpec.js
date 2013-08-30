@@ -896,6 +896,20 @@ describe('$http', function() {
       });
 
 
+      it('should allow the cached value to be an empty string', function () {
+        cache.put('/abc', '');
+
+        callback.andCallFake(function (response, status, headers) {
+          expect(response).toBe('');
+          expect(status).toBe(200);
+        });
+
+        $http({method: 'GET', url: '/abc', cache: cache}).success(callback);
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalled();
+      });
+
+
       it('should default to status code 200 and empty headers if cache contains a non-array element',
           inject(function($rootScope) {
             cache.put('/myurl', 'simple response');
