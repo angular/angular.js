@@ -600,6 +600,46 @@ describe('ngView animations', function() {
         expect(itemA).not.toEqual(itemB);
         var itemB = $animate.flushNext('enter').element;
     }));
+
+    it('should render ngClass on ngView',
+      inject(function($compile, $rootScope, $templateCache, $animate, $location, $timeout) {
+
+        var item;
+        $rootScope.tpl = 'one';
+        $rootScope.klass = 'classy';
+        element = $compile(html('<div><div ng-view ng-class="klass"></div></div>'))($rootScope);
+        $rootScope.$digest();
+
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        item = $animate.flushNext('enter').element;
+
+        $animate.flushNext('addClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('classy')).toBe(true);
+
+        $rootScope.klass = 'boring';
+        $rootScope.$digest();
+
+        $animate.flushNext('removeClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('classy')).toBe(false);
+        expect(item.hasClass('boring')).toBe(true);
+
+        $location.path('/bar');
+        $rootScope.$digest();
+
+        $animate.flushNext('leave').element;
+        item = $animate.flushNext('enter').element;
+
+        $animate.flushNext('addClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('boring')).toBe(true);
+      }));
   });
 
   it('should not double compile when the route changes', function() {
