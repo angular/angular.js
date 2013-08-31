@@ -3198,6 +3198,18 @@ describe('$compile', function() {
       $rootScope.$apply();
       expect(element.attr('on-click')).toEqual('javascript:doSomething()');
     }));
+
+    it('should pass through arbitrary values on "on" and "data-on" attributes', inject(function($compile, $rootScope) {
+      element = $compile('<button data-on="{{dataOnVar}}"></script>')($rootScope);
+      $rootScope.dataOnVar = 'data-on text';
+      $rootScope.$apply();
+      expect(element.attr('data-on')).toEqual('data-on text');
+      
+      element = $compile('<button on="{{onVar}}"></script>')($rootScope);
+      $rootScope.onVar = 'on text';
+      $rootScope.$apply();
+      expect(element.attr('on')).toEqual('on text');
+    }));
   });
 
   describe('iframe[src]', function() {
