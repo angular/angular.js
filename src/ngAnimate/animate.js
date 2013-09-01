@@ -279,9 +279,11 @@ angular.module('ngAnimate', ['ng'])
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the enter animation
          * @param {function()=} done callback function that will be called once the animation is complete
+         * @param {function()=} between callback function that will be called after DOM operations but before the animation starts
         */
-        enter : function(element, parent, after, done) {
+        enter : function(element, parent, after, done, between) {
           $delegate.enter(element, parent, after);
+          if(between) between();
           performAnimation('enter', 'ng-enter', element, parent, after, function() {
             $timeout(done || noop, 0, false);
           });
@@ -349,9 +351,11 @@ angular.module('ngAnimate', ['ng'])
          * @param {jQuery/jqLite element} parent the parent element of the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} after the sibling element (which is the previous element) of the element that will be the focus of the move animation
          * @param {function()=} done callback function that will be called once the animation is complete
+         * @param {function()=} between callback function that will be called after DOM operations but before the animation starts
         */
-        move : function(element, parent, after, done) {
+        move : function(element, parent, after, done, between) {
           $delegate.move(element, parent, after);
+          if(between) between();
           performAnimation('move', 'ng-move', element, null, null, function() {
             $timeout(done || noop, 0, false);
           });
