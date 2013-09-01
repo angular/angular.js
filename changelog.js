@@ -169,14 +169,14 @@ var writeChangelog = function(stream, commits, version) {
         hash: commit.hash,
         closes: []
       });
-    };
+    }
   });
 
   stream.write(util.format(HEADER_TPL, version, version, currentDate()));
   printSection(stream, 'Bug Fixes', sections.fix);
   printSection(stream, 'Features', sections.feat);
   printSection(stream, 'Breaking Changes', sections.breaks, false);
-}
+};
 
 
 var getPreviousTag = function() {

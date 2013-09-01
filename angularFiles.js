@@ -79,7 +79,7 @@ angularFiles = {
     'src/ngTouch/swipe.js',
     'src/ngTouch/directive/ngClick.js',
     'src/ngTouch/directive/ngSwipe.js',
-    'docs/components/angular-bootstrap/bootstrap.js',
+    'docs/components/angular-bootstrap/bootstrap.js'
   ],
 
   'angularScenario': [
