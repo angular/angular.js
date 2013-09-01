@@ -11,7 +11,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *
  * `ngResource` is the name of the optional Angular module that adds support for interacting with
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
- * `ngReource` provides the {@link ngResource.$resource `$resource`} serivce.
+ * `ngReource` provides the {@link ngResource.$resource `$resource`} service.
  *
  * {@installModule resource}
  *
