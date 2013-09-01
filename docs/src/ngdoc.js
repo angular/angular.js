@@ -1278,7 +1278,7 @@ function explainModuleInstallation(moduleName){
     '<a href="http://bower.io/">Bower</a> (as <code>' + modulePackage + '</code>), ' +
     'and on <a href="http://code.angularjs.org/">code.angularjs.org</a>.</p>' +
 
-    '<p>Then load the module in your application by adding it as a dependant module:</p><pre><code>' +
+    '<p>Then load the module in your application by adding it as a dependent module:</p><pre><code>' +
     '    angular.module(\'app\', [\'' + ngMod + '\']);</pre></code>' +
 
     '<p>With that you\'re ready to get started!</p>';
