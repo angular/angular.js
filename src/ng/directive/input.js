@@ -837,6 +837,9 @@ var VALID_CLASS = 'ng-valid',
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
  * collaborate together to achieve the desired result.
  *
+ * Note that `contenteditable` is an HTML5 attribute, which tells the browser to let the element
+ * contents be edited in place by the user.  This will not work on older browsers.
+ *
  * <example module="customControl">
     <file name="style.css">
       [contenteditable] {
