@@ -372,7 +372,7 @@ Doc.prototype = {
           return explainModuleInstallation(module);
         });
     });
-    text = parts.join('');
+    text = parts.join('' + '\n');
 
     function prepareClassName(text) {
       return text.toLowerCase().replace(/[_\W]+/g, '-');
