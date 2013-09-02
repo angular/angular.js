@@ -74,9 +74,10 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
  */
 angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
-    var prefix = 'expect ' + this.future.name + ' ';
+    var prefix = 'expect ' + this.future.name + ' ',
+        not;
     if (this.inverse) {
-      prefix += 'not ';
+      prefix += not = 'not ';
     }
     var self = this;
     this.addFuture(prefix + name + ' ' + angular.toJson(expected),
@@ -85,7 +86,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
         self.actual = self.future.value;
         if ((self.inverse && fn.call(self, expected)) ||
             (!self.inverse && !fn.call(self, expected))) {
-          error = 'expected ' + angular.toJson(expected) +
+          error = 'expected ' + not + angular.toJson(expected) +
             ' but was ' + angular.toJson(self.actual);
         }
         done(error);
