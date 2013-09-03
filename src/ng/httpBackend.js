@@ -56,7 +56,9 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       var xhr = new XHR();
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
-        if (value) xhr.setRequestHeader(key, value);
+        if (isDefined(value)) {
+            xhr.setRequestHeader(key, value);
+        }
       });
 
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
