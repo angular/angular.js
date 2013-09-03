@@ -510,6 +510,28 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(arrayLikelog).toEqual(['x', 'y']);
         });
+
+        it('should return a new array with old values', function(){
+          var watchArgs;
+          $rootScope.$watchCollection('obj', function (newValues, oldValues) {
+            watchArgs = {
+              newValues: newValues,
+              oldValues: oldValues
+            };
+          });
+
+          $rootScope.obj = ['a'];
+          $rootScope.$digest();
+
+          expect(watchArgs.newValues).toEqual($rootScope.obj);
+          expect(watchArgs.oldValues).toEqual([]);
+
+          $rootScope.obj.push('b');
+          $rootScope.$digest();
+
+          expect(watchArgs.newValues).toEqual(['a', 'b']);
+          expect(watchArgs.oldValues).toEqual(['a']);
+        })
       });
 
 

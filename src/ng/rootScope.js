@@ -362,6 +362,7 @@ function $RootScopeProvider(){
       $watchCollection: function(obj, listener) {
         var self = this;
         var oldValue;
+        var oldArray;
         var newValue;
         var changeDetected = 0;
         var objGetter = $parse(obj);
@@ -371,6 +372,7 @@ function $RootScopeProvider(){
 
         function $watchCollectionWatch() {
           newValue = objGetter(self);
+          oldArray = null;
           var newLength, key;
 
           if (!isObject(newValue)) {
@@ -385,6 +387,8 @@ function $RootScopeProvider(){
               oldLength = oldValue.length = 0;
               changeDetected++;
             }
+
+            oldArray = oldValue.slice(0);
 
             newLength = newValue.length;
 
@@ -439,7 +443,7 @@ function $RootScopeProvider(){
         }
 
         function $watchCollectionAction() {
-          listener(newValue, oldValue, self);
+          listener(newValue, oldArray || oldValue, self);
         }
 
         return this.$watch($watchCollectionWatch, $watchCollectionAction);
