@@ -78,6 +78,13 @@ describe('Filter: filter', function() {
     expect(filter(items, '!isk')[0]).toEqual(items[1]);
   });
 
+  it('should support escaped "!" as string', function() {
+    var items = ['!ciro', 'ricardo'];
+
+    expect(filter(items, '+!ciro').length).toBe(1);
+    expect(filter(items, '+!ciro')[0]).toEqual(items[0]);
+  });
+
   describe('should support comparator', function() {
 
     it('as equality when true', function() {

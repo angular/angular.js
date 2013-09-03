@@ -16,7 +16,8 @@
  *
  *   - `string`: Predicate that results in a substring match using the value of `expression`
  *     string. All strings or objects with string properties in `array` that contain this string
- *     will be returned. The predicate can be negated by prefixing the string with `!`.
+ *     will be returned. The predicate can be negated by prefixing the string with `!`. If you
+ *     want to escape `!` prefix that with `+`.
  *
  *   - `Object`: A pattern object can be used to filter specific properties on objects contained
  *     by `array`. For example `{name:"M", phone:"1"}` predicate will return an array of items
@@ -103,6 +104,11 @@
  */
 function filterFilter() {
   return function(array, expression, comparator) {
+    var escaped = [],
+      escapedSign = '+';
+    if(typeof expression == 'string' && expression.charAt(0) === escapedSign && expression.charAt(1) === '!') {
+      escaped.push(expression.substring(1));
+    }
     if (!isArray(array)) return array;
 
     var comparatorType = typeof(comparator),
@@ -133,6 +139,12 @@ function filterFilter() {
     var search = function(obj, text){
       if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
+      }
+
+      if (typeof text == 'string' && text.charAt(0) === escapedSign) {
+        if (escaped.toString().indexOf(text.substring(1)) !== -1) {
+          text = text.substring(1);
+        }
       }
       switch (typeof obj) {
         case "boolean":
