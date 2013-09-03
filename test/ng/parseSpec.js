@@ -173,6 +173,13 @@ describe('parser', function() {
         lex("'\\u1''bla'");
       }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla'].");
     });
+
+    it('should tokenize unicode identifier names', function () {
+      var tokens = lex("אʔα⁀β.ㄱ﹍ㅎ.がな０");
+      var i = 0;
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('אʔα⁀β.ㄱ﹍ㅎ.がな０');
+    });
   });
 
   var $filterProvider, scope;
@@ -777,6 +784,16 @@ describe('parser', function() {
         expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
         expect(scope.element[0].name).toBe('lucas');
         expect(count).toBe(1);
+      });
+
+
+      it('should work with unicode identifier names', function () {
+        scope.π = 3.14;
+        scope.ㄱ = {ㄴ: 1};
+        expect(scope.$eval('π')).toBe(3.14);
+        expect(scope.$eval('ㄱ.ㄴ')).toBe(1);
+        expect(scope.$eval('ㄷ = 2')).toBe(2);
+        expect(scope.ㄷ).toBe(2);
       });
 
 
