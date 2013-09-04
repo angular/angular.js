@@ -190,7 +190,7 @@ Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
 
 
 
-<a name="1.2.0-rc1"></a>
+<a name="1.2.0rc1"></a>
 # 1.2.0-rc1 spooky-giraffe (2013-08-13)
 
 [Full Commit Log](https://github.com/angular/angular.js/compare/v1.1.5...master)
