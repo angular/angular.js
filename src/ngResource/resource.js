@@ -470,7 +470,7 @@ angular.module('ngResource', ['ng']).
           });
 
           httpConfig.data = data;
-          var encoding = action.encoding || true;
+          var encoding = (action.encoding == null)? true : action.encoding;
           route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url, encoding);
 
           var promise = $http(httpConfig).then(function(response) {
