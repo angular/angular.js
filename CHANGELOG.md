@@ -1,3 +1,96 @@
+<a name="1.2.0-rc2"></a>
+# 1.2.0-rc2 barehand-atomsplitting (2013-09-04)
+
+## Features
+
+- **Scope:** asynchronously auto-flush `$evalAsync` queue when outside of `$digest` cycle
+  ([6b91aa0a](https://github.com/angular/angular.js/commit/6b91aa0a18098100e5f50ea911ee135b50680d67),
+   [#3539](https://github.com/angular/angular.js/issues/3539), [#2438](https://github.com/angular/angular.js/issues/2438))
+- **minErr:** log minerr doc url in development builds
+  ([37123cd2](https://github.com/angular/angular.js/commit/37123cd2858b4e318ed8109af745312df4848577),
+   [#3566](https://github.com/angular/angular.js/issues/3566))
+- **ngMock:**
+  - allow passing an object literal as shorthand to module
+  ([f737c97d](https://github.com/angular/angular.js/commit/f737c97df02918eb5b19bf5c8248fa3e20f9b361))
+  - add support for creating dynamic style sheets within test code
+  ([fb3a7db0](https://github.com/angular/angular.js/commit/fb3a7db0809b959d50be4cb93a65a91200071dd5))
+
+
+
+## Bug Fixes
+
+- **$http:** allow empty responses to be cached
+  ([8e48c4ff](https://github.com/angular/angular.js/commit/8e48c4ff6abf7083a04cf20312d2b106f4ba5b2c),
+   [#3809](https://github.com/angular/angular.js/issues/3809))
+- **$injector:** don't parse fns with no args
+  ([44b6b72e](https://github.com/angular/angular.js/commit/44b6b72e5e9d193ec878ac7a4f25a00815f68cca))
+- **$parse:** handle promises returned from parsed function calls
+  ([3a658220](https://github.com/angular/angular.js/commit/3a65822023119b71deab5e298c7ef2de204caa13),
+   [#3503](https://github.com/angular/angular.js/issues/3503))
+- **$q:**
+  - reject should catch & forward exceptions thrown in error callbacks
+  ([5d9f4205](https://github.com/angular/angular.js/commit/5d9f42050a11015adbd5dc4dde73818919e93a99))
+  - fix forwarding resolution when callbacks aren't functions
+  ([7d188d63](https://github.com/angular/angular.js/commit/7d188d630c63fde05d8765d0ad2d75a5baa8e5d3),
+   [#3535](https://github.com/angular/angular.js/issues/3535))
+- **$location:** fix history problems on Boxee box
+  ([eefcdad0](https://github.com/angular/angular.js/commit/eefcdad013b56d5d3a05c0b2137a5860091b2575))
+- **$timeout:** clean deferreds immediately after callback exec/cancel
+  ([920a3804](https://github.com/angular/angular.js/commit/920a3804136d49cdaf7bc2712f5832bc50409dc9))
+
+- **Directives:**
+  - **ngTransclude:**
+     - clear the translusion point before transcluding
+      ([eed299a3](https://github.com/angular/angular.js/commit/eed299a31b5a6dd0363133c5f9271bf33d090c94))
+     - make the transclusion available to parent post-link function
+      ([bf79bd41](https://github.com/angular/angular.js/commit/bf79bd4194eca2118ae1c492c08dbd217f5ae810))
+  - **ngView:** ensure `ngClass` works with together with `ngView`'s transclusion behavior
+    ([40c0220c](https://github.com/angular/angular.js/commit/40c0220c47c620070b30aec6ec4552c68a8689eb))
+
+- **Filters:**
+  - **filter:** filter on false properties
+    ([3bc4e7fd](https://github.com/angular/angular.js/commit/3bc4e7fd20372c0cad8298bff019b32681b16026),
+     [#2797](https://github.com/angular/angular.js/issues/2797))
+  - **orderBy:** remove redundant if statement
+    ([5e45fd4a](https://github.com/angular/angular.js/commit/5e45fd4ac6ff7c00d34deb099fca12301cafd7b0))
+
+- **Misc:**
+  - parse IE11 UA string correctly
+    ([427ee93f](https://github.com/angular/angular.js/commit/427ee93f11d0ef64b8844f9b43b2a0f21f2be2cb),
+     [#3682](https://github.com/angular/angular.js/issues/3682))
+
+- **i18n:** remove obsolete locale files
+  ([6382e21f](https://github.com/angular/angular.js/commit/6382e21fb28541a2484ac1a241d41cf9fbbe9d2c))
+
+- **ngAnimate:**
+  - ensure that `ngClass` is always compiled before enter, leave and move animations are applied
+  ([36ad40b1](https://github.com/angular/angular.js/commit/36ad40b18cfdd0690411a5169aa94e222946b5cf),
+   [#3727](https://github.com/angular/angular.js/issues/3727), [#3603](https://github.com/angular/angular.js/issues/3603))
+  - cut down on extra `$timeout` calls
+  ([4382df03](https://github.com/angular/angular.js/commit/4382df03fa1962aed027742c1b463406c40653c9))
+  - skip `ngAnimate` animations if the provided element already has transitions applied to it
+  ([7c605ddf](https://github.com/angular/angular.js/commit/7c605ddf1c57c9f162827713ca5b0fbb12de5fa5),
+   [#3587](https://github.com/angular/angular.js/issues/3587))
+  - only apply a timeout when transitions or keyframe animations are used
+  ([ee2f3d21](https://github.com/angular/angular.js/commit/ee2f3d21da6c9fccfe1e6a4ea8a65627519c8bf2),
+   [#3613](https://github.com/angular/angular.js/issues/3613))
+  - ensure older versions of webkit work for animations
+  ([b1a43cd0](https://github.com/angular/angular.js/commit/b1a43cd04e8727df5bef3197f5fda3b98ecab740))
+
+- **ngMocks:** `$logProvider` should not use internal APIs
+  ([baaa73ee](https://github.com/angular/angular.js/commit/baaa73ee1ef25fa506ff7aaab3159d710acdafdb),
+   [#3612](https://github.com/angular/angular.js/issues/3612))
+
+
+
+## Breaking Changes
+
+- **i18n:** due to [6382e21f](https://github.com/angular/angular.js/commit/6382e21fb28541a2484ac1a241d41cf9fbbe9d2c),
+  some uncommon region-specific local files were removed.
+
+
+
+
 <a name="1.0.8"></a>
 # 1.0.8 bubble-burst (2013-08-22)
 
@@ -15,7 +108,7 @@ Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
 - **$http:** ensure case-insensitive header overriding
   ([25d9f5a8](https://github.com/angular/angular.js/commit/25d9f5a804b7a6a61db6e84e594b1b5fe7ea14bf))
 - **$location:**
-  - default to / for the url base if no base[href]
+  - default to / for the url base if no `base[href]`
   ([cbe31d8d](https://github.com/angular/angular.js/commit/cbe31d8dfd12ce973c574bfc825ffc0ffb8eb7c4),
    [#2762](https://github.com/angular/angular.js/issues/2762))
   - prevent infinite digest error due to IE bug

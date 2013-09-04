@@ -2,7 +2,7 @@
   "name": "angularjs",
   "version": "1.2.0-snapshot",
   "cdnVersion": "1.2.0rc1",
-  "codename": "barehand-atomspliting",
+  "codename": "barehand-atomsplitting",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
