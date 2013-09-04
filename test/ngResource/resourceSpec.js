@@ -130,13 +130,23 @@ describe("resource", function() {
 		});
 
     $httpBackend.expect('GET', '/Path/foo#1').respond('{}');
-    $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz#1').respond('{}');
     $httpBackend.expect('GET', '/Path/http://localhost:8080').respond('{}');
 
     R.get({a: 'foo#1'});
-    R.get({a: 'doh!@foo', bar: 'baz#1'});
     R.get({a: 'http://localhost:8080'});
   });
+  
+  it('should still encode query params that are delegated to http', function() {
+    var R = $resource('/Path/:a', {}, {
+		  get : {method:'GET', params:{}, encoding:false}
+		});
+
+    $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz%231').respond('{}');
+
+    R.get({a: 'doh!@foo', bar: 'baz#1'});
+  });
+  
+ 
 
   it('should not encode @ in url params', function() {
    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
