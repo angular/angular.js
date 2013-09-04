@@ -262,7 +262,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       }
 
       function setupAsMultiple(scope, selectElement, ctrl) {
-        var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
           forEach(selectElement.find('option'), function(option) {
@@ -270,13 +269,17 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           });
         };
 
-        // we have to do it on each watch since ngModel watches reference, but
-        // we need to work of an array, so we need to see if anything was inserted/removed
-        scope.$watch(function selectMultipleWatch() {
-          if (!equals(lastView, ctrl.$viewValue)) {
-            lastView = copy(ctrl.$viewValue);
-            ctrl.$render();
+        scope.$watchCollection(attr.ngModel, function selectMultipleWatch(newValue, oldValue) {
+          var formatters = ctrl.$formatters,
+              idx = formatters.length,
+              value = newValue;
+
+          ctrl.$modelValue = value;
+          while(idx--) {
+            value = formatters[idx](value);
           }
+          ctrl.$viewValue = value;
+          ctrl.$render();
         });
 
         selectElement.on('change', function() {
@@ -394,6 +397,19 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         // TODO(vojta): can't we optimize this ?
         scope.$watch(render);
+
+        scope.$watchCollection(attr.ngModel, function selectMultipleWatch(newValue, oldValue) {
+          var formatters = ctrl.$formatters,
+              idx = formatters.length,
+              value = newValue;
+
+          ctrl.$modelValue = value;
+          while(idx--) {
+            value = formatters[idx](value);
+          }
+          ctrl.$viewValue = value;
+          render();
+        });
 
         function render() {
               // Temporary location for the option groups before we render them
