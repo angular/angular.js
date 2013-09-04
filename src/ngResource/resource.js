@@ -339,7 +339,7 @@ angular.module('ngResource', ['ng']).
     }
 
     Route.prototype = {
-      setUrlParams: function(config, params, actionUrl) {
+      setUrlParams: function(config, params, actionUrl, encoding) {
         var self = this,
             url = actionUrl || self.template,
             val,
@@ -357,7 +357,11 @@ angular.module('ngResource', ['ng']).
         forEach(self.urlParams, function(_, urlParam){
           val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
           if (angular.isDefined(val) && val !== null) {
-            encodedVal = encodeUriSegment(val);
+            if(encoding) {
+            	encodedVal = encodeUriSegment(val);
+	    } else {
+	    	encodedVal = val;
+	    }
             url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");
           } else {
             url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match,
@@ -467,7 +471,8 @@ angular.module('ngResource', ['ng']).
           });
 
           httpConfig.data = data;
-          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
+          var encoding = (action.encoding == null)? true : action.encoding;
+          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url, encoding);
 
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
