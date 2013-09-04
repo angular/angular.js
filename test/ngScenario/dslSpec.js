@@ -386,8 +386,8 @@ describe("angular.scenario.dsl", function() {
         });
         $root.dsl.element(elementSelector).trigger(eventName, keys, x, y);
         expect(eventObj).toBeDefined();
-        expect(eventObj.pageX).toBe(x);
-        expect(eventObj.pageY).toBe(y);
+        expect(eventObj.clientX).toBe(x);
+        expect(eventObj.clientY).toBe(y);
       }
 
       function _testMouseEvent(elementSelector, eventName, x, y) {
@@ -397,8 +397,8 @@ describe("angular.scenario.dsl", function() {
         });
         $root.dsl.element(elementSelector)[eventName]([], x, y);
         expect(eventObj).toBeDefined();
-        expect(eventObj.pageX).toBe(x);
-        expect(eventObj.pageY).toBe(y);
+        expect(eventObj.clientX).toBe(x);
+        expect(eventObj.clientY).toBe(y);
       }
 
       it('should execute mousedown', function() {
