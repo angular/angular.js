@@ -100,4 +100,5 @@ function $FilterProvider($provide) {
   register('number', numberFilter);
   register('orderBy', orderByFilter);
   register('uppercase', uppercaseFilter);
+  register('replace', replaceFilter);
 }
