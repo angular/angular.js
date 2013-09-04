@@ -559,6 +559,12 @@ Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
         JS:   scope.foo = function() { alert(1); }
         HTML: <div ng-click="foo()">
 
+  - due to [e46100f7](https://github.com/angular/angular.js/commit/e46100f7097d9a8f174bdb9e15d4c6098395c3f2), existing directives
+    with name ending with `"-start"` or `"-end"` will stop working.
+
+    This change was necessary to enable multi-element directives. The best fix is to rename existing directives, so that they
+    don't end with these suffixes.
+
 - **$q:** due to [f078762d](https://github.com/angular/angular.js/commit/f078762d48d0d5d9796dcdf2cb0241198677582c),
   the `always` method is now exposed as `finally`.
 
