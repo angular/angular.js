@@ -29,7 +29,7 @@ describe('angular.scenario.Application', function() {
       return {x:counter++, document:{x:counter++}};
     };
     app.navigateTo('http://www.google.com/');
-    app.executeAction(function($document, $window) {
+    app.executeAction(function($window, $document) {
       testWindow = $window;
       testDocument = $document;
     });
