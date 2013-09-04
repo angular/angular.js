@@ -429,6 +429,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
+               if (keyName && keys[index].charAt(0) === '$') continue;
                locals[valueName] = values[keyName ? locals[keyName]=keys[index]:index];
                optionGroupName = groupByFn(scope, locals) || '';
             if (!(optionGroup = optionGroups[optionGroupName])) {
