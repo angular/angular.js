@@ -26,8 +26,8 @@
  <input type="text" ng-model="message"/>
  <button ng-click="$log.debug(message)">debug</button>
  <button ng-click="$log.log(message)">log</button>
- <button ng-click="$log.info(message)">info</button>
  <button ng-click="$log.warn(message)">warn</button>
+ <button ng-click="$log.info(message)">info</button>
  <button ng-click="$log.error(message)">error</button>
  </div>
  </file>
@@ -40,7 +40,7 @@
  * @description
  * Use the `$logProvider` to configure how the application logs messages
  */
-function $LogProvider() {
+function $LogProvider(){
     var levels = {
             off: Number.MAX_VALUE,
             error: 5,
@@ -73,7 +73,7 @@ function $LogProvider() {
      * @param {string=} flag enable or disable debug level messages
      * @returns {*} current value if used as getter or itself (chaining) if used as setter
      */
-    this.debugEnabled = function (flag) {
+    this.debugEnabled = function(flag) {
         if (isDefined(flag)) {
             if (flag) {
                 this.setLogLevel('debug');
@@ -97,9 +97,9 @@ function $LogProvider() {
      */
     this.setLogLevel = function (level) {
         this.level = levels[level];
-    }
+    };
 
-    this.$get = ['$window', function ($window) {
+    this.$get = ['$window', function($window){
         return {
             /**
              * @ngdoc method
@@ -174,9 +174,9 @@ function $LogProvider() {
                 logFn = console[type] || console.log || noop;
 
             if (logFn.apply) {
-                return function () {
+                return function() {
                     var args = [];
-                    forEach(arguments, function (arg) {
+                    forEach(arguments, function(arg) {
                         args.push(formatError(arg));
                     });
                     return logFn.apply(console, args);
@@ -185,11 +185,9 @@ function $LogProvider() {
 
             // we are IE which either doesn't have window.console => this is noop and we do nothing,
             // or we are IE where console.log doesn't have apply so we log at least first 2 args
-            return function (arg1, arg2) {
+            return function(arg1, arg2) {
                 logFn(arg1, arg2);
             }
         }
-    }
-    ]
-    ;
+    }];
 }

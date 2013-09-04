@@ -1,27 +1,24 @@
 'use strict';
 
-describe('$log', function () {
+function initService(debugEnabled) {
+    return module(function($logProvider){
+        $logProvider.debugEnabled(debugEnabled);
+    });
+}
+
+describe('$log', function() {
     var $window, logger, log, warn, info, error, debug;
 
 
-    beforeEach(module(function ($provide) {
+
+    beforeEach(module(function($provide){
         $window = {navigator: {}, document: {}};
         logger = '';
-        log = function () {
-            logger += 'log;';
-        };
-        warn = function () {
-            logger += 'warn;';
-        };
-        info = function () {
-            logger += 'info;';
-        };
-        error = function () {
-            logger += 'error;';
-        };
-        debug = function () {
-            logger += 'debug;';
-        };
+        log = function() { logger+= 'log;'; };
+        warn = function() { logger+= 'warn;'; };
+        info = function() { logger+= 'info;'; };
+        error = function() { logger+= 'error;'; };
+        debug = function() { logger+= 'debug;'; };
 
         $provide.provider('$log', $LogProvider);
         $provide.value('$exceptionHandler', angular.mock.rethrow);
@@ -29,16 +26,14 @@ describe('$log', function () {
     }));
 
     it('should use console if present', inject(
-        function () {
-            $window.console = {
-                log: log,
+        function(){
+            $window.console = {log: log,
                 warn: warn,
                 info: info,
                 error: error,
-                debug: debug
-            };
+                debug: debug};
         },
-        function ($log) {
+        function($log) {
             $log.log();
             $log.warn();
             $log.info();
@@ -50,10 +45,10 @@ describe('$log', function () {
 
 
     it('should use console.log() if other not present', inject(
-        function () {
+        function(){
             $window.console = {log: log};
         },
-        function ($log) {
+        function($log) {
             $log.log();
             $log.warn();
             $log.info();
@@ -65,7 +60,7 @@ describe('$log', function () {
 
 
     it('should use noop if no console', inject(
-        function ($log) {
+        function($log) {
             $log.log();
             $log.warn();
             $log.info();
@@ -76,7 +71,7 @@ describe('$log', function () {
 
 
     it("should work in IE where console.error doesn't have apply method", inject(
-        function () {
+        function() {
             log.apply = log.call =
                 warn.apply = warn.call =
                     info.apply = info.call =
@@ -89,7 +84,7 @@ describe('$log', function () {
                 error: error,
                 debug: debug};
         },
-        function ($log) {
+        function($log) {
             $log.log.apply($log);
             $log.warn.apply($log);
             $log.info.apply($log);
@@ -101,19 +96,17 @@ describe('$log', function () {
 
     describe("$log.debug", function () {
 
-        beforeEach(module(function ($logProvider) {
-            $logProvider.debugEnabled(false);
-        }));
+        beforeEach(initService(false));
 
         it("should skip debugging output if disabled", inject(
-            function () {
+            function(){
                 $window.console = {log: log,
                     warn: warn,
                     info: info,
                     error: error,
                     debug: debug};
             },
-            function ($log) {
+            function($log) {
                 $log.log();
                 $log.warn();
                 $log.info();
@@ -125,36 +118,36 @@ describe('$log', function () {
 
     });
 
-    describe('$log.error', function () {
+    describe('$log.error', function() {
         var e, $log, errorArgs;
 
-        beforeEach(function () {
+        beforeEach(function() {
             e = new Error('');
             e.message = undefined;
             e.sourceURL = undefined;
             e.line = undefined;
             e.stack = undefined;
 
-            $log = new $LogProvider().$get[1]({console: {error: function () {
+            $log = new $LogProvider().$get[1]({console:{error:function() {
                 errorArgs = [].slice.call(arguments, 0);
             }}});
         });
 
 
-        it('should pass error if does not have trace', function () {
+        it('should pass error if does not have trace', function() {
             $log.error('abc', e);
             expect(errorArgs).toEqual(['abc', e]);
         });
 
 
-        it('should print stack', function () {
+        it('should print stack', function() {
             e.stack = 'stack';
             $log.error('abc', e);
             expect(errorArgs).toEqual(['abc', 'stack']);
         });
 
 
-        it('should print line', function () {
+        it('should print line', function() {
             e.message = 'message';
             e.sourceURL = 'sourceURL';
             e.line = '123';
@@ -164,12 +157,9 @@ describe('$log', function () {
     });
 
     describe('$log with level set to "off"', function () {
-
         beforeEach(module(function ($logProvider) {
             $logProvider.setLogLevel('off');
         }));
-
-        //off, error, warn, info, log, debug, all
 
         it('should not log anything if level is "off"', inject(
             function () {
