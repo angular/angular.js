@@ -803,13 +803,16 @@ forEach({
 
   triggerHandler: function(element, eventName, eventData) {
     var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
-    eventData = eventData || {
+    
+    eventData = eventData || [];
+
+    var event = [{
       preventDefault: noop,
       stopPropagation: noop
-    };
+    }];
 
     forEach(eventFns, function(fn) {
-      fn.call(element, eventData);
+      fn.apply(element, event.concat(eventData));
     });
   }
 }, function(fn, name){
