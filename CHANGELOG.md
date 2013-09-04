@@ -1,5 +1,5 @@
-<a name="1.2.0-rc2"></a>
-# 1.2.0-rc2 barehand-atomsplitting (2013-09-04)
+<a name="1.2.0-rc.2"></a>
+# 1.2.0-rc.2 barehand-atomsplitting (2013-09-04)
 
 ## Features
 
@@ -191,7 +191,7 @@ Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
 
 
 <a name="1.2.0rc1"></a>
-# 1.2.0-rc1 spooky-giraffe (2013-08-13)
+# 1.2.0rc1 spooky-giraffe (2013-08-13)
 
 [Full Commit Log](https://github.com/angular/angular.js/compare/v1.1.5...master)
 
