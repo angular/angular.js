@@ -37,6 +37,7 @@ angularFiles = {
     'src/ng/filter/filters.js',
     'src/ng/filter/limitTo.js',
     'src/ng/filter/orderBy.js',
+    'src/ng/filter/replace.js',
 
     'src/ng/directive/directives.js',
     'src/ng/directive/a.js',
