@@ -1343,6 +1343,18 @@ describe('jqLite', function() {
       event = pokeSpy.mostRecentCall.args[0];
       expect(event.preventDefault).toBeDefined();
     });
+
+    it('should pass data as an additional argument', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          data;
+
+      element.on('click', pokeSpy);
+
+      element.triggerHandler('click', [{hello: "world"}]);
+      data = pokeSpy.mostRecentCall.args[1];
+      expect(data.hello).toBe("world");
+    });
   });
 
 
