@@ -35,7 +35,7 @@
      </file>
      <file name="style.css">
        .scroll-area {
-         height: 450px;
+         height: 350px;
          overflow: auto;
        }
        #bottom {
