@@ -94,7 +94,6 @@ describe('filter', function() {
 
   beforeEach(module('phonecatFilters'));
 
-
   describe('checkmark', function() {
 
     it('should convert boolean values to unicode checkmark or cross',
@@ -106,8 +105,12 @@ describe('filter', function() {
 });
 </pre>
 
-Note that you need to configure our test injector with the `phonecatFilters` module before any of
-our filter tests execute.
+We must call `beforeEach(module('phonecatFilters'))` before any of
+our filter tests execute. This call loads our `phonecatFilters` module into the injector
+for this test run.
+
+Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
+access to the filter that we want to test.  See {@link api/angular.mock.inject angular.mock.inject()}.
 
 You should now see the following output in the Karma tab:
 
