@@ -1017,7 +1017,9 @@ function angularInit(element, bootstrap) {
  * They must use {@link api/ng.directive:ngApp ngApp}.
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
+ *     Each item in the array should be the name of a predefined module or a (DI annotated)
+ *     function that will be invoked by the injector as a run block. See: {@link angular.module modules}
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
