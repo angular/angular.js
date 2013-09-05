@@ -27,12 +27,12 @@ describe('NgModelController', function() {
   });
 
 
-  it('should fail on non-assignable model binding', inject(function($controller) {
+  it('should fail on non-assignable model binding', inject(function($controller, $rootScope) {
     var exception;
 
     try {
       $controller(NgModelController, {
-        $scope: null,
+        $scope: $rootScope,
         $element: jqLite('<input ng-model="1+2">'),
         $attrs: {
           ngModel: '1+2'
@@ -61,6 +61,15 @@ describe('NgModelController', function() {
 
     expect(ctrl.$name).toBe('testAlias');
   });
+
+  it('should use the property value when name is a property name', inject(function($controller, $rootScope) {
+    var scope = $rootScope.$new();
+    scope.testAlias = 'myAlias';
+    var controller = $controller(NgModelController, {
+      $scope: scope, $element: element.find('input'), $attrs: {name: 'testAlias', ngModel: 'value'}
+    });
+    expect(controller.$name).toBe(scope.testAlias);
+  }));
 
 
   describe('setValidity', function() {

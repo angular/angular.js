@@ -971,7 +971,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$dirty = false;
   this.$valid = true;
   this.$invalid = false;
-  this.$name = $attr.name;
+  try {
+    var attrName = $scope.$eval($attr.name);
+    this.$name = isUndefined(attrName) ? $attr.name : attrName;
+  } catch (e) {
+    this.$name = $attr.name;
+  }
 
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign;
