@@ -417,9 +417,9 @@ describe('ngMock', function() {
 
       $timeout(iterate, 100);
       $timeout(iterate, 123);
-      $timeout.flushNext(100);
+      $timeout.flush(100);
       expect(count).toBe(1);
-      $timeout.flushNext(123);
+      $timeout.flush(123);
       expect(count).toBe(2);
     }));
   });
