@@ -375,7 +375,8 @@ docsApp.serviceFactory.prepareDefaultAppModule = function() {
     var moduleName = 'App';
     return {
       module : moduleName,
-      script : "angular.module('" + moduleName + "', ['" + deps.join("','") + "']);\n\n"
+      script : "angular.module('" + moduleName + "', [" + 
+          (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
     };
   };
 };
