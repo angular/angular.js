@@ -130,7 +130,11 @@ angular.mock.$Browser = function() {
    */
   self.defer.flushNext = function(expectedDelay) {
     var tick = self.deferredFns.shift();
-    expect(tick.time).toEqual(expectedDelay);
+    
+    if (angular.isDefined(expectedDelay)) {
+      expect(tick.time).toEqual(expectedDelay);
+    }
+    
     tick.fn();
   };
 
