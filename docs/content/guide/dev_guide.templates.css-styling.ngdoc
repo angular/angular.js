@@ -7,9 +7,17 @@ Angular sets these CSS classes. It is up to your application to provide useful s
 
 # CSS classes used by angular
 
+* `ng-scope`
+  - **Usage:** angular applies this class to any element that a {@link api/ng.$rootScope.Scope scope} is attached to. 
+    (see {@link guide/scope scope} guide for more information about scopes)
+
+* `ng-binding`
+  - **Usage:** angular applies this class to any element that is attached to a data binding.
+    (see {@link guide/dev_guide.templates.databinding databinding} guide)
+
 * `ng-invalid`, `ng-valid`
   - **Usage:** angular applies this class to an input widget element if that element's input does
-    not pass validation. (see {@link api/ng.directive:input input} directive).
+    not pass validation. (see {@link api/ng.directive:input input} directive)
 
 * `ng-pristine`, `ng-dirty`
   - **Usage:** angular {@link api/ng.directive:input input} directive applies `ng-pristine` class
