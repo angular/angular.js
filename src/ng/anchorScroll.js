@@ -16,7 +16,7 @@
  * @example
    <example>
      <file name="index.html">
-       <div ng-controller="MainCtrl">
+       <div ng-controller="ScrollCtrl">
          <a ng-click="gotoBottom()">Go to bottom</a>
          <a id="bottom"></a> You're at the bottom!
        </div>
