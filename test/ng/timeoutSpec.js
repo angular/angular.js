@@ -77,7 +77,7 @@ describe('$timeout', function() {
     var promise2 = $timeout(function() {}, 100, false);
     expect(cancelSpy).not.toHaveBeenCalled();
 
-    $timeout.flushNext(0);
+    $timeout.flush(0);
 
     // Promise1 deferred object should already be removed from the list and not cancellable
     $timeout.cancel(promise1);
