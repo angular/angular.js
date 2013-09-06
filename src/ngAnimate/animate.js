@@ -659,7 +659,7 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function onAnimationProgress(event) {
-          event.originalEvent.elapsedTime >= totalTime && done();
+          (event.elapsedTime || (event.originalEvent && event.originalEvent.elapsedTime)) >= totalTime && done();
         }
 
         function parseMaxTime(str) {
