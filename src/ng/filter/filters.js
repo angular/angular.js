@@ -260,7 +260,7 @@ var DATE_FORMATS = {
 };
 
 var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
-    NUMBER_STRING = /^\-?[1-9]\d*$/;
+    NUMBER_STRING = /^\-?\d+$/;
 
 /**
  * @ngdoc filter
