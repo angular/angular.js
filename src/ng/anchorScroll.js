@@ -16,7 +16,7 @@
  * @example
    <example>
      <file name="index.html">
-       <div ng-controller="MainCtrl">
+       <div id="scrollArea" ng-controller="ScrollCtrl">
          <a ng-click="gotoBottom()">Go to bottom</a>
          <a id="bottom"></a> You're at the bottom!
        </div>
@@ -34,6 +34,11 @@
        }
      </file>
      <file name="style.css">
+       #scrollArea {
+         height: 350px;
+         overflow: auto;
+       }
+
        #bottom {
          display: block;
          margin-top: 2000px;
