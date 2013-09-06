@@ -542,21 +542,33 @@ angular.module('ngAnimate', ['ng'])
       }
     }]);
 
-    $animateProvider.register('', ['$window','$sniffer', '$timeout', function($window, $sniffer, $timeout) {
-      var noop = angular.noop;
+    $animateProvider.register('', ['$window', '$sniffer', function($window, $sniffer) {
       var forEach = angular.forEach;
 
-      //one day all browsers will have these properties
-      var w3cAnimationProp = 'animation';
-      var w3cTransitionProp = 'transition';
-      var w3cAnimationEvent = 'animationend';
-      var w3cTransitionEvent = 'transitionend';
+      // Detect proper transitionend/animationend event names.
+      var transitionProp, transitionendEvent, animationProp, animationendEvent;
 
-      //but some still use vendor-prefixed styles
-      var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
-      var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
-      var vendorAnimationEvent = $sniffer.vendorPrefix.toLowerCase() + 'AnimationEnd';
-      var vendorTransitionEvent = $sniffer.vendorPrefix.toLowerCase() + 'TransitionEnd';
+      // If unprefixed events are not supported but webkit-prefixed are, use the latter.
+      // Otherwise, just use W3C names, browsers not supporting them at all will just ignore them.
+      // Note: Chrome implements `window.onwebkitanimationend` and doesn't implement `window.onanimationend`
+      // but at the same time dispatches the `animationend` event and not `webkitAnimationEnd`.
+      // Register both events in case `window.onanimationend` is not supported because of that,
+      // do the same for `transitionend` as Safari is likely to exhibit similar behavior.
+      if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+        transitionProp = 'WebkitTransition';
+        transitionendEvent = 'webkitTransitionEnd transitionend';
+      } else {
+        transitionProp = 'transition';
+        transitionendEvent = 'transitionend';
+      }
+
+      if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+        animationProp = 'WebkitAnimation';
+        animationendEvent = 'webkitAnimationEnd animationend';
+      } else {
+        animationProp = 'animation';
+        animationendEvent = 'animationend';
+      }
 
       var durationKey = 'Duration',
           propertyKey = 'Property',
@@ -573,8 +585,7 @@ angular.module('ngAnimate', ['ng'])
           forEach(element, function(element) {
             if (element.nodeType == ELEMENT_NODE) {
               var elementStyles = $window.getComputedStyle(element) || {};
-              existingDuration = Math.max(parseMaxTime(elementStyles[w3cTransitionProp + durationKey]),
-                                          parseMaxTime(elementStyles[vendorTransitionProp + durationKey]),
+              existingDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]),
                                           existingDuration);
             }
           });
@@ -593,16 +604,12 @@ angular.module('ngAnimate', ['ng'])
           if (element.nodeType == ELEMENT_NODE) {
             var elementStyles = $window.getComputedStyle(element) || {};
 
-            var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
-                                               parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
+            var transitionDuration = parseMaxTime(elementStyles[transitionProp + durationKey]);
 
-            var animationDuration   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + durationKey]),
-                                               parseMaxTime(elementStyles[vendorAnimationProp   + durationKey]));
+            var animationDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
 
             if(animationDuration > 0) {
-              animationDuration *= Math.max(parseInt(elementStyles[w3cAnimationProp   + animationIterationCountKey]) || 0,
-                                           parseInt(elementStyles[vendorAnimationProp + animationIterationCountKey]) || 0,
-                                           1);
+              animationDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
             }
 
             transitionTime = Math.max(transitionDuration, transitionTime);
@@ -610,44 +617,41 @@ angular.module('ngAnimate', ['ng'])
           }
         });
 
-        /* there is no point in performing a reflow if the animation
-           timeout is empty (this would cause a flicker bug normally
-           in the page */
+        // There is no point in performing a reflow if the animation
+        // timeout is empty (this would cause a flicker bug normally
+        // in the page.
         var totalTime = Math.max(transitionTime,animationTime);
         if(totalTime > 0) {
           var node = element[0];
 
-          //temporarily disable the transition so that the enter styles
-          //don't animate twice (this is here to avoid a bug in Chrome/FF).
-          node.style[w3cTransitionProp + propertyKey] = 'none';
-          node.style[vendorTransitionProp + propertyKey] = 'none';
+          // Temporarily disable the transition so that the enter styles
+          // don't animate twice (this is here to avoid a bug in Chrome/FF).
+          node.style[transitionProp + propertyKey] = 'none';
 
           var activeClassName = '';
           forEach(className.split(' '), function(klass, i) {
             activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
           });
 
-          //this triggers a reflow which allows for the transition animation to kick in
+          // This triggers a reflow which allows for the transition animation to kick in.
           element.prop('clientWidth');
-          node.style[w3cTransitionProp + propertyKey] = '';
-          node.style[vendorTransitionProp + propertyKey] = '';
+          node.style[transitionProp + propertyKey] = '';
           element.addClass(activeClassName);
 
-          var css3AnimationEvents = [w3cAnimationEvent,  vendorAnimationEvent,
-                                     w3cTransitionEvent, vendorTransitionEvent].join(' ');
+          var css3AnimationEvents = animationendEvent + ' ' + transitionendEvent;
           element.on(css3AnimationEvents, onAnimationProgress);
 
-          //this will automatically be called by $animate so
-          //there is no need to attach this internally to the
-          //timeout done method
+          // This will automatically be called by $animate so
+          // there is no need to attach this internally to the
+          // timeout done method.
           return function onEnd(cancelled) {
             element.off(css3AnimationEvents, onAnimationProgress);
             element.removeClass(className);
             element.removeClass(activeClassName);
 
-            //only when the animation is cancelled is the done()
-            //function not called for this animation therefore
-            //this must be also called
+            // Only when the animation is cancelled is the done()
+            // function not called for this animation therefore
+            // this must be also called.
             if(cancelled) {
               done();
             }
