@@ -96,8 +96,13 @@
           evnt.initEvent(eventType, false, true);
         }
         else {
-          evnt = document.createEvent('TransitionEvent');
-          evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime);
+          try {
+            evnt = new TransitionEvent(eventType, eventData);
+          }
+          catch(e) {
+            evnt = document.createEvent('TransitionEvent');
+            evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime);
+          }
         }
       }
       else if(/animationend/.test(eventType)) {
@@ -106,8 +111,13 @@
           evnt.initEvent(eventType, false, true);
         }
         else {
-          evnt = document.createEvent('AnimationEvent');
-          evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime);
+          try {
+            evnt = new AnimationEvent(eventType, eventData);
+          }
+          catch(e) {
+            evnt = document.createEvent('AnimationEvent');
+            evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime);
+          }
         }
       }
       else {
