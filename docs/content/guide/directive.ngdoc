@@ -430,8 +430,11 @@ compiler}. The attributes are:
     a string value representing the url.  In either case, the template URL is passed through {@link
     api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
 
-  * `replace` - if set to `true` then the template will replace the current element, rather than
-    append the template to the element.
+  * `replace` - use the template to replace part of the current element.
+
+    * `true` - the template will replace the current element entirely.
+    * `'attributes'` - the template top level attributes will be merged with the current element. The
+      element content remains untouched. Anything at the template but the attributes are ignored.
 
   * `transclude` - compile the content of the element and make it available to the directive.
     Typically used with {@link api/ng.directive:ngTransclude
