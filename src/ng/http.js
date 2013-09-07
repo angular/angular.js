@@ -966,16 +966,17 @@ function $HttpProvider() {
 
     function buildUrl(url, params) {
           if (!params) return url;
-          var parts = [];
+          var parts = [], valueIsArray;
           forEachSorted(params, function(value, key) {
             if (value == null || value == undefined) return;
-            if (!isArray(value)) value = [value];
+            valueIsArray = isArray(value);
+            if (!valueIsArray) value = [value];
 
             forEach(value, function(v) {
               if (isObject(v)) {
                 v = toJson(v);
               }
-              parts.push(encodeUriQuery(key) + '=' +
+              parts.push(encodeUriQuery(key) + (valueIsArray ? '[]=' : '=') +
                          encodeUriQuery(v));
             });
           });
