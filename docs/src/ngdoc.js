@@ -714,7 +714,7 @@ Doc.prototype = {
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function() {
-      var restrict = self.restrict || 'AC';
+      var restrict = self.restrict || 'A';
 
       if (restrict.match(/E/)) {
         dom.html('<p>');
