@@ -58,18 +58,10 @@ describe('ngClick (touch)', function() {
     expect($rootScope.count).toBe(0);
 
     time = 10;
-    browserTrigger(element, 'touchstart',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
+    browserTrigger(element, 'touchstart', [], 10, 10);
 
     time = 900;
-    browserTrigger(element, 'touchend',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
+    browserTrigger(element, 'touchend', [], 10, 10);
 
     expect($rootScope.count).toBe(0);
   }));
@@ -82,16 +74,8 @@ describe('ngClick (touch)', function() {
 
     expect($rootScope.tapped).toBeUndefined();
 
-    browserTrigger(element, 'touchstart',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
-    browserTrigger(element, 'touchend',{
-      keys: [],
-      x: 400,
-      y: 400
-    });
+    browserTrigger(element, 'touchstart', [], 10, 10);
+    browserTrigger(element, 'touchend', [], 400, 400);
 
     expect($rootScope.tapped).toBeUndefined();
   }));
@@ -104,17 +88,9 @@ describe('ngClick (touch)', function() {
 
     expect($rootScope.tapped).toBeUndefined();
 
-    browserTrigger(element, 'touchstart',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
+    browserTrigger(element, 'touchstart', [], 10, 10);
     browserTrigger(element, 'touchmove');
-    browserTrigger(element, 'touchend',{
-      keys: [],
-      x: 400,
-      y: 400
-    });
+    browserTrigger(element, 'touchend', [], 400, 400);
 
     expect($rootScope.tapped).toBeUndefined();
   }));
@@ -128,17 +104,9 @@ describe('ngClick (touch)', function() {
     var CSS_CLASS = 'ng-click-active';
 
     expect(element.hasClass(CSS_CLASS)).toBe(false);
-    browserTrigger(element, 'touchstart',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
+    browserTrigger(element, 'touchstart', 10, 10);
     expect(element.hasClass(CSS_CLASS)).toBe(true);
-    browserTrigger(element, 'touchend',{
-      keys: [],
-      x: 10,
-      y: 10
-    });
+    browserTrigger(element, 'touchend', 10, 10);
     expect(element.hasClass(CSS_CLASS)).toBe(false);
     expect($rootScope.tapped).toBe(true);
   }));
@@ -167,27 +135,15 @@ describe('ngClick (touch)', function() {
 
       // Fire touchstart at 10ms, touchend at 50ms, the click at 300ms.
       time = 10;
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.count).toBe(1);
 
       time = 100;
-      browserTrigger(element, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'click', [], 10, 10);
 
       expect($rootScope.count).toBe(1);
     }));
@@ -213,27 +169,15 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count2).toBe(0);
 
       time = 10;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(1);
 
       time = 100;
-      browserTrigger(element2, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element2, 'click', [], 10, 10);
 
       expect($rootScope.count1).toBe(1);
       expect($rootScope.count2).toBe(0);
@@ -259,76 +203,40 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count2).toBe(0);
 
       time = 10;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(1);
 
       time = 90;
       // Verify that it is blured so we don't get soft-keyboard
       element1[0].blur = jasmine.createSpy('blur');
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'click', [], 10, 10);
       expect(element1[0].blur).toHaveBeenCalled();
 
       expect($rootScope.count1).toBe(1);
 
       time = 100;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 130;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchend', [], 10, 10);
 
       expect($rootScope.count1).toBe(2);
 
       // Click on other element that should go through.
       time = 150;
-      browserTrigger(element2, 'touchstart',{
-        keys: [],
-        x: 100,
-        y: 120
-      });
-      browserTrigger(element2, 'touchend',{
-        keys: [],
-        x: 100,
-        y: 120
-      });
-      browserTrigger(element2, 'click',{
-        keys: [],
-        x: 100,
-        y: 120
-      });
+      browserTrigger(element2, 'touchstart', [], 100, 120);
+      browserTrigger(element2, 'touchend', [], 100, 120);
+      browserTrigger(element2, 'click', [], 100, 120);
 
       expect($rootScope.count2).toBe(1);
 
       // Click event for the element that should be busted.
       time = 200;
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'click', [], 10, 10);
 
       expect($rootScope.count1).toBe(2);
       expect($rootScope.count2).toBe(1);
@@ -345,26 +253,14 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count).toBe(0);
 
       time = 10;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchend', [], 10, 10);
       expect($rootScope.count).toBe(1);
 
       time = 2700;
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'click', [], 10, 10);
 
       expect($rootScope.count).toBe(2);
     }));
@@ -380,27 +276,15 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count).toBe(0);
 
       time = 10;
-      browserTrigger(element1, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchstart', [], 10, 10);
 
       time = 50;
-      browserTrigger(element1, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'touchend', [], 10, 10);
 
       expect($rootScope.count).toBe(1);
 
       time = 2700;
-      browserTrigger(element1, 'click',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element1, 'click', [], 10, 10);
 
       expect($rootScope.count).toBe(2);
     }));
@@ -435,16 +319,8 @@ describe('ngClick (touch)', function() {
       $rootScope.disabled = true;
       $rootScope.$digest();
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.event).toBeUndefined();
     }));
@@ -453,64 +329,32 @@ describe('ngClick (touch)', function() {
       $rootScope.disabled = false;
       $rootScope.$digest();
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.event).toBeDefined();
     }));
     it('should not trigger click if regular disabled is true', inject(function($rootScope, $compile) {
       element = $compile('<div ng-click="event = $event" disabled="true"></div>')($rootScope);
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.event).toBeUndefined();
     }));
     it('should not trigger click if regular disabled is present', inject(function($rootScope, $compile) {
       element = $compile('<button ng-click="event = $event" disabled ></button>')($rootScope);
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.event).toBeUndefined();
     }));
     it('should trigger click if regular disabled is not present', inject(function($rootScope, $compile) {
       element = $compile('<div ng-click="event = $event" ></div>')($rootScope);
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect($rootScope.event).toBeDefined();
     }));
@@ -527,16 +371,8 @@ describe('ngClick (touch)', function() {
         called = true;
       });
 
-      browserTrigger(element, 'touchstart',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
-      browserTrigger(element, 'touchend',{
-        keys: [],
-        x: 10,
-        y: 10
-      });
+      browserTrigger(element, 'touchstart', [], 10, 10);
+      browserTrigger(element, 'touchend', [], 10, 10);
 
       expect(called).toEqual(true);
     }));

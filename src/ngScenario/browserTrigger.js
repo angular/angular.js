@@ -19,18 +19,15 @@
    * not specified.
    *
    * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
-   * @param {string} eventType Optional event type
-   * @param {Object=} eventData An optional object which contains additional event data (such as x,y coordinates, keys, etc...) that
-   * are passed into the event when triggered
+   * @param {string} eventType Optional event type.
+   * @param {Array.<string>=} keys Optional list of pressed keys
+   *        (valid values: 'alt', 'meta', 'shift', 'ctrl')
+   * @param {number} x Optional x-coordinate for mouse/touch events.
+   * @param {number} y Optional y-coordinate for mouse/touch events.
    */
-  window.browserTrigger = function browserTrigger(element, eventType, eventData) {
+  window.browserTrigger = function browserTrigger(element, eventType, keys, x, y) {
     if (element && !element.nodeName) element = element[0];
     if (!element) return;
-
-    eventData = eventData || {};
-    var keys = eventData.keys;
-    var x = eventData.x;
-    var y = eventData.y;
 
     var inputType = (element.type) ? element.type.toLowerCase() : null,
         nodeName = element.nodeName.toLowerCase();
@@ -89,48 +86,8 @@
       }
       return ret;
     } else {
-      var evnt;
-      if(/transitionend/.test(eventType)) {
-        if(window.WebKitTransitionEvent) {
-          evnt = new WebKitTransitionEvent(eventType, eventData);
-          evnt.initEvent(eventType, false, true);
-        }
-        else {
-          try {
-            evnt = new TransitionEvent(eventType, eventData);
-          }
-          catch(e) {
-            evnt = document.createEvent('TransitionEvent');
-            evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime);
-          }
-        }
-      }
-      else if(/animationend/.test(eventType)) {
-        if(window.WebKitAnimationEvent) {
-          evnt = new WebKitAnimationEvent(eventType, eventData);
-          evnt.initEvent(eventType, false, true);
-        }
-        else {
-          try {
-            evnt = new AnimationEvent(eventType, eventData);
-          }
-          catch(e) {
-            evnt = document.createEvent('AnimationEvent');
-            evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime);
-          }
-        }
-      }
-      else {
-        evnt = document.createEvent('MouseEvents');
-        x = x || 0;
-        y = y || 0;
-        evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
-            pressed('shift'), pressed('meta'), 0, element);
-      }
-
-      if(!evnt) return;
-
-      var originalPreventDefault = evnt.preventDefault,
+      var evnt = document.createEvent('MouseEvents'),
+          originalPreventDefault = evnt.preventDefault,
           appWindow = element.ownerDocument.defaultView,
           fakeProcessDefault = true,
           finalProcessDefault,
@@ -142,6 +99,11 @@
         fakeProcessDefault = false;
         return originalPreventDefault.apply(evnt, arguments);
       };
+
+      x = x || 0;
+      y = y || 0;
+      evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
+          pressed('shift'), pressed('meta'), 0, element);
 
       element.dispatchEvent(evnt);
       finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);

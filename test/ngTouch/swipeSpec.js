@@ -46,11 +46,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, startEvent,{
-        keys: [],
-        x: 100,
-        y: 20
-      });
+      browserTrigger(element, startEvent, [], 100, 20);
 
       expect(events.start).toHaveBeenCalled();
 
@@ -75,11 +71,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, startEvent,{
-        keys: [],
-        x: 100,
-        y: 20
-      });
+      browserTrigger(element, startEvent, [], 100, 20);
 
       expect(events.start).toHaveBeenCalled();
 
@@ -87,11 +79,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 140,
-        y: 20
-      });
+      browserTrigger(element, moveEvent, [], 140, 20);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.move).toHaveBeenCalled();
@@ -116,11 +104,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 100,
-        y: 40
-      });
+      browserTrigger(element, moveEvent, [], 100, 40);
 
       expect(events.start).not.toHaveBeenCalled();
       expect(events.move).not.toHaveBeenCalled();
@@ -144,11 +128,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, endEvent,{
-        keys: [],
-        x: 100,
-        y: 40
-      });
+      browserTrigger(element, endEvent, [], 100, 40);
 
       expect(events.start).not.toHaveBeenCalled();
       expect(events.move).not.toHaveBeenCalled();
@@ -172,11 +152,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, startEvent,{
-        keys: [],
-        x: 100,
-        y: 40
-      });
+      browserTrigger(element, startEvent, [], 100, 40);
 
       expect(events.start).toHaveBeenCalled();
 
@@ -184,41 +160,13 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 120,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 130,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 140,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 150,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 160,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 170,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 180,
-        y: 40
-      });
+      browserTrigger(element, moveEvent, [], 120, 40);
+      browserTrigger(element, moveEvent, [], 130, 40);
+      browserTrigger(element, moveEvent, [], 140, 40);
+      browserTrigger(element, moveEvent, [], 150, 40);
+      browserTrigger(element, moveEvent, [], 160, 40);
+      browserTrigger(element, moveEvent, [], 170, 40);
+      browserTrigger(element, moveEvent, [], 180, 40);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.move.calls.length).toBe(7);
@@ -226,11 +174,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, endEvent,{
-        keys: [],
-        x: 200,
-        y: 40
-      });
+      browserTrigger(element, endEvent, [], 200, 40);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.move.calls.length).toBe(7);
@@ -255,11 +199,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, startEvent,{
-        keys: [],
-        x: 100,
-        y: 40
-      });
+      browserTrigger(element, startEvent, [], 100, 40);
 
       expect(events.start).toHaveBeenCalled();
 
@@ -267,31 +207,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 101,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 105,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 110,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 115,
-        y: 40
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 120,
-        y: 40
-      });
+      browserTrigger(element, moveEvent, [], 101, 40);
+      browserTrigger(element, moveEvent, [], 105, 40);
+      browserTrigger(element, moveEvent, [], 110, 40);
+      browserTrigger(element, moveEvent, [], 115, 40);
+      browserTrigger(element, moveEvent, [], 120, 40);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.move.calls.length).toBe(3);
@@ -299,11 +219,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, endEvent,{
-        keys: [],
-        x: 200,
-        y: 40
-      });
+      browserTrigger(element, endEvent, [], 200, 40);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.move.calls.length).toBe(3);
@@ -328,11 +244,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, startEvent,{
-        keys: [],
-        x: 100,
-        y: 40
-      });
+      browserTrigger(element, startEvent, [], 100, 40);
 
       expect(events.start).toHaveBeenCalled();
 
@@ -340,31 +252,11 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.cancel).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 101,
-        y: 41
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 105,
-        y: 55
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 110,
-        y: 60
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 115,
-        y: 70
-      });
-      browserTrigger(element, moveEvent,{
-        keys: [],
-        x: 120,
-        y: 80
-      });
+      browserTrigger(element, moveEvent, [], 101, 41);
+      browserTrigger(element, moveEvent, [], 105, 55);
+      browserTrigger(element, moveEvent, [], 110, 60);
+      browserTrigger(element, moveEvent, [], 115, 70);
+      browserTrigger(element, moveEvent, [], 120, 80);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.cancel).toHaveBeenCalled();
@@ -372,11 +264,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect(events.move).not.toHaveBeenCalled();
       expect(events.end).not.toHaveBeenCalled();
 
-      browserTrigger(element, endEvent,{
-        keys: [],
-        x: 200,
-        y: 40
-      });
+      browserTrigger(element, endEvent, [], 200, 40);
 
       expect(events.start).toHaveBeenCalled();
       expect(events.cancel).toHaveBeenCalled();
