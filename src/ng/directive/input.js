@@ -1165,7 +1165,6 @@ var ngModelDirective = function() {
 /**
  * @ngdoc directive
  * @name ng.directive:ngChange
- * @restrict E
  *
  * @description
  * Evaluate given expression when user changes the input.
@@ -1174,6 +1173,8 @@ var ngModelDirective = function() {
  * Note, this directive requires `ngModel` to be present.
  *
  * @element input
+ * @param {expression} ngChange {@link guide/expression Expression} to evaluate upon change
+ * in input value.
  *
  * @example
  * <doc:example>
