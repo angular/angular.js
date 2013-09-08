@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngInit
+ * @restrict AC
  *
  * @description
  * The `ngInit` directive specifies initialization tasks to be executed

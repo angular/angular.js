@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngStyle
+ * @restrict AC
  *
  * @description
  * The `ngStyle` directive allows you to set CSS style on an HTML element conditionally.

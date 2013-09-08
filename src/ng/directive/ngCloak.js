@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngCloak
+ * @restrict AC
  *
  * @description
  * The `ngCloak` directive is used to prevent the Angular html template from being briefly

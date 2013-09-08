@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngBind
+ * @restrict AC
  *
  * @description
  * The `ngBind` attribute tells Angular to replace the text content of the specified HTML element

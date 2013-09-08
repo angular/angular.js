@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngTransclude
+ * @restrict AC
  *
  * @description
  * Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.
