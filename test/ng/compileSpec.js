@@ -1046,7 +1046,10 @@ describe('$compile', function() {
                  priority: priority,
                  compile: function() {
                    log(name + '-C');
-                   return function() { log(name + '-L'); }
+                   return {
+                     pre: function() { log(name + '-PreL'); },
+                     post: function() { log(name + '-PostL'); }
+                   }
                  }
                }, options || {}));
               });
@@ -1075,7 +1078,8 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
-              'third-L; first-L; second-L; last-L');
+              'first-PreL; second-PreL; last-PreL; third-PreL; ' +
+              'third-PostL; first-PostL; second-PostL; last-PostL');
 
             var span = element.find('span');
             expect(span.attr('first')).toEqual('');
@@ -1099,7 +1103,8 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
-              'iFirst-L; iSecond-L; iThird-L; iLast-L');
+              'iFirst-PreL; iSecond-PreL; iThird-PreL; iLast-PreL; ' +
+              'iFirst-PostL; iSecond-PostL; iThird-PostL; iLast-PostL');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1124,7 +1129,8 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
-              'third-L; first-L; second-L; last-L');
+              'first-PreL; second-PreL; last-PreL; third-PreL; ' +
+              'third-PostL; first-PostL; second-PostL; last-PostL');
 
             var span = element.find('span');
             expect(span.attr('first')).toEqual('');
@@ -1149,7 +1155,8 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
-              'iFirst-L; iSecond-L; iThird-L; iLast-L');
+              'iFirst-PreL; iSecond-PreL; iThird-PreL; iLast-PreL; ' +
+              'iFirst-PostL; iSecond-PostL; iThird-PostL; iLast-PostL');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1262,6 +1269,35 @@ describe('$compile', function() {
 
             expect(controllerSpy.callCount).toBe(2);
             expect(element.text()).toBe('boom!1|boom!2|');
+          });
+        });
+
+
+        it('should support templateUrl with replace', function() {
+          // a regression https://github.com/angular/angular.js/issues/3792
+          module(function($compileProvider) {
+            $compileProvider.directive('simple', function() {
+              return {
+                templateUrl: '/some.html',
+                replace: true
+              };
+            });
+          });
+
+          inject(function($templateCache, $rootScope, $compile) {
+            $templateCache.put('/some.html',
+              '<div ng-switch="i">' +
+                '<div ng-switch-when="1">i = 1</div>' +
+                '<div ng-switch-default>I dont know what `i` is.</div>' +
+              '</div>');
+
+            element = $compile('<div simple></div>')($rootScope);
+
+            $rootScope.$apply(function() {
+              $rootScope.i = 1;
+            });
+
+            expect(element.html()).toContain('i = 1');
           });
         });
       });
@@ -1482,7 +1518,7 @@ describe('$compile', function() {
           function($rootScope, $compile) {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for isolated scope on: ' +
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
                 '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
           })
         );
@@ -2824,7 +2860,7 @@ describe('$compile', function() {
     });
 
 
-    it('should make the result of a transclusion available to the parent directive in pre- and post- linking phase (templateUrl)',
+    it('should make the result of a transclusion available to the parent directive in post-linking phase (templateUrl)',
         function() {
           // when compiling an async directive the transclusion is always processed before the directive
           // this is different compared to sync directive. delaying the transclusion makes little sense.
@@ -2850,7 +2886,7 @@ describe('$compile', function() {
 
         element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
         $rootScope.$apply();
-        expect(log).toEqual('pre(unicorn!); post(unicorn!)');
+        expect(log).toEqual('pre(); post(unicorn!)');
       });
     });
   });
