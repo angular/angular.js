@@ -135,6 +135,7 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   BEGIN_TAG_REGEXP = /^</,
   BEGING_END_TAGE_REGEXP = /^<\s*\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
+  DOCTYPE_REGEXP = /<!DOCTYPE(.*?)>/g,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
@@ -199,10 +200,13 @@ function makeMap(str) {
  * @param {object} handler
  */
 function htmlParser( html, handler ) {
+
   var index, chars, match, stack = [], last = html;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
   while ( html ) {
+
+    console.log(html);
     chars = true;
 
     // Make sure we're not in a script or style element
@@ -217,7 +221,14 @@ function htmlParser( html, handler ) {
           html = html.substring( index + 3 );
           chars = false;
         }
+      // DOCTYPE
+      } else if (html.indexOf("<!DOCTYPE") === 0) {
+        index = html.indexOf(">");
 
+        if (index >= 0) {
+          html = html.substring(index);
+          chars = false;
+        }
       // end tag
       } else if ( BEGING_END_TAGE_REGEXP.test(html) ) {
         match = html.match( END_TAG_REGEXP );
@@ -261,6 +272,9 @@ function htmlParser( html, handler ) {
 
       parseEndTag( "", stack.last() );
     }
+
+    console.log('at end (html): ', html);
+    console.log('at end (last): ', last);
 
     if ( html == last ) {
       throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block of html: {0}", html);
