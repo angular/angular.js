@@ -302,7 +302,7 @@ var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {
     var formDirective = {
       name: 'form',
-      restrict: 'E',
+      restrict: isNgForm ? 'EAC' : 'E',
       controller: FormController,
       compile: function() {
         return {
@@ -351,7 +351,7 @@ var formDirectiveFactory = function(isNgForm) {
       }
     };
 
-    return isNgForm ? extend(copy(formDirective), {restrict: 'EAC'}) : formDirective;
+    return formDirective;
   }];
 };
 
