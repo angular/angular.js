@@ -734,9 +734,11 @@ function $CompileProvider($provide) {
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
      * @param {JQLite} jqCollection If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace nodes on it.
+     * @param {Object=} ignoreDirective An optional directive that will be ignored when compiling
+     *        the transclusion.
      * @returns linkFn
      */
-    function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn, jqCollection, originalReplaceDirective) {
+    function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn, jqCollection, ignoreDirective) {
       var terminalPriority = -Number.MAX_VALUE,
           preLinkFns = [],
           postLinkFns = [],
@@ -748,7 +750,6 @@ function $CompileProvider($provide) {
           directiveName,
           $template,
           transcludeDirective,
-          replaceDirective = originalReplaceDirective,
           childTranscludeFn = transcludeFn,
           controllerDirectives,
           linkFn,
@@ -801,7 +802,7 @@ function $CompileProvider($provide) {
             replaceWith(jqCollection, jqLite(sliceArgs($template)), compileNode);
 
             childTranscludeFn = compile($template, transcludeFn, terminalPriority,
-                                        replaceDirective && replaceDirective.name);
+                                        ignoreDirective && ignoreDirective.name);
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -820,7 +821,7 @@ function $CompileProvider($provide) {
           directiveValue = denormalizeTemplate(directiveValue);
 
           if (directive.replace) {
-            replaceDirective = directive;
+            ignoreDirective = directive;
             $template = jqLite('<div>' +
                                  trim(directiveValue) +
                                '</div>').contents();
@@ -859,7 +860,7 @@ function $CompileProvider($provide) {
           templateDirective = directive;
 
           if (directive.replace) {
-            replaceDirective = directive;
+            ignoreDirective = directive;
           }
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i),
               nodeLinkFn, $compileNode, templateAttrs, jqCollection, childTranscludeFn);
