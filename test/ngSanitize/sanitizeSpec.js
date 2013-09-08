@@ -39,12 +39,6 @@ describe('HTML', function() {
       };
     });
 
-    iit('should parse the doctype', function() {
-        htmlParser('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">', handler);
-        expect(text).toEqual('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">');
-        console.log(start);
-    });
-
     it('should parse basic format', function() {
       htmlParser('<tag attr="value">text</tag>', handler);
       expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
