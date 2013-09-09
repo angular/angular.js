@@ -224,7 +224,7 @@ function htmlParser( html, handler ) {
         match = html.match( DOCTYPE_REGEXP );
 
         if ( match ) {
-          html = html.substring( match[0].length );
+          html = html.replace( match[0] , '');
           chars = false;
         }
       // end tag

@@ -80,6 +80,12 @@ describe('HTML', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
   });
 
+  it('should remove DOCTYPE header', function() {
+    expectHTML('a<!DOCTYPE html>c.').toEqual('ac.');
+    expectHTML('a<!DocTyPe html>c.').toEqual('ac.');
+    expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">').toEqual('');
+  });
+
   it('should remove nested script', function() {
     expectHTML('a< SCRIPT >A< SCRIPT >evil< / scrIpt >B< / scrIpt >c.').toEqual('ac.');
   });
