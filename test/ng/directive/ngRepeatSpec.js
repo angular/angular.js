@@ -59,6 +59,19 @@ describe('ngRepeat', function() {
   });
 
 
+  it('should allow multiple spaces between the identifer and `in`', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item   in items">{{item.name}};</li>' +
+      '</ul>')(scope);
+
+    scope.items = [{name: 'misko'}, {name:'shyam'}];
+    scope.$digest();
+    expect(element.find('li').length).toEqual(2);
+    expect(element.text()).toEqual('misko;shyam;');
+  });
+
+
   it('should iterate over an array-like object', function() {
     element = $compile(
       '<ul>' +
