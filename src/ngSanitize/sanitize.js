@@ -200,7 +200,6 @@ function makeMap(str) {
  * @param {object} handler
  */
 function htmlParser( html, handler ) {
-
   var index, chars, match, stack = [], last = html;
   stack.last = function() { return stack[ stack.length - 1 ]; };
 
