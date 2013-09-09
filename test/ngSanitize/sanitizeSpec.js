@@ -293,7 +293,5 @@ describe('HTML', function() {
         expect(' &#14; java\u0000\u0000script:alert("D");').not.toBeValidUrl();
       });
     });
-
-
   });
 });
