@@ -119,11 +119,16 @@ describe('Filter: filter', function() {
       var expr = {key: 10};
       var comparator = function (obj,value) {
         return obj > value;
-      }
+      };
       expect(filter(items, expr, comparator)).toEqual([items[2]]);
 
       expr = 10;
       expect(filter(items, expr, comparator)).toEqual([items[2], items[3]]);
+
+      comparator = function (obj,value,index) {
+        return index % 2 == 0;
+      };
+      expect(filter(items, expr, comparator)).toEqual([items[0], items[2]]);
 
     });
 

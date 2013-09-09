@@ -32,15 +32,15 @@
  *     called for each element of `array`. The final result is an array of those elements that
  *     the predicate returned true for.
  *
- * @param {function(expected, actual)|true|undefined} comparator Comparator which is used in
+ * @param {function(expected, actual, index)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
  *     the object in the array) should be considered a match.
  *
  *   Can be one of:
  *
- *     - `function(expected, actual)`:
- *       The function will be given the object value and the predicate value to compare and
- *       should return true if the item should be included in filtered result.
+ *     - `function(expected, actual, index)`:
+ *       The function will be given the object value, the predicate value and in case of an array 
+ *       the index to compare. It should return true if the item should be included in filtered result.
  *
  *     - `true`: A shorthand for `function(expected, actual) { return angular.equals(expected, actual)}`.
  *       this is essentially strict comparison of expected and actual.
@@ -108,9 +108,9 @@ function filterFilter() {
   return function(array, expression, comperator) {
     if (!isArray(array)) return array;
     var predicates = [];
-    predicates.check = function(value) {
+    predicates.check = function(value, index) {
       for (var j = 0; j < predicates.length; j++) {
-        if(!predicates[j](value)) {
+        if(!predicates[j](value, index)) {
           return false;
         }
       }
@@ -132,7 +132,7 @@ function filterFilter() {
           return (''+obj).toLowerCase().indexOf(text) > -1
         };
     }
-    var search = function(obj, text){
+    var search = function(obj, text, index){
       if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
       }
@@ -140,15 +140,15 @@ function filterFilter() {
         case "boolean":
         case "number":
         case "string":
-          return comperator(obj, text);
+          return comperator(obj, text, index);
         case "object":
           switch (typeof text) {
             case "object":
-              return comperator(obj, text);
+              return comperator(obj, text, index);
               break;
             default:
               for ( var objKey in obj) {
-                if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
+                if (objKey.charAt(0) !== '$' && search(obj[objKey], text, index)) {
                   return true;
                 }
               }
@@ -157,7 +157,7 @@ function filterFilter() {
           return false;
         case "array":
           for ( var i = 0; i < obj.length; i++) {
-            if (search(obj[i], text)) {
+            if (search(obj[i], text, index)) {
               return true;
             }
           }
@@ -177,16 +177,16 @@ function filterFilter() {
             (function() {
               if (!expression[key]) return;
               var path = key
-              predicates.push(function(value) {
-                return search(value, expression[path]);
+              predicates.push(function(value, index) {
+                return search(value, expression[path], index);
               });
             })();
           } else {
             (function() {
               if (typeof(expression[key]) == 'undefined') { return; }
               var path = key;
-              predicates.push(function(value) {
-                return search(getter(value,path), expression[path]);
+              predicates.push(function(value, index) {
+                return search(getter(value,path), expression[path], index);
               });
             })();
           }
@@ -201,7 +201,7 @@ function filterFilter() {
     var filtered = [];
     for ( var j = 0; j < array.length; j++) {
       var value = array[j];
-      if (predicates.check(value)) {
+      if (predicates.check(value, j)) {
         filtered.push(value);
       }
     }
