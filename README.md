@@ -16,6 +16,7 @@ it makes development fun!
 * API Docs: http://docs.angularjs.org/api
 * Developer Guide: http://docs.angularjs.org/guide
 * Contribution guidelines: http://docs.angularjs.org/misc/contribute
+* Dashboard: http://dashboard.angularjs.org
 
 Building AngularJS
 ---------
