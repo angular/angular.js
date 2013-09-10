@@ -125,7 +125,8 @@ function Browser(window, document, $log, $sniffer) {
 
   var lastBrowserUrl = location.href,
       baseElement = document.find('base'),
-      replacedUrl = null;
+      replacedUrl = null,
+      ignoreHashChange = false;
 
   /**
    * @name ng.$browser#url
@@ -160,6 +161,8 @@ function Browser(window, document, $log, $sniffer) {
           baseElement.attr('href', baseElement.attr('href'));
         }
       } else {
+        // Flag to ignore hashchange events occasionally generated in Android 2.2, 2.3
+        ignoreHashChange = true;
         if (replace) {
           location.replace(url);
           replacedUrl = url;
@@ -167,6 +170,7 @@ function Browser(window, document, $log, $sniffer) {
           location.href = url;
           replacedUrl = null;
         }
+        ignoreHashChange = false;
       }
       return self;
     // getter
@@ -182,7 +186,7 @@ function Browser(window, document, $log, $sniffer) {
       urlChangeInit = false;
 
   function fireUrlChange() {
-    if (lastBrowserUrl == self.url()) return;
+    if (lastBrowserUrl == self.url() || ignoreHashChange) return;
 
     lastBrowserUrl = self.url();
     forEach(urlChangeListeners, function(listener) {
