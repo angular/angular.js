@@ -482,7 +482,7 @@ Doc.prototype = {
             description:self.markdown(text.replace(match[0], match[6])),
             type: optional ? match[1].substring(0, match[1].length-1) : match[1],
             optional: optional,
-            'default':match[5]
+            default: match[5]
           };
           self.param.push(param);
         } else if (atName == 'returns' || atName == 'return') {
@@ -629,7 +629,6 @@ Doc.prototype = {
           types = types.substr(0,limit);
         }
         types = types.split(/\|(?![\(\)\w\|\s]+>)/);
-        var description = param.description;
         if (param.optional) {
           name += ' <div><em>(optional)</em></div>';
         }
@@ -642,8 +641,15 @@ Doc.prototype = {
           dom.text(type);
           dom.html('</a>');
         }
+
         dom.html('</td>');
-        dom.html('<td>' + description + '</td>');
+        var description = '<td>';
+        description += param.description;
+        if (param.default) {
+          description += ' <p><em>(default: ' + param.default + ')</em></p>';
+        }
+        description += '</td>';
+        dom.html(description);
         dom.html('</tr>');
       };
       dom.html('</tbody>');
