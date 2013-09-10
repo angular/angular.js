@@ -535,7 +535,9 @@ angular.module('ngAnimate', ['ng'])
         function done() {
           if(!done.hasBeenRun) {
             done.hasBeenRun = true;
-            element.removeData(NG_ANIMATE_STATE);
+            if(element != $rootElement) {
+              element.removeData(NG_ANIMATE_STATE);
+            }
             (onComplete || noop)();
           }
         }

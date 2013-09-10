@@ -1522,4 +1522,21 @@ describe("ngAnimate", function() {
     });
   });
 
+  it("should not remove the animation flag data on $rootElement after an animation is executed", 
+    inject(function($compile, $rootElement, $animate, $document) {
+
+    var stateFlag = '$$ngAnimateState';
+    var body = jqLite($document[0].body);
+
+    //this is here since $rootElement is not on the document node
+    body.data(stateFlag, {});
+    body.append($rootElement);
+
+    expect(isObject($rootElement.data(stateFlag))).toBe(true);
+
+    $animate.addClass($rootElement, 'parent');
+
+    expect(isObject($rootElement.data(stateFlag))).toBe(true);
+  }));
+
 });
