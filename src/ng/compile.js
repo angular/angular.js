@@ -418,12 +418,20 @@ function $CompileProvider($provide) {
 
 
       /**
+       * @ngdoc function
+       * @name ng.$compile.directive.Attributes#$observe
+       * @methodOf ng.$compile.directive.Attributes
+       * @function
+       *
+       * @description
        * Observe an interpolated attribute.
        * The observer will never be called, if given attribute is not interpolated.
+       * The interpolated value of the attribute is passed to the observer function.
        *
        * @param {string} key Normalized key. (ie ngAttribute) .
-       * @param {function(*)} fn Function that will be called whenever the attribute value changes.
-       * @returns {function(*)} the `fn` Function passed in.
+       * @param {function(attrValue)} fn Function that will be called whenever the attribute value changes.
+       *        See the {@link guide/directive#Attributes Directive guide} for more info.
+       * @returns {function()} the `fn` Function passed in.
        */
       $observe: function(key, fn) {
         var attrs = this,
