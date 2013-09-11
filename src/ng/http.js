@@ -971,11 +971,11 @@ function $HttpProvider() {
 		function toQueryString(params, parts, pk) {
       forEachSorted(params, function(value, key) {
 	      if (value == null || value == undefined) return;
-				if (pk) key = pk+'['+key+']'
+				if (pk) key = pk+'['+key+']';
 	      if (is('Array',value)) {
 		      forEach(value, function(v,i) {
 						if(is('Object', v)){
-							key = key+'['+i+']'
+							key = key+'['+i+']';
 			      	toQueryString(v, parts, key)
 						} else {
 				      parts.push(encodeUriQuery(key) + '=' +
@@ -994,7 +994,7 @@ function $HttpProvider() {
     function buildUrl(url, params) {
           if (!params) return url;
           var parts = [];
-					toQueryString(params, parts)
+					toQueryString(params, parts);
           return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
         }
 
