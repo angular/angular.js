@@ -605,8 +605,9 @@ function $CompileProvider($provide) {
      *        the function returns.
      * @param attrs The shared attrs object which is used to populate the normalized attributes.
      * @param {number=} maxPriority Max directive priority.
+     * @param ignoreElementDirective if the element directive should not be collected
      */
-    function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
+    function collectDirectives(node, directives, attrs, maxPriority, ignoreDirective, ignoreElementDirective) {
       var nodeType = node.nodeType,
           attrsMap = attrs.$attr,
           match,
@@ -615,8 +616,10 @@ function $CompileProvider($provide) {
       switch(nodeType) {
         case 1: /* Element */
           // use the node name: <directive>
-          addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
+          if (!ignoreElementDirective) {
+            addDirective(directives,
+                directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
+          }
 
           // iterate over the attributes
           for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
@@ -819,8 +822,10 @@ function $CompileProvider($provide) {
         }
 
         if (directive.template) {
-          assertNoDuplicate('template', templateDirective, directive, $compileNode);
-          templateDirective = directive;
+          if (directive.replace !== 'attributes') {
+            assertNoDuplicate('template', templateDirective, directive, $compileNode);
+            templateDirective = directive;
+          }
 
           directiveValue = (isFunction(directive.template))
               ? directive.template($compileNode, templateAttrs)
@@ -839,7 +844,9 @@ function $CompileProvider($provide) {
               throw $compileMinErr('tplrt', "Template for directive '{0}' must have exactly one root element. {1}", directiveName, '');
             }
 
-            replaceWith(jqCollection, $compileNode, compileNode);
+            if (directive.replace !== 'attributes') {
+              replaceWith(jqCollection, $compileNode, compileNode);
+            }
 
             var newTemplateAttrs = {$attr: {}};
 
@@ -852,7 +859,10 @@ function $CompileProvider($provide) {
                 collectDirectives(
                     compileNode,
                     directives.splice(i + 1, directives.length - (i + 1)),
-                    newTemplateAttrs
+                    newTemplateAttrs,
+                    undefined,
+                    undefined,
+                    directive.replace === 'attributes'
                 )
             );
             mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
@@ -864,10 +874,12 @@ function $CompileProvider($provide) {
         }
 
         if (directive.templateUrl) {
-          assertNoDuplicate('template', templateDirective, directive, $compileNode);
-          templateDirective = directive;
+          if (directive.replace !== 'attributes') {
+            assertNoDuplicate('template', templateDirective, directive, $compileNode);
+            templateDirective = directive;
+          }
 
-          if (directive.replace) {
+          if (directive.replace !== 'attributes') {
             replaceDirective = directive;
           }
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i),
@@ -1167,7 +1179,9 @@ function $CompileProvider($provide) {
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
               : origAsyncDirective.templateUrl;
 
-      $compileNode.html('');
+      if (origAsyncDirective.replace !== 'attributes') {
+        $compileNode.html('');
+      }
 
       $http.get($sce.getTrustedResourceUrl(templateUrl), {cache: $templateCache}).
         success(function(content) {
@@ -1185,8 +1199,10 @@ function $CompileProvider($provide) {
             }
 
             tempTemplateAttrs = {$attr: {}};
-            replaceWith($rootElement, $compileNode, compileNode);
-            collectDirectives(compileNode, directives, tempTemplateAttrs);
+            if (origAsyncDirective.replace !== 'attributes') {
+              replaceWith($rootElement, $compileNode, compileNode);
+            }
+            collectDirectives(compileNode, directives, tempTemplateAttrs, undefined, undefined, origAsyncDirective.replace === 'attributes');
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;

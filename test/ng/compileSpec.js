@@ -473,6 +473,11 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceAttributes', valueFn({
+            restrict: 'CA',
+            replace: 'attributes',
+            template: '<span class="log" style="width: 10px" high-log></span>'
+          }));
           directive('append', valueFn({
             restrict: 'CAM',
             template: '<div class="log" style="width: 10px" high-log>Append!</div>',
@@ -493,21 +498,43 @@ describe('$compile', function() {
 
 
         it('should replace element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div replace>ignore</div><div>')($rootScope);
+          element = $compile('<div><div replace>ignore</div></div>')($rootScope);
           expect(element.text()).toEqual('Replace!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
+        it('should replace attributes from template', inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div replace-attributes medium-log>Original</div></div>')($rootScope);
+          expect(element.text()).toEqual('Original');
+          expect(element.find('div').attr('class')).toEqual('log');
+          expect(log).toEqual('MEDIUM; HIGH; LOG');
+        }));
+        it('should not collect the directive from the element at the template when replace is `attributes`', function() {
+          module(function() {
+            directive('span', function(log) {
+              return {
+                restrict: 'ECA',
+                link: function(scope, element) {
+                  log('FAIL');
+                }
+              };
+            })
+          });
+          inject(function($compile, $rootScope, log) {
+            element = $compile('<div replace-attributes></div>')($rootScope);
+            expect(log).toEqual('HIGH; LOG');
+          })
+        });
 
         it('should append element with template', inject(function($compile, $rootScope) {
-          element = $compile('<div><div append>ignore</div><div>')($rootScope);
+          element = $compile('<div><div append>ignore</div></div>')($rootScope);
           expect(element.text()).toEqual('Append!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
 
         it('should compile template when replacing', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div replace medium-log>ignore</div><div>')
+          element = $compile('<div><div replace medium-log>ignore</div></div>')
             ($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Replace!');
@@ -517,7 +544,7 @@ describe('$compile', function() {
 
 
         it('should compile template when appending', inject(function($compile, $rootScope, log) {
-          element = $compile('<div><div append medium-log>ignore</div><div>')
+          element = $compile('<div><div append medium-log>ignore</div></div>')
             ($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!');
@@ -527,7 +554,7 @@ describe('$compile', function() {
 
         it('should merge attributes including style attr', inject(function($compile, $rootScope) {
           element = $compile(
-            '<div><div replace class="medium-log" style="height: 20px" ></div><div>')
+            '<div><div replace class="medium-log" style="height: 20px" ></div></div>')
             ($rootScope);
           var div = element.find('div');
           expect(div.hasClass('medium-log')).toBe(true);
@@ -545,6 +572,12 @@ describe('$compile', function() {
           } catch(e) {
             expect(e.message).toMatch(/Multiple directives .* asking for template/);
           }
+        }));
+
+        it('should allow multiple templates per directive when the templates add only attributes', inject(function($compile) {
+          element = $compile('<div><span replace-attributes class="replace"></span></div>')($rootScope);
+          $rootScope.$digest();
+          expect(element.text()).toEqual('Replace!');
         }));
 
         it('should play nice with repeater when replacing', inject(function($compile, $rootScope) {
@@ -713,6 +746,11 @@ describe('$compile', function() {
               replace: true,
               templateUrl: 'hello.html'
             }));
+            directive('aHello', valueFn({
+              restrict: 'CAM',
+              replace: 'attributes',
+              templateUrl: 'hello.html'
+            }));
             directive('iCau', valueFn({
               restrict: 'CAM',
               replace: true,
@@ -868,6 +906,22 @@ describe('$compile', function() {
               expect(sortedHtml(element)).toBeOneOf(
                   '<div><span class="i-hello">Hello, Elvis!</span></div>',
                   '<div><span class="i-hello" i-hello="">Hello, Elvis!</span></div>' //ie8
+              );
+            }
+        ));
+
+
+        it('should compile, flush and link the template for attribute directives', inject(
+            function($compile, $templateCache, $rootScope) {
+              $templateCache.put('hello.html', '<span>To Be Ignored</span>');
+              var template = $compile('<div><b class="a-hello">Hello World!</b></div>');
+
+              element = template($rootScope);
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).toBeOneOf(
+                  '<div><b class="a-hello">Hello World!</b></div>',
+                  '<div><b class="a-hello" a-hello="">Hello World!</b></div>' //ie8
               );
             }
         ));
