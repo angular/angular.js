@@ -139,7 +139,7 @@ describe("resource", function() {
 
   it('should encode array params', function() {
     var R = $resource('/Path/:a');
-    $httpBackend.expect('GET', '/Path/doh&foo?bar=baz1&bar=baz2').respond('{}');
+    $httpBackend.expect('GET', '/Path/doh&foo?bar[]=baz1&bar[]=baz2').respond('{}');
     R.get({a: 'doh&foo', bar: ['baz1', 'baz2']});
   });
 

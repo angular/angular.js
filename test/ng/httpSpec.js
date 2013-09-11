@@ -438,8 +438,14 @@ describe('$http', function() {
 
 
       it('should expand arrays in params map', inject(function($httpBackend, $http) {
-          $httpBackend.expect('GET', '/url?a=1&a=2&a=3').respond('');
+          $httpBackend.expect('GET', '/url?a[]=1&a[]=2&a[]=3').respond('');
           $http({url: '/url', params: {a: [1,2,3]}, method: 'GET'});
+      }));
+
+
+      it('should expand short arrays in params map', inject(function($httpBackend, $http) {
+          $httpBackend.expect('GET', '/url?a[]=1').respond('');
+          $http({url: '/url', params: {a: [1]}, method: 'GET'});
       }));
 
 
