@@ -45,8 +45,6 @@ This is how we get the ball rolling (refer to the diagram and example below):
   9. The `{{name}}` {@link api/ng.$interpolate interpolates} the expression to
      `Hello World!`
 
-<div class="clear">
-</div>
 <example>
   <file name="index.html">
     <p ng-init=" name='World' ">Hello {{name}}!</p>
@@ -126,8 +124,6 @@ user enters text into the text field.
         the JavaScript execution context.
      7. The browser re-renders the view with update text.
 
-<div class="clear">
-</div>
 <example>
   <file name="index.html">
     <input ng-model="name">
@@ -147,8 +143,6 @@ The following example demonstrates how the `name` {@link guide/expression expres
 into a different value depending on which scope it is evaluated in. The example is followed by
 a diagram depicting the scope boundaries.
 
-<div class="clear">
-</div>
 <div class="show-scope">
 <example>
   <file name="index.html">
@@ -204,8 +198,6 @@ The separation of the controller and the view is important because:
     controller. This is important for re-skinning, device specific views (i.e. mobile vs desktop),
     and testability.
 
-<div class="clear">
-</div>
 <example>
   <file name="index.html">
     <div ng-controller="MyCtrl">
@@ -239,10 +231,6 @@ to inherit from or special accessor methods for accessing or changing the model.
 primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
 
 
-<div class="clear">
-</div>
-
-
 <a name="view"></a>
 # View
 
@@ -268,9 +256,6 @@ rendering the view compared to most other templating systems.
     api/ng.$rootScope.Scope#$watch watches} on the model. The result is a
     continuously updating view which does not need template model re-merging. Your model becomes
     the single source-of-truth for your view.
-
-<div class="clear">
-</div>
 
 <example>
   <file name="index.html">
@@ -369,7 +354,6 @@ api/AUTO.$injector injector} asks the instance factory to create a new instance.
 A {@link api/angular.Module module} is a way to configure the injector's instance factory, known
 as a {@link api/AUTO.$provide provider}.
 
-<div class='clear'></div>
 <pre>
   // Create a module
   var myModule = angular.module('myModule', [])
