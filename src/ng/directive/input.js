@@ -1093,6 +1093,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * current scope. If the property doesn't already exist on this scope, it will be created
  * implicitly and added to the scope.
  *
+ * For best practices on using `ngModel`, see:
+ *
+ *  - {@link https://github.com/angular/angular.js/wiki/Understanding-Scopes}
+ *
  * For basic examples, how to use `ngModel`, see:
  *
  *  - {@link ng.directive:input input}
