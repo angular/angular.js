@@ -104,7 +104,7 @@ __`test/e2e/scenarios.js`:__
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
 runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
+http://angular.github.com/angular-phonecat/step-10/test/e2e/runner.html
 Angular's server}.
 
 # Experiments
