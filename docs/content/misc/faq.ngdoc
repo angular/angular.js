@@ -67,7 +67,7 @@ illustration we typically build snappy apps with hundreds or thousands of active
 
 ### How big is the angular.js file that I need to include?
 
-The size of the file is < 29KB compressed and minified.
+The size of the file is <code>< 90KB</code> compressed and minified.
 
 
 ### Can I use the open-source Closure Library with Angular?
@@ -91,13 +91,14 @@ framework, provides mocks for many heavy dependencies (server-side communication
 
 ### How can I learn more about Angular?
 
-Watch the July 17, 2012 talk
-"{@link http://www.youtube.com/watch?v=1CpiB3Wk25U AngularJS Intro + Dependency Injection}".
+{@link http://www.thinkster.io/pick/GtaQ0oMGIl/ A Better Way to Learn AngularJS}"
+{@link http://www.ng-newsletter.com/posts/beginner2expert-how_to_start.html How to get started (Part 1 of the AngularJS - from beginner to expert in 7 steps series)}"
+{@link http://www.thinkster.io/pick/GUIDJbpIie/ AngularJS Tutorial: Learn to build modern web apps)}"
 
 
 ### How is Angular licensed?
 
-The MIT License.
+{@link https://github.com/angular/angular.js/blob/master/LICENSE The MIT License}.
 
 ### Can I download and use the Angular logo artwork?
 
@@ -113,7 +114,7 @@ make our schwag will be happy to do a custom run for you, based on our existing 
 they'll waive the setup costs, and you can order any quantity you need.
 
 **Stickers**
-Contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+Contact Tom Witting (or anyone in sales) via email at {@link mailto:tom@stickergiant.com tom@stickergiant.com}, and tell him you want to order some AngularJS
 stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping.
 
 As long as the design stays exactly the same, {@link http://www.stickergiant.com StickerGiant} will give you a reorder discount.
