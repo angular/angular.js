@@ -373,6 +373,7 @@ function $RouteProvider(){
      * @description
      * Broadcasted if any of the resolve promises are rejected.
      *
+     * @param {Object} angularEvent Synthetic event object
      * @param {Route} current Current route information.
      * @param {Route} previous Previous route information.
      * @param {Route} rejection Rejection of the promise. Usually the error of the failed promise.
