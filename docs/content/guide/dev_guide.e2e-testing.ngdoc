@@ -38,9 +38,9 @@ it('should filter results', function() {
 });
 </pre>
 This scenario describes the requirements of a Buzz Client, specifically, that it should be able to
-filter the stream of the user. It starts by entering a value in the 'user' input field, clicking
+filter the stream of the user. It starts by entering a value in the input field with ng-model="user", clicking
 the only button on the page, and then it verifies that there are 10 items listed. It then enters
-'Bees' in the 'filterText' input field and verifies that the list is reduced to a single item.
+'Bees' in the input field with ng-model='filterText'  and verifies that the list is reduced to a single item.
 
 The API section below lists the available commands and expectations for the Runner.
 
