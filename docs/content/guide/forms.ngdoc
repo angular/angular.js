@@ -115,7 +115,7 @@ This ensures that the user is not distracted with an error until after interacti
 
 A form is an instance of {@link api/ng.directive:form.FormController FormController}.
 The form instance can optionally be published into the scope using the `name` attribute.
-Similarly control is an instance of {@link api/ng.directive:ngModel.NgModelController NgModelController}.
+Similarly, control is an instance of {@link api/ng.directive:ngModel.NgModelController NgModelController}.
 The control instance can similarly be published into the form instance using the `name` attribute.
 This implies that the internal state of both the form and the control is available for binding in the view using the standard binding primitives.
 
