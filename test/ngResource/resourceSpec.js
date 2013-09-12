@@ -774,6 +774,64 @@ describe("resource", function() {
   });
 
 
+  it('should allow per action request interceptor that gets full request', function() {
+    var r;
+    CreditCard = $resource('/CreditCard', {}, {
+      query: {
+        method: 'get',
+        isArray: true,
+        interceptor: {
+          request: function(request) {
+            return r = request;
+          }
+        }
+      }
+    });
+
+    $httpBackend.expect('GET', '/CreditCard').respond(200);
+
+    var ccs = CreditCard.query();
+
+    ccs.$promise.then(callback);
+
+    $httpBackend.flush();
+    expect(callback).toHaveBeenCalledOnce();
+
+    expect(r.config.method).toBe('GET');
+    expect(r.config.url).toBe('/CreditCard');
+    expect(r.status).toBe(200);
+  });
+
+
+  // No idea how to test a request error.
+  xit('should allow per action requestError interceptor that gets full request', function() {
+    CreditCard = $resource('/CreditCard', {}, {
+      query: {
+        method: 'get',
+        isArray: true,
+        interceptor: {
+          requestError: function(request) {
+            return request;
+          }
+        }
+      }
+    });
+
+    $httpBackend.expect('GET', '/CreditCard').respond(404);
+
+    var ccs = CreditCard.query();
+
+    ccs.$promise.then(callback);
+
+    $httpBackend.flush();
+    expect(callback).toHaveBeenCalledOnce();
+
+    var request = callback.mostRecentCall.args[0];
+    expect(request.status).toBe(404);
+    expect(request.config).toBeDefined();
+  });
+
+
   describe('failure mode', function() {
     var ERROR_CODE = 500,
         ERROR_RESPONSE = 'Server Error',

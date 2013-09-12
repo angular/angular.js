@@ -94,9 +94,12 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *     requests with credentials} for more information.
  *   - **`responseType`** - `{string}` - see {@link
  *     https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType requestType}.
- *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
+ *   - **`interceptor`** - `{Object=}` - The interceptor object has four optional methods -
+ *     `request` and `requestError`. Both `request` and `requestError` interceptors get called
+ *     with `http request` object.
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
- *     with `http response` object. See {@link ng.$http $http interceptors}.
+ *     with `http response` object.
+ *     See {@link ng.$http $http interceptors}.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
@@ -457,6 +460,8 @@ angular.module('ngResource', ['ng']).
           var isInstanceCall = data instanceof Resource;
           var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
           var httpConfig = {};
+          var requestInterceptor = action.interceptor && action.interceptor.request || undefined;
+          var requestErrorInterceptor = action.interceptor && action.interceptor.requestError || undefined;
           var responseInterceptor = action.interceptor && action.interceptor.response || defaultResponseInterceptor;
           var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
 
@@ -469,7 +474,7 @@ angular.module('ngResource', ['ng']).
           httpConfig.data = data;
           route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
 
-          var promise = $http(httpConfig).then(function(response) {
+          var promise = $http(httpConfig).then(requestInterceptor, requestErrorInterceptor).then(function(response) {
             var data = response.data,
                 promise = value.$promise;
 
