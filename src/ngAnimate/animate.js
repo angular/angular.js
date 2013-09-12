@@ -201,9 +201,9 @@ angular.module('ngAnimate', ['ng'])
 
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var rootAnimateState = {running:true};
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout) {
-
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
+        
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       function lookup(name) {
@@ -282,8 +282,10 @@ angular.module('ngAnimate', ['ng'])
         */
         enter : function(element, parent, after, done) {
           $delegate.enter(element, parent, after);
-          performAnimation('enter', 'ng-enter', element, parent, after, function() {
-            $timeout(done || noop, 0, false);
+          $rootScope.$$postDigest(function() {
+            performAnimation('enter', 'ng-enter', element, parent, after, function() {
+              done && $timeout(done, 0, false);
+            });
           });
         },
 
@@ -315,8 +317,10 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         leave : function(element, done) {
-          performAnimation('leave', 'ng-leave', element, null, null, function() {
-            $delegate.leave(element, done);
+          $rootScope.$$postDigest(function() {
+            performAnimation('leave', 'ng-leave', element, null, null, function() {
+              $delegate.leave(element, done);
+            });
           });
         },
 
@@ -352,8 +356,10 @@ angular.module('ngAnimate', ['ng'])
         */
         move : function(element, parent, after, done) {
           $delegate.move(element, parent, after);
-          performAnimation('move', 'ng-move', element, null, null, function() {
-            $timeout(done || noop, 0, false);
+          $rootScope.$$postDigest(function() {
+            performAnimation('move', 'ng-move', element, null, null, function() {
+              done && $timeout(done, 0, false);
+            });
           });
         },
 
@@ -543,13 +549,17 @@ angular.module('ngAnimate', ['ng'])
       //one day all browsers will have these properties
       var w3cAnimationProp = 'animation';
       var w3cTransitionProp = 'transition';
+      var w3cAnimationEvent = 'animationend';
+      var w3cTransitionEvent = 'transitionend';
 
       //but some still use vendor-prefixed styles
       var vendorAnimationProp = $sniffer.vendorPrefix + 'Animation';
       var vendorTransitionProp = $sniffer.vendorPrefix + 'Transition';
+      var vendorAnimationEvent = $sniffer.vendorPrefix.toLowerCase() + 'AnimationEnd';
+      var vendorTransitionEvent = $sniffer.vendorPrefix.toLowerCase() + 'TransitionEnd';
 
       var durationKey = 'Duration',
-          delayKey = 'Delay',
+          propertyKey = 'Property',
           animationIterationCountKey = 'IterationCount',
           ELEMENT_NODE = 1;
 
@@ -577,16 +587,11 @@ angular.module('ngAnimate', ['ng'])
         element.addClass(className);
 
         //we want all the styles defined before and after
-        var duration = 0;
+        var transitionTime = 0,
+            animationTime = 0;
         forEach(element, function(element) {
           if (element.nodeType == ELEMENT_NODE) {
             var elementStyles = $window.getComputedStyle(element) || {};
-
-            var transitionDelay     = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
-                                               parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
-
-            var animationDelay      = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
-                                               parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
 
             var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
                                                parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
@@ -600,30 +605,43 @@ angular.module('ngAnimate', ['ng'])
                                            1);
             }
 
-            duration = Math.max(animationDelay  + animationDuration,
-                                transitionDelay + transitionDuration,
-                                duration);
+            transitionTime = Math.max(transitionDuration, transitionTime);
+            animationTime = Math.max(animationDuration, animationTime);
           }
         });
 
         /* there is no point in performing a reflow if the animation
            timeout is empty (this would cause a flicker bug normally
            in the page */
-        if(duration > 0) {
+        var totalTime = Math.max(transitionTime,animationTime);
+        if(totalTime > 0) {
+          var node = element[0];
+
+          //temporarily disable the transition so that the enter styles
+          //don't animate twice (this is here to avoid a bug in Chrome/FF).
+          node.style[w3cTransitionProp + propertyKey] = 'none';
+          node.style[vendorTransitionProp + propertyKey] = 'none';
+
           var activeClassName = '';
           forEach(className.split(' '), function(klass, i) {
             activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
           });
 
-          $timeout(function() {
-            element.addClass(activeClassName);
-            $timeout(done, duration * 1000, false);
-          },0,false);
+          //this triggers a reflow which allows for the transition animation to kick in
+          element.prop('clientWidth');
+          node.style[w3cTransitionProp + propertyKey] = '';
+          node.style[vendorTransitionProp + propertyKey] = '';
+          element.addClass(activeClassName);
+
+          var css3AnimationEvents = [w3cAnimationEvent,  vendorAnimationEvent,
+                                     w3cTransitionEvent, vendorTransitionEvent].join(' ');
+          element.on(css3AnimationEvents, onAnimationProgress);
 
           //this will automatically be called by $animate so
           //there is no need to attach this internally to the
           //timeout done method
           return function onEnd(cancelled) {
+            element.off(css3AnimationEvents, onAnimationProgress);
             element.removeClass(className);
             element.removeClass(activeClassName);
 
@@ -638,6 +656,10 @@ angular.module('ngAnimate', ['ng'])
         else {
           element.removeClass(className);
           done();
+        }
+
+        function onAnimationProgress(event) {
+          (event.elapsedTime || (event.originalEvent && event.originalEvent.elapsedTime)) >= totalTime && done();
         }
 
         function parseMaxTime(str) {

@@ -109,7 +109,7 @@ exports.ngVersions = function() {
       //NON_RC_RELEASE_NUMBER is used to signal the non-RC version for the release and
       //it will always appear at the top of the list since the number is so high!
       versionMap[baseVersion].push(
-        version == baseVersion ? NON_RC_RELEASE_NUMBER : parseInt(version.match(/rc(\d+)/)[1]));
+        version == baseVersion ? NON_RC_RELEASE_NUMBER : parseInt(version.match(/rc\.?(\d+)/)[1]));
     };
 
     //flatten the map so that the RC versions occur in a natural sorted order
@@ -714,7 +714,7 @@ Doc.prototype = {
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function() {
-      var restrict = self.restrict || 'AC';
+      var restrict = self.restrict || 'A';
 
       if (restrict.match(/E/)) {
         dom.html('<p>');

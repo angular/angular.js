@@ -15,7 +15,7 @@ describe('HTML', function() {
   describe('htmlParser', function() {
     if (angular.isUndefined(window.htmlParser)) return;
 
-    var handler, start, text;
+    var handler, start, text, comment;
     beforeEach(function() {
       handler = {
           start: function(tag, attrs, unary){
@@ -35,8 +35,40 @@ describe('HTML', function() {
           },
           end:function(tag) {
             expect(tag).toEqual(start.tag);
+          },
+          comment:function(comment_) {
+            comment = comment_;
           }
       };
+    });
+
+    it('should parse comments', function() {
+      htmlParser('<!--FOOBAR-->', handler);
+      expect(comment).toEqual('FOOBAR');
+    });
+
+    it('should throw an exception for invalid comments', function() {
+      var caught=false;
+      try {
+        htmlParser('<!-->', handler);
+      }
+      catch (ex) {
+        caught = true;
+        // expected an exception due to a bad parse
+      }
+      expect(caught).toBe(true);
+    });
+
+    it('double-dashes are not allowed in a comment', function() {
+      var caught=false;
+      try {
+        htmlParser('<!-- -- -->', handler);
+      }
+      catch (ex) {
+        caught = true;
+        // expected an exception due to a bad parse
+      }
+      expect(caught).toBe(true);
     });
 
     it('should parse basic format', function() {

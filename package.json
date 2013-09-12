@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
   "version": "1.2.0-snapshot",
-  "cdnVersion": "1.2.0rc1",
-  "codename": "barehand-atomspliting",
+  "cdnVersion": "1.2.0-rc.2",
+  "codename": "ferocious-twitch",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -24,7 +24,7 @@
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
     "karma-ng-scenario": "~0.1.0",
-    "karma-junit-reporter": "karma-runner/karma-junit-reporter#karma-0.11",
+    "karma-junit-reporter": "git://github.com/karma-runner/karma-junit-reporter#karma-0.11",
     "karma-sauce-launcher": "~0.1.0",
     "karma-script-launcher": "~0.1.0",
     "yaml-js": "~0.0.8",
@@ -35,7 +35,9 @@
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-merge-conflict": "~0.0.1",
     "promises-aplus-tests": "~1.3.2",
-    "grunt-shell": "~0.3.1"
+    "grunt-shell": "~0.3.1",
+    "semver": "~2.1.0",
+    "lodash": "~1.3.1"
   },
   "licenses": [
     {
