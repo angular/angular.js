@@ -260,6 +260,29 @@ describe('$httpBackend', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
+    it('should set the data to [] if no data is passed to the callback', function() {
+	  callback.andCallFake(function(status, response) {
+		  expect(status).toBe(200);
+		  expect(response).toBe([]);
+	  });
+
+	  $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+
+	  var script = fakeDocument.$$scripts.shift(),
+		  url = script.src.match(SCRIPT_URL);
+
+	  expect(url[1]).toBe('http://example.org/path');
+	  callbacks[url[2]](undefined);
+
+	  if (script.onreadystatechange) {
+		  script.readyState = 'complete';
+		  script.onreadystatechange();
+	  } else {
+		  script.onload()
+	  }
+
+	  expect(callback).toHaveBeenCalledOnce();
+    });
 
     it('should clean up the callback and remove the script', function() {
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
