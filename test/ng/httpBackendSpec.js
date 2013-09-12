@@ -70,14 +70,16 @@ describe('$httpBackend', function() {
 
 
   it('should normalize IE\'s 1223 status code into 204', function() {
-    callback.andCallFake(function(status) {
+    callback.andCallFake(function(status, response, headers, statusText) {
       expect(status).toBe(204);
+      expect(statusText).toBe('No Content');
     });
 
     $backend('GET', 'URL', null, callback);
     xhr = MockXhr.$$lastInstance;
 
     xhr.status = 1223;
+    xhr.statusText = 'Unknown';
     xhr.readyState = 4;
     xhr.onreadystatechange();
 
@@ -351,6 +353,7 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(200);
+      expect(callback.mostRecentCall.args[3]).toBe('OK');
     });
 
 
@@ -362,6 +365,7 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(200);
+      expect(callback.mostRecentCall.args[3]).toBe('OK');
     });
 
 
@@ -373,6 +377,7 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
+      expect(callback.mostRecentCall.args[3]).toBe('Not Found');
     });
 
 
@@ -384,6 +389,7 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
+      expect(callback.mostRecentCall.args[3]).toBe('Not Found');
     });
   });
 });
