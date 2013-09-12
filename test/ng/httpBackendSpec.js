@@ -263,7 +263,7 @@ describe('$httpBackend', function() {
     it('should set the data to [] if no data is passed to the callback', function() {
 	  callback.andCallFake(function(status, response) {
 		  expect(status).toBe(200);
-		  expect(response).toBe([]);
+		  expect(response).toEqual([]);
 	  });
 
 	  $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
