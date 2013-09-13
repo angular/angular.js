@@ -20,7 +20,7 @@
  * attribute is displayed.
  *
  * @animations
- * enter - happens after the ngSwtich contents change and the matched child element is placed inside the container
+ * enter - happens after the ngSwitch contents change and the matched child element is placed inside the container
  * leave - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM
  *
  * @usage
