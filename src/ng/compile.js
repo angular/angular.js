@@ -153,8 +153,8 @@ function $CompileProvider($provide) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|file):/,
-      imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file):|data:image\//;
+      aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|file|chrome-extension):/,
+      imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file|chrome-extension):|data:image\//;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
