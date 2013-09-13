@@ -438,6 +438,119 @@ angular.mock.$LogProvider = function() {
 };
 
 
+/**
+ * @ngdoc service
+ * @name ngMock.$interval
+ *
+ * @description
+ * Mock implementation of the $interval service.
+ *
+ * Use {@link ngMock.$interval#flush `$interval.flush(millis)`} to
+ * move forward by `millis` milliseconds and trigger any functions scheduled to run in that
+ * time.
+ *
+ * @param {function()} fn A function that should be called repeatedly.
+ * @param {number} delay Number of milliseconds between each function call.
+ * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
+ *   indefinitely.
+ * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
+ *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
+ * @returns {promise} A promise which will be notified on each iteration.
+ */
+angular.mock.$IntervalProvider = function() {
+  this.$get = ['$rootScope', '$q',
+       function($rootScope,   $q) {
+    var repeatFns = [],
+        nextRepeatId = 0,
+        now = 0;
+
+    var $interval = function(fn, delay, count, invokeApply) {
+      var deferred = $q.defer(),
+          promise = deferred.promise,
+          count = (isDefined(count)) ? count : 0,
+          iteration = 0,
+          skipApply = (isDefined(invokeApply) && !invokeApply);
+
+      promise.then(null, null, fn);
+
+      promise.$$intervalId = nextRepeatId;
+
+      function tick() {
+        deferred.notify(iteration++);
+
+        if (count > 0 && iteration >= count) {
+          var fnIndex;
+          deferred.resolve(iteration);
+
+          angular.forEach(repeatFns, function(fn, index) {
+            if (fn.id === promise.$$intervalId) fnIndex = index;
+          });
+
+          if (fnIndex !== undefined) {
+            repeatFns.splice(fnIndex, 1);
+          }
+        }
+
+        if (!skipApply) $rootScope.$apply();
+      };
+
+      repeatFns.push({
+        nextTime:(now + delay),
+        delay: delay,
+        fn: tick,
+        id: nextRepeatId,
+        deferred: deferred
+      });
+      repeatFns.sort(function(a,b){ return a.nextTime - b.nextTime;});
+
+      nextRepeatId++;
+      return promise;
+    };
+
+    $interval.cancel = function(promise) {
+      var fnIndex;
+
+      angular.forEach(repeatFns, function(fn, index) {
+        if (fn.id === promise.$$intervalId) fnIndex = index;
+      });
+
+      if (fnIndex !== undefined) {
+        repeatFns[fnIndex].deferred.reject('canceled');
+        repeatFns.splice(fnIndex, 1);
+        return true;
+      }
+
+      return false;
+    };
+
+    /**
+     * @ngdoc method
+     * @name ngMock.$interval#flush
+     * @methodOf ngMock.$interval
+     * @description
+     *
+     * Runs interval tasks scheduled to be run in the next `millis` milliseconds.
+     *
+     * @param {number=} millis maximum timeout amount to flush up until.
+     *
+     * @return {number} The amount of time moved forward.
+     */
+    $interval.flush = function(millis) {
+      now += millis;
+      while (repeatFns.length && repeatFns[0].nextTime <= now) {
+        var task = repeatFns[0];
+        task.fn();
+        task.nextTime += task.delay;
+        repeatFns.sort(function(a,b){ return a.nextTime - b.nextTime;});
+      }
+      return millis;
+    };
+
+    return $interval;
+  }];
+};
+
+
 (function() {
   var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
 
@@ -1581,6 +1694,7 @@ angular.module('ngMock', ['ng']).provider({
   $browser: angular.mock.$BrowserProvider,
   $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
   $log: angular.mock.$LogProvider,
+  $interval: angular.mock.$IntervalProvider,
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider
 }).config(function($provide) {

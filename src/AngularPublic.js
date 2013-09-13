@@ -114,6 +114,7 @@ function publishExternalAPI(angular){
         $exceptionHandler: $ExceptionHandlerProvider,
         $filter: $FilterProvider,
         $interpolate: $InterpolateProvider,
+        $interval: $IntervalProvider,
         $http: $HttpProvider,
         $httpBackend: $HttpBackendProvider,
         $location: $LocationProvider,
