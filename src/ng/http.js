@@ -186,9 +186,32 @@ function $HttpProvider() {
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
      * 
-     * If your $http is scheduled from something that doesn't cause a $digest to fire then your 
-     * request won't be sent immediately. To make sure a $http request if fired immediately, wrap your
-     * call around with an $scope.$apply(function(){ //make $http request here }
+     * # Calling $http from outside AngularJS
+     * The `$http` service will not actually send the request until the next `$digest()` is executed.
+     * Normally this is not an issue, since almost all the time your call to `$http` will be from within
+     * a `$apply()` block.
+     * If you are calling `$http` from outside Angular, then you should wrap it in a call to `$apply`
+     * to cause a $digest to occur and also to handle errors in the block correctly.
+     *
+     * ```
+     * $scope.$apply(function() {
+     *   $http(...);
+     * });
+     * ```
+     *
+     * # Writing Unit Tests that use $http
+     * When unit testing you are mostly responsible for scheduling the `$digest` cycle. If you do not
+     * trigger a `$digest` before calling `$httpBackend.flush()` then the request will not have been
+     * made and `$httpBackend.expect(...)` expectations will fail.  The solution is to run the code
+     * that calls the `$http()` method inside a $apply block as explained in the previous section.
+     *
+     * ```
+     * $httpBackend.expectGET(...);
+     * $scope.$apply(function() {
+     *   $http.get(...);
+     * });
+     * $httpBackend.flush();
+     * ```
      *
      * # Shortcut methods
      *
