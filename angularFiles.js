@@ -20,6 +20,7 @@ angularFiles = {
     'src/ng/http.js',
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
+    'src/ng/interval.js',
     'src/ng/locale.js',
     'src/ng/location.js',
     'src/ng/log.js',

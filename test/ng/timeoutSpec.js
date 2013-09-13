@@ -165,6 +165,20 @@ describe('$timeout', function() {
     }));
 
 
+    it('should cancel the promise', inject(function($timeout, log) {
+      var promise = $timeout(noop);
+      promise.then(function(value) { log('promise success: ' + value); },
+                 function(err) { log('promise error: ' + err); },
+                 function(note) { log('promise update: ' + note); });
+      expect(log).toEqual([]);
+
+      $timeout.cancel(promise);
+      $timeout.flush();
+
+      expect(log).toEqual(['promise error: canceled']);
+    }));
+
+
     it('should return true if a task was successfully canceled', inject(function($timeout) {
       var task1 = jasmine.createSpy('task1'),
           task2 = jasmine.createSpy('task2'),
