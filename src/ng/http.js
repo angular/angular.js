@@ -185,6 +185,10 @@ function $HttpProvider() {
      * will result in the success callback being called. Note that if the response is a redirect,
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
+     * 
+     * If your $http is scheduled from something that doesn't cause a $digest to fire then your 
+     * request won't be sent immediately. To make sure a $http request if fired immediately, wrap your
+     * call around with an $scope.$apply(function(){ //make $http request here }
      *
      * # Shortcut methods
      *
