@@ -111,3 +111,7 @@ This is the sequence that your code should follow:
 
   2. Call {@link api/angular.bootstrap} to {@link compiler compile} the element into an
   executable, bi-directionally bound application.
+
+
+Note also that if you need even more control (delayed/module loading), you must set window.name = "NG_DEFER_BOOTSTRAP!" before angular.js loads.
+https://github.com/tnajdek/angular-requirejs-seed/blob/master/app/js/main.js
