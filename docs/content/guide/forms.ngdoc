@@ -2,19 +2,19 @@
 @name Forms
 @description
 
-Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
-A Form is a collection of controls for the purpose of grouping related controls together.
+Controls are ways for a user to enter data.
+A Form is a collection of controls (`input`, `select`, `textarea`) for the purpose of grouping related controls together.
 
 Form and controls provide validation services, so that the user can be notified of invalid input.
 This provides a better user experience, because the user gets instant feedback on how to correct the error.
 Keep in mind that while client-side validation plays an important role in providing good user experience, it can easily be circumvented and thus can not be trusted.
-Server-side validation is still necessary for a secure application.
+Server-side validation is always necessary for a secure application.
 
 
 # Simple form
 The key directive in understanding two-way data-binding is {@link api/ng.directive:ngModel ngModel}.
-The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
-In addition it provides an {@link api/ng.directive:ngModel.NgModelController API} for other directives to augment its behavior.
+The `ngModel` directive provides two-way data-binding by synchronizing the model to the view, as well as view to the model.
+In addition, it provides an {@link api/ng.directive:ngModel.NgModelController API} for other directives to augment its behavior.
 
 <doc:example>
 <doc:source>
