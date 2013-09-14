@@ -266,7 +266,6 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       }
 
       function Multiple(scope, selectElement, ctrl) {
-        var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
           forEach(selectElement.find('option'), function(option) {
@@ -274,13 +273,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           });
         };
 
-        // we have to do it on each watch since ngModel watches reference, but
-        // we need to work of an array, so we need to see if anything was inserted/removed
-        scope.$watch(function selectMultipleWatch() {
-          if (!equals(lastView, ctrl.$viewValue)) {
-            lastView = copy(ctrl.$viewValue);
-            ctrl.$render();
-          }
+        scope.$watchCollection(attr.ngModel, function selectMultipleWatch(newValue, oldValue) {
+          ctrl.$viewValue = newValue;
+          requiredValidator && requiredValidator(newValue);
+          ctrl.$render();
         });
 
         selectElement.on('change', function() {

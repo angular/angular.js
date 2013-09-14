@@ -986,7 +986,7 @@ describe('input', function() {
       expect(scope.list).toEqual(['a']);
 
       changeInputValueTo('a , b');
-      expect(inputElm.val()).toEqual('a , b');
+      expect(inputElm.val()).toEqual('a, b');
       expect(scope.list).toEqual(['a', 'b']);
     });
 
@@ -1019,6 +1019,28 @@ describe('input', function() {
       changeInputValueTo('a,b: c');
       expect(scope.list).toEqual(['a', 'b', 'c']);
     });
+
+    it("should detect changes in the values of an array", function () {
+      var list = ['x', 'y', 'z'];
+      compileInput('<input type="text" ng-model="list" ng-list />');
+      scope.$apply(function() {
+        scope.list = list;
+      });
+      expect(inputElm.val()).toBe('x, y, z');
+      scope.$apply(function() {
+        list.unshift('w');
+      });
+      expect(inputElm.val()).toBe('w, x, y, z');
+    });
+
+    it('should be invalid if empty', function() {
+      compileInput('<input name="namesInput" ng-model="list" ng-list required/>');
+      changeInputValueTo('a');
+      expect(inputElm).toBeValid();
+      changeInputValueTo('');
+      expect(inputElm).toBeInvalid();
+    });
+
   });
 
   describe('required', function() {
