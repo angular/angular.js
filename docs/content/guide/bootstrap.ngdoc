@@ -111,3 +111,18 @@ This is the sequence that your code should follow:
 
   2. Call {@link api/angular.bootstrap} to {@link compiler compile} the element into an
   executable, bi-directionally bound application.
+
+## Deferred Bootstrap
+
+This features enables tools like Batarang and test runners to
+hook into angular's bootstrap process and sneak in more modules
+into the DI registry which can replace or augment DI services for
+the purpose of instrumentation or mocking out heavy dependencies.
+
+If `window.name` contains prefix `NG_DEFER_BOOTSTRAP!` when
+{@link api/angular.bootstrap} is called, the bootstrap process will be paused
+until `angular.resumeBootstrap()` is called.
+
+`angular.resumeBootstrap()` takes an optional array of modules that
+should be added to the original list of modules that the app was
+about to be bootstrapped with.
