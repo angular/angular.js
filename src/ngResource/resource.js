@@ -279,7 +279,9 @@ angular.module('ngResource', ['ng']).
   factory('$resource', ['$http', '$parse', '$q', function($http, $parse, $q) {
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
-      'save':   {method:'POST'},
+//       'save':   {method:'POST'},
+      'create': {method:'POST'},              
+      'update': {method:'PUT'},              
       'query':  {method:'GET', isArray:true},
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'}
@@ -528,6 +530,14 @@ angular.module('ngResource', ['ng']).
           var result = Resource[name](params, this, success, error);
           return result.$promise || result;
         };
+        
+        Resource.prototype.$save = function(success, error) {
+          if (this.id) {
+            this.$update(success, error)
+          } else {
+            this.$create(success, error)
+          }
+        }
       });
 
       Resource.bind = function(additionalParamDefaults){
