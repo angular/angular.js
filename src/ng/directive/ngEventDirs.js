@@ -5,8 +5,8 @@
  * @name ng.directive:ngClick
  *
  * @description
- * The ngClick allows you to specify custom behavior when
- * element is clicked.
+ * The ngClick directive allows you to specify custom behavior when
+ * an element is clicked.
  *
  * @element ANY
  * @param {expression} ngClick {@link guide/expression Expression} to evaluate upon
