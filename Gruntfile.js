@@ -1,5 +1,6 @@
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
+var path = require('path');
 
 module.exports = function(grunt) {
   //grunt plugins
@@ -235,7 +236,7 @@ module.exports = function(grunt) {
           stderr:true,
           failOnError:true
         },
-        command:'./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js'
+        command:path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js')
       }
     },
 
