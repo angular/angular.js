@@ -855,6 +855,8 @@ var VALID_CLASS = 'ng-valid',
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
  * collaborate together to achieve the desired result.
+ * 
+ * Sidenote: contenteditable is also an HTML5 attribute.
  *
  * <example module="customControl">
     <file name="style.css">
