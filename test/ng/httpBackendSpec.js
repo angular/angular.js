@@ -68,6 +68,12 @@ describe('$httpBackend', function() {
     expect(xhr.$$async).toBe(true);
   });
 
+  it('should pass null to send if no body is set', function() {
+    $backend('GET', '/some-url', null, noop);
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$data).toBe(null);
+  });
 
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
