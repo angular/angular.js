@@ -64,14 +64,16 @@ describe('ngInclude', function() {
   }));
 
 
-  it('should NOT use untrusted expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+  it('should NOT use untrusted URL expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
     element = jqLite('<ng:include src="url"></ng:include>');
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
-    $rootScope.url = 'myUrl';
-    expect($rootScope.$digest).toThrow();
+    $rootScope.url = 'http://example.com/myUrl';
+    expect(function() { $rootScope.$digest(); }).toThrowMinErr(
+        '$sce', 'insecurl',
+        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
     jqLite(document.body).html('');
   }));
 
@@ -82,10 +84,13 @@ describe('ngInclude', function() {
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
-    $rootScope.url = $sce.trustAsUrl('myUrl');
-    expect($rootScope.$digest).toThrow();
+    $rootScope.url = $sce.trustAsUrl('http://example.com/myUrl');
+    expect(function() { $rootScope.$digest(); }).toThrowMinErr(
+        '$sce', 'insecurl',
+        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
     jqLite(document.body).html('');
   }));
+
 
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
