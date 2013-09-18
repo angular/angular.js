@@ -114,6 +114,16 @@ function camelCase(name) {
     replace(MOZ_HACK_REGEXP, 'Moz$1');
 }
 
+/**
+ * Converts camelCase and snake_case to dash-case.
+ * @param name Name to normalize
+ */
+function dashCase(name) {
+  return camelCase(name).
+    replace(/(\w)([A-Z])/g, '$1-$2').
+    toLowerCase();
+}
+
 /////////////////////////////////////////////
 // jQuery mutation patch
 //
