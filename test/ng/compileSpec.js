@@ -3342,6 +3342,35 @@ describe('$compile', function() {
       expect(element.attr('test3')).toBe('Misko');
       expect(element.attr('test4')).toBe('Misko');
     }));
+
+    describe('when an attribute has a dash-separated name', function () {
+
+      it('should work with different prefixes', inject(function($compile, $rootScope) {
+        $rootScope.name = "JamieMason";
+        element = $compile('<span ng:attr:dash-test="{{name}}" ng-Attr-dash-test2="{{name}}" ng_Attr_dash-test3="{{name}}"></span>')($rootScope);
+        expect(element.attr('dash-test')).toBeUndefined();
+        expect(element.attr('dash-test2')).toBeUndefined();
+        expect(element.attr('dash-test3')).toBeUndefined();
+        $rootScope.$digest();
+        expect(element.attr('dash-test')).toBe('JamieMason');
+        expect(element.attr('dash-test2')).toBe('JamieMason');
+        expect(element.attr('dash-test3')).toBe('JamieMason');
+      }));
+
+      it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+        $rootScope.name = "JamieMason";
+        element = $compile('<span data-ng-attr-dash-test2="{{name}}" x-ng-attr-dash-test3="{{name}}" data-ng:attr-dash-test4="{{name}}"></span>')($rootScope);
+        expect(element.attr('dash-test2')).toBeUndefined();
+        expect(element.attr('dash-test3')).toBeUndefined();
+        expect(element.attr('dash-test4')).toBeUndefined();
+        $rootScope.$digest();
+        expect(element.attr('dash-test2')).toBe('JamieMason');
+        expect(element.attr('dash-test3')).toBe('JamieMason');
+        expect(element.attr('dash-test4')).toBe('JamieMason');
+      }));
+
+    });
+
   });
 
 
