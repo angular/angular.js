@@ -1352,6 +1352,31 @@ describe('jqLite', function() {
      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-   })
+   });
   });
+
+
+  describe('dashCase', function() {
+
+   it('should leave non-dashed strings alone', function() {
+     expect(dashCase('foo')).toBe('foo');
+     expect(dashCase('')).toBe('');
+   });
+
+   it('should preserve dashed strings', function() {
+     expect(dashCase('foo-bar')).toBe('foo-bar');
+     expect(dashCase('foo-bar-baz')).toBe('foo-bar-baz');
+   });
+
+   it('should covert camelCase strings to dash-case', function() {
+     expect(dashCase('fooBar')).toBe('foo-bar');
+     expect(dashCase('fooBarBaz')).toBe('foo-bar-baz');
+   });
+
+   it('should covert mixed separators to dash-case', function() {
+     expect(dashCase('foo:bar_baz')).toBe('foo-bar-baz');
+   });
+
+  });
+
 });
