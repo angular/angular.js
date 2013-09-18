@@ -7,7 +7,7 @@ describe('Filter: limitTo', function() {
 
   beforeEach(inject(function($filter) {
     items = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    str = "tuvwxyz";
+    str = 'tuvwxyz';
     limitTo = $filter('limitTo');
   }));
 
@@ -15,33 +15,31 @@ describe('Filter: limitTo', function() {
   it('should return the first X items when X is positive', function() {
     expect(limitTo(items, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(items, '3')).toEqual(['a', 'b', 'c']);
-    expect(limitTo(str, 3)).toEqual("tuv");
-    expect(limitTo(str, '3')).toEqual("tuv");
+    expect(limitTo(str, 3)).toEqual('tuv');
+    expect(limitTo(str, '3')).toEqual('tuv');
   });
 
 
   it('should return the last X items when X is negative', function() {
     expect(limitTo(items, -3)).toEqual(['f', 'g', 'h']);
     expect(limitTo(items, '-3')).toEqual(['f', 'g', 'h']);
-    expect(limitTo(str, -3)).toEqual("xyz");
-    expect(limitTo(str, '-3')).toEqual("xyz");
+    expect(limitTo(str, -3)).toEqual('xyz');
+    expect(limitTo(str, '-3')).toEqual('xyz');
   });
 
 
-  it('should return an empty array when X cannot be parsed', function() {
-    expect(limitTo(items, 'bogus')).toEqual([]);
-    expect(limitTo(items, 'null')).toEqual([]);
-    expect(limitTo(items, 'undefined')).toEqual([]);
-    expect(limitTo(items, null)).toEqual([]);
-    expect(limitTo(items, undefined)).toEqual([]);
+  it('should return no items when X is 0', function () {
+    expect(limitTo(items, 0)).toEqual([]);
+    expect(limitTo(str, 0)).toEqual('');
   });
 
-  it('should return an empty string when X cannot be parsed', function() {
-    expect(limitTo(str, 'bogus')).toEqual("");
-    expect(limitTo(str, 'null')).toEqual("");
-    expect(limitTo(str, 'undefined')).toEqual("");
-    expect(limitTo(str, null)).toEqual("");
-    expect(limitTo(str, undefined)).toEqual("");
+
+  it('should return the entire input when X cannot be parsed', function() {
+    expect(limitTo(items, 'bogus')).toEqual(items);
+    expect(limitTo(items, 'null')).toEqual(items);
+    expect(limitTo(items, 'undefined')).toEqual(items);
+    expect(limitTo(items, null)).toEqual(items);
+    expect(limitTo(items, undefined)).toEqual(items);
   });
 
 
@@ -61,6 +59,7 @@ describe('Filter: limitTo', function() {
 
     expect(limitTo(items, 9)).not.toBe(items);
   });
+
 
   it('should return the entire string if X exceeds input length', function() {
     expect(limitTo(str, 9)).toEqual(str);
