@@ -315,6 +315,19 @@ describe("angular.scenario.dsl", function() {
         dealoc(elm);
       });
 
+      it('should not navigate if click was on anchor whose href starts with "javascript:"', function() {
+        $window.location = '#foo';
+        doc.append('<a id="first" href="javascript:void(0)" onclick=""></a>');
+        $root.dsl.element('first').click();
+        expect($window.location).toEqual('#foo');
+        doc.append('<a id="second" href="javascript:void(0);" onclick=""></a>');
+        $root.dsl.element('second').click();
+        expect($window.location).toEqual('#foo');
+        doc.append('<a id="third" href=" JavaScript: void(0) ;" onclick=""></a>');
+        $root.dsl.element('third').click();
+        expect($window.location).toEqual('#foo');
+      });
+
       it('should execute dblclick', function() {
         var clicked;
         // Hash is important, otherwise we actually
@@ -345,6 +358,19 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.element('a').dblclick();
         expect($window.location).toBe(initLocation);
         dealoc(elm);
+      });
+
+      it('should not navigate if dblclick was on anchor whose href starts with "javascript:"', function() {
+        $window.location = '#foo';
+        doc.append('<a id="first" href="javascript:void(0)" onclick=""></a>');
+        $root.dsl.element('first').dblclick();
+        expect($window.location).toEqual('#foo');
+        doc.append('<a id="second" href="javascript:void(0);" onclick=""></a>');
+        $root.dsl.element('second').dblclick();
+        expect($window.location).toEqual('#foo');
+        doc.append('<a id="third" href=" JavaScript: void(0) ;" onclick=""></a>');
+        $root.dsl.element('third').dblclick();
+        expect($window.location).toEqual('#foo');
       });
 
       it('should execute mouseover', function() {

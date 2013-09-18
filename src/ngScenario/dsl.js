@@ -344,6 +344,16 @@ angular.scenario.dsl('element', function() {
   ];
   var chain = {};
 
+  var hrefIsJavascriptCall = function(href) {
+    href = href.toLowerCase();
+    href.replace(/\s+/g, ' ');
+    if (href.substring(0, 11) == "javascript:") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   chain.count = function() {
     return this.addFutureAction("element '" + this.label + "' count", function($window, $document, done) {
       try {
@@ -360,7 +370,7 @@ angular.scenario.dsl('element', function() {
       var href = elements.attr('href');
       var eventProcessDefault = elements.trigger('click')[0];
 
-      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+      if (href && !hrefIsJavascriptCall(href) && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
         this.application.navigateTo(href, function() {
           done();
         }, done);
@@ -376,7 +386,7 @@ angular.scenario.dsl('element', function() {
       var href = elements.attr('href');
       var eventProcessDefault = elements.trigger('dblclick')[0];
 
-      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+      if (href && !hrefIsJavascriptCall(href) && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
         this.application.navigateTo(href, function() {
           done();
         }, done);
