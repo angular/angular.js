@@ -64,24 +64,10 @@
    </doc:example>
  */
 function limitToFilter() {
-  return function(input, limit) {
-    if (!isArray(input) && !isString(input)) return input;
-
+  return function (input, limit) {
     limit = int(limit);
-    var start, end;
+    if (!isArray(input) && !isString(input) || isNaN(limit)) return input;
 
-    if (isNaN(limit)) {
-      start = end = 0;
-    }
-    else if (limit >= 0) {
-      start = 0;
-      end = limit;
-    }
-    else {
-      start = limit;
-      end = undefined;
-    }
-
-    return input.slice(start, end);
+    return limit >=0 ? input.slice(0, limit) : input.slice(limit);
   }
 }
