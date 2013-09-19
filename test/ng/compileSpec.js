@@ -489,6 +489,14 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithArbitraryAttribute', valueFn({
+            replace: true,
+            template: '<div data-foo="bar">With data-foo</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
         }));
 
 
@@ -536,6 +544,14 @@ describe('$compile', function() {
           expect(div.css('height')).toBe('20px');
           expect(div.attr('replace')).toEqual('');
           expect(div.attr('high-log')).toEqual('');
+        }));
+
+        it('should preserve identical attributes when merging', inject(function($compile, $rootScope) {
+          element = $compile(
+            '<div><div replace-with-arbitrary-attribute data-foo="bar"/><div>')
+            ($rootScope);
+          var div = element.find('div');
+          expect(div.attr('data-foo')).toBe('bar');
         }));
 
         it('should prevent multiple templates per element', inject(function($compile) {

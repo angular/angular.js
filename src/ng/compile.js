@@ -383,7 +383,10 @@ function $CompileProvider($provide) {
           if (writeAttr !== false) {
             if (value === null || value === undefined) {
               this.$$element.removeAttr(attrName);
-            } else {
+            } else if (value !== this.$$element.attr(attrName)) {
+              // Set new value only if it is not already there, avoiding
+              // issues with IE, where certain attributes cannot be set
+              // on in-document elements, e.g. 'type' on <input>
               this.$$element.attr(attrName, value);
             }
           }
@@ -1130,8 +1133,9 @@ function $CompileProvider($provide) {
       // reapply the old attributes to the new element
       forEach(dst, function(value, key) {
         if (key.charAt(0) != '$') {
-          if (src[key]) {
-            value += (key === 'style' ? ';' : ' ') + src[key];
+          var srcVal = src[key];
+          if (srcVal && srcVal !== value) {
+            value += (key === 'style' ? ';' : ' ') + srcVal;
           }
           dst.$set(key, value, true, srcAttr[key]);
         }
