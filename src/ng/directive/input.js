@@ -824,13 +824,13 @@ var VALID_CLASS = 'ng-valid',
  * @description
  *
  * `NgModelController` provides API for the `ng-model` directive. The controller contains
- * services for data-binding, validation, CSS update, value formatting and parsing. It
- * specifically does not contain any logic which deals with DOM rendering or listening to
- * DOM events. The `NgModelController` is meant to be extended by other directives where, the
- * directive provides DOM manipulation and the `NgModelController` provides the data-binding.
+ * services for data-binding, validation, CSS updates, and value formatting and parsing. It
+ * purposefully does not contain any logic which deals with DOM rendering or listening to
+ * DOM events. Such DOM related logic should be provided by other directives which make use of
+ * `NgModelController` for data-binding.
  * Note that you cannot use `NgModelController` in a directive with an isolated scope,
  * as, in that case, the `ng-model` value gets put into the isolated scope and does not get
- * propogated to the parent scope.
+ * propagated to the parent scope.
  *
  *
  * This example shows how to use `NgModelController` with a custom control to achieve
