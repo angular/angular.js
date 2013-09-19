@@ -56,22 +56,22 @@ locale-specific file to the end of `angular.js` or `angular.min.js` file.
 For example on *nix, to create an angular.js file that contains localization rules for german
 locale, you can do the following:
 
-`cat angular.js i18n/angular-locale_de-ge.js > angular_de-ge.js`
+`cat angular.js i18n/angular-locale_de-de.js > angular_de-de.js`
 
-When the application containing `angular_de-ge.js` script instead of the generic angular.js script
+When the application containing `angular_de-de.js` script instead of the generic angular.js script
 starts, Angular is automatically pre-configured with localization rules for the german locale.
 
 **2. Including locale js script in index.html page**
 
 You can also include the locale specific js file in the index.html page. For example, if one client
-requires German locale, you would serve index_de-ge.html which will look something like this:
+requires German locale, you would serve index_de-de.html which will look something like this:
 
 <pre>
 <html ng-app>
  <head>
 ….
    <script src="angular.js"></script>
-   <script src="i18n/angular-locale_de-ge.js"></script>
+   <script src="i18n/angular-locale_de-de.js"></script>
 ….
  </head>
 </html>
