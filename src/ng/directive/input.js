@@ -828,11 +828,8 @@ var VALID_CLASS = 'ng-valid',
  * purposefully does not contain any logic which deals with DOM rendering or listening to
  * DOM events. Such DOM related logic should be provided by other directives which make use of
  * `NgModelController` for data-binding.
- * Note that you cannot use `NgModelController` in a directive with an isolated scope,
- * as, in that case, the `ng-model` value gets put into the isolated scope and does not get
- * propagated to the parent scope.
  *
- *
+ * ## Custom Control Example
  * This example shows how to use `NgModelController` with a custom control to achieve
  * data-binding. Notice how different directives (`contenteditable`, `ng-model`, and `required`)
  * collaborate together to achieve the desired result.
@@ -910,6 +907,39 @@ var VALID_CLASS = 'ng-valid',
     </file>
  * </example>
  *
+ * ## Isolated Scope Pitfall
+ *
+ * Note that if you have a directive with an isolated scope, you cannot require `ngModel`
+ * since the model value will be looked up on the isolated scope rather than the outer scope.
+ * When the directive updates the model value, calling `ngModel.$setViewValue()` the property
+ * on the outer scope will not be updated.
+ *
+ * Here is an example of this situation.  You'll notice that even though both 'input' and 'div'
+ * seem to be attached to the same model, they are not kept in synch.
+ *
+ * <example module="badIsolatedDirective">
+    <file name="script.js">
+		angular.module('badIsolatedDirective', []).directive('bad', function() {
+		  return {
+		    require: 'ngModel',
+		    scope: { },
+		    template: '<input ng-model="innerModel">',
+		    link: function(scope, element, attrs, ngModel) {
+		      scope.$watch('innerModel', function(value) {
+		        console.log(value);
+		        ngModel.$setViewValue(value);
+		      });
+		    }
+		  };
+		});
+    </file>
+    <file name="index.html">
+	    <input ng-model="someModel">
+	    <div bad ng-model="someModel"></div>
+    </file>
+ * </example>
+ *
+ * 
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
     function($scope, $exceptionHandler, $attr, $element, $parse) {
