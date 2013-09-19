@@ -949,7 +949,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * HTML document you must manually bootstrap them using {@link angular.bootstrap}.
  * Applications cannot be nested.
  *
- * In the example below if the `ngApp` directive would not be placed
+ * In the example below if the `ngApp` directive were not placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
