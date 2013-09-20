@@ -137,6 +137,18 @@ describe("resource", function() {
   });
 
 
+  it('should not encode ; in url params', function() {
+   //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+   //with regards to the character set (pchar) allowed in path segments
+   //so we need this test to make sure that we don't over-encode the params and break stuff like
+   //buzz api which uses @self
+
+   var R = $resource('/Path/:a/semicolon');
+   $httpBackend.expect('GET', '/Path/a=a;b=b;c=x/semicolon').respond('{}');
+   R.get({a: 'a=a;b=b;c=x'});
+  });
+
+
   it('should encode array params', function() {
     var R = $resource('/Path/:a');
     $httpBackend.expect('GET', '/Path/doh&foo?bar=baz1&bar=baz2').respond('{}');
