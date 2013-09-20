@@ -10,7 +10,7 @@
  *
  * MVC components in angular:
  *
- * * Model — The Model is scope properties; scopes are attached to DOM where scope properties
+ * * Model — The Model is scope properties; scopes are attached to the DOM where scope properties
  *   are accessed through bindings.
  * * View — The template (HTML with data bindings) that is rendered into the View.
  * * Controller — The `ngController` directive specifies a Controller class; the class contains business
@@ -31,8 +31,8 @@
  * easily be called from the angular markup. Notice that the scope becomes the `this` for the
  * controller's instance. This allows for easy access to the view data from the controller. Also
  * notice that any changes to the data are automatically reflected in the View without the need
- * for a manual update. The example is included in two different declaration styles based on
- * your style preferences.
+ * for a manual update. The example is shown in two different declaration styles you may use
+ * according to preference.
    <doc:example>
      <doc:source>
       <script>
