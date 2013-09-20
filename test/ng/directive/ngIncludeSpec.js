@@ -286,6 +286,32 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should not break attribute bindings on the same element', inject(function($compile, $rootScope, $httpBackend) {
+    // regression #3793
+
+    element = $compile('<div><span foo="#/{{hrefUrl}}" ng:include="includeUrl"></span></div>')($rootScope);
+    $httpBackend.expect('GET', 'url1').respond('template text 1');
+    $rootScope.hrefUrl = 'fooUrl1';
+    $rootScope.includeUrl = 'url1';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 1');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl1');
+
+    $httpBackend.expect('GET', 'url2').respond('template text 2');
+    $rootScope.includeUrl = 'url2';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl1');
+
+    $rootScope.hrefUrl = 'fooUrl2';
+    $rootScope.$digest();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl2');
+  }));
+
+
   describe('autoscoll', function() {
     var autoScrollSpy;
 
