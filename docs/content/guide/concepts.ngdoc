@@ -234,6 +234,7 @@ primitive, object hash, or a full object Type. In short the model is a plain Jav
 <a name="view"></a>
 # View
 
+// Image has a spelling erorr where "wold" should be written out as "world"
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-view.png">
 
 The view is what the user sees. The view begins its life as a template, is merged with the
