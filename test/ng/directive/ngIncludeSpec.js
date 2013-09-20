@@ -286,6 +286,32 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should work when placed on an anchor link', inject(function($compile, $rootScope, $httpBackend) {
+    // regression #3793
+
+    element = $compile('<div><a ng-href="#/{{hrefUrl}}" ng:include="includeUrl"></a></div>')($rootScope);
+    $httpBackend.expect('GET', 'url1').respond('template text 1');
+    $rootScope.hrefUrl = 'fooUrl1';
+    $rootScope.includeUrl = 'url1';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 1');
+    expect(element.find('a').attr('href')).toBe('#/fooUrl1');
+
+    $httpBackend.expect('GET', 'url2').respond('template text 2');
+    $rootScope.includeUrl = 'url2';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('a').attr('href')).toBe('#/fooUrl1');
+
+    $rootScope.hrefUrl = 'fooUrl2';
+    $rootScope.$digest();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('a').attr('href')).toBe('#/fooUrl2');
+  }));
+
+
   describe('autoscoll', function() {
     var autoScrollSpy;
 
