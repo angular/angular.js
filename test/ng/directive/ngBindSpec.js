@@ -102,6 +102,18 @@ describe('ngBind*', function() {
         expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
+      it('should watch the string value to avoid infinite recursion', inject(function($rootScope, $compile, $sce) {
+        // Ref: https://github.com/angular/angular.js/issues/3932
+        // If the binding is a function that creates a new value on every call via trustAs, we'll
+        // trigger an infinite digest if we don't take care of it.
+        element = $compile('<div ng-bind-html="getHtml()"></div>')($rootScope);
+        $rootScope.getHtml = function() {
+          return $sce.trustAsHtml('<div onclick="">hello</div>');
+        };
+        $rootScope.$digest();
+        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+
       describe('when $sanitize is available', function() {
         beforeEach(function() { module('ngSanitize'); });
 
