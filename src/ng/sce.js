@@ -173,32 +173,38 @@ function $SceDelegateProvider() {
       return allowed;
     }
 
-    function generateHolderType(base) {
+    function generateHolderType(base, useCache) {
+      var cacheInstances = {};
       var holderType = function TrustedValueHolderType(trustedValue) {
+        if (cacheInstances[trustedValue] && useCache) {
+          return cacheInstances[trustedValue];
+        }
+
+        cacheInstances[trustedValue] = this;
         this.$$unwrapTrustedValue = function() {
           return trustedValue;
         };
       };
       if (base) {
-        holderType.prototype = new base();
+        holderType.prototype = new base('');
       }
       holderType.prototype.valueOf = function sceValueOf() {
         return this.$$unwrapTrustedValue();
-      }
+      };
       holderType.prototype.toString = function sceToString() {
         return this.$$unwrapTrustedValue().toString();
-      }
+      };
       return holderType;
     }
 
     var trustedValueHolderBase = generateHolderType(),
         byType = {};
 
-    byType[SCE_CONTEXTS.HTML] = generateHolderType(trustedValueHolderBase);
-    byType[SCE_CONTEXTS.CSS] = generateHolderType(trustedValueHolderBase);
-    byType[SCE_CONTEXTS.URL] = generateHolderType(trustedValueHolderBase);
-    byType[SCE_CONTEXTS.JS] = generateHolderType(trustedValueHolderBase);
-    byType[SCE_CONTEXTS.RESOURCE_URL] = generateHolderType(byType[SCE_CONTEXTS.URL]);
+    byType[SCE_CONTEXTS.HTML] = generateHolderType(trustedValueHolderBase, true);
+    byType[SCE_CONTEXTS.CSS] = generateHolderType(trustedValueHolderBase, true);
+    byType[SCE_CONTEXTS.URL] = generateHolderType(trustedValueHolderBase, true);
+    byType[SCE_CONTEXTS.JS] = generateHolderType(trustedValueHolderBase, true);
+    byType[SCE_CONTEXTS.RESOURCE_URL] = generateHolderType(byType[SCE_CONTEXTS.URL], true);
 
     /**
      * @ngdoc method
@@ -335,7 +341,7 @@ function $SceDelegateProvider() {
  * # Strict Contextual Escaping
  *
  * Strict Contextual Escaping (SCE) is a mode in which AngularJS requires bindings in certain
- * contexts to result in a value that is marked as safe to use for that context One example of such
+ * contexts to result in a value that is marked as safe to use for that context. One example of such
  * a context is binding arbitrary html controlled by the user via `ng-bind-html`.  We refer to these
  * contexts as privileged or SCE contexts.
  *
@@ -413,7 +419,7 @@ function $SceDelegateProvider() {
  * By default, Angular only loads templates from the same domain and protocol as the application
  * document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on the template URL.  To load templates from other domains and/or
- * protocols, you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist
+ * protocols, you may either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist
  * them} or {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.
  *
  * *Please note*:
@@ -929,13 +935,13 @@ function $SceProvider() {
       var lName = lowercase(name);
       sce[camelCase("parse_as_" + lName)] = function (expr) {
         return parse(enumValue, expr);
-      }
+      };
       sce[camelCase("get_trusted_" + lName)] = function (value) {
         return getTrusted(enumValue, value);
-      }
+      };
       sce[camelCase("trust_as_" + lName)] = function (value) {
         return trustAs(enumValue, value);
-      }
+      };
     });
 
     return sce;

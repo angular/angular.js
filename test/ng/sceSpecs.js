@@ -173,6 +173,14 @@ describe('SCE', function() {
       expect($sce.getTrustedHtml(wrappedValue)).toBe(originalValue);
       expect(wrappedValue.toString()).toBe(originalValue.toString());
     }));
+
+    it('should be watchable', inject(function ($rootScope, $sce) {
+      $rootScope.$watch(function() { return $sce.trustAsHtml('<b></b>'); }, function(value) {
+        expect($sce.getTrustedHtml(value)).toBe('<b></b>');
+      });
+      $rootScope.$apply();
+    }));
+
   });
 
 
