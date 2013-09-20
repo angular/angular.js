@@ -223,7 +223,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
                   currentScope[current.controllerAs] = controller;
                 }
                 clone.data('$ngControllerController', controller);
-                clone.contents().data('$ngControllerController', controller);
+                clone.children().data('$ngControllerController', controller);
               }
 
               link(currentScope);
