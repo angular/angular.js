@@ -455,7 +455,7 @@ describe('ngView', function() {
   });
 
 
-  it('should set $scope and $controllerController on the view', function() {
+  it('should set $scope and $controllerController on the view elements (except for non-element nodes)', function() {
     function MyCtrl($scope) {
       $scope.state = 'WORKS';
       $scope.ctrl = this;
@@ -466,11 +466,14 @@ describe('ngView', function() {
     });
 
     inject(function($templateCache, $location, $rootScope, $route) {
-      $templateCache.put('tpl.html', [200, '<div>{{state}}</div>', {}]);
+      // in the template the white-space before the div is an intentional non-element node,
+      // a text might get wrapped into span so it's safer to just use white space
+      $templateCache.put('tpl.html', [200, '   \n   <div>{{state}}</div>', {}]);
 
       $location.url('/foo');
       $rootScope.$digest();
-      expect(element.text()).toEqual('WORKS');
+      // using toMatch because in IE8+jquery the space doesn't get preserved. jquery bug?
+      expect(element.text()).toMatch(/\s*WORKS/);
 
       var div = element.find('div');
       expect(div.parent()[0].nodeName.toUpperCase()).toBeOneOf('NG:VIEW', 'VIEW');
