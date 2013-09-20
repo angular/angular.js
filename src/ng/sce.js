@@ -131,12 +131,6 @@ function $SceDelegateProvider() {
     return resourceUrlBlacklist;
   };
 
-  // Helper functions for matching resource urls by policy.
-  function isCompatibleProtocol(documentProtocol, resourceProtocol) {
-    return ((documentProtocol === resourceProtocol) ||
-            (documentProtocol === "http:" && resourceProtocol === "https:"));
-  }
-
   this.$get = ['$log', '$document', '$injector', '$$urlUtils', function(
                 $log,   $document,   $injector,   $$urlUtils) {
 
