@@ -15,12 +15,12 @@
  * For us to be compatible, we just need to implement the "getterFn" in $parse without violating
  * any of these restrictions.
  * 
- * AngularJS uses `Function(string)` generated functions as a speed optimization. By applying `ngCsp`
- * it is be possible to opt into the CSP compatible mode. When this mode is on AngularJS will
+ * AngularJS uses `Function(string)` generated functions as a speed optimization. Applying the `ngCsp`
+ * directive will cause Angular to use CSP compatibility mode. When this mode is on AngularJS will
  * evaluate all expressions up to 30% slower than in non-CSP mode, but no security violations will
  * be raised.
  * 
- * In order to use this feature put `ngCsp` directive on the root element of the application.
+ * In order to use this feature put the `ngCsp` directive on the root element of the application.
  * 
  * @example
  * This example shows how to apply the `ngCsp` directive to the `html` tag.
