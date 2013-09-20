@@ -1069,6 +1069,26 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
   /**
    * @ngdoc function
+   * @name ng.directive:ngModel.NgModelController#$setPristine
+   * @methodOf ng.directive:ngModel.NgModelController
+   *
+   * @description
+   * Sets the control to dirty state.
+   *
+   * This method can be called to remove the 'ng-pristine' class and set the control to a dirty
+   * state (ng-dirty class).
+   */
+  this.$setDirty = function () {
+    if (this.$pristine) {
+      this.$dirty = true;
+      this.$pristine = false;
+      $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
+      parentForm.$setDirty();
+    }
+  };
+
+  /**
+   * @ngdoc function
    * @name ng.directive:ngModel.NgModelController#$setViewValue
    * @methodOf ng.directive:ngModel.NgModelController
    *
@@ -1088,12 +1108,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     this.$viewValue = value;
 
     // change to dirty
-    if (this.$pristine) {
-      this.$dirty = true;
-      this.$pristine = false;
-      $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
-      parentForm.$setDirty();
-    }
+    this.$setDirty();
 
     forEach(this.$parsers, function(fn) {
       value = fn(value);
