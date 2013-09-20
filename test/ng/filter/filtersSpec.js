@@ -242,8 +242,35 @@ describe('filters', function() {
       expect(date(noon, "EEEE, MMMM dd, yyyy")).
                       toEqual('Friday, September 03, 2010');
 
-      expect(date(earlyDate, "MMMM dd, y")).
-                      toEqual('September 03, 1');
+      expect(date(earlyDate, "MMMM ddS, y")).
+                      toEqual('September 03rd, 1');
+    });
+
+    it('should get ordinal suffixes right', function() {
+      var first = new angular.mock.TzDate(+5, '1986-09-01T12:05:08.001Z'),
+          second = new angular.mock.TzDate(+5, '1986-09-02T12:05:08.001Z'),
+          third = new angular.mock.TzDate(+5, '1986-09-03T12:05:08.001Z'),
+          fourth = new angular.mock.TzDate(+5, '1986-09-04T12:05:08.001Z'),
+          twenty_second = new angular.mock.TzDate(+5, '1986-09-22T12:05:08.001Z'),
+          thirtyth = new angular.mock.TzDate(+5, '1986-09-30T12:05:08.001Z');
+
+      expect(date(first, "EEEE MMMM ddS yyyy")).
+                       toEqual('Monday September 01st 1986');
+
+      expect(date(second, "MMMM - ddS")).
+                       toEqual('September - 02nd');
+
+      expect(date(third, "EEE, MMM, ddS, yyyy")).
+                       toEqual('Wed, Sep, 03rd, 1986');
+
+      expect(date(fourth, "ddS yyyy")).
+                       toEqual('04th 1986');
+
+      expect(date(twenty_second, "ddS yyyy")).
+                       toEqual('22nd 1986');
+
+      expect(date(thirtyth, "EEEE, MMMM ddS")).
+                       toEqual('Tuesday, September 30th');
     });
 
     it('should format timezones correctly (as per ISO_8601)', function() {

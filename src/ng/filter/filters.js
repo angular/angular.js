@@ -218,6 +218,13 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+function dateOrdinalGetter(date) {
+  var date = date.getDate();
+
+  // http://stackoverflow.com/a/6003581/1226469
+  return (date > 3 && date < 21 ? 'th' : {1: 'st', 2: 'nd', 3: 'rd'}[date % 10] || 'th');
+}
+
 function timeZoneGetter(date) {
   var zone = -1 * date.getTimezoneOffset();
   var paddedZone = (zone >= 0) ? "+" : "";
@@ -256,10 +263,11 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: ampmGetter,
+     S: dateOrdinalGetter,
      Z: timeZoneGetter
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaSZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|S|Z))(.*)/,
     NUMBER_STRING = /^\d+$/;
 
 /**
@@ -293,6 +301,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'s'`: Second in minute (0-59)
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: am/pm marker
+ *   * `'S'`: 2 character English suffix for the day of the month (st, nd, rd, th)
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
  *
  *   `format` string can also be one of the following predefined
