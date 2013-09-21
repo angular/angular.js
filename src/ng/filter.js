@@ -79,7 +79,13 @@ function $FilterProvider($provide) {
   var suffix = 'Filter';
 
   function register(name, factory) {
-    return $provide.factory(name + suffix, factory);
+    if(isObject(name)) {
+      forEach(name, function(filter, key) {
+        register(key, filter);
+      });
+    } else {
+      return $provide.factory(name + suffix, factory);
+    }
   }
   this.register = register;
 
