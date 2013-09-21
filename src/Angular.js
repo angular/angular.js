@@ -758,7 +758,7 @@ function bind(self, fn) {
 function toJsonReplacer(key, value) {
   var val = value;
 
-  if (/^\$+/.test(key)) {
+  if (typeof key === 'string' && key.charAt(0) === '$') {
     val = undefined;
   } else if (isWindow(value)) {
     val = '$WINDOW';
