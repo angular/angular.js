@@ -515,8 +515,8 @@ function $LocationProvider(){
     }
   };
 
-  this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
-      function( $rootScope,   $browser,   $sniffer,   $rootElement) {
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement', '$window',
+      function( $rootScope,   $browser,   $sniffer,   $rootElement,   $window) {
     var $location,
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
@@ -548,6 +548,13 @@ function $LocationProvider(){
       }
 
       var absHref = elm.prop('href');
+
+      // If this was an anchor element in an SVG, it'll need to be unpacked.
+      if ($window.SVGAnimatedString &&
+          absHref instanceof $window.SVGAnimatedString) {
+        absHref = absHref.animVal;
+      }
+
       var rewrittenUrl = $location.$$rewrite(absHref);
 
       if (absHref && !elm.attr('target') && rewrittenUrl && !event.isDefaultPrevented()) {
