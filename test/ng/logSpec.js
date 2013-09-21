@@ -69,21 +69,23 @@ describe('$log', function() {
     }
   ));
 
+  describe("IE logging behavior", function() {
+    function removeApplyFunctionForIE() {
+      log.apply = log.call =
+        warn.apply = warn.call =
+        info.apply = info.call =
+        error.apply = error.call =
+        debug.apply = debug.call = null;
 
-  it("should work in IE where console.error doesn't have apply method", inject(
-      function() {
-        log.apply = log.call =
-            warn.apply = warn.call =
-            info.apply = info.call =
-            error.apply = error.call =
-            debug.apply = debug.call = null;
+      $window.console = {log: log,
+        warn: warn,
+        info: info,
+        error: error,
+        debug: debug};
+    }
 
-        $window.console = {log: log,
-                           warn: warn,
-                           info: info,
-                           error: error,
-                           debug: debug};
-      },
+    it("should work in IE where console.error doesn't have apply method", inject(
+      removeApplyFunctionForIE,
       function($log) {
         $log.log.apply($log);
         $log.warn.apply($log);
@@ -92,7 +94,27 @@ describe('$log', function() {
         $log.debug.apply($log);
         expect(logger).toEqual('log;warn;info;error;debug;');
       })
-  );
+    );
+
+    it("should not attempt to log second argument in IE if it is not specified to prevent 'undefined' from being printed", inject(
+      function() {
+        log = function(arg1, arg2) { logger+= 'log;' + arg2; };
+        warn = function(arg1, arg2) { logger+= 'warn;' + arg2; };
+        info = function(arg1, arg2) { logger+= 'info;' + arg2; };
+        error = function(arg1, arg2) { logger+= 'error;' + arg2; };
+        debug = function(arg1, arg2) { logger+= 'debug;' + arg2; };
+      },
+      removeApplyFunctionForIE,
+      function($log) {
+        $log.log();
+        $log.warn();
+        $log.info();
+        $log.error();
+        $log.debug();
+        expect(logger).toEqual('log;warn;info;error;debug;');
+      })
+    );
+  });
 
   describe("$log.debug", function () {
 	 
