@@ -137,7 +137,6 @@ describe('Filter: filter', function() {
 
     });
 
-
   });
 
 });
