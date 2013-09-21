@@ -144,9 +144,9 @@
  * </div>
  * </pre>
  *
- * The HTML specs do not require browsers to preserve the special attributes such as disabled.
- * (The presence of them means true and absence means false)
- * This prevents the angular compiler from correctly retrieving the binding expression.
+ * The HTML specs do not require browsers to preserve the values of special attributes
+ * such as disabled. (The presence of them means true and absence means false)
+ * This prevents the Angular compiler from correctly retrieving the binding expression.
  * To solve this problem, we introduce the `ngDisabled` directive.
  *
  * @example
