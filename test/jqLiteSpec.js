@@ -1288,7 +1288,19 @@ describe('jqLite', function() {
       expect(element.find('span').eq(20).length).toBe(0);
     });
   });
-
+  
+  describe('offset', function() {
+    it("should retrieve the offset of the element", function() {
+      var element = jqLite("<div style='position: absolute; top: 300px; left: 300px'></div>");
+      var doc = jqLite(document);
+      var body = doc.find("body");
+      body.append(element);
+      
+      var offset = element.offset();
+      expect(offset.top).toBe(300);
+      expect(offset.left).toBe(300);
+    });
+  });
 
   describe('triggerHandler', function() {
     it('should trigger all registered handlers for an event', function() {
