@@ -275,7 +275,7 @@ beforeEach(function () {
 
 In order to understand what is happening, we should emphasize that ngScenario calls are not
 immediately executed, but queued (in ngScenario terms, we would be talking about adding
-future actions). If we had only one entry in our table, than the following future actions
+future actions). If we had only one entry in our table, then the following future actions
 would be queued:
 
 <pre>
