@@ -121,6 +121,8 @@ All of the setter methods return the same `$location` object to allow chaining. 
 change multiple segments in one go, chain setters like this:
 <pre>$location.path('/newValue').search({key: value});</pre>
 
+## Replace method
+
 There is a special `replace` method which can be used to tell the $location service that the next
 time the $location service is synced with the browser, the last history record should be replaced
 instead of creating a new one. This is useful when you want to implement redirection, which would
