@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-  var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
+  var msie = document.documentMode || parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
 
   function indexOf(array, obj) {
     if (array.indexOf) return array.indexOf(obj);
