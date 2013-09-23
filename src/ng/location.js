@@ -572,7 +572,7 @@ function $LocationProvider(){
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
         if ($rootScope.$broadcast('$locationChangeStart', newUrl, $location.absUrl()).defaultPrevented) {
-          $browser.url($location.absUrl());
+          $browser.url($location.absUrl(), true);
           return;
         }
         $rootScope.$evalAsync(function() {
