@@ -35,7 +35,10 @@ var htmlAnchorDirective = valueFn({
     return function(scope, element) {
       element.on('click', function(event){
         // if we have no href url, then don't navigate anywhere.
-        if (!element.attr('href')) {
+        if (!element.attr('href') &&
+            // Links in SVGs use the xlink namespace
+            (!element[0].getAttributeNS ||
+             !element[0].getAttributeNS('http://www.w3.org/1999/xlink', 'href'))) {
           event.preventDefault();
         }
       });
