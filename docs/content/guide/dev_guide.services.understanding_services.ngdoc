@@ -12,7 +12,7 @@ above). You can also create your own custom services.
 
 ## Using a Service
 
-To use an Angular service, you identify it as a dependency for the component (controller, service,
+To use an Angular service, you identify it as a dependency for the componentt (controller, service,
 filter or directive) that depends on the service.  Angular's dependency injection subsystem takes
 care of the rest. The Angular injector subsystem is in charge of service instantiation, resolution
 of dependencies, and provision of dependencies to components as requested.
@@ -35,7 +35,7 @@ Or by providing an "inline" injection annotation:
 
 ## Defining a Service
 
-Application developers are free to define their own services by registering a their name, and **service
+Application developers are free to define their own services by registering their name, and **service
 factory function**, in Angular modules.
 
 The purpose of the **service factory function** is to generate the single object, or function, that 
