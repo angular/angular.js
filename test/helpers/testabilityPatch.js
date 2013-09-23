@@ -226,6 +226,17 @@ function sortedHtml(element, showNgClass) {
 }
 
 
+function childrenTagsOf(element) {
+  var tags = [];
+
+  forEach(jqLite(element).children(), function(child) {
+    tags.push(child.nodeName.toLowerCase());
+  });
+
+  return tags;
+}
+
+
 // TODO(vojta): migrate these helpers into jasmine matchers
 /**a
  * This method is a cheap way of testing if css for a given node is not set to 'none'. It doesn't
