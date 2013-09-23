@@ -470,10 +470,11 @@ function $RouteProvider(){
             if (isString(next.redirectTo)) {
               $location.path(interpolate(next.redirectTo, next.params)).search(next.params)
                        .replace();
-            } else {
+            } else if (isFunction(next.redirectTo)) {
               $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
                        .replace();
             }
+            return;
           }
         }
 
