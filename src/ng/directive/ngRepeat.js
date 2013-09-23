@@ -327,8 +327,21 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           for (key in lastBlockMap) {
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
-              $animate.leave(block.elements);
-              forEach(block.elements, function(element) { element[NG_REMOVED] = true});
+
+              var elementsToRemove = [];
+              var elementToRemove = block.startNode;
+              elementsToRemove.push(elementToRemove);
+
+              if (block.startNode !== block.endNode) {
+                do {
+                  elementToRemove = elementToRemove.nextSibling;
+                  if (!elementToRemove) break;
+                  elementsToRemove.push(elementToRemove);
+                } while (elementToRemove !== block.endNode);
+              }
+
+              $animate.leave(angular.element(elementsToRemove));
+              forEach(elementsToRemove, function(element) { element[NG_REMOVED] = true; });
               block.scope.$destroy();
             }
           }
@@ -338,6 +351,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
             block = nextBlockOrder[index];
+            if (nextBlockOrder[index - 1]) previousNode = nextBlockOrder[index - 1].endNode;
 
             if (block.startNode) {
               // if we have already seen this object, then we need to reuse the
@@ -371,10 +385,11 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
             if (!block.startNode) {
               linker(childScope, function(clone) {
+                clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 block.scope = childScope;
-                block.startNode = clone[0];
+                block.startNode = previousNode && previousNode.endNode ? previousNode.endNode : clone[0];
                 block.elements = clone;
                 block.endNode = clone[clone.length - 1];
                 nextBlockMap[block.id] = block;
