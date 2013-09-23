@@ -132,6 +132,7 @@
   padding: 0;
   font-size: inherit;
   font-family: monospace;
+  white-space: nowrap;
 }
 
 .content h2,
