@@ -31,7 +31,14 @@ beforeEach(function() {
   }
 
   function isNgElementHidden(element) {
-    return angular.element(element).hasClass('ng-hide');
+    // we need to check element.getAttribute for SVG nodes
+    var hidden = true;
+    forEach(angular.element(element), function (element) {
+      if ((' ' +(element.getAttribute('class') || '') + ' ').indexOf(' ng-hide ') === -1) {
+        hidden = false;
+      }
+    });
+    return hidden;
   };
 
   this.addMatchers({

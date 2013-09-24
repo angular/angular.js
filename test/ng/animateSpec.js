@@ -40,6 +40,18 @@ describe("$animate", function() {
       expect(element).toBeHidden();
     }));
 
+    it("should add and remove classes on SVG elements", inject(function($animate) {
+      if (!window.SVGElement) return;
+      var svg = jqLite('<svg><rect></rect></svg>');
+      var rect = svg.children();
+      $animate.enabled(false);
+      expect(rect).toBeShown();
+      $animate.addClass(rect, 'ng-hide');
+      expect(rect).toBeHidden();
+      $animate.removeClass(rect, 'ng-hide');
+      expect(rect).not.toBeHidden();
+    }));
+
     it("should throw error on wrong selector", function() {
       module(function($animateProvider) {
         expect(function() {

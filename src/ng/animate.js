@@ -156,7 +156,9 @@ var $AnimateProvider = ['$provide', function($provide) {
         className = isString(className) ?
                       className :
                       isArray(className) ? className.join(' ') : '';
-        element.addClass(className);
+        forEach(element, function (element) {
+          JQLiteAddClass(element, className);
+        });
         done && $timeout(done, 0, false);
       },
 
@@ -177,7 +179,9 @@ var $AnimateProvider = ['$provide', function($provide) {
         className = isString(className) ?
                       className :
                       isArray(className) ? className.join(' ') : '';
-        element.removeClass(className);
+        forEach(element, function (element) {
+          JQLiteRemoveClass(element, className);
+        });
         done && $timeout(done, 0, false);
       },
 
