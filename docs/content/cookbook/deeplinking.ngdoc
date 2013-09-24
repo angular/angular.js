@@ -36,7 +36,8 @@ In this example we have a simple app which consist of two screens:
      .config(function($routeProvider) {
         $routeProvider.
           when("/welcome",  {templateUrl:'welcome.html',  controller:WelcomeCntl}).
-          when("/settings", {templateUrl:'settings.html', controller:SettingsCntl});
+          when("/settings", {templateUrl:'settings.html', controller:SettingsCntl}).
+          otherwise({redirectTo: '/welcome'});
      });
 
    AppCntl.$inject = ['$scope', '$route']
@@ -51,23 +52,42 @@ In this example we have a simple app which consist of two screens:
    }
 
    function WelcomeCntl($scope) {
-    $scope.greet = function() {
-     alert("Hello " + $scope.person.name);
-    };
    }
 
    function SettingsCntl($scope, $location) {
-    $scope.cancel = function() {
-     $scope.form = angular.copy($scope.person);
-    };
+
+    $scope.isResetDisabled = function() {
+     return angular.equals($scope.form, $scope.person)
+    }
+
+    $scope.isSaveDisabled = function () {
+     return $scope.myForm.$invalid || angular.equals($scope.form, $scope.person)
+    }
 
     $scope.save = function() {
      angular.copy($scope.form, $scope.person);
      $location.path('/welcome');
     };
 
-    $scope.cancel();
-   }
+    $scope.init = function() {
+     $scope.form = angular.copy($scope.person);
+    }
+
+    $scope.cancel = function() {
+     $scope.init();
+     $location.path('/welcome');
+    };
+
+    $scope.addContact = function() {
+     $scope.form.contacts.push({type:'', url:''})
+    }
+
+    $scope.removeContact = function(contact) {
+     $scope.form.contacts.splice( $scope.form.contacts.indexOf(contact), 1 );
+    }
+
+    $scope.init();
+  }
  </file>
  <file name="style.css">
    [ng-view] {
@@ -77,61 +97,98 @@ In this example we have a simple app which consist of two screens:
    }
 
    .partial-info {
-      background-color: blue;
-      color: white;
-      padding: 3px;
-    }
+     background-color: blue;
+     color: white;
+     padding: 3px;
+   }
  </file>
  <file name="index.html">
     <div ng-controller="AppCntl">
       <h1>Your App Chrome</h1>
-      [ <a href="welcome">Welcome</a> | <a href="settings">Settings</a> ]
-      <hr/>
-      <span class="partial-info">
-        Partial: {{$route.current.template}}
-      </span>
+      <nav>[ <a href="#/welcome">Welcome</a> | <a href="#/settings">Settings</a> ]</nav>
+      <hr />
+      <small class="partial-info" ng-bind="'Partial: '+ ($route.current.loadedTemplateUrl || '(empty)')"></small>
       <div ng-view></div>
-      <small>Your app footer </small>
+      <hr />
+      <footer>Your app footer</footer>
     </div>
  </file>
  <file name="settings.html">
-   <label>Name:</label>
-   <input type="text" ng:model="form.name" required>
+   <form name="myForm">
+   <label>Name: <input type="text" ng-model="form.name" required></label>
 
-   <div ng:repeat="contact in form.contacts">
-     <select ng:model="contact.type">
+   <div ng-repeat="contact in form.contacts">
+     <select ng-model="contact.type">
        <option>url</option>
        <option>email</option>
        <option>phone</option>
      </select>
-     <input type="text" ng:model="contact.url">
-     [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
+     <input type="text" ng-model="contact.url" />
+     <button title="remove" ng-click="removeContact(contact)">X</button>
    </div>
    <div>
-     [ <a href="" ng:click="form.contacts.$add()">add</a> ]
+     <button title="add" ng-click="addContact()">+</button>
    </div>
 
-   <button ng:click="cancel()">Cancel</button>
-   <button ng:click="save()">Save</button>
+   <button title="save" ng-click="save()" ng-disabled="isSaveDisabled()">Save</button>
+   <button title="reset" ng-click="init()" ng-disabled="isResetDisabled()">Reset</button>
+   <button title="cancel" ng-click="cancel()">Cancel</button>
+   </form>   
  </file>
  <file name="welcome.html">
-   Hello {{person.name}},
-   <div>
-     Your contact information:
-     <div ng:repeat="contact in person.contacts">{{contact.type}}:
-       <span ng-bind-html="contact.url|linky"></span>
-     </div>
-   </div>
+  <h2>Hello {{person.name}}!</h2>
+  <div>
+    Your contact information:
+    <ul>
+      <li ng-repeat="contact in person.contacts">{{contact.type}}:
+        <span ng-bind-html="contact.url | linky"></span>
+      </li>
+    </ul>
+  </div>
  </file>
  <file name="scenario.js">
-   it('should navigate to URL', function() {
+   it('should change the view to welcome.html by default when user visits the root', function() {
+     expect(element('.partial-info').html()).toContain('welcome.html');
+   });
+
+   it('should change the view to welcome.html when user clicks the Welcome nav link', function() {
      element('a:contains(Welcome)').click();
-     expect(element('[ng-view]').text()).toMatch(/Hello anonymous/);
+     expect(element('.partial-info').html()).toContain('welcome.html');
+   });
+
+   it('should welcome the user by name', function() {
+    element('a:contains(Welcome)').click();
+    expect(element('[ng-view] h2').html()).toContain('Hello anonymous!');
+   });
+
+   it('should change the view to settings.html when user clicks the Settings nav link', function() {
+     element('a:contains(Settings)').click();
+     expect(element('small.partial-info').html()).toContain('settings.html');
+   });
+
+   it('should preserve the original name upon canceling a name change', function() {
+     element('a:contains(Welcome)').click();
+     expect(element('[ng-view] h2').html()).toContain('Hello anonymous!');
+     element('a:contains(Settings)').click();
+     input('form.name').enter('notreallymyname');
+     element(':button:contains(Cancel)').click();
+     expect(element('[ng-view] h2').html()).toContain('Hello anonymous!');
+   });
+
+   it('should discard the change when Reset is clicked', function() {
+     expect(element('[ng-view] h2').html()).toContain('Hello anonymous!');
+     element('a:contains(Settings)').click();
+     input('form.name').enter('notreallymyname');
+     element(':button:contains(Cancel)').click();     
+     expect(element('[ng-view] h2').html()).toContain('Hello anonymous!');
+   });
+
+
+   it('should save an updated name', function() {
      element('a:contains(Settings)').click();
      input('form.name').enter('yourname');
      element(':button:contains(Save)').click();
-     element('a:contains(Welcome)').click();
-     expect(element('[ng-view]').text()).toMatch(/Hello yourname/);
+     expect(element('[ng-view] h2').html()).toContain('Hello yourname!');
    });
  </file>
 </example>
@@ -143,9 +200,9 @@ In this example we have a simple app which consist of two screens:
 * Routes are defined in the `AppCntl` class. The initialization of the controller causes the
   initialization of the {@link api/ngRoute.$route $route} service with the proper URL
   routes.
-* The  {@link api/ngRoute.$route $route} service then watches the URL and instantiates the
+* The {@link api/ngRoute.$route $route} service then watches the URL and instantiates the
   appropriate controller when the URL changes.
-* The  {@link api/ngRoute.directive:ngView ngView} widget loads the
-  view when the URL changes. It also sets the view scope to the newly instantiated controller.
+* The {@link api/ngRoute.directive:ngView ngView} widget loads the view when the URL 
+  changes. It also sets the view scope to the newly instantiated controller.
 * Changing the URL is sufficient to change the controller and view. It makes no difference whether
   the URL is changed programatically or by the user.
