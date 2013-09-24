@@ -824,6 +824,28 @@ describe('$route', function() {
             .toEqual(['http://server/#/bar/id3?extra=eId', true]);
       });
     });
+
+    it('should return immediately when redirectTo exist', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
+        $routeProvider.when('/foo/:id/:extra', {
+          redirectTo: '/bar/:id',
+          resolve: { notBeCalled: function() {} }
+        });
+      });
+      inject(function($browser, $route, $location, $rootScope) {
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var route = $route.routes['/foo/:id/:extra'];
+
+        spyOn(route.resolve, 'notBeCalled');
+
+        $location.path('/foo/id3/eId');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/bar/id3');
+        expect(route.resolve.notBeCalled).not.toHaveBeenCalled()
+      })
+    })
   });
 
 
