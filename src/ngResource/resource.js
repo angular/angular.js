@@ -196,6 +196,28 @@ var $resourceMinErr = angular.$$minErr('$resource');
      expect(newCard.id).toEqual(789);
  * </pre>
  *
+ * The method `$serialize` can preprocess instance data before send request, if `$serialize`
+ * is not defined or the property `$serialize` is not a function, nothing will happen.
+ *
+   <pre>
+     var User = $resource('/user/:userId', {userId:'@id'}),
+         user = new User({id: 123});
+
+     user.posts = [{id: 456}, {id: 789}];
+
+     // preprocess instance data before send request
+     User.prototype.$serialize = function(user) {
+       user.posts = user.posts.map(function(post) {
+         return post.id;
+       });
+       return user;
+     };
+
+     $httpBackend.expectPOST('/user/123', {id: 123, posts: [456, 789]});
+     user.$save();
+     $httpBackend.flush();
+   </pre>
+ *
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
  *
@@ -203,7 +225,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
-
+ *
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
      var user = User.get({userId:123}, function() {
@@ -459,6 +481,9 @@ angular.module('ngResource', ['ng']).
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response || defaultResponseInterceptor;
           var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
+          var $serialize = angular.isFunction(Resource.prototype.$serialize) ? Resource.prototype.$serialize : angular.identity;
+
+          data = $serialize(angular.copy(data));
 
           forEach(action, function(value, key) {
             if (key != 'params' && key != 'isArray' && key != 'interceptor') {

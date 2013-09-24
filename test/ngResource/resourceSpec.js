@@ -1032,6 +1032,35 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
   });
+
+  describe('$serialize', function() {
+    var resp, $serialize, Resource, resource;
+
+    beforeEach(function() {
+      resp = {id: 123, prop: 'respprop'};
+      Resource = $resource('/resource/:id', {id: '@id'});
+      resource = new Resource;
+      $serialize = function(data) {
+        data.id = data.id || 1;
+        data.prop = data.prop || 'prop';
+        return data;
+      };
+    });
+
+    it('should format uri and send request with $serialize result', function() {
+      $httpBackend.expect('POST', '/resource/1', {id: 1, prop: 'prop'}).respond(resp);
+      Resource.prototype.$serialize = $serialize;
+      resource.$save();
+      $httpBackend.flush();
+    });
+
+    it('should allow $serialize not exist', function() {
+      $httpBackend.expect('POST', '/resource/2', {id: 2}).respond(resp);
+      resource = new Resource({id: 2});
+      resource.$save();
+      $httpBackend.flush();
+    });
+  })
 });
 
 describe('resource', function() {
@@ -1082,6 +1111,5 @@ describe('resource', function() {
         /^\[\$resource:badcfg\] Error in resource configuration. Expected response to contain an object but got an array/
       )
   });
-
 
 });
