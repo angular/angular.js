@@ -189,8 +189,12 @@ function $CompileProvider($provide) {
                 var directive = $injector.invoke(directiveFactory);
                 if (isFunction(directive)) {
                   directive = { compile: valueFn(directive) };
-                } else if (!directive.compile && directive.link) {
-                  directive.compile = valueFn(directive.link);
+                } else if (!directive.compile) {
+                  if(directive.link) {
+                    directive.compile = valueFn(directive.link);
+                  } else if(directive.require) {
+                    directive.compile = valueFn(noop);
+                  }
                 }
                 directive.priority = directive.priority || 0;
                 directive.name = directive.name || name;
