@@ -91,6 +91,7 @@ function $FilterProvider($provide) {
 
   ////////////////////////////////////////
 
+  register('bind', bindFilter);
   register('currency', currencyFilter);
   register('date', dateFilter);
   register('filter', filterFilter);

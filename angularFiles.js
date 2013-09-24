@@ -33,6 +33,7 @@ angularFiles = {
     'src/ng/window.js',
 
     'src/ng/filter.js',
+    'src/ng/filter/bind.js',
     'src/ng/filter/filter.js',
     'src/ng/filter/filters.js',
     'src/ng/filter/limitTo.js',
