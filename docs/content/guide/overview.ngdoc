@@ -99,7 +99,7 @@ concepts which the application developer may face:
     </div>
   </file>
   <file name="scenario.js">
-    it('should show of angular binding', function() {
+    it('should show off angular binding', function() {
       expect(binding('qty * cost')).toEqual('$19.95');
       input('qty').enter('2');
       input('cost').enter('5.00');
