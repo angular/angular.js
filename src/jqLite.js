@@ -279,17 +279,17 @@ function JQLiteData(element, key, value) {
 }
 
 function JQLiteHasClass(element, selector) {
-  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
+  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, cssClasses) {
   if (cssClasses) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.className = trim(
-          (" " + element.className + " ")
+      element.setAttribute('class', trim(
+          (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " ")
+          .replace(" " + trim(cssClass) + " ", " "))
       );
     });
   }
@@ -297,11 +297,17 @@ function JQLiteRemoveClass(element, cssClasses) {
 
 function JQLiteAddClass(element, cssClasses) {
   if (cssClasses) {
+    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                            .replace(/[\n\t]/g, " ");
+
     forEach(cssClasses.split(' '), function(cssClass) {
-      if (!JQLiteHasClass(element, cssClass)) {
-        element.className = trim(element.className + ' ' + trim(cssClass));
+      cssClass = trim(cssClass);
+      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+        existingClasses += cssClass + ' ';
       }
     });
+
+    element.setAttribute('class', trim(existingClasses));
   }
 }
 
