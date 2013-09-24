@@ -215,7 +215,7 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
     if ( appBase == stripHash(url) ) {
       return url;
     } else if ( (appUrl = beginsWith(appBaseNoFile, url)) ) {
-      return appBase + hashPrefix + appUrl;
+      return appBase + hashPrefix + (beginsWith('/', appUrl) || appUrl);
     } else if ( appBaseNoFile === url + '/') {
       return appBaseNoFile;
     }
