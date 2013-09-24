@@ -271,6 +271,16 @@ describe('angular', function() {
       expect(equals(NaN, NaN)).toBe(true);
     });
 
+    it('should treat two \'unknown\' objects as equal', function() {
+      if (window.ActiveXObject) {
+        var unknown = new ActiveXObject('Msxml2.XMLHTTP').open;
+        if (typeof unknown === 'unknown') {
+          expect(equals({foo:unkown}, {foo:unkown})).toBe(true);
+          expect(equals({foo:unkown}, null)).toBe(false);
+        }
+      }
+    });
+
     it('should compare Scope instances only by identity', inject(function($rootScope) {
       var scope1 = $rootScope.$new(),
           scope2 = $rootScope.$new();

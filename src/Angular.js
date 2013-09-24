@@ -682,6 +682,7 @@ function shallowCopy(src, dst) {
  * * Both values represent the same regular expression (In JavasScript,
  *   /abc/ == /abc/ => false. But we consider two regular expressions as equal when their textual
  *   representation matches).
+ * * Both values have type `'unknown'` (Internet Explorer COM objects)
  *
  * During a property comparison, properties of `function` type and properties with names
  * that begin with `$` are ignored.
@@ -698,6 +699,7 @@ function equals(o1, o2) {
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2) {
+    if (t1 == 'unknown') return true;
     if (t1 == 'object') {
       if (isArray(o1)) {
         if (!isArray(o2)) return false;
