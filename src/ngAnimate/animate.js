@@ -560,6 +560,7 @@ angular.module('ngAnimate', ['ng'])
 
       var durationKey = 'Duration',
           propertyKey = 'Property',
+          delayKey = 'Delay',
           animationIterationCountKey = 'IterationCount',
           ELEMENT_NODE = 1;
 
@@ -593,6 +594,12 @@ angular.module('ngAnimate', ['ng'])
           if (element.nodeType == ELEMENT_NODE) {
             var elementStyles = $window.getComputedStyle(element) || {};
 
+            var transitionDelay  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + delayKey]),
+                                            parseMaxTime(elementStyles[vendorTransitionProp  + delayKey]));
+
+            var animationDelay   = Math.max(parseMaxTime(elementStyles[w3cAnimationProp      + delayKey]),
+                                            parseMaxTime(elementStyles[vendorAnimationProp   + delayKey]));
+
             var transitionDuration  = Math.max(parseMaxTime(elementStyles[w3cTransitionProp     + durationKey]),
                                                parseMaxTime(elementStyles[vendorTransitionProp  + durationKey]));
 
@@ -605,17 +612,18 @@ angular.module('ngAnimate', ['ng'])
                                            1);
             }
 
-            transitionTime = Math.max(transitionDuration, transitionTime);
-            animationTime = Math.max(animationDuration, animationTime);
+            transitionTime = Math.max(transitionDelay + transitionDuration, transitionTime);
+            animationTime = Math.max(animationDelay + animationDuration, animationTime);
           }
         });
 
         /* there is no point in performing a reflow if the animation
            timeout is empty (this would cause a flicker bug normally
            in the page */
-        var totalTime = Math.max(transitionTime,animationTime);
-        if(totalTime > 0) {
-          var node = element[0];
+        var maxTime = Math.max(transitionTime,animationTime) * 1000;
+        if(maxTime > 0) {
+          var node = element[0],
+              startTime = Date.now();
 
           //temporarily disable the transition so that the enter styles
           //don't animate twice (this is here to avoid a bug in Chrome/FF).
@@ -659,7 +667,14 @@ angular.module('ngAnimate', ['ng'])
         }
 
         function onAnimationProgress(event) {
-          (event.elapsedTime || (event.originalEvent && event.originalEvent.elapsedTime)) >= totalTime && done();
+          event.stopPropagation();
+          var ev = event.originalEvent || event;
+          /* $manualTimeStamp is a mocked timeStamp value which is set
+           * within browserTrigger(). This is only here so that tests can
+           * mock animations properly. Real events fallback to event.timeStamp. */
+          if((ev.$manualTimeStamp || ev.timeStamp) - startTime >= maxTime) {
+            done();
+          }
         }
 
         function parseMaxTime(str) {
