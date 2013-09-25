@@ -101,7 +101,7 @@
           }
           catch(e) {
             evnt = document.createEvent('TransitionEvent');
-            evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime);
+            evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
           }
         }
       }
@@ -116,7 +116,7 @@
           }
           catch(e) {
             evnt = document.createEvent('AnimationEvent');
-            evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime);
+            evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
           }
         }
       }
@@ -127,6 +127,11 @@
         evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
             pressed('shift'), pressed('meta'), 0, element);
       }
+
+      /* we're unable to change the timeStamp value directly so this
+       * is only here to allow for testing where the timeStamp value is
+       * read */
+      evnt.$manualTimeStamp = eventData.timeStamp;
 
       if(!evnt) return;
 
