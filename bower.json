@@ -1,7 +1,7 @@
 {
   "name": "AngularJS",
   "devDependencies": {
-    "jquery": "git://github.com/components/jquery.git#v1.8.3",
+    "jquery": "1.10.2",
     "lunr.js": "0.4.0",
     "google-code-prettify": "1.0.0",
     "components-font-awesome": "3.1.0",
