@@ -1,6 +1,6 @@
 // Copy/pasted from src/Angular.js, so that we can disable specific tests on IE.
 //var msie = parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
-var msie = document.documentMode || parseInt((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1], 10);
+var msie = document.documentMode;
 
 var createMockWindow = function() {
   var mockWindow = {};
