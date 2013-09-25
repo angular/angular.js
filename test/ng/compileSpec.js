@@ -3382,6 +3382,38 @@ describe('$compile', function() {
     });
 
 
+    it('should correctly collect ranges on multiple directives on a single element', function () {
+      module(function($compileProvider) {
+        $compileProvider.directive('emptyDirective', function() {
+          return function (scope, element) {
+            element.data('x', 'abc');
+          };
+        });
+        $compileProvider.directive('rangeDirective', function() {
+          return {
+            link: function (scope) {
+              scope.x = 'X';
+              scope.y = 'Y';
+            }
+          };
+        });
+      });
+
+      inject(function ($compile, $rootScope) {
+        element = $compile(
+          '<div>' +
+            '<div range-directive-start empty-directive>{{x}}</div>' +
+            '<div range-directive-end>{{y}}</div>' +
+          '</div>'
+        )($rootScope);
+
+        $rootScope.$digest();
+        expect(element.text()).toBe('XY');
+        expect(angular.element(element[0].firstChild).data('x')).toBe('abc');
+      });
+    });
+
+
     it('should throw error if unterminated (containing termination as a child)', function () {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
