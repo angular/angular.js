@@ -841,6 +841,26 @@ describe('ngRepeat', function() {
       expect(newLis[1]).toEqual(lis[0]);
       expect(newLis[2]).toEqual(lis[1]);
     });
+
+    it('should be stable even if the collection is initially undefined', function () {
+      scope.items = undefined;
+      scope.$digest();
+
+      scope.items = [
+        { name: 'A' },
+        { name: 'B' },
+        { name: 'C' }
+      ];
+      scope.$digest();
+
+      lis = element.find('li');
+      scope.items.shift();
+      scope.$digest();
+
+      var newLis = element.find('li');
+      expect(newLis.length).toBe(2);
+      expect(newLis[0]).toBe(lis[1]);
+    });
   });
 
   it('should grow multi-node repeater', inject(function($compile, $rootScope) {
@@ -861,8 +881,6 @@ describe('ngRepeat', function() {
     $rootScope.$digest();
     expect(element.text()).toEqual('T1:D1;T2:D2;T3:D3;');
   }));
-
-
 });
 
 describe('ngRepeat animations', function() {
