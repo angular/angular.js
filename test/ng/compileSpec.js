@@ -2798,6 +2798,18 @@ describe('$compile', function() {
     });
 
 
+    it('should throw on an ng-translude element inside no transclusion directive', function() {
+      inject(function ($rootScope, $compile) {
+        expect(function () {
+          $compile('<div><div ng-transclude></div></div>')($rootScope);
+        }).toThrowMinErr('ngTransclude', 'orphan',
+            'Illegal use of ngTransclude directive in the template! ' +
+            'No parent directive that requires a transclusion found. ' +
+            '<div ng-transclude="">');
+      });
+    });
+
+
     it('should make the result of a transclusion available to the parent directive in post-linking phase (template)',
         function() {
       module(function() {
