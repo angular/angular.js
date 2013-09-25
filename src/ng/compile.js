@@ -595,6 +595,38 @@ function $CompileProvider($provide) {
       }
     }
 
+    /**
+     * @ngdoc directive
+     * @name ng.directive:ngAttr
+     * @restrict A
+     *
+     * @description
+     * If an attribute with a binding is prefixed with ngAttr prefix
+     * (denormalized prefix: 'ng-attr-', 'ng:attr-') then during the
+     * compilation the prefix will be removed and the binding will be
+     * applied to an unprefixed attribute. This allows binding to
+     * attributes that would otherwise be eagerly processed by
+     * browsers in their uncompiled form (e.g. img[src] or svg's
+     * circle[cx] attributes).
+     *
+     * For example, considering template:
+     * <pre>
+     * <svg>
+     *   <circle ng-attr-cx="{{cx}}"></circle>
+     * </svg>
+     * </pre>
+     *
+     * and model cx set to 5, will result in rendering this dom:
+     * <pre>
+     * <svg>
+     *   <circle cx="5"></circle>
+     * </svg>
+     * </pre>
+     *
+     * If you were to bind {{cx}} directly to the cx attribute, you'd
+     * get the following error: Error: Invalid value for attribute
+     * cx="{{cx}}". With ng-attr-cx you can work around this problem.
+     */
 
     /**
      * Looks for directives on the given node and adds them to the directive collection which is
@@ -631,7 +663,7 @@ function $CompileProvider($provide) {
               // support ngAttr attribute binding
               ngAttrName = directiveNormalize(name);
               if (NG_ATTR_BINDING.test(ngAttrName)) {
-                name = ngAttrName.substr(6).toLowerCase();
+                name = dashCase(ngAttrName.substr(6));
               }
               if ((index = ngAttrName.lastIndexOf('Start')) != -1 && index == ngAttrName.length - 5) {
                 attrStartName = name;
