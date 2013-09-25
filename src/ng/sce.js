@@ -12,6 +12,55 @@ var SCE_CONTEXTS = {
   JS: 'js'
 };
 
+// Helper functions follow.
+
+// Copied from:
+// http://docs.closure-library.googlecode.com/git/closure_goog_string_string.js.source.html#line962
+// Prereq: s is a string.
+function escapeForRegexp(s) {
+  return s.replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').
+           replace(/\x08/g, '\\x08');
+};
+
+
+function adjustMatcher(matcher) {
+  if (matcher === 'self') {
+    return matcher;
+  } else if (isString(matcher)) {
+    // Strings match exactly except for 2 wildcards - '*' and '**'.
+    // '*' matches any character except those from the set ':/.?&'.
+    // '**' matches any character (like .* in a RegExp).
+    // More than 2 *'s raises an error as it's ill defined.
+    if (matcher.indexOf('***') > -1) {
+      throw $sceMinErr('iwcard',
+          'Illegal sequence *** in string matcher.  String: {0}', matcher);
+    }
+    matcher = escapeForRegexp(matcher).
+                  replace('\\*\\*', '.*').
+                  replace('\\*', '[^:/.?&;]*');
+    return new RegExp('^' + matcher + '$');
+  } else if (isRegExp(matcher)) {
+    // The only other type of matcher allowed is a Regexp.
+    // Match entire URL / disallow partial matches.
+    // Flags are reset (i.e. no global, ignoreCase or multiline)
+    return new RegExp('^' + matcher.source + '$');
+  } else {
+    throw $sceMinErr('imatcher',
+        'Matchers may only be "self", string patterns or RegExp objects');
+  }
+}
+
+
+function adjustMatchers(matchers) {
+  var adjustedMatchers = [];
+  if (isDefined(matchers)) {
+    forEach(matchers, function(matcher) {
+      adjustedMatchers.push(adjustMatcher(matcher));
+    });
+  }
+  return adjustedMatchers;
+}
+
 
 /**
  * @ngdoc service
@@ -45,13 +94,37 @@ var SCE_CONTEXTS = {
  * @name ng.$sceDelegateProvider
  * @description
  *
- * The $sceDelegateProvider provider allows developers to configure the {@link ng.$sceDelegate
+ * The `$sceDelegateProvider` provider allows developers to configure the {@link ng.$sceDelegate
  * $sceDelegate} service.  This allows one to get/set the whitelists and blacklists used to ensure
- * that URLs used for sourcing Angular templates are safe.  Refer {@link
+ * that the URLs used for sourcing Angular templates are safe.  Refer {@link
  * ng.$sceDelegateProvider#resourceUrlWhitelist $sceDelegateProvider.resourceUrlWhitelist} and
  * {@link ng.$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist}
  *
- * Read more about {@link ng.$sce Strict Contextual Escaping (SCE)}.
+ * For the general details about this service in Angular, read the main page for {@link ng.$sce
+ * Strict Contextual Escaping (SCE)}.
+ *
+ * **Example**:  Consider the following case. <a name="example"></a>
+ *
+ * - your app is hosted at url `http://myapp.example.com/`
+ * - but some of your templates are hosted on other domains you control such as
+ *   `http://srv01.assets.example.com/`,  `http://srv02.assets.example.com/`, etc.
+ * - and you have an open redirect at `http://myapp.example.com/clickThru?...`.
+ *
+ * Here is what a secure configuration for this scenario might look like:
+ *
+ * <pre class="prettyprint">
+ *    angular.module('myApp', []).config(function($sceDelegateProvider) {
+ *      $sceDelegateProvider.resourceUrlWhitelist([
+ *        // Allow same origin resource loads.
+ *        'self',
+ *        // Allow loading from our assets domain.  Notice the difference between * and **.
+ *        'http://srv*.assets.example.com/**']);
+ *
+ *      // The blacklist overrides the whitelist so the open redirect here is blocked.
+ *      $sceDelegateProvider.resourceUrlBlacklist([
+ *        'http://myapp.example.com/clickThru**']);
+ *      }); 
+ * </pre>
  */
 
 function $SceDelegateProvider() {
@@ -68,28 +141,25 @@ function $SceDelegateProvider() {
    * @function
    *
    * @param {Array=} whitelist When provided, replaces the resourceUrlWhitelist with the value
-   *     provided.  This must be an array.
+   *     provided.  This must be an array or null.  A snapshot of this array is used so further
+   *     changes to the array are ignored.
    *
-   *     Each element of this array must either be a regex or the special string `'self'`.
+   *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items allowed in
+   *     this array.
    *
-   *     When a regex is used, it is matched against the normalized / absolute URL of the resource
-   *     being tested.
-   *
-   *     The **special string** `'self'` can be used to match against all URLs of the same domain as the
-   *     application document with the same protocol (allows sourcing https resources from http documents.)
-   *
-   *     Please note that **an empty whitelist array will block all URLs**!
+   *     Note: **an empty whitelist array will block all URLs**!
    *
    * @return {Array} the currently set whitelist array.
    *
-   * The **default value** when no whitelist has been explicitly set is `['self']`.
+   * The **default value** when no whitelist has been explicitly set is `['self']` allowing only
+   * same origin resource requests.
    *
    * @description
    * Sets/Gets the whitelist of trusted resource URLs.
    */
   this.resourceUrlWhitelist = function (value) {
     if (arguments.length) {
-      resourceUrlWhitelist = value;
+      resourceUrlWhitelist = adjustMatchers(value);
     }
     return resourceUrlWhitelist;
   };
@@ -101,13 +171,11 @@ function $SceDelegateProvider() {
    * @function
    *
    * @param {Array=} blacklist When provided, replaces the resourceUrlBlacklist with the value
-   *     provided.  This must be an array.
+   *     provided.  This must be an array or null.  A snapshot of this array is used so further
+   *     changes to the array are ignored.
    *
-   *     Each element of this array must either be a regex or the special string `'self'` (see
-   *     `resourceUrlWhitelist` for meaning - it's only really useful there.)
-   *
-   *     When a regex is used, it is matched against the normalized / absolute URL of the resource
-   *     being tested.
+   *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items allowed in
+   *     this array.
    *
    *     The typical usage for the blacklist is to **block [open redirects](http://cwe.mitre.org/data/definitions/601.html)**
    *     served by your domain as these would otherwise be trusted but actually return content from the redirected
@@ -126,7 +194,7 @@ function $SceDelegateProvider() {
 
   this.resourceUrlBlacklist = function (value) {
     if (arguments.length) {
-      resourceUrlBlacklist = value;
+      resourceUrlBlacklist = adjustMatchers(value);
     }
     return resourceUrlBlacklist;
   };
@@ -147,7 +215,8 @@ function $SceDelegateProvider() {
       if (matcher === 'self') {
         return $$urlUtils.isSameOrigin(parsedUrl);
       } else {
-        return !!parsedUrl.href.match(matcher);
+        // definitely a regex.  See adjustMatchers()
+        return !!matcher.exec(parsedUrl.href);
       }
     }
 
@@ -457,9 +526,54 @@ function $SceDelegateProvider() {
  * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contens are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
  * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently unused.  Feel free to use it in your own directives. |
  *
- * ## Show me an example.
+ * ## Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
  *
+ *  Each element in these arrays must be one of the following:
  *
+ *  - **'self'**
+ *    - The special **string**, `'self'`, can be used to match against all URLs of the **same
+ *      domain** as the application document using the **same protocol**.
+ *  - **String** (except the special value `'self'`)
+ *    - The string is matched against the full *normalized / absolute URL* of the resource
+ *      being tested (substring matches are not good enough.)
+ *    - There are exactly **two wildcard sequences** - `*` and `**`.  All other characters
+ *      match themselves.
+ *    - `*`: matches zero or more occurances of any character other than one of the following 6
+ *      characters: '`:`', '`/`', '`.`', '`?`', '`&`' and ';'.  It's a useful wildcard for use
+ *      in a whitelist.
+ *    - `**`: matches zero or more occurances of *any* character.  As such, it's not
+ *      not appropriate to use in for a scheme, domain, etc. as it would match too much.  (e.g.
+ *      http://**.example.com/ would match http://evil.com/?ignore=.example.com/ and that might
+ *      not have been the intention.)  It's usage at the very end of the path is ok.  (e.g.
+ *      http://foo.example.com/templates/**).
+ *  - **RegExp** (*see caveat below*)
+ *    - *Caveat*:  While regular expressions are powerful and offer great flexibility,  their syntax
+ *      (and all the inevitable escaping) makes them *harder to maintain*.  It's easy to
+ *      accidentally introduce a bug when one updates a complex expression (imho, all regexes should
+ *      have good test coverage.).  For instance, the use of `.` in the regex is correct only in a
+ *      small number of cases.  A `.` character in the regex used when matching the scheme or a
+ *      subdomain could be matched against a `:` or literal `.` that was likely not intended.   It
+ *      is highly recommended to use the string patterns and only fall back to regular expressions
+ *      if they as a last resort.
+ *    - The regular expression must be an instance of RegExp (i.e. not a string.)  It is
+ *      matched against the **entire** *normalized / absolute URL* of the resource being tested
+ *      (even when the RegExp did not have the `^` and `$` codes.)  In addition, any flags
+ *      present on the RegExp (such as multiline, global, ignoreCase) are ignored.
+ *    - If you are generating your Javascript from some other templating engine (not
+ *      recommended, e.g. in issue [#4006](https://github.com/angular/angular.js/issues/4006)),
+ *      remember to escape your regular expression (and be aware that you might need more than
+ *      one level of escaping depending on your templating engine and the way you interpolated
+ *      the value.)  Do make use of your platform's escaping mechanism as it might be good
+ *      enough before coding your own.  e.g. Ruby has
+ *      [Regexp.escape(str)](http://www.ruby-doc.org/core-2.0.0/Regexp.html#method-c-escape)
+ *      and Python has [re.escape](http://docs.python.org/library/re.html#re.escape).
+ *      Javascript lacks a similar built in function for escaping.  Take a look at Google
+ *      Closure library's [goog.string.regExpEscape(s)](
+ *      http://docs.closure-library.googlecode.com/git/closure_goog_string_string.js.source.html#line962).
+ *
+ * Refer {@link ng.$sceDelegateProvider#example $sceDelegateProvider} for an example.
+ *
+ * ## Show me an example using SCE.
  *
  * @example
  <example module="mySceApp">
@@ -925,7 +1039,7 @@ function $SceProvider() {
         getTrusted = sce.getTrusted,
         trustAs = sce.trustAs;
 
-    angular.forEach(SCE_CONTEXTS, function (enumValue, name) {
+    forEach(SCE_CONTEXTS, function (enumValue, name) {
       var lName = lowercase(name);
       sce[camelCase("parse_as_" + lName)] = function (expr) {
         return parse(enumValue, expr);
