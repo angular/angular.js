@@ -6,13 +6,15 @@
  * @restrict A
  *
  * @description
- * Using Angular markup like {{hash}} in an href attribute makes
- * the page open to a wrong URL, if the user clicks that link before
- * angular has a chance to replace the {{hash}} with actual URL, the
- * link will be broken and will most likely return a 404 error.
+ * Using Angular markup like `{{hash}}` in an href attribute will
+ * make the link go to the wrong URL if the user clicks it before
+ * Angular has a chance to replace the `{{hash}}` markup with its
+ * value. Until Angular replaces the markup the link will be broken
+ * and will most likely return a 404 error.
+ *
  * The `ngHref` directive solves this problem.
  *
- * The buggy way to write it:
+ * The wrong way to write it:
  * <pre>
  * <a href="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
@@ -26,7 +28,8 @@
  * @param {template} ngHref any string which can contain `{{}}` markup.
  *
  * @example
- * This example uses `link` variable inside `href` attribute:
+ * This example shows various combinations of `href`, `ng-href` and `ng-click` attributes
+ * in links and their different behaviors:
     <doc:example>
       <doc:source>
         <input ng-model="value" /><br />
