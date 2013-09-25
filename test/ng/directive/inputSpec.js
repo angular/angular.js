@@ -998,6 +998,16 @@ describe('input', function() {
       expect(scope.list).toEqual([]);
     });
 
+    it('should be invalid if required and empty', function() {
+      compileInput('<input type="text" ng-list ng-model="list" required>');
+      changeInputValueTo('');
+      expect(scope.list).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      changeInputValueTo('a,b');
+      expect(scope.list).toEqual(['a','b']);
+      expect(inputElm).toBeValid();
+    });
+
 
     it('should allow custom separator', function() {
       compileInput('<input type="text" ng-model="list" ng-list=":" />');
@@ -1090,10 +1100,29 @@ describe('input', function() {
 
 
     it('should set $invalid when model undefined', function() {
-      compileInput('<input type="text" ng-model="notDefiend" required />');
+      compileInput('<input type="text" ng-model="notDefined" required />');
       scope.$digest();
       expect(inputElm).toBeInvalid();
-    })
+    });
+
+
+    it('should allow `false` as a valid value when the input type is not "checkbox"', function() {
+      compileInput('<input type="radio" ng-value="true" ng-model="answer" required />' +
+        '<input type="radio" ng-value="false" ng-model="answer" required />');
+
+      scope.$apply();
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.answer = true;
+      });
+      expect(inputElm).toBeValid();
+
+      scope.$apply(function() {
+        scope.answer = false;
+      });
+      expect(inputElm).toBeValid();
+    });
   });
 
 
