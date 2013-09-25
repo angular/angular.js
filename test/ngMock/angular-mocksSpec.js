@@ -472,6 +472,12 @@ describe('ngMock', function() {
       }
     }
 
+    it('should respond to an event registered before tests started', function () {
+      expect(document.hasBeenSpecialClicked).toBe(0);
+      browserTrigger(angular.element(document), 'specialclick');
+      expect(document.hasBeenSpecialClicked).toBe(1);
+    });
+
     it('should remove data', function() {
       expect(angular.element.cache).toEqual({});
       var div = angular.element('<div></div>');

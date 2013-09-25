@@ -1790,10 +1790,15 @@ angular.mock.clearDataCache = function() {
 
   for(key in cache) {
     if (cache.hasOwnProperty(key)) {
-      var handle = cache[key].handle;
+      if (angular.mock.initialKeys && angular.mock.initialKeys.indexOf(key) > -1) {
+        delete cache[key];
+      }
+      else {
+        var handle = cache[key].handle;
 
-      handle && angular.element(handle.elem).off();
-      delete cache[key];
+        handle && angular.element(handle.elem).off();
+        delete cache[key];
+      }
     }
   }
 };
@@ -1805,6 +1810,11 @@ angular.mock.clearDataCache = function() {
   var currentSpec = null;
 
   beforeEach(function() {
+    if (!angular.mock.initialKeys) {
+      angular.element.cache.foo = 'bar';
+      angular.mock.initialKeys = Object.keys(angular.element.cache);
+      angular.mock.clearDataCache();
+    }
     currentSpec = this;
   });
 

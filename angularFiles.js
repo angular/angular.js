@@ -111,6 +111,7 @@ angularFiles = {
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
+    'test/documentEvent.js',
     'test/ngMock/*.js',
     'test/ngTouch/**/*.js'
   ],
