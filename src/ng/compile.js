@@ -925,7 +925,14 @@ function $CompileProvider($provide) {
             }
             optional = optional || value == '?';
           }
+
           value = $element[retrievalMethod]('$' + require + 'Controller');
+
+          if ($element[0].nodeType == 8 && $element[0].$$controller) { // Transclusion comment node
+            value = value || $element[0].$$controller;
+            $element[0].$$controller = null;
+          }
+
           if (!value && !optional) {
             throw $compileMinErr('ctreq', "Controller '{0}', required by directive '{1}', can't be found!", require, directiveName);
           }
@@ -1040,9 +1047,16 @@ function $CompileProvider($provide) {
             }
 
             controllerInstance = $controller(controller, locals);
-            $element.data(
-                '$' + directive.name + 'Controller',
-                controllerInstance);
+
+            // Directives with element transclusion and a controller need to attach controller
+            // to the comment node created by the compiler, but jQuery .data doesn't support
+            // attaching data to comment nodes so instead we set it directly on the element and
+            // remove it after we read it later.
+            if ($element[0].nodeType == 8) { // Transclusion comment node
+              $element[0].$$controller = controllerInstance;
+            } else {
+              $element.data('$' + directive.name + 'Controller', controllerInstance);
+            }
             if (directive.controllerAs) {
               locals.$scope[directive.controllerAs] = controllerInstance;
             }
