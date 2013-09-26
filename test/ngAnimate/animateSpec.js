@@ -1270,6 +1270,36 @@ describe("ngAnimate", function() {
     expect(child.hasClass('ng-enter-active')).toBe(false);
   }));
 
+  it("should not set the transition property flag if only CSS animations are used",
+    inject(function($compile, $rootScope, $animate, $sniffer) {
+
+    if (!$sniffer.animations) return;
+
+    ss.addRule('.ani.ng-enter', 'my_animation 2s linear;' +
+      vendorPrefix + 'animation: my_animation 2s linear');
+
+    ss.addRule('.trans.ng-enter',  'transition:1s linear all;' +
+                    vendorPrefix + 'transition:1s linear all');
+
+    var element = html($compile('<div>...</div>')($rootScope));
+    var child = $compile('<div class="ani">...</div>')($rootScope);
+    child.css('transition-property','background-color');
+
+    $animate.enter(child, element);
+    $rootScope.$digest();
+
+    browserTrigger(child,'transitionend', { timeStamp: Date.now() + 2000 });
+
+    expect(child.css('transition-property')).toBe('background-color');
+    child.remove();
+
+    child.attr('class','trans');
+    $animate.enter(child, element);
+    $rootScope.$digest();
+
+    expect(child.css('transition-property')).not.toBe('background-color');
+  }));
+
   it("should skip animations if the browser does not support CSS3 transitions and CSS3 animations",
     inject(function($compile, $rootScope, $animate, $sniffer) {
 
