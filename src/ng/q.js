@@ -288,7 +288,7 @@ function qFactory(nextTick, exceptionHandler) {
           return this.then(null, callback);
         },
 
-        "finally": function(callback) {
+        "finally": function(callback){
 
           function makePromise(value, resolved) {
             var result = defer();
@@ -382,7 +382,8 @@ function qFactory(nextTick, exceptionHandler) {
    */
   var reject = function(reason) {
     return {
-      then: function(callback, errback) {
+
+      then: function(callback, errback){
         var result = defer();
         nextTick(function() {
           try {
@@ -394,8 +395,23 @@ function qFactory(nextTick, exceptionHandler) {
         });
         return result.promise;
       },
+
       "catch": function(callback) {
         return this.then(null, callback);
+      },
+
+      "finally": function(callback){
+          var result = defer();
+          nextTick(function(){
+            try{
+                result.resolve((isFunction(callback)?callback: defaultCallback)(reason));
+            } catch(e) {
+                result.reject(e);
+                exceptionHandler(e);
+            }
+          });
+          return result.promise;
+
       }
     };
   };
