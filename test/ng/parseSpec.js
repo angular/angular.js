@@ -339,6 +339,47 @@ describe('parser', function() {
         expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
       });
 
+      it('should parse filters as method parameters', function() {
+        $filterProvider.register('substring', valueFn(function(input, start, end) {
+          return input.substring(start, end);
+        }));
+
+        scope.offset =  3;
+
+        scope.echo1 = function(substring) {
+          return substring;
+        };
+
+        expect(scope.$eval("echo1(('abcd'|substring:1:offset))")).toEqual("bc");
+        expect(scope.$eval("echo1('abcd'|substring:1:offset)")).toEqual("bc");
+
+        scope.echo2 = function(lowercaseSubstring,uppercaseSubstring) {
+          return lowercaseSubstring+uppercaseSubstring;
+        };
+
+        expect(scope.$eval("echo2(('abcd'|substring:1:offset),('abcd'|substring:1:3|uppercase))")).toEqual("bcBC");
+        expect(scope.$eval("echo2('abcd'|substring:1:offset,'abcd'|substring:1:3|uppercase)")).toEqual("bcBC");
+
+        expect(scope.$eval("echo2('',('abcd'|substring:1:3|uppercase))")).toEqual("BC");
+        expect(scope.$eval("echo2('','abcd'|substring:1:3|uppercase)")).toEqual("BC");
+
+        expect(scope.$eval("echo2(null,('abcd'|substring:1:3|uppercase))")).toEqual("nullBC");
+        expect(scope.$eval("echo2(null,'abcd'|substring:1:3|uppercase)")).toEqual("nullBC");
+
+        expect(scope.$eval("echo2(undefined,('abcd'|substring:1:3|uppercase))")).toEqual("undefinedBC");
+        expect(scope.$eval("echo2(undefined,'abcd'|substring:1:3|uppercase)")).toEqual("undefinedBC");
+
+        expect(scope.$eval("echo2(('abcd'|substring:1:offset),null)")).toEqual("bcnull");
+        expect(scope.$eval("echo2('abcd'|substring:1:offset,null)")).toEqual("bcnull");
+
+        expect(scope.$eval("echo2(('abcd'|substring:1:offset),undefined)")).toEqual("bcundefined");
+        expect(scope.$eval("echo2('abcd'|substring:1:offset,undefined)")).toEqual("bcundefined");
+
+        scope.date = new Date();
+        expect(scope.$eval("echo1((date|date:'yyyy'))")).toEqual(scope.date.getFullYear().toString());
+        expect(scope.$eval("echo1(date|date:'yyyy')")).toEqual(scope.date.getFullYear().toString());
+      });
+
       it('should access scope', function() {
         scope.a =  123;
         scope.b = {c: 456};

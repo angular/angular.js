@@ -698,7 +698,7 @@ Parser.prototype = {
     var argsFn = [];
     if (this.peekToken().text !== ')') {
       do {
-        argsFn.push(this.expression());
+        argsFn.push(this.filterChain());
       } while (this.expect(','));
     }
     this.consume(')');
