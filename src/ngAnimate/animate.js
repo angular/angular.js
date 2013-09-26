@@ -203,7 +203,7 @@ angular.module('ngAnimate', ['ng'])
     var rootAnimateState = {running:true};
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
-        
+
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
       function lookup(name) {
@@ -626,9 +626,12 @@ angular.module('ngAnimate', ['ng'])
               startTime = Date.now();
 
           //temporarily disable the transition so that the enter styles
-          //don't animate twice (this is here to avoid a bug in Chrome/FF).
-          node.style[w3cTransitionProp + propertyKey] = 'none';
-          node.style[vendorTransitionProp + propertyKey] = 'none';
+          //that are not translations don't animate twice
+          //(this is here to avoid a bug in Chrome/FF).
+          if (propertyKey.indexOf('translate') === -1) {
+            node.style[w3cTransitionProp + propertyKey] = 'none';
+            node.style[vendorTransitionProp + propertyKey] = 'none';
+          }
 
           var activeClassName = '';
           forEach(className.split(' '), function(klass, i) {
