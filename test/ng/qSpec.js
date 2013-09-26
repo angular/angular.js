@@ -31,7 +31,7 @@
 */
 
 describe('q', function() {
-  var q, defer, deferred, promise, log;
+  var q, defer, reject, deferred, rejectedDeferred, promise, log;
 
   // The following private functions are used to help with logging for testing invocation of the
   // promise callbacks.
@@ -180,10 +180,15 @@ describe('q', function() {
   }
 
 
+
+
+
   beforeEach(function() {
     q = qFactory(mockNextTick.nextTick, noop),
+    reject = q.reject,
     defer = q.defer;
-    deferred =  defer()
+    deferred =  defer();
+    rejectedDeferred = reject();
     promise = deferred.promise;
     log = [];
     mockNextTick.queue = [];
@@ -194,6 +199,19 @@ describe('q', function() {
     expect(mockNextTick.queue.length).toBe(0);
   });
 
+  it('should have a method called reject',function(){
+    expect(typeof q.reject == 'function').toEqual(true);
+  });
+  it('should have a method called defer',function(){
+    expect(typeof q.defer == 'function').toEqual(true);
+  });
+
+  describe('reject',function(){
+    it('should create a new rejected deferred',function(){
+      expect(typeof rejectedDeferred.then == 'function').toEqual(true);
+      expect(typeof rejectedDeferred.catch == 'function').toEqual(true);
+    });
+  });
 
   describe('defer', function() {
     it('should create a new deferred', function() {

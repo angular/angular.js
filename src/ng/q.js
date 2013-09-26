@@ -393,6 +393,9 @@ function qFactory(nextTick, exceptionHandler) {
           }
         });
         return result.promise;
+      },
+      "catch": function(callback) {
+        return this.then(null, callback);
       }
     };
   };
