@@ -218,38 +218,17 @@ function lex(text, csp){
   function readIdent() {
     var ident = "",
         start = index,
-        lastDot, peekIndex, methodName, ch;
+        peekIndex, methodName, ch;
 
     while (index < text.length) {
       ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
-        if (ch == '.') lastDot = index;
         ident += ch;
       } else {
         break;
       }
       index++;
     }
-
-    //check if this is not a method invocation and if it is back out to last dot
-    if (lastDot) {
-      peekIndex = index;
-      while(peekIndex < text.length) {
-        ch = text.charAt(peekIndex);
-        if (ch == '(') {
-          methodName = ident.substr(lastDot - start + 1);
-          ident = ident.substr(0, lastDot - start);
-          index = peekIndex;
-          break;
-        }
-        if(isWhitespace(ch)) {
-          peekIndex++;
-        } else {
-          break;
-        }
-      }
-    }
-
 
     var token = {
       index:start,
@@ -265,7 +244,8 @@ function lex(text, csp){
       }, {
         assign: function(self, value) {
           return setter(self, ident, value, text);
-        }
+        },
+        context: getter.context
       });
     }
 
@@ -618,16 +598,13 @@ function parser(text, json, $filter, csp){
       }
     }
 
-    var next, context;
+    var next;
     while ((next = expect('(', '[', '.'))) {
       if (next.text === '(') {
-        primary = functionCall(primary, context);
-        context = null;
+        primary = functionCall(primary);
       } else if (next.text === '[') {
-        context = primary;
-        primary = objectIndex(primary);
+        primary = extend(objectIndex(primary), {context: primary});
       } else if (next.text === '.') {
-        context = primary;
         primary = fieldAccess(primary);
       } else {
         throwError("IMPOSSIBLE");
@@ -646,7 +623,11 @@ function parser(text, json, $filter, csp){
         {
           assign:function(scope, value, locals) {
             return setter(object(scope, locals), field, value, text);
-          }
+          },
+          context: getter.context ? function (scope, locals) { return getter.context(object(scope, locals)); } : object,
+          getterInContext: getter.getterInContext ? function(scope, locals, self) {
+            return getter.getterInContext(self || object(scope, locals), locals);
+          } : undefined
         }
     );
   }
@@ -680,7 +661,7 @@ function parser(text, json, $filter, csp){
       });
   }
 
-  function _functionCall(fn, contextGetter) {
+  function _functionCall(fn) {
     var argsFn = [];
     if (peekToken().text != ')') {
       do {
@@ -690,12 +671,12 @@ function parser(text, json, $filter, csp){
     consume(')');
     return function(scope, locals){
       var args = [],
-          context = contextGetter ? contextGetter(scope, locals) : scope;
+          context = fn.context ? fn.context(scope, locals) : scope;
 
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](scope, locals));
       }
-      var fnPtr = fn(scope, locals, context) || noop;
+      var fnPtr = (fn.getterInContext || fn)(scope, locals, context) || noop;
 
       ensureSafeObject(fnPtr, text);
 
@@ -881,7 +862,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
   };
 }
 
-function getterFn(path, csp, fullExp) {
+function getterFn(path, csp, fullExp, noContext) {
   if (getterFnCache.hasOwnProperty(path)) {
     return getterFnCache[path];
   }
@@ -930,7 +911,20 @@ function getterFn(path, csp, fullExp) {
     fn.toString = function() { return code; };
   }
 
-  return getterFnCache[path] = fn;
+  if (pathKeysLength > 1 && !noContext) {
+    fn = extend(fn,
+      {
+        context: getterFn(pathKeys.slice(0, pathKeys.length - 1).join('.'), csp, fullExp, true),
+        getterInContext: getterFn(pathKeys[pathKeys.length - 1], csp, fullExp, true)
+      }
+    );
+  }
+
+  if (!noContext) {
+    getterFnCache[path] = fn;
+  }
+
+  return fn;
 }
 
 ///////////////////////////////////
