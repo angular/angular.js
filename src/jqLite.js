@@ -279,18 +279,18 @@ function JQLiteData(element, key, value) {
 }
 
 function JQLiteHasClass(element, selector) {
-  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
+  return ((" " + (element.getAttribute('class') || "") + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, cssClasses) {
   if (cssClasses) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.className = trim(
-          (" " + element.className + " ")
+      jqLite(element).attr('class', trim(
+          (" " + (element.getAttribute('class') || "") + " ")
           .replace(/[\n\t]/g, " ")
           .replace(" " + trim(cssClass) + " ", " ")
-      );
+      ));
     });
   }
 }
@@ -299,7 +299,8 @@ function JQLiteAddClass(element, cssClasses) {
   if (cssClasses) {
     forEach(cssClasses.split(' '), function(cssClass) {
       if (!JQLiteHasClass(element, cssClass)) {
-        element.className = trim(element.className + ' ' + trim(cssClass));
+        jqLite(element).attr('class',
+            trim((element.getAttribute('class') || "") + ' ' + trim(cssClass)));
       }
     });
   }
