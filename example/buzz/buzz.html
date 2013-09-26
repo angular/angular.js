@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:ng="http://angularjs.org">
+  <head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+    <script type="text/javascript" src="http://angularjs.org/ng/js/angular-debug.js#autobind"></script>
+    <script type="text/javascript" src="buzz.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://angularjs.org/ng/css/angular.css"/>
+    <link rel="stylesheet" type="text/css" href="buzz.css"/>
+  </head>
+  <body ng:init="$window.$root = this" ng:controller="BuzzController">
+  <div>
+    <span>&lt;angular/&gt; Buzz</span>
+    <span>
+      filter:
+      <input type="text" ng:model="filterText"/>
+    </span>
+    <span>
+      user:
+      <input type="text" ng:model="userId" required/>
+      <button ng:click="$location.hashPath = userId">fetch</button>
+    </span>
+  </div>
+  <ul>
+    <li ng:repeat="item in activities.data.items.$filter(filterText)">
+      <h1>
+        <img ng:src="{{item.actor.thumbnailUrl}}"/>
+        <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+        <a href="#" ng:click="expandReplies(item)">Replies: {{item.links.replies[0].count}}</a>
+      </h1>
+      <div>
+        {{item.object.content | html}}
+        <div>
+          <a href="{{attachment.links.enclosure[0].href}}" ng:repeat="attachment in item.object.attachments">
+            <img ng:src="{{attachment.links.preview[0].href}}"/>
+          </a>
+        </div>
+      </div>
+      <my:expand expand="item.replies.show">
+        <ul>
+          <li ng:repeat="reply in item.replies.data.items">
+            <img ng:src="{{reply.actor.thumbnailUrl}}"/>
+            <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
+            {{reply.content | html}}
+          </li>
+        </ul>
+      </my:expand>
+    </li>
+  </ul>
+  </body>
+</html>

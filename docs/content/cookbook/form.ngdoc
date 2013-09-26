@@ -1,0 +1,114 @@
+@ngdoc overview
+@name Cookbook: Form
+@description
+
+A web application's main purpose is to present and gather data. For this reason Angular strives
+to make both of these operations trivial. This example shows off how you can build a simple form to
+allow a user to enter data.
+
+
+<doc:example>
+ <doc:source>
+  <script>
+    function FormController($scope) {
+      var user = $scope.user = {
+        name: 'John Smith',
+        address:{line1: '123 Main St.', city:'Anytown', state:'AA', zip:'12345'},
+        contacts:[{type:'phone', value:'1(234) 555-1212'}]
+      };
+      $scope.state = /^\w\w$/;
+      $scope.zip = /^\d\d\d\d\d$/;
+
+      $scope.addContact = function() {
+         user.contacts.push({type:'email', value:''});
+      };
+
+      $scope.removeContact = function(contact) {
+        for (var i = 0, ii = user.contacts.length; i < ii; i++) {
+          if (contact === user.contacts[i]) {
+            $scope.user.contacts.splice(i, 1);
+          }
+        }
+      };
+    }
+  </script>
+  <div ng-controller="FormController" class="example">
+
+    <label>Name:</label><br>
+    <input type="text" ng-model="user.name" required/> <br><br>
+
+    <label>Address:</label><br>
+    <input type="text" ng-model="user.address.line1" size="33" required> <br>
+    <input type="text" ng-model="user.address.city" size="12" required>,
+    <input type="text" ng-model="user.address.state"
+           ng-pattern="state" size="2" required>
+    <input type="text" ng-model="user.address.zip" size="5"
+           ng-pattern="zip" required><br><br>
+
+    <label>Phone:</label>
+    [ <a href="" ng-click="addContact()">add</a> ]
+    <div ng-repeat="contact in user.contacts">
+      <select ng-model="contact.type">
+        <option>email</option>
+        <option>phone</option>
+        <option>pager</option>
+        <option>IM</option>
+      </select>
+      <input type="text" ng-model="contact.value" required>
+       [ <a href="" ng-click="removeContact(contact)">X</a> ]
+    </div>
+    <hr/>
+    Debug View:
+    <pre>user={{user | json}}</pre>
+  </div>
+
+ </doc:source>
+ <doc:scenario>
+  it('should show debug', function() {
+    expect(binding('user')).toMatch(/John Smith/);
+  });
+  it('should add contact', function() {
+    using('.example').element('a:contains(add)').click();
+    using('.example div:last').input('contact.value').enter('you@example.org');
+    expect(binding('user')).toMatch(/\(234\) 555\-1212/);
+    expect(binding('user')).toMatch(/you@example.org/);
+  });
+
+  it('should remove contact', function() {
+    using('.example').element('a:contains(X)').click();
+    expect(binding('user')).not().toMatch(/\(234\) 555\-1212/);
+  });
+
+  it('should validate zip', function() {
+    expect(using('.example').
+      element(':input[ng\\:model="user.address.zip"]').
+      prop('className')).not().toMatch(/ng-invalid/);
+    using('.example').input('user.address.zip').enter('abc');
+    expect(using('.example').
+      element(':input[ng\\:model="user.address.zip"]').
+      prop('className')).toMatch(/ng-invalid/);
+  });
+
+  it('should validate state', function() {
+    expect(using('.example').element(':input[ng\\:model="user.address.state"]').prop('className'))
+      .not().toMatch(/ng-invalid/);
+    using('.example').input('user.address.state').enter('XXX');
+    expect(using('.example').element(':input[ng\\:model="user.address.state"]').prop('className'))
+      .toMatch(/ng-invalid/);
+  });
+ </doc:scenario>
+</doc:example>
+
+
+# Things to notice
+
+* The user data model is initialized {@link api/ng.directive:ngController controller} and is
+  available in the {@link api/ng.$rootScope.Scope scope} with the initial data.
+* For debugging purposes we have included a debug view of the model to better understand what
+  is going on.
+* The {@link api/ng.directive:input input directives} simply refer
+  to the model and are data-bound.
+* The inputs validate. (Try leaving them blank or entering non digits in the zip field)
+* In your application you can simply read from or write to the model and the form will be updated.
+* By clicking the 'add' link you are adding new items into the `user.contacts` array which are then
+  reflected in the view.

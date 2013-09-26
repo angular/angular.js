@@ -1,0 +1,33 @@
+<!doctype html>
+<html ng-app="personalLog">
+  <head>
+    <title>Personal Log</title>
+    <script src="../../src/loader.js"></script>
+    <script>
+      setupModuleLoader(window);
+    </script>
+    <script src="personalLog.js"></script>
+    <script src="../../src/angular-bootstrap.js"></script>
+    <script src="../../src/ngCookies/cookies.js"></script>
+  </head>
+
+
+  <body ng-controller="LogCtrl">
+
+    <form action="" ng-submit="addLog(newMsg)">
+      <input type="text" ng-model="newMsg">
+      <input type="submit" value="add">
+      <input type="button" value="remove all" ng-click="rmLogs()">
+    </form>
+
+    <hr/>
+    <h2>Logs:</h2>
+    <ul>
+      <li ng-repeat="log in logs | orderBy:'-at'">
+        {{log.at | date:'yy-MM-dd HH:mm'}} {{log.msg}}
+        [<a href="" ng-click="rmLog(log)">x</a>]
+      </li>
+    </ul>
+
+  </body>
+</html>

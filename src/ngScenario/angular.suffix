@@ -1,0 +1,22 @@
+bindJQuery();
+publishExternalAPI(angular);
+
+var $runner = new angular.scenario.Runner(window),
+    scripts = document.getElementsByTagName('script'),
+    script = scripts[scripts.length - 1],
+    config = {};
+
+angular.forEach(script.attributes, function(attr) {
+  var match = attr.name.match(/ng[:\-](.*)/);
+  if (match) {
+    config[match[1]] = attr.value || true;
+  }
+});
+
+if (config.autotest) {
+  JQLite(document).ready(function() {
+    angular.scenario.setUpAndRun(config);
+  });
+}
+})(window, document);
+

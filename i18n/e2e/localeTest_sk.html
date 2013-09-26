@@ -1,0 +1,29 @@
+<!document html>
+<html ng-app>
+  <head>
+    <meta charset="utf-8">
+    <title>locale test</title>
+    <script src="../../build/angular.js"></script>
+    <script src="../../build/i18n/angular-locale_sk-sk.js"></script>
+    <script>
+      function AppCntl($scope){
+        $scope.input = 234234443432;
+        $scope.plInput = 1;
+      }
+    </script>
+  </head>
+  <body ng-controller="AppCntl">
+    <input type="text" ng-model="input" value="234234443432"><br>
+    date: {{input | date:"medium"}}<br>
+    date: {{input | date:"longDate"}}<br>
+    number: {{input | number}}<br>
+    currency: {{input | currency }}
+    <hr/>
+    <input type="text" ng-model="plInput"><br>
+    <ng-pluralize count="plInput"
+                  when= "{ 'one': 'Mas jeden email!',
+                           'few': 'Mas {} emaily!',
+                           'other': 'Mas {} emailov!'}">
+    </ng-pluralize>
+  </body>
+</html>

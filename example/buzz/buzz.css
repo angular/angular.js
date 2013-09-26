@@ -1,0 +1,89 @@
+body {
+  background: -webkit-gradient(linear, left top, left 100, from(#bbb), to(#fff));
+  background-repeat: no-repeat;
+  margin: 0px;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+body > div {
+  border-top: 1px solid white;
+  border-bottom: 1px solid black;
+  text-align: center;
+  background: -webkit-gradient(linear, left top, left bottom, from(#CCC), to(#888));
+  -webkit-background-origin: padding; -webkit-background-clip: content;
+}
+body > div button {
+  margin: 5px;
+}
+
+body > div span:FIRST-CHILD {
+  float: left;
+  font-family: monospace;
+  font-size: 1.5em;
+  color: black;
+  padding: 2px 5px;
+}
+
+body > div span:last-child {
+  float: right;
+}
+
+ul {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}
+
+body > ul > li {
+  border: 1px solid black;
+  margin: 15px 5px;
+  padding: 0;
+  -webkit-box-shadow: 5px 5px 5px #888;
+}
+
+body > ul > li > h1 {
+  margin: 0;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#999));
+  font-size: 13px;
+  border-bottom: 1px solid black;
+}
+
+h1 > img,
+li > img {
+  max-height: 30px;
+  max-width: 30px;
+  vertical-align: middle;
+  padding: 3px;
+}
+
+a > img {
+  margin-right: 5px;
+  margin-top: 5px;
+}
+
+body > ul > li > h1 > a:last-child {
+  float: right;
+  margin: 10px;
+}
+
+body > ul > li > div {
+  background-color: white;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+  margin: 0;
+  padding: 10px;
+}
+
+body > ul > li ul {
+  margin: 0;
+  padding: 0;
+  margin-left: 5px;
+  border-left: 5px solid lightgray;
+}
+
+body > ul > li ul > li {
+  margin: 0;
+  padding: 10px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+}
+

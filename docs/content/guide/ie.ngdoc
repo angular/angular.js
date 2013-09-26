@@ -1,0 +1,187 @@
+@ngdoc overview
+@name Developer Guide: Internet Explorer Compatibility
+@description
+
+# Overview
+
+This document describes the Internet Explorer (IE) idiosyncrasies when dealing with custom HTML
+attributes and tags. Read this document if you are planning on deploying your Angular application
+on IE v8.0 or earlier.
+
+# Short Version
+
+To make your Angular application work on IE please make sure that:
+
+  1. You polyfill JSON.stringify if necessary (IE7 will need this). You can use
+     [JSON2](https://github.com/douglascrockford/JSON-js) or
+     [JSON3](http://bestiejs.github.com/json3/) polyfills for this.
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org">
+         <head>
+           <!--[if lte IE 8]>
+             <script src="/path/to/json2.js"></script>
+           <![endif]-->
+         </head>
+         <body>
+           ...
+         </body>
+       </html>
+     </pre>
+
+  2. add `id="ng-app"` to the root element in conjunction with `ng-app` attribute
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
+         ...
+       </html>
+     </pre>
+
+  3. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
+     `<div ng-view>` instead), or
+
+  4. if you **do use** custom element tags, then you must take these steps to make IE happy:
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
+         <head>
+           <!--[if lte IE 8]>
+             <script>
+               document.createElement('ng-include');
+               document.createElement('ng-pluralize');
+               document.createElement('ng-view');
+     
+               // Optionally these for CSS
+               document.createElement('ng:include');
+               document.createElement('ng:pluralize');
+               document.createElement('ng:view');
+             </script>
+           <![endif]-->
+         </head>
+         <body>
+           ...
+         </body>
+       </html>
+     </pre>
+
+The **important** parts are:
+
+  * `xmlns:ng` - *namespace* - you need one namespace for each custom tag you are planning on
+    using.
+
+  * `document.createElement(yourTagName)` - *creation of custom tag names* - Since this is an
+    issue only for older version of IE you need to load it conditionally. For each tag which does
+    not have namespace and which is not defined in HTML you need to pre-declare it to make IE
+    happy.
+
+
+# Long Version
+
+IE has issues with element tag names which are not standard HTML tag names. These fall into two
+categories, and each category has its own fix.
+
+  * If the tag name starts with `my:` prefix than it is considered an XML namespace and must
+    have corresponding namespace declaration on `<html xmlns:my="ignored">`
+
+  * If the tag has no `:` but it is not a standard HTML tag, then it must be pre-created using
+    `document.createElement('my-tag')`
+
+  * If you are planning on styling the custom tag with CSS selectors, then it must be
+    pre-created using `document.createElement('my-tag')` regardless of XML namespace.
+
+
+## The Good News
+
+The good news is that these restrictions only apply to element tag names, and not to element
+attribute names. So this requires no special handling in IE: `<div my-tag your:tag></div>`.
+
+
+## What happens if I fail to do this?
+
+Suppose you have HTML with unknown tag `mytag` (this could also be `my:tag` or `my-tag` with same
+result):
+
+<pre>
+  <html>
+    <body>
+      <mytag>some text</mytag>
+    </body>
+  </html>
+</pre>
+
+It should parse into the following DOM:
+
+<pre>
+#document
+  +- HTML
+     +- BODY
+        +- mytag
+           +- #text: some text
+</pre>
+
+The expected behavior is that the `BODY` element has a child element `mytag`, which in turn has
+the text `some text`.
+
+But this is not what IE does (if the above fixes are not included):
+
+<pre>
+#document
+  +- HTML
+     +- BODY
+        +- mytag
+        +- #text: some text
+        +- /mytag
+</pre>
+
+In IE, the behavior is that the `BODY` element has three children:
+
+  1. A self closing `mytag`. Example of self closing tag is `<br/>`. The trailing `/` is optional,
+  but the `<br>` tag is not allowed to have any children, and browsers consider `<br>some
+  text</br>` as three siblings not a `<br>` with `some text` as child.
+
+  2. A text node with `some text`. This should have been a child of `mytag` above, not a sibling.
+
+  3. A corrupt self closing `/mytag`. This is corrupt since element names are not allowed to have
+  the `/` character. Furthermore this closing element should not be part of the DOM since it is
+  only used to delineate the structure of the DOM.
+
+
+## CSS Styling of Custom Tag Names
+
+To make CSS selectors work with custom elements, the custom element name must be pre-created with 
+`document.createElement('my-tag')` regardless of XML namespace.
+
+<pre>
+  <html xmlns:ng="needed for ng: namespace">
+    <head>
+      <!--[if lte IE 8]>
+        <script>
+          // needed to make ng-include parse properly
+          document.createElement('ng-include');
+
+          // needed to enable CSS reference
+          document.createElement('ng:view');
+        </script>
+      <![endif]-->
+      <style>
+        ng\\:view {
+          display: block;
+          border: 1px solid red;
+        }
+
+        ng-include {
+          display: block;
+          border: 1px solid blue;
+        }
+      </style>
+    </head>
+    <body>
+      <ng:view></ng:view>
+      <ng-include></ng-include>
+      ...
+    </body>
+  </html>
+</pre>
+
+
+

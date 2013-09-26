@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="../../css/angular.css">
+    <script type="text/javascript" src="../../lib/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../../src/angular-bootstrap.js"></script>
+    <script type="text/javascript" src="tweeterclient.js"></script>
+  </head>
+  <body ng:class="status" Xng:init="tweets = fetchTweets()">
+     (TODO: I should fetch current tweets)
+    <div class="tweeter box">
+      <h1>Tweets: {{$anchor.user}}</h1>
+      [ Filter: <input type="text" ng:model="tweetFilter"/> (TODO: this should act as search box)
+        <span ng:show="$anchor.user">| <a href="#user=">&lt;&lt; All</a></span>
+      ]
+      <div class="loading">Loading...</div>
+      <ul>
+       <li Xng:repeat="tweet in tweets"
+           ng:class-even="'even'" ng:class-odd="'odd'">
+         <img src="{{tweet.user.profile_image_url}}"/>
+         [ <a href="" Xng:click="$anchor.user=tweet.user.screen_name">{{tweet.user.nickname || tweet.user.name || tweet.user.screen_name }}</a>
+         ]:
+         {{tweet.text}} (TODO: I want urls as links)
+         <span class="notes">{{tweet.created_at}}</span>
+         <span class="notes">{{tweet.user.notes}}</span>
+         <div class="clrleft"></div>
+       </li>
+      </ul>
+    </div>
+    <pre>tweets=(TODO: display me!!!)</pre>
+  </body>
+</html>

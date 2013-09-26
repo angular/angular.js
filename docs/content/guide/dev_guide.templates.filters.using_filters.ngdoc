@@ -1,0 +1,44 @@
+@ngdoc overview
+@name Developer Guide: Templates: Filters: Using Angular Filters
+@description
+
+Filters can be part of any {@link api/ng.$rootScope.Scope} evaluation but are typically used to format
+expressions in bindings in your templates:
+
+        {{ expression | filter }}
+
+Filters typically transform the data to a new data type, formatting the data in the process.
+Filters can also be chained, and can take optional arguments.
+
+You can chain filters using this syntax:
+
+        {{ expression | filter1 | filter2 }}
+
+You can also pass colon-delimited arguments to filters, for example, to display the number 123 with
+2 decimal points:
+
+        123 | number:2
+
+Use the same syntax for multiple arguments:
+
+        myArray | orderBy:'timestamp':true
+
+Here are some examples that show values before and after applying different filters to an
+expression in a binding:
+
+* No filter: `{{1234.5678}}` => `1234.5678`
+* Number filter: `{{1234.5678|number}}` => `1,234.57`. Notice the "," and rounding to two
+significant digits.
+* Filter with arguments: `{{1234.5678|number:5}}` => `1,234.56780`. Filters can take optional
+arguments, separated by colons in a binding. For example, the "number" filter takes a number
+argument that specifies how many digits to display to the right of the decimal point.
+
+
+## Related Topics
+
+* {@link dev_guide.templates.filters Understanding Angular Filters}
+* {@link dev_guide.templates.filters.creating_filters Creating Angular Filters}
+
+## Related API
+
+* {@link api/ng.$filter Angular Filter API}

@@ -1,0 +1,5 @@
+@ngdoc overview
+@name ng
+@description
+
+`ng` is the name of the {@link guide/module angular module} that contains all of the core angular services.

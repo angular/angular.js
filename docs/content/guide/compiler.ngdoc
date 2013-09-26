@@ -1,0 +1,142 @@
+@ngdoc overview
+@name Developer Guide: HTML Compiler
+@description
+
+# Overview
+
+Angular's {@link api/ng.$compile HTML compiler} allows the developer to teach the
+browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
+and even create new HTML elements or attributes with custom behavior. Angular calls these behavior
+extensions {@link api/ng.$compileProvider#directive directives}.
+
+HTML has a lot of constructs for formatting the HTML for static documents in a declarative fashion.
+For example if something needs to be centered, there is no need to provide instructions to the
+browser how the window size needs to be divided in half so that the center is found, and that this
+center needs to be aligned with the text's center. Simply add an `align="center"` attribute to any
+element to achieve the desired behavior. Such is the power of declarative language.
+
+But the declarative language is also limited, since it does not allow you to teach the browser new
+syntax. For example there is no easy way to get the browser to align the text at 1/3 the position
+instead of 1/2. What is needed is a way to teach the browser new HTML syntax.
+
+Angular comes pre-bundled with common directives which are useful for building any app. We also
+expect that you will create directives that are specific to your app. These extensions become a
+Domain Specific Language for building your application.
+
+All of this compilation takes place in the web browser; no server side or pre-compilation step is
+involved.
+
+
+# Compiler
+
+Compiler is an angular service which traverses the DOM looking for attributes. The compilation
+process happens in two phases.
+
+  1. **Compile:** traverse the DOM and collect all of the directives. The result is a linking
+  function.
+
+  2. **Link:** combine the directives with a scope and produce a live view. Any changes in the
+  scope model are reflected in the view, and any user interactions with the view are reflected
+  in the scope model. This makes the scope model the single source of truth.
+
+Some directives such as {@link api/ng.directive:ngRepeat `ng-repeat`} clone DOM elements once
+for each item in a collection. Having a compile and link phase improves performance since the
+cloned template only needs to be compiled once, and then linked once for each clone instance.
+
+
+# Directive
+
+A directive is a behavior which should be triggered when specific HTML constructs are encountered
+during the compilation process. The directives can be placed in element names, attributes, class
+names, as well as comments. Here are some equivalent examples of invoking the {@link
+api/ng.directive:ngBind `ng-bind`} directive.
+
+<pre>
+  <span ng-bind="exp"></span>
+  <span class="ng-bind: exp;"></span>
+  <ng-bind></ng-bind>
+  <!-- directive: ng-bind exp -->
+</pre>
+
+A directive is just a function which executes when the compiler encounters it in the DOM. See {@link
+api/ng.$compileProvider#directive directive API} for in-depth documentation on how
+to write directives.
+
+Here is a directive which makes any element draggable. Notice the `draggable` attribute on the
+`<span>` element.
+
+<example module="drag">
+  <file name="script.js">
+    angular.module('drag', []).
+      directive('draggable', function($document) {
+        return function(scope, element, attr) {
+          var startX = 0, startY = 0, x = 0, y = 0;
+          element.css({
+           position: 'relative',
+           border: '1px solid red',
+           backgroundColor: 'lightgrey',
+           cursor: 'pointer'
+          });
+          element.on('mousedown', function(event) {
+            // Prevent default dragging of selected content
+            event.preventDefault();
+            startX = event.screenX - x;
+            startY = event.screenY - y;
+            $document.on('mousemove', mousemove);
+            $document.on('mouseup', mouseup);
+          });
+
+          function mousemove(event) {
+            y = event.screenY - startY;
+            x = event.screenX - startX;
+            element.css({
+              top: y + 'px',
+              left:  x + 'px'
+            });
+          }
+
+          function mouseup() {
+            $document.unbind('mousemove', mousemove);
+            $document.unbind('mouseup', mouseup);
+          }
+        }
+      });
+  </file>
+  <file name="index.html">
+    <span draggable>Drag ME</span>
+  </file>
+</example>
+
+
+The presence of the `draggable` attribute on any element gives the element new behavior. The beauty of
+this approach is that we have taught the browser a new trick. We have extended the vocabulary of
+what the browser understands in a way which is natural to anyone who is familiar with HTML
+principles.
+
+
+# Understanding View
+
+There are many templating systems out there. Most of them consume a static string template and
+combine it with data, resulting in a new string. The resulting text is then `innerHTML`ed into
+an element.
+
+<img src="img/One_Way_Data_Binding.png">
+
+This means that any changes to the data need to be re-merged with the template and then
+`innerHTML`ed into the DOM. Some of the issues with this approach are: reading user input and merging it with data,
+clobbering user input by overwriting it, managing the whole update process, and lack of behavior
+expressiveness.
+
+Angular is different. The Angular compiler consumes the DOM with directives, not string templates.
+The result is a linking function, which when combined with a scope model results in a live view. The
+view and scope model bindings are transparent. No action from the developer is needed to update
+the view. And because no `innerHTML` is used there are no issues of clobbering user input.
+Furthermore, Angular directives can contain not just text bindings, but behavioral constructs as
+well.
+
+<img src="img/Two_Way_Data_Binding.png">
+
+The Angular approach produces a stable DOM. This means that the DOM element instance bound to a model
+item instance does not change for the lifetime of the binding. This means that the code can get
+hold of the elements and register event handlers and know that the reference will not be destroyed
+by template data merge.

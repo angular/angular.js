@@ -1,0 +1,298 @@
+@ngdoc overview
+@name Contributing
+@description
+
+
+* <a href="#H1_1">License</a>
+* <a href="#H1_2">Contributing to Source Code</a>
+* <a href="#H1_3">Applying Code Standards</a>
+* <a href="#H1_4">Checking Out and Building `Angular`</a>
+* <a href="#H1_5">Submitting Your Changes</a>
+
+
+<a name="H1_1"></a>
+# License
+
+AngularJS is an open source project licensed under the {@link
+http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. Your contributions are
+always welcome. When working with AngularJS code base, please follow the guidelines provided on
+this page.
+
+
+<a name="H1_2"></a>
+# Contributing to Source Code
+
+We'd love for you to contribute to our source code and to make AngularJS even better than it is
+today! Here are the guidelines we'd like you to follow:
+
+* Major changes that you intend to contribute to the project should be discussed first on our {@link
+https://groups.google.com/forum/?hl=en#!forum/angular mailing list} so that we can better
+coordinate our efforts, prevent  duplication of work, and help you to craft the change so that it
+is successfully accepted upstream.
+
+* Small changes and bug fixes can be crafted and submitted to Github as a <a href="#H1_5">pull
+request</a>.
+
+
+
+<a name="H1_3"></a>
+# Applying Code Standards
+
+To ensure consistency throughout the source code, keep these rules in mind as you are working:
+
+* All features or bug fixes must be tested by one or more <a href="#unit-tests">specs</a>.
+
+* All public API methods must be documented with ngdoc, an extended version of jsdoc (we added
+support for markdown and templating via `@ngdoc` tag). To see how we document our APIs, please
+check out the existing ngdocs.
+
+* With the exceptions listed below, we follow the rules contained in {@link
+http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml Google's JavaScript Style
+Guide}:
+
+  * Do not use namespaces: Instead, we wrap the entire `angular` code base in an anonymous closure
+and export our API explicitly rather than implicitly.
+
+  * Wrap all code at 100 characters.
+
+  * Instead of complex inheritance hierarchies, we prefer simple objects. We use prototypical
+inheritance only when absolutely necessary.
+
+  * We love functions and closures and, whenever possible, prefer them over objects.
+
+  * To write concise code that can be better minified, internally we use aliases that map to the
+external API. See our existing code to see what we mean.
+
+  * We don't go crazy with type annotations for private internal APIs unless it's an internal API
+that is used throughout AngularJS. The best guidance is to do what makes the most sense.
+
+
+<a name="H1_4"></a>
+# Checking Out and Building Angular
+
+The AngularJS source code is hosted at {@link http://github.com Github}, which we also use to
+accept code contributions. The AngularJS repository can be found at **<https://github.com/angular/angular.js>**.
+
+Several steps are needed to check out and build AngularJS:
+
+
+## Installation Dependencies
+
+Before you can build AngularJS, you must install or configure the following dependencies on your
+machine:
+
+* Git: The {@link http://help.github.com/mac-git-installation Github Guide to Installing Git} is
+quite a good source for information on Git.
+
+* {@link http://nodejs.org Node.js}: We use Node to generate the documentation, run a
+development web server, run tests, and generate a build. Depending on your system, you can install Node either from source or as a
+pre-packaged bundle.
+
+* {@link http://www.java.com Java}: JavaScript is minified using
+{@link https://developers.google.com/closure/ Closure Tools} jar. Make sure you have Java (version 6 or higher) installed
+and included in your {@link http://docs.oracle.com/javase/tutorial/essential/environment/paths.html PATH} variable.
+
+  Once installed, you'll also need several npms (node packages), which you can install once you checked out a local copy
+  of the Angular repository (see below) with:
+
+  * `cd angular.js`
+  * `npm install`
+  * `bower install`
+
+* {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
+
+  * `sudo npm install -g grunt-cli`
+
+* {@link http://bower.io/ Bower}: Bower is used to manage packages for the docs. Install the bower tool globally with:
+
+  * `sudo npm install -g bower`
+
+
+## Creating a Github Account and Forking Angular
+
+To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
+Afterwards, go ahead and {@link http://help.github.com/forking fork} the {@link
+https://github.com/angular/angular.js main angular repository}.
+
+
+## Building AngularJS
+
+To build AngularJS, you check out the source code and use Grunt to generate the non-minified and
+minified AngularJS files:
+
+1. To clone your Github repository, run:
+
+        git clone git@github.com:<github username>/angular.js.git
+
+2. To go to the AngularJS directory, run:
+
+        cd angular.js
+
+3. To add the main AngularJS repository as an upstream remote to your repository, run:
+
+        git remote add upstream https://github.com/angular/angular.js.git
+
+4. To add node.js dependencies
+
+        npm install
+
+5. To add docs components
+
+        bower install
+
+6. To build AngularJS, run:
+
+        grunt package
+
+NOTE: If you're using Windows you must run your command line with administrative privileges (right click, run as
+Administrator).
+
+
+The build output can be located under the `build` directory. It consists of the following files and
+directories:
+
+* `angular-<version>.zip` — This is the complete zip file, which  contains all of the release build
+artifacts.
+
+* `angular.js` — The non-minified `angular` script.
+
+* `angular.min.js` —  The minified `angular` script.
+
+* `angular-scenario.js` — The `angular` End2End test runner.
+
+* `docs/` — A directory that contains all of the files needed to run `docs.angularjs.org`.
+
+* `docs/index.html` — The main page for the documentation.
+
+* `docs/docs-scenario.html` — The End2End test runner for the documentation application.
+
+
+<a name="webserver"></a>
+## Running a Local Development Web Server
+
+To debug code and run end-to-end tests, it is often useful to have a local HTTP server. For this purpose, we have
+made available a local web server based on Node.js.
+
+1. To start the web server, run:
+
+        grunt webserver
+
+2. To access the local server, go to this website:
+
+        http://localhost:8000/
+
+   By default, it serves the contents of the AngularJS project directory.
+
+
+<a name="unit-tests"></a>
+## Running the Unit Test Suite
+
+Our unit and integration tests are written with Jasmine and executed with Karma.  To run all of the
+tests once on Chrome run:
+
+    grunt test:unit
+
+To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
+
+    grunt test:unit --browsers Opera,Firefox
+
+Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
+
+During development it's however more productive to continuously run unit tests every time the source or test files
+change. To execute tests in this mode run:
+
+1. To start the Karma server, capture Chrome browser and run unit tests, run:
+
+        grunt autotest:jqlite
+
+2. To capture more browsers, open this url in the desired browser (url might be different if you have multiple instance
+   of Karma running, read Karma's console output for the correct url):
+
+        http://localhost:9876/
+
+3. To re-run tests just change any source or test file.
+
+
+To learn more about all of the preconfigured Grunt tasks run:
+
+    grunt --help
+
+
+## Running the end-to-end Test Suite
+
+To run the E2E test suite:
+
+1. Start the local web server if it's not running already.
+
+        grunt webserver
+
+2. In a browser, go to:
+
+        http://localhost:8000/build/docs/docs-scenario.html
+
+   or in terminal run:
+
+        grunt test:end2end
+
+For convenience you can also simply run:
+
+        grunt test:e2e
+
+This will start the webserver for you and run the tests.
+
+
+
+<a name="H1_5"></a>
+# Submitting Your Changes
+
+To create and submit a change:
+
+1. <a name="CLA"></a>
+   Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code changes to be
+   accepted, the CLA must be signed. It's a quick process, we promise!
+
+   For individuals we have a [simple click-through form](http://code.google.com/legal/individual-cla-v1.0.html). For
+   corporations we'll need you to
+   [print, sign and one of scan+email, fax or mail the form](http://code.google.com/legal/corporate-cla-v1.0.html).
+
+
+2. Create and checkout a new branch off the master branch for your changes:
+
+        git checkout -b my-fix-branch master
+
+3. Create your patch, make sure to have plenty of tests (that pass).
+
+4. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
+   please check out our
+   [commit message conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#)
+   and our commit message presubmit hook `validate-commit-msg.js`):
+
+        git commit -a
+
+5. Push your branch to Github:
+
+        git push origin my-fix-branch
+
+6. In Github, send a pull request to `angular:master`.
+
+
+7. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
+from the main (upstream) repository:
+
+  1. To delete the branch in Github, run:
+
+            git push origin :my-fix-branch
+
+  2. To check out the master branch, run:
+
+            git checkout master
+
+  3. To delete a local branch, run:
+
+            git branch -D my-fix-branch
+
+  4. To update your master with the latest upstream version, run:
+
+            git pull --ff upstream master
+
+That's it! Thank you for your contribution!

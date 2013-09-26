@@ -1,0 +1,92 @@
+.reveal.ng-enter {
+  -webkit-transition:1s linear all;
+  -moz-transition:1s linear all;
+  -o-transition:1s linear all;
+  transition:1s linear all;
+
+  opacity:0;
+}
+.reveal.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.nav-list {
+  padding: 0;
+}
+
+.nav-list li {
+  margin:0!important;
+  padding:2px 15px;
+  overflow:hidden;
+  line-height:1.1em;
+}
+
+.slide-reveal.ng-enter {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+
+  opacity:0.5;
+  position:relative;
+  opacity:0;
+  top:10px;
+}
+.slide-reveal.ng-enter.ng-enter-active {
+  top:0;
+  opacity:1;
+}
+
+.expand.ng-enter,
+.expand.ng-leave {
+  -webkit-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -moz-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -o-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+}
+.expand.ng-enter {
+  opacity:0;
+  line-height:0;
+  height:0!important;
+}
+.expand.ng-enter.expand.ng-enter-active {
+  opacity:1;
+  line-height:20px;
+  height:20px!important;
+}
+
+.expand.ng-leave {
+  opacity:1;
+  height:20px;
+}
+.expand.ng-leave.expand.ng-leave-active {
+  opacity:0;
+  height:0;
+}
+
+.foldout.ng-enter,
+.foldout.ng-hide-add,
+.foldout.ng-hide-remove {
+  -webkit-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -moz-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  -o-transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+  transition:0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) all;
+}
+
+.foldout.ng-hide-remove,
+.foldout.ng-enter {
+  opacity:0;
+}
+
+.foldout.ng-hide-remove.ng-hide-remove-active,
+.foldout.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.foldout.ng-hide-add {
+  opacity:1;
+}
+
+.foldout.ng-hide-add.ng-hide-active {
+  opacity:0;
+}

@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - 0.10
+
+env:
+  global:
+    - SAUCE_USERNAME=angular-ci
+    - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+    - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
+    - LOGS_DIR=/tmp/angular-build/logs
+
+before_script:
+  - mkdir -p $LOGS_DIR
+  - ./lib/sauce/sauce_connect_setup.sh
+  - npm install -g grunt-cli
+  - grunt bower
+  - grunt bower
+  - grunt package-without-bower
+  - grunt ci-checks
+  - ./lib/sauce/sauce_connect_block.sh
+
+script:
+  - ./travis_build.sh
+
+after_script:
+  - ./travis_print_logs.sh

@@ -1,0 +1,63 @@
+@ngdoc overview
+@name Cookbook: Resources - Buzz
+@description
+
+External resources are URLs that provide JSON data, which are then rendered with the help of
+templates. Angular has a resource factory that can be used to give names to the URLs and then
+attach behavior to them. For example you can use the
+{@link http://code.google.com/apis/buzz/v1/getting_started.html#background-operations| Google Buzz
+API}
+to retrieve Buzz activity and comments.
+
+<doc:example>
+ <doc:source>
+    <script>
+    BuzzController.$inject = ['$scope', '$resource'];
+    function BuzzController($scope, $resource) {
+     $scope.userId = 'googlebuzz';
+     $scope.Activity = $resource(
+      'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+      {alt: 'json', callback: 'JSON_CALLBACK'},
+      { get:     {method: 'JSONP', params: {visibility: '@self'}},
+        replies: {method: 'JSONP', params: {visibility: '@self', comments: '@comments'}}
+      });
+
+     $scope.fetch = function() {
+      $scope.activities = $scope.Activity.get({userId:this.userId});
+     }
+
+     $scope.expandReplies = function(activity) {
+      activity.replies = $scope.Activity.replies({userId: this.userId, activityId: activity.id});
+     }
+    };
+    </script>
+    <div ng-controller="BuzzController">
+     <input ng-model="userId"/>
+     <button ng-click="fetch()">fetch</button>
+     <hr/>
+     <div class="buzz" ng-repeat="item in activities.data.items">
+      <h1 style="font-size: 15px;">
+       <img ng-src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+       <a href ng-click="expandReplies(item)" style="float: right;">
+        Expand replies: {{item.links.replies[0].count}}
+       </a>
+      </h1>
+      {{item.object.content | html}}
+      <div class="reply" ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+       <img ng-src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
+       {{reply.content | html}}
+      </div>
+     </div>
+    </div>
+ </doc:source>
+ <doc:scenario>
+  xit('fetch buzz and expand', function() {
+    element(':button:contains(fetch)').click();
+    expect(repeater('div.buzz').count()).toBeGreaterThan(0);
+    element('.buzz a:contains(Expand replies):first').click();
+    expect(repeater('div.reply').count()).toBeGreaterThan(0);
+  });
+ </doc:scenario>
+</doc:example>

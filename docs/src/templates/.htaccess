@@ -1,0 +1,19 @@
+## OFFLINE SUPPORT ##
+
+# These rules tell apache to check if there is a cookie called "offline", with value set to the
+# current angular version. If this rule matches the appcache-offline.manifest will be served for
+# requests to appcache.manifest
+#
+# This file must be processed by Grunt in order to replace %ANGULAR_VERSION% with the actual version.
+
+Options -Indexes
+RewriteEngine on
+RewriteCond %{HTTP_COOKIE}      ng-offline="NG_VERSION_FULL"
+RewriteRule appcache.manifest   appcache-offline.manifest
+
+## Redirect to the latest manifest
+RewriteCond %{HTTP_HOST}        ^docs-next\.angularjs\.org$
+RewriteRule appcache.manifest   http://code.angularjs.org/next/docs/appcache.manifest [R=301]
+
+## HTML5 URL Support ##
+RewriteRule ^(guide|api|cookbook|misc|tutorial)(/.*)?$    index.html

@@ -1,0 +1,7 @@
+@ngdoc error
+@name $interpolate:interr
+@fullName Interpolation Error
+@description
+
+This error occurs when interpolation fails due to some exception. The error
+message above should provide additional context.

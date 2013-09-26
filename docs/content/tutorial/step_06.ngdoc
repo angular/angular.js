@@ -1,0 +1,111 @@
+@ngdoc overview
+@name Tutorial: 6 - Templating Links & Images
+@description
+
+<ul doc-tutorial-nav="6"></ul>
+
+
+In this step, you will add thumbnail images for the phones in the phone list, and links that, for
+now, will go nowhere. In subsequent steps you will use the links to display additional information
+about the phones in the catalog.
+
+
+<div doc-tutorial-reset="6"></div>
+
+
+You should now see links and images of the phones in the list.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-5...step-6
+GitHub}:
+
+
+## Data
+
+Note that the `phones.json` file contains unique ids and image urls for each of the phones. The
+urls point to the `app/img/phones/` directory.
+
+__`app/phones/phones.json`__ (sample snippet):
+<pre>
+ [
+  {
+   ...
+   "id": "motorola-defy-with-motoblur",
+   "imageUrl": "img/phones/motorola-defy-with-motoblur.0.jpg",
+   "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122",
+   ...
+  },
+ ...
+ ]
+</pre>
+
+
+## Template
+
+__`app/index.html`:__
+<pre>
+...
+        <ul class="phones">
+          <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
+            <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+            <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+            <p>{{phone.snippet}}</p>
+          </li>
+        </ul>
+...
+</pre>
+
+To dynamically generate links that will in the future lead to phone detail pages, we used the
+now-familiar double-curly brace binding in the `href` attribute values. In step 2, we added the
+`{{phone.name}}` binding as the element content. In this step the `{{phone.id}}` binding is used in
+the element attribute.
+
+We also added phone images next to each record using an image tag with the {@link
+api/ng.directive:ngSrc ngSrc} directive. That directive prevents the
+browser from treating the angular `{{ expression }}` markup literally, and initiating a request to
+invalid url `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
+specified an attribute binding in a regular `src` attribute (`<img  class="diagram" src="{{phone.imageUrl}}">`).
+Using the `ngSrc` directive prevents the browser from making an http request to an invalid location.
+
+
+## Test
+
+__`test/e2e/scenarios.js`__:
+<pre>
+...
+    it('should render phone specific links', function() {
+      input('query').enter('nexus');
+      element('.phones li a').click();
+      expect(browser().location().url()).toBe('/phones/nexus-s');
+    });
+...
+</pre>
+
+We added a new end-to-end test to verify that the app is generating correct links to the phone
+views that we will implement in the upcoming steps.
+
+You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
+runner to see the tests run, or you can see them running on {@link
+http://angular.github.com/angular-phonecat/step-6/test/e2e/runner.html
+Angular's server}.
+
+
+# Experiments
+
+* Replace the `ng-src` directive with a plain old `src` attribute. Using tools such as Firebug,
+or Chrome's Web Inspector, or inspecting the webserver access logs, confirm that the app is indeed
+making an extraneous request to `/app/%7B%7Bphone.imageUrl%7D%7D` (or
+`/app/{{phone.imageUrl}}`).
+
+  The issue here is that the browser will fire a request for that invalid image address as soon as
+it hits the `img` tag, which is before Angular has a chance to evaluate the expression and inject
+the valid address.
+
+
+# Summary
+
+Now that you have added phone images and links, go to {@link step_07 step 7} to learn about Angular
+layout templates and how Angular makes it easy to create applications that have multiple views.
+
+
+<ul doc-tutorial-nav="6"></ul>

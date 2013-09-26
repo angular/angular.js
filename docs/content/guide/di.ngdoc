@@ -1,0 +1,239 @@
+@ngdoc overview
+@name Developer Guide: Dependency Injection
+@description
+
+# Dependency Injection
+
+Dependency Injection (DI) is a software design pattern that deals with how code gets hold of its
+dependencies.
+
+For in-depth discussion about DI, see {@link http://en.wikipedia.org/wiki/Dependency_injection
+Dependency Injection} at Wikipedia, {@link http://martinfowler.com/articles/injection.html
+Inversion of Control} by Martin Fowler, or read about DI in your favorite software design pattern
+book.
+
+## DI in a nutshell
+
+There are only three ways an object or a function can get a hold of its dependencies:
+
+  1. The dependency can be created, typically using the `new` operator.
+
+  2. The dependency can be looked up by referring to a global variable.
+
+  3. The dependency can be passed in to where it is needed.
+
+
+The first two options of creating or looking up dependencies are not optimal because they hard
+code the dependency. This makes it difficult, if not impossible, to modify the dependencies.
+This is especially problematic in tests, where it is often desirable to provide mock dependencies
+for test isolation.
+
+The third option is the most viable, since it removes the responsibility of locating the
+dependency from the component. The dependency is simply handed to the component.
+
+<pre>
+  function SomeClass(greeter) {
+    this.greeter = greeter;
+  }
+  
+  SomeClass.prototype.doSomething = function(name) {
+    this.greeter.greet(name);
+  }
+</pre>
+
+In the above example `SomeClass` is not concerned with locating the `greeter` dependency, it
+is simply handed the `greeter` at runtime.
+
+This is desirable, but it puts the responsibility of getting hold of the dependency on the
+code that constructs `SomeClass`.
+
+To manage the responsibility of dependency creation, each Angular application has an {@link
+api/angular.injector injector}. The injector is a service locator that is responsible for
+construction and lookup of dependencies.
+
+Here is an example of using the injector service:
+
+<pre>
+  // Provide the wiring information in a module
+  angular.module('myModule', []).
+  
+    // Teach the injector how to build a 'greeter'
+    // Notice that greeter itself is dependent on '$window'
+    factory('greeter', function($window) {
+      // This is a factory function, and is responsible for 
+      // creating the 'greet' service.
+      return {
+        greet: function(text) {
+          $window.alert(text);
+        }
+      };
+    });
+
+  // New injector is created from the module. 
+  // (This is usually done automatically by angular bootstrap)
+  var injector = angular.injector(['myModule', 'ng']);
+  
+  // Request any dependency from the injector
+  var greeter = injector.get('greeter');
+</pre>
+
+Asking for dependencies solves the issue of hard coding, but it also means that the injector needs
+to be passed throughout the application. Passing the injector breaks the {@link
+http://en.wikipedia.org/wiki/Law_of_Demeter Law of Demeter}. To remedy this, we turn the
+dependency lookup responsibility to the injector by declaring the dependencies as in this example:
+
+<pre>
+  <!-- Given this HTML -->
+  <div ng-controller="MyController">
+    <button ng-click="sayHello()">Hello</button>
+  </div>
+</pre>  
+<pre>
+  // And this controller definition
+  function MyController($scope, greeter) {
+    $scope.sayHello = function() {
+      greeter.greet('Hello World');
+    };
+  }
+  
+  // The 'ng-controller' directive does this behind the scenes
+  injector.instantiate(MyController);
+</pre>
+
+Notice that by having the `ng-controller` instantiate the class, it can satisfy all of the
+dependencies of `MyController` without the controller ever knowing about the injector. This is
+the best outcome. The application code simply asks for the dependencies it needs, without having to
+deal with the injector. This setup does not break the Law of Demeter.
+
+## Dependency Annotation
+
+How does the injector know what service needs to be injected?
+
+The application developer needs to provide annotation information that the injector uses in order
+to resolve the dependencies. Throughout Angular, certain API functions are invoked using the
+injector, as per the API documentation. The injector needs to know what services to inject into
+the function. Below are three equivalent ways of annotating your code with service name
+information. These can be used interchangeably as you see fit and are equivalent.
+
+### Inferring Dependencies
+
+The simplest way to get hold of the dependencies, is to assume that the function parameter names
+are the names of the dependencies.
+
+<pre>
+  function MyController($scope, greeter) {
+    ...
+  }
+</pre>
+
+Given a function the injector can infer the names of the service to inject by examining the
+function declaration and extracting the parameter names. In the above example `$scope`, and
+`greeter` are two services which need to be injected into the function.
+
+While straightforward, this method will not work with JavaScript minifiers/obfuscators as they
+rename the method parameter names. This makes this way of annotating only useful for {@link
+http://www.pretotyping.org/ pretotyping}, and demo applications.
+
+### `$inject` Annotation
+
+To allow the minifers to rename the function parameters and still be able to inject right services
+the function needs to be annotated with the `$inject` property. The `$inject` property is an array
+of service names to inject.
+
+<pre>
+  var MyController = function(renamed$scope, renamedGreeter) {
+    ...
+  }
+  MyController.$inject = ['$scope', 'greeter'];
+</pre>
+
+In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
+Using above code snippet as an example, '$scope' will be injected into 'renamed$scope' and 'greeter' into 'renamedGreeter'.
+Care must be taken that the `$inject` annotation is kept in sync with the actual arguments in the
+function declaration.
+
+This method of annotation is useful for controller declarations since it assigns the annotation
+information with the function.
+
+### Inline Annotation
+
+Sometimes using the `$inject` annotation style is not convenient such as when annotating
+directives.
+
+For example:
+
+<pre>
+  someModule.factory('greeter', function($window) {
+    ...
+  });
+</pre>
+
+Results in code bloat due to needing a temporary variable:
+
+<pre>
+  var greeterFactory = function(renamed$window) {
+    ...
+  };
+  
+  greeterFactory.$inject = ['$window'];
+  
+  someModule.factory('greeter', greeterFactory);
+</pre>
+
+For this reason the third annotation style is provided as well.
+
+<pre>
+  someModule.factory('greeter', ['$window', function(renamed$window) {
+    ...
+  }]);
+</pre>
+
+Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
+where injection is supported.
+
+## Where can I use DI?
+
+DI is pervasive throughout Angular. It is typically used in controllers and factory methods. 
+
+### DI in controllers
+
+Controllers are classes which are responsible for application behavior. The recommended way of 
+declaring controllers is using the array notation:
+
+<pre>
+  someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
+    ...
+    $scope.aMethod = function() {
+      ...
+    }
+    ...
+  }]);
+</pre>
+
+This avoids the creation of global functions for controllers and also protects against minification.
+
+
+### Factory methods
+
+Factory methods are responsible for creating most objects in Angular. Examples are directives,
+services, and filters. The factory methods are registered with the module, and the recommended way
+of declaring factories is:
+
+<pre>
+  angular.module('myModule', []).
+    config(['depProvider', function(depProvider){
+      ...
+    }]).
+    factory('serviceId', ['depService', function(depService) {
+      ...
+    }]).
+    directive('directiveName', ['depService', function(depService) {
+      ...
+    }]).
+    filter('filterName', ['depService', function(depService) {
+      ...
+    }]).
+    run(['depService', function(depService) {
+      ...
+    }]);
+</pre>

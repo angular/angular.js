@@ -1,0 +1,324 @@
+@ngdoc overview
+@name Forms
+@description
+
+Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
+A Form is a collection of controls for the purpose of grouping related controls together.
+
+Form and controls provide validation services, so that the user can be notified of invalid input.
+This provides a better user experience, because the user gets instant feedback on how to correct the error.
+Keep in mind that while client-side validation plays an important role in providing good user experience, it can easily be circumvented and thus can not be trusted.
+Server-side validation is still necessary for a secure application.
+
+
+# Simple form
+The key directive in understanding two-way data-binding is {@link api/ng.directive:ngModel ngModel}.
+The `ngModel` directive provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
+In addition it provides an {@link api/ng.directive:ngModel.NgModelController API} for other directives to augment its behavior.
+
+<doc:example>
+<doc:source>
+<div ng-controller="Controller">
+  <form novalidate class="simple-form">
+    Name: <input type="text" ng-model="user.name" /><br />
+    E-mail: <input type="email" ng-model="user.email" /><br />
+    Gender: <input type="radio" ng-model="user.gender" value="male" />male
+    <input type="radio" ng-model="user.gender" value="female" />female<br />
+    <button ng-click="reset()">RESET</button>
+    <button ng-click="update(user)">SAVE</button>
+  </form>
+  <pre>form = {{user | json}}</pre>
+  <pre>master = {{master | json}}</pre>
+</div>
+
+<script>
+  function Controller($scope) {
+    $scope.master= {};
+
+    $scope.update = function(user) {
+      $scope.master= angular.copy(user);
+    };
+
+    $scope.reset = function() {
+      $scope.user = angular.copy($scope.master);
+    };
+
+    $scope.reset();
+  }
+  </script>
+</doc:source>
+</doc:example>
+
+
+Note that `novalidate` is used to disable browser's native form validation.
+
+
+
+# Using CSS classes
+
+To allow styling of form as well as controls, `ngModel`  add these CSS classes:
+
+- `ng-valid`
+- `ng-invalid`
+- `ng-pristine`
+- `ng-dirty`
+
+The following example uses the CSS to display validity of each form control.
+In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
+This ensures that the user is not distracted with an error until after interacting with the control, and failing to satisfy its validity.
+
+<doc:example>
+<doc:source>
+<div ng-controller="Controller">
+  <form novalidate class="css-form">
+    Name:
+      <input type="text" ng-model="user.name" required /><br />
+    E-mail: <input type="email" ng-model="user.email" required /><br />
+    Gender: <input type="radio" ng-model="user.gender" value="male" />male
+    <input type="radio" ng-model="user.gender" value="female" />female<br />
+    <button ng-click="reset()">RESET</button>
+    <button ng-click="update(user)">SAVE</button>
+  </form>
+</div>
+
+<style type="text/css">
+  .css-form input.ng-invalid.ng-dirty {
+    background-color: #FA787E;
+  }
+
+  .css-form input.ng-valid.ng-dirty {
+    background-color: #78FA89;
+  }
+</style>
+
+<script>
+  function Controller($scope) {
+    $scope.master = {};
+
+    $scope.update = function(user) {
+      $scope.master = angular.copy(user);
+    };
+
+    $scope.reset = function() {
+      $scope.user = angular.copy($scope.master);
+    };
+
+    $scope.reset();
+  }
+  </script>
+</doc:source>
+</doc:example>
+
+
+
+# Binding to form and control state
+
+A form is an instance of {@link api/ng.directive:form.FormController FormController}.
+The form instance can optionally be published into the scope using the `name` attribute.
+Similarly, control is an instance of {@link api/ng.directive:ngModel.NgModelController NgModelController}.
+The control instance can similarly be published into the form instance using the `name` attribute.
+This implies that the internal state of both the form and the control is available for binding in the view using the standard binding primitives.
+
+This allows us to extend the above example with these features:
+
+- RESET button is enabled only if form has some changes
+- SAVE button is enabled only if form has some changes and is valid
+- custom error messages for `user.email` and `user.agree`
+
+<doc:example>
+<doc:source>
+<div ng-controller="Controller">
+  <form name="form" class="css-form" novalidate>
+    Name:
+      <input type="text" ng-model="user.name" name="uName" required /><br />
+    E-mail:
+      <input type="email" ng-model="user.email" name="uEmail" required/><br />
+    <div ng-show="form.uEmail.$dirty && form.uEmail.$invalid">Invalid:
+      <span ng-show="form.uEmail.$error.required">Tell us your email.</span>
+      <span ng-show="form.uEmail.$error.email">This is not a valid email.</span>
+    </div>
+
+    Gender: <input type="radio" ng-model="user.gender" value="male" />male
+    <input type="radio" ng-model="user.gender" value="female" />female<br />
+
+    <input type="checkbox" ng-model="user.agree" name="userAgree" required />
+    I agree: <input ng-show="user.agree" type="text" ng-model="user.agreeSign"
+              required /><br />
+    <div ng-show="!user.agree || !user.agreeSign">Please agree and sign.</div>
+
+    <button ng-click="reset()" ng-disabled="isUnchanged(user)">RESET</button>
+    <button ng-click="update(user)"
+            ng-disabled="form.$invalid || isUnchanged(user)">SAVE</button>
+  </form>
+</div>
+
+<script>
+  function Controller($scope) {
+    $scope.master = {};
+
+    $scope.update = function(user) {
+      $scope.master = angular.copy(user);
+    };
+
+    $scope.reset = function() {
+      $scope.user = angular.copy($scope.master);
+    };
+
+    $scope.isUnchanged = function(user) {
+      return angular.equals(user, $scope.master);
+    };
+
+    $scope.reset();
+  }
+</script>
+</doc:source>
+</doc:example>
+
+
+
+# Custom Validation
+
+Angular provides basic implementation for most common html5 {@link api/ng.directive:input input}
+types: ({@link api/ng.directive:input.text text}, {@link api/ng.directive:input.number number}, {@link api/ng.directive:input.url url}, {@link api/ng.directive:input.email email}, {@link api/ng.directive:input.radio radio}, {@link api/ng.directive:input.checkbox checkbox}), as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`, `min`, `max`).
+
+Defining your own validator can be done by defining your own directive which adds a custom validation function to the `ngModel` {@link api/ng.directive:ngModel.NgModelController controller}.
+To get a hold of the controller the directive specifies a dependency as shown in the example below.
+The validation can occur in two places:
+
+  * **Model to View update** -
+    Whenever the bound model changes, all functions in {@link api/ng.directive:ngModel.NgModelController#$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link api/ng.directive:ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
+
+  * **View to Model update** -
+    In a similar way, whenever a user interacts with a control it calls {@link api/ng.directive:ngModel.NgModelController#$setViewValue NgModelController#$setViewValue}.
+This in turn pipelines all functions in the {@link api/ng.directive:ngModel.NgModelController#$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link api/ng.directive:ngModel.NgModelController#$setValidity NgModelController#$setValidity}.
+
+In the following example we create two directives.
+
+  * The first one is `integer` and it validates whether the input is a valid integer.
+    For example `1.23` is an invalid value, since it contains a fraction.
+    Note that we unshift the array instead of pushing.
+    This is because we want to be first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
+
+  * The second directive is a `smart-float`.
+    It parses both `1.2` and `1,2` into a valid float number `1.2`.
+    Note that we can't use input type `number` here as HTML5 browsers would not allow the user to type what it would consider an invalid number such as `1,2`.
+
+
+<doc:example module="form-example1">
+<doc:source>
+<div ng-controller="Controller">
+  <form name="form" class="css-form" novalidate>
+    <div>
+      Size (integer 0 - 10):
+      <input type="number" ng-model="size" name="size"
+             min="0" max="10" integer />{{size}}<br />
+      <span ng-show="form.size.$error.integer">This is not valid integer!</span>
+      <span ng-show="form.size.$error.min || form.size.$error.max">
+        The value must be in range 0 to 10!</span>
+    </div>
+
+    <div>
+      Length (float):
+      <input type="text" ng-model="length" name="length" smart-float />
+      {{length}}<br />
+      <span ng-show="form.length.$error.float">
+        This is not a valid float number!</span>
+    </div>
+  </form>
+</div>
+
+<script>
+  var app = angular.module('form-example1', []);
+
+  var INTEGER_REGEXP = /^\-?\d*$/;
+  app.directive('integer', function() {
+    return {
+      require: 'ngModel',
+      link: function(scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function(viewValue) {
+          if (INTEGER_REGEXP.test(viewValue)) {
+            // it is valid
+            ctrl.$setValidity('integer', true);
+            return viewValue;
+          } else {
+            // it is invalid, return undefined (no model update)
+            ctrl.$setValidity('integer', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+
+  var FLOAT_REGEXP = /^\-?\d+((\.|\,)\d+)?$/;
+  app.directive('smartFloat', function() {
+    return {
+      require: 'ngModel',
+      link: function(scope, elm, attrs, ctrl) {
+        ctrl.$parsers.unshift(function(viewValue) {
+          if (FLOAT_REGEXP.test(viewValue)) {
+            ctrl.$setValidity('float', true);
+            return parseFloat(viewValue.replace(',', '.'));
+          } else {
+            ctrl.$setValidity('float', false);
+            return undefined;
+          }
+        });
+      }
+    };
+  });
+</script>
+</doc:source>
+</doc:example>
+
+
+# Implementing custom form controls (using `ngModel`)
+Angular implements all of the basic HTML form controls ({@link api/ng.directive:input input}, {@link api/ng.directive:select select}, {@link api/ng.directive:textarea textarea}), which should be sufficient for most cases.
+However, if you need more flexibility, you can write your own form control as a directive.
+
+In order for custom control to work with `ngModel` and to achieve two-way data-binding it needs to:
+
+  - implement `$render` method, which is responsible for rendering the data after it passed the {@link   api/ng.directive:ngModel.NgModelController#$formatters NgModelController#$formatters},
+  - call `$setViewValue` method, whenever the user interacts with the control and model needs to be updated. This is usually done inside a DOM Event listener.
+
+See {@link guide/directive $compileProvider.directive} for more info.
+
+The following example shows how to add two-way data-binding to contentEditable elements.
+
+<doc:example module="form-example2">
+<doc:source>
+<script>
+  angular.module('form-example2', []).directive('contenteditable', function() {
+    return {
+      require: 'ngModel',
+      link: function(scope, elm, attrs, ctrl) {
+        // view -> model
+        elm.on('blur', function() {
+          scope.$apply(function() {
+            ctrl.$setViewValue(elm.html());
+          });
+        });
+
+        // model -> view
+        ctrl.$render = function() {
+          elm.html(ctrl.$viewValue);
+        };
+
+        // load init value from DOM
+        ctrl.$setViewValue(elm.html());
+      }
+    };
+  });
+</script>
+
+<div contentEditable="true" ng-model="content" title="Click to edit">Some</div>
+<pre>model = {{content}}</pre>
+
+<style type="text/css">
+  div[contentEditable] {
+    cursor: pointer;
+    background-color: #D0D0D0;
+  }
+</style>
+</doc:source>
+</doc:example>

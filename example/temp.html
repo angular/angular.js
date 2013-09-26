@@ -1,0 +1,30 @@
+<!doctype html>
+<html ng-app="example">
+  <head>
+    <title>angular dev sandbox</title>
+    <script src="../src/loader.js"></script>
+    <script>
+      setupModuleLoader(window);
+      angular.module('example', [], function($routeProvider) {
+        $routeProvider.when('/view1', {controller: MyCtrl, templateUrl: 'view1.html'});
+        $routeProvider.when('/view2', {controller: MyCtrl, templateUrl: 'view2.html'});
+
+        function MyCtrl($location, $scope) {
+          $scope.url = function() {
+            return $location.url();
+          }
+        };
+      });
+    </script>
+    <script src="../src/angular-bootstrap.js"></script>
+  </head>
+  <body>
+    <p>
+      <a href="#/view1">view1</a> | <a href="#/view2">view2</a> | <a href="#">blank</a>
+    </p>
+
+    <hr>
+
+    <div ng-view></div>
+  </body>
+</html>
