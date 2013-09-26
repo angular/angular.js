@@ -37,7 +37,7 @@
  */
 var ngEventDirectives = {};
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
@@ -290,6 +290,51 @@ forEach(
  * @element window, input, select, textarea, a
  * @param {expression} ngBlur {@link guide/expression Expression} to evaluate upon
  * blur. (Event object is available as `$event`)
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngCopy
+ *
+ * @description
+ * Specify custom behavior on copy event.
+ *
+ * @element window, input, select, textarea, a
+ * @param {expression} ngCopy {@link guide/expression Expression} to evaluate upon
+ * copy. (Event object is available as `$event`)
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngCut
+ *
+ * @description
+ * Specify custom behavior on cut event.
+ *
+ * @element window, input, select, textarea, a
+ * @param {expression} ngCut {@link guide/expression Expression} to evaluate upon
+ * cut. (Event object is available as `$event`)
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ng.directive:ngPaste
+ *
+ * @description
+ * Specify custom behavior on paste event.
+ *
+ * @element window, input, select, textarea, a
+ * @param {expression} ngPaste {@link guide/expression Expression} to evaluate upon
+ * paste. (Event object is available as `$event`)
  *
  * @example
  * See {@link ng.directive:ngClick ngClick}
