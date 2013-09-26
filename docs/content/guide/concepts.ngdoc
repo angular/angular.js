@@ -327,6 +327,9 @@ they are used in conjunction with the locale to format the data in locale specif
 They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
 
 <example>
+  <file name="script.js">
+    angular.module('App', [])
+  </file>
   <file name="index.html">
     <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
       Number formatting: {{ 1234567890 | number }} <br>
