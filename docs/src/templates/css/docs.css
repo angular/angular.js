@@ -135,6 +135,10 @@
   white-space: nowrap;
 }
 
+.content pre code {
+  white-space: inherit;
+}
+
 .content h2,
 .content h3,
 .content h4,
