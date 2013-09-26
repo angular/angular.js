@@ -23,8 +23,11 @@ myModule.directive('myDirective', function factory() {
 
 Following are invalid uses of this directive:
 ```
-<my-directive bind="1+2">    <!-- ERROR because `1+2=localValue` is an invalid statement -->
-<my-directive bind="myFn()"> <!-- ERROR because `myFn()=localValue` is an invalid statement -->
+<!-- ERROR because `1+2=localValue` is an invalid statement -->
+<my-directive bind="1+2">
+
+<!-- ERROR because `myFn()=localValue` is an invalid statement -->
+<my-directive bind="myFn()">
 ```
 
 
