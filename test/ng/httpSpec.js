@@ -432,7 +432,7 @@ describe('$http', function() {
 
 
       it('should jsonify objects in params map', inject(function($httpBackend, $http) {
-        $httpBackend.expect('GET', '/url?a=1&b=%7B%22c%22:3%7D').respond('');
+        $httpBackend.expect('GET', '/url?a=1&b%5Bc%5D=3').respond('');
         $http({url: '/url', params: {a:1, b:{c:3}}, method: 'GET'});
       }));
 
