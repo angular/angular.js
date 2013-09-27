@@ -151,7 +151,7 @@ function $LogProvider(){
       // we are IE which either doesn't have window.console => this is noop and we do nothing,
       // or we are IE where console.log doesn't have apply so we log at least first 2 args
       return function(arg1, arg2) {
-        logFn(arg1, arg2);
+        logFn(arg1, arg2 == null ? '' : arg2);
       }
     }
   }];
