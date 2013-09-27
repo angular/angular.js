@@ -356,7 +356,7 @@ function $RootScopeProvider(){
        *    `oldCollection` object is a copy of the former collection data.
        *    The `scope` refers to the current scope.
        *
-       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function 
+       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function
        * is executed, the internal watch operation is terminated.
        */
       $watchCollection: function(obj, listener) {
@@ -496,6 +496,7 @@ function $RootScopeProvider(){
         var watch, value, last,
             watchers,
             asyncQueue = this.$$asyncQueue,
+            asyncQueueItem,
             postDigestQueue = this.$$postDigestQueue,
             length,
             dirty, ttl = TTL,
@@ -511,7 +512,8 @@ function $RootScopeProvider(){
 
           while(asyncQueue.length) {
             try {
-              current.$eval(asyncQueue.shift());
+              asyncQueueItem = asyncQueue.shift();
+              current.$eval(asyncQueueItem.expr, asyncQueueItem.options);
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -662,8 +664,8 @@ function $RootScopeProvider(){
        *
        * @returns {*} The result of evaluating the expression.
        */
-      $eval: function(expr, locals) {
-        return $parse(expr)(this, locals);
+      $eval: function(expr, locals, options) {
+        return $parse(expr, options)(this, locals);
       },
 
       /**
@@ -693,7 +695,7 @@ function $RootScopeProvider(){
        *    - `function(scope)`: execute the function with the current `scope` parameter.
        *
        */
-      $evalAsync: function(expr) {
+      $evalAsync: function(expr, options) {
         // if we are outside of an $digest loop and this is the first time we are scheduling async task also schedule
         // async auto-flush
         if (!$rootScope.$$phase && !$rootScope.$$asyncQueue.length) {
@@ -704,7 +706,7 @@ function $RootScopeProvider(){
           });
         }
 
-        this.$$asyncQueue.push(expr);
+        this.$$asyncQueue.push({ expr: expr, options: options });
       },
 
       $$postDigest : function(expr) {
@@ -757,10 +759,10 @@ function $RootScopeProvider(){
        *
        * @returns {*} The result of evaluating the expression.
        */
-      $apply: function(expr) {
+      $apply: function(expr, options) {
         try {
           beginPhase('$apply');
-          return this.$eval(expr);
+          return this.$eval(expr, options);
         } catch (e) {
           $exceptionHandler(e);
         } finally {

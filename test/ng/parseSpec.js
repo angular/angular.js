@@ -847,9 +847,9 @@ describe('parser', function() {
           it('should evaluated resolved promise and get its value', function() {
             deferred.resolve('hello!');
             scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe('hello!');
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe('hello!');
           });
 
 
@@ -858,48 +858,48 @@ describe('parser', function() {
             scope.greeting = promise;
             expect(scope.$eval('gretting')).toBe(undefined);
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
           });
 
 
           it('should evaluate a promise and eventualy get its value', function() {
             scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve('hello!');
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe('hello!');
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe('hello!');
           });
 
 
           it('should evaluate a promise and eventualy ignore its rejection', function() {
             scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.reject('sorry');
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
             scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
+            expect(scope.$eval('greeting', {}, { unwrapPromises: true })).toBe(undefined);
           });
 
           it('should evaluate a function call returning a promise and eventually get its return value', function() {
             scope.greetingFn = function() { return promise; };
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
+            expect(scope.$eval('greetingFn()', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
+            expect(scope.$eval('greetingFn()', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve('hello!');
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
+            expect(scope.$eval('greetingFn()', {}, { unwrapPromises: true })).toBe(undefined);
             scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe('hello!');
+            expect(scope.$eval('greetingFn()', {}, { unwrapPromises: true })).toBe('hello!');
           });
 
           describe('assignment into promises', function() {
@@ -909,7 +909,7 @@ describe('parser', function() {
               scope.person = promise;
               deferred.resolve({'name': 'Bill Gates'});
 
-              var getter = $parse('person.name');
+              var getter = $parse('person.name', { unwrapPromises: true });
               expect(getter(scope)).toBe(undefined);
 
               scope.$digest();
@@ -923,7 +923,7 @@ describe('parser', function() {
               scope.greeting = promise;
               deferred.resolve('Salut!');
 
-              var getter = $parse('greeting');
+              var getter = $parse('greeting', { unwrapPromises: true });
               expect(getter(scope)).toBe(undefined);
 
               scope.$digest();
@@ -937,7 +937,7 @@ describe('parser', function() {
             it('should evaluate an unresolved promise and set and remember its value', inject(function($parse) {
               scope.person = promise;
 
-              var getter = $parse('person.name');
+              var getter = $parse('person.name', { unwrapPromises: true });
               expect(getter(scope)).toBe(undefined);
 
               scope.$digest();
@@ -948,7 +948,7 @@ describe('parser', function() {
 
               expect(getter(scope)).toBe('Bonjour');
 
-              var c1Getter = $parse('person.A.B.C1');
+              var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });
               scope.$digest();
               expect(c1Getter(scope)).toBe(undefined);
               c1Getter.assign(scope, 'c1_value');
@@ -956,7 +956,7 @@ describe('parser', function() {
               expect(c1Getter(scope)).toBe('c1_value');
 
               // Set another property on the person.A.B
-              var c2Getter = $parse('person.A.B.C2');
+              var c2Getter = $parse('person.A.B.C2', { unwrapPromises: true });
               scope.$digest();
               expect(c2Getter(scope)).toBe(undefined);
               c2Getter.assign(scope, 'c2_value');
@@ -964,103 +964,136 @@ describe('parser', function() {
               expect(c2Getter(scope)).toBe('c2_value');
 
               // c1 should be unchanged.
-              expect($parse('person.A')(scope)).toEqual(
+              expect($parse('person.A', { unwrapPromises: true })(scope)).toEqual(
                   {B: {C1: 'c1_value', C2: 'c2_value'}});
             }));
 
 
             it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
-               inject(function($parse) {
+                inject(function($parse) {
               scope.person = promise;
-              var c1Getter = $parse('person.A.B.C1');
+              var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });
               c1Getter.assign(scope, 'c1_value');
               // resolving the promise should update the tree.
               deferred.resolve({A: {B: {C1: 'resolved_c1'}}});
               scope.$digest();
               expect(c1Getter(scope)).toEqual('resolved_c1');
             }));
+
+
+            describe('do-not-unwrap-promises flag', function () {
+              it('should return the promise object instead of evaluating it', inject(function ($parse) {
+                scope.person = promise;
+                scope.getPerson = function () { return promise; };
+
+                var getter = $parse('person', { unwrapPromises: false });
+                var fnGetter = $parse('getPerson()', { unwrapPromises: false });
+
+                expect(getter(scope)).toBe(promise);
+                expect(fnGetter(scope)).toBe(promise);
+
+                scope.$digest();
+                expect(getter(scope)).toBe(promise);
+                expect(fnGetter(scope)).toBe(promise);
+              }));
+
+              it('promise unwrapping should be disabled by default', inject(function ($parse) {
+                scope.person = promise;
+                scope.getPerson = function () { return promise; };
+
+                var getter = $parse('person');
+                var fnGetter = $parse('getPerson()');
+
+                expect(getter(scope)).toBe(promise);
+                expect(fnGetter(scope)).toBe(promise);
+
+                scope.$digest();
+                expect(getter(scope)).toBe(promise);
+                expect(fnGetter(scope)).toBe(promise);
+              }));
+            });
           });
         });
 
         describe('dereferencing', function() {
           it('should evaluate and dereference properties leading to and from a promise', function() {
             scope.obj = {greeting: promise};
-            expect(scope.$eval('obj.greeting')).toBe(undefined);
-            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+            expect(scope.$eval('obj.greeting', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('obj.greeting')).toBe(undefined);
-            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+            expect(scope.$eval('obj.greeting', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve({polite: 'Good morning!'});
             scope.$digest();
-            expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
-            expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
+            expect(scope.$eval('obj.greeting', {}, { unwrapPromises: true })).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj.greeting.polite', {}, { unwrapPromises: true })).toBe('Good morning!');
           });
 
           it('should evaluate and dereference properties leading to and from a promise via bracket ' +
               'notation', function() {
             scope.obj = {greeting: promise};
-            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve({polite: 'Good morning!'});
             scope.$digest();
-            expect(scope.$eval('obj["greeting"]')).toEqual({polite: 'Good morning!'});
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe('Good morning!');
+            expect(scope.$eval('obj["greeting"]', {}, { unwrapPromises: true })).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj["greeting"]["polite"]', {}, { unwrapPromises: true })).toBe('Good morning!');
           });
 
 
           it('should evaluate and dereference array references leading to and from a promise',
               function() {
             scope.greetings = [promise];
-            expect(scope.$eval('greetings[0]')).toBe(undefined);
-            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+            expect(scope.$eval('greetings[0]', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('greetings[0][0]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('greetings[0]')).toBe(undefined);
-            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+            expect(scope.$eval('greetings[0]', {}, { unwrapPromises: true })).toBe(undefined);
+            expect(scope.$eval('greetings[0][0]', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve(['Hi!', 'Cau!']);
             scope.$digest();
-            expect(scope.$eval('greetings[0]')).toEqual(['Hi!', 'Cau!']);
-            expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
+            expect(scope.$eval('greetings[0]', {}, { unwrapPromises: true })).toEqual(['Hi!', 'Cau!']);
+            expect(scope.$eval('greetings[0][0]', {}, { unwrapPromises: true })).toBe('Hi!');
           });
 
 
           it('should evaluate and dereference promises used as function arguments', function() {
             scope.greet = function(name) { return 'Hi ' + name + '!'; };
             scope.name = promise;
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+            expect(scope.$eval('greet(name)', {}, { unwrapPromises: true })).toBe('Hi undefined!');
 
             scope.$digest();
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+            expect(scope.$eval('greet(name)', {}, { unwrapPromises: true })).toBe('Hi undefined!');
 
             deferred.resolve('Veronica');
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+            expect(scope.$eval('greet(name)', {}, { unwrapPromises: true })).toBe('Hi undefined!');
 
             scope.$digest();
-            expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
+            expect(scope.$eval('greet(name)', {}, { unwrapPromises: true })).toBe('Hi Veronica!');
           });
 
 
           it('should evaluate and dereference promises used as array indexes', function() {
             scope.childIndex = promise;
             scope.kids = ['Adam', 'Veronica', 'Elisa'];
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+            expect(scope.$eval('kids[childIndex]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+            expect(scope.$eval('kids[childIndex]', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve(1);
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+            expect(scope.$eval('kids[childIndex]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
+            expect(scope.$eval('kids[childIndex]', {}, { unwrapPromises: true })).toBe('Veronica');
           });
 
 
@@ -1068,16 +1101,16 @@ describe('parser', function() {
             scope.childKey = promise;
             scope.kids = {'a': 'Adam', 'v': 'Veronica', 'e': 'Elisa'};
 
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+            expect(scope.$eval('kids[childKey]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+            expect(scope.$eval('kids[childKey]', {}, { unwrapPromises: true })).toBe(undefined);
 
             deferred.resolve('v');
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+            expect(scope.$eval('kids[childKey]', {}, { unwrapPromises: true })).toBe(undefined);
 
             scope.$digest();
-            expect(scope.$eval('kids[childKey]')).toBe('Veronica');
+            expect(scope.$eval('kids[childKey]', {}, { unwrapPromises: true })).toBe('Veronica');
           });
 
 

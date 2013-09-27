@@ -777,7 +777,9 @@ describe('Scope', function() {
 
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect(isolateScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
-      expect($rootScope.$$asyncQueue).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
+
+      var queueExpressions = map($rootScope.$$asyncQueue, function (item) { return item.expr; });
+      expect(queueExpressions).toEqual(['rootExpression', 'childExpression', 'isolateExpression']);
     }));
 
 

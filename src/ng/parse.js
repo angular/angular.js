@@ -42,7 +42,7 @@ function ensureSafeObject(obj, fullExpression) {
   if (obj && obj.constructor === obj) {
     throw $parseMinErr('isecfn',
         'Referencing Function in Angular expressions is disallowed! Expression: {0}', fullExpression);
-  // 
+  //
   } else if (// isWindow(obj)
       obj && obj.document && obj.location && obj.alert && obj.setInterval) {
     throw $parseMinErr('isecwindow',
@@ -107,8 +107,10 @@ var Lexer = function (csp) {
 Lexer.prototype = {
   constructor: Lexer,
 
-  lex: function (text) {
+  lex: function (text, options) {
     this.text = text;
+    this.options = options || {};
+
     this.index = 0;
     this.ch;
     this.lastCh = ':'; // can start regexp
@@ -295,12 +297,12 @@ Lexer.prototype = {
       token.fn = OPERATORS[ident];
       token.json = OPERATORS[ident];
     } else {
-      var getter = getterFn(ident, this.csp, this.text);
+      var getter = getterFn(ident, this.csp, this.text, this.options);
       token.fn = extend(function(self, locals) {
         return (getter(self, locals));
       }, {
         assign: function(self, value) {
-          return setter(self, ident, value, parser.text);
+          return setter(self, ident, value, parser.text, parser.options);
         }
       });
     }
@@ -382,11 +384,12 @@ Parser.ZERO = function () { return 0; };
 Parser.prototype = {
   constructor: Parser,
 
-  parse: function (text, json) {
+  parse: function (text, json, options) {
     this.text = text;
     this.json = json;
+    this.options = options;
 
-    this.tokens = this.lexer.lex(text, this.csp);
+    this.tokens = this.lexer.lex(text, options);
 
     if (json) {
       // The extra level of aliasing is here, just in case the lexer misses something, so that
@@ -686,13 +689,13 @@ Parser.prototype = {
   fieldAccess: function(object) {
     var parser = this;
     var field = this.expect().text;
-    var getter = getterFn(field, this.csp, this.text);
+    var getter = getterFn(field, this.csp, this.text, this.options);
 
     return extend(function(scope, locals, self) {
       return getter(self || object(scope, locals), locals);
     }, {
       assign: function(scope, value, locals) {
-        return setter(object(scope, locals), field, value, parser.text);
+        return setter(object(scope, locals), field, value, parser.text, parser.options);
       }
     });
   },
@@ -710,7 +713,7 @@ Parser.prototype = {
 
       if (!o) return undefined;
       v = ensureSafeObject(o[i], parser.text);
-      if (v && v.then) {
+      if (v && v.then && parser.options.unwrapPromises) {
         p = v;
         if (!('$$v' in v)) {
           p.$$v = undefined;
@@ -757,7 +760,7 @@ Parser.prototype = {
         fnPtr(args[0], args[1], args[2], args[3], args[4]);
 
       // Check for promise
-      if (v && v.then) {
+      if (v && v.then && parser.options.unwrapPromises) {
         var p = v;
         if (!('$$v' in v)) {
           p.$$v = undefined;
@@ -833,7 +836,9 @@ Parser.prototype = {
 // Parser helper functions
 //////////////////////////////////////////////////
 
-function setter(obj, path, setValue, fullExp) {
+function setter(obj, path, setValue, fullExp, options) {
+  options = options || {};
+
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
     key = ensureSafeMemberName(element.shift(), fullExp);
@@ -843,7 +848,7 @@ function setter(obj, path, setValue, fullExp) {
       obj[key] = propertyObj;
     }
     obj = propertyObj;
-    if (obj.then) {
+    if (obj.then && options.unwrapPromises) {
       if (!("$$v" in obj)) {
         (function(promise) {
           promise.then(function(val) { promise.$$v = val; }); }
@@ -867,7 +872,7 @@ var getterFnCache = {};
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
   ensureSafeMemberName(key0, fullExp);
   ensureSafeMemberName(key1, fullExp);
   ensureSafeMemberName(key2, fullExp);
@@ -880,7 +885,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
     if (pathVal === null || pathVal === undefined) return pathVal;
 
     pathVal = pathVal[key0];
-    if (pathVal && pathVal.then) {
+    if (pathVal && pathVal.then && options.unwrapPromises) {
       if (!("$$v" in pathVal)) {
         promise = pathVal;
         promise.$$v = undefined;
@@ -891,7 +896,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
     if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
 
     pathVal = pathVal[key1];
-    if (pathVal && pathVal.then) {
+    if (pathVal && pathVal.then && options.unwrapPromises) {
       if (!("$$v" in pathVal)) {
         promise = pathVal;
         promise.$$v = undefined;
@@ -902,7 +907,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
     if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
 
     pathVal = pathVal[key2];
-    if (pathVal && pathVal.then) {
+    if (pathVal && pathVal.then && options.unwrapPromises) {
       if (!("$$v" in pathVal)) {
         promise = pathVal;
         promise.$$v = undefined;
@@ -913,7 +918,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
     if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
 
     pathVal = pathVal[key3];
-    if (pathVal && pathVal.then) {
+    if (pathVal && pathVal.then && options.unwrapPromises) {
       if (!("$$v" in pathVal)) {
         promise = pathVal;
         promise.$$v = undefined;
@@ -924,7 +929,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
     if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
 
     pathVal = pathVal[key4];
-    if (pathVal && pathVal.then) {
+    if (pathVal && pathVal.then && options.unwrapPromises) {
       if (!("$$v" in pathVal)) {
         promise = pathVal;
         promise.$$v = undefined;
@@ -936,9 +941,13 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
   };
 }
 
-function getterFn(path, csp, fullExp) {
-  if (getterFnCache.hasOwnProperty(path)) {
-    return getterFnCache[path];
+function getterFn(path, csp, fullExp, options) {
+  options = options || {};
+
+  var cacheKey = path;
+  cacheKey += '#unwrapPromises:' + (!!options.unwrapPromises).toString();
+  if (getterFnCache.hasOwnProperty(cacheKey)) {
+    return getterFnCache[cacheKey];
   }
 
   var pathKeys = path.split('.'),
@@ -947,12 +956,12 @@ function getterFn(path, csp, fullExp) {
 
   if (csp) {
     fn = (pathKeysLength < 6)
-        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp)
+        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, options)
         : function(scope, locals) {
           var i = 0, val;
           do {
             val = cspSafeGetterFn(
-                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp
+                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp, options
                   )(scope, locals);
 
             locals = undefined; // clear after first iteration
@@ -971,21 +980,23 @@ function getterFn(path, csp, fullExp) {
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
                       : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
-              'if (s && s.then) {\n' +
-                ' if (!("$$v" in s)) {\n' +
-                  ' p=s;\n' +
-                  ' p.$$v = undefined;\n' +
-                  ' p.then(function(v) {p.$$v=v;});\n' +
-                  '}\n' +
-                ' s=s.$$v\n' +
-              '}\n';
+              (options.unwrapPromises
+                ? 'if (s && s.then) {\n' +
+                  ' if (!("$$v" in s)) {\n' +
+                    ' p=s;\n' +
+                    ' p.$$v = undefined;\n' +
+                    ' p.then(function(v) {p.$$v=v;});\n' +
+                    '}\n' +
+                  ' s=s.$$v\n' +
+                '}\n'
+                : '');
     });
     code += 'return s;';
     fn = Function('s', 'k', code); // s=scope, k=locals
     fn.toString = function() { return code; };
   }
 
-  return getterFnCache[path] = fn;
+  return getterFnCache[cacheKey] = fn;
 }
 
 ///////////////////////////////////
@@ -1032,21 +1043,37 @@ function getterFn(path, csp, fullExp) {
 function $ParseProvider() {
   var cache = {};
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
-    return function(exp) {
+    return function(exp, options) {
       switch (typeof exp) {
         case 'string':
-          if (cache.hasOwnProperty(exp)) {
-            return cache[exp];
+          options = options || {};
+          options.unwrapPromises = !!options.unwrapPromises;
+
+          var cacheKey = exp;
+          for (var option in options) {
+            if (options.hasOwnProperty(option)) {
+              cacheKey += '#' + option + ':' + options[option].toString();
+            }
+          }
+
+          if (cache.hasOwnProperty(cacheKey)) {
+            return cache[cacheKey];
           }
 
           var lexer = new Lexer($sniffer.csp);
           var parser = new Parser(lexer, $filter, $sniffer.csp);
-          return cache[exp] = parser.parse(exp, false);
+          return cache[cacheKey] = parser.parse(exp, false, options);
 
         case 'function':
+          if (options && !equals(options, {})) {
+            throw new $parseMinErr('options', 'No options available for the $parse() call');
+          }
           return exp;
 
         default:
+          if (options && !equals(options, {})) {
+            throw new $parseMinErr('options', 'No options available for the $parse() call');
+          }
           return noop;
       }
     };
