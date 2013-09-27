@@ -356,7 +356,7 @@ function $RootScopeProvider(){
        *    `oldCollection` object is a copy of the former collection data.
        *    The `scope` refers to the current scope.
        *
-       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function 
+       * @returns {function()} Returns a de-registration function for this listener. When the de-registration function
        * is executed, the internal watch operation is terminated.
        */
       $watchCollection: function(obj, listener) {
@@ -707,8 +707,8 @@ function $RootScopeProvider(){
         this.$$asyncQueue.push(expr);
       },
 
-      $$postDigest : function(expr) {
-        this.$$postDigestQueue.push(expr);
+      $$postDigest : function(fn) {
+        this.$$postDigestQueue.push(fn);
       },
 
       /**
