@@ -623,7 +623,6 @@ function $CompileProvider($provide) {
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             var attrStartName = false;
             var attrEndName = false;
-            var index;
 
             attr = nAttrs[j];
             if (!msie || msie >= 8 || attr.specified) {
