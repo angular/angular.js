@@ -101,17 +101,34 @@ function orderByFilter($parse){
         }
         get = $parse(predicate);
       }
-      return reverseComparator(function(a,b){
-        return compare(get(a),get(b));
-      }, descending);
+      return {
+        getter: get,
+        comparator: reverseComparator(function(a, b) {
+          return compare(a, b);
+        }, descending)
+      };
     });
-    var arrayCopy = [];
-    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
-    return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
+
+    // Schwartzian transform
+    var sorted = map(array, function(item) {
+      return {
+        item: item,
+        predicate: map(sortPredicate, function(obj) {
+          return obj.getter(item);
+        })
+      };
+    }).sort(reverseComparator(comparator, reverseOrder));
+
+    return map(sorted, function(obj) {
+      return obj.item;
+    });
 
     function comparator(o1, o2){
       for ( var i = 0; i < sortPredicate.length; i++) {
-        var comp = sortPredicate[i](o1, o2);
+        var comp = sortPredicate[i].comparator(
+          o1.predicate[i],
+          o2.predicate[i]
+        );
         if (comp !== 0) return comp;
       }
       return 0;
