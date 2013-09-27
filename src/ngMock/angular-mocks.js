@@ -1958,7 +1958,7 @@ angular.mock.clearDataCache = function() {
    *       inject(function(version) {
    *         expect(version).toEqual('overridden');
    *       });
-   *     ));
+   *     });
    *   });
    *
    * </pre>
