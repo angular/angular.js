@@ -151,7 +151,7 @@ into output that looks like money."
 
 Notice that we achieved this application behavior not by calling Angular methods, nor by
 implementing application specific behavior as a framework. We achieved the behavior because the
-browser behaved more in line with what is needed for a dynamic web application rather then what is
+browser behaved more in line with what is needed for a dynamic web application rather than what is
 needed for a static document. Angular has lowered the impedance mismatch to the point where no
 library/framework calls are needed.
 
