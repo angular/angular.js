@@ -57,6 +57,7 @@ var ngTranscludeDirective = ngDirective({
       throw minErr('ngTransclude')('orphan',
           'Illegal use of ngTransclude directive in the template! ' +
           'No parent directive that requires a transclusion found. ' +
+          'Element: {0}',
           startingTag($element));
     }
 
