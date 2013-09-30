@@ -1046,7 +1046,10 @@ describe('$compile', function() {
                  priority: priority,
                  compile: function() {
                    log(name + '-C');
-                   return function() { log(name + '-L'); }
+                   return {
+                     pre: function() { log(name + '-P'); },
+                     post: function() { log(name + '-L'); }
+                   }
                  }
                }, options || {}));
               });
@@ -1075,6 +1078,7 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
+              'first-P; second-P; last-P; third-P; ' +
               'third-L; first-L; second-L; last-L');
 
             var span = element.find('span');
@@ -1099,6 +1103,7 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
+              'iFirst-P; iSecond-P; iThird-P; iLast-P; ' +
               'iFirst-L; iSecond-L; iThird-L; iLast-L');
 
             var div = element.find('div');
@@ -1124,6 +1129,7 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
+              'first-P; second-P; last-P; third-P; ' +
               'third-L; first-L; second-L; last-L');
 
             var span = element.find('span');
@@ -1149,6 +1155,7 @@ describe('$compile', function() {
             $rootScope.$digest();
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
+              'iFirst-P; iSecond-P; iThird-P; iLast-P; ' +
               'iFirst-L; iSecond-L; iThird-L; iLast-L');
 
             var div = element.find('div');
@@ -2824,11 +2831,8 @@ describe('$compile', function() {
     });
 
 
-    it('should make the result of a transclusion available to the parent directive in pre- and post- linking phase (templateUrl)',
+    it('should make the result of a transclusion available to the parent directive in post- linking phase (templateUrl)',
         function() {
-          // when compiling an async directive the transclusion is always processed before the directive
-          // this is different compared to sync directive. delaying the transclusion makes little sense.
-
       module(function() {
         directive('trans', function(log) {
           return {
@@ -2850,7 +2854,7 @@ describe('$compile', function() {
 
         element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
         $rootScope.$apply();
-        expect(log).toEqual('pre(unicorn!); post(unicorn!)');
+        expect(log).toEqual('pre(); post(unicorn!)');
       });
     });
   });

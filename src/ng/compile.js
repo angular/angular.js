@@ -585,9 +585,10 @@ function $CompileProvider($provide) {
                           on('$destroy', bind(transcludeScope, transcludeScope.$destroy));
                     };
                   })(childTranscludeFn || transcludeFn)
-              );
+              ).performAll();
             } else {
-              nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
+              nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn)
+                  .performAll();
             }
           } else if (childLinkFn) {
             childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
@@ -1067,28 +1068,39 @@ function $CompileProvider($provide) {
           });
         }
 
-        // PRELINKING
-        for(i = 0, ii = preLinkFns.length; i < ii; i++) {
-          try {
-            linkFn = preLinkFns[i];
-            linkFn(scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.require, $element));
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
-          }
-        }
-
-        // RECURSION
-        childLinkFn && childLinkFn(scope, linkNode.childNodes, undefined, boundTranscludeFn);
-
-        // POSTLINKING
-        for(i = 0, ii = postLinkFns.length; i < ii; i++) {
-          try {
-            linkFn = postLinkFns[i];
-            linkFn(scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.require, $element));
-          } catch (e) {
-            $exceptionHandler(e, startingTag($element));
+        return {
+          preLinkFn: function() {
+            // PRELINKING
+            for(i = 0, ii = preLinkFns.length; i < ii; i++) {
+              try {
+                linkFn = preLinkFns[i];
+                linkFn(scope, $element, attrs,
+                    linkFn.require && getControllers(linkFn.require, $element));
+              } catch (e) {
+                $exceptionHandler(e, startingTag($element));
+              }
+            }
+          },
+          childLinkFn: function() {
+            // RECURSION
+            childLinkFn && childLinkFn(scope, linkNode.childNodes, undefined, boundTranscludeFn);
+          },
+          postLinkFn: function() {
+            // POSTLINKING
+            for(i = 0, ii = postLinkFns.length; i < ii; i++) {
+              try {
+                linkFn = postLinkFns[i];
+                linkFn(scope, $element, attrs,
+                    linkFn.require && getControllers(linkFn.require, $element));
+              } catch (e) {
+                $exceptionHandler(e, startingTag($element));
+              }
+            }
+          },
+          performAll: function() {
+            this.preLinkFn();
+            this.childLinkFn();
+            this.postLinkFn();
           }
         }
       }
@@ -1235,10 +1247,16 @@ function $CompileProvider($provide) {
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
 
-            afterTemplateNodeLinkFn(
-              beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement, controller),
-              scope, linkNode, $rootElement, controller
-            );
+            var beforeNodeLinkFn = beforeTemplateNodeLinkFn(undefined, scope, linkNode,
+                $rootElement, controller);
+            var afterNodeLinkFn = afterTemplateNodeLinkFn(undefined, scope, linkNode,
+                $rootElement, controller);
+            beforeNodeLinkFn.preLinkFn();
+            afterNodeLinkFn && afterNodeLinkFn.preLinkFn();
+            afterTemplateChildLinkFn && afterTemplateChildLinkFn(scope, linkNode.childNodes,
+                undefined, controller);
+            beforeNodeLinkFn.postLinkFn();
+            afterNodeLinkFn && afterNodeLinkFn.postLinkFn();
           }
           linkQueue = null;
         }).
@@ -1252,10 +1270,33 @@ function $CompileProvider($provide) {
           linkQueue.push(node);
           linkQueue.push(rootElement);
           linkQueue.push(controller);
+          return {
+            performAll: function() {}
+          }
         } else {
-          afterTemplateNodeLinkFn(function() {
-            beforeTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, controller);
-          }, scope, node, rootElement, controller);
+          var beforeNodeLinkFn = beforeTemplateNodeLinkFn(undefined, scope, node, rootElement,
+              controller);
+          var afterNodeLinkFn = afterTemplateNodeLinkFn(undefined, scope, node, rootElement,
+              controller);
+          return {
+            preLinkFn: function() {
+              beforeNodeLinkFn.preLinkFn();
+              afterNodeLinkFn && afterNodeLinkFn.preLinkFn();
+            },
+            childLinkFn: function() {
+              afterTemplateChildLinkFn && afterTemplateChildLinkFn(scope, node.childNodes,
+                  undefined, controller);
+            },
+            postLinkFn: function() {
+              beforeNodeLinkFn.postLinkFn();
+              afterNodeLinkFn && afterNodeLinkFn.postLinkFn();
+            },
+            performAll: function() {
+              this.preLinkFn();
+              this.childLinkFn();
+              this.postLinkFn();
+            }
+          }
         }
       };
     }
