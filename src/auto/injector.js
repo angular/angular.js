@@ -147,7 +147,7 @@ function annotate(fn) {
  * @description
  * Invoke the method and supply the method arguments from the `$injector`.
  *
- * @param {!function} fn The function to invoke. The function arguments come form the function annotation.
+ * @param {!function} fn The function to invoke. Function parameters are injected according to the {@link http://docs.angularjs.org/guide/di $inject Annotation} rules.
  * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
