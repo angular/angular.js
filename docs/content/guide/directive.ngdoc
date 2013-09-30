@@ -39,11 +39,11 @@ the following example.
    </script>
    <div ng-controller="Ctrl1">
      Hello <input ng-model='name'> <hr/>
-     &lt;span ng:bind="name"&gt; <span ng:bind="name"></span> <br/>
-     &lt;span ng_bind="name"&gt; <span ng_bind="name"></span> <br/>
-     &lt;span ng-bind="name"&gt; <span ng-bind="name"></span> <br/>
-     &lt;span data-ng-bind="name"&gt; <span data-ng-bind="name"></span> <br/>
-     &lt;span x-ng-bind="name"&gt; <span x-ng-bind="name"></span> <br/>
+     <span ng:bind="name"></span> <br/>
+     <span ng_bind="name"></span> <br/>
+     <span ng-bind="name"></span> <br/>
+     <span data-ng-bind="name"></span> <br/>
+     <span x-ng-bind="name"></span> <br/>
    </div>
   </doc:source>
   <doc:scenario>
