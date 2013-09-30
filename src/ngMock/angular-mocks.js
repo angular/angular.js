@@ -1785,15 +1785,35 @@ angular.mock.e2e.$httpBackendDecorator = ['$rootScope', '$delegate', '$browser',
 
 
 angular.mock.clearDataCache = function() {
-  var key,
+  var elementInfo, initElementInfo,
+      elementKey,
+      eventName,
       cache = angular.element.cache;
 
-  for(key in cache) {
-    if (cache.hasOwnProperty(key)) {
-      var handle = cache[key].handle;
+  for(elementKey in cache) {
+    if (!cache.hasOwnProperty(elementKey)) continue;
 
-      handle && angular.element(handle.elem).off();
-      delete cache[key];
+    elementInfo = cache[elementKey];
+    initElementInfo = angular.mock.initialElementCache[elementKey];
+
+    if (initElementInfo) {
+      for (eventName in elementInfo.events) {
+        if (!elementInfo.hasOwnProperty(eventName)) continue;
+        if (!initElementInfo.events || !initElementInfo.events[eventName]) {
+          angular.element(elementInfo.handle.elem).off(eventName);
+        } else {
+          angular.forEach(elementInfo.events[eventName], function(listener) {
+            if (angular.indexOf(initElementInfo.events[eventName], listener) == -1) {
+              angular.element(elementInfo.handle.elem).off(eventName, listener);
+            }
+          });
+        }
+      }
+
+      cache[elementKey] = initElementInfo;
+    } else {
+      angular.element(elementInfo.handle && elementInfo.handle.elem).off();
+      delete cache[elementKey];
     }
   }
 };
@@ -1805,6 +1825,10 @@ angular.mock.clearDataCache = function() {
   var currentSpec = null;
 
   beforeEach(function() {
+    if (!angular.mock.initialElementCache) {
+      angular.mock.initialElementCache = angular.copy(angular.element.cache);
+      angular.mock.clearDataCache();
+    }
     currentSpec = this;
   });
 
