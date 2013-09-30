@@ -1264,6 +1264,35 @@ describe('$compile', function() {
             expect(element.text()).toBe('boom!1|boom!2|');
           });
         });
+
+
+        it('should support templateUrl with replace', function() {
+          // a regression https://github.com/angular/angular.js/issues/3792
+          module(function($compileProvider) {
+            $compileProvider.directive('simple', function() {
+              return {
+                templateUrl: '/some.html',
+                replace: true
+              };
+            });
+          });
+
+          inject(function($templateCache, $rootScope, $compile) {
+            $templateCache.put('/some.html',
+              '<div ng-switch="i">' +
+                '<div ng-switch-when="1">i = 1</div>' +
+                '<div ng-switch-default>I dont know what `i` is.</div>' +
+              '</div>');
+
+            element = $compile('<div simple></div>')($rootScope);
+
+            $rootScope.$apply(function() {
+              $rootScope.i = 1;
+            });
+
+            expect(element.html()).toContain('i = 1');
+          });
+        });
       });
 
 
@@ -2824,7 +2853,7 @@ describe('$compile', function() {
     });
 
 
-    it('should make the result of a transclusion available to the parent directive in pre- and post- linking phase (templateUrl)',
+    it('should make the result of a transclusion available to the parent directive in post- linking phase (templateUrl)',
         function() {
           // when compiling an async directive the transclusion is always processed before the directive
           // this is different compared to sync directive. delaying the transclusion makes little sense.
@@ -2834,13 +2863,8 @@ describe('$compile', function() {
           return {
             transclude: true,
             templateUrl: 'trans.html',
-            link: {
-              pre: function($scope, $element) {
-                log('pre(' + $element.text() + ')');
-              },
-              post: function($scope, $element) {
-                log('post(' + $element.text() + ')');
-              }
+            link: function($scope, $element) {
+              log('post(' + $element.text() + ')');
             }
           };
         });
@@ -2850,7 +2874,7 @@ describe('$compile', function() {
 
         element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
         $rootScope.$apply();
-        expect(log).toEqual('pre(unicorn!); post(unicorn!)');
+        expect(log).toEqual('post(unicorn!)');
       });
     });
   });
