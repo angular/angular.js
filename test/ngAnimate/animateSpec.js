@@ -503,7 +503,6 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
           $animate.removeClass(element, 'ng-hide');
-          $timeout.flush();
           expect(element).toBeShown();
         }));
 
@@ -554,7 +553,6 @@ describe("ngAnimate", function() {
           element.addClass('ng-hide');
           expect(element).toBeHidden();
           $animate.removeClass(element, 'ng-hide');
-          $timeout.flush();
           expect(element).toBeShown();
 
           $animate.enabled(true);

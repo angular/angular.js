@@ -481,7 +481,7 @@ angular.module('ngAnimate', ['ng'])
           //avoid calling done() since there is no need to remove any
           //data or className values since this happens earlier than that
           //and also use a timeout so that it won't be asynchronous
-          $timeout(onComplete || noop, 0, false);
+          onComplete && onComplete();
           return;
         }
 
