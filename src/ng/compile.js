@@ -770,6 +770,55 @@ function $CompileProvider($provide) {
           linkFn,
           directiveValue;
 
+      for(var i = 0, ii = directives.length; i < ii; i++) {
+        directive = directives[i];
+        if (terminalPriority > directive.priority) {
+          break; // prevent further processing of directives
+        }
+
+        directiveName = directive.name;
+
+        if (directiveValue = directive.scope) {
+          assertNoDuplicate('new/isolated scope', newIsolateScopeDirective, directive, $compileNode);
+
+          // skip the check for directives with async templates, we'll check the derived sync directive when
+          // the template arrives
+          if (!directive.templateUrl && isObject(directiveValue)) {
+            newIsolateScopeDirective = directive;
+          }
+        }
+
+        if (!directive.templateUrl && directive.controller) {
+          directiveValue = directive.controller;
+          controllerDirectives = controllerDirectives || {};
+          assertNoDuplicate("'" + directiveName + "' controller",
+              controllerDirectives[directiveName], directive, $compileNode);
+          controllerDirectives[directiveName] = directive;
+        }
+
+        if (directiveValue = directive.transclude) {
+          terminalPriority = directive.priority;
+          assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
+          transcludeDirective = directive;
+        }
+
+        if (directive.template) {
+          assertNoDuplicate('template', templateDirective, directive, $compileNode);
+          templateDirective = directive;
+        }
+
+        if (directive.templateUrl) {
+          assertNoDuplicate('template', templateDirective, directive, $compileNode);
+          templateDirective = directive;
+        }
+
+        if (directive.terminal) {
+          terminalPriority = Math.max(terminalPriority, directive.priority);
+        }
+      }
+
+      terminalPriority = -Number.MAX_VALUE;
+
       // executes all directives on the current element
       for(var i = 0, ii = directives.length; i < ii; i++) {
         directive = directives[i];
@@ -789,13 +838,9 @@ function $CompileProvider($provide) {
         if (directiveValue = directive.scope) {
           newScopeDirective = newScopeDirective || directive;
 
-          // skip the check for directives with async templates, we'll check the derived sync directive when
-          // the template arrives
           if (!directive.templateUrl) {
-            assertNoDuplicate('new/isolated scope', newIsolateScopeDirective, directive, $compileNode);
             if (isObject(directiveValue)) {
               safeAddClass($compileNode, 'ng-isolate-scope');
-              newIsolateScopeDirective = directive;
             }
             safeAddClass($compileNode, 'ng-scope');
           }
@@ -803,17 +848,7 @@ function $CompileProvider($provide) {
 
         directiveName = directive.name;
 
-        if (!directive.templateUrl && directive.controller) {
-          directiveValue = directive.controller;
-          controllerDirectives = controllerDirectives || {};
-          assertNoDuplicate("'" + directiveName + "' controller",
-              controllerDirectives[directiveName], directive, $compileNode);
-          controllerDirectives[directiveName] = directive;
-        }
-
         if (directiveValue = directive.transclude) {
-          assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
-          transcludeDirective = directive;
           terminalPriority = directive.priority;
           if (directiveValue == 'element') {
             $template = groupScan(compileNode, attrStart, attrEnd)
@@ -832,9 +867,6 @@ function $CompileProvider($provide) {
         }
 
         if (directive.template) {
-          assertNoDuplicate('template', templateDirective, directive, $compileNode);
-          templateDirective = directive;
-
           directiveValue = (isFunction(directive.template))
               ? directive.template($compileNode, templateAttrs)
               : directive.template;
@@ -843,6 +875,7 @@ function $CompileProvider($provide) {
 
           if (directive.replace) {
             replaceDirective = directive;
+
             $template = jqLite('<div>' +
                                  trim(directiveValue) +
                                '</div>').contents();
@@ -877,9 +910,6 @@ function $CompileProvider($provide) {
         }
 
         if (directive.templateUrl) {
-          assertNoDuplicate('template', templateDirective, directive, $compileNode);
-          templateDirective = directive;
-
           if (directive.replace) {
             replaceDirective = directive;
           }
@@ -904,7 +934,6 @@ function $CompileProvider($provide) {
           nodeLinkFn.terminal = true;
           terminalPriority = Math.max(terminalPriority, directive.priority);
         }
-
       }
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope;
