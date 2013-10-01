@@ -3178,6 +3178,10 @@ describe('$compile', function() {
       $rootScope.$apply();
       expect(element.attr('href')).toBe('mailto:foo@bar.com');
 
+      $rootScope.testUrl = "tel:5558675309";
+      $rootScope.$apply();
+      expect(element.attr('href')).toBe('tel:5558675309');
+
       $rootScope.testUrl = "file:///foo/bar.html";
       $rootScope.$apply();
       expect(element.attr('href')).toBe('file:///foo/bar.html');
