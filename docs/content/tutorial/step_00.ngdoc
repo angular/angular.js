@@ -24,18 +24,15 @@ angular-seed, and run the application in the browser.
         <ul>
           <li><b>For node.js users:</b>
             <ol>
-              <li>In a <i>separate</i> terminal tab or window, run
-<code>node ./scripts/web-server.js</code> to start the web server.</li>
+              <li>In a <i>separate</i> terminal tab or window, run <code>node ./scripts/web-server.js</code> to start the web server.</li>
               <li>Open a browser window for the app and navigate to <a
-href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
+              href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
             </ol>
           </li>
           <li><b>For other http servers:</b>
             <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code>
-directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
+              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
+              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
             </ol>
           </li>
         </ul>
@@ -56,18 +53,14 @@ directory.</li>
         <ul>
           <li><b>For node.js users:</b>
             <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node
-scripts\web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
+              <li>In a <i>separate</i> terminal tab or window, run <code>node scripts\web-server.js</code> to start the web server.</li>
+              <li>Open a browser window for the app and navigate to <a href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html</a></li>
             </ol>
           </li>
           <li><b>For other http servers:</b>
             <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code>
-directory.</li>
-              <li>Navigate in your browser to
-<code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
+              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
+              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
             </ol>
           </li>
         </ul>
@@ -109,9 +102,11 @@ __`app/index.html`:__
 
           <html ng-app>
 
-  The `ng-app` attribute represents an Angular directive (named `ngApp`; Angular uses
-  `name-with-dashes` for attribute names and `camelCase` for the corresponding directive name)
-  used to flag an element which Angular should consider to be the root element of our application.
+  The `ng-app` attribute represents an Angular directive named `ngApp` (Angular uses
+  `name-with-dashes` for its custom attributes and `camelCase` for the corresponding directives
+  that implements them).
+  This directive is used to flag the html element that Angular should consider to be the root element
+  of our application.
   This gives application developers the freedom to tell Angular if the entire html page or only a
   portion of it should be treated as the Angular application.
 
@@ -153,7 +148,7 @@ for most cases. In advanced cases, such as when using script loaders, you can us
 There are 3 important things that happen during the app bootstrap:
 
 1. The {@link api/AUTO.$injector injector} that will be used for dependency injection
-   within this app is created.
+   when this app is created.
 
 2. The injector will then create the {@link api/ng.$rootScope root scope} that will
    become the context for the model of our application.

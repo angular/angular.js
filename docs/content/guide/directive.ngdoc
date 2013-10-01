@@ -404,10 +404,6 @@ compiler}. The attributes are:
   * `controllerAs` - Controller alias at the directive scope. An alias for the controller so it
     can be referenced at the directive template. The directive needs to define a scope for this
     configuration to be used. Useful in the case when directive is used as component.
-  
-  * `require` - Require another controller be passed into current directive linking function. The
-    `require` takes a name of the directive controller to pass in. If no such controller can be
-    found an error is raised. The name can be prefixed with:
 
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
     declaration style. If omitted, the default (attributes only) is used.
@@ -434,8 +430,11 @@ compiler}. The attributes are:
     a string value representing the url.  In either case, the template URL is passed through {@link
     api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
 
-  * `replace` - if set to `true` then the template will replace the current element, rather than
-    append the template to the element.
+  * `replace` - specify where the template should be inserted. Defaults to `false`.
+
+    * `true` - the template will replace the current element.
+    * `false` - the template will replace the contents of the current element.
+
 
   * `transclude` - compile the content of the element and make it available to the directive.
     Typically used with {@link api/ng.directive:ngTransclude

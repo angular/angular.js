@@ -5,10 +5,10 @@
  * @name ng.directive:ngShow
  *
  * @description
- * The `ngShow` directive shows and hides the given HTML element conditionally based on the expression
- * provided to the ngShow attribute. The show and hide mechanism is a achieved by removing and adding
- * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
- * in AngularJS which sets the display style to none (using an !important flag).
+ * The `ngShow` directive shows or hides the given HTML element based on the expression
+ * provided to the ngShow attribute. The element is shown or hidden by removing or adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
+ * in AngularJS and sets the display style to none (using an !important flag).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is visible) -->
@@ -54,9 +54,9 @@
  * ## A note about animations with ngShow
  *
  * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
- * is true and false. This system works similar to the animation system present with ngClass, however, the
- * only difference is that you must also include the !important flag to override the display property so
- * that you can perform an animation when the element is hidden during the time of the animation.
+ * is true and false. This system works like the animation system present with ngClass except that
+ * you must also include the !important flag to override the display property
+ * so that you can perform an animation when the element is hidden during the time of the animation.
  *
  * <pre>
  * //
@@ -157,10 +157,10 @@ var ngShowDirective = ['$animate', function($animate) {
  * @name ng.directive:ngHide
  *
  * @description
- * The `ngHide` directive shows and hides the given HTML element conditionally based on the expression
- * provided to the ngHide attribute. The show and hide mechanism is a achieved by removing and adding
- * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
- * in AngularJS which sets the display style to none (using an !important flag).
+ * The `ngHide` directive shows or hides the given HTML element based on the expression
+ * provided to the ngHide attribute. The element is shown or hidden by removing or adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
+ * in AngularJS and sets the display style to none (using an !important flag).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is hidden) -->
@@ -206,8 +206,8 @@ var ngShowDirective = ['$animate', function($animate) {
  * ## A note about animations with ngHide
  *
  * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
- * is true and false. This system works similar to the animation system present with ngClass, however, the
- * only difference is that you must also include the !important flag to override the display property so
+ * is true and false. This system works like the animation system present with ngClass, except that
+ * you must also include the !important flag to override the display property so
  * that you can perform an animation when the element is hidden during the time of the animation.
  *
  * <pre>

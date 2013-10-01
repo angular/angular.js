@@ -455,7 +455,7 @@ describe('ngView', function() {
   });
 
 
-  it('should set $scope and $controllerController on the view', function() {
+  it('should set $scope and $controllerController on the view elements (except for non-element nodes)', function() {
     function MyCtrl($scope) {
       $scope.state = 'WORKS';
       $scope.ctrl = this;
@@ -466,11 +466,14 @@ describe('ngView', function() {
     });
 
     inject(function($templateCache, $location, $rootScope, $route) {
-      $templateCache.put('tpl.html', [200, '<div>{{state}}</div>', {}]);
+      // in the template the white-space before the div is an intentional non-element node,
+      // a text might get wrapped into span so it's safer to just use white space
+      $templateCache.put('tpl.html', [200, '   \n   <div>{{state}}</div>', {}]);
 
       $location.url('/foo');
       $rootScope.$digest();
-      expect(element.text()).toEqual('WORKS');
+      // using toMatch because in IE8+jquery the space doesn't get preserved. jquery bug?
+      expect(element.text()).toMatch(/\s*WORKS/);
 
       var div = element.find('div');
       expect(div.parent()[0].nodeName.toUpperCase()).toBeOneOf('NG:VIEW', 'VIEW');
@@ -600,6 +603,46 @@ describe('ngView animations', function() {
         expect(itemA).not.toEqual(itemB);
         var itemB = $animate.flushNext('enter').element;
     }));
+
+    it('should render ngClass on ngView',
+      inject(function($compile, $rootScope, $templateCache, $animate, $location, $timeout) {
+
+        var item;
+        $rootScope.tpl = 'one';
+        $rootScope.klass = 'classy';
+        element = $compile(html('<div><div ng-view ng-class="klass"></div></div>'))($rootScope);
+        $rootScope.$digest();
+
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        item = $animate.flushNext('enter').element;
+
+        $animate.flushNext('addClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('classy')).toBe(true);
+
+        $rootScope.klass = 'boring';
+        $rootScope.$digest();
+
+        $animate.flushNext('removeClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('classy')).toBe(false);
+        expect(item.hasClass('boring')).toBe(true);
+
+        $location.path('/bar');
+        $rootScope.$digest();
+
+        $animate.flushNext('leave').element;
+        item = $animate.flushNext('enter').element;
+
+        $animate.flushNext('addClass').element;
+        $animate.flushNext('addClass').element;
+
+        expect(item.hasClass('boring')).toBe(true);
+      }));
   });
 
   it('should not double compile when the route changes', function() {
@@ -628,13 +671,8 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('enter'); //ngView
-
-      $timeout.flush();
-
       $animate.flushNext('enter'); //repeat 1
       $animate.flushNext('enter'); //repeat 2
-
-      $timeout.flush();
 
       expect(element.text()).toEqual('12');
 
@@ -642,17 +680,17 @@ describe('ngView animations', function() {
       $rootScope.$digest();
 
       $animate.flushNext('leave'); //ngView old
-      $timeout.flush();
+
+      $rootScope.$digest();
 
       $animate.flushNext('enter'); //ngView new
-      $timeout.flush();
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
       $animate.flushNext('enter'); //ngRepeat 3
       $animate.flushNext('enter'); //ngRepeat 4
 
-      $timeout.flush();
+      $rootScope.$digest();
 
       expect(element.text()).toEqual('34');
 

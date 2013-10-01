@@ -10,6 +10,8 @@
  * the click event. This version handles them immediately, and then prevents the
  * following click event from propagating.
  *
+ * Requires the {@link ngTouch `ngTouch`} module to be installed.
+ *
  * This directive can fall back to using an ordinary click event, and so works on desktop
  * browsers as well as mobile.
  *

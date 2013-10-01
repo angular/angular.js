@@ -112,13 +112,29 @@ describe('$sniffer', function() {
         else if(/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
         }
-        else if(/ie/i.test(ua)) {
+        else if(/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         else if(/opera/i.test(ua)) {
           expectedPrefix = 'O';
         }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);
+      });
+    });
+
+    it('should still work for an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.vendorPrefix).toBe('webkit');
       });
     });
 
@@ -201,6 +217,23 @@ describe('$sniffer', function() {
         expect($sniffer.animations).toBe(true);
       });
     });
+
+    it('should be true when an older version of Webkit is used', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
   });
 
   describe('transitions', function() {
@@ -282,5 +315,31 @@ describe('$sniffer', function() {
       });
     });
 
+  });
+
+
+  describe('history', function() {
+    it('should be true on Boxee box with an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        var win = {
+          history: {
+            pushState: noop
+          },
+          navigator: {
+            userAgent: 'boxee (alpha/Darwin 8.7.1 i386 - 0.9.11.5591)'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.history).toBe(false);
+      });
+    });
   });
 });

@@ -1,64 +1,15 @@
 var docsApp = {
   controller: {},
   directive: {},
-  serviceFactory: {}
+  serviceFactory: {},
+  filter: {}
 };
 
 docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
-  $scope.versions = expandVersions(NG_VERSIONS);
-  $scope.version  = ($scope.version || NG_VERSION).match(/^([\d\.]+\d+\S+)/)[1]; //match only the number
-
-  $scope.jumpToDocsVersion = function(value) {
-    var isLastStable,
-        version,
-        versions = $scope.versions;
-    for(var i=versions.length-1;i>=0;i--) {
-      var v = versions[i];
-      if(v.version == value) {
-        var next = versions[i - 1];
-        isLastStable = v.stable && (!next || next && !next.stable);
-        version = v;
-        break;
-      }
-    };
-
-    if(version && version.version >= '1.0.0') {
-      //the older versions have a different path to the docs within their repo directory
-      var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
-
-      //the last stable version should redirect to docs.angularjs.org instead of code.angularjs.org
-      var url = 'http://' +
-                  (isLastStable ?
-                    'docs.angularjs.org' :
-                    'code.angularjs.org/' + version.version + '/' + docsPath);
-
-      $window.location = url;
-    }
-  };
-
-  function expandVersions(angularVersions) {
-    var unstableVersionStart = 0;
-    angularVersions.forEach(function(version) {
-      var split = version.split('.');
-      unstableVersionStart = split[1] % 2 == 1 ?
-                        Math.max(unstableVersionStart, parseInt(split[0] + '' + split[1])) :
-                        unstableVersionStart;
-    });
-
-    var versions = [];
-    for(var i=angularVersions.length-1;i>=0;i--) {
-      var version = angularVersions[i];
-      var split = version.split('.');
-      var stable = parseInt(split[0] + '' + split[1]) < unstableVersionStart;
-      versions.push({
-        version : version,
-        stable : stable,
-        title : 'AngularJS - v' + version,
-        group : (stable ? 'Stable' : 'Unstable')
-      });
-    };
-
-    return versions;
+  $scope.docs_versions = NG_VERSIONS;
+  $scope.docs_version  = NG_VERSIONS[0];
+  $scope.jumpToDocsVersion = function(version) {
+    $window.location = version.url;
   };
 }];
 
@@ -305,7 +256,40 @@ docsApp.directive.docTutorialReset = function() {
 };
 
 
-docsApp.directive.errorDisplay = ['$location', function ($location) {
+docsApp.filter.errorLink = ['$sanitize', function ($sanitize) {
+  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/g,
+      MAILTO_REGEXP = /^mailto:/,
+      STACK_TRACE_REGEXP = /:\d+:\d+$/;
+
+  var truncate = function (text, nchars) {
+    if (text.length > nchars) {
+      return text.substr(0, nchars - 3) + '...';
+    }
+    return text;
+  };
+
+  return function (text, target) {
+    var targetHtml = target ? ' target="' + target + '"' : '';
+
+    if (!text) return text;
+
+    return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
+      if (STACK_TRACE_REGEXP.test(url)) {
+        return url;
+      }
+
+      // if we did not match ftp/http/mailto then assume mailto
+      if (!/^((ftp|https?):\/\/|mailto:)/.test(url)) url = 'mailto:' + url;
+
+      return '<a' + targetHtml + ' href="' + url +'">' +
+                truncate(url.replace(MAILTO_REGEXP, ''), 60) +
+              '</a>';
+    }));
+  };
+}];
+
+
+docsApp.directive.errorDisplay = ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
   var interpolate = function (formatString) {
     var formatArgs = arguments;
     return formatString.replace(/\{\d+\}/g, function (match) {
@@ -328,7 +312,7 @@ docsApp.directive.errorDisplay = ['$location', function ($location) {
       for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
-      element.text(interpolate.apply(null, formatArgs));
+      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
     }
   };
 }];
@@ -375,7 +359,8 @@ docsApp.serviceFactory.prepareDefaultAppModule = function() {
     var moduleName = 'App';
     return {
       module : moduleName,
-      script : "angular.module('" + moduleName + "', ['" + deps.join("','") + "']);\n\n"
+      script : "angular.module('" + moduleName + "', [" + 
+          (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
     };
   };
 };
@@ -923,3 +908,7 @@ angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', '
   factory(docsApp.serviceFactory).
   directive(docsApp.directive).
   controller(docsApp.controller);
+
+angular.forEach(docsApp.filter, function (docsAppFilter, filterName) {
+  angular.module('docsApp').filter(filterName, docsAppFilter);
+});

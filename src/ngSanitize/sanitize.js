@@ -6,25 +6,14 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * @ngdoc overview
  * @name ngSanitize
  * @description
- * 
+ *
+ * # ngSanitize
+ *
  * The `ngSanitize` module provides functionality to sanitize HTML.
- * 
- * # Installation
- * As a separate module, it must be loaded after Angular core is loaded; otherwise, an 'Uncaught Error:
- * No module: ngSanitize' runtime error will occur.
  *
- * <pre>
- *   <script src="angular.js"></script>
- *   <script src="angular-sanitize.js"></script>
- * </pre>
+ * {@installModule sanitize}
  *
- * # Usage
- * To make sure the module is available to your application, declare it as a dependency of you application
- * module.
- *
- * <pre>
- *   angular.module('app', ['ngSanitize']);
- * </pre>
+ * See {@link ngSanitize.$sanitize `$sanitize`} for usage.
  */
 
 /*
@@ -221,9 +210,10 @@ function htmlParser( html, handler ) {
 
       // Comment
       if ( html.indexOf("<!--") === 0 ) {
-        index = html.indexOf("-->");
+        // comments containing -- are not allowed unless they terminate the comment
+        index = html.indexOf("--", 4);
 
-        if ( index >= 0 ) {
+        if ( index >= 0 && html.lastIndexOf("-->", index) === index) {
           if (handler.comment) handler.comment( html.substring( 4, index ) );
           html = html.substring( index + 3 );
           chars = false;

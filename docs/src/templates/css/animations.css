@@ -16,9 +16,9 @@
 
 .nav-list li {
   margin:0!important;
-  padding:0 15px;
-  height:20px;
+  padding:2px 15px;
   overflow:hidden;
+  line-height:1.1em;
 }
 
 .slide-reveal.ng-enter {
@@ -62,13 +62,6 @@
 .expand.ng-leave.expand.ng-leave-active {
   opacity:0;
   height:0;
-}
-
-.animate-container.animations-off * {
-  -webkit-transition: none;
-  -moz-transition: none;
-  -o-transition: color 0 ease-in; /* opera is special :) */
-  transition: none;
 }
 
 .foldout.ng-enter,

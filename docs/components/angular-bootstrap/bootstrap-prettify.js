@@ -199,7 +199,6 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           deregisterEmbedRootScope;
 
       modules.push(['$provide', function($provide) {
-        $provide.value('$animate', $animate);
         $provide.value('$templateCache', $templateCache);
         $provide.value('$anchorScroll', angular.noop);
         $provide.value('$browser', $browser);

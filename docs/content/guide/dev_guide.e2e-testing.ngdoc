@@ -38,9 +38,9 @@ it('should filter results', function() {
 });
 </pre>
 This scenario describes the requirements of a Buzz Client, specifically, that it should be able to
-filter the stream of the user. It starts by entering a value in the 'user' input field, clicking
+filter the stream of the user. It starts by entering a value in the input field with ng-model="user", clicking
 the only button on the page, and then it verifies that there are 10 items listed. It then enters
-'Bees' in the 'filterText' input field and verifies that the list is reduced to a single item.
+'Bees' in the input field with ng-model='filterText'  and verifies that the list is reduced to a single item.
 
 The API section below lists the available commands and expectations for the Runner.
 
@@ -134,10 +134,10 @@ Returns an array with the values in the column with the given `binding` in the r
 the given jQuery `selector`. The `label` is used for test output.
 
 ## select(name).option(value)
-Picks the option with the given `value` on the select with the given `name`.
+Picks the option with the given `value` on the select with the given ng-model `name`.
 
 ## select(name).options(value1, value2...)
-Picks the options with the given `values` on the multi select with the given `name`.
+Picks the options with the given `values` on the multi select with the given ng-model `name`.
 
 ## element(selector, label).count()
 Returns the number of elements that match the given jQuery `selector`. The `label` is used for test
@@ -275,7 +275,7 @@ beforeEach(function () {
 
 In order to understand what is happening, we should emphasize that ngScenario calls are not
 immediately executed, but queued (in ngScenario terms, we would be talking about adding
-future actions). If we had only one entry in our table, than the following future actions
+future actions). If we had only one entry in our table, then the following future actions
 would be queued:
 
 <pre>

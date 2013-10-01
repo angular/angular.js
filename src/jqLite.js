@@ -67,7 +67,7 @@
  *
  * ### Events
  * - `$destroy` - AngularJS intercepts all jqLite/jQuery's DOM destruction apis and fires this event
- *    on all DOM nodes being removed.  This can be used to clean up and 3rd party bindings to the DOM
+ *    on all DOM nodes being removed.  This can be used to clean up any 3rd party bindings to the DOM
  *    element before it is removed.
  * ### Methods
  * - `controller(name)` - retrieves the controller of the current element or its parent. By default
@@ -279,17 +279,17 @@ function JQLiteData(element, key, value) {
 }
 
 function JQLiteHasClass(element, selector) {
-  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
+  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, cssClasses) {
   if (cssClasses) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.className = trim(
-          (" " + element.className + " ")
+      element.setAttribute('class', trim(
+          (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " ")
+          .replace(" " + trim(cssClass) + " ", " "))
       );
     });
   }
@@ -297,11 +297,17 @@ function JQLiteRemoveClass(element, cssClasses) {
 
 function JQLiteAddClass(element, cssClasses) {
   if (cssClasses) {
+    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                            .replace(/[\n\t]/g, " ");
+
     forEach(cssClasses.split(' '), function(cssClass) {
-      if (!JQLiteHasClass(element, cssClass)) {
-        element.className = trim(element.className + ' ' + trim(cssClass));
+      cssClass = trim(cssClass);
+      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+        existingClasses += cssClass + ' ';
       }
     });
+
+    element.setAttribute('class', trim(existingClasses));
   }
 }
 

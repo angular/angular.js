@@ -64,7 +64,7 @@ tag as the template.
 bindings. As opposed to evaluating constants, these expressions are referring to our application
 model, which was set up in our `PhoneListCtrl` controller.
 
-      <img class="diagram" src="img/tutorial/tutorial_02.png">
+<img class="diagram" src="img/tutorial/tutorial_02.png">
 
 
 ## Model and Controller

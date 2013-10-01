@@ -2,8 +2,8 @@
 @name Forms
 @description
 
-Controls (`input`, `select`, `textarea`) are a way for user to enter data.
-Form is a collection of controls for the purpose of grouping related controls together.
+Controls (`input`, `select`, `textarea`) are ways for a user to enter data.
+A Form is a collection of controls for the purpose of grouping related controls together.
 
 Form and controls provide validation services, so that the user can be notified of invalid input.
 This provides a better user experience, because the user gets instant feedback on how to correct the error.
@@ -115,7 +115,7 @@ This ensures that the user is not distracted with an error until after interacti
 
 A form is an instance of {@link api/ng.directive:form.FormController FormController}.
 The form instance can optionally be published into the scope using the `name` attribute.
-Similarly control is an instance of {@link api/ng.directive:ngModel.NgModelController NgModelController}.
+Similarly, control is an instance of {@link api/ng.directive:ngModel.NgModelController NgModelController}.
 The control instance can similarly be published into the form instance using the `name` attribute.
 This implies that the internal state of both the form and the control is available for binding in the view using the standard binding primitives.
 
@@ -154,10 +154,10 @@ This allows us to extend the above example with these features:
 
 <script>
   function Controller($scope) {
-    $scope.master= {};
+    $scope.master = {};
 
     $scope.update = function(user) {
-      $scope.master= angular.copy(user);
+      $scope.master = angular.copy(user);
     };
 
     $scope.reset = function() {

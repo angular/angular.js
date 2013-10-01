@@ -35,8 +35,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent, [], 100, 20);
-      browserTrigger(element, endEvent, [], 20, 20);
+      browserTrigger(element, startEvent, {
+        keys : [],
+        x : 100,
+        y : 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
       expect($rootScope.swiped).toBe(true);
     }));
 
@@ -45,8 +53,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       $rootScope.$digest();
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent, [], 20, 20);
-      browserTrigger(element, endEvent, [], 90, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 90,
+        y: 20
+      });
       expect($rootScope.swiped).toBe(true);
     }));
 
@@ -57,9 +73,21 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent, [], 90, 20);
-      browserTrigger(element, moveEvent, [], 70, 200);
-      browserTrigger(element, endEvent, [], 20, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 90,
+        y: 20
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 70,
+        y: 200
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -71,8 +99,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent, [], 90, 20);
-      browserTrigger(element, endEvent, [], 80, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 90,
+        y: 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 80,
+        y: 20
+      });
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -84,8 +120,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, startEvent, [], 20, 20);
-      browserTrigger(element, moveEvent, [], 40, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 40,
+        y: 20
+      });
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -97,8 +141,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
 
       expect($rootScope.swiped).toBeUndefined();
 
-      browserTrigger(element, moveEvent, [], 10, 20);
-      browserTrigger(element, endEvent, [], 90, 20);
+      browserTrigger(element, moveEvent,{
+        keys: [],
+        x: 10,
+        y: 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 90,
+        y: 20
+      });
 
       expect($rootScope.swiped).toBeUndefined();
     }));
@@ -114,8 +166,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent, [], 100, 20);
-      browserTrigger(element, endEvent, [], 20, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 100,
+        y: 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
       expect(eventFired).toEqual(true);
     }));
 
@@ -130,8 +190,16 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
         eventFired = true;
       });
 
-      browserTrigger(element, startEvent, [], 20, 20);
-      browserTrigger(element, endEvent, [], 100, 20);
+      browserTrigger(element, startEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 100,
+        y: 20
+      });
       expect(eventFired).toEqual(true);
     }));
   });

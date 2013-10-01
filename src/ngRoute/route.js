@@ -5,17 +5,11 @@
  * @name ngRoute
  * @description
  *
- * ngRoute
- * =========
+ * # ngRoute
  *
- * The ngRoute module provides routing and deeplinking services and directives for angular apps.
+ * The `ngRoute` module provides routing and deeplinking services and directives for angular apps.
  *
- * To make use of routing with AngularJS, the `angular-route.js` JavaScript file must be included into your application
- * and the `ngRoute` module must be included as a dependency.
- *
- * <pre>
- * angular.module('App', ['ngRoute']);
- * </pre>
+ * {@installModule route}
  *
  */
 
@@ -30,6 +24,8 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  * @description
  *
  * Used for configuring routes. See {@link ngRoute.$route $route} for an example.
+ *
+ * Requires the {@link ngRoute `ngRoute`} module to be installed.
  */
 function $RouteProvider(){
   var routes = {};
@@ -113,8 +109,8 @@ function $RouteProvider(){
    *      The custom `redirectTo` function is expected to return a string which will be used
    *      to update `$location.path()` and `$location.search()`.
    *
-   *    - `[reloadOnSearch=true]` - {boolean=} - reload route when only $location.search()
-   *    changes.
+   *    - `[reloadOnSearch=true]` - {boolean=} - reload route when only `$location.search()`
+   *      or `$location.hash()` changes.
    *
    *      If the option is set to `false` and url in the browser changes, then
    *      `$routeUpdate` event is broadcasted on the root scope.
@@ -231,13 +227,15 @@ function $RouteProvider(){
      * @property {Array.<Object>} routes Array of all configured routes.
      *
      * @description
-     * Is used for deep-linking URLs to controllers and views (HTML partials).
+     * `$route` is used for deep-linking URLs to controllers and views (HTML partials).
      * It watches `$location.url()` and tries to map the path to an existing route definition.
+     *
+     * Requires the {@link ngRoute `ngRoute`} module to be installed.
      *
      * You can define routes through {@link ngRoute.$routeProvider $routeProvider}'s API.
      *
-     * The `$route` service is typically used in conjunction with {@link ngRoute.directive:ngView ngView}
-     * directive and the {@link ngRoute.$routeParams $routeParams} service.
+     * The `$route` service is typically used in conjunction with the {@link ngRoute.directive:ngView `ngView`}
+     * directive and the {@link ngRoute.$routeParams `$routeParams`} service.
      *
      * @example
        This example shows how changing the URL hash causes the `$route` to match a route against the
@@ -375,6 +373,7 @@ function $RouteProvider(){
      * @description
      * Broadcasted if any of the resolve promises are rejected.
      *
+     * @param {Object} angularEvent Synthetic event object
      * @param {Route} current Current route information.
      * @param {Route} previous Previous route information.
      * @param {Route} rejection Rejection of the promise. Usually the error of the failed promise.

@@ -149,23 +149,19 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var NG_INCLUDE_PRIORITY = 500;
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animate', '$sce',
                   function($http,   $templateCache,   $anchorScroll,   $compile,   $animate,   $sce) {
   return {
     restrict: 'ECA',
+    priority: 1000,
     terminal: true,
-    priority: NG_INCLUDE_PRIORITY,
-    compile: function(element, attr) {
+    transclude: 'element',
+    compile: function(element, attr, transclusion) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      element.html('');
-      var anchor = jqLite(document.createComment(' ngInclude: ' + srcExp + ' '));
-      element.replaceWith(anchor);
-
-      return function(scope) {
+      return function(scope, $element) {
         var changeCounter = 0,
             currentScope,
             currentElement;
@@ -189,21 +185,23 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
 
-              cleanupLastIncludeContent();
+              transclusion(newScope, function(clone) {
+                cleanupLastIncludeContent();
 
-              currentScope = newScope;
-              currentElement = element.clone();
-              currentElement.html(response);
-              $animate.enter(currentElement, null, anchor);
+                currentScope = newScope;
+                currentElement = clone;
 
-              $compile(currentElement, false, NG_INCLUDE_PRIORITY - 1)(currentScope);
+                currentElement.html(response);
+                $animate.enter(currentElement, null, $element);
+                $compile(currentElement.contents())(currentScope);
 
-              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $anchorScroll();
-              }
+                if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                  $anchorScroll();
+                }
 
-              currentScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
+                currentScope.$emit('$includeContentLoaded');
+                scope.$eval(onloadExp);
+              });
             }).error(function() {
               if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });

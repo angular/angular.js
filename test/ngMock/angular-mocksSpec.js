@@ -168,7 +168,7 @@ describe('ngMock', function() {
           $log.reset();
         }));
 
-        it("should skip debugging output if disabled", inject(function($log) {
+        it("should skip debugging output if disabled (" + debugEnabled + ")", inject(function($log) {
             $log.log('fake log');
             $log.info('fake log');
             $log.warn('fake log');
@@ -197,19 +197,19 @@ describe('ngMock', function() {
         $log.reset();
       }));
 
-      it('should provide the debug method', function() {
+      it('should provide the log method', function() {
         expect(function() { $log.log(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the info method', function() {
         expect(function() { $log.info(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the warn method', function() {
         expect(function() { $log.warn(''); }).not.toThrow();
       });
 
-      it('should provide the debug method', function() {
+      it('should provide the error method', function() {
         expect(function() { $log.error(''); }).not.toThrow();
       });
 
@@ -520,6 +520,42 @@ describe('ngMock', function() {
     });
 
     describe('module', function() {
+
+      describe('object literal format', function() {
+        var mock = { log: 'module' };
+        
+        beforeEach(function() {
+          module({
+              'service': mock,
+              'other': { some: 'replacement'}
+            },
+            'ngResource',
+            function ($provide) { $provide.value('example', 'win'); }
+          );
+        });
+
+        it('should inject the mocked module', function() {
+          inject(function(service) {
+            expect(service).toEqual(mock);
+          });
+        });
+        
+        it('should support multiple key value pairs', function() {
+          inject(function(service, other) {
+            expect(other.some).toEqual('replacement');
+            expect(service).toEqual(mock);
+          });
+        });
+
+        it('should integrate with string and function', function() {
+          inject(function(service, $resource, example) {
+            expect(service).toEqual(mock);
+            expect($resource).toBeDefined();
+            expect(example).toEqual('win');
+          });
+        });
+      });
+
       describe('in DSL', function() {
         it('should load module', module(function() {
           log += 'module';
