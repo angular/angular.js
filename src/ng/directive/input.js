@@ -958,7 +958,7 @@ var VALID_CLASS = 'ng-valid',
     </file>
  * </example>
  *
- * 
+ *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
     function($scope, $exceptionHandler, $attr, $element, $parse) {

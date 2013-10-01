@@ -96,19 +96,25 @@ describe('$compile', function() {
         directive('div', function(log) {
           return {
             restrict: 'ECA',
-            link: log.fn('1')
+            link: {
+              pre: log.fn('pre1'),
+              post: log.fn('post1')
+            }
           };
         });
         directive('div', function(log) {
           return {
             restrict: 'ECA',
-            link: log.fn('2')
+            link: {
+              pre: log.fn('pre2'),
+              post: log.fn('post2')
+            }
           };
         });
       });
       inject(function($compile, $rootScope, log) {
         element = $compile('<div></div>')($rootScope);
-        expect(log).toEqual('1; 2');
+        expect(log).toEqual('pre1; pre2; post2; post1');
       });
     });
   });
@@ -206,7 +212,7 @@ describe('$compile', function() {
           '<span greet="angular" log="L" x-high-log="H" data-medium-log="M"></span>')
           ($rootScope);
         expect(element.text()).toEqual('Hello angular');
-        expect(log).toEqual('H; M; L');
+        expect(log).toEqual('L; M; H');
       }));
 
 
@@ -387,7 +393,7 @@ describe('$compile', function() {
           element = $compile(
             '<span log="L" x-high-log="H" data-medium-log="M"></span>')
             ($rootScope);
-          expect(log).toEqual('H; M; L');
+          expect(log).toEqual('L; M; H');
         }));
       });
 
@@ -511,8 +517,7 @@ describe('$compile', function() {
             ($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Replace!');
-          // HIGH goes after MEDIUM since it executes as part of replaced template
-          expect(log).toEqual('MEDIUM; HIGH; LOG');
+          expect(log).toEqual('LOG; HIGH; MEDIUM');
         }));
 
 
@@ -521,7 +526,7 @@ describe('$compile', function() {
             ($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!');
-          expect(log).toEqual('HIGH; LOG; MEDIUM');
+          expect(log).toEqual('LOG; HIGH; MEDIUM');
         }));
 
 
@@ -1079,7 +1084,7 @@ describe('$compile', function() {
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
               'first-PreL; second-PreL; last-PreL; third-PreL; ' +
-              'third-PostL; first-PostL; second-PostL; last-PostL');
+              'third-PostL; last-PostL; second-PostL; first-PostL');
 
             var span = element.find('span');
             expect(span.attr('first')).toEqual('');
@@ -1104,7 +1109,7 @@ describe('$compile', function() {
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
               'iFirst-PreL; iSecond-PreL; iThird-PreL; iLast-PreL; ' +
-              'iFirst-PostL; iSecond-PostL; iThird-PostL; iLast-PostL');
+              'iLast-PostL; iThird-PostL; iSecond-PostL; iFirst-PostL');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1130,7 +1135,7 @@ describe('$compile', function() {
             expect(log).toEqual(
               'first-C; FLUSH; second-C; last-C; third-C; ' +
               'first-PreL; second-PreL; last-PreL; third-PreL; ' +
-              'third-PostL; first-PostL; second-PostL; last-PostL');
+              'third-PostL; last-PostL; second-PostL; first-PostL');
 
             var span = element.find('span');
             expect(span.attr('first')).toEqual('');
@@ -1156,7 +1161,7 @@ describe('$compile', function() {
             expect(log).toEqual(
               'iFirst-C; FLUSH; iSecond-C; iThird-C; iLast-C; ' +
               'iFirst-PreL; iSecond-PreL; iThird-PreL; iLast-PreL; ' +
-              'iFirst-PostL; iSecond-PostL; iThird-PostL; iLast-PostL');
+              'iLast-PostL; iThird-PostL; iSecond-PostL; iFirst-PostL');
 
             var div = element.find('div');
             expect(div.attr('i-first')).toEqual('');
@@ -1344,10 +1349,10 @@ describe('$compile', function() {
                 scope: true,
                 restrict: 'CA',
                 compile: function() {
-                  return function (scope, element) {
+                  return {pre: function (scope, element) {
                     log(scope.$id);
                     expect(element.data('$scope')).toBe(scope);
-                  };
+                  }};
                 }
               };
             });
@@ -1409,9 +1414,9 @@ describe('$compile', function() {
           directive('log', function(log) {
             return {
               restrict: 'CA',
-              link: function(scope) {
+              link: {pre: function(scope) {
                 log('log-' + scope.$id + '-' + scope.$parent.$id);
-              }
+              }}
             };
           });
         }));
@@ -1419,7 +1424,7 @@ describe('$compile', function() {
 
         it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
           element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('LOG; log-002-001; 002');
+          expect(log).toEqual('002; log-002-001; LOG');
           expect(element.find('span').hasClass('ng-scope')).toBe(true);
         }));
 
@@ -1427,7 +1432,7 @@ describe('$compile', function() {
         it('should allow creation of new isolated scopes for directives', inject(
             function($rootScope, $compile, log) {
           element = $compile('<div><span iscope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('LOG; log-002-001; 002');
+          expect(log).toEqual('log-002-001; LOG; 002');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -1439,7 +1444,7 @@ describe('$compile', function() {
           $httpBackend.expect('GET', 'tscope.html').respond('<a log>{{name}}; scopeId: {{$id}}</a>');
           element = $compile('<div><span tscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('LOG; log-002-001; 002');
+          expect(log).toEqual('log-002-001; LOG; 002');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
           expect(element.text()).toBe('Jozo; scopeId: 002');
@@ -1453,7 +1458,7 @@ describe('$compile', function() {
               respond('<p><a log>{{name}}; scopeId: {{$id}}</a></p>');
           element = $compile('<div><span trscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('LOG; log-002-001; 002');
+          expect(log).toEqual('log-002-001; LOG; 002');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
           expect(element.text()).toBe('Jozo; scopeId: 002');
@@ -1467,7 +1472,7 @@ describe('$compile', function() {
               respond('<p><a log>{{name}}; scopeId: {{$id}} |</a></p>');
           element = $compile('<div><span ng-repeat="i in [1,2,3]" trscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('LOG; log-003-002; 003; LOG; log-005-004; 005; LOG; log-007-006; 007');
+          expect(log).toEqual('log-003-002; LOG; 003; log-005-004; LOG; 005; log-007-006; LOG; 007');
           $rootScope.name = 'Jozo';
           $rootScope.$apply();
           expect(element.text()).toBe('Jozo; scopeId: 003 |Jozo; scopeId: 005 |Jozo; scopeId: 007 |');
@@ -1481,7 +1486,7 @@ describe('$compile', function() {
           $httpBackend.expect('GET', 'tiscope.html').respond('<a log></a>');
           element = $compile('<div><span tiscope></span></div>')($rootScope);
           $httpBackend.flush();
-          expect(log).toEqual('LOG; log-002-001; 002');
+          expect(log).toEqual('log-002-001; LOG; 002');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -1501,7 +1506,7 @@ describe('$compile', function() {
                   '</b>' +
                 '</div>'
               )($rootScope);
-            expect(log).toEqual('LOG; log-003-002; 003; LOG; log-002-001; 002; LOG; log-004-001; 004');
+            expect(log).toEqual('002; 003; log-003-002; LOG; log-002-001; LOG; 004; log-004-001; LOG');
           })
         );
 
@@ -1571,7 +1576,38 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(element.text()).toEqual('text: angular');
           expect(element.attr('name')).toEqual('attr: angular');
-        }));
+        })
+    );
+
+
+    it('should process attribute interpolation at the beginning of the post-linking phase', function() {
+      module(function() {
+        directive('attrLog', function(log) {
+          return {
+            compile: function($element, $attrs) {
+              log('compile=' + $attrs.myName);
+
+              return {
+                pre: function($scope, $element, $attrs) {
+                  log('preLink=' + $attrs.myName);
+                },
+                post: function($scope, $element) {
+                  log('postLink=' + $attrs.myName);
+                }
+              }
+            }
+          }
+        })
+      });
+      inject(function($rootScope, $compile, log) {
+        element = $compile('<div attr-log my-name="{{name}}"></div>')($rootScope);
+        $rootScope.name = 'angular';
+        $rootScope.$apply();
+        log('digest=' + element.attr('my-name'));
+        expect(log).toEqual('compile={{name}}; preLink={{name}}; postLink=; digest=angular');
+      });
+    });
+
 
     describe('SCE values', function() {
       it('should resolve compile and link both attribute and text bindings', inject(
@@ -1753,7 +1789,7 @@ describe('$compile', function() {
     it('should compile from top to bottom but link from bottom up', inject(
         function($compile, $rootScope, log) {
           element = $compile('<a b><c></c></a>')($rootScope);
-          expect(log).toEqual('tA; tB; tC; preA; preB; preC; postC; postA; postB');
+          expect(log).toEqual('tA; tB; tC; preA; preB; preC; postC; postB; postA');
         }
     ));
 
@@ -2230,7 +2266,7 @@ describe('$compile', function() {
       });
       inject(function(log, $compile, $rootScope) {
         element = $compile('<div main dep other></div>')($rootScope);
-        expect(log).toEqual('main; dep:main; false');
+        expect(log).toEqual('false; dep:main; main');
       });
     });
 
@@ -2639,7 +2675,7 @@ describe('$compile', function() {
         element = $compile('<div><div high-log trans="text" log>{{$parent.$id}}-{{$id}};</div></div>')
             ($rootScope);
         $rootScope.$apply();
-        expect(log).toEqual('compile: <!-- trans: text -->; HIGH; link; LOG; LOG');
+        expect(log).toEqual('compile: <!-- trans: text -->; link; LOG; LOG; HIGH');
         expect(element.text()).toEqual('001-002;001-003;');
       });
     });
@@ -2901,6 +2937,62 @@ describe('$compile', function() {
         $templateCache.put('trans.html', '<div ng-transclude></div>');
 
         element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('pre(); post(unicorn!)');
+      });
+    });
+
+
+    it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase (template)',
+        function() {
+      module(function() {
+        directive('replacedTrans', function(log) {
+          return {
+            transclude: true,
+            replace: true,
+            template: '<div ng-transclude></div>',
+            link: {
+              pre: function($scope, $element) {
+                log('pre(' + $element.text() + ')');
+              },
+              post: function($scope, $element) {
+                log('post(' + $element.text() + ')');
+              }
+            }
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile) {
+        element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
+        $rootScope.$apply();
+        expect(log).toEqual('pre(); post(unicorn!)');
+      });
+    });
+
+
+    it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase (templateUrl)',
+        function() {
+      module(function() {
+        directive('replacedTrans', function(log) {
+          return {
+            transclude: true,
+            replace: true,
+            templateUrl: 'trans.html',
+            link: {
+              pre: function($scope, $element) {
+                log('pre(' + $element.text() + ')');
+              },
+              post: function($scope, $element) {
+                log('post(' + $element.text() + ')');
+              }
+            }
+          };
+        });
+      });
+      inject(function(log, $rootScope, $compile, $templateCache) {
+        $templateCache.put('trans.html', '<div ng-transclude></div>');
+
+        element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
         $rootScope.$apply();
         expect(log).toEqual('pre(); post(unicorn!)');
       });
