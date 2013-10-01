@@ -246,6 +246,11 @@ describe('filters', function() {
                       toEqual('September 03, 1');
     });
 
+    it('should accept negative numbers as strings', function() {
+      expect(date(earlyDate.getTime() + "")).
+                      toEqual('Sep 3, 1');
+    });
+
     it('should format timezones correctly (as per ISO_8601)', function() {
       //Note: TzDate's first argument is offset, _not_ timezone.
       var utc       = new angular.mock.TzDate( 0, '2010-09-03T12:05:08.000Z');
