@@ -101,6 +101,16 @@ describe('$httpBackend', function() {
     });
   });
 
+  it('should set requested headers even if they have falsy values', function() {
+    $backend('POST', 'URL', null, noop, {'X-header1': 0, 'X-header2': '', 'X-header3': false});
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$reqHeaders).toEqual({
+      'X-header1': 0,
+      'X-header2': '',
+      'X-header3': false
+    });
+  });
 
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
@@ -388,6 +398,7 @@ describe('$httpBackend', function() {
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
     });
+
   });
 });
 
