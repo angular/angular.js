@@ -217,19 +217,19 @@ it('should show example', inject(
     $locationProvider.hashPrefix('!');
   },
   function($location) {
-    // open http://host.com/base/index.html#!/a
-    $location.absUrl() == 'http://host.com/base/index.html#!/a'
+    // open http://example.com/base/index.html#!/a
+    $location.absUrl() == 'http://example.com/base/index.html#!/a'
     $location.path() == '/a'
 
     $location.path('/foo')
-    $location.absUrl() == 'http://host.com/base/index.html#!/foo'
+    $location.absUrl() == 'http://example.com/base/index.html#!/foo'
 
     $location.search() == {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://host.com/base/index.html#!/foo?a=b&c'
+    $location.absUrl() == 'http://example.com/base/index.html#!/foo?a=b&c'
 
     $location.path('/new').search('x=y');
-    $location.absUrl() == 'http://host.com/base/index.html#!/new?x=y'
+    $location.absUrl() == 'http://example.com/base/index.html#!/new?x=y'
   }
 ));
 </pre>
@@ -267,31 +267,31 @@ it('should show example', inject(
   },
   function($location) {
     // in browser with HTML5 history support:
-    // open http://host.com/#!/a -> rewrite to http://host.com/a
-    // (replacing the http://host.com/#!/a history record)
+    // open http://example.com/#!/a -> rewrite to http://example.com/a
+    // (replacing the http://example.com/#!/a history record)
     $location.path() == '/a'
 
     $location.path('/foo');
-    $location.absUrl() == 'http://host.com/foo'
+    $location.absUrl() == 'http://example.com/foo'
 
     $location.search() == {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://host.com/foo?a=b&c'
+    $location.absUrl() == 'http://example.com/foo?a=b&c'
 
     $location.path('/new').search('x=y');
     $location.url() == 'new?x=y'
-    $location.absUrl() == 'http://host.com/new?x=y'
+    $location.absUrl() == 'http://example.com/new?x=y'
 
     // in browser without html5 history support:
-    // open http://host.com/new?x=y -> redirect to http://host.com/#!/new?x=y
-    // (again replacing the http://host.com/new?x=y history item)
+    // open http://example.com/new?x=y -> redirect to http://example.com/#!/new?x=y
+    // (again replacing the http://example.com/new?x=y history item)
     $location.path() == '/new'
     $location.search() == {x: 'y'}
 
     $location.path('/foo/bar');
     $location.path() == '/foo/bar'
     $location.url() == '/foo/bar?x=y'
-    $location.absUrl() == 'http://host.com/#!/foo/bar?x=y'
+    $location.absUrl() == 'http://example.com/#!/foo/bar?x=y'
   }
 ));
 </pre>
@@ -391,8 +391,8 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
-    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/other-base/another?search">external</a>
   </div>
 
@@ -405,8 +405,8 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
-    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/other-base/another?search">external</a>
   </div>
 </div>
@@ -433,8 +433,8 @@ In this examples we use `<base href="/base/index.html" />`
   }
 
   var browsers = {
-    html5: new FakeBrowser('http://www.host.com/base/path?a=b#h', '/base/index.html'),
-    hashbang: new FakeBrowser('http://www.host.com/base/index.html#!/path?a=b#h', '/base/index.html')
+    html5: new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html'),
+    hashbang: new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html')
   };
 
   function Html5Cntl($scope, $location) {
