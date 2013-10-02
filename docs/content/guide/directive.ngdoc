@@ -682,10 +682,10 @@ Following is an example of building a reusable widget.
                      '</div>',
            // The linking function will add behavior to the template
            link: function(scope, element, attrs) {
-                 // Title element
+             // Title element
              var title = angular.element(element.children()[0]),
-                 // Opened / closed state
-                 opened = true;
+             // Opened / closed state
+             opened = true;
 
              // Clicking on title should open/close the zippy
              title.on('click', toggle);
