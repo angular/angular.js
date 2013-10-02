@@ -8,20 +8,19 @@
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
- * Keep in mind that:
- *
- * -    by default, the template URL is restricted to the same domain and protocol as the
- *      application document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
- *      $sce.getTrustedResourceUrl} on it.  To load templates from other domains and/or protocols,
- *      you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
- *      {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.  Refer Angular's {@link
- *      ng.$sce Strict Contextual Escaping}.
- * -    in addition, the browser's
- *      {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
- *      Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
- *      (CORS)} policy apply that may further restrict whether the template is successfully loaded.
- *      (e.g.  ngInclude won't work for cross-domain requests on all browsers and for `file://`
- *      access on some browsers)
+ * By default, the template URL is restricted to the same domain and protocol as the
+ * application document. This is done by calling {@link ng.$sce#getTrustedResourceUrl
+ * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
+ * you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
+ * {@link ng.$sce#trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
+ * ng.$sce Strict Contextual Escaping}.
+ * 
+ * In addition, the browser's
+ * {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
+ * Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
+ * (CORS)} policy may further restrict whether the template is successfully loaded.
+ * For example, `ngInclude` won't work for cross-domain requests on all browsers and for `file://`
+ * access on some browsers.
  *
  * @animations
  * enter - animation is used to bring new content into the browser.
