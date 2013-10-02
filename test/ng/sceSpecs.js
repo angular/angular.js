@@ -2,6 +2,12 @@
 
 describe('SCE', function() {
 
+  // Work around an IE8 bug.  Though window.inject === angular.mock.inject, if it's invoked the
+  // window scope, IE8 loses the exception object that bubbles up and replaces it with a TypeError.
+  // By using a local alias, it gets invoked on the global scope instead of window.
+  // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
+  var inject = angular.mock.inject;
+
   describe('when disabled', function() {
     beforeEach(function() {
       module(function($sceProvider) {
@@ -262,9 +268,7 @@ describe('SCE', function() {
             $sceDelegateProvider.resourceUrlBlacklist(cfg.blackList);
           }
         });
-        // This needs to be angular.mock.inject even though it's === window.inject.
-        // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
-        angular.mock.inject(testFn);
+        inject(testFn);
       }
     }
 
@@ -399,20 +403,13 @@ describe('SCE', function() {
           expect($sce.getTrustedResourceUrl('http://example.com/foo:1/2.3?4&5-6')).toEqual('http://example.com/foo:1/2.3?4&5-6');
       }));
 
-      // TODO(chirayu): This throws a very helpful TypeError exception - "Object doesn't support
-      // this property or method".  Tracing using the debugger on IE8 developer tools shows me one
-      // catch(e) block where the exception is correct, but jumping up to the parent catch block has
-      // the TypeError exception.  I've been unable to repro this outside this snippet or figure out
-      // why this is happening.  Until then, this test doesn't run on IE8.
-      if (!msie || msie > 8) {
-        it('should not accept *** in the string', function() {
-          expect(function() {
-            runTest({whiteList: ['http://***']}, null)();
-          }).toThrowMinErr('$injector', 'modulerr', new RegExp(
-               /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-               /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\.  String: http:\/\/\*\*\*/.source));
-        });
-      }
+      it('should not accept *** in the string', function() {
+        expect(function() {
+          runTest({whiteList: ['http://***']}, null)();
+        }).toThrowMinErr('$injector', 'modulerr', new RegExp(
+             /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
+             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\.  String: http:\/\/\*\*\*/.source));
+      });
     });
 
     describe('"self" matcher', function() {
