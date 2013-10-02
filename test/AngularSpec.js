@@ -461,6 +461,13 @@ describe('angular', function() {
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
 
+    it('should handle string values like arrays', function() {
+      var log = [];
+
+      forEach('bar', function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:b', '1:a', '2:r']);
+    });
+
 
     it('should handle objects with length property as objects', function() {
       var obj = {
