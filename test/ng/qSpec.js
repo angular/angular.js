@@ -1260,7 +1260,7 @@ describe('q', function() {
           evilPromise.success = success;
           evilPromise.error = error;
         }
-      }
+      };
 
       q.all([promise, evilPromise]).then(success(), error());
       expect(logStr()).toBe('');
@@ -1319,7 +1319,7 @@ describe('q', function() {
           evilPromise.success = success;
           evilPromise.error = error;
         }
-      }
+      };
 
       q.all({good: promise, evil: evilPromise}).then(success(), error());
       expect(logStr()).toBe('');
