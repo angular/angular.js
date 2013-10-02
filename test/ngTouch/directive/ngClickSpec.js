@@ -466,6 +466,42 @@ describe('ngClick (touch)', function() {
 
       expect($rootScope.event).toBeDefined();
     }));
+    it('should trigger click if ngEnabled is true', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" ng-enabled="enabled"></div>')($rootScope);
+      $rootScope.enabled = true;
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      browserTrigger(element, 'touchend',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      expect($rootScope.event).toBeDefined();
+    }));
+    it('should not trigger click if ngEnabled is false', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event" ng-enabled="enabled"></div>')($rootScope);
+      $rootScope.enabled = false;
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      browserTrigger(element, 'touchend',{
+        keys: [],
+        x: 10,
+        y: 10
+      });
+
+      expect($rootScope.event).toBeUndefined();
+    }));
     it('should not trigger click if regular disabled is true', inject(function($rootScope, $compile) {
       element = $compile('<div ng-click="event = $event" disabled="true"></div>')($rootScope);
 

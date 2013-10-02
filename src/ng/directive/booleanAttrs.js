@@ -172,6 +172,44 @@
  *     then special attribute "disabled" will be set on the element
  */
 
+ /**
+ * @ngdoc directive
+ * @name ng.directive:ngEnabled
+ * @restrict A
+ *
+ * @description
+ *
+ * The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
+ * <pre>
+ * <div ng-init="scope = { isDisabled: false }">
+ *  <button disabled="{{scope.isDisabled}}">Disabled</button>
+ * </div>
+ * </pre>
+ *
+ * The HTML specs do not require browsers to preserve the values of special attributes
+ * such as disabled. (The presence of them means true and absence means false)
+ * This prevents the Angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce the `ngDisabled` directive and its corollary `ngEnabled`.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+        Click me to toggle: <input type="checkbox" ng-model="checked"><br/>
+        <button ng-model="button" ng-enabled="checked">Button</button>
+      </doc:source>
+      <doc:scenario>
+        it('should toggle button', function() {
+          expect(element('.doc-example-live :button').prop('disabled')).toBeTruthy();
+          input('checked').check();
+          expect(element('.doc-example-live :button').prop('disabled')).toBeFalsy();
+        });
+      </doc:scenario>
+    </doc:example>
+ *
+ * @element INPUT
+ * @param {expression} ngEnabled If the {@link guide/expression expression} is falsy,
+ *     then special attribute "disabled" will be set on the element
+ */
 
 /**
  * @ngdoc directive
@@ -199,7 +237,7 @@
     </doc:example>
  *
  * @element INPUT
- * @param {expression} ngChecked If the {@link guide/expression expression} is truthy, 
+ * @param {expression} ngChecked If the {@link guide/expression expression} is truthy,
  *     then special attribute "checked" will be set on the element
  */
 
@@ -230,7 +268,7 @@
     </doc:example>
  *
  * @element INPUT
- * @param {expression} ngReadonly If the {@link guide/expression expression} is truthy, 
+ * @param {expression} ngReadonly If the {@link guide/expression expression} is truthy,
  *     then special attribute "readonly" will be set on the element
  */
 
@@ -303,6 +341,23 @@
 
 var ngAttributeAliasDirectives = {};
 
+function ngAttributeAliasDirective(attrName, directiveName, inverted) {
+  inverted = !!inverted;
+
+  return function() {
+    return {
+      priority: 100,
+      compile: function() {
+        return function(scope, element, attr) {
+          scope.$watch(attr[directiveName], function ngBooleanAttrWatchAction(value) {
+            attr.$set(attrName, !!(inverted ^ !!value));
+          });
+        };
+      }
+    };
+  };
+}
+
 
 // boolean attrs are evaluated
 forEach(BOOLEAN_ATTR, function(propName, attrName) {
@@ -310,20 +365,10 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   if (propName == "multiple") return;
 
   var normalized = directiveNormalize('ng-' + attrName);
-  ngAttributeAliasDirectives[normalized] = function() {
-    return {
-      priority: 100,
-      compile: function() {
-        return function(scope, element, attr) {
-          scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
-            attr.$set(attrName, !!value);
-          });
-        };
-      }
-    };
-  };
+  ngAttributeAliasDirectives[normalized] = ngAttributeAliasDirective(attrName, normalized);
 });
 
+ngAttributeAliasDirectives['ngEnabled'] = ngAttributeAliasDirective('disabled', 'ngEnabled', true);
 
 // ng-src, ng-srcset, ng-href are interpolated
 forEach(['src', 'srcset', 'href'], function(attrName) {

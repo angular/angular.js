@@ -30,6 +30,16 @@ describe('boolean attr directives', function() {
     expect(element.attr('disabled')).toBeTruthy();
   }));
 
+  it('should bind disabled to the negation of ng-enabled', inject(function($rootScope, $compile) {
+    element = $compile('<button ng-enabled="isEnabled">Button</button>')($rootScope);
+    $rootScope.isEnabled = false;
+    $rootScope.$digest();
+    expect(element.attr('disabled')).toBeTruthy();
+    $rootScope.isEnabled = true;
+    $rootScope.$digest();
+    expect(element.attr('disabled')).toBeFalsy();
+  }));
+
 
   it('should bind checked', inject(function($rootScope, $compile) {
     element = $compile('<input type="checkbox" ng-checked="isChecked" />')($rootScope)
