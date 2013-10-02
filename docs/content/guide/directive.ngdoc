@@ -27,28 +27,28 @@ attribute only.)
   <!-- directive: my-dir exp -->
 </pre>
 
-Directives can be invoked in many different ways, but are equivalent in the end result as shown in
-the following example.
+The following demonstrates the various ways a Directive (ngBind in this case) can be referenced from within a template.
 
 <doc:example>
   <doc:source >
    <script>
      function Ctrl1($scope) {
-       $scope.name = 'angular';
+       $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
      }
    </script>
    <div ng-controller="Ctrl1">
      Hello <input ng-model='name'> <hr/>
+     &lt;span ng-bind="name"&gt; <span ng-bind="name"></span> <br/>
      &lt;span ng:bind="name"&gt; <span ng:bind="name"></span> <br/>
      &lt;span ng_bind="name"&gt; <span ng_bind="name"></span> <br/>
-     &lt;span ng-bind="name"&gt; <span ng-bind="name"></span> <br/>
      &lt;span data-ng-bind="name"&gt; <span data-ng-bind="name"></span> <br/>
      &lt;span x-ng-bind="name"&gt; <span x-ng-bind="name"></span> <br/>
    </div>
   </doc:source>
   <doc:scenario>
     it('should show off bindings', function() {
-      expect(element('div[ng-controller="Ctrl1"] span[ng-bind]').text()).toBe('angular');
+      expect(element('div[ng-controller="Ctrl1"] span[ng-bind]').text())
+        .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
     });
   </doc:scenario>
 </doc:example>
