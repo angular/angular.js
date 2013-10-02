@@ -404,9 +404,9 @@ function $SceDelegateProvider() {
  * # Strict Contextual Escaping
  *
  * Strict Contextual Escaping (SCE) is a mode in which AngularJS requires bindings in certain
- * contexts to result in a value that is marked as safe to use for that context One example of such
- * a context is binding arbitrary html controlled by the user via `ng-bind-html`.  We refer to these
- * contexts as privileged or SCE contexts.
+ * contexts to result in a value that is marked as safe to use for that context.  One example of
+ * such a context is binding arbitrary html controlled by the user via `ng-bind-html`.  We refer
+ * to these contexts as privileged or SCE contexts.
  *
  * As of version 1.2, Angular ships with SCE enabled by default.
  *
