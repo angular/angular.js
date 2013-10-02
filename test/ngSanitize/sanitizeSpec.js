@@ -24,7 +24,7 @@ describe('HTML', function() {
                 attrs: attrs,
                 unary: unary
             };
-            // Since different browsers handle newlines differenttly we trim
+            // Since different browsers handle newlines differently we trim
             // so that it is easier to write tests.
             angular.forEach(attrs, function(value, key) {
               attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '')
@@ -110,6 +110,13 @@ describe('HTML', function() {
 
   it('should remove script', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
+  });
+
+  it('should remove DOCTYPE header', function() {
+    expectHTML('<!DOCTYPE html>').toEqual('');
+    expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n"http://www.w3.org/TR/html4/strict.dtd">').toEqual('');
+    expectHTML('a<!DOCTYPE html>c.').toEqual('ac.');
+    expectHTML('a<!DocTyPe html>c.').toEqual('ac.');
   });
 
   it('should remove nested script', function() {
@@ -319,6 +326,7 @@ describe('HTML', function() {
         expect(' &#14; java\u0000\u0000script:alert("D");').not.toBeValidUrl();
       });
     });
+
 
   });
 });
