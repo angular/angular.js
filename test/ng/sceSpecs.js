@@ -262,7 +262,9 @@ describe('SCE', function() {
             $sceDelegateProvider.resourceUrlBlacklist(cfg.blackList);
           }
         });
-        inject(testFn);
+        // This needs to be angular.mock.inject even though it's === window.inject.
+        // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
+        angular.mock.inject(testFn);
       }
     }
 
@@ -288,15 +290,13 @@ describe('SCE', function() {
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
-    if (!msie || msie > 8) {
-      it('should not accept unknown matcher type', function() {
-        expect(function() {
-          runTest({whiteList: [{}]}, null)();
-        }).toThrowMinErr('$injector', 'modulerr', new RegExp(
-            /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-            /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
-      });
-    }
+    it('should not accept unknown matcher type', function() {
+      expect(function() {
+        runTest({whiteList: [{}]}, null)();
+      }).toThrowMinErr('$injector', 'modulerr', new RegExp(
+          /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
+          /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
+    });
 
     describe('adjustMatcher', function() {
       it('should rewrite regex into regex and add ^ & $ on either end', function() {
