@@ -425,9 +425,13 @@ function $CompileProvider($provide) {
        * @function
        *
        * @description
-       * Observe an interpolated attribute.
-       * The observer will never be called, if given attribute is not interpolated.
-       * The interpolated value of the attribute is passed to the observer function.
+       * Observes an interpolated attribute.
+       *
+       * If the attribute contains interpolation, the observer function will be invoked 
+       * with the interpolated value of the attribute whenever it is changed.
+       *
+       * If the attribute does not contain interpolation, the observer function will be invoked 
+       * with the attribute value once during the next $digest.
        *
        * @param {string} key Normalized key. (ie ngAttribute) .
        * @param {function(interpolatedValue)} fn Function that will be called whenever
