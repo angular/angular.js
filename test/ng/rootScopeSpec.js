@@ -287,16 +287,16 @@ describe('Scope', function() {
     it('should watch functions', function() {
       module(provideLog);
       inject(function($rootScope, log) {
-        $rootScope.fn = function() {return 'a'};
+        $rootScope.fn = function() {return 'a';};
         $rootScope.$watch('fn', function(fn) {
           log(fn());
         });
         $rootScope.$digest();
         expect(log).toEqual('a');
-        $rootScope.fn = function() {return 'b'};
+        $rootScope.fn = function() {return 'b';};
         $rootScope.$digest();
         expect(log).toEqual('a; b');
-      })
+      });
     });
 
 
@@ -488,7 +488,7 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(log).toEqual([ '["b",[],{}]', '["b",{},[]]' ]);
 
-          $rootScope.obj.shift()
+          $rootScope.obj.shift();
           log = [];
           $rootScope.$digest();
           expect(log).toEqual([ '[{},[]]' ]);
@@ -499,14 +499,14 @@ describe('Scope', function() {
           $rootScope.$watchCollection('arrayLikeObject', function logger(obj) {
             forEach(obj, function (element){
               arrayLikelog.push(element.name);
-            })
+            });
           });
           document.body.innerHTML = "<p>" +
                                       "<a name='x'>a</a>" +
                                       "<a name='y'>b</a>" +
                                     "</p>";
 
-          $rootScope.arrayLikeObject =  document.getElementsByTagName('a')
+          $rootScope.arrayLikeObject =  document.getElementsByTagName('a');
           $rootScope.$digest();
           expect(arrayLikelog).toEqual(['x', 'y']);
         });
@@ -565,7 +565,7 @@ describe('Scope', function() {
           log = [];
           $rootScope.$digest();
           expect(log).toEqual([ '{"b":[],"c":"B"}' ]);
-        })
+        });
       });
     });
   });
