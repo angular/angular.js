@@ -30,9 +30,9 @@ dependencies. For this reason a component must, explicitly, define its dependenc
 
 Or by providing an "inline" injection annotation:
 
-        var myService = function($http) { ... };
-        myModule.factory('myService', ['$http', myService]);
-
+        var MyController = function($location) { ... };
+        myModule.factory('MyController', ['$location', MyController]);
+        
 ## Defining a Service
 
 Application developers are free to define their own services by registering their name, and **service
