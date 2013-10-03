@@ -2997,6 +2997,30 @@ describe('$compile', function() {
         expect(log).toEqual('pre(); post(unicorn!)');
       });
     });
+
+
+    it('should terminate compilation only for element trasclusion', function() {
+      module(function() {
+        directive('elementTrans', function(log) {
+          return {
+            transclude: 'element',
+            priority: 50,
+            compile: log.fn('compile:elementTrans')
+          };
+        });
+        directive('regularTrans', function(log) {
+          return {
+            transclude: true,
+            priority: 50,
+            compile: log.fn('compile:regularTrans')
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        $compile('<div><div element-trans log="elem"></div><div regular-trans log="regular"></div></div>')($rootScope);
+        expect(log).toEqual('compile:elementTrans; compile:regularTrans; regular');
+      });
+    });
   });
 
 
