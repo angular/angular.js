@@ -69,7 +69,7 @@ both module systems can live side by side and fulfil their goals.
 
 __`app/js/app.js`:__
 <pre>
-var myApp = angular.module('phonecat', []).
+var phonecatApp = angular.module('phonecatApp', []).
   config(['$routeProvider', function($routeProvider) {
   $routeProvider.
       when('/phones', {templateUrl: 'partials/phone-list.html',   controller: PhoneListCtrl}).
@@ -124,7 +124,7 @@ __`app/index.html`:__
 __`app/js/controllers.js`:__
 <pre>
 ...
-myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
+phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
   $scope.phoneId = $routeParams.phoneId;
 }]);
 </pre>

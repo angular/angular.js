@@ -39,7 +39,7 @@ __`app/index.html`.__
 
 __`app/js/services.js`.__
 <pre>
-var myApp = angular.module('phonecatServices', ['ngResource']).
+var phonecatApp = angular.module('phonecatServices', ['ngResource']).
     factory('Phone', function($resource){
   return $resource('phones/:phoneId.json', {}, {
     query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
@@ -60,11 +60,11 @@ api/ng.$http $http} service.
 __`app/js/app.js`.__
 <pre>
 ...
-angular.module('phonecat', ['phonecatFilters', 'phonecatServices']).
+angular.module('phonecatApp', ['phonecatFilters', 'phonecatServices']).
 ...
 </pre>
 
-We need to add 'phonecatServices' to 'phonecat' application's requires array.
+We need to add the 'phonecatServices' module dependency to 'phonecatApp' module's requires array.
 
 
 ## Controller
@@ -79,12 +79,12 @@ __`app/js/controllers.js`.__
 <pre>
 ...
 
-myApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
+phonecatApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
   $scope.phones = Phone.query();
   $scope.orderProp = 'age';
 }]);
 
-myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
+phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
   $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
     $scope.mainImageUrl = phone.images[0];
   });

@@ -65,9 +65,7 @@ necessary!
 
 __`app/js/controllers.js`:__
 <pre>
-var myApp = angular.module('myApp',[]);
-
-myApp.controller('PhoneListCtrl', ['$scope', function($scope) {
+function PhoneListCtrl($scope) {
   $scope.phones = [
     {"name": "Nexus S",
      "snippet": "Fast just got faster with Nexus S.",
@@ -81,7 +79,11 @@ myApp.controller('PhoneListCtrl', ['$scope', function($scope) {
   ];
 
   $scope.orderProp = 'age';
-}]);
+}
+
+var phonecatApp = angular.module('phonecatApp',[]);
+phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
+
 </pre>
 
 * We modified the `phones` model - the array of phones - and added an `age` property to each phone
