@@ -608,13 +608,86 @@ function createInjector(modulesToLoad) {
       return isObject(returnedValue) ? returnedValue : instance;
     }
 
+    function dependencies() {
+      var res = [],
+          suffixLength = providerSuffix.length,
+          _provider,
+          providerName;
+
+      for (providerName in providerCache) {
+        if (providerCache.hasOwnProperty(providerName)) {
+          _provider = providerCache[providerName];
+          switch (providerName) {
+            case "$provide":
+              continue;
+            case "$controllerProvider":
+              forEach(_provider.constructors(), function(name, constructor) {
+                res.push({
+                  name: name,
+                  requires: annotate(constructor)
+                });
+              });
+            default:
+              if (isFunction(_provider.$get) || isArray(_provider.$get)) {
+                res.push({
+                  name: providerName.substr(0, providerName.length - suffixLength),
+                  requires: annotate(_provider.$get)
+                });
+              }
+          }
+        }
+      }
+
+      return res;
+    }
+
     return {
       invoke: invoke,
       instantiate: instantiate,
       get: getService,
       annotate: annotate,
+      dependencies: dependencies,
       has: function(name) {
         return providerCache.hasOwnProperty(name + providerSuffix) || cache.hasOwnProperty(name);
+      },
+      all: function() {
+
+        var providers = [],
+            suffixLength = providerSuffix.length,
+            name;
+
+        var removeSuffix = function (str) {
+          return str.substr(0, str.length - suffixLength);
+        }; 
+
+        var hasSuffix = function (str) {
+          return str.indexOf(providerSuffix, str.length - suffixLength) !== -1;
+        };
+
+        return Object.keys(providerCache).filter(hasSuffix).map(function (name) {
+          return {
+            name: removeSuffix(name),
+            deps: annotate(providerCache[name].$get)
+          };
+        });
+
+      },
+      dot: function (filterFn) {
+        var indent   = "    ",
+            filterFn = filterFn || function () { return true; };
+        return [
+          "digraph g {",
+          indent + "graph[rankdir=LR, center=true, margin=0.2, nodesep=0.1, ranksep=0.3]",
+          this.all().map(function (provider) {
+            var name = provider.name;
+            if (filterFn(name) === false) return "";
+            return provider.deps.reduce(function (acc, dep) {
+              var rule = indent + '"' + name + '" -> "' + dep + '"';
+              return acc + rule + "\n";
+            }, "");
+          }).join(""),
+          "}"
+        ].join("\n");
       }
     };
   }

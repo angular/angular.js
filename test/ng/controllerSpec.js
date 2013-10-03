@@ -57,6 +57,20 @@ describe('$controller', function() {
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
     });
+
+    it('should make registered controller constructors accessible', function() {
+      var FooCtrl = function($scope) {},
+          found = false;
+      $controllerProvider.register('FooCtrl', FooCtrl);
+      forEach($controllerProvider.constructors(), function (x) {
+        if (x.name === 'FooCtrl') {
+          found = true;
+          expect(x.constructor).toEqual(FooCtrl);
+          return false;
+        }
+      });
+      expect(found).toBe(true);
+    });
   });
 
 

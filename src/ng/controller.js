@@ -32,6 +32,25 @@ function $ControllerProvider() {
     }
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.$controllerProvider#constructors
+   * @methodOf ng.$controllerProvider
+   * @return {Array} constructors
+   */
+  this.constructors = function() {
+    var res = [],
+        name;
+    for(name in controllers) {
+      if (controllers.hasOwnProperty(name)) {
+        res.push({
+          name: name,
+          constructor: controllers[name]
+        });
+      }
+    }
+    return res;
+  };
 
   this.$get = ['$injector', '$window', function($injector, $window) {
 
