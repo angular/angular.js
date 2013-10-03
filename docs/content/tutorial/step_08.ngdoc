@@ -61,8 +61,8 @@ the same way as the phone list controller.
 
 __`app/js/controllers.js`:__
 <pre>
-var myApp = angular.module('myApp',[]);
-myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
+var phonecatApp = angular.module('phonecatApp',[]);
+phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
   $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
     $scope.phone = data;
   });
@@ -132,7 +132,7 @@ __`test/unit/controllersSpec.js`:__
 
       $routeParams.phoneId = 'xyz';
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
     }));
 
 
