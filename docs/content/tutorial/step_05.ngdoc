@@ -62,7 +62,8 @@ function PhoneListCtrl($scope, $http) {
   $scope.orderProp = 'age';
 }
 
-//PhoneListCtrl.$inject = ['$scope', '$http'];
+var phonecatApp = angular.module('phonecatApp',[]);
+phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
 </pre>
 
 `$http` makes an HTTP GET request to our web server, asking for `phone/phones.json` (the url is
@@ -106,20 +107,29 @@ constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minific
 minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
 minified as well, and the dependency injector would not be able to identify services correctly.
 
-To overcome issues caused by minification, just assign an array with service identifier strings
-into the `$inject` property of the controller function, just like the last line in the snippet
-(commented out) suggests:
+There are two ways to overcome issues caused by minification.
 
+* You can create a `$inject` property on the controller function which holds an array of strings.
+  Each string in the array is the name of the service to inject for the corresponding parameter.
+  In the case of our example we would write:
+
+    function PhoneListCtrl($scope, $http) {...}
     PhoneListCtrl.$inject = ['$scope', '$http'];
+    phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
 
-There is also one more way to specify this dependency list and avoid minification issues — using the
-bracket notation which wraps the function to be injected into an array of strings (representing the
-dependency names) followed by the function to be injected:
+* Use the inline bracket notation which wraps the function to be injected into an array of strings
+  (representing the dependency names) followed by the function to be injected:
 
-    var PhoneListCtrl = ['$scope', '$http', function($scope, $http) { /* constructor body */ }];
+    function PhoneListCtrl($scope, $http) {...}
+    phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
 
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
+
+When using the second method, it is common to provide the constructor function inline as an
+anonymous function when registering the controller:
+
+    phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
 
 
 ## Test
@@ -147,7 +157,7 @@ describe('PhoneCat controllers', function() {
           respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
 
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneListCtrl, {$scope: scope});
+      ctrl = $controller('PhoneListCtrl', {$scope: scope});
     }));
 </pre>
 
@@ -167,8 +177,8 @@ isolated from the work done in other tests.
 
 * We created a new scope for our controller by calling `$rootScope.$new()`
 
-* We called the injected `$controller` function passing the `PhoneListCtrl` function and the created
-scope as parameters.
+* We called the injected `$controller` function passing the name of the`PhoneListCtrl` controller
+and the created scope as parameters.
 
 Because our code now uses the `$http` service to fetch the phone list data in our controller, before
 we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an

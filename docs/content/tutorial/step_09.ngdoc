@@ -45,7 +45,7 @@ our main `phonecat` module.
 __`app/js/app.js`:__
 <pre>
 ...
-angular.module('phonecat', ['phonecatFilters']).
+angular.module('phonecatApp', ['phonecatFilters']).
 ...
 </pre>
 
