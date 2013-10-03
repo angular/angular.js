@@ -447,17 +447,19 @@ In this examples we use `<base href="/base/index.html" />`
 
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
+    // We must kill a link to the injector for this element otherwise angular will
+    // complain that it has been bootstrapped already.
+    root.data('$injector', null);
     angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
       $locationProvider.html5Mode(true).hashPrefix('!');
 
       $provide.value('$browser', browsers[name]);
-      $provide.value('$document', root);
       $provide.value('$sniffer', {history: name == 'html5'});
 
       $compileProvider.directive('ngAddressBar', function() {
         return function(scope, elm, attrs) {
           var browser = browsers[attrs.browser],
-              input = angular.element('<input type="text">').val(browser.url()),
+              input = angular.element('<input type="text" style="width: 400px">').val(browser.url()),
               delay;
 
           input.on('keypress keyup keydown', function() {
