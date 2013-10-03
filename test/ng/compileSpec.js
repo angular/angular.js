@@ -3256,7 +3256,7 @@ describe('$compile', function() {
       $rootScope.dataOnVar = 'data-on text';
       $rootScope.$apply();
       expect(element.attr('data-on')).toEqual('data-on text');
-      
+
       element = $compile('<button on="{{onVar}}"></script>')($rootScope);
       $rootScope.onVar = 'on text';
       $rootScope.$apply();

@@ -1370,6 +1370,7 @@ function $CompileProvider($provide) {
       var firstElementToRemove = elementsToRemove[0],
           removeCount = elementsToRemove.length,
           parent = firstElementToRemove.parentNode,
+          scope = jQuery(firstElementToRemove).data('$scope'),
           i, ii;
 
       if ($rootElement) {
@@ -1402,6 +1403,10 @@ function $CompileProvider($provide) {
         jqLite(element).remove(); // must do this way to clean up expando
         fragment.appendChild(element);
         delete elementsToRemove[k];
+      }
+
+      if (scope) {
+        jQuery(newNode).data('$scope', scope);
       }
 
       elementsToRemove[0] = newNode;
