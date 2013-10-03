@@ -39,7 +39,7 @@ __`app/index.html`.__
 
 __`app/js/services.js`.__
 <pre>
-angular.module('phonecatServices', ['ngResource']).
+var myApp = angular.module('phonecatServices', ['ngResource']).
     factory('Phone', function($resource){
   return $resource('phones/:phoneId.json', {}, {
     query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
@@ -79,16 +79,12 @@ __`app/js/controllers.js`.__
 <pre>
 ...
 
-function PhoneListCtrl($scope, Phone) {
+myApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
   $scope.phones = Phone.query();
   $scope.orderProp = 'age';
-}
+}]);
 
-//PhoneListCtrl.$inject = ['$scope', 'Phone'];
-
-
-
-function PhoneDetailCtrl($scope, $routeParams, Phone) {
+myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
   $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
     $scope.mainImageUrl = phone.images[0];
   });
@@ -96,9 +92,7 @@ function PhoneDetailCtrl($scope, $routeParams, Phone) {
   $scope.setImage = function(imageUrl) {
     $scope.mainImageUrl = imageUrl;
   }
-}
-
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', 'Phone'];
+}]);
 </pre>
 
 Notice how in `PhoneListCtrl` we replaced:
