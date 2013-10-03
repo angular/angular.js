@@ -10,22 +10,22 @@
  *
  * # `ngOptions`
  *
- * Optionally `ngOptions` attribute can be used to dynamically generate a list of `<option>`
- * elements for a `<select>` element using an array or an object obtained by evaluating the
- * `ngOptions` expression.
+ * The `ngOptions` attribute can be used to dynamically generate a list of `<option>`
+ * elements for the `<select>` element using the array or object obtained by evaluating the
+ * `ngOptions` comprehension_expression.
  *
- * When an item in the `<select>` menu is selected, the value of array element or object property
+ * When an item in the `<select>` menu is selected, the array element or object property
  * represented by the selected option will be bound to the model identified by the `ngModel`
- * directive of the parent select element.
+ * directive.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
- * be nested into the `<select>` element. This element will then represent `null` or "not selected"
+ * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
  *
  * Note: `ngOptions` provides iterator facility for `<option>` element which should be used instead
  * of {@link ng.directive:ngRepeat ngRepeat} when you want the
- * `select` model to be bound to a non-string value. This is because an option element can currently
- * be bound to string values only.
+ * `select` model to be bound to a non-string value. This is because an option element can only
+ * be bound to string values at present.
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
