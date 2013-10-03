@@ -128,7 +128,7 @@ describe('parser', function() {
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
       expect(map(tokens, function(t) { return t.text;})).
-          toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
+          toEqual(['a.b.c',  '(', 'd', ')', '-', 'e.f', '(', ')']);
     });
 
     it('should tokenize number', function() {
@@ -423,12 +423,23 @@ describe('parser', function() {
           this.a = 123;
         };
         C.prototype.getA = function() {
-          return this.a;
+          return this && this.a;
         };
 
         scope.obj = new C();
+        scope.obj.x = {getB: function() { return this && this.b}};
+        scope.obj.b = 321;
+        scope.obj.x.b = 456;
         expect(scope.$eval("obj.getA()")).toEqual(123);
         expect(scope.$eval("obj['getA']()")).toEqual(123);
+        expect(scope.$eval("this['obj'].x.getB()")).toEqual(456);
+        expect(scope.$eval("(obj.getA)()")).toEqual(123);
+        expect(scope.$eval("(obj['getA'])()")).toEqual(123);
+        expect(scope.$eval("(this['obj'].getA)()")).toEqual(123);
+        expect(scope.$eval("(this['obj'].x.getB)()")).toEqual(456);
+        expect(scope.$eval("(false || obj.getA)()")).toEqual(undefined);
+        expect(scope.$eval("(true && obj.getA)()")).toEqual(undefined);
+        expect(scope.$eval("({x: obj.getA, a: 321}).x()")).toEqual(321);
       });
 
       it('should evaluate methods in correct context (this) in argument', function() {
