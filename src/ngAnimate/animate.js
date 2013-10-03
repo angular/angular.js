@@ -600,40 +600,43 @@ angular.module('ngAnimate', ['ng'])
         element.addClass(className);
 
         //we want all the styles defined before and after
-        var transitionTime = 0,
-            animationTime = 0;
+        var transitionDuration = 0,
+            animationDuration = 0,
+            transitionDelay = 0,
+            animationDelay = 0;
         forEach(element, function(element) {
           if (element.nodeType == ELEMENT_NODE) {
             var elementStyles = $window.getComputedStyle(element) || {};
 
-            var transitionDelay  = parseMaxTime(elementStyles[transitionProp + delayKey]);
+            transitionDelay  = Math.max(parseMaxTime(elementStyles[transitionProp + delayKey]), transitionDelay);
 
-            var animationDelay   = parseMaxTime(elementStyles[animationProp + delayKey]);
+            animationDelay   = Math.max(parseMaxTime(elementStyles[animationProp + delayKey]), animationDelay);
 
-            var transitionDuration = parseMaxTime(elementStyles[transitionProp + durationKey]);
+            transitionDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]), transitionDuration);
 
-            var animationDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
+            var aDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
 
-            if(animationDuration > 0) {
-              animationDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
+            if(aDuration > 0) {
+              aDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
             }
 
-            transitionTime = Math.max(transitionDelay + transitionDuration, transitionTime);
-            animationTime = Math.max(animationDelay + animationDuration, animationTime);
+            animationDuration = Math.max(aDuration, animationDuration);
           }
         });
 
         /* there is no point in performing a reflow if the animation
            timeout is empty (this would cause a flicker bug normally
-           in the page */
-        var maxTime = Math.max(transitionTime,animationTime) * 1000;
-        if(maxTime > 0) {
-          var node = element[0],
-              startTime = Date.now();
+           in the page. There is also no point in performing an animation
+           that only has a delay and no duration */
+        var maxDuration = Math.max(transitionDuration, animationDuration);
+        if(maxDuration > 0) {
+          var maxDelayTime = Math.max(transitionDelay, animationDelay) * 1000,
+              startTime = Date.now(),
+              node = element[0];
 
           //temporarily disable the transition so that the enter styles
           //don't animate twice (this is here to avoid a bug in Chrome/FF).
-          if(transitionTime > 0) {
+          if(transitionDuration > 0) {
             node.style[transitionProp + propertyKey] = 'none';
           }
 
@@ -644,7 +647,7 @@ angular.module('ngAnimate', ['ng'])
 
           // This triggers a reflow which allows for the transition animation to kick in.
           element.prop('clientWidth');
-          if(transitionTime > 0) {
+          if(transitionDuration > 0) {
             node.style[transitionProp + propertyKey] = '';
           }
           element.addClass(activeClassName);
@@ -678,8 +681,13 @@ angular.module('ngAnimate', ['ng'])
           var ev = event.originalEvent || event;
           /* $manualTimeStamp is a mocked timeStamp value which is set
            * within browserTrigger(). This is only here so that tests can
-           * mock animations properly. Real events fallback to event.timeStamp. */
-          if((ev.$manualTimeStamp || ev.timeStamp) - startTime >= maxTime) {
+           * mock animations properly. Real events fallback to event.timeStamp.
+           * We're checking to see if the timestamp surpasses the expected delay,
+           * but we're using elapsedTime instead of the timestamp on the 2nd
+           * pre-condition since animations sometimes close off early */
+          if((ev.$manualTimeStamp || ev.timeStamp) - startTime >= maxDelayTime &&
+              ev.elapsedTime >= maxDuration) {
+
             done();
           }
         }
