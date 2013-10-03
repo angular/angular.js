@@ -1093,7 +1093,25 @@ describe('input', function() {
       compileInput('<input type="text" ng-model="notDefiend" required />');
       scope.$digest();
       expect(inputElm).toBeInvalid();
-    })
+    });
+
+    it('should allow `false` as a valid value when the input type is not "checkbox"', function() {
+      compileInput('<input type="radio" ng-value="true" ng-model="answer" required />' +
+        '<input type="radio" ng-value="false" ng-model="answer" required />');
+
+      scope.$apply();
+      expect(inputElm).toBeInvalid();
+
+      scope.$apply(function() {
+        scope.answer = true;
+      });
+      expect(inputElm).toBeValid();
+
+      scope.$apply(function() {
+        scope.answer = false;
+      });
+      expect(inputElm).toBeValid();
+    });
   });
 
 

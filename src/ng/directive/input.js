@@ -1266,14 +1266,15 @@ var requiredDirective = function() {
       attr.required = true; // force truthy in case we are on non input element
 
       var validator = function(value) {
-        if (attr.required && (isEmpty(value) || value === false)) {
+        if (attr.required && (isEmpty(value) || !acceptFalse && value === false)) {
           ctrl.$setValidity('required', false);
           return;
         } else {
           ctrl.$setValidity('required', true);
           return value;
         }
-      };
+      },
+        acceptFalse = nodeName_(elm).toLowerCase() !== 'input' || attr.type !== 'checkbox';
 
       ctrl.$formatters.push(validator);
       ctrl.$parsers.unshift(validator);
