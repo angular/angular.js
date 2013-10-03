@@ -816,8 +816,9 @@ function $CompileProvider($provide) {
         if (directiveValue = directive.transclude) {
           assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
           transcludeDirective = directive;
-          terminalPriority = directive.priority;
+
           if (directiveValue == 'element') {
+            terminalPriority = directive.priority;
             $template = groupScan(compileNode, attrStart, attrEnd)
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
