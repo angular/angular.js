@@ -1519,7 +1519,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
-                '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
+                '<div class="iscope-a; scope-b">');
           })
         );
 
@@ -2700,7 +2700,7 @@ describe('$compile', function() {
     });
 
 
-    it('should only allow one transclude per element', function() {
+    it('should only allow one content transclusion per element', function() {
       module(function() {
         directive('first', valueFn({
           scope: {},
@@ -2716,7 +2716,28 @@ describe('$compile', function() {
         expect(function() {
           $compile('<div class="first second"></div>');
         }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
-            '<div class="first second ng-isolate-scope ng-scope">');
+            '<div class="first second">');
+      });
+    });
+
+
+    it('should only allow one element transclusion per element', function() {
+      module(function() {
+        directive('first', valueFn({
+          scope: {},
+          restrict: 'CA',
+          transclude: 'element'
+        }));
+        directive('second', valueFn({
+          restrict: 'CA',
+          transclude: 'element'
+        }));
+      });
+      inject(function($compile) {
+        expect(function() {
+          $compile('<div class="first second"></div>');
+        }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
+            '<div class="first second">');
       });
     });
 
