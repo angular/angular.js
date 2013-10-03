@@ -124,11 +124,10 @@ __`app/index.html`:__
 __`app/js/controllers.js`:__
 <pre>
 ...
-function PhoneDetailCtrl($scope, $routeParams) {
+var myApp = angular.module('myApp',[]);
+myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', function($scope, $routeParams) {
   $scope.phoneId = $routeParams.phoneId;
-}
-
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams'];
+}]);
 </pre>
 
 
