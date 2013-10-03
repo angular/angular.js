@@ -215,8 +215,11 @@ angular.module('ngAnimate', ['ng'])
           //the empty string value is the default animation
           //operation which performs CSS transition and keyframe
           //animations sniffing. This is always included for each
-          //element animation procedure
-          classes.push('');
+          //element animation procedure if the browser supports
+          //transitions and/or keyframe animations
+          if ($sniffer.transitions || $sniffer.animations) {
+            classes.push('');
+          }
 
           for(var i=0; i < classes.length; i++) {
             var klass = classes[i],
@@ -477,7 +480,7 @@ angular.module('ngAnimate', ['ng'])
 
         //skip the animation if animations are disabled, a parent is already being animated
         //or the element is not currently attached to the document body.
-        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running) {
+        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || animations.length == 0) {
           //avoid calling done() since there is no need to remove any
           //data or className values since this happens earlier than that
           //and also use a timeout so that it won't be asynchronous
@@ -579,11 +582,7 @@ angular.module('ngAnimate', ['ng'])
           ELEMENT_NODE = 1;
 
       function animate(element, className, done) {
-        if (!($sniffer.transitions || $sniffer.animations)) {
-          done();
-          return;
-        }
-        else if(['ng-enter','ng-leave','ng-move'].indexOf(className) == -1) {
+        if(['ng-enter','ng-leave','ng-move'].indexOf(className) == -1) {
           var existingDuration = 0;
           forEach(element, function(element) {
             if (element.nodeType == ELEMENT_NODE) {
