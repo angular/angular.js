@@ -25,7 +25,8 @@ GitHub}:
 __`app/js/controllers.js`:__
 <pre>
 ...
-function PhoneDetailCtrl($scope, $routeParams, $http) {
+var myApp = angular.module('myApp',[]);
+myApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
   $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
     $scope.phone = data;
     $scope.mainImageUrl = data.images[0];
@@ -34,9 +35,7 @@ function PhoneDetailCtrl($scope, $routeParams, $http) {
   $scope.setImage = function(imageUrl) {
     $scope.mainImageUrl = imageUrl;
   }
-}
-
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
+}]);
 </pre>
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
