@@ -482,7 +482,7 @@ function $RouteProvider(){
           then(function() {
             if (next) {
               var locals = extend({}, next.resolve),
-                  template, templateUrl;
+                  template, templateUrl, controller;
 
               forEach(locals, function(value, key) {
                 locals[key] = isString(value) ? $injector.get(value) : $injector.invoke(value);
@@ -505,6 +505,16 @@ function $RouteProvider(){
               }
               if (isDefined(template)) {
                 locals['$template'] = template;
+              }
+
+              if (isDefined(controller = next.controller)) {
+                if (isFunction(controller)) {
+                  controller = controller(next.params);
+                }
+              }
+              if (isDefined(controller)) {
+                next.controller = controller;
+                locals['$controller'] = controller;
               }
               return $q.all(locals);
             }
