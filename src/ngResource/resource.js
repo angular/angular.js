@@ -466,7 +466,7 @@ angular.module('ngResource', ['ng']).
             }
           });
 
-          httpConfig.data = data;
+          if (hasBody) httpConfig.data = data;
           route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
 
           var promise = $http(httpConfig).then(function(response) {
