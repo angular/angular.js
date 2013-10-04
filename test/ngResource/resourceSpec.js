@@ -32,6 +32,16 @@ describe("resource", function() {
   });
 
 
+  it('should not include a request body when calling $delete', function() {
+    $httpBackend.expect('DELETE', '/fooresource', null).respond({});
+    var Resource = $resource('/fooresource');
+    var resource = new Resource({ foo: 'bar' });
+
+    resource.$delete();
+    $httpBackend.flush();
+  });
+
+
   it("should build resource", function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
