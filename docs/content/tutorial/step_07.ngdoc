@@ -114,7 +114,7 @@ directive:
 __`app/index.html`:__
 <pre>
 <!doctype html>
-<html lang="en" ng-app="phonecat">
+<html lang="en" ng-app="phonecatApp">
 ...
 </pre>
 
@@ -138,7 +138,7 @@ route into the layout template, which makes it a perfect fit for our `index.html
 
 __`app/index.html`:__
 <pre>
-<html lang="en" ng-app="phonecat">
+<html lang="en" ng-app="phonecatApp">
 <head>
 ...
   <script src="lib/angular/angular.js"></script>
