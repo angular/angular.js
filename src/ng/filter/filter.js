@@ -129,7 +129,7 @@ function filterFilter() {
       default:
         comperator = function(obj, text) {
           text = (''+text).toLowerCase();
-          return (''+obj).toLowerCase().indexOf(text) > -1
+          return (''+obj).toLowerCase().indexOf(text) > -1;
         };
     }
     var search = function(obj, text){
