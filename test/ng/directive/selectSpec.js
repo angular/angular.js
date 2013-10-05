@@ -1247,5 +1247,15 @@ describe('select', function() {
       expect(element.find('span').text()).toBe('success');
       dealoc(element);
     }));
+
+    it('should throw an exception if an option value interpolates to "hasOwnProperty"', function() {
+      scope.hasOwnPropertyOption = "hasOwnProperty";
+      expect(function() {
+        compile('<select ng-model="x">'+
+                  '<option>{{hasOwnPropertyOption}}</option>'+
+                '</select>');
+      }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
+    });
+
   });
 });

@@ -73,9 +73,12 @@ function FormController(element, attrs) {
    * Input elements using ngModelController do this automatically when they are linked.
    */
   form.$addControl = function(control) {
+    // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
+    // and not added to the scope.  Now we throw an error.
+    assertNotHasOwnProperty(control.$name, 'input');
     controls.push(control);
 
-    if (control.$name && !form.hasOwnProperty(control.$name)) {
+    if (control.$name) {
       form[control.$name] = control;
     }
   };
