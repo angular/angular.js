@@ -10,6 +10,8 @@
 
 function setupModuleLoader(window) {
 
+  var $injectorMinErr = minErr('$injector');
+
   function ensure(obj, name, factory) {
     return obj[name] || (obj[name] = factory());
   }
@@ -68,12 +70,13 @@ function setupModuleLoader(window) {
      * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
+      assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
         modules[name] = null;
       }
       return ensure(modules, name, function() {
         if (!requires) {
-          throw minErr('$injector')('nomod', "Module '{0}' is not available! You either misspelled the module name " +
+          throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled the module name " +
               "or forgot to load it. If registering a module ensure that you specify the dependencies as the second " +
               "argument.", name);
         }

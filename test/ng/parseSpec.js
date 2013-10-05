@@ -351,6 +351,26 @@ describe('parser', function() {
         expect(scope.$eval('toString()', scope)).toBe('custom toString');
       });
 
+      it('should not break if hasOwnProperty is referenced in an expression', function() {
+        scope.obj = { value: 1};
+        // By evaluating an expression that calls hasOwnProperty, the getterFnCache
+        // will store a property called hasOwnProperty.  This is effectively:
+        // getterFnCache['hasOwnProperty'] = null
+        scope.$eval('obj.hasOwnProperty("value")');
+        // If we rely on this property then evaluating any expression will fail
+        // because it is not able to find out if obj.value is there in the cache
+        expect(scope.$eval('obj.value')).toBe(1);
+      });
+
+      it('should not break if the expression is "hasOwnProperty"', function() {
+        scope.fooExp = 'barVal';
+        // By evaluating hasOwnProperty, the $parse cache will store a getter for
+        // the scope's own hasOwnProperty function, which will mess up future cache look ups.
+        // i.e. cache['hasOwnProperty'] = function(scope) { return scope.hasOwnProperty; }
+        scope.$eval('hasOwnProperty');
+        expect(scope.$eval('fooExp')).toBe('barVal');
+      });
+
       it('should evaluate grouped expressions', function() {
         expect(scope.$eval("(1+2)*3")).toEqual((1+2)*3);
       });

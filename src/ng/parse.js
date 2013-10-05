@@ -290,6 +290,7 @@ Lexer.prototype = {
       text: ident
     };
 
+    // OPERATORS is our own object so we don't need to use special hasOwnPropertyFn
     if (OPERATORS.hasOwnProperty(ident)) {
       token.fn = OPERATORS[ident];
       token.json = OPERATORS[ident];
@@ -938,6 +939,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
 }
 
 function getterFn(path, csp, fullExp) {
+  // Check whether the cache has this getter already.
+  // We can use hasOwnProperty directly on the cache because we ensure,
+  // see below, that the cache never stores a path called 'hasOwnProperty'
   if (getterFnCache.hasOwnProperty(path)) {
     return getterFnCache[path];
   }
@@ -986,7 +990,12 @@ function getterFn(path, csp, fullExp) {
     fn.toString = function() { return code; };
   }
 
-  return getterFnCache[path] = fn;
+  // Only cache the value if it's not going to mess up the cache object
+  // This is more performant that using Object.prototype.hasOwnProperty.call
+  if (path !== 'hasOwnProperty') {
+    getterFnCache[path] = fn;
+  }
+  return fn;
 }
 
 ///////////////////////////////////
@@ -1034,19 +1043,28 @@ function $ParseProvider() {
   var cache = {};
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     return function(exp) {
+      var lexer, parser, parsedExpression;
       switch (typeof exp) {
         case 'string':
           if (cache.hasOwnProperty(exp)) {
             return cache[exp];
           }
 
-          var lexer = new Lexer($sniffer.csp);
-          var parser = new Parser(lexer, $filter, $sniffer.csp);
-          return cache[exp] = parser.parse(exp, false);
+          lexer = new Lexer($sniffer.csp);
+          parser = new Parser(lexer, $filter, $sniffer.csp);
+          parsedExpression = parser.parse(exp, false);
 
+          if (exp !== 'hasOwnProperty') {
+            // Only cache the value if it's not going to mess up the cache object
+            // This is more performant that using Object.prototype.hasOwnProperty.call
+            cache[exp] = parsedExpression;
+          }
+
+          return parser.parse(exp, false);
+          
         case 'function':
           return exp;
-
+          
         default:
           return noop;
       }
