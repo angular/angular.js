@@ -117,6 +117,15 @@ describe('$compile', function() {
         expect(log).toEqual('pre1; pre2; post2; post1');
       });
     });
+
+    it('should throw an exception if a directive is called "hasOwnProperty"', function() {
+      module(function() {
+        expect(function() {
+          directive('hasOwnProperty', function() { });
+        }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid directive name");
+      });
+      inject(function($compile) {});
+    });
   });
 
 

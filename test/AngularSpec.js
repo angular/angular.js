@@ -417,11 +417,25 @@ describe('angular', function() {
     });
 
 
+    it('should not break if obj is an array we override hasOwnProperty', function() {
+      var obj = [];
+      obj[0] = 1;
+      obj[1] = 2;
+      obj.hasOwnProperty = null;
+      var log = [];
+      forEach(obj, function(value, key) {
+        log.push(key + ':' + value);
+      });
+      expect(log).toEqual(['0:1', '1:2']);
+    });
+
+
+
     it('should handle JQLite and jQuery objects like arrays', function() {
       var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
           log = [];
 
-      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
     });
 

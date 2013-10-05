@@ -305,6 +305,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
            key = (collection === collectionKeys) ? index : collectionKeys[index];
            value = collection[key];
            trackById = trackByIdFn(key, value, index);
+           assertNotHasOwnProperty(trackById, '`track by` id');
            if(lastBlockMap.hasOwnProperty(trackById)) {
              block = lastBlockMap[trackById]
              delete lastBlockMap[trackById];
@@ -327,6 +328,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
           // remove existing items
           for (key in lastBlockMap) {
+            // lastBlockMap is our own object so we don't need to use special hasOwnPropertyFn
             if (lastBlockMap.hasOwnProperty(key)) {
               block = lastBlockMap[key];
               $animate.leave(block.elements);

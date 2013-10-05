@@ -1,5 +1,6 @@
 'use strict';
 
+var ngOptionsMinErr = minErr('ngOptions');
 /**
  * @ngdoc directive
  * @name ng.directive:select
@@ -148,10 +149,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         ngModelCtrl = ngModelCtrl_;
         nullOption = nullOption_;
         unknownOption = unknownOption_;
-      }
+      };
 
 
       self.addOption = function(value) {
+        assertNotHasOwnProperty(value, '"option value"');
         optionsMap[value] = true;
 
         if (ngModelCtrl.$viewValue == value) {
@@ -177,12 +179,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         $element.prepend(unknownOption);
         $element.val(unknownVal);
         unknownOption.prop('selected', true); // needed for IE
-      }
+      };
 
 
       self.hasOption = function(value) {
         return optionsMap.hasOwnProperty(value);
-      }
+      };
 
       $scope.$on('$destroy', function() {
         // disable unknown option so that we don't do work when the whole select is being destroyed
@@ -300,7 +302,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw minErr('ngOptions')('iexp',
+          throw ngOptionsMinErr('iexp',
             "Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
             optionsExp, startingTag(selectElement));
         }
@@ -339,7 +341,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             var optionGroup,
                 collection = valuesFn(scope) || [],
                 locals = {},
-                key, value, optionElement, index, groupIndex, length, groupLength;
+                key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
 
             if (multiple) {
               value = [];
@@ -354,7 +356,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                     key = optionElement.val();
                     if (keyName) locals[keyName] = key;
                     if (trackFn) {
-                      for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                      for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
                         locals[valueName] = collection[trackIndex];
                         if (trackFn(scope, locals) == key) break;
                       }
@@ -373,7 +375,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 value = null;
               } else {
                 if (trackFn) {
-                  for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                  for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
                     locals[valueName] = collection[trackIndex];
                     if (trackFn(scope, locals) == key) {
                       value = valueFn(scope, locals);
@@ -446,7 +448,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals)) != undefined;
+              selected = selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals)) !== undefined;
             } else {
               if (trackFn) {
                 var modelCast = {};
@@ -564,7 +566,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         }
       }
     }
-  }
+  };
 }];
 
 var optionDirective = ['$interpolate', function($interpolate) {
@@ -613,5 +615,5 @@ var optionDirective = ['$interpolate', function($interpolate) {
         });
       };
     }
-  }
+  };
 }];
