@@ -421,7 +421,7 @@ describe('angular', function() {
       var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
           log = [];
 
-      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
     });
 
