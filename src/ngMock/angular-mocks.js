@@ -731,7 +731,7 @@ angular.mock.dump = function(object) {
     offset = offset ||  '  ';
     var log = [offset + 'Scope(' + scope.$id + '): {'];
     for ( var key in scope ) {
-      if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
+      if (Object.prototype.hasOwnProperty.call(scope, key) && !key.match(/^(\$|this)/)) {
         log.push('  ' + key + ': ' + angular.toJson(scope[key]));
       }
     }
@@ -1773,7 +1773,7 @@ angular.mock.clearDataCache = function() {
       cache = angular.element.cache;
 
   for(key in cache) {
-    if (cache.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(cache,key)) {
       var handle = cache[key].handle;
 
       handle && angular.element(handle.elem).off();

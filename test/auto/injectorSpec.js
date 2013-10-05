@@ -295,6 +295,24 @@ describe('injector', function() {
     });
 
     describe('$provide', function() {
+
+      it('should throw an exception if we try to register a service called "hasOwnProperty"', function() {
+        createInjector([function($provide) {
+          expect(function() {
+            $provide.provider('hasOwnProperty', function() {  });
+          }).toThrowMinErr('ng', 'badname');
+        }]);
+      });
+
+      it('should throw an exception if we try to register a constant called "hasOwnProperty"', function() {
+        createInjector([function($provide) {
+          expect(function() {
+            $provide.constant('hasOwnProperty', {});
+          }).toThrowMinErr('ng', 'badname');
+        }]);
+      });
+
+
       describe('constant', function() {
         it('should create configuration injectable constants', function() {
           var log = [];
