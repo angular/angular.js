@@ -599,8 +599,8 @@ describe('injector', function() {
         expect(function() {
           createInjector([function($provide){
             $provide.factory('service', function(service){});
-            return function(service) {}
-          }])
+            return function(service) {};
+          }]);
         }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: service');
       });
 
@@ -610,37 +610,51 @@ describe('injector', function() {
           createInjector([function($provide){
             $provide.factory('a', function(b){});
             $provide.factory('b', function(a){});
-            return function(a) {}
-          }])
+            return function(a) {};
+          }]);
         }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: b <- a');
       });
+
     });
   });
 
 
   describe('retrieval', function() {
-    var instance,
-        $injector,
-        $provide;
+    var instance = {name:'angular'};
+    var Instance = function() { this.name = 'angular'; };
 
-    beforeEach(function() {
-      $injector = createInjector([ ['$provide', function(provide) {
-        ($provide = provide).value('instance', instance = {name:'angular'});
+    function createInjectorWithValue(instanceName, instance) {
+      return createInjector([ ['$provide', function(provide) {
+        provide.value(instanceName, instance);
       }]]);
+    }
+    function createInjectorWithFactory(serviceName, serviceDef) {
+      return createInjector([ ['$provide', function(provide) {
+        provide.factory(serviceName, serviceDef);
+      }]]);
+    }
+
+
+    it('should retrieve by name', function() {
+      var $injector = createInjectorWithValue('instance', instance);
+      var retrievedInstance = $injector.get('instance');
+      expect(retrievedInstance).toBe(instance);
     });
 
 
-    it('should retrieve by name and cache instance', function() {
-      expect(instance).toEqual({name: 'angular'});
+    it('should cache instance', function() {
+      var $injector = createInjectorWithFactory('instance', function() { return new Instance(); });
+      var instance = $injector.get('instance');
       expect($injector.get('instance')).toBe(instance);
       expect($injector.get('instance')).toBe(instance);
     });
 
 
     it('should call functions and infer arguments', function() {
-      expect($injector.invoke(function(instance) { return instance; })).toBe(instance);
+      var $injector = createInjectorWithValue('instance', instance);
       expect($injector.invoke(function(instance) { return instance; })).toBe(instance);
     });
+
   });
 
 
