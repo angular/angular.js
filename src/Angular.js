@@ -745,7 +745,7 @@ function equals(o1, o2) {
       } else if (isDate(o1)) {
         return isDate(o2) && o1.getTime() == o2.getTime();
       } else if (isRegExp(o1) && isRegExp(o2)) {
-        return o1.toString() == o2.toString();
+        return o1.toString() === o2.toString();
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) || isArray(o2)) return false;
         keySet = {};
