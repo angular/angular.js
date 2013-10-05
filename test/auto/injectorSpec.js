@@ -90,6 +90,27 @@ describe('injector', function() {
 
   describe('invoke', function() {
     var args;
+    var q, defer, deferred, promise, log;
+    var mockNextTick = {
+      nextTick: function(task) {
+        mockNextTick.queue.push(task);
+      },
+      queue: [],
+      flush: function() {
+        if (!mockNextTick.queue.length) throw new Error('Nothing to be flushed!');
+        while (mockNextTick.queue.length) {
+          var queue = mockNextTick.queue;
+          mockNextTick.queue = [];
+          forEach(queue, function(task) {
+            try {
+              task();
+            } catch(e) {
+              dump('exception in mockNextTick:', e, e.name, e.message, task);
+            }
+          });
+        }
+      }
+    }
 
     beforeEach(function() {
       args = null;
@@ -132,6 +153,91 @@ describe('injector', function() {
         injector.invoke(['a', 123], {});
       }).toThrowMinErr("ng", "areq", "Argument 'fn' is not a function, got number");
     });
+
+    it('should return a promise if an injected dependency is a promised service', function() {
+      providers('e', function() {return { then: function(){}};});
+      var returned = injector.invoke(['$q', 'e', fn]);
+      expect(typeof returned.then).toBe('function');
+    });
+
+    it('should call the function immediately if no injected dependencies are promised services', function() {
+      var testFnSpy = jasmine.createSpy('injectedPromise');
+      var returned = injector.invoke(['a', 'b', testFnSpy]);
+      expect(testFnSpy).toHaveBeenCalled();
+    });
+
+    it('should not call the function immediately if an injected dependency is a promised service', function() {
+      var testFnSpy = jasmine.createSpy('injectedPromise');
+      providers('e', function() {return { then: function(){}};});
+      var returned = injector.invoke(['$q', 'e', testFnSpy]);
+      expect(testFnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should eventually call the function if an injected dependency is a promised service', function() {
+      var testFnSpy = jasmine.createSpy('injectedPromise');
+      var flag = false;
+      var asyncService = function($q){
+        return promise;
+      }
+
+      q = qFactory(mockNextTick.nextTick, noop);
+      deferred =  q.defer()
+      promise = deferred.promise;
+      providers('$q', function(){return q});
+
+      runs(function(){
+        providers('e', asyncService);
+        var returned = injector.invoke(['e', testFnSpy]);
+        expect(testFnSpy).not.toHaveBeenCalled();
+        setTimeout(function(){
+          deferred.resolve();
+          mockNextTick.flush();
+          flag = true;
+        }, 50);
+      });
+
+      waitsFor(function(){
+        return flag;
+      }, "Error waiting for async-service injection", 200);
+
+      runs(function(){
+        expect(testFnSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should use the eventually-resolved Service as argument if an injected dependency is a promised service', function() {
+      var testFnSpy = jasmine.createSpy('injectedPromise');
+      var flag = false;
+      var asyncService = function($q){
+        return promise;
+      }
+      var testResolvedValue = '1234ABCD';
+
+      q = qFactory(mockNextTick.nextTick, noop);
+      deferred =  q.defer()
+      promise = deferred.promise;
+      providers('$q', function(){return q});
+
+      runs(function(){
+        providers('e', asyncService);
+        var returned = injector.invoke(['e', testFnSpy]);
+        expect(testFnSpy).not.toHaveBeenCalled();
+        setTimeout(function(){
+          deferred.resolve(testResolvedValue);
+          mockNextTick.flush();
+          flag = true;
+        }, 50);
+      });
+
+      waitsFor(function(){
+        return flag;
+      }, "Error waiting for async-service injection", 200);
+
+      runs(function(){
+        expect(testFnSpy.mostRecentCall.args[0]).toEqual(testResolvedValue);
+      });
+    });
+
   });
 
 
