@@ -72,4 +72,10 @@ describe('module loader', function() {
             "or forgot to load it. If registering a module ensure that you specify the dependencies as the second " +
             "argument.");
   });
+
+  it('should complain if a module is called "hasOwnProperty', function() {
+    expect(function() {
+      window.angular.module('hasOwnProperty', []);
+    }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid module name");
+  });
 });

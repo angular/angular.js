@@ -137,6 +137,18 @@ describe('form', function() {
   });
 
 
+  it('should throw an exception if an input has name="hasOwnProperty"', function() {
+    doc = jqLite(
+      '<form name="form">'+
+        '<input name="hasOwnProperty" ng-model="some" />'+
+        '<input name="other" ng-model="someOther" />'+
+      '</form>');
+      expect(function() {
+	    $compile(doc)(scope);
+      }).toThrowMinErr('ng', 'badname');
+  });
+
+
   describe('preventing default submission', function() {
 
     it('should prevent form submission', function() {

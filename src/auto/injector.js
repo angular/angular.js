@@ -455,6 +455,7 @@ function createInjector(modulesToLoad) {
   }
 
   function provider(name, provider_) {
+    assertNotHasOwnProperty(name, 'service');
     if (isFunction(provider_) || isArray(provider_)) {
       provider_ = providerInjector.instantiate(provider_);
     }
@@ -475,6 +476,7 @@ function createInjector(modulesToLoad) {
   function value(name, value) { return factory(name, valueFn(value)); }
 
   function constant(name, value) {
+    assertNotHasOwnProperty(name, 'constant');
     providerCache[name] = value;
     instanceCache[name] = value;
   }

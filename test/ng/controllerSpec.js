@@ -57,6 +57,13 @@ describe('$controller', function() {
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
     });
+
+
+    it('should throw an exception if a controller is called "hasOwnProperty"', function () {
+      expect(function() {
+        $controllerProvider.register('hasOwnProperty', function($scope) {});
+      }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");
+    });
   });
 
 

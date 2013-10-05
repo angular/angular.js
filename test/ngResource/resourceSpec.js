@@ -242,6 +242,13 @@ describe("resource", function() {
   });
 
 
+  it('should throw an exception if a param is called "hasOwnProperty"', function() {
+     expect(function() {
+      $resource('/:hasOwnProperty').get();
+     }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
+  });
+
+
   it("should create resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
 
