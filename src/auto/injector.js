@@ -276,39 +276,76 @@ function annotate(fn) {
  * a service. The Provider can have additional methods which would allow for configuration of the provider.
  *
  * <pre>
- *   function GreetProvider() {
- *     var salutation = 'Hello';
- *
- *     this.salutation = function(text) {
- *       salutation = text;
- *     };
- *
- *     this.$get = function() {
- *       return function (name) {
- *         return salutation + ' ' + name + '!';
+ *   function TrackingProvider() {
+ *     this.$get = function($http) {
+ *       var observed = {};
+ *       return {
+ *         event: function(event) {
+ *           var current = observed[event];
+ *           return observed[event] = current ? current + 1 : 1;
+ *         },
+ *         save: function() {
+ *           $http.post("/track",observed);
+ *         }
  *       };
  *     };
  *   }
  *
- *   describe('Greeter', function(){
- *
+ *   describe('Tracking', function() {
+ *     var mocked;
  *     beforeEach(module(function($provide) {
- *       $provide.provider('greet', GreetProvider);
+ *       $provide.provider('tracking', TrackingProvider);
+ *       mocked = {post: jasmine.createSpy('postSpy')};
+ *       $provide.value('$http',mocked);
+ *     }));
+ *     it('allows events to be tracked', inject(function(tracking) {
+ *       expect(tracking.event('login')).toEqual(1);
+ *       expect(tracking.event('login')).toEqual(2);
  *     }));
  *
- *     it('should greet', inject(function(greet) {
- *       expect(greet('angular')).toEqual('Hello angular!');
+ *     it('posts to save', inject(function(tracking) {
+ *       tracking.save();
+ *       expect(mocked.post.callCount).toEqual(1);
  *     }));
- *
- *     it('should allow configuration of salutation', function() {
- *       module(function(greetProvider) {
- *         greetProvider.salutation('Ahoj');
- *       });
- *       inject(function(greet) {
- *         expect(greet('angular')).toEqual('Ahoj angular!');
- *       });
- *     });
+ *   });
  * </pre>
+ *
+ * There are also shorthand methods to define services that don't need to be configured beyond their `$get()` method. 
+ *
+ * `service()` registers a constructor function which will be invoked with `new` to create the instance. You can specify services that will be provided by the injector.
+ *
+ *  <pre>
+ *    function TrackingProvider($http) {
+ *      var observed = {};
+ *      this.event = function(event) {
+ *        var current = observed[event];
+ *        return observed[event] = current ? current + 1 : 1;
+ *      };
+ *      this.save = function() {
+ *        $http.post("/track",observed);
+ *      };
+ *    }
+ *    $provider.service('tracking',TrackingProvider);
+ *  </pre>
+ *
+ *  `factory()` registers a function whose return value is the instance. Again, you can specify services that will be provided by the injector.
+ *
+ *  <pre>
+ *    function TrackingProvider($http) {
+ *      var observed = {};
+ *      return {
+ *        event: function(event) {
+ *          var current = observed[event];
+ *          return observed[event] = current ? current + 1 : 1;
+ *        },
+ *        save: function() {
+ *          $http.post("/track",observed);
+ *        }
+ *      };
+ *    }
+ *    $provider.factory('tracking',TrackingProvider);
+ *  </pre>
+ *
  */
 
 /**
@@ -336,7 +373,7 @@ function annotate(fn) {
  * @methodOf AUTO.$provide
  * @description
  *
- * A short hand for configuring services if only `$get` method is required.
+ * A service whose instance is the return value of `$getFn`. Short hand for configuring services if only `$get` method is required. 
  *
  * @param {string} name The name of the instance.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
@@ -351,7 +388,7 @@ function annotate(fn) {
  * @methodOf AUTO.$provide
  * @description
  *
- * A short hand for registering service of given class.
+ * A service whose instance is created by invoking `constructor` with `new`. A short hand for registering services which use a constructor.
  *
  * @param {string} name The name of the instance.
  * @param {Function} constructor A class (constructor function) that will be instantiated.
@@ -621,3 +658,4 @@ function createInjector(modulesToLoad) {
     };
   }
 }
+
