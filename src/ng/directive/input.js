@@ -388,6 +388,13 @@ function isEmpty(value) {
   return isUndefined(value) || value === '' || value === null || value !== value;
 }
 
+function validityChanged(ctrl, element) {
+  return ctrl.$checkValidity && !equals(ctrl.$validityState, element.prop('validity'));
+}
+
+function isBadInput(ctrl) {
+  return ctrl.$validityState && ctrl.$validityState.badInput;
+}
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
@@ -401,7 +408,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       value = trim(value);
     }
 
-    if (ctrl.$viewValue !== value) {
+    if (ctrl.$viewValue !== value || validityChanged(ctrl, element)) {
       scope.$apply(function() {
         ctrl.$setViewValue(value);
       });
@@ -522,12 +529,21 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 }
 
+function numberIsBadInput(ctrl) {
+  if (!isEmpty(ctrl.$viewValue) && NUMBER_REGEXP.test(ctrl.$viewValue)) {
+    return false;
+  }
+  return ctrl.$validityState && ctrl.$validityState.badInput;
+}
+
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  ctrl.$checkValidity = true;
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   ctrl.$parsers.push(function(value) {
     var empty = isEmpty(value);
-    if (empty || NUMBER_REGEXP.test(value)) {
+    if (!numberIsBadInput(ctrl) && (empty || NUMBER_REGEXP.test(value))) {
       ctrl.$setValidity('number', true);
       return value === '' ? null : (empty ? value : parseFloat(value));
     } else {
@@ -546,7 +562,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       if (!isEmpty(value) && value < min) {
         ctrl.$setValidity('min', false);
         return undefined;
-      } else {
+      } else if (!isEmpty(value)) {
         ctrl.$setValidity('min', true);
         return value;
       }
@@ -562,7 +578,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       if (!isEmpty(value) && value > max) {
         ctrl.$setValidity('max', false);
         return undefined;
-      } else {
+      } else if (!isEmpty(value)) {
         ctrl.$setValidity('max', true);
         return value;
       }
@@ -574,7 +590,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   ctrl.$formatters.push(function(value) {
 
-    if (isEmpty(value) || isNumber(value)) {
+    if (!isBadInput(ctrl) && (isEmpty(value) || isNumber(value))) {
       ctrl.$setValidity('number', true);
       return value;
     } else {
@@ -972,6 +988,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$valid = true;
   this.$invalid = false;
   this.$name = $attr.name;
+  this.$validityState = copy($element.prop('validity'));
 
   var ngModelGet = $parse($attr.ngModel),
       ngModelSet = ngModelGet.assign;
@@ -1116,15 +1133,17 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   var ctrl = this;
 
   $scope.$watch(function ngModelWatch() {
-    var value = ngModelGet($scope);
+    var value = ngModelGet($scope), validity = $element.prop('validity');
 
     // if scope model value and ngModel value are out of sync
-    if (ctrl.$modelValue !== value) {
+    if (ctrl.$modelValue !== value ||
+       (ctrl.$checkValidity && !equals(validity, ctrl.$validityState))) {
 
       var formatters = ctrl.$formatters,
           idx = formatters.length;
 
       ctrl.$modelValue = value;
+      ctrl.$validityState = ctrl.$checkValidity && copy(validity);
       while(idx--) {
         value = formatters[idx](value);
       }
