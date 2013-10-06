@@ -651,6 +651,17 @@ describe('input', function() {
     });
 
 
+    it('should invalidate non-numeric values', function() {
+      compileInput('<input type="number" ng-model="age" />');
+
+      scope.$apply(function() {
+        scope.age = 'gerbils';
+      });
+      scope.$digest();
+      expect(inputElm).toBeInvalid();
+    });
+
+
     describe('min', function() {
 
       it('should validate', function() {
