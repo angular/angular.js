@@ -1043,8 +1043,6 @@ function $ParseProvider() {
   var cache = {};
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     return function(exp) {
-      var lexer = new Lexer($sniffer.csp);
-      var parser = new Parser(lexer, $filter, $sniffer.csp);
       var parsedExpression;
 
       switch (typeof exp) {
@@ -1053,6 +1051,8 @@ function $ParseProvider() {
             return cache[exp];
           }
 
+          var lexer = new Lexer($sniffer.csp);
+          var parser = new Parser(lexer, $filter, $sniffer.csp);
           parsedExpression = parser.parse(exp, false);
 
           if (exp !== 'hasOwnProperty') {
