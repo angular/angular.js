@@ -225,6 +225,31 @@ describe('injector', function() {
     expect(log).toEqual('value;function;service;->value;function;service;');
   });
 
+  it('should make service and controller dependencies available', function() {
+    var injector = createInjector([function($provide) {
+      $provide.value('FooValue', 'FooValue');
+      $provide.factory('FooFactory', function(FooValue) {});
+      $provide.provider('FooService', function() {
+        this.$get = function (FooValue, FooFactory) {};
+      });
+    }]);
+    var found = 0;
+    forEach(injector.dependencies(), function (x) {
+      if (x.name === 'FooValue') {
+        expect(x.requires).toEqual([]);
+        found++;
+      }
+      if (x.name === 'FooFactory') {
+        expect(x.requires).toEqual(['FooValue']);
+        found++;
+      }
+      if (x.name === 'FooService') {
+        expect(x.requires).toEqual(['FooValue', 'FooFactory']);
+        found++;
+      }
+    });
+    expect(found).toEqual(3);
+  });
 
   describe('module', function() {
     it('should provide $injector even when no module is requested', function() {
