@@ -1,6 +1,8 @@
 'use strict';
 
 var $parseMinErr = minErr('$parse');
+var promiseWarningCache = {};
+var promiseWarning;
 
 // Sandboxing Angular Expressions
 // ------------------------------
@@ -99,8 +101,8 @@ var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'
 /**
  * @constructor
  */
-var Lexer = function (csp) {
-  this.csp = csp;
+var Lexer = function (options) {
+  this.options = options;
 };
 
 Lexer.prototype = {
@@ -108,6 +110,7 @@ Lexer.prototype = {
 
   lex: function (text) {
     this.text = text;
+
     this.index = 0;
     this.ch = undefined;
     this.lastCh = ':'; // can start regexp
@@ -295,12 +298,12 @@ Lexer.prototype = {
       token.fn = OPERATORS[ident];
       token.json = OPERATORS[ident];
     } else {
-      var getter = getterFn(ident, this.csp, this.text);
+      var getter = getterFn(ident, this.options, this.text);
       token.fn = extend(function(self, locals) {
         return (getter(self, locals));
       }, {
         assign: function(self, value) {
-          return setter(self, ident, value, parser.text);
+          return setter(self, ident, value, parser.text, parser.options);
         }
       });
     }
@@ -371,10 +374,10 @@ Lexer.prototype = {
 /**
  * @constructor
  */
-var Parser = function (lexer, $filter, csp) {
+var Parser = function (lexer, $filter, options) {
   this.lexer = lexer;
   this.$filter = $filter;
-  this.csp = csp;
+  this.options = options;
 };
 
 Parser.ZERO = function () { return 0; };
@@ -388,7 +391,7 @@ Parser.prototype = {
     //TODO(i): strip all the obsolte json stuff from this file
     this.json = json;
 
-    this.tokens = this.lexer.lex(text, this.csp);
+    this.tokens = this.lexer.lex(text);
 
     if (json) {
       // The extra level of aliasing is here, just in case the lexer misses something, so that
@@ -688,13 +691,13 @@ Parser.prototype = {
   fieldAccess: function(object) {
     var parser = this;
     var field = this.expect().text;
-    var getter = getterFn(field, this.csp, this.text);
+    var getter = getterFn(field, this.options, this.text);
 
     return extend(function(scope, locals, self) {
       return getter(self || object(scope, locals), locals);
     }, {
       assign: function(scope, value, locals) {
-        return setter(object(scope, locals), field, value, parser.text);
+        return setter(object(scope, locals), field, value, parser.text, parser.options);
       }
     });
   },
@@ -712,7 +715,7 @@ Parser.prototype = {
 
       if (!o) return undefined;
       v = ensureSafeObject(o[i], parser.text);
-      if (v && v.then) {
+      if (v && v.then && parser.options.unwrapPromises) {
         p = v;
         if (!('$$v' in v)) {
           p.$$v = undefined;
@@ -759,7 +762,7 @@ Parser.prototype = {
             : fnPtr(args[0], args[1], args[2], args[3], args[4]);
 
       // Check for promise
-      if (v && v.then) {
+      if (v && v.then && parser.options.unwrapPromises) {
         var p = v;
         if (!('$$v' in v)) {
           p.$$v = undefined;
@@ -827,7 +830,7 @@ Parser.prototype = {
       literal: true,
       constant: allConstant
     });
-  },
+  }
 };
 
 
@@ -835,7 +838,10 @@ Parser.prototype = {
 // Parser helper functions
 //////////////////////////////////////////////////
 
-function setter(obj, path, setValue, fullExp) {
+function setter(obj, path, setValue, fullExp, options) {
+  //needed?
+  options = options || {};
+
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
     key = ensureSafeMemberName(element.shift(), fullExp);
@@ -845,7 +851,8 @@ function setter(obj, path, setValue, fullExp) {
       obj[key] = propertyObj;
     }
     obj = propertyObj;
-    if (obj.then) {
+    if (obj.then && options.unwrapPromises) {
+      promiseWarning(fullExp);
       if (!("$$v" in obj)) {
         (function(promise) {
           promise.then(function(val) { promise.$$v = val; }); }
@@ -869,76 +876,103 @@ var getterFnCache = {};
  * - http://jsperf.com/angularjs-parse-getter/4
  * - http://jsperf.com/path-evaluation-simplified/7
  */
-function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp) {
+function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
   ensureSafeMemberName(key0, fullExp);
   ensureSafeMemberName(key1, fullExp);
   ensureSafeMemberName(key2, fullExp);
   ensureSafeMemberName(key3, fullExp);
   ensureSafeMemberName(key4, fullExp);
-  return function(scope, locals) {
-    var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
-        promise;
 
-    if (pathVal === null || pathVal === undefined) return pathVal;
+  return !options.unwrapPromises
+      ? function cspSafeGetter(scope, locals) {
+          var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
 
-    pathVal = pathVal[key0];
-    if (pathVal && pathVal.then) {
-      if (!("$$v" in pathVal)) {
-        promise = pathVal;
-        promise.$$v = undefined;
-        promise.then(function(val) { promise.$$v = val; });
-      }
-      pathVal = pathVal.$$v;
-    }
-    if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
+          if (pathVal === null || pathVal === undefined) return pathVal;
+          pathVal = pathVal[key0];
 
-    pathVal = pathVal[key1];
-    if (pathVal && pathVal.then) {
-      if (!("$$v" in pathVal)) {
-        promise = pathVal;
-        promise.$$v = undefined;
-        promise.then(function(val) { promise.$$v = val; });
-      }
-      pathVal = pathVal.$$v;
-    }
-    if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
+          if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
+          pathVal = pathVal[key1];
 
-    pathVal = pathVal[key2];
-    if (pathVal && pathVal.then) {
-      if (!("$$v" in pathVal)) {
-        promise = pathVal;
-        promise.$$v = undefined;
-        promise.then(function(val) { promise.$$v = val; });
-      }
-      pathVal = pathVal.$$v;
-    }
-    if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
+          if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
+          pathVal = pathVal[key2];
 
-    pathVal = pathVal[key3];
-    if (pathVal && pathVal.then) {
-      if (!("$$v" in pathVal)) {
-        promise = pathVal;
-        promise.$$v = undefined;
-        promise.then(function(val) { promise.$$v = val; });
-      }
-      pathVal = pathVal.$$v;
-    }
-    if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
+          if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
+          pathVal = pathVal[key3];
 
-    pathVal = pathVal[key4];
-    if (pathVal && pathVal.then) {
-      if (!("$$v" in pathVal)) {
-        promise = pathVal;
-        promise.$$v = undefined;
-        promise.then(function(val) { promise.$$v = val; });
-      }
-      pathVal = pathVal.$$v;
-    }
-    return pathVal;
-  };
+          if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
+          pathVal = pathVal[key4];
+
+          return pathVal;
+        }
+      : function cspSafePromiseEnabledGetter(scope, locals) {
+          var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
+              promise;
+
+          if (pathVal === null || pathVal === undefined) return pathVal;
+
+          pathVal = pathVal[key0];
+          if (pathVal && pathVal.then) {
+            promiseWarning(fullExp);
+            if (!("$$v" in pathVal)) {
+              promise = pathVal;
+              promise.$$v = undefined;
+              promise.then(function(val) { promise.$$v = val; });
+            }
+            pathVal = pathVal.$$v;
+          }
+          if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
+
+          pathVal = pathVal[key1];
+          if (pathVal && pathVal.then) {
+            promiseWarning(fullExp);
+            if (!("$$v" in pathVal)) {
+              promise = pathVal;
+              promise.$$v = undefined;
+              promise.then(function(val) { promise.$$v = val; });
+            }
+            pathVal = pathVal.$$v;
+          }
+          if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
+
+          pathVal = pathVal[key2];
+          if (pathVal && pathVal.then) {
+            promiseWarning(fullExp);
+            if (!("$$v" in pathVal)) {
+              promise = pathVal;
+              promise.$$v = undefined;
+              promise.then(function(val) { promise.$$v = val; });
+            }
+            pathVal = pathVal.$$v;
+          }
+          if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
+
+          pathVal = pathVal[key3];
+          if (pathVal && pathVal.then) {
+            promiseWarning(fullExp);
+            if (!("$$v" in pathVal)) {
+              promise = pathVal;
+              promise.$$v = undefined;
+              promise.then(function(val) { promise.$$v = val; });
+            }
+            pathVal = pathVal.$$v;
+          }
+          if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
+
+          pathVal = pathVal[key4];
+          if (pathVal && pathVal.then) {
+            promiseWarning(fullExp);
+            if (!("$$v" in pathVal)) {
+              promise = pathVal;
+              promise.$$v = undefined;
+              promise.then(function(val) { promise.$$v = val; });
+            }
+            pathVal = pathVal.$$v;
+          }
+          return pathVal;
+        }
 }
 
-function getterFn(path, csp, fullExp) {
+function getterFn(path, options, fullExp) {
   // Check whether the cache has this getter already.
   // We can use hasOwnProperty directly on the cache because we ensure,
   // see below, that the cache never stores a path called 'hasOwnProperty'
@@ -950,14 +984,14 @@ function getterFn(path, csp, fullExp) {
       pathKeysLength = pathKeys.length,
       fn;
 
-  if (csp) {
+  if (options.csp) {
     fn = (pathKeysLength < 6)
-        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp)
+        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, options)
         : function(scope, locals) {
           var i = 0, val;
           do {
             val = cspSafeGetterFn(
-                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp
+                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp, options
                   )(scope, locals);
 
             locals = undefined; // clear after first iteration
@@ -976,18 +1010,25 @@ function getterFn(path, csp, fullExp) {
                       ? 's'
                       // but if we are first then we check locals first, and if so read it first
                       : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
-              'if (s && s.then) {\n' +
-                ' if (!("$$v" in s)) {\n' +
-                  ' p=s;\n' +
-                  ' p.$$v = undefined;\n' +
-                  ' p.then(function(v) {p.$$v=v;});\n' +
-                  '}\n' +
-                ' s=s.$$v\n' +
-              '}\n';
+              (options.unwrapPromises
+                ? 'if (s && s.then) {\n' +
+                  ' pw("' + fullExp.replace(/\"/g, '\\"') + '");\n' +
+                  ' if (!("$$v" in s)) {\n' +
+                    ' p=s;\n' +
+                    ' p.$$v = undefined;\n' +
+                    ' p.then(function(v) {p.$$v=v;});\n' +
+                    '}\n' +
+                  ' s=s.$$v\n' +
+                '}\n'
+                : '');
     });
     code += 'return s;';
-    fn = Function('s', 'k', code); // s=scope, k=locals
-    fn.toString = function() { return code; };
+
+    var evaledFnGetter = Function('s', 'k', 'pw', code); // s=scope, k=locals, pw=promiseWarning
+    evaledFnGetter.toString = function() { return code; };
+    fn = function(scope, locals) {
+      return evaledFnGetter(scope, locals, promiseWarning);
+    };
   }
 
   // Only cache the value if it's not going to mess up the cache object
@@ -1039,20 +1080,125 @@ function getterFn(path, csp, fullExp) {
  *        set to a function to change its value on the given context.
  *
  */
+
+
+/**
+ * @ngdoc object
+ * @name ng.$parseProvider
+ * @function
+ *
+ * @description
+ * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse} service.
+ */
 function $ParseProvider() {
   var cache = {};
-  this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
+
+  var $parseOptions = {
+    csp: false,
+    unwrapPromises: false,
+    logPromiseWarnings: true
+  };
+
+
+  /**
+   * @deprecated Promise unwrapping via $parse is deprecated and will be removed in the future.
+   *
+   * @ngdoc method
+   * @name ng.$parseProvider#unwrapPromises
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * **This feature is deprecated, see deprecation notes below for more info**
+   *
+   * If set to true (default is false), $parse will unwrap promises automatically when a promise is found at any part of
+   * the expression. In other words, if set to true, the expression will always result in a non-promise value.
+   *
+   * While the promise is unresolved, it's treated as undefined, but once resolved and fulfilled, the fulfillment value
+   * is used in place of the promise while evaluating the expression.
+   *
+   * **Deprecation notice**
+   *
+   * This is a feature that didn't prove to be wildly useful or popular, primarily because of the dichotomy between data
+   * access in templates (accessed as raw values) and controller code (accessed as promises).
+   *
+   * In most code we ended up resolving promises manually in controllers anyway and thus unifying the model access there.
+   *
+   * Other downsides of automatic promise unwrapping:
+   *
+   * - when building components it's often desirable to receive the raw promises
+   * - adds complexity and slows down expression evaluation
+   * - makes expression code pre-generation unattractive due to the amount of code that needs to be generated
+   * - makes IDE auto-completion and tool support hard
+   *
+   * **Warning Logs**
+   *
+   * If the unwrapping is enabled, Angular will log a warning about each expression that unwraps a promise (to reduce
+   * the noise, each expression is logged only once). To disable this logging use
+   * `$parseProvider.logPromiseWarnings(false)` api.
+   *
+   *
+   * @param {boolean=} value New value.
+   * @returns {boolean|self} Returns the current setting when used as getter and self if used as setter.
+   */
+  this.unwrapPromises = function(value) {
+    if (isDefined(value)) {
+      $parseOptions.unwrapPromises = !!value;
+      return this;
+    } else {
+      return $parseOptions.unwrapPromises;
+    }
+  };
+
+
+  /**
+   * @deprecated Promise unwrapping via $parse is deprecated and will be removed in the future.
+   *
+   * @ngdoc method
+   * @name ng.$parseProvider#logPromiseWarnings
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * Controls whether Angular should log a warning on any encounter of a promise in an expression.
+   *
+   * The default is set to `true`.
+   *
+   * This setting applies only if `$parseProvider.unwrapPromises` setting is set to true as well.
+   *
+   * @param {boolean=} value New value.
+   * @returns {boolean|self} Returns the current setting when used as getter and self if used as setter.
+   */
+ this.logPromiseWarnings = function(value) {
+    if (isDefined(value)) {
+      $parseOptions.logPromiseWarnings = value;
+      return this;
+    } else {
+      return $parseOptions.logPromiseWarnings;
+    }
+  };
+
+
+  this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
+    $parseOptions.csp = $sniffer.csp;
+
+    promiseWarning = function promiseWarning(fullExp) {
+      if (!$parseOptions.logPromiseWarnings || promiseWarningCache.hasOwnProperty(fullExp)) return;
+      promiseWarningCache[fullExp] = true;
+      $log.warn('[$parse] Promise found in the expression `' + fullExp + '`. ' +
+          'Automatic unwrapping of promises in Angular expressions is deprecated.');
+    };
+
     return function(exp) {
       var parsedExpression;
 
       switch (typeof exp) {
         case 'string':
+
           if (cache.hasOwnProperty(exp)) {
             return cache[exp];
           }
 
-          var lexer = new Lexer($sniffer.csp);
-          var parser = new Parser(lexer, $filter, $sniffer.csp);
+          var lexer = new Lexer($parseOptions);
+          var parser = new Parser(lexer, $filter, $parseOptions);
           parsedExpression = parser.parse(exp, false);
 
           if (exp !== 'hasOwnProperty') {
