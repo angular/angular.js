@@ -414,13 +414,14 @@ function createInjector(modulesToLoad) {
       providerSuffix = 'Provider',
       path = [],
       loadedModules = new HashMap(),
+      so = supportObject,
       providerCache = {
         $provide: {
-            provider: supportObject(provider),
-            factory: supportObject(factory),
-            service: supportObject(service),
-            value: supportObject(value),
-            constant: supportObject(constant),
+            provider: so(provider),
+            factory: so(factory),
+            service: so(service),
+            value: so(value),
+            constant: so(constant),
             decorator: decorator
           }
       },
