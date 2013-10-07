@@ -569,7 +569,7 @@ angular.module('ngAnimate', ['ng'])
       }
     }]);
 
-    $animateProvider.register('', ['$window', '$sniffer', function($window, $sniffer) {
+    $animateProvider.register('', ['$window', '$sniffer', '$timeout', function($window, $sniffer, $timeout) {
       var forEach = angular.forEach;
 
       // Detect proper transitionend/animationend event names.
@@ -604,6 +604,19 @@ angular.module('ngAnimate', ['ng'])
           delayKey = 'Delay',
           animationIterationCountKey = 'IterationCount',
           ELEMENT_NODE = 1;
+
+      var animationReflowQueue = [], animationTimer, timeOut = false;
+      function afterReflow(callback) {
+        animationReflowQueue.push(callback);
+        $timeout.cancel(animationTimer);
+        animationTimer = $timeout(function() {
+          angular.forEach(animationReflowQueue, function(fn) {
+            fn();
+          });
+          animationReflowQueue = [];
+          animationTimer = null;
+        }, 10, false); 
+      }
 
       function animate(element, className, done) {
         if(['ng-enter','ng-leave','ng-move'].indexOf(className) == -1) {
@@ -670,13 +683,15 @@ angular.module('ngAnimate', ['ng'])
           });
 
           // This triggers a reflow which allows for the transition animation to kick in.
-          element.prop('clientWidth');
-          if(transitionDuration > 0) {
-            node.style[transitionProp + propertyKey] = '';
-          }
-          element.addClass(activeClassName);
-
           var css3AnimationEvents = animationendEvent + ' ' + transitionendEvent;
+
+          afterReflow(function() {
+            if(transitionDuration > 0) {
+              node.style[transitionProp + propertyKey] = '';
+            }
+            element.addClass(activeClassName);
+          });
+
           element.on(css3AnimationEvents, onAnimationProgress);
 
           // This will automatically be called by $animate so
