@@ -440,7 +440,7 @@ angular.scenario.dsl('element', function() {
       var args = arguments,
           futureName = (args.length == 0)
               ? "element '" + this.label + "' " + methodName
-              : futureName = "element '" + this.label + "' set " + methodName + " to '" + value + "'";
+              : "element '" + this.label + "' set " + methodName + " to '" + value + "'";
 
       return this.addFutureAction(futureName, function($window, $document, done) {
         var element = $document.elements();
