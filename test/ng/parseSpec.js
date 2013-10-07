@@ -62,6 +62,18 @@ describe('parser', function() {
       expect(tokens[i].string).toEqual('d"e');
     });
 
+    it('should tokenize identifiers containing non-english unicode letters', function() {
+      var tokens = lex("π + mărţi.şor | Антон");
+
+      expect(tokens.length).toEqual(5);
+
+      expect(tokens[0].text).toEqual('π');
+      expect(tokens[1].text).toEqual('+');
+      expect(tokens[2].text).toEqual('mărţi.şor');
+      expect(tokens[3].text).toEqual('|');
+      expect(tokens[4].text).toEqual('Антон');
+    });
+
     it('should tokenize undefined', function() {
       var tokens = lex("undefined");
       var i = 0;
