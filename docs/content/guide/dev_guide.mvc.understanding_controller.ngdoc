@@ -45,6 +45,8 @@ your application as follows:
 Note also that we use the array notation to explicitly specify the dependency
 of the controller on the `$scope` service provided by Angular.
 
+**NOTE**: To pass more than one service into controller initialization, services must be comma separated as {@link guide/di#di.controllers follows}.
+
 # Adding Behavior to a Scope Object
 
 Behavior on an Angular scope object is in the form of scope method properties available to the

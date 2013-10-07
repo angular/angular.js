@@ -195,7 +195,7 @@ where injection is supported.
 
 DI is pervasive throughout Angular. It is typically used in controllers and factory methods. 
 
-### DI in controllers
+<h3 id="di.controllers">DI in controllers</h3>
 
 Controllers are classes which are responsible for application behavior. The recommended way of 
 declaring controllers is using the array notation:
