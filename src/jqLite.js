@@ -11,56 +11,55 @@
  *
  * @description
  * Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
- * `angular.element` can be either an alias for [jQuery](http://api.jquery.com/jQuery/) function, if
- * jQuery is available, or a function that wraps the element or string in Angular's jQuery lite
- * implementation (commonly referred to as jqLite).
  *
- * Real jQuery always takes precedence over jqLite, provided it was loaded before `DOMContentLoaded`
- * event fired.
+ * If jQuery is available, `angular.element` is an alias for the
+ * [jQuery](http://api.jquery.com/jQuery/) function. If jQuery is not available, `angular.element`
+ * delegates to Angular's built-in subset of jQuery, called "jQuery lite" or "jqLite."
  *
- * jqLite is a tiny, API-compatible subset of jQuery that allows
- * Angular to manipulate the DOM. jqLite implements only the most commonly needed functionality
- * within a very small footprint, so only a subset of the jQuery API - methods, arguments and
- * invocation styles - are supported.
+ * <div class="alert alert-success">jqLite is a tiny, API-compatible subset of jQuery that allows
+ * Angular to manipulate the DOM in a cross-browser compatible way. **jqLite** implements only the most
+ * commonly needed functionality with the goal of having a very small footprint.</div>
  *
- * Note: All element references in Angular are always wrapped with jQuery or jqLite; they are never
- * raw DOM references.
+ * To use jQuery, simply load it before `DOMContentLoaded` event fired.
+ *
+ * <div class="alert">**Note:** all element references in Angular are always wrapped with jQuery or
+ * jqLite; they are never raw DOM references.</div>
  *
  * ## Angular's jqLite
- * Angular's lite version of jQuery provides only the following jQuery methods:
+ * jqLite provides only the following jQuery methods:
  *
- * - [addClass()](http://api.jquery.com/addClass/)
- * - [after()](http://api.jquery.com/after/)
- * - [append()](http://api.jquery.com/append/)
- * - [attr()](http://api.jquery.com/attr/)
- * - [bind()](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
- * - [children()](http://api.jquery.com/children/) - Does not support selectors
- * - [clone()](http://api.jquery.com/clone/)
- * - [contents()](http://api.jquery.com/contents/)
- * - [css()](http://api.jquery.com/css/)
- * - [data()](http://api.jquery.com/data/)
- * - [eq()](http://api.jquery.com/eq/)
- * - [find()](http://api.jquery.com/find/) - Limited to lookups by tag name
- * - [hasClass()](http://api.jquery.com/hasClass/)
- * - [html()](http://api.jquery.com/html/)
- * - [next()](http://api.jquery.com/next/) - Does not support selectors
- * - [on()](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
- * - [off()](http://api.jquery.com/off/) - Does not support namespaces or selectors
- * - [parent()](http://api.jquery.com/parent/) - Does not support selectors
- * - [prepend()](http://api.jquery.com/prepend/)
- * - [prop()](http://api.jquery.com/prop/)
- * - [ready()](http://api.jquery.com/ready/)
- * - [remove()](http://api.jquery.com/remove/)
- * - [removeAttr()](http://api.jquery.com/removeAttr/)
- * - [removeClass()](http://api.jquery.com/removeClass/)
- * - [removeData()](http://api.jquery.com/removeData/)
- * - [replaceWith()](http://api.jquery.com/replaceWith/)
- * - [text()](http://api.jquery.com/text/)
- * - [toggleClass()](http://api.jquery.com/toggleClass/)
- * - [triggerHandler()](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [unbind()](http://api.jquery.com/off/) - Does not support namespaces
- * - [val()](http://api.jquery.com/val/)
- * - [wrap()](http://api.jquery.com/wrap/)
+ * - [`addClass()`](http://api.jquery.com/addClass/)
+ * - [`after()`](http://api.jquery.com/after/)
+ * - [`append()`](http://api.jquery.com/append/)
+ * - [`attr()`](http://api.jquery.com/attr/)
+ * - [`bind()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+ * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
+ * - [`clone()`](http://api.jquery.com/clone/)
+ * - [`contents()`](http://api.jquery.com/contents/)
+ * - [`css()`](http://api.jquery.com/css/)
+ * - [`data()`](http://api.jquery.com/data/)
+ * - [`eq()`](http://api.jquery.com/eq/)
+ * - [`find()`](http://api.jquery.com/find/) - Limited to lookups by tag name
+ * - [`hasClass()`](http://api.jquery.com/hasClass/)
+ * - [`html()`](http://api.jquery.com/html/)
+ * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
+ * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
+ * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
+ * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
+ * - [`prepend()`](http://api.jquery.com/prepend/)
+ * - [`prop()`](http://api.jquery.com/prop/)
+ * - [`ready()`](http://api.jquery.com/ready/)
+ * - [`remove()`](http://api.jquery.com/remove/)
+ * - [`removeAttr()`](http://api.jquery.com/removeAttr/)
+ * - [`removeClass()`](http://api.jquery.com/removeClass/)
+ * - [`removeData()`](http://api.jquery.com/removeData/)
+ * - [`replaceWith()`](http://api.jquery.com/replaceWith/)
+ * - [`text()`](http://api.jquery.com/text/)
+ * - [`toggleClass()`](http://api.jquery.com/toggleClass/)
+ * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
+ * - [`unbind()`](http://api.jquery.com/off/) - Does not support namespaces
+ * - [`val()`](http://api.jquery.com/val/)
+ * - [`wrap()`](http://api.jquery.com/wrap/)
  *
  * ## jQuery/jqLite Extras
  * Angular also provides the following additional methods and events to both jQuery and jqLite:
@@ -69,6 +68,7 @@
  * - `$destroy` - AngularJS intercepts all jqLite/jQuery's DOM destruction apis and fires this event
  *    on all DOM nodes being removed.  This can be used to clean up any 3rd party bindings to the DOM
  *    element before it is removed.
+ *
  * ### Methods
  * - `controller(name)` - retrieves the controller of the current element or its parent. By default
  *   retrieves controller associated with the `ngController` directive. If `name` is provided as
