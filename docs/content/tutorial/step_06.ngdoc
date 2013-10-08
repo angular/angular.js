@@ -27,16 +27,16 @@ urls point to the `app/img/phones/` directory.
 
 __`app/phones/phones.json`__ (sample snippet):
 <pre>
- [
+[
   {
-   ...
-   "id": "motorola-defy-with-motoblur",
-   "imageUrl": "img/phones/motorola-defy-with-motoblur.0.jpg",
-   "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122",
-   ...
+    ...
+    "id": "motorola-defy-with-motoblur",
+    "imageUrl": "img/phones/motorola-defy-with-motoblur.0.jpg",
+    "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122",
+    ...
   },
- ...
- ]
+  ...
+]
 </pre>
 
 
