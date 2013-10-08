@@ -30,7 +30,7 @@ function $HttpBackendProvider() {
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument) {
+function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
     var status;
@@ -102,7 +102,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument)
     }
 
     function completeRequest(callback, status, response, headersString) {
-      var protocol = urlResolve(url).protocol;
+      var protocol = locationProtocol || urlResolve(url).protocol;
 
       // cancel timeout and subsequent timeout promise resolution
       timeoutId && $browserDefer.cancel(timeoutId);

@@ -363,7 +363,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -374,7 +374,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -384,7 +384,7 @@ describe('$httpBackend', function() {
     });
 
 
-    iit('should convert 0 to 404 if no content - relative url', function() {
+    it('should convert 0 to 404 if no content - relative url', function() {
       $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);
