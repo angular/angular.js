@@ -129,7 +129,7 @@ The {@link api/ngResource.$resource $resource} service augments the response obj
 with methods for updating and deleting the resource. If we were to use the standard `toEqual`
 matcher, our tests would fail because the test values would not match the responses exactly. To
 solve the problem, we use a newly-defined `toEqualData` {@link
-http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine matcher}. When the
+https://github.com/pivotal/jasmine/wiki/Matchers Jasmine matcher}. When the
 `toEqualData` matcher compares two objects, it takes only object properties into account and
 ignores methods.
 
