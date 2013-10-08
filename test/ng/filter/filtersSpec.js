@@ -247,7 +247,10 @@ describe('filters', function() {
     });
 
     it('should accept negative numbers as strings', function() {
-      expect(date('-1')).toEqual('Dec 31, 1969');
+      //Note: this tests a timestamp set for 3 days before the unix epoch.
+      //The behavior of `date` depends on your timezone, which is why we check just
+      //the year and not the whole daye. See Issue #4218
+      expect(date('-259200000').split(' ')[2]).toEqual('1969');
     });
 
     it('should format timezones correctly (as per ISO_8601)', function() {
