@@ -312,10 +312,30 @@ angular.scenario.dsl('select', function() {
     });
   };
 
-  chain.options = function() {
-    var values = arguments;
+  chain.options = function(values) {
+    // var values = arguments;
+    // This functions does not work
+    // somehow the arguments is not getting any input when I do select(selector).options(0,1,2);
+    // but if I put a receiver there it will get the value from this input select(selector).options([0,1,2]);
     return this.addFutureAction("select '" + this.name + "' options '" + values + "'", function($window, $document, done) {
+      
       var select = $document.elements('select[multiple][ng\\:model="$1"]', this.name);
+    
+      // Can only select by values is not very convenient, I add a for loop so it can select by option's string value.  
+      var option = select.find('option[value="' + values[0] + '"]');
+      if (option.length) {
+        select.val(values);
+      } else {
+        var options = [];
+	       for(i=0;i<values.length;i++) {
+	          var tempoption = select.find('option:contains("' + values[i] + '")');
+		         if (tempoption.length)
+		             options.push(tempoption.val());
+		         else
+		             return done("option '" + values[i] + "' not found");
+	       }	  
+        select.val(options);
+      }
       select.val(values);
       select.trigger('change');
       done();
