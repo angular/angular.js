@@ -272,22 +272,22 @@
             <div ng-show="search">Filtered results:</div>
 
             <ul class="nav nav-list" ng-hide="page">
-              <li ng-repeat="page in pages track by page.url" ng-class="navClass(page)" class="api-list-item">
+              <li ng-repeat="page in pages track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
               </li>
             </ul>
 
-            <ul class="nav nav-list well api-list-item" ng-repeat="namespace in namespaces track by namespace.url">
+            <ul class="nav nav-list well api-list-item fade-in" ng-repeat="namespace in namespaces track by namespace.url">
               <li class="nav-header module">
                 <a class="code" href="{{namespace.url}}">{{namespace.name}}</a>
               </li>
 
-              <li ng-repeat="page in namespace.errors track by page.url" ng-class="navClass(page)" ng-animate="'expand'" class="api-list-item">
+              <li ng-repeat="page in namespace.errors track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.shortName}}</a>
               </li>
             </ul>
 
-            <ul class="nav nav-list well api-list-item" ng-repeat="module in modules track by module.url">
+            <ul class="nav nav-list well api-list-item fade-in" ng-repeat="module in modules track by module.url">
               <li class="nav-header module">
                 <a class="guide" href="{{URL.module}}">module</a>
                 <a class="code" href="{{module.url}}">{{module.name}}</a>
@@ -326,7 +326,7 @@
                 <a href="{{URL.api}}" class="global guide">global APIs</a>
                 &nbsp;
               </li>
-              <li ng-repeat="page in module.globals track by page.url" ng-class="navClass(page)" class="api-list-item">
+              <li ng-repeat="page in module.globals track by page.url" ng-class="navClass(page)" class="expand api-list-item">
                 <a href="{{page.url}}" tabindex="2">{{page.id}}</a>
               </li>
 
