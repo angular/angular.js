@@ -79,28 +79,27 @@ the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor f
 __`app/js/controllers.js`:__
 <pre>
 
-function PhoneListCtrl($scope) {
-  $scope.phones = [
-    {"name": "Nexus S",
-     "snippet": "Fast just got faster with Nexus S."},
-    {"name": "Motorola XOOM™ with Wi-Fi",
-     "snippet": "The Next, Next Generation tablet."},
-    {"name": "MOTOROLA XOOM™",
-     "snippet": "The Next, Next Generation tablet."}
-  ];
-}
+var phonecatApp = angular.module('phonecatApp', []);
 
-var phonecatApp = angular.module('phonecatApp',[]);
-phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
+phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
+  $scope.phones = [
+    {'name': 'Nexus S',
+     'snippet': 'Fast just got faster with Nexus S.'},
+    {'name': 'Motorola XOOM™ with Wi-Fi',
+     'snippet': 'The Next, Next Generation tablet.'},
+    {'name': 'MOTOROLA XOOM™',
+     'snippet': 'The Next, Next Generation tablet.'}
+  ];
+});
 
 </pre>
 
-Here we have declared a controller called __PhoneListCtrl__ and registered it in an AngularJS
+Here we declared a controller called __PhoneListCtrl__ and registered it in an AngularJS
 module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
 module name as the module to load when bootstrapping the Angular application.
 
-Although the controller is not yet doing very much controlling, it is playing a crucial role. By
-providing context for our data model, the controller allows us to establish data-binding between
+Although the controller is not yet doing very much, it plays a crucial role. By providing context
+for our data model, the controller allows us to establish data-binding between
 the model and the view. We connected the dots between the presentation, data, and logic components
 as follows:
 
