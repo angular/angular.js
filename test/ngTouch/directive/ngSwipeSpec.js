@@ -66,6 +66,23 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
       expect($rootScope.swiped).toBe(true);
     }));
 
+    it('should pass event object', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-swipe-left="event = $event"></div>')($rootScope);
+      $rootScope.$digest();
+
+      browserTrigger(element, startEvent, {
+        keys : [],
+        x : 100,
+        y : 20
+      });
+      browserTrigger(element, endEvent,{
+        keys: [],
+        x: 20,
+        y: 20
+      });
+      expect($rootScope.event).toBeDefined();
+    }));
+
     it('should not swipe if you move too far vertically', inject(function($rootScope, $compile, $rootElement) {
       element = $compile('<div ng-swipe-left="swiped = true"></div>')($rootScope);
       $rootElement.append(element);
