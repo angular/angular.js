@@ -842,10 +842,12 @@ function $RootScopeProvider(){
             namedListeners,
             scope = this,
             stopPropagation = false,
+            stopImmediatePropagation = false,
             event = {
               name: name,
               targetScope: scope,
               stopPropagation: function() {stopPropagation = true;},
+              stopImmediatePropagation: function(){stopImmediatePropagation=true;},
               preventDefault: function() {
                 event.defaultPrevented = true;
               },
@@ -869,6 +871,8 @@ function $RootScopeProvider(){
             try {
               //allow all listeners attached to the current scope to run
               namedListeners[i].apply(null, listenerArgs);
+              //stop all other listeners immediately
+              if (stopImmediatePropagation) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
