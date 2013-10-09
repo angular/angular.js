@@ -1314,8 +1314,7 @@ var requiredDirective = function() {
  * can be a fixed string (by default a comma) or a regular expression.
  *
  * @element input
- * @param {string=} ngList optional delimiter that should be used to split the value. If
- *   specified in form `/something/` then the value will be converted into a regular expression.
+ * @param {string=} ngList optional delimiter that should be used to split the value.
  *
  * @example
     <doc:example>
@@ -1357,8 +1356,7 @@ var ngListDirective = function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
-      var match = /\/(.*)\//.exec(attr.ngList),
-          separator = match && new RegExp(match[1]) || attr.ngList || ',';
+      var separator = attr.ngList || ', ';
 
       var parse = function(viewValue) {
         // If the viewValue is invalid (say required but empty) it will be `undefined`
@@ -1367,7 +1365,7 @@ var ngListDirective = function() {
         var list = [];
 
         if (viewValue) {
-          forEach(viewValue.split(separator), function(value) {
+          forEach(viewValue.split(trim(separator)), function(value) {
             if (value) list.push(trim(value));
           });
         }
@@ -1378,7 +1376,7 @@ var ngListDirective = function() {
       ctrl.$parsers.push(parse);
       ctrl.$formatters.push(function(value) {
         if (isArray(value)) {
-          return value.join(', ');
+          return value.join(separator);
         }
 
         return undefined;
