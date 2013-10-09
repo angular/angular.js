@@ -14,7 +14,9 @@ var inputType = {
    * Standard HTML text input with angular data binding.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} name Property name of the form under which the control is published. Setting
+   * 	this property changes the zero length effect of a binding to the empty string instead of the
+   * 	default of undefined.
    * @param {string=} required Adds `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
