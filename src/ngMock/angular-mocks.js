@@ -467,9 +467,9 @@ angular.mock.$IntervalProvider = function() {
     var $interval = function(fn, delay, count, invokeApply) {
       var deferred = $q.defer(),
           promise = deferred.promise,
-          count = (isDefined(count)) ? count : 0,
+          count = (angular.isDefined(count)) ? count : 0,
           iteration = 0,
-          skipApply = (isDefined(invokeApply) && !invokeApply);
+          skipApply = (angular.isDefined(invokeApply) && !invokeApply);
 
       promise.then(null, null, fn);
 
