@@ -1287,6 +1287,7 @@ describe('ngMock', function() {
       angular.forEach(['expect', 'when'], function(prefix) {
         angular.forEach(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP', 'HEAD'], function(method) {
           var shortcut = prefix + method;
+
           it('should provide ' + shortcut + ' shortcut method', function() {
             hb[shortcut]('/foo').respond('bar');
             hb(method, '/foo', undefined, callback);
