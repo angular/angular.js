@@ -761,16 +761,6 @@ Parser.prototype = {
             ? fnPtr.apply(context, args)
             : fnPtr(args[0], args[1], args[2], args[3], args[4]);
 
-      // Check for promise
-      if (v && v.then && parser.options.unwrapPromises) {
-        var p = v;
-        if (!('$$v' in v)) {
-          p.$$v = undefined;
-          p.then(function(val) { p.$$v = val; });
-        }
-        v = v.$$v;
-      }
-
       return ensureSafeObject(v, parser.text);
     };
   },
