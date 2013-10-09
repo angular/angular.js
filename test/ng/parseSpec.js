@@ -1129,18 +1129,6 @@ describe('parser', function() {
             expect(scope.$eval('greeting')).toBe(undefined);
           });
 
-          it('should evaluate a function call returning a promise and eventually get its return value', function() {
-            scope.greetingFn = function() { return promise; };
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-
-            deferred.resolve('hello!');
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe('hello!');
-          });
 
           describe('assignment into promises', function() {
             // This behavior is analogous to assignments to non-promise values
