@@ -8,8 +8,11 @@
  * @description
  * Simple service for logging. Default implementation writes the message
  * into the browser's console (if present).
- *
+ * 
  * The main purpose of this service is to simplify debugging and troubleshooting.
+ *
+ * The default is not to log `debug` messages. You can use
+ * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
  *
  * @example
    <example>
