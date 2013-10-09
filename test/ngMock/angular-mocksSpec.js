@@ -1216,7 +1216,7 @@ describe('ngMock', function() {
 
 
       it('should do nothing when all expectations satisfied', function() {
-        hb.expect('GET', '/u2').respond(200, '', {});        
+        hb.expect('GET', '/u2').respond(200, '', {});
         hb.expect('POST', '/u3').respond(201, '', {});
         hb.when('DELETE', '/some').respond(200, '');
 
