@@ -36,7 +36,7 @@ describe("ngAnimate", function() {
 
     describe("enable / disable", function() {
 
-      it("should disable and enable the animations", function() {
+      it("should work for all animations", function() {
         var $animate, initialState = null;
 
         angular.bootstrap(body, ['ngAnimate',function() {
@@ -56,7 +56,6 @@ describe("ngAnimate", function() {
         expect($animate.enabled(1)).toBe(true);
         expect($animate.enabled()).toBe(true);
       });
-
     });
 
     describe("with polyfill", function() {
@@ -229,6 +228,7 @@ describe("ngAnimate", function() {
         expect(child.attr('class')).toContain('ng-enter');
         expect(child.attr('class')).toContain('ng-enter-active');
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+        $timeout.flush();
 
         //move
         element.append(after);
@@ -239,6 +239,7 @@ describe("ngAnimate", function() {
         expect(child.attr('class')).toContain('ng-move');
         expect(child.attr('class')).toContain('ng-move-active');
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+        $timeout.flush();
 
         //hide
         $animate.addClass(child, 'ng-hide');
@@ -261,6 +262,7 @@ describe("ngAnimate", function() {
         expect(child.attr('class')).toContain('ng-leave');
         expect(child.attr('class')).toContain('ng-leave-active');
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+        $timeout.flush();
       }));
 
       it("should not run if animations are disabled",
@@ -330,6 +332,29 @@ describe("ngAnimate", function() {
         expect(child.hasClass('animation-cancelled')).toBe(true);
       }));
 
+      it("should skip a class-based animation if the same element already has an ongoing structural animation",
+        inject(function($animate, $rootScope, $sniffer, $timeout) {
+
+        var completed = false;
+        $animate.enter(child, element, null, function() {
+          completed = true; 
+        });
+        $rootScope.$digest();
+
+        expect(completed).toBe(false);
+
+        $animate.addClass(child, 'green');
+        expect(element.hasClass('green'));
+
+        expect(completed).toBe(false);
+        if($sniffer.transitions) {
+          $timeout.flush();
+          browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+        }
+        $timeout.flush();
+
+        expect(completed).toBe(true);
+      }));
 
       it("should fire the cancel/end function with the correct flag in the parameters",
         inject(function($animate, $rootScope, $sniffer, $timeout) {
@@ -722,6 +747,7 @@ describe("ngAnimate", function() {
           expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
         }
+        $timeout.flush();
         expect(element.hasClass('abc')).toBe(true);
 
         $rootScope.klass = 'xyz';
@@ -735,6 +761,7 @@ describe("ngAnimate", function() {
           expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11000 });
         }
+        $timeout.flush();
         expect(element.hasClass('xyz')).toBe(true);
       }));
 
@@ -767,7 +794,8 @@ describe("ngAnimate", function() {
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3000 });
         }
 
-        expect(element.hasClass('one two')).toBe(true);
+        expect(element.hasClass('one')).toBe(true);
+        expect(element.hasClass('two')).toBe(true);
       }));
     });
 
@@ -1670,6 +1698,7 @@ describe("ngAnimate", function() {
 
       expect(animationState).toBe('enter-cancel');
       $rootScope.$digest();
+      $timeout.flush();
 
       $animate.addClass(child, 'something');
       expect(animationState).toBe('addClass');
@@ -1711,4 +1740,139 @@ describe("ngAnimate", function() {
     expect(element[0].querySelectorAll('.ng-enter-active').length).toBe(0);
   }));
 
+
+  it("should work to disable all child animations for an element", function() {
+    var childAnimated = false,
+        containerAnimated = false;
+    module(function($animateProvider) {
+      $animateProvider.register('.child', function() {
+        return {
+          addClass : function(element, className, done) {
+            childAnimated = true;
+            done();
+          }
+        }
+      });
+      $animateProvider.register('.container', function() {
+        return {
+          leave : function(element, done) {
+            containerAnimated = true;
+            done();
+          }
+        }
+      });
+    });
+      
+    inject(function($compile, $rootScope, $animate, $timeout, $rootElement) {
+      $animate.enabled(true);
+
+      var element = $compile('<div class="container"></div>')($rootScope);
+      jqLite($document[0].body).append($rootElement);
+      $rootElement.append(element);
+
+      var child = $compile('<div class="child"></div>')($rootScope);
+      element.append(child);
+
+      $animate.enabled(true, element);
+
+      $animate.addClass(child, 'awesome');
+      expect(childAnimated).toBe(true);
+
+      childAnimated = false;
+      $animate.enabled(false, element);
+
+      $animate.addClass(child, 'super');
+      expect(childAnimated).toBe(false);
+
+      $animate.leave(element);
+      $rootScope.$digest();
+      expect(containerAnimated).toBe(true);
+    });
+  });
+
+  it("should disable all child animations on structural animations until the first reflow has passed", function() {
+    var intercepted;
+    module(function($animateProvider) {
+      $animateProvider.register('.animated', function() {
+        return {
+          enter : ani('enter'),
+          leave : ani('leave'),
+          move : ani('move'),
+          addClass : ani('addClass'),
+          removeClass : ani('removeClass')
+        };
+
+        function ani(type) {
+          return function(element, className, done) {
+            intercepted = type;
+            (done || className)();
+          }
+        }
+      });
+    });
+
+    inject(function($animate, $rootScope, $sniffer, $timeout, $compile, _$rootElement_) {
+      $rootElement = _$rootElement_;
+
+      $animate.enabled(true);
+      $rootScope.$digest();
+
+      var element = $compile('<div class="element animated">...</div>')($rootScope);
+      var child1 = $compile('<div class="child1 animated">...</div>')($rootScope);
+      var child2 = $compile('<div class="child2 animated">...</div>')($rootScope);
+      var container = $compile('<div class="container">...</div>')($rootScope);
+
+      jqLite($document[0].body).append($rootElement);
+      $rootElement.append(container);
+      element.append(child1);
+      element.append(child2);
+
+      $animate.move(element, null, container);
+      $rootScope.$digest();
+
+      expect(intercepted).toBe('move');
+
+      $animate.addClass(child1, 'test');
+      expect(child1.hasClass('test')).toBe(true);
+
+      expect(intercepted).toBe('move');
+      $animate.leave(child1);
+      $rootScope.$digest();
+
+      expect(intercepted).toBe('move');
+
+      //reflow has passed
+      $timeout.flush();
+
+      $animate.leave(child2);
+      $rootScope.$digest();
+      expect(intercepted).toBe('leave');
+    });
+  });
+
+  it("should not disable any child animations when any parent class-based animations are run", function() {
+    var intercepted;
+    module(function($animateProvider) {
+      $animateProvider.register('.animated', function() {
+        return {
+          enter : function(element, done) {
+            intercepted = true;
+            done();
+          }
+        }
+      });
+    });
+
+    inject(function($animate, $rootScope, $sniffer, $timeout, $compile, $document, $rootElement) {
+      $animate.enabled(true);
+
+      var element = $compile('<div ng-class="{klass:bool}"> <div ng-if="bool" class="animated">value</div></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $rootScope.bool = true;
+      $rootScope.$digest();
+      expect(intercepted).toBe(true);
+    });
+  });
 });
