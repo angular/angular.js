@@ -279,12 +279,13 @@ function JQLiteData(element, key, value) {
 }
 
 function JQLiteHasClass(element, selector) {
+  if (!element.getAttribute) return false;
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, cssClasses) {
-  if (cssClasses) {
+  if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.setAttribute('class', trim(
           (" " + (element.getAttribute('class') || '') + " ")
@@ -296,7 +297,7 @@ function JQLiteRemoveClass(element, cssClasses) {
 }
 
 function JQLiteAddClass(element, cssClasses) {
-  if (cssClasses) {
+  if (cssClasses && element.setAttribute) {
     var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
                             .replace(/[\n\t]/g, " ");
 
