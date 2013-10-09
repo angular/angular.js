@@ -12,11 +12,11 @@
  *
  * It also watches the `$location.hash()` and scrolls whenever it changes to match any anchor.
  * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
- * 
+ *
  * @example
    <example>
      <file name="index.html">
-       <div ng-controller="MainCtrl">
+       <div ng-controller="ScrollCtrl">
          <a ng-click="gotoBottom()">Go to bottom</a>
          <a id="bottom"></a> You're at the bottom!
        </div>
@@ -27,7 +27,7 @@
            // set the location.hash to the id of
            // the element you wish to scroll to.
            $location.hash('bottom');
-           
+
            // call $anchorScroll()
            $anchorScroll();
          }
