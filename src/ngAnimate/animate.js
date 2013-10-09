@@ -642,6 +642,10 @@ angular.module('ngAnimate', ['ng'])
           animationIterationCountKey = 'IterationCount',
           ELEMENT_NODE = 1;
 
+      var NG_ANIMATE_PARENT_KEY = '$ngAnimateKey';
+      var lookupCache = {};
+      var parentCounter = 0;
+
       var animationReflowQueue = [], animationTimer, timeOut = false;
       function afterReflow(callback) {
         animationReflowQueue.push(callback);
@@ -652,65 +656,93 @@ angular.module('ngAnimate', ['ng'])
           });
           animationReflowQueue = [];
           animationTimer = null;
+          lookupCache = {};
         }, 10, false); 
       }
 
-      function animate(element, className, done) {
-        if(['ng-enter','ng-leave','ng-move'].indexOf(className) == -1) {
-          var existingDuration = 0;
+      function getElementAnimationDetails(element, cacheKey, onlyCheckTransition) {
+        var data = lookupCache[cacheKey];
+        if(!data) {
+          var transitionDuration = 0, transitionDelay = 0,
+              animationDuration = 0, animationDelay = 0;
+
+          //we want all the styles defined before and after
           forEach(element, function(element) {
             if (element.nodeType == ELEMENT_NODE) {
               var elementStyles = $window.getComputedStyle(element) || {};
-              existingDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]),
-                                          existingDuration);
+
+              transitionDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]), transitionDuration);
+
+              if(!onlyCheckTransition) {
+                transitionDelay  = Math.max(parseMaxTime(elementStyles[transitionProp + delayKey]), transitionDelay);
+
+                animationDelay   = Math.max(parseMaxTime(elementStyles[animationProp + delayKey]), animationDelay);
+
+                var aDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
+
+                if(aDuration > 0) {
+                  aDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
+                }
+
+                animationDuration = Math.max(aDuration, animationDuration);
+              }
             }
           });
-          if(existingDuration > 0) {
-            done();
-            return;
-          }
+          data = {
+            transitionDelay : transitionDelay,
+            animationDelay : animationDelay,
+            transitionDuration : transitionDuration,
+            animationDuration : animationDuration
+          };
+          lookupCache[cacheKey] = data;
+        }
+        return data;
+      }
+
+      function parseMaxTime(str) {
+        var total = 0, values = angular.isString(str) ? str.split(/\s*,\s*/) : [];
+        forEach(values, function(value) {
+          total = Math.max(parseFloat(value) || 0, total);
+        });
+        return total;
+      }
+
+      function getCacheKey(element) {
+        var parent = element.parent();
+        var parentID = parent.data(NG_ANIMATE_PARENT_KEY);
+        if(!parentID) {
+          parent.data(NG_ANIMATE_PARENT_KEY, ++parentCounter);
+          parentID = parentCounter;
+        }
+        return parentID + '-' + element[0].className;
+      }
+
+      function animate(element, className, done) {
+
+        var cacheKey = getCacheKey(element);
+        if(getElementAnimationDetails(element, cacheKey, true).transitionDuration > 0) {
+
+          done();
+          return;
         }
 
         element.addClass(className);
 
-        //we want all the styles defined before and after
-        var transitionDuration = 0,
-            animationDuration = 0,
-            transitionDelay = 0,
-            animationDelay = 0;
-        forEach(element, function(element) {
-          if (element.nodeType == ELEMENT_NODE) {
-            var elementStyles = $window.getComputedStyle(element) || {};
-
-            transitionDelay  = Math.max(parseMaxTime(elementStyles[transitionProp + delayKey]), transitionDelay);
-
-            animationDelay   = Math.max(parseMaxTime(elementStyles[animationProp + delayKey]), animationDelay);
-
-            transitionDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]), transitionDuration);
-
-            var aDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
-
-            if(aDuration > 0) {
-              aDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
-            }
-
-            animationDuration = Math.max(aDuration, animationDuration);
-          }
-        });
+        var timings = getElementAnimationDetails(element, cacheKey + ' ' + className);
 
         /* there is no point in performing a reflow if the animation
            timeout is empty (this would cause a flicker bug normally
            in the page. There is also no point in performing an animation
            that only has a delay and no duration */
-        var maxDuration = Math.max(transitionDuration, animationDuration);
+        var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
         if(maxDuration > 0) {
-          var maxDelayTime = Math.max(transitionDelay, animationDelay) * 1000,
+          var maxDelayTime = Math.max(timings.transitionDelay, timings.animationDelay) * 1000,
               startTime = Date.now(),
               node = element[0];
 
           //temporarily disable the transition so that the enter styles
           //don't animate twice (this is here to avoid a bug in Chrome/FF).
-          if(transitionDuration > 0) {
+          if(timings.transitionDuration > 0) {
             node.style[transitionProp + propertyKey] = 'none';
           }
 
@@ -723,7 +755,7 @@ angular.module('ngAnimate', ['ng'])
           var css3AnimationEvents = animationendEvent + ' ' + transitionendEvent;
 
           afterReflow(function() {
-            if(transitionDuration > 0) {
+            if(timings.transitionDuration > 0) {
               node.style[transitionProp + propertyKey] = '';
             }
             element.addClass(activeClassName);
@@ -768,13 +800,6 @@ angular.module('ngAnimate', ['ng'])
           }
         }
 
-        function parseMaxTime(str) {
-          var total = 0, values = angular.isString(str) ? str.split(/\s*,\s*/) : [];
-          forEach(values, function(value) {
-            total = Math.max(parseFloat(value) || 0, total);
-          });
-          return total;
-        }
       }
 
       return {
