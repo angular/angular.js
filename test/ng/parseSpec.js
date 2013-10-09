@@ -1119,6 +1119,60 @@ describe('parser', function() {
           fn.assign(scope, 123);
           expect(scope).toEqual({a:123});
         }));
+        describe('assignable with scopes', function() {
+          it('should assign to the same scope when there is a dot notation', inject(function($rootScope, $parse) {
+            var fn = $parse('a.b'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new();
+            fn.assign(childScope, 123);
+            expect(parentScope.a).toBe(undefined);
+            expect(childScope.a.b).toBe(123);
+          }));
+          it('should assign to the parent scope when the parent has the definition and there is a dot notation', inject(function($rootScope, $parse) {
+            var fn = $parse('a.b'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new();
+            parentScope.a = {};
+            fn.assign(childScope, 123);
+            expect(parentScope.a.b).toBe(123);
+            expect(childScope.a.b).toBe(123);
+          }));
+          it('should assign to the same scope when there is no dot notation and the property is not present on the parent', inject(function($rootScope, $parse) {
+            var fn = $parse('a'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new();
+            fn.assign(childScope, 'lucas');
+            expect(parentScope.a).toBe(undefined);
+            expect(childScope.a).toBe('lucas');
+          }));
+          it('should assign to the scope that has a definition when there is no dot notation', inject(function($rootScope, $parse) {
+            var fn = $parse('a'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new();
+            parentScope.a = '';
+            fn.assign(childScope, 'lucas');
+            expect(parentScope.a).toBe('lucas');
+            expect(childScope.a).toBe('lucas');
+          }));
+          it('should be able to use `this` to force the current scope', inject(function($rootScope, $parse) {
+            var fn = $parse('this.a'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new();
+            parentScope.a = '';
+            fn.assign(childScope, 'lucas');
+            expect(parentScope.a).toBe('');
+            expect(childScope.a).toBe('lucas');
+          }));
+          it('should not cross isolated scopes', inject(function($rootScope, $parse) {
+            var fn = $parse('a'),
+              parentScope = $rootScope.$new(),
+              childScope = parentScope.$new(true);
+            parentScope.a = '';
+            fn.assign(childScope, 'lucas');
+            expect(parentScope.a).toBe('');
+            expect(childScope.a).toBe('lucas');
+          }));
+        });
       });
 
 

@@ -39,7 +39,7 @@ describe('ngIf', function () {
   it('should create a new scope', function () {
     $scope.$apply('value = true');
     element.append($compile(
-      '<div ng-if="value"><span ng-init="value=false"></span></div>'
+      '<div ng-if="value"><span ng-init="this.value=false"></span></div>'
     )($scope));
     $scope.$apply();
     expect(element.children('div').length).toBe(1);
