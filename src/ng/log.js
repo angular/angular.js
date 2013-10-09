@@ -10,6 +10,8 @@
  * into the browser's console (if present).
  *
  * The main purpose of this service is to simplify debugging and troubleshooting.
+ * To print debug messages, you should turn the debuggin on,
+ * see http://docs.angularjs.org/api/ng.$logProvider
  *
  * @example
    <example>
