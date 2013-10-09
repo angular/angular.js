@@ -285,6 +285,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         enter : function(element, parent, after, done) {
+          this.enabled(false, element);
           $delegate.enter(element, parent, after);
           $rootScope.$$postDigest(function() {
             performAnimation('enter', 'ng-enter', element, parent, after, function() {
@@ -322,6 +323,7 @@ angular.module('ngAnimate', ['ng'])
         */
         leave : function(element, done) {
           cancelChildAnimations(element);
+          this.enabled(false, element);
           $rootScope.$$postDigest(function() {
             performAnimation('leave', 'ng-leave', element, null, null, function() {
               $delegate.leave(element, done);
@@ -361,6 +363,7 @@ angular.module('ngAnimate', ['ng'])
         */
         move : function(element, parent, after, done) {
           cancelChildAnimations(element);
+          this.enabled(false, element);
           $delegate.move(element, parent, after);
           $rootScope.$$postDigest(function() {
             performAnimation('move', 'ng-move', element, null, null, function() {
@@ -451,12 +454,30 @@ angular.module('ngAnimate', ['ng'])
          * Globally enables/disables animations.
          *
         */
-        enabled : function(value) {
-          if (arguments.length) {
-            rootAnimateState.running = !value;
+        enabled : function(value, element) {
+          switch(arguments.length) {
+            case 2:
+              if(value) {
+                cleanup(element);
+              }
+              else {
+                var data = element.data(NG_ANIMATE_STATE) || {};
+                data.structural = true;
+                data.running = true;
+                element.data(NG_ANIMATE_STATE, data);
+              }
+            break;
+
+            case 1:
+              rootAnimateState.running = !value;
+            break;
+
+            default:
+              value = !rootAnimateState.running
+            break;
           }
-          return !rootAnimateState.running;
-        }
+          return !!value;
+         }
       };
 
       /*
@@ -484,24 +505,29 @@ angular.module('ngAnimate', ['ng'])
         //skip the animation if animations are disabled, a parent is already being animated
         //or the element is not currently attached to the document body.
         if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || animations.length == 0) {
-          //avoid calling done() since there is no need to remove any
-          //data or className values since this happens earlier than that
-          //and also use a timeout so that it won't be asynchronous
-          onComplete && onComplete();
+          done();
           return;
         }
 
         var ngAnimateState = element.data(NG_ANIMATE_STATE) || {};
 
-        //if an animation is currently running on the element then lets take the steps
-        //to cancel that animation and fire any required callbacks
+        var isClassBased = event == 'addClass' || event == 'removeClass';
         if(ngAnimateState.running) {
+          if(isClassBased && ngAnimateState.structural) {
+            onComplete && onComplete();
+            return;
+          }
+
+          //if an animation is currently running on the element then lets take the steps
+          //to cancel that animation and fire any required callbacks
+          $timeout.cancel(ngAnimateState.flagTimer);
           cancelAnimations(ngAnimateState.animations);
-          ngAnimateState.done();
+          (ngAnimateState.done || noop)();
         }
 
         element.data(NG_ANIMATE_STATE, {
           running:true,
+          structural:!isClassBased,
           animations:animations,
           done:done
         });
@@ -516,16 +542,13 @@ angular.module('ngAnimate', ['ng'])
           };
 
           if(animation.start) {
-            if(event == 'addClass' || event == 'removeClass') {
-              animation.endFn = animation.start(element, className, fn);
-            } else {
-              animation.endFn = animation.start(element, fn);
-            }
+            animation.endFn = isClassBased ?
+              animation.start(element, className, fn) :
+              animation.start(element, fn);
           } else {
             fn();
           }
         });
-
 
         function progress(index) {
           animations[index].done = true;
@@ -539,7 +562,21 @@ angular.module('ngAnimate', ['ng'])
         function done() {
           if(!done.hasBeenRun) {
             done.hasBeenRun = true;
-            cleanup(element);
+            var data = element.data(NG_ANIMATE_STATE);
+            if(data) {
+              /* only structural animations wait for reflow before removing an
+                 animation, but class-based animations don't. An example of this
+                 failing would be when a parent HTML tag has a ng-class attribute
+                 causing ALL directives below to skip animations during the digest */
+              if(isClassBased) {
+                cleanup(element);
+              } else {
+                data.flagTimer = $timeout(function() {
+                  cleanup(element);
+                }, 0, false);
+                element.data(NG_ANIMATE_STATE, data);
+              }
+            }
             (onComplete || noop)();
           }
         }
