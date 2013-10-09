@@ -493,6 +493,16 @@ describe('jqLite', function() {
     });
 
 
+    it('should ignore comment elements', function() {
+      var comment = jqLite(document.createComment('something'));
+
+      comment.addClass('whatever');
+      comment.hasClass('whatever');
+      comment.toggleClass('whatever');
+      comment.removeClass('whatever');
+    });
+
+
     describe('hasClass', function() {
       it('should check class', function() {
         var selector = jqLite([a, b]);
