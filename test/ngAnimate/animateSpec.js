@@ -726,10 +726,10 @@ describe("ngAnimate", function() {
       it('should re-evaluate the CSS classes for an animation each time',
         inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout, $compile) {
 
-        ss.addRule('.abc', '-webkit-transition:22s linear all;' +
-                                   'transition:22s linear all;');
-        ss.addRule('.xyz', '-webkit-transition:11s linear all;' +
-                                   'transition:11s linear all;');
+        ss.addRule('.abc.ng-enter', '-webkit-transition:22s linear all;' +
+                                    'transition:22s linear all;');
+        ss.addRule('.xyz.ng-enter', '-webkit-transition:11s linear all;' +
+                                    'transition:11s linear all;');
 
         var parent = $compile('<div><span ng-class="klass"></span></div>')($rootScope);
         var element = parent.find('span');
@@ -1873,6 +1873,51 @@ describe("ngAnimate", function() {
       $rootScope.bool = true;
       $rootScope.$digest();
       expect(intercepted).toBe(true);
+    });
+  });
+
+  it("should cache the response from getComputedStyle if each successive element has the same className value and parent until the first reflow hits", function() {
+    var count = 0;
+    module(function($provide) {
+      $provide.value('$window', {
+        document : jqLite(window.document),
+        getComputedStyle: function(element) {
+          count++;
+          return window.getComputedStyle(element);
+        }
+      });
+    });
+
+    inject(function($animate, $rootScope, $compile, $rootElement, $timeout, $document, $sniffer) {
+    if(!$sniffer.transitions) return;
+
+      $animate.enabled(true);
+
+      var element = $compile('<div></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      for(var i=0;i<20;i++) {
+        var kid = $compile('<div class="kid"></div>')($rootScope);
+        $animate.enter(kid, element);
+      }
+      $rootScope.$digest();
+      $timeout.flush();
+
+      expect(count).toBe(2);
+
+      dealoc(element);
+      count = 0;
+
+      for(var i=0;i<20;i++) {
+        var kid = $compile('<div class="kid c-'+i+'"></div>')($rootScope);
+        $animate.enter(kid, element);
+      }
+
+      $rootScope.$digest();
+      $timeout.flush();
+
+      expect(count).toBe(40);
     });
   });
 });
