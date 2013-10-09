@@ -1069,6 +1069,15 @@ describe('Scope', function() {
         expect(log).toEqual('2>2>2>');
       });
 
+      it('should stop propagation immediately if stopImmediatePropagation is called', function(){
+        child.$on('myEvent', logger);
+        grandChild.$on('myEvent', function(e) { e.stopImmediatePropagation(); });
+        grandChild.$on('myEvent', logger);
+        grandChild.$on('myEvent', logger);
+        grandChild.$emit('myEvent');
+        expect(log).toEqual('2>');
+      });
+
       it('should dispatch exceptions to the $exceptionHandler',
           inject(function($exceptionHandler) {
         child.$on('myEvent', function() { throw 'bubbleException'; });
