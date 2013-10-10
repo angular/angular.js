@@ -11,7 +11,7 @@ describe('$location', function() {
   });
 
   describe('NewUrl', function() {
-    beforeEach(function() {
+    beforeEach(function () {
       url = new LocationHtml5Url('http://www.domain.com:9877/');
       url.$$parse('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
     });
@@ -695,69 +695,6 @@ describe('$location', function() {
     });
   });
 
-
-  describe('SERVER_MATCH', function() {
-
-    it('should parse basic url', function() {
-      var match = SERVER_MATCH.exec('http://www.angularjs.org/path?search#hash?x=x');
-
-      expect(match[1]).toBe('http');
-      expect(match[3]).toBe('www.angularjs.org');
-    });
-
-
-    it('should parse file://', function() {
-      var match = SERVER_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
-
-      expect(match[1]).toBe('file');
-      expect(match[3]).toBe('');
-      expect(match[5]).toBeFalsy();
-    });
-
-
-    it('should parse url with "-" in host', function() {
-      var match = SERVER_MATCH.exec('http://a-b1.c-d.09/path');
-
-      expect(match[1]).toBe('http');
-      expect(match[3]).toBe('a-b1.c-d.09');
-      expect(match[5]).toBeFalsy();
-    });
-
-
-    it('should parse host without "/" at the end', function() {
-      var match = SERVER_MATCH.exec('http://host.org');
-      expect(match[3]).toBe('host.org');
-
-      match = SERVER_MATCH.exec('http://host.org#');
-      expect(match[3]).toBe('host.org');
-
-      match = SERVER_MATCH.exec('http://host.org?');
-      expect(match[3]).toBe('host.org');
-    });
-
-
-    it('should parse chrome extension urls', function() {
-      var match = SERVER_MATCH.exec('chrome-extension://jjcldkdmokihdaomalanmlohibnoplog/index.html?foo#bar');
-
-      expect(match[1]).toBe('chrome-extension');
-      expect(match[3]).toBe('jjcldkdmokihdaomalanmlohibnoplog');
-    });
-
-    it('should parse FFOS app:// urls', function() {
-      var match = SERVER_MATCH.exec('app://{d0419af1-8b42-41c5-96f4-ef4179e52315}/path');
-
-      expect(match[1]).toBe('app');
-      expect(match[3]).toBe('{d0419af1-8b42-41c5-96f4-ef4179e52315}');
-      expect(match[5]).toBeFalsy();
-      expect(match[6]).toBe('/path');
-      expect(match[8]).toBeFalsy();
-
-      match = SERVER_MATCH.exec('app://}foo{')
-      expect(match).toBe(null);
-    });
-  });
-
-
   describe('PATH_MATCH', function() {
 
     it('should parse just path', function() {
@@ -1327,7 +1264,7 @@ describe('$location', function() {
     );
 
 
-   it('should listen on click events on href and prevent browser default in hashbang mode', function() {
+    it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/#/somePath">link</a>');
