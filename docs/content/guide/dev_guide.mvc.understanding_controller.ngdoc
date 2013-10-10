@@ -103,23 +103,25 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 ## A Spicy Controller Example
 
 <pre>
-<body ng-controller="SpicyCtrl">
+<body ng-app="SpicyApp" ng-controller="SpicyCtrl">
  <button ng-click="chiliSpicy()">Chili</button>
  <button ng-click="jalapenoSpicy()">Jalapeño</button>
  <p>The food is {{spice}} spicy!</p>
 </body>
 
-function SpicyCtrl($scope) {
- $scope.spice = 'very';
- $scope.chiliSpicy = function() {
-   $scope.spice = 'chili';
- }
- $scope.jalapenoSpicy = function() {
-  $scope.spice = 'jalapeño';
- }
-}
+var myApp = angular.module('SpicyApp', []);
 
-
+myApp.controller('SpicyCtrl', ['$scope', function($scope){
+    $scope.spicy = 'very';
+    
+    $scope.chiliSpicy = function() {
+        $scope.spice = 'chili';
+    };
+    
+    $scope.jalapenoSpicy = function() {
+        $scope.spice = 'jalapeño';
+    };
+}]);
 </pre>
 
 Things to notice in the example above:
@@ -147,19 +149,24 @@ previous example.
 ## Controller Method Arguments Example
 
 <pre>
-<body ng-controller="SpicyCtrl">
- <input ng-model="customSpice" value="wasabi">
+<body ng-app="SpicyApp" ng-controller="SpicyCtrl">
+ <input ng-model="customSpice">
  <button ng-click="spicy('chili')">Chili</button>
  <button ng-click="spicy(customSpice)">Custom spice</button>
  <p>The food is {{spice}} spicy!</p>
 </body>
 
-function SpicyCtrl($scope) {
- $scope.spice = 'very';
- $scope.spicy = function(spice) {
-   $scope.spice = spice;
- }
-}
+var myApp = angular.module('SpicyApp', []);
+
+myApp.controller('SpicyCtrl', ['$scope', function($scope){
+    $scope.customSpice = "wasabi";
+    $scope.spice = 'very';
+    
+    $scope.spicy = function(spice){
+        $scope.spice = spice;
+    };
+}]);
+
 </pre>
 
 Notice that the `SpicyCtrl` controller now defines just one method called `spicy`, which takes one
@@ -174,7 +181,7 @@ Controller inheritance in Angular is based on {@link api/ng.$rootScope.Scope Sco
 have a look at an example:
 
 <pre>
-<body ng-controller="MainCtrl">
+<body ng-app="MyApp" ng-controller="MainCtrl">
  <p>Good {{timeOfDay}}, {{name}}!</p>
  <div ng-controller="ChildCtrl">
   <p>Good {{timeOfDay}}, {{name}}!</p>
@@ -182,19 +189,19 @@ have a look at an example:
  </div>
 </body>
 
-function MainCtrl($scope) {
- $scope.timeOfDay = 'morning';
- $scope.name = 'Nikki';
-}
+var myApp = angular.module('MyApp', [])
 
-function ChildCtrl($scope) {
- $scope.name = 'Mattie';
-}
-
-function BabyCtrl($scope) {
- $scope.timeOfDay = 'evening';
- $scope.name = 'Gingerbreak Baby';
-}
+.controller('MainCtrl', ['$scope', function($scope){
+  $scope.timeOfDay = 'morning';
+  $scope.name = 'Nikki';
+}])
+.controller('ChildCtrl', ['$scope', function($scope){
+  $scope.name = 'Mattie';
+}])
+.controller('BabyCtrl', ['$scope', function($scope){
+  $scope.timeOfDay = 'evening';
+  $scope.name = 'Gingerbreak Baby';
+}]);
 </pre>
 
 Notice how we nested three `ngController` directives in our template. This template construct will
