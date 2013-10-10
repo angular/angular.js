@@ -74,11 +74,11 @@ beforeEach(function() {
       this.message = function() {
         var expected;
         if (this.actual.message && this.actual.name == 'Error') {
-          expected = toJson(this.actual.message);
+          expected = angular.toJson(this.actual.message);
         } else {
-          expected = toJson(this.actual);
+          expected = angular.toJson(this.actual);
         }
-        return "Expected " + expected + " to be an Error with message " + toJson(message);
+        return "Expected " + expected + " to be an Error with message " + angular.toJson(message);
       };
       return this.actual.name == 'Error' && this.actual.message == message;
     },
@@ -187,9 +187,9 @@ beforeEach(function() {
         codeRegex = new RegExp('^\\[' + escapeRegexp(namespace) + ':' + escapeRegexp(code) + '\\]'),
         not = this.isNot ? "not " : "",
         regex = jasmine.isA_("RegExp", content) ? content :
-                  isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
+                  angular.isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
 
-      if(!isFunction(this.actual)) {
+      if(!angular.isFunction(this.actual)) {
         throw new Error('Actual is not a function');
       }
 
@@ -215,7 +215,7 @@ beforeEach(function() {
         return result;
       }
 
-      if (isDefined(regex)) {
+      if (angular.isDefined(regex)) {
         return regex.test(exceptionMessage);
       }
       return result;

@@ -279,7 +279,7 @@ describe('ngView', function() {
 
   it('should be async even if served from cache', function() {
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {controller: noop, templateUrl: 'myUrl1'});
+      $routeProvider.when('/foo', {controller: angular.noop, templateUrl: 'myUrl1'});
     });
 
     inject(function($route, $rootScope, $location, $templateCache) {
@@ -498,16 +498,16 @@ describe('ngView', function() {
       $location.url('/foo');
       $rootScope.$digest();
 
-      forEach(element.contents(), function(node) {
+      angular.forEach(element.contents(), function(node) {
         if(node.nodeType == 3 /* text node */) {
-          expect(jqLite(node).scope()).not.toBe($route.current.scope);
-          expect(jqLite(node).controller()).not.toBeDefined();
+          expect(angular.element(node).scope()).not.toBe($route.current.scope);
+          expect(angular.element(node).controller()).not.toBeDefined();
         } else if(node.nodeType == 8 /* comment node */) {
-          expect(jqLite(node).scope()).toBe(element.scope());
-          expect(jqLite(node).controller()).toBe(element.controller());
+          expect(angular.element(node).scope()).toBe(element.scope());
+          expect(angular.element(node).controller()).toBe(element.controller());
         } else {
-          expect(jqLite(node).scope()).toBe($route.current.scope);
-          expect(jqLite(node).controller()).toBeDefined();
+          expect(angular.element(node).scope()).toBe($route.current.scope);
+          expect(angular.element(node).controller()).toBeDefined();
         }
       });
     });
@@ -530,7 +530,7 @@ describe('ngView animations', function() {
     // we need to run animation on attached elements;
     return function(_$rootElement_) {
       $rootElement = _$rootElement_;
-      body = jqLite(document.body);
+      body = angular.element(document.body);
     };
   }));
 
@@ -541,8 +541,8 @@ describe('ngView animations', function() {
 
 
   beforeEach(module(function($provide, $routeProvider) {
-    $routeProvider.when('/foo', {controller: noop, templateUrl: '/foo.html'});
-    $routeProvider.when('/bar', {controller: noop, templateUrl: '/bar.html'});
+    $routeProvider.when('/foo', {controller: angular.noop, templateUrl: '/foo.html'});
+    $routeProvider.when('/bar', {controller: angular.noop, templateUrl: '/bar.html'});
     return function($templateCache) {
       $templateCache.put('/foo.html', [200, '<div>data</div>', {}]);
       $templateCache.put('/bar.html', [200, '<div>data2</div>', {}]);
