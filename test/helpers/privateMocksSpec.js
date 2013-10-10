@@ -9,7 +9,7 @@ describe('private mocks', function() {
       var stylesheet = createMockStyleSheet($document, $window);
       expect(doc.styleSheets.length).toBe(count + 1);
 
-      jqLite(doc.body).append($rootElement);
+      angular.element(doc.body).append($rootElement);
 
       var elm = $compile('<div class="padded">...</div>')($rootScope);
       $rootElement.append(elm);
