@@ -696,8 +696,9 @@ describe("ngAnimate", function() {
         $rootScope.$digest();
 
         if ($sniffer.transitions) {
-          expect(element.hasClass('abc ng-enter')).toBe(true);
-          expect(element.hasClass('abc ng-enter ng-enter-active')).toBe(true);
+          expect(element.hasClass('abc')).toBe(true);
+          expect(element.hasClass('ng-enter')).toBe(true);
+          expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
         }
         expect(element.hasClass('abc')).toBe(true);
@@ -708,7 +709,8 @@ describe("ngAnimate", function() {
 
         if ($sniffer.transitions) {
           expect(element.hasClass('xyz')).toBe(true);
-          expect(element.hasClass('xyz ng-enter ng-enter-active')).toBe(true);
+          expect(element.hasClass('ng-enter')).toBe(true);
+          expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11000 });
         }
         expect(element.hasClass('xyz')).toBe(true);
@@ -732,8 +734,10 @@ describe("ngAnimate", function() {
         $animate.enter(element, parent);
         $rootScope.$digest();
         if($sniffer.transitions) {
-          expect(element.hasClass('one two ng-enter')).toBe(true);
-          expect(element.hasClass('one two ng-enter ng-enter-active')).toBe(true);
+          expect(element.hasClass('one')).toBe(true);
+          expect(element.hasClass('two')).toBe(true);
+          expect(element.hasClass('ng-enter')).toBe(true);
+          expect(element.hasClass('ng-enter-active')).toBe(true);
           expect(element.hasClass('one-active')).toBe(false);
           expect(element.hasClass('two-active')).toBe(false);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3000 });
@@ -1573,5 +1577,75 @@ describe("ngAnimate", function() {
 
     expect(element.contents().length).toBe(1);
   }));
+
+  it("should cancel all child animations when a leave or move animation is triggered on a parent element", function() {
+
+    var animationState;
+    module(function($animateProvider) {
+      $animateProvider.register('.animan', function($timeout) {
+        return {
+          enter : function(element, done) {
+            animationState = 'enter';
+            $timeout(done, 0, false);
+            return function() {
+              animationState = 'enter-cancel';
+            }
+          },
+          addClass : function(element, className, done) {
+            animationState = 'addClass';
+            $timeout(done, 0, false);
+            return function() {
+              animationState = 'addClass-cancel';
+            }
+          }
+        };
+      });
+    });
+
+    inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
+      var element = html($compile('<div class="parent"></div>')($rootScope));
+      var container = html($compile('<div class="container"></div>')($rootScope));
+      var child   = html($compile('<div class="animan child"></div>')($rootScope));
+
+      ss.addRule('.animan.ng-enter, .animan.something-add',  '-webkit-transition: width 1s, background 1s 1s;' +
+                                                             'transition: width 1s, background 1s 1s;');
+
+      $rootElement.append(element);
+      jqLite(document.body).append($rootElement);
+
+      $animate.enter(child, element);
+      $rootScope.$digest();
+
+      expect(animationState).toBe('enter');
+      if($sniffer.transitions) {
+        expect(child.hasClass('ng-enter')).toBe(true);
+        expect(child.hasClass('ng-enter-active')).toBe(true);
+      }
+
+      $animate.move(element, container);
+      if($sniffer.transitions) {
+        expect(child.hasClass('ng-enter')).toBe(false);
+        expect(child.hasClass('ng-enter-active')).toBe(false);
+      }
+
+      expect(animationState).toBe('enter-cancel');
+      $rootScope.$digest();
+      $timeout.flush();
+
+      $animate.addClass(child, 'something');
+      expect(animationState).toBe('addClass');
+      if($sniffer.transitions) {
+        expect(child.hasClass('something-add')).toBe(true);
+        expect(child.hasClass('something-add-active')).toBe(true);
+      }
+
+      $animate.leave(container);
+      expect(animationState).toBe('addClass-cancel');
+      if($sniffer.transitions) {
+        expect(child.hasClass('something-add')).toBe(false);
+        expect(child.hasClass('something-add-active')).toBe(false);
+      }
+    });
+  });
 
 });

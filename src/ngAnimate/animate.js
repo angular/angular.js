@@ -200,6 +200,7 @@ angular.module('ngAnimate', ['ng'])
     var selectors = $animateProvider.$$selectors;
 
     var NG_ANIMATE_STATE = '$$ngAnimateState';
+    var NG_ANIMATE_CLASS_NAME = 'ng-animate';
     var rootAnimateState = {running:true};
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
@@ -320,6 +321,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         leave : function(element, done) {
+          cancelChildAnimations(element);
           $rootScope.$$postDigest(function() {
             performAnimation('leave', 'ng-leave', element, null, null, function() {
               $delegate.leave(element, done);
@@ -358,6 +360,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} done callback function that will be called once the animation is complete
         */
         move : function(element, parent, after, done) {
+          cancelChildAnimations(element);
           $delegate.move(element, parent, after);
           $rootScope.$$postDigest(function() {
             performAnimation('move', 'ng-move', element, null, null, function() {
@@ -503,6 +506,10 @@ angular.module('ngAnimate', ['ng'])
           done:done
         });
 
+        //the ng-animate class does nothing, but it's here to allow for
+        //parent animations to find and cancel child animations when needed
+        element.addClass(NG_ANIMATE_CLASS_NAME);
+
         forEach(animations, function(animation, index) {
           var fn = function() {
             progress(index);
@@ -519,12 +526,6 @@ angular.module('ngAnimate', ['ng'])
           }
         });
 
-        function cancelAnimations(animations) {
-          var isCancelledFlag = true;
-          forEach(animations, function(animation) {
-            (animation.endFn || noop)(isCancelledFlag);
-          });
-        }
 
         function progress(index) {
           animations[index].done = true;
@@ -538,10 +539,33 @@ angular.module('ngAnimate', ['ng'])
         function done() {
           if(!done.hasBeenRun) {
             done.hasBeenRun = true;
-            element.removeData(NG_ANIMATE_STATE);
+            cleanup(element);
             (onComplete || noop)();
           }
         }
+      }
+
+      function cancelChildAnimations(element) {
+        angular.forEach(element[0].querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
+          element = angular.element(element);
+          var data = element.data(NG_ANIMATE_STATE);
+          if(data) {
+            cancelAnimations(data.animations);
+            cleanup(element);
+          }
+        });
+      }
+
+      function cancelAnimations(animations) {
+        var isCancelledFlag = true;
+        forEach(animations, function(animation) {
+          (animation.endFn || noop)(isCancelledFlag);
+        });
+      }
+
+      function cleanup(element) {
+        element.removeClass(NG_ANIMATE_CLASS_NAME);
+        element.removeData(NG_ANIMATE_STATE);
       }
     }]);
 
