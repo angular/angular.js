@@ -160,7 +160,7 @@ describe('ngMock', function() {
 
 
   describe('$log', function() {
-    forEach([true, false], function(debugEnabled) {
+    angular.forEach([true, false], function(debugEnabled) {
       describe('debug ' + debugEnabled, function() {
         beforeEach(module(function($logProvider) {
           $logProvider.debugEnabled(debugEnabled);
