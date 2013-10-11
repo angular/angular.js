@@ -976,6 +976,43 @@ describe('ngRepeat', function() {
   });
 
 
+  describe('compatibility', function() {
+
+    it('should allow mixing ngRepeat and another element transclusion directive', function() {
+      $compileProvider.directive('elmTrans', valueFn({
+        transclude: 'element',
+        controller: function($transclude, $scope, $element) {
+          $transclude(function(transcludedNodes) {
+            $element.after(']]').after(transcludedNodes).after('[[');
+          });
+        }
+      }));
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div ng-repeat="i in [1,2]" elm-trans>{{i}}</div></div>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toBe('[[1]][[2]]')
+      });
+    });
+
+
+    it('should allow mixing ngRepeat with ngInclude', inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.whenGET('someTemplate.html').respond('<p>some template; </p>');
+      element = $compile('<div><div ng-repeat="i in [1,2]" ng-include="\'someTemplate.html\'"></div></div>')($rootScope);
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toBe('some template; some template; ');
+    }));
+
+
+    it('should allow mixing ngRepeat with ngIf', inject(function($compile, $rootScope) {
+      element = $compile('<div><div ng-repeat="i in [1,2,3,4]" ng-if="i % 2 == 0">{{i}};</div></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe('2;4;');
+    }));
+  });
+
+
   describe('ngRepeatStart', function () {
     it('should grow multi-node repeater', inject(function($compile, $rootScope) {
       $rootScope.show = false;
