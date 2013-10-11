@@ -63,8 +63,8 @@ var $AnimateProvider = ['$provide', function($provide) {
      * @name ng.$animate
      *
      * @description
-     * The $animate service provides rudimentary DOM manipulation functions to insert, remove, move elements within
-     * the DOM as well as adding and removing classes. This service is the core service used by the ngAnimate $animator
+     * The $animate service provides rudimentary DOM manipulation functions to insert, remove and move elements within
+     * the DOM, as well as adding and removing classes. This service is the core service used by the ngAnimate $animator
      * service which provides high-level animation hooks for CSS and JavaScript. 
      *
      * $animate is available in the AngularJS core, however, the ngAnimate module must be included to enable full out
@@ -131,7 +131,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @param {jQuery/jqLite element} element the element which will be moved around within the DOM
        * @param {jQuery/jqLite element} parent the parent element where the element will be inserted into (if the after element is not present)
        * @param {jQuery/jqLite element} after the sibling element where the element will be positioned next to
-       * @param {function=} done the callback function (if provided) that will be fired after the element has been moved to it's new position
+       * @param {function=} done the callback function (if provided) that will be fired after the element has been moved to its new position
        */
       move : function(element, parent, after, done) {
         // Do not remove element before insert. Removing will cause data associated with the
