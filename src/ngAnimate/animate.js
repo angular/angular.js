@@ -202,10 +202,23 @@ angular.module('ngAnimate', ['ng'])
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
     var rootAnimateState = {running:true};
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope', '$document',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope,   $document) {
         
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
+
+      var getElementsByClassName = (function() {
+        /* element.getElementsByClassName is much faster than element.querySelector,
+           however IE8 doesn't support it so we need to do some feature sniffing...
+           http://jsperf.com/getelementsbyclassname-vs-queryselectorall/18#results */
+        return $document[0].getElementsByClassName ?
+          function(element, klass) {
+            return element.getElementsByClassName(klass);
+          } :
+          function(element, klass) {
+            element.querySelectorAll('.' + klass);
+          }
+      })();
 
       function lookup(name) {
         if (name) {
@@ -583,7 +596,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function cancelChildAnimations(element) {
-        angular.forEach(element[0].querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
+        angular.forEach(getElementsByClassName(element[0], NG_ANIMATE_CLASS_NAME), function(element) {
           element = angular.element(element);
           var data = element.data(NG_ANIMATE_STATE);
           if(data) {
