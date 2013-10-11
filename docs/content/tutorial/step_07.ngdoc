@@ -60,6 +60,11 @@ Providers are objects that provide (create) instances of services and expose con
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
 service, the `$routeProvider` exposes APIs that allow you to define routes for your application.
 
+<div class="alert alert-warning">
+**Note:** Providers can only be injected into `config` functions. Thus you could not inject
+`$routeProvider` into `PhoneListCtrl`.
+</div>
+
 Angular modules solve the problem of removing global state from the application and provide a way
 of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try to
 solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
