@@ -25,17 +25,19 @@ GitHub}:
 __`app/js/controllers.js`:__
 <pre>
 ...
-var phonecatApp = angular.module('phonecatApp',[]);
-phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
-  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-    $scope.phone = data;
-    $scope.mainImageUrl = data.images[0];
-  });
+var phonecatControllers = angular.module('phonecatControllers',[]);
 
-  $scope.setImage = function(imageUrl) {
-    $scope.mainImageUrl = imageUrl;
-  }
-}]);
+phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
+  function($scope, $routeParams, $http) {
+    $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+      $scope.phone = data;
+      $scope.mainImageUrl = data.images[0];
+    });
+
+    $scope.setImage = function(imageUrl) {
+      $scope.mainImageUrl = imageUrl;
+    }
+  }]);
 </pre>
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
@@ -133,7 +135,7 @@ template remains operational.
 
 # Summary
 
-With the phone image swapper in place, we're ready for {@link step_11 step 11} (the last step!) to
+With the phone image swapper in place, we're ready for {@link step_11 step 11} to
 learn an even better way to fetch data.
 
 
