@@ -80,7 +80,7 @@
 var ngIfDirective = ['$animate', function($animate) {
   return {
     transclude: 'element',
-    priority: 1000,
+    priority: 600,
     terminal: true,
     restrict: 'A',
     compile: function (element, attr, transclude) {
