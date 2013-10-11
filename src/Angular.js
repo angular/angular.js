@@ -393,14 +393,9 @@ function isDate(value){
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-var isArray = (function() {
-  if(Array.isArray) {
-    return Array.isArray;
-  }
-  return function(value) {
-    return toString.apply(value) == '[object Array]';
-  };
-})();
+var isArray = Array.isArray || function(value) {
+  return toString.apply(value) == '[object Array]';
+};
 
 
 /**
