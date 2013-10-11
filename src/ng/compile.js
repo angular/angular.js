@@ -186,7 +186,7 @@ function $CompileProvider($provide) {
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
           function($injector, $exceptionHandler) {
             var directives = [];
-            forEach(hasDirectives[name], function(directiveFactory) {
+            forEach(hasDirectives[name], function(directiveFactory, index) {
               try {
                 var directive = $injector.invoke(directiveFactory);
                 if (isFunction(directive)) {
@@ -195,6 +195,7 @@ function $CompileProvider($provide) {
                   directive.compile = valueFn(directive.link);
                 }
                 directive.priority = directive.priority || 0;
+                directive.index = index;
                 directive.name = directive.name || name;
                 directive.require = directive.require || (directive.controller && directive.name);
                 directive.restrict = directive.restrict || 'A';
@@ -1277,7 +1278,10 @@ function $CompileProvider($provide) {
      * Sorting function for bound directives.
      */
     function byPriority(a, b) {
-      return b.priority - a.priority;
+      var diff = b.priority - a.priority;
+      if (diff !== 0) return diff;
+      if (a.name !== b.name) return (a.name < b.name) ? -1 : 1;
+      return a.index - b.index;
     }
 
 
