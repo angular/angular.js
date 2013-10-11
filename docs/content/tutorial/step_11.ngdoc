@@ -39,12 +39,14 @@ __`app/index.html`.__
 
 __`app/js/services.js`.__
 <pre>
-var phonecatApp = angular.module('phonecatServices', ['ngResource']).
-    factory('Phone', function($resource){
-  return $resource('phones/:phoneId.json', {}, {
-    query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
-  });
-});
+var phonecatServices = angular.module('phonecatServices', ['ngResource']);
+
+phonecatServices.factory('Phone', ['$resource',
+  function($resource){
+    return $resource('phones/:phoneId.json', {}, {
+      query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
+    });
+  }]);
 </pre>
 
 We used the module API to register a custom service using a factory function. We passed in the name
@@ -215,8 +217,8 @@ You should now see the following output in the Karma tab:
 
 # Summary
 
-There you have it!  We have created a web app in a relatively short amount of time. In the {@link
-the_end closing notes} we'll cover where to go from here.
+With the phone image swapper in place, we're ready for {@link step_12 step 12} (the last step!) to
+learn how to improve this application with animations.
 
 
 <ul doc-tutorial-nav="11"></ul>
