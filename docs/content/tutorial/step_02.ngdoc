@@ -94,7 +94,7 @@ phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
 
 </pre>
 
-Here we declared a controller called __PhoneListCtrl__ and registered it in an AngularJS
+Here we declared a controller called `PhoneListCtrl` and registered it in an AngularJS
 module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
 module name as the module to load when bootstrapping the Angular application.
 
