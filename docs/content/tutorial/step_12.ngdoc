@@ -384,8 +384,7 @@ your own JavaScript animation library is beyond the scope of this tutorial. For 
 `jQuery.animate`, see the {@link http://api.jquery.com/animate/ jQuery documentation}.
 
 <div class="alert alert-error">
-  <h4>Important:</h4>
-  Be sure to use jQuery version `1.10.2`. AngularJS does not yet support jQuery `2.x`.
+  **Important:** Be sure to use jQuery version `1.10.x`. AngularJS does not yet support jQuery `2.x`.
 </div>
 
 The `addClass` and `removeClass` callback functions are called whenever an a class is added or removed
