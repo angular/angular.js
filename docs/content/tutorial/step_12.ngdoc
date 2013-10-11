@@ -413,7 +413,7 @@ do any cleanup necessary for when the animation finishes.
 
 # Summary
 
-There you have it! Animations are in place. Hopefully this has shown you how you can improve
-your AngularJS web application to have an awesome layer of animated interactivity.
+There you have it!  We have created a web app in a relatively short amount of time. In the {@link
+the_end closing notes} we'll cover where to go from here.
 
 <ul doc-tutorial-nav="12"></ul>
