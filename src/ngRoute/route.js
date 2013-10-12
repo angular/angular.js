@@ -484,7 +484,7 @@ function $RouteProvider(){
           then(function() {
             if (next) {
               var locals = extend({}, next.resolve),
-                  template, templateUrl, controller;
+                  template, templateUrl;
 
               forEach(locals, function(value, key) {
                 locals[key] = isString(value) ? $injector.get(value) : $injector.invoke(value);
@@ -508,16 +508,6 @@ function $RouteProvider(){
               if (isDefined(template)) {
                 locals['$template'] = template;
               }
-
-              if (isDefined(controller = next.controller)) {
-                if (isFunction(controller)) {
-                  controller = controller(next.params);
-                }
-              }
-              if (isDefined(controller)) {
-                next.controller = controller;
-                locals['$controller'] = controller;
-              }
               return $q.all(locals);
             }
           }).
@@ -538,6 +528,15 @@ function $RouteProvider(){
       }
     }
 
+    /**
+     * @returns the current active controller by route
+     */
+    function compilerControllerByRouteVerification(controller, params){
+      if ( isDefined(controller) && isFunction(controller) && params.autoRoute === true ) {
+          controller = controller(params);
+      }
+      return controller;
+    }
 
     /**
      * @returns the current active route, by matching it against the URL
@@ -550,6 +549,9 @@ function $RouteProvider(){
           match = inherit(route, {
             params: extend({}, $location.search(), params),
             pathParams: params});
+
+          route.controller = compilerControllerByRouteVerification(route.controller, params);
+
           match.$$route = route;
         }
       });
