@@ -201,13 +201,13 @@ function makeMap(str) {
  */
 function htmlParser( html, handler ) {
   var index, chars, match, stack = [], last = html;
-  stack.last = function() { return stack[ stack.length - 1 ]; };
+  var getLast = function () { return stack[stack.length - 1]; };
 
   while ( html ) {
     chars = true;
 
     // Make sure we're not in a script or style element
-    if ( !stack.last() || !specialElements[ stack.last() ] ) {
+    if ( !getLast(stack) || !specialElements[ getLast(stack) ] ) {
 
       // Comment
       if ( html.indexOf("<!--") === 0 ) {
@@ -258,7 +258,7 @@ function htmlParser( html, handler ) {
       }
 
     } else {
-      html = html.replace(new RegExp("(.*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'), function(all, text){
+      html = html.replace(new RegExp("(.*)<\\s*\\/\\s*" + getLast(stack) + "[^>]*>", 'i'), function(all, text){
         text = text.
           replace(COMMENT_REGEXP, "$1").
           replace(CDATA_REGEXP, "$1");
@@ -268,7 +268,7 @@ function htmlParser( html, handler ) {
         return "";
       });
 
-      parseEndTag( "", stack.last() );
+      parseEndTag( "", getLast(stack) );
     }
 
     if ( html == last ) {
@@ -283,12 +283,12 @@ function htmlParser( html, handler ) {
   function parseStartTag( tag, tagName, rest, unary ) {
     tagName = angular.lowercase(tagName);
     if ( blockElements[ tagName ] ) {
-      while ( stack.last() && inlineElements[ stack.last() ] ) {
-        parseEndTag( "", stack.last() );
+      while ( getLast(stack) && inlineElements[ getLast(stack) ] ) {
+        parseEndTag( "", getLast(stack) );
       }
     }
 
-    if ( optionalEndTagElements[ tagName ] && stack.last() == tagName ) {
+    if ( optionalEndTagElements[ tagName ] && getLast(stack) == tagName ) {
       parseEndTag( "", tagName );
     }
 
