@@ -177,7 +177,7 @@ route into the layout template. This makes it a perfect fit for our `index.html`
 
 <div class="alert alert-info">
 **Note:** Starting with AngularJS version 1.2, `ngRoute` is in its own module and must be loaded by loading
-the `angular-route.js` file distributed with Angular. The easist way to load the file is to add a `<scipt>`
+the `angular-route.js` file distributed with Angular. The easist way to load the file is to add a `<script>`
 tag to your `index.html` file as shown below.
 </div>
 
