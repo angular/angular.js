@@ -147,10 +147,10 @@
  * </div>
  * </pre>
  *
- * The HTML specs do not require browsers to preserve the values of special attributes
- * such as disabled. (The presence of them means true and absence means false)
- * This prevents the Angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce the `ngDisabled` directive.
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as disabled. (Their presence means true and their absence means false.)
+ * This prevents the Angular compiler from retrieving the binding expression.
+ * The `ngDisabled` directive solves this problem for the `disabled` attribute.
  *
  * @example
     <doc:example>
@@ -179,10 +179,10 @@
  * @restrict A
  *
  * @description
- * The HTML specs do not require browsers to preserve the special attributes such as checked.
- * (The presence of them means true and absence means false)
- * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce the `ngChecked` directive.
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as checked. (Their presence means true and their absence means false.)
+ * This prevents the Angular compiler from retrieving the binding expression.
+ * The `ngChecked` directive solves this problem for the `checked` attribute.
  * @example
     <doc:example>
       <doc:source>
@@ -210,10 +210,10 @@
  * @restrict A
  *
  * @description
- * The HTML specs do not require browsers to preserve the special attributes such as readonly.
- * (The presence of them means true and absence means false)
- * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce the `ngReadonly` directive.
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as readonly. (Their presence means true and their absence means false.)
+ * This prevents the Angular compiler from retrieving the binding expression.
+ * The `ngReadonly` directive solves this problem for the `readonly` attribute.
  * @example
     <doc:example>
       <doc:source>
@@ -241,10 +241,10 @@
  * @restrict A
  *
  * @description
- * The HTML specs do not require browsers to preserve the special attributes such as selected.
- * (The presence of them means true and absence means false)
- * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduced the `ngSelected` directive.
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as selected. (Their presence means true and their absence means false.)
+ * This prevents the Angular compiler from retrieving the binding expression.
+ * The `ngSelected` directive solves this problem for the `selected` atttribute.
  * @example
     <doc:example>
       <doc:source>
@@ -274,10 +274,10 @@
  * @restrict A
  *
  * @description
- * The HTML specs do not require browsers to preserve the special attributes such as open.
- * (The presence of them means true and absence means false)
- * This prevents the angular compiler from correctly retrieving the binding expression.
- * To solve this problem, we introduce the `ngOpen` directive.
+ * The HTML specification does not require browsers to preserve the values of boolean attributes
+ * such as open. (Their presence means true and their absence means false.)
+ * This prevents the Angular compiler from retrieving the binding expression.
+ * The `ngOpen` directive solves this problem for the `open` attribute.
  *
  * @example
      <doc:example>
