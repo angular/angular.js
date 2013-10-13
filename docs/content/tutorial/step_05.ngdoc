@@ -99,7 +99,7 @@ convention, angular's built-in services, Scope methods and a few other Angular A
 prefix in front of the name.
 
 The `$` prefix is there to namespace Angular-provided services.
-It's best to avoid naming your services and models anything that begins with a `$` to avoid
+To prevent collisions it's best to avoid naming your services and models anything that begins with a `$`.
 
 If you inspect a Scope, you may also notice some properties that begin with `$$`. These
 properties are considered private, and should not be accessed or modified.
