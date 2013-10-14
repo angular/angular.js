@@ -16,7 +16,8 @@
  * * Controller — The `ngController` directive specifies a Controller class; the class contains business
  *   logic behind the application to decorate the scope with functions and values
  *
- * Note that an alternative way to define controllers is via the {@link ngRoute.$route $route} service.
+ * Note that an alternative way to define controllers is via the {@link ngRoute.$route $route} service, however, do not
+ * define controllers there if you have already defined them via ng-controller.
  *
  * @element ANY
  * @scope
