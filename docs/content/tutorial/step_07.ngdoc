@@ -165,7 +165,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
 
 Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
 it's common to create just one module for all of your controllers if there are just a few. For larger apps,
-you will rpobbaly want to create separate modules for each major feature of your app.
+you will probably want to create separate modules for each major feature of your app.
 
 Because our example app is relatively small, we'll add all of our controllers to this module.
 
