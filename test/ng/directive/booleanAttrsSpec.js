@@ -252,3 +252,22 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('http://server');
   }));
 });
+
+describe("ngPoster", function() {
+  var element;
+
+  afterEach(function() {
+    dealoc(element);
+  });
+
+  it("should interpolate the expression and bind the poster", inject(function($rootScope, $compile){
+    element = $compile('<video ng-poster="some/{{poster_img}}"></video>')($rootScope)
+    $rootScope.$digest();
+    expect(element.attr('poster')).toEqual('some/');
+
+    $rootScope.$apply(function() {
+      $rootScope.poster_img = 1;
+    });
+    expect(element.attr('poster')).toEqual('some/1');
+  }));
+});

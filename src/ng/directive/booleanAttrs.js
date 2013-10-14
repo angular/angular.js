@@ -110,6 +110,31 @@
 
 /**
  * @ngdoc directive
+ * @name ng.directive:ngPoster
+ * @restrict A
+ *
+ * @description
+ * Using Angular markup like `{{hash}}` in a `poster` attribute doesn't
+ * work right: The browser will fetch from the URL with the literal
+ * text `{{hash}}` until Angular replaces the expression inside
+ * `{{hash}}`. The `ngPoster` directive solves this problem.
+ *
+ * The buggy way to write it:
+ * <pre>
+ * <video poster="http://www.gravatar.com/avatar/{{hash}}"></video>
+ * </pre>
+ *
+ * The correct way to write it:
+ * <pre>
+ * <video ng-poster="http://www.gravatar.com/avatar/{{hash}}"></video>
+ * </pre>
+ *
+ * @element VIDEO
+ * @param {template} ngPoster any string which can contain `{{}}` markup.
+ */
+
+/**
+ * @ngdoc directive
  * @name ng.directive:ngSrcset
  * @restrict A
  *
@@ -325,8 +350,8 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
 });
 
 
-// ng-src, ng-srcset, ng-href are interpolated
-forEach(['src', 'srcset', 'href'], function(attrName) {
+// ng-src, ng-srcset, ng-href, ng-poster are interpolated
+forEach(['src', 'srcset', 'href', 'poster'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
