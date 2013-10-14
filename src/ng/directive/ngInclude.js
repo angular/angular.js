@@ -29,6 +29,7 @@
  * The enter and leave animation occur concurrently.
  *
  * @scope
+ * @priority 400
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
