@@ -7,8 +7,9 @@
  * @priority 1000
  *
  * @description
- * Sometimes it is necessary to write code which looks like bindings but which should be left alone
- * by angular. Use `ngNonBindable` to make angular ignore a chunk of HTML.
+ * The `ngNonBindable` directive tells Angular to ignore a portion of the DOM. This allows
+ * the use of content which has the syntax of Angular bindings but which is not intended for
+ * use by Angular.
  *
  * @element ANY
  *
