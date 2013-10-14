@@ -9,6 +9,7 @@
  * provided to the ngShow attribute. The element is shown or hidden by removing or adding
  * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
  * in AngularJS and sets the display style to none (using an !important flag).
+ * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is visible) -->
@@ -161,6 +162,7 @@ var ngShowDirective = ['$animate', function($animate) {
  * provided to the ngHide attribute. The element is shown or hidden by removing or adding
  * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
  * in AngularJS and sets the display style to none (using an !important flag).
+ * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is hidden) -->

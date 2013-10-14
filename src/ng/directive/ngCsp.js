@@ -19,6 +19,10 @@
  * evaluate all expressions up to 30% slower than in non-CSP mode, but no security violations will
  * be raised.
  *
+ * CSP forbids JavaScript to inline stylesheet rules. In non CSP mode Angular automatically
+ * includes some CSS rules (e.g. {@link ng.directive:ngCloak ngCloak}).
+ * To make those directives work in CSP mode, include the `angular-csp.css` manually.
+ *
  * In order to use this feature put the `ngCsp` directive on the root element of the application.
  *
  * *Note: This directive is only available in the `ng-csp` and `data-ng-csp` attribute form.*
