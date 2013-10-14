@@ -117,25 +117,25 @@ There are two ways to overcome issues caused by minification:
 * You can create a `$inject` property on the controller function which holds an array of strings.
   Each string in the array is the name of the service to inject for the corresponding parameter.
   In the case of our example we would write:
-
+<pre>
     function PhoneListCtrl($scope, $http) {...}
     PhoneListCtrl.$inject = ['$scope', '$http'];
     phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-
+</pre>
 * Use the inline bracket notation which wraps the function to be injected into an array of strings
   (representing the dependency names) followed by the function to be injected:
-
+<pre>
     function PhoneListCtrl($scope, $http) {...}
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-
+</pre>
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
 
 When using the second method, it is common to provide the constructor function inline as an
 anonymous function when registering the controller:
-
+<pre>
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
-
+</pre>
 
 From this point onward, we're going to use the inline method in the tutorial. With that in mind,
 let's add the annotations to our `PhoneListCtrl`:
