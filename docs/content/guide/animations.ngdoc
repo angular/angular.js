@@ -265,7 +265,7 @@ For a full breakdown of the steps involved during each animation event, refer to
 
 ## How do I use animations in my own directives?
 
-You can also use animations within custom directives can also be established by injecting `$animate` directly into your directive and
+Animations within custom directives can also be established by injecting `$animate` directly into your directive and
 making calls to it when needed.
 
 <pre>
