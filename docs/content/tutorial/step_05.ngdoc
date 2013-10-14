@@ -56,7 +56,7 @@ __`app/js/controllers.js:`__
 <pre>
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope, $http) {
+phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {
   $http.get('phones/phones.json').success(function(data) {
     $scope.phones = data;
   });
@@ -79,7 +79,7 @@ json response and parsed it for us!
 To use a service in angular, you simply declare the names of the dependencies you need as arguments
 to the controller's constructor function, as follows:
 
-    function PhoneListCtrl($scope, $http) {...}
+    phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {...}
 
 Angular's dependency injector provides services to your controller when the controller is being
 constructed. The dependency injector also takes care of creating any transitive dependencies the
@@ -145,7 +145,7 @@ __`app/js/controllers.js:`__
 var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
-  function PhoneListCtrl($scope, $http) {
+  function ($scope, $http) {
     $http.get('phones/phones.json').success(function(data) {
       $scope.phones = data;
     });
