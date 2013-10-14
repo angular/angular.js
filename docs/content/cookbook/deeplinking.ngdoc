@@ -148,4 +148,4 @@ In this example we have a simple app which consist of two screens:
 * The  {@link api/ngRoute.directive:ngView ngView} widget loads the
   view when the URL changes. It also sets the view scope to the newly instantiated controller.
 * Changing the URL is sufficient to change the controller and view. It makes no difference whether
-  the URL is changed programatically or by the user.
+  the URL is changed programmatically or by the user.
