@@ -754,6 +754,7 @@ Parser.prototype = {
       }
       var fnPtr = fn(scope, locals, context) || noop;
 
+      ensureSafeObject(context, parser.text);
       ensureSafeObject(fnPtr, parser.text);
 
       // IE stupidity! (IE doesn't have apply for some native functions)
