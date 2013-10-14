@@ -15,7 +15,8 @@
  * of the browser view.
  *
  * `ngCloak` works in cooperation with the following css rule embedded within `angular.js` and
- *  `angular.min.js`:
+ * `angular.min.js`.
+ * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
  * <pre>
  * [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
