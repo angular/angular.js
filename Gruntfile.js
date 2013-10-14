@@ -121,6 +121,7 @@ module.exports = function(grunt) {
         src: util.wrap([files['angularSrc']], 'angular'),
         styles: {
           css: ['css/angular.css'],
+          generateCspCssFile: true,
           minify: true
         }
       },
