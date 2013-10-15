@@ -314,6 +314,24 @@ describe('Scope', function() {
     }));
 
 
+    it('should handle $sce trusted values', inject(function($rootScope, $sce) {
+      $rootScope.$sce = $sce;
+      $rootScope.$watch('$sce.trustAsHtml("<html></html>")', function() {});
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    }));
+
+
+    it('should handle $sce trusted values in deep compare', inject(function($rootScope, $sce) {
+      $rootScope.$sce = $sce;
+      $rootScope.$watch('$sce.trustAsHtml("<html></html>")', function() {}, true);
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    }));
+
+
     it('should return a function that allows listeners to be unregistered', inject(
         function($rootScope) {
       var listener = jasmine.createSpy('watch listener'),

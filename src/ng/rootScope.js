@@ -75,8 +75,8 @@ function $RootScopeProvider(){
     return TTL;
   };
 
-  this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
-      function( $injector,   $exceptionHandler,   $parse,   $browser) {
+  this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser', '$sce',
+      function( $injector,   $exceptionHandler,   $parse,   $browser,   $sce) {
 
     /**
      * @ngdoc function
@@ -533,7 +533,7 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if (watch && (value = watch.get(current)) !== (last = watch.last) &&
+                  if (watch && (value = $sce.valueOf(watch.get(current))) !== (last = watch.last) &&
                       !(watch.eq
                           ? equals(value, last)
                           : (typeof value == 'number' && typeof last == 'number'
