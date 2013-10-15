@@ -136,6 +136,29 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  *
  * @element ANY
  * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
+ *
+ * @example
+ * Try it here: enter text in text box and watch the greeting change.
+   <doc:example module="ngBindHtmlExample" deps="angular-sanitize.js" >
+     <doc:source>
+       <script>
+         angular.module('ngBindHtmlExample', ['ngSanitize'])
+
+         .controller('ngBindHtmlCtrl', ['$scope', function ngBindHtmlCtrl($scope) {
+           $scope.myHTML = 'I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>';
+         }]);
+       </script>
+       <div ng-controller="ngBindHtmlCtrl">
+        <p ng-bind-html="myHTML"></p>
+       </div>
+     </doc:source>
+     <doc:scenario>
+       it('should check ng-bind-html', function() {
+         expect(using('.doc-example-live').binding('myHTML')).
+           toBe('I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return function(scope, element, attr) {
