@@ -760,6 +760,13 @@ function equals(o1, o2) {
 }
 
 
+function csp() {
+  return (document.securityPolicy && document.securityPolicy.isActive) ||
+      (document.querySelector &&
+      !!(document.querySelector('[ng-csp]') || document.querySelector('[data-ng-csp]')));
+}
+
+
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
 }

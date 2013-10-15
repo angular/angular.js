@@ -44,12 +44,13 @@ function publishExternalAPI(angular){
     'isNumber': isNumber,
     'isElement': isElement,
     'isArray': isArray,
-    '$$minErr': minErr,
     'version': version,
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
-    'callbacks': {counter: 0}
+    'callbacks': {counter: 0},
+    '$$minErr': minErr,
+    '$$csp': csp
   });
 
   angularModule = setupModuleLoader(window);
@@ -77,7 +78,6 @@ function publishExternalAPI(angular){
             ngClass: ngClassDirective,
             ngClassEven: ngClassEvenDirective,
             ngClassOdd: ngClassOddDirective,
-            ngCsp: ngCspDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
             ngForm: ngFormDirective,

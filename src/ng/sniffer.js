@@ -76,7 +76,7 @@ function $SnifferProvider() {
 
         return eventSupport[event];
       },
-      csp: document.securityPolicy ? document.securityPolicy.isActive : false,
+      csp: csp(),
       vendorPrefix: vendorPrefix,
       transitions : transitions,
       animations : animations
