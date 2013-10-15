@@ -794,18 +794,19 @@ function $CompileProvider($provide) {
         }
 
         if (directiveValue = directive.scope) {
-          newScopeDirective = newScopeDirective || directive;
-
           // skip the check for directives with async templates, we'll check the derived sync directive when
           // the template arrives
           if (!directive.templateUrl) {
-            assertNoDuplicate('new/isolated scope', newIsolateScopeDirective, directive, $compileNode);
             if (isObject(directiveValue)) {
+              assertNoDuplicate('new/isolated scope', newIsolateScopeDirective || newScopeDirective, directive, $compileNode);
               safeAddClass($compileNode, 'ng-isolate-scope');
               newIsolateScopeDirective = directive;
+            } else {
+              assertNoDuplicate('new/isolated scope', newIsolateScopeDirective, directive, $compileNode);  
             }
             safeAddClass($compileNode, 'ng-scope');
           }
+          newScopeDirective = newScopeDirective || directive;
         }
 
         directiveName = directive.name;
