@@ -53,7 +53,7 @@ function parseAppUrl(relativeUrl, locationObj) {
  * @returns {string} returns text from whole after begin or undefined if it does not begin with expected string.
  */
 function beginsWith(begin, whole) {
-  if (whole.indexOf(begin) == 0) {
+  if (whole && whole.indexOf(begin) == 0) {
     return whole.substr(begin.length);
   }
 }
