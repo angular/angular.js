@@ -147,8 +147,7 @@ for most cases. In advanced cases, such as when using script loaders, you can us
 
 There are 3 important things that happen during the app bootstrap:
 
-1. The {@link api/AUTO.$injector injector} that will be used for dependency injection
-   when this app is created.
+1. The {@link api/AUTO.$injector injector} that will be used for dependency injection is created.
 
 2. The injector will then create the {@link api/ng.$rootScope root scope} that will
    become the context for the model of our application.
