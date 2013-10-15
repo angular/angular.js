@@ -1,3 +1,279 @@
+<a name="1.2.0-rc.3"></a>
+# 1.2.0-rc.3 ferocious-twitch (2013-10-14)
+
+
+## Features
+
+- **$interval:** add a service wrapping setInterval
+  ([2b5ce84f](https://github.com/angular/angular.js/commit/2b5ce84fca7b41fca24707e163ec6af84bc12e83))
+- **$sce:** simpler patterns for `$sceDelegateProviders` white/blacklists
+  ([93ce5923](https://github.com/angular/angular.js/commit/93ce5923e92f6d2db831d8715ec62734821c70ce),
+   [#4006](https://github.com/angular/angular.js/issues/4006))
+- **$filter:** allow map of filters to be registered
+  ([4033cf28](https://github.com/angular/angular.js/commit/4033cf28142664c52aa7b4bc95340ac913397ac8),
+   [#4036](https://github.com/angular/angular.js/issues/4036),
+   [#4091](https://github.com/angular/angular.js/issues/4091))
+- **$compile:** support `tel:` links in `a[href]`
+  ([e7730297](https://github.com/angular/angular.js/commit/e773029717f11d727af609a139b173a135c79eab))
+
+- **Directives:**
+  - **ngRepeat:** support repeating over `ngInclude` and other directives that replace repeated nodes
+    ([9efa46ae](https://github.com/angular/angular.js/commit/9efa46ae640cde17487c341daa9a75c0bd79da02),
+     [#3104](https://github.com/angular/angular.js/issues/3104))
+  - **event directives:** add `ngCopy`, `ngCut`, and `ngPaste`
+  ([147c6929](https://github.com/angular/angular.js/commit/147c6929a264a7b077a5f2cfc5aa9a0b9513acd7),
+   [#4172](https://github.com/angular/angular.js/issues/4172))
+
+- **Misc:**
+  - jQuery 1.10.x support
+  ([e0c134b8](https://github.com/angular/angular.js/commit/e0c134b8bfa282379daec6a7137512d58f956443),
+   [#3764](https://github.com/angular/angular.js/issues/3764))
+  - **minErr:** linkify error messages on minErr docs pages
+  ([6aaae062](https://github.com/angular/angular.js/commit/6aaae062171bfc8e5046c3eae99bc9d63037120a))
+  - **tutorial:** add step 12 on animations to the phonecat tutorial
+  ([ad525645](https://github.com/angular/angular.js/commit/ad5256452bb8f1d481d78e7ae15a59d288f0d8e9))
+
+
+
+## Bug Fixes
+
+- **$compile:**
+  - abort compilation when duplicate element transclusion
+  ([63c5334c](https://github.com/angular/angular.js/commit/63c5334c84b7269428c710226764d1f08a36e0d4),
+   [#3893](https://github.com/angular/angular.js/issues/3893),
+   [#4217](https://github.com/angular/angular.js/issues/4217),
+   [#3307](https://github.com/angular/angular.js/issues/3307))
+  - make order directives w/ same priority deterministic
+  ([4357da85](https://github.com/angular/angular.js/commit/4357da857587d3c28790e7dc654664bec5808768))
+  - fix (reverse) directive postLink fn execution order
+  ([31f190d4](https://github.com/angular/angular.js/commit/31f190d4d53921d32253ba80d9ebe57d6c1de82b),
+   [#3558](https://github.com/angular/angular.js/issues/3558))
+  - don't terminate compilation for regular transclusion directives
+  ([fe214501](https://github.com/angular/angular.js/commit/fe2145016cb057c92f9f01b32c58b4d7259eb6ee))
+  - ng-attr to support dash separated attribute names
+  ([8e6e3eba](https://github.com/angular/angular.js/commit/8e6e3ebad991eaf57a7885549ea3b91932d495c9))
+  - allow interpolations for non-event handlers attrs
+  ([8e1276c0](https://github.com/angular/angular.js/commit/8e1276c011b33b90af47494dc5e76baf86468a5a))
+  - link parents before traversing
+  ([742271ff](https://github.com/angular/angular.js/commit/742271ffa3a518d9e8ef2cb97c24b45b44e3378d),
+   [#3792](https://github.com/angular/angular.js/issues/3792),
+   [#3923](https://github.com/angular/angular.js/issues/3923),
+   [#3935](https://github.com/angular/angular.js/issues/3935),
+   [#3927](https://github.com/angular/angular.js/issues/3927))
+  - collect ranges on multiple directives on one element
+  ([6a8edc1d](https://github.com/angular/angular.js/commit/6a8edc1d43aca7c5a92f86309b1bb1d5f9968442),
+   [#4002](https://github.com/angular/angular.js/issues/4002))
+- **$parse:**
+  - deprecate promise unwrapping and make it an opt-in
+  ([5dc35b52](https://github.com/angular/angular.js/commit/5dc35b527b3c99f6544b8cb52e93c6510d3ac577),
+   [#4158](https://github.com/angular/angular.js/issues/4158),
+   [#4270](https://github.com/angular/angular.js/issues/4270))
+  - disallow access to window and dom in expressions
+  ([be0b4856](https://github.com/angular/angular.js/commit/be0b4856699334ff51bacf2d1fd3394663d6bd28))
+- **$httpBackend:**
+  - set headers with falsy values
+  ([e9a22241](https://github.com/angular/angular.js/commit/e9a222418a029d830698444cf95bf13f8ad75805),
+   [#2984](https://github.com/angular/angular.js/issues/2984))
+  - don't send empty string bodies
+  ([0d0330ad](https://github.com/angular/angular.js/commit/0d0330adc24a68cd6891a030a56d3ce3bbced03c),
+   [#2149](https://github.com/angular/angular.js/issues/2149))
+- **$location:**
+  - prevent infinite digest error in IE7
+  ([d7071148](https://github.com/angular/angular.js/commit/d70711481e6311c9cd283d650f07ca0cca72ecc2),
+   [#2802](https://github.com/angular/angular.js/issues/2802))
+  - re-assign location after BFCache back
+  ([2ebf9316](https://github.com/angular/angular.js/commit/2ebf93163027abc55ba27f673be3b8dc1281c068),
+   [#4044](https://github.com/angular/angular.js/issues/4044))
+- **$log:** prevent logging `undefined` for $log in IE
+  ([4ff1a650](https://github.com/angular/angular.js/commit/4ff1a65031e985bf930f6761c1ecf46e4db98d6e),
+   [#1705](https://github.com/angular/angular.js/issues/1705))
+- **Scope:**
+  - `$evalAsync` executes on the right scope
+  ([10cc1a42](https://github.com/angular/angular.js/commit/10cc1a42c925749f88433546d41d35ba07a88e6f))
+  - make `stopPropagation` only stop its own event
+  ([47f7bd70](https://github.com/angular/angular.js/commit/47f7bd706efc5f2944d182e46c1b1d324298ff36),
+   [#4204](https://github.com/angular/angular.js/issues/4204))
+
+- **Filters:**
+  - **date:** allow negative millisecond value strings
+  ([025c9219](https://github.com/angular/angular.js/commit/025c92190376414c15f15fd20a75b41489a4e70a))
+
+- **Directives:**
+  - correct priority of structural directives (ngRepeat, ngSwitchWhen, ngIf, ngInclude, ngView)
+  ([b7af76b4](https://github.com/angular/angular.js/commit/b7af76b4c5aa77648cc1bfd49935b48583419023))
+  - **input:** `false` is no longer an empty value by default
+  ([b56b21a8](https://github.com/angular/angular.js/commit/b56b21a898b3c77589a48a290271f9dc181dafe8),
+   [#3490](https://github.com/angular/angular.js/issues/3490))
+  - **ngBindHtml:** watch string value instead of wrapper
+  ([e2068ad4](https://github.com/angular/angular.js/commit/e2068ad426075ac34c06c12e2fac5f594cc81969),
+   [#3932](https://github.com/angular/angular.js/issues/3932))
+  - **ngOptions:** ignore object properties which start with $
+  ([aa3c54c7](https://github.com/angular/angular.js/commit/aa3c54c73f7470999535294899a1c33cd193f455))
+  - **ngRepeat:** correctly track elements even when the collection is initially undefined
+  ([31c56f54](https://github.com/angular/angular.js/commit/31c56f540045b5270f5b8e235873da855caf3486),
+   [#4145](https://github.com/angular/angular.js/issues/4145),
+   [#3964](https://github.com/angular/angular.js/issues/3964))
+  - **ngTransclude:** detect ngTranslude usage without a transclusion directive
+  ([5a1a6b86](https://github.com/angular/angular.js/commit/5a1a6b86a8dbcd8aa4fe9c59fad8d005eead686c),
+   [#3759](https://github.com/angular/angular.js/issues/3759))
+
+
+- **jqLite:**
+  - ignore class methods on comment elements
+  ([64fd2c42](https://github.com/angular/angular.js/commit/64fd2c421ed582c16812d164a8a6f031b8e66287))
+  - use get/setAttribute so that jqLite works on SVG nodes
+  ([c785267e](https://github.com/angular/angular.js/commit/c785267eb8780d8b7658ef93ebb5ebddd566294d),
+   [#3858](https://github.com/angular/angular.js/issues/3858))
+
+- **Misc:**
+  - **isArrayLike:** correctly handle string primitives
+  ([5b8c7884](https://github.com/angular/angular.js/commit/5b8c78843e8d62a7a67cead8bf04c76aa8ee411d),
+   [#3356](https://github.com/angular/angular.js/issues/3356))
+  - protect calls to hasOwnProperty in public API
+  ([7a586e5c](https://github.com/angular/angular.js/commit/7a586e5c19f3d1ecc3fefef084ce992072ee7f60),
+   [#3331](https://github.com/angular/angular.js/issues/3331))
+
+- **ngRoute:**
+  - **ngView:** IE8 regression due to expando on non-element nodes
+  ([255e8c13](https://github.com/angular/angular.js/commit/255e8c13cf0fd78f1c4d7c279be7bf47c2402956),
+   [#3971](https://github.com/angular/angular.js/issues/3971))
+  - **$route:** parametrized routes do not match against locations that would not valorize each parameters.
+  ([0ff86c32](https://github.com/angular/angular.js/commit/0ff86c323359fba1a60bacab178e3c68528f8e1f))
+
+- **ngResource:**
+  - pass transformed value to both callbacks and promises
+  ([e36e28eb](https://github.com/angular/angular.js/commit/e36e28ebd4a6c144e47d11fba8e211d8d5a9d03e),
+   [#3817](https://github.com/angular/angular.js/issues/3817))
+  - remove request body from $delete
+  ([8336b3a2](https://github.com/angular/angular.js/commit/8336b3a286f8469d4cd7c412c41ca8c1a31fecf0),
+   [#4280](https://github.com/angular/angular.js/issues/4280))
+
+- **ngSanitize:**
+  - sanitize DOCTYPE declarations correctly
+  ([e66c23fe](https://github.com/angular/angular.js/commit/e66c23fe55f8571a014b0686c8dbca128e7a8240),
+   [#3931](https://github.com/angular/angular.js/issues/3931))
+  - sanitizer should not accept <!--> as a valid comment
+  ([21e9e8cf](https://github.com/angular/angular.js/commit/21e9e8cf68ef007136da6cc212d2f1f252fb668a))
+
+- **ngTouch:**
+  - ngClick does not pass touchend event when jQuery is loaded
+  ([9fd92cc3](https://github.com/angular/angular.js/commit/9fd92cc3c93a6378e8887fd46fd4ad182a375544))
+  - add $event to ng-swipe
+  ([507d8021](https://github.com/angular/angular.js/commit/507d8021b1c91cc0cefc0418e61b04597ad1030b),
+   [#4071](https://github.com/angular/angular.js/issues/4071),
+   [#4321](https://github.com/angular/angular.js/issues/4321))
+
+- **ngAnimate:**
+  - ensure that a timeStamp is created if not provided by the browser event
+  ([cd216c4c](https://github.com/angular/angular.js/commit/cd216c4c30adfebb3ef633f18fab2d98e8c52ebc),
+   [#3053](https://github.com/angular/angular.js/issues/3053))
+  - perform internal caching on getComputedStyle to boost the performance of CSS3 transitions/animations
+  ([b1e604e3](https://github.com/angular/angular.js/commit/b1e604e38ceec1714174fb54cc91590a7fe99a92),
+   [#4011](https://github.com/angular/angular.js/issues/4011),
+   [#4124](https://github.com/angular/angular.js/issues/4124))
+  - ensure structural animations skip all child animations even if no animation is present during compile
+  ([cc584607](https://github.com/angular/angular.js/commit/cc5846073e57ef190182026d7e5a8e2770d9b770),
+   [#3215](https://github.com/angular/angular.js/issues/3215))
+  - cancel any ongoing child animations during move and leave animations
+  ([3f31a7c7](https://github.com/angular/angular.js/commit/3f31a7c7691993893f0724076816f6558643bd91))
+  - ensure elapsedTime always considers delay values
+  ([079dd939](https://github.com/angular/angular.js/commit/079dd93991ac79b5f9af6efb7fe2b3600195f10c))
+  - ensure transition-property is not changed when only keyframe animations are in use
+  ([2df3c9f5](https://github.com/angular/angular.js/commit/2df3c9f58def9584455f7c4bfdabbd12aab58bf9),
+   [#3933](https://github.com/angular/angular.js/issues/3933))
+  - avoid completing the animation asynchronously unless CSS transtiions/animations are present
+  ([2a63dfa6](https://github.com/angular/angular.js/commit/2a63dfa6cc7889888f4296fff2944e74ff30b3af),
+   [#4023](https://github.com/angular/angular.js/issues/4023),
+   [#3940](https://github.com/angular/angular.js/issues/3940))
+  - ensure that delays are always considered before an animation closes
+  ([0a63adce](https://github.com/angular/angular.js/commit/0a63adce687d28ada90ea930d5e69883cc11cba5),
+   [#4028](https://github.com/angular/angular.js/issues/4028))
+  - check elapsedTime on current event
+  ([d50ed6bf](https://github.com/angular/angular.js/commit/d50ed6bfb8c4982401923ff535fe932ef4f387a2))
+  - support addClass/removeClass animations on SVG nodes
+    ([c785267e](https://github.com/angular/angular.js/commit/c785267eb8780d8b7658ef93ebb5ebddd566294d),
+     [#3858](https://github.com/angular/angular.js/issues/3858))
+
+- **ngScenario:**
+  - remove redundant assignment
+  ([a80e96ce](https://github.com/angular/angular.js/commit/a80e96cea184b392505f0a292785a5c66d45e165),
+   [#4315](https://github.com/angular/angular.js/issues/4315))
+  - fix error message description
+  ([f8f8f754](https://github.com/angular/angular.js/commit/f8f8f754b02459bb789247476cc0da63d2d7370f))
+  - provide event parameters as object
+  ([28f56a38](https://github.com/angular/angular.js/commit/28f56a383e9d1ff378e3568a3039e941c7ffb1d8))
+  - include "not " in error messages if test is inverted
+  ([3589f178](https://github.com/angular/angular.js/commit/3589f17824376e9db4e8d002caeb4483943eeb18),
+   [#3840](https://github.com/angular/angular.js/issues/3840))
+
+
+## Breaking Changes
+
+- **$compile:** due to [31f190d4](https://github.com/angular/angular.js/commit/31f190d4d53921d32253ba80d9ebe57d6c1de82b),
+  the order of postLink fn is now mirror opposite of the order in which corresponding preLinking and compile functions execute.
+
+  Previously the compile/link fns executed in this order controlled via priority:
+
+  - CompilePriorityHigh, CompilePriorityMedium, CompilePriorityLow
+  - compile child nodes
+  - PreLinkPriorityHigh, PreLinkPriorityMedium, PreLinkPriorityLow
+  - link child nodes
+  - PostLinkPriorityHigh, PostLinkPriorityMedium, PostLinkPriorityLow
+
+  This was changed to:
+
+  - CompilePriorityHigh, CompilePriorityMedium, CompilePriorityLow
+  - compile child nodes
+  - PreLinkPriorityHigh, PreLinkPriorityMedium, PreLinkPriorityLow
+  - link child nodes
+  - PostLinkPriorityLow, PostLinkPriorityMedium , PostLinkPriorityHigh
+
+  Very few directives in practice rely on order of postLinking function (unlike on the order of compile functions), so
+  in the rare case of this change affecting an existing directive, it might be necessary to convert it to a preLinking
+  function or give it negative priority (look at the diff of this commit to see how an internal attribute interpolation
+  directive was adjusted).
+
+- **$parse:**
+  - due to [5dc35b52](https://github.com/angular/angular.js/commit/5dc35b527b3c99f6544b8cb52e93c6510d3ac577),
+  $parse and templates in general will no longer automatically unwrap promises. This feature has been deprecated and if absolutely needed, it can be reenabled during transitional period via `$parseProvider.unwrapPromises(true)` api.
+  - due to [b6a37d11](https://github.com/angular/angular.js/commit/b6a37d112b3e1478f4d14a5f82faabf700443748),
+  feature added in rc.2 that unwraps return values from functions if the values are promises (if promise unwrapping is enabled - see previous point), was reverted due to breaking a popular usage pattern.
+
+- **directives:** due to [b7af76b4](https://github.com/angular/angular.js/commit/b7af76b4c5aa77648cc1bfd49935b48583419023),
+  the priority of ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView has changed. This could affect directives that explicitly specify their priority.
+
+  In order to make ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView work together in all common scenarios their directives are being adjusted to achieve the following precendence:
+
+  ```
+  Directive        | Old Priority | New Priority
+  =============================================
+  ngRepeat         | 1000         | 1000
+  ---------------------------------------------
+  ngSwitchWhen     | 500          | 800
+  ---------------------------------------------
+  ngIf             | 1000         | 600
+  ---------------------------------------------
+  ngInclude/ngView | 1000         | 400
+  ```
+
+- **form/ngForm** due to [7a586e5c](https://github.com/angular/angular.js/commit/7a586e5c19f3d1ecc3fefef084ce992072ee7f60),
+  Inputs with name equal to "hasOwnProperty" are not allowed inside form or ngForm directives.
+
+  Before, inputs whose name was "hasOwnProperty" were quietly ignored and not added to the scope.  Now a badname exception is thrown.
+
+  Using "hasOwnProperty" for an input name would be very unusual and bad practice.
+
+  Either do not include such an input in a `form` or `ngForm` directive or change the name of the input.
+
+
+- **ngScenario:** due to [28f56a38](https://github.com/angular/angular.js/commit/28f56a383e9d1ff378e3568a3039e941c7ffb1d8),
+  browserTrigger now uses an eventData object instead of direct parameters for mouse events.
+  To migrate, place the `keys`,`x` and `y` parameters inside of an object and place that as the third parameter for the browserTrigger function.
+
+
+
+
+
 <a name="1.2.0-rc.2"></a>
 # 1.2.0-rc.2 barehand-atomsplitting (2013-09-04)
 
