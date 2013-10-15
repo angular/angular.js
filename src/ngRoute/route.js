@@ -90,7 +90,9 @@ function $RouteProvider(){
    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
    *      be injected into the controller. If any of these dependencies are promises, they will be
    *      resolved and converted to a value before the controller is instantiated and the
-   *      `$routeChangeSuccess` event is fired. The map object is:
+   *      {@link ngRoute.$route#$routeChangeSuccess $routeChangeSuccess} event is fired. If any of theses
+   *      dependencies are promises, when rejected the {@link ngRoute.$route#$routeChangeError $routeChangeError}
+   *      event is fired. The map object is:
    *
    *      - `key` – `{string}`: a name of a dependency to be injected into the controller.
    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
