@@ -96,7 +96,7 @@ var ngOptionsMinErr = minErr('ngOptions');
           Color (null allowed):
           <span  class="nullable">
             <select ng-model="color" ng-options="c.name for c in colors">
-              <option value="">-- chose color --</option>
+              <option value="">-- choose color --</option>
             </select>
           </span><br/>
 
