@@ -413,9 +413,12 @@ compiler}. The attributes are:
     * `C` - Class: `<div class="my-directive: exp;"></div>`
     * `M` - Comment: `<!-- directive: my-directive exp -->`
 
-  * `template` - replace the current element with the contents of the given HTML. The replacement process
-    migrates all of the attributes / classes from the old element to the new one. See the
-    {@link guide/directive#Components Creating Components} section below for more information.
+  * `template` - the HTML that will be inserted into the DOM. Whether the HTML will be placed
+    inside the current element or replace it entirely depends on the `replace` attribute.
+    
+    The replacement process migrates all of the attributes / classes from the old element to the
+    new one. See the {@link guide/directive#Components Creating Components} section below for more
+    information.
 
     You can specify `template` as a string representing the template or as a function which takes
     two arguments `tElement` and `tAttrs` (described in the `compile` function api below) and
@@ -430,7 +433,8 @@ compiler}. The attributes are:
     a string value representing the url.  In either case, the template URL is passed through {@link
     api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
 
-  * `replace` - specify where the template should be inserted. Defaults to `false`.
+  * `replace` - specify whether the template will replace the current element itself or its contents.
+     Defaults to `false`.
 
     * `true` - the template will replace the current element.
     * `false` - the template will replace the contents of the current element.
