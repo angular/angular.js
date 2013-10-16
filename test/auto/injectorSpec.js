@@ -788,6 +788,16 @@ describe('injector', function() {
     });
 
 
+    it('should allow constructor to return a function', function() {
+      var fn = function() {};
+      var Class = function() {
+        return fn;
+      };
+
+      expect($injector.instantiate(Class)).toBe(fn);
+    });
+
+
     it('should handle constructor exception', function() {
       expect(function() {
         $injector.instantiate(function() { throw 'MyError'; });

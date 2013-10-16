@@ -759,7 +759,7 @@ function createInjector(modulesToLoad) {
       instance = new Constructor();
       returnedValue = invoke(Type, instance, locals);
 
-      return isObject(returnedValue) ? returnedValue : instance;
+      return isObject(returnedValue) || isFunction(returnedValue) ? returnedValue : instance;
     }
 
     return {
