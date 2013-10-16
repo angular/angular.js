@@ -158,6 +158,10 @@ is the same test using `$controller`:
 __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
+  beforeEach(function () {
+    // Load the controller's module
+    module('phonecatApp');
+  });
 
   describe('PhoneListCtrl', function(){
 
