@@ -95,7 +95,7 @@ function classDirective(name, selector) {
  *   names of the properties whose values are truthy will be added as css classes to the
  *   element.
  *
- * @example Example that demostrates basic bindings via ngClass directive.
+ * @example Example that demonstrates basic bindings via ngClass directive.
    <example>
      <file name="index.html">
        <p ng-class="{strike: strike, bold: bold, red: red}">Map Syntax Example</p>
