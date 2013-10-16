@@ -54,7 +54,7 @@ if (window.jQuery) {
       });
 
       it('should fire on html(\'\')', function() {
-        doc.html('');
+        doc.empty();
       });
     });
   });

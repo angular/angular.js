@@ -974,7 +974,7 @@ function startingTag(element) {
   try {
     // turns out IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
-    element.html('');
+    element.empty();
   } catch(e) {}
   // As Per DOM Standards
   var TEXT_NODE = 3;

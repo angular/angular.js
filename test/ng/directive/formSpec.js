@@ -216,7 +216,7 @@ describe('form', function() {
         // yes, I know, scope methods should not do direct DOM manipulation, but I wanted to keep
         // this test small. Imagine that the destroy action will cause a model change (e.g.
         // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
-        doc.html('');
+        doc.empty();
         destroyed = true;
       }
 
