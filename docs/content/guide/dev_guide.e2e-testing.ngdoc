@@ -173,11 +173,6 @@ Executes the `method` passing in `key` and `value` on the element matching the g
 `selector`, where `method` can be any of the following jQuery methods: `attr`,  `prop`, `css`.  The
 `label` is used for test output.
 
-JavaScript is a dynamically typed language which comes with great power of expression, but it also
-come with almost no-help from the compiler. For this reason we feel very strongly that any code
-written in JavaScript needs to come with a strong set of tests. We have built many features into
-angular which makes testing your angular applications easy. So there is no excuse for not testing.
-
 # Matchers
 
 Matchers are used in combination with the `expect(...)` function as described above and can
