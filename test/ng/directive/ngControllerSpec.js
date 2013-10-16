@@ -85,4 +85,26 @@ describe('ngController', function() {
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
   }));
+
+  it('should allow mixing with ngRepeat which inherits the item sub-scope', inject(function($compile, $rootScope){
+      $rootScope.Counter = function($scope){
+        $scope.count = $scope.$index;
+      };
+
+      element = $compile('<div><div ng-repeat="i in [1,2]" ng-controller="Counter">{{count}};</div></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe('0;1;');
+    }));
+
+  it('should allow mixing with ngInclude', inject(function($compile, $rootScope, $httpBackend) {
+    $rootScope.Includer = function($scope) {
+      $scope.name = 'Included';
+    };
+    element = $compile('<div><div ng-controller="Includer" ng-include="\'url\'"></div></div>')($rootScope);
+    $httpBackend.expect('GET', 'url').respond('{{name}}');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('Included');
+    dealoc($rootScope);
+  }));
 });
