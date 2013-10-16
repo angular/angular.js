@@ -28,7 +28,7 @@ function escape(text) {
 function setHtmlIe8SafeWay(element, html) {
   var newElement = angular.element('<pre>' + html + '</pre>');
 
-  element.html('');
+  element.empty();
   element.append(newElement.contents());
   return element;
 }
