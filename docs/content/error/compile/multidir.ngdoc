@@ -3,7 +3,8 @@
 @fullName Multiple Directive Resource Contention
 @description
 
-This error occurs when multiple directives are applied to the same DOM element, and processing them would result in an collisions or unsupported configuration.
+This error occurs when multiple directives are applied to the same DOM element, and
+processing them would result in a collision or an unsupported configuration.
 
 
 To resolve this issue remove one of the directives which is causing the collision.
