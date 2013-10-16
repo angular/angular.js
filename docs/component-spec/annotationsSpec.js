@@ -5,7 +5,7 @@ describe('Docs Annotations', function() {
   var body;
   beforeEach(function() {
     body = angular.element(document.body);
-    body.html('');
+    body.empty();
   });
 
   var normalizeHtml = function(html) {
