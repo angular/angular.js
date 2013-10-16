@@ -1,4 +1,5 @@
 'use strict';
+/* jshint maxlen: false */
 
 /**
  * @ngdoc overview
