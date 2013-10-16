@@ -1726,9 +1726,9 @@ angular.module('ngMock', ['ng']).provider({
   $interval: angular.mock.$IntervalProvider,
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider
-}).config(function($provide) {
+}).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
-});
+}]);
 
 /**
  * @ngdoc overview
@@ -1739,9 +1739,9 @@ angular.module('ngMock', ['ng']).provider({
  * Currently there is only one mock present in this module -
  * the {@link ngMockE2E.$httpBackend e2e $httpBackend} mock.
  */
-angular.module('ngMockE2E', ['ng']).config(function($provide) {
+angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-});
+}]);
 
 /**
  * @ngdoc object
