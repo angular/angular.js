@@ -333,13 +333,13 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
           // becomes the compilation root
           nullOption.removeClass('ng-scope');
 
-          // we need to remove it before calling selectElement.html('') because otherwise IE will
+          // we need to remove it before calling selectElement.empty() because otherwise IE will
           // remove the label from the element. wtf?
           nullOption.remove();
         }
 
         // clear contents, we'll add what's needed based on the model
-        selectElement.html('');
+        selectElement.empty();
 
         selectElement.on('change', function() {
           scope.$apply(function() {

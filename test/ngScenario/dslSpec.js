@@ -53,7 +53,7 @@ describe("angular.scenario.dsl", function() {
     // Just use the real one since it delegates to this.addFuture
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
-    jqLite($window.document).html('');
+    jqLite($window.document).empty();
   }));
 
   afterEach(function(){

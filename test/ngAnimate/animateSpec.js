@@ -301,7 +301,7 @@ describe("ngAnimate", function() {
           inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
 
           $rootScope.$digest();
-          element.html('');
+          element.empty();
 
           var child1 = $compile('<div>1</div>')($rootScope);
           var child2 = $compile('<div>2</div>')($rootScope);

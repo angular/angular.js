@@ -47,7 +47,7 @@ describe('ngInclude', function() {
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(body.text()).toEqual('misko');
-    body.html('');
+    body.empty();
   }));
 
 
@@ -60,7 +60,7 @@ describe('ngInclude', function() {
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(element.text()).toEqual('Alibaba');
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 
@@ -74,7 +74,7 @@ describe('ngInclude', function() {
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
         /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 
@@ -88,7 +88,7 @@ describe('ngInclude', function() {
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
         /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 

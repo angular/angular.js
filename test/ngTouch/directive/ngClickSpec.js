@@ -152,7 +152,7 @@ describe('ngClick (touch)', function() {
     }));
 
     afterEach(inject(function($document) {
-      $document.find('body').html('');
+      $document.find('body').empty();
     }));
 
 

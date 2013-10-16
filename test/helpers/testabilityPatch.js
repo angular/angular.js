@@ -29,8 +29,7 @@ beforeEach(function() {
     bindJQuery();
   }
 
-
-  angular.element(document.body).html('').removeData();
+  angular.element(document.body).empty().removeData();
 });
 
 afterEach(function() {
