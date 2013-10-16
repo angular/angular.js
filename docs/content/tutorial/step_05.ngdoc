@@ -6,7 +6,7 @@
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of Angular's built-in {@link api/ng services} called {@link
+from our server using one of Angular's built-in {@link guide/dev_guide.services services} called {@link
 api/ng.$http $http}. We will use Angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
