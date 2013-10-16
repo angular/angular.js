@@ -85,4 +85,59 @@ describe('ngController', function() {
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
   }));
+
+
+  it('should work with ngInclude on the same element', inject(function($compile, $rootScope, $httpBackend) {
+    $rootScope.GreeterController = function($scope) {
+      $scope.name = 'Vojta';
+    };
+
+    element = $compile('<div><div ng-controller="GreeterController" ng-include="\'url\'"></div></div>')($rootScope);
+    $httpBackend.expect('GET', 'url').respond('{{name}}');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toEqual('Vojta');
+  }));
+
+
+  it('should only instantiate the controller once with ngInclude on the same element',
+      inject(function($compile, $rootScope, $httpBackend) {
+
+    var count = 0;
+
+    $rootScope.CountController = function($scope) {
+      count += 1;
+    };
+
+    element = $compile('<div><div ng-controller="CountController" ng-include="url"></div></div>')($rootScope);
+
+    $httpBackend.expect('GET', 'first').respond('first');
+    $rootScope.url = 'first';
+    $rootScope.$digest();
+    $httpBackend.flush();
+
+    $httpBackend.expect('GET', 'second').respond('second');
+    $rootScope.url = 'second';
+    $rootScope.$digest();
+    $httpBackend.flush();
+
+    expect(count).toBe(1);
+  }));
+
+
+  it('when ngInclude is on the same element, the content included content should get a child scope of the controller',
+      inject(function($compile, $rootScope, $httpBackend) {
+
+    var controllerScope;
+
+    $rootScope.ExposeScopeController = function($scope) {
+      controllerScope = $scope;
+    };
+
+    element = $compile('<div><div ng-controller="ExposeScopeController" ng-include="\'url\'"></div></div>')($rootScope);
+    $httpBackend.expect('GET', 'url').respond('<div ng-init="name=\'Vojta\'"></div>');
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(controllerScope.name).toBeUndefined();
+  }));
 });
