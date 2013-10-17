@@ -207,6 +207,48 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   }
 };
 
+docsApp.directive.docModuleComponents = ['sections', function(sections) {
+  return {
+    template: '  <div class="component-breakdown">' +
+              '    <h2>Module Components</h2>' +
+              '    <div ng-repeat="(key, section) in components">' + 
+              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' + 
+              '      <table class="definition-table">' + 
+              '        <tr>' + 
+              '          <th>Name</th>' + 
+              '          <th>Description</th>' + 
+              '        </tr>' + 
+              '        <tr ng-repeat="component in section.components">' + 
+              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' + 
+              '          <td>{{ component.shortDescription }}</td>' + 
+              '        </tr>' + 
+              '      </table>' + 
+              '    </div>' +
+              '  </div>',
+    scope : {
+      module : '@docModuleComponents'
+    },
+    controller : ['$scope', function($scope) {
+      var validTypes = ['property','function','directive','service','object','filter'];
+      var components = {};
+      angular.forEach(sections.api, function(item) {
+        if(item.moduleName == $scope.module) {
+          var type = item.type;
+          if(type == 'object') type = 'service';
+          if(validTypes.indexOf(type) >= 0) {
+            components[type] = components[type] || {
+              title : type,
+              type : type,
+              components : [] 
+            };
+            components[type].components.push(item);
+          }
+        }
+      });
+      $scope.components = components;
+    }]
+  };
+}]
 
 docsApp.directive.docTutorialNav = function(templateMerge) {
   var pages = [

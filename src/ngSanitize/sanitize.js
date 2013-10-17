@@ -13,6 +13,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *
  * {@installModule sanitize}
  *
+ * <div doc-module-components="ngSanitize"></div>
+ *
  * See {@link ngSanitize.$sanitize `$sanitize`} for usage.
  */
 
