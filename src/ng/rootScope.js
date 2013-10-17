@@ -802,19 +802,29 @@ function $RootScopeProvider(){
        *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag to true.
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
        *
-       * @param {string} name Event name to listen on.
+       * @param {string|array} names Event names to listen on, specified as either a space-separated string, or
+			 *                             an array of strings.
        * @param {function(event, args...)} listener Function to call when the event is emitted.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name];
-        if (!namedListeners) {
-          this.$$listeners[name] = namedListeners = [];
-        }
-        namedListeners.push(listener);
-
+      $on: function(names, listener) {
+				var $$listeners = this.$$listeners;
+				if (isString(names)) {
+					names = names.split(/\s+/);
+				}
+				for(var i=0; i<names.length; ++i) {
+					var name = names[i],
+	            namedListeners = $$listeners[name];
+	        if (!namedListeners) {
+	          this.$$listeners[name] = namedListeners = [];
+	        }
+	        namedListeners.push(listener);
+				}
         return function() {
-          namedListeners[indexOf(namedListeners, listener)] = null;
+					for(var i=0; i<names.length; ++i) {
+						var namedListeners = $$listeners[names[i]];
+          	namedListeners[indexOf(namedListeners, listener)] = null;
+					}
         };
       },
 
