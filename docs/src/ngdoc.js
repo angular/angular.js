@@ -213,6 +213,14 @@ Doc.prototype = {
     return words.join(' ');
   },
 
+  shortDescription : function() {
+    var text = this.description.split("\n")[0];
+    text = text.replace(/<.+?\/?>/g, '');
+    text = text.replace(/{/g,'&#123;');
+    text = text.replace(/}/g,'&#125;');
+    return text;
+  },
+
   getMinerrNamespace: function () {
     if (this.ngdoc !== 'error') {
       throw new Error('Tried to get the minErr namespace, but @ngdoc ' +
@@ -471,10 +479,19 @@ Doc.prototype = {
       (this.ngdoc === 'error' ? this.name : '') ||
       (((this.file||'').match(/.*(\/|\\)([^(\/|\\)]*)\.ngdoc/)||{})[2]) || // try to extract it from file name
       this.name; // default to name
+    this.moduleName = parseModuleName(this.id);
     this.description = this.markdown(this.description);
     this.example = this.markdown(this.example);
     this['this'] = this.markdown(this['this']);
     return this;
+
+    function parseModuleName(id) {
+      var module = id.split('.')[0];
+      if(module == 'angular') {
+        module = 'ng';
+      }
+      return module;
+    }
 
     function flush() {
       if (atName) {
@@ -1106,6 +1123,8 @@ function metadata(docs){
       name: title(doc),
       shortName: shortName,
       type: doc.ngdoc,
+      moduleName: doc.moduleName,
+      shortDescription: doc.shortDescription(),
       keywords:doc.keywords()
     });
   });

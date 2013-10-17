@@ -7,10 +7,11 @@
  *
  * # ngCookies
  *
- * Provides the {@link ngCookies.$cookies `$cookies`} and
- * {@link ngCookies.$cookieStore `$cookieStore`} services.
+ * The `ngCookies` module provides a convenient wrapper for reading and writing browser cookies. 
  *
  * {@installModule cookies}
+ *
+ * <div doc-module-components="ngCookies"></div>
  *
  * See {@link ngCookies.$cookies `$cookies`} and
  * {@link ngCookies.$cookieStore `$cookieStore`} for usage.
