@@ -13,8 +13,15 @@ can be extended such that HTML can be turned into a declarative domain specific 
 Directives have camel cased names such as `ngBind`. The directive can be invoked by translating
 the camel case name into snake case with these special characters `:`, `-`, or `_`. Optionally the
 directive can be prefixed with `x-`, or `data-` to make it HTML validator compliant. Here is a
-list of some of the possible directive names: `ng:bind`, `ng-bind`, `ng_bind`, `x-ng-bind` and
-`data-ng-bind`.
+list of some of the possible directive names: 
+
+<ul>
+  <li><code>ng:bind</code></li>
+  <li><code>ng-bind</code></li>
+  <li><code>ng_bind</code></li> 
+  <li><code>x-ng-bind</code></li>
+  <li><code>data-ng-bind</code></li>
+</ul>
 
 The directives can be placed as element names, attributes, CSS class names, and inside comments.
 However, most directives are restricted to attribute only. Here are some equivalent examples of
