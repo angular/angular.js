@@ -599,9 +599,9 @@ describe('ngView animations', function() {
         $location.path('/bar');
         $rootScope.$digest();
 
-        var itemA = $animate.flushNext('leave').element;
+        var itemA = $animate.flushNext('enter').element;
         expect(itemA).not.toEqual(itemB);
-        var itemB = $animate.flushNext('enter').element;
+        var itemB = $animate.flushNext('leave').element;
     }));
 
     it('should render ngClass on ngView',
@@ -635,8 +635,8 @@ describe('ngView animations', function() {
         $location.path('/bar');
         $rootScope.$digest();
 
-        $animate.flushNext('leave').element;
-        item = $animate.flushNext('enter').element;
+        $animate.flushNext('enter').element;
+        item = $animate.flushNext('leave').element;
 
         $animate.flushNext('addClass').element;
         $animate.flushNext('addClass').element;
@@ -679,11 +679,10 @@ describe('ngView animations', function() {
       $location.path('/bar');
       $rootScope.$digest();
 
+      $animate.flushNext('enter'); //ngView new
       $animate.flushNext('leave'); //ngView old
 
       $rootScope.$digest();
-
-      $animate.flushNext('enter'); //ngView new
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 

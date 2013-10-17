@@ -207,10 +207,10 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
           if (template) {
             var newScope = scope.$new();
             linker(newScope, function(clone) {
-              cleanupLastView();
-
               clone.html(template);
-              $animate.enter(clone, null, $element);
+              $animate.enter(clone, null, currentElement || $element);
+
+              cleanupLastView();
 
               var link = $compile(clone.contents()),
                   current = $route.current;
