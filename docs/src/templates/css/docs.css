@@ -508,3 +508,26 @@ pre ol li {
   font-size: 16px;
   word-break: normal;
 }
+
+.text-info {
+  color:#3a87ad;
+}
+
+.definition-table tr > td:first-child {
+  font-weight:bold;
+  width:30%;
+}
+
+.definition-table.spaced {
+  margin-bottom:30px;
+}
+
+.component-heading {
+  text-transform:capitalize;
+}
+
+.component-breakdown {
+  margin-bottom:30px;
+  padding-bottom:30px;
+  border-bottom:1px solid #aaa;
+}
