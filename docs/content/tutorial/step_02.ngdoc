@@ -151,13 +151,15 @@ Angular. Since testing is such a critical part of software development, we make 
 tests in Angular so that developers are encouraged to write them.
 
 ### Testing non-Global Controllers
-In practice, you will not want to have your controller functions in the global namespace.  In this
-case Angular provides a service, `$controller`, which will retrieve your controller by name.  Here
-is the same test using `$controller`:
+In practice, you will not want to have your controller functions in the global namespace. Instead,
+we have registered our controllers in the `phonecatApp` module. In this case Angular provides a
+service, `$controller`, which will retrieve your controller by name.  Here is the same test using
+`$controller`:
 
 __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
+  beforeEach(module('phonecatApp'));
 
   describe('PhoneListCtrl', function(){
 
@@ -170,6 +172,9 @@ describe('PhoneCat controllers', function() {
   });
 });
 </pre>
+
+Don't forget that we need to load up the `phonecatApp` module into the test so that the controller
+is available to be injected.
 
 ### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
