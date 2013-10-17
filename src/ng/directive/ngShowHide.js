@@ -145,8 +145,12 @@
  */
 var ngShowDirective = ['$animate', function($animate) {
   return function(scope, element, attr) {
-    scope.$watch(attr.ngShow, function ngShowWatchAction(value){
-      $animate[toBoolean(value) ? 'removeClass' : 'addClass'](element, 'ng-hide');
+    var watchHasNeverFired = true;
+    scope.$watch(attr.ngShow, function ngShowWatchAction(value, oldValue){
+      if (watchHasNeverFired || (toBoolean(value) !== toBoolean(oldValue))) {
+        watchHasNeverFired = false;
+        $animate[toBoolean(value) ? 'removeClass' : 'addClass'](element, 'ng-hide');
+      }
     });
   };
 }];
@@ -297,8 +301,11 @@ var ngShowDirective = ['$animate', function($animate) {
  */
 var ngHideDirective = ['$animate', function($animate) {
   return function(scope, element, attr) {
-    scope.$watch(attr.ngHide, function ngHideWatchAction(value){
-      $animate[toBoolean(value) ? 'addClass' : 'removeClass'](element, 'ng-hide');
+    var watchHasNeverFired = true;
+    scope.$watch(attr.ngHide, function ngHideWatchAction(value, oldValue){
+      if (watchHasNeverFired || (toBoolean(value) !== toBoolean(oldValue))) {
+        $animate[toBoolean(value) ? 'addClass' : 'removeClass'](element, 'ng-hide');
+      }
     });
   };
 }];
