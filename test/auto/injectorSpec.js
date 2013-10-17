@@ -74,7 +74,7 @@ describe('injector', function() {
   });
 
 
-  it('should proved path to the missing provider', function() {
+  it('should provide path to the missing provider', function() {
     providers('a', function(idontexist) {return 1;});
     providers('b', function(a) {return 2;});
     expect(function() {
