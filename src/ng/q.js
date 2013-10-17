@@ -103,6 +103,8 @@
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
+ * - `progress(notifyCallback)` – shorthand for `promise.then(null, null, notifyCallback)`
+ *
  * - `finally(callback)` – allows you to observe either the fulfillment or rejection of a promise,
  *   but to do so without modifying the final value. This is useful to release resources or do some
  *   clean-up that needs to be done whether the promise was rejected or resolved. See the [full
@@ -286,6 +288,10 @@ function qFactory(nextTick, exceptionHandler) {
 
         "catch": function(callback) {
           return this.then(null, callback);
+        },
+
+        progress: function(callback) {
+          return this.then(null, null, callback);
         },
 
         "finally": function(callback) {
