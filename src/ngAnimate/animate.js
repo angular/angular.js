@@ -493,35 +493,47 @@ angular.module('ngAnimate', ['ng'])
       */
       function performAnimation(event, className, element, parent, after, onComplete) {
         var classes = (element.attr('class') || '') + ' ' + className;
-        var animationLookup = (' ' + classes).replace(/\s+/g,'.'),
-            animations = [];
-        forEach(lookup(animationLookup), function(animation, index) {
-          animations.push({
-            start : animation[event]
-          });
-        });
-
+        var animationLookup = (' ' + classes).replace(/\s+/g,'.');
         if (!parent) {
           parent = after ? after.parent() : element.parent();
         }
-        var disabledAnimation = { running : true };
 
-        //skip the animation if animations are disabled, a parent is already being animated
-        //or the element is not currently attached to the document body.
-        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || animations.length === 0) {
+        var disabledAnimation = { running : true };
+        var matches = lookup(animationLookup);
+        var isClassBased = event == 'addClass' || event == 'removeClass';
+        var ngAnimateState = element.data(NG_ANIMATE_STATE) || {};
+
+        //skip the animation if animations are disabled, a parent is already being animated,
+        //the element is not currently attached to the document body or then completely close
+        //the animation if any matching animations are not found at all.
+        //NOTE: IE8 + IE9 should close properly (run done()) in case a NO animation is not found.
+        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || matches.length == 0) {
           done();
           return;
         }
 
-        var ngAnimateState = element.data(NG_ANIMATE_STATE) || {};
+        var animations = [];
+        //only add animations if the currently running animation is not structural
+        //or if there is no animation running at all
+        if(!ngAnimateState.running || !(isClassBased && ngAnimateState.structural)) {
+          forEach(matches, function(animation) {
+            //add the animation to the queue to if it is allowed to be cancelled
+            if(!animation.allowCancel || animation.allowCancel(element, event, className)) {
+              animations.push({
+                start : animation[event]
+              });
+            }
+          });
+        }
 
-        var isClassBased = event == 'addClass' || event == 'removeClass';
+        //this would mean that an animation was not allowed so let the existing
+        //animation do it's thing and close this one early
+        if(animations.length == 0) {
+          onComplete && onComplete();
+          return;
+        }
+
         if(ngAnimateState.running) {
-          if(isClassBased && ngAnimateState.structural) {
-            onComplete && onComplete();
-            return;
-          }
-
           //if an animation is currently running on the element then lets take the steps
           //to cancel that animation and fire any required callbacks
           $timeout.cancel(ngAnimateState.flagTimer);
@@ -651,6 +663,7 @@ angular.module('ngAnimate', ['ng'])
           animationIterationCountKey = 'IterationCount';
 
       var NG_ANIMATE_PARENT_KEY = '$ngAnimateKey';
+      var NG_ANIMATE_CLASS_KEY = '$$ngAnimateClasses';
       var lookupCache = {};
       var parentCounter = 0;
 
@@ -669,7 +682,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function getElementAnimationDetails(element, cacheKey, onlyCheckTransition) {
-        var data = lookupCache[cacheKey];
+        var data = cacheKey ? lookupCache[cacheKey] : null;
         if(!data) {
           var transitionDuration = 0, transitionDelay = 0,
               animationDuration = 0, animationDelay = 0;
@@ -702,7 +715,9 @@ angular.module('ngAnimate', ['ng'])
             transitionDuration : transitionDuration,
             animationDuration : animationDuration
           };
-          lookupCache[cacheKey] = data;
+          if(cacheKey) {
+            lookupCache[cacheKey] = data;
+          }
         }
         return data;
       }
@@ -769,6 +784,7 @@ angular.module('ngAnimate', ['ng'])
             element.addClass(activeClassName);
           });
 
+          element.data(NG_ANIMATE_CLASS_KEY, className + ' ' + activeClassName);
           element.on(css3AnimationEvents, onAnimationProgress);
 
           // This will automatically be called by $animate so
@@ -778,6 +794,7 @@ angular.module('ngAnimate', ['ng'])
             element.off(css3AnimationEvents, onAnimationProgress);
             element.removeClass(className);
             element.removeClass(activeClassName);
+            element.removeData(NG_ANIMATE_CLASS_KEY);
 
             // Only when the animation is cancelled is the done()
             // function not called for this animation therefore
@@ -811,6 +828,35 @@ angular.module('ngAnimate', ['ng'])
       }
 
       return {
+        allowCancel : function(element, event, className) {
+          //always cancel the current animation if it is a
+          //structural animation
+          var oldClasses = element.data(NG_ANIMATE_CLASS_KEY);
+          if(!oldClasses || ['enter','leave','move'].indexOf(event) >= 0) {
+            return true;
+          }
+
+          var parent = element.parent();
+          var clone = angular.element(element[0].cloneNode());
+
+          //make the element super hidden and override any CSS style values
+          clone.attr('style','position:absolute; top:-9999px; left:-9999px');
+          clone.removeAttr('id');
+          clone.html('');
+
+          angular.forEach(oldClasses.split(' '), function(klass) {
+            clone.removeClass(klass);
+          });
+
+          var suffix = event == 'addClass' ? '-add' : '-remove';
+          clone.addClass(suffixClasses(className, suffix));
+          parent.append(clone);
+
+          var timings = getElementAnimationDetails(clone);
+          clone.remove();
+
+          return Math.max(timings.transitionDuration, timings.animationDuration) > 0;
+        },
         enter : function(element, done) {
           return animate(element, 'ng-enter', done);
         },
