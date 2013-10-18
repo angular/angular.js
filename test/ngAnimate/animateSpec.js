@@ -746,8 +746,8 @@ describe("ngAnimate", function() {
           expect(element.hasClass('ng-enter')).toBe(true);
           expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
+          $timeout.flush();
         }
-        $timeout.flush();
         expect(element.hasClass('abc')).toBe(true);
 
         $rootScope.klass = 'xyz';
@@ -760,8 +760,8 @@ describe("ngAnimate", function() {
           expect(element.hasClass('ng-enter')).toBe(true);
           expect(element.hasClass('ng-enter-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 11000, elapsedTime: 11000 });
+          $timeout.flush();
         }
-        $timeout.flush();
         expect(element.hasClass('xyz')).toBe(true);
       }));
 
@@ -1920,4 +1920,40 @@ describe("ngAnimate", function() {
       expect(count).toBe(40);
     });
   });
+
+  it("should cancel an ongoing class-based animation only if the new class contains transition/animation CSS code",
+    inject(function($compile, $rootScope, $animate, $sniffer) {
+
+    if (!$sniffer.transitions) return;
+
+    ss.addRule('.green-add', '-webkit-transition:1s linear all;' +
+                                     'transition:1s linear all;');
+
+    ss.addRule('.blue-add', 'background:blue;');
+
+    ss.addRule('.red-add', '-webkit-transition:1s linear all;' +
+                                   'transition:1s linear all;');
+
+    ss.addRule('.yellow-add', '-webkit-animation: some_animation 4s linear 1s 2 alternate;' +
+                                      'animation: some_animation 4s linear 1s 2 alternate;');
+
+    var element = $compile('<div></div>')($rootScope);
+    $rootElement.append(element);
+    jqLite($document[0].body).append($rootElement);
+
+    $animate.addClass(element, 'green');
+    expect(element.hasClass('green-add')).toBe(true);
+ 
+    $animate.addClass(element, 'blue');
+    expect(element.hasClass('blue')).toBe(true); 
+    expect(element.hasClass('green-add')).toBe(true); //not cancelled
+
+    $animate.addClass(element, 'red');
+    expect(element.hasClass('green-add')).toBe(false);
+    expect(element.hasClass('red-add')).toBe(true);
+
+    $animate.addClass(element, 'yellow');
+    expect(element.hasClass('red-add')).toBe(false); 
+    expect(element.hasClass('yellow-add')).toBe(true);
+  }));
 });
