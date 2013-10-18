@@ -63,6 +63,17 @@ describe('form', function() {
     expect(scope.myForm.alias).toBeDefined();
   });
 
+  it('should use ngForm value as form name when nested inside form', function () {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<div ng-form="nestedForm"><input type="text" name="alias" ng-model="value"/></div>' +
+      '</form>')(scope);
+
+    expect(scope.myForm).toBeDefined();
+    expect(scope.myForm.nestedForm).toBeDefined();
+    expect(scope.myForm.nestedForm.alias).toBeDefined();
+  });
+
 
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
@@ -72,10 +83,11 @@ describe('form', function() {
   });
 
 
-  it('should allow form name to be an expression', function() {
+  it('should support expression in form name', function() {
     doc = $compile('<form name="obj.myForm"></form>')(scope);
 
-    expect(scope['obj.myForm']).toBeTruthy();
+    expect(scope.obj).toBeDefined();
+    expect(scope.obj.myForm).toBeTruthy();
   });
 
 
@@ -122,6 +134,18 @@ describe('form', function() {
     expect(widget.$dirty).toBe(false);
     expect(widget.$valid).toBe(true);
     expect(widget.$invalid).toBe(false);
+  });
+
+
+  it('should throw an exception if an input has name="hasOwnProperty"', function() {
+    doc = jqLite(
+      '<form name="form">'+
+        '<input name="hasOwnProperty" ng-model="some" />'+
+        '<input name="other" ng-model="someOther" />'+
+      '</form>');
+      expect(function() {
+	    $compile(doc)(scope);
+      }).toThrowMinErr('ng', 'badname');
   });
 
 
@@ -247,7 +271,7 @@ describe('form', function() {
       });
 
       doc = $compile('<form action="some.py"></form>')(scope);
-      doc.bind('submit', callback);
+      doc.on('submit', callback);
 
       browserTrigger(doc, 'submit');
       expect(callback).toHaveBeenCalledOnce();
@@ -310,6 +334,30 @@ describe('form', function() {
 
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
+      expect(parent.$error.required).toBe(false);
+    });
+
+
+    it('should deregister a child form whose name is an expression when its DOM is removed', function() {
+      doc = jqLite(
+        '<form name="parent">' +
+          '<div class="ng-form" name="child.form">' +
+          '<input ng:model="modelA" name="inputA" required>' +
+          '</div>' +
+          '</form>');
+      $compile(doc)(scope);
+      scope.$apply();
+
+      var parent = scope.parent,
+        child = scope.child.form;
+
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+      expect(parent.$error.required).toEqual([child]);
+      doc.children().remove(); //remove child
+
+      expect(parent.child).toBeUndefined();
+      expect(scope.child.form).toBeUndefined();
       expect(parent.$error.required).toBe(false);
     });
 

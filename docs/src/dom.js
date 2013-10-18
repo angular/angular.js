@@ -8,7 +8,12 @@ exports.htmlEscape = htmlEscape;
 //////////////////////////////////////////////////////////
 
 function htmlEscape(text){
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\{\{/g, '<span>{{</span>')
+          .replace(/\}\}/g, '<span>}}</span>');
 }
 
 
@@ -43,8 +48,9 @@ DOM.prototype = {
       var headingDepth = this.headingDepth;
       for ( var i = 10; i > 0; --i) {
         html = html
-          .replace(new RegExp('(<\/?h)' + i + '(>)', 'gm'), function(all, start, end){
-            return start + (i + headingDepth) + end;
+          .replace(new RegExp('<h' + i + '(.*?)>([\\s\\S]+)<\/h' + i +'>', 'gm'), function(_, attrs, content){
+            var tag = 'h' + (i + headingDepth);
+            return '<' + tag + attrs + '>' + content + '</' + tag + '>';
           });
       }
       this.out.push(html);

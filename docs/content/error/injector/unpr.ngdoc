@@ -1,0 +1,26 @@
+@ngdoc error
+@name $injector:unpr
+@fullName Unknown Provider
+@description
+
+This error results from the `$injector` being unable to resolve a required
+dependency. To fix this, make sure the dependency is defined and spelled
+correctly. For example:
+
+```
+angular.module('myApp', [])
+  .controller('myCtrl', ['myService', function (myService) {
+    // Do something with myService
+  }]);
+```
+
+This code will fail with `$injector:unpr` if `myService` is not defined. Making
+sure each dependency is defined will fix the problem.
+
+```
+angular.module('myApp', [])
+  .service('myService', function () { /* ... */ })
+  .controller('myCtrl', ['myService', function (myService) {
+    // Do something with myService
+  }]);
+```

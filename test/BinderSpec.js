@@ -94,28 +94,35 @@ describe('Binder', function() {
     $rootScope.$apply();
     expect(sortedHtml(form)).toBe(
         '<ul>' +
-          '<#comment></#comment>' +
+          '<!-- ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">A</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">B</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
         '</ul>');
 
     items.unshift({a: 'C'});
     $rootScope.$apply();
     expect(sortedHtml(form)).toBe(
         '<ul>' +
-          '<#comment></#comment>' +
+          '<!-- ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">C</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">A</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">B</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
         '</ul>');
 
     items.shift();
     $rootScope.$apply();
     expect(sortedHtml(form)).toBe(
         '<ul>' +
-          '<#comment></#comment>' +
+          '<!-- ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">A</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
           '<li ng-bind="item.a" ng-repeat="item in model.items">B</li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
         '</ul>');
 
     items.shift();
@@ -132,8 +139,9 @@ describe('Binder', function() {
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
-          '<#comment></#comment>' +
+          '<!-- ngRepeat: item in model.items -->' +
           '<li ng-repeat="item in model.items"><span ng-bind="item.a">A</span></li>' +
+          '<!-- end ngRepeat: item in model.items -->' +
         '</ul>');
   }));
 
@@ -148,15 +156,15 @@ describe('Binder', function() {
     $rootScope.items = items;
 
     $rootScope.$apply();
-    expect(element[0].childNodes.length - 1).toEqual(0);
+    expect(element[0].childNodes.length).toEqual(1);
 
     items.name = 'misko';
     $rootScope.$apply();
-    expect(element[0].childNodes.length - 1).toEqual(1);
+    expect(element[0].childNodes.length).toEqual(3);
 
     delete items.name;
     $rootScope.$apply();
-    expect(element[0].childNodes.length - 1).toEqual(0);
+    expect(element[0].childNodes.length).toEqual(1);
   }));
 
   it('IfTextBindingThrowsErrorDecorateTheSpan', function() {
@@ -175,7 +183,7 @@ describe('Binder', function() {
       $rootScope.error['throw'] = function() {throw 'MyError';};
       errorLogs.length = 0;
       $rootScope.$apply();
-      expect(errorLogs.shift().message).toBe('Error while interpolating: {{error.throw()}}\nMyError');
+      expect(errorLogs.shift().message).toMatch(/^\[\$interpolate:interr\] Can't interpolate: \{\{error.throw\(\)\}\}\nMyError/);
 
       $rootScope.error['throw'] = function() {return 'ok';};
       $rootScope.$apply();
@@ -219,17 +227,23 @@ describe('Binder', function() {
 
     expect(sortedHtml(element)).toBe(
         '<div>'+
-          '<#comment></#comment>'+
+          '<!-- ngRepeat: m in model -->' +
           '<div name="a" ng-repeat="m in model">'+
-            '<#comment></#comment>'+
+            '<!-- ngRepeat: i in m.item -->' +
             '<ul name="a1" ng-repeat="i in m.item"></ul>'+
+            '<!-- end ngRepeat: i in m.item -->' +
             '<ul name="a2" ng-repeat="i in m.item"></ul>'+
+            '<!-- end ngRepeat: i in m.item -->' +
           '</div>'+
+          '<!-- end ngRepeat: m in model -->' +
           '<div name="b" ng-repeat="m in model">'+
-            '<#comment></#comment>'+
+            '<!-- ngRepeat: i in m.item -->' +
             '<ul name="b1" ng-repeat="i in m.item"></ul>'+
+            '<!-- end ngRepeat: i in m.item -->' +
             '<ul name="b2" ng-repeat="i in m.item"></ul>'+
+            '<!-- end ngRepeat: i in m.item -->' +
           '</div>' +
+          '<!-- end ngRepeat: m in model -->' +
         '</div>');
   }));
 
@@ -306,14 +320,19 @@ describe('Binder', function() {
         '<div ng-repeat="i in [0,1]" ng-class-even="\'e\'" ng-class-odd="\'o\'"></div>' +
       '</div>')($rootScope);
     $rootScope.$apply();
+
     var d1 = jqLite(element[0].childNodes[1]);
-    var d2 = jqLite(element[0].childNodes[2]);
+    var d2 = jqLite(element[0].childNodes[3]);
     expect(d1.hasClass('o')).toBeTruthy();
     expect(d2.hasClass('e')).toBeTruthy();
     expect(sortedHtml(element)).toBe(
-        '<div><#comment></#comment>' +
+       '<div>' +
+        '<!-- ngRepeat: i in [0,1] -->' +
         '<div class="o" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat="i in [0,1]"></div>' +
-        '<div class="e" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat="i in [0,1]"></div></div>');
+        '<!-- end ngRepeat: i in [0,1] -->' +
+        '<div class="e" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat="i in [0,1]"></div>' +
+        '<!-- end ngRepeat: i in [0,1] -->' +
+        '</div>');
   }));
 
   it('BindStyle', inject(function($rootScope, $compile) {
@@ -416,9 +435,11 @@ describe('Binder', function() {
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
-          '<#comment></#comment>' +
+          '<!-- ngRepeat: (k,v) in {a:0,b:1} -->' +
           '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
           '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
+          '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
         '</ul>');
   }));
 

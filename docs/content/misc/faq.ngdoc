@@ -51,7 +51,7 @@ Yes. See instructions in {@link downloading}.
 ### What browsers does Angular work with?
 
 We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera,
-IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet 
+IE8, IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
 Explorer Compatibility} for more details in supporting legacy IE browsers.
 
 
@@ -81,6 +81,9 @@ Yes, Angular can use {@link http://jquery.com/ jQuery} if it's present in your a
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
 to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
 
+Due to a change to use `on()`/`off()` rather than `bind()`\`unbind()`, Angular 1.2 only operates with
+jQuery 1.7.1 or above.
+
 
 ### What is testability like in Angular?
 
@@ -101,9 +104,9 @@ The MIT License.
 
 ### Can I download and use the Angular logo artwork?
 
-Yes! You can find design files in our github repository, under "{@link https://github.com/angular/angular.js/tree/master/images/logo 
+Yes! You can find design files in our github repository, under "{@link https://github.com/angular/angular.js/tree/master/images/logo
 angular.js/images/logo}"
-The logo design is licensed under a "{@link http://creativecommons.org/licenses/by-sa/3.0/ 
+The logo design is licensed under a "{@link http://creativecommons.org/licenses/by-sa/3.0/
 Creative Commons Attribution-ShareAlike 3.0 Unported License}". If you have some other use in mind, contact us.
 
 ### How can I get some AngularJS schwag?
@@ -113,16 +116,12 @@ make our schwag will be happy to do a custom run for you, based on our existing 
 they'll waive the setup costs, and you can order any quantity you need.
 
 **Stickers**
-Contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
-stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping. 
+For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at tom@stickergiant.com, and tell him you want to order some AngularJS
+stickers just like the ones in job #42711. You'll have to give them your own info for billing and shipping.
 
 As long as the design stays exactly the same, {@link http://www.stickergiant.com StickerGiant} will give you a reorder discount.
 
-**T-shirts**
-Contact sales at {@link http://www.customink.com www.customink.com} and tell them you want some shirts with design name "angularjs",
-just like past order #2106371. You'll have to give them your own info for billing and shipping.
-
-As long as the design stays exactly the same, CustomInk won't charge for any set up fees, and they'll give you a reorder discount.
+For a smaller order, or for other countries, we suggest downloading the logo artwork and making your own.
 
 ## Common Pitfalls
 

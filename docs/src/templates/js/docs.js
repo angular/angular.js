@@ -1,25 +1,150 @@
 var docsApp = {
   controller: {},
   directive: {},
-  serviceFactory: {}
+  serviceFactory: {},
+  filter: {}
 };
 
+docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
+  $scope.docs_versions = NG_VERSIONS;
+  $scope.docs_version  = NG_VERSIONS[0];
+  $scope.jumpToDocsVersion = function(version) {
+    $window.location = version.url;
+  };
+}];
+
+docsApp.controller.DocsNavigationCtrl = ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
+  function clearResults() {
+    $scope.results = [];
+    $scope.colClassName = null;
+    $scope.hasResults = false;
+  }
+
+  $scope.search = function(q) {
+    var MIN_SEARCH_LENGTH = 3;
+    if(q.length >= MIN_SEARCH_LENGTH) {
+      var results = docsSearch(q);
+      var totalSections = 0;
+      for(var i in results) {
+        ++totalSections;
+      }
+      if(totalSections > 0) {
+        $scope.colClassName = 'cols-' + totalSections;
+      }
+      $scope.hasResults = totalSections > 0;
+      $scope.results = results;
+    }
+    else {
+      clearResults();
+    }
+    if(!$scope.$$phase) $scope.$apply();
+  };
+  $scope.submit = function() {
+    var result;
+    for(var i in $scope.results) {
+      result = $scope.results[i][0];
+      if(result) {
+        break;
+      }
+    }
+    if(result) {
+      $location.path(result.url);
+      $scope.hideResults();
+    }
+  };
+  $scope.hideResults = function() {
+    clearResults();
+    $scope.q = '';
+  };
+}];
+
+docsApp.serviceFactory.lunrSearch = function() {
+  return function(properties) {
+    if (window.RUNNING_IN_NG_TEST_RUNNER) return null;
+
+    var engine = lunr(properties);
+    return {
+      store : function(values) {
+        engine.add(values);
+      },
+      search : function(q) {
+        return engine.search(q);
+      }
+    };
+  };
+};
+
+docsApp.serviceFactory.docsSearch = ['$rootScope','lunrSearch', 'NG_PAGES',
+    function($rootScope, lunrSearch, NG_PAGES) {
+  if (window.RUNNING_IN_NG_TEST_RUNNER) {
+    return null;
+  }
+
+  var index = lunrSearch(function() {
+    this.ref('id');
+    this.field('title', {boost: 50});
+    this.field('description', { boost : 20 });
+  });
+
+  angular.forEach(NG_PAGES, function(page, i) {
+    var title = page.shortName;
+    if(title.charAt(0) == 'n' && title.charAt(1) == 'g') {
+      title = title + ' ' + title.charAt(2).toLowerCase() + title.substr(3);
+    }
+    index.store({
+      id: i,
+      title: title,
+      description: page.keywords
+    });
+  });
+
+  return function(q) {
+    var results = {};
+    angular.forEach(index.search(q), function(result) {
+      var item = NG_PAGES[result.ref];
+      var section = item.section;
+      if(section == 'cookbook') {
+        section = 'tutorial';
+      }
+      results[section] = results[section] || [];
+      if(results[section].length < 15) {
+        results[section].push(item);
+      }
+    });
+    return results;
+  };
+}];
 
 docsApp.directive.focused = function($timeout) {
   return function(scope, element, attrs) {
     element[0].focus();
-    element.bind('focus', function() {
+    element.on('focus', function() {
       scope.$apply(attrs.focused + '=true');
     });
-    element.bind('blur', function() {
+    element.on('blur', function() {
       // have to use $timeout, so that we close the drop-down after the user clicks,
       // otherwise when the user clicks we process the closing before we process the click.
       $timeout(function() {
         scope.$eval(attrs.focused + '=false');
       });
     });
-    scope.$eval(attrs.focused + '=true')
-  }
+    scope.$eval(attrs.focused + '=true');
+  };
+};
+
+docsApp.directive.docsSearchInput = function() {
+  return function(scope, element, attrs) {
+    var ESCAPE_KEY_KEYCODE = 27;
+    element.bind('keydown', function(event) {
+      if(event.keyCode == ESCAPE_KEY_KEYCODE) {
+        event.stopPropagation();
+        event.preventDefault();
+        scope.$apply(function() {
+          scope.hideResults();
+        });
+      }
+    });
+  };
 };
 
 
@@ -47,6 +172,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         html: read($attrs.sourceEditHtml),
         css: read($attrs.sourceEditCss),
         js: read($attrs.sourceEditJs),
+        json: read($attrs.sourceEditJson),
         unit: read($attrs.sourceEditUnit),
         scenario: read($attrs.sourceEditScenario)
       };
@@ -59,7 +185,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
         openPlunkr(sources);
       };
     }
-  }
+  };
 
   function read(text) {
     var files = [];
@@ -77,7 +203,7 @@ docsApp.directive.docTutorialNav = function(templateMerge) {
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
     'step_05', 'step_06', 'step_07', 'step_08', 'step_09',
-    'step_10', 'step_11', 'the_end'
+    'step_10', 'step_11', 'step_12', 'the_end'
   ];
   return {
     compile: function(element, attrs) {
@@ -127,7 +253,69 @@ docsApp.directive.docTutorialReset = function() {
         '</div>\n');
     }
   };
-}
+};
+
+
+docsApp.filter.errorLink = ['$sanitize', function ($sanitize) {
+  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/g,
+      MAILTO_REGEXP = /^mailto:/,
+      STACK_TRACE_REGEXP = /:\d+:\d+$/;
+
+  var truncate = function (text, nchars) {
+    if (text.length > nchars) {
+      return text.substr(0, nchars - 3) + '...';
+    }
+    return text;
+  };
+
+  return function (text, target) {
+    var targetHtml = target ? ' target="' + target + '"' : '';
+
+    if (!text) return text;
+
+    return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
+      if (STACK_TRACE_REGEXP.test(url)) {
+        return url;
+      }
+
+      // if we did not match ftp/http/mailto then assume mailto
+      if (!/^((ftp|https?):\/\/|mailto:)/.test(url)) url = 'mailto:' + url;
+
+      return '<a' + targetHtml + ' href="' + url +'">' +
+                truncate(url.replace(MAILTO_REGEXP, ''), 60) +
+              '</a>';
+    }));
+  };
+}];
+
+
+docsApp.directive.errorDisplay = ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
+  var interpolate = function (formatString) {
+    var formatArgs = arguments;
+    return formatString.replace(/\{\d+\}/g, function (match) {
+      // Drop the braces and use the unary plus to convert to an integer.
+      // The index will be off by one because of the formatString.
+      var index = +match.slice(1, -1);
+      if (index + 1 >= formatArgs.length) {
+        return match;
+      }
+      return formatArgs[index+1];
+    });
+  };
+
+  return {
+    link: function (scope, element, attrs) {
+      var search = $location.search(),
+        formatArgs = [attrs.errorDisplay],
+        i;
+
+      for (i = 0; angular.isDefined(search['p'+i]); i++) {
+        formatArgs.push(search['p'+i]);
+      }
+      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
+    }
+  };
+}];
 
 
 docsApp.serviceFactory.angularUrls = function($document) {
@@ -141,7 +329,7 @@ docsApp.serviceFactory.angularUrls = function($document) {
   });
 
   return urls;
-}
+};
 
 
 docsApp.serviceFactory.formPostData = function($document) {
@@ -158,31 +346,124 @@ docsApp.serviceFactory.formPostData = function($document) {
   };
 };
 
-docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angularUrls) {
+
+docsApp.serviceFactory.prepareDefaultAppModule = function() {
   return function(content) {
-    var allFiles = [].concat(content.js, content.css, content.html);
-    var indexHtmlContent = '<!doctype html>\n' +
-        '<html ng-app>\n' +
-        '  <head>\n' +
-        '    <script src="{{angularJSUrl}}"></script>\n' +
-        '{{scriptDeps}}\n' +
-        '  </head>\n' +
-        '  <body>\n\n' +
-        '{{indexContents}}' +
-        '\n\n  </body>\n' +
-        '</html>\n';
-    var scriptDeps = '';
+    var deps = [];
     angular.forEach(content.deps, function(file) {
-      if (file.name !== 'angular.js') {
-        scriptDeps += '    <script src="' + file.name + '"></script>\n'
+      if(file.name == 'angular-animate.js') {
+        deps.push('ngAnimate');
       }
     });
+
+    var moduleName = 'App';
+    return {
+      module : moduleName,
+      script : "angular.module('" + moduleName + "', [" + 
+          (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
+    };
+  };
+};
+
+docsApp.serviceFactory.prepareEditorAssetTags = function(angularUrls) {
+  return function(content, options) {
+    options = options || {};
+    var includeLocalFiles = options.includeLocalFiles;
+    var html = makeScriptTag(angularUrls['angular.js']);
+
+    var allFiles = [].concat(content.js, content.css, content.html, content.json);
+    angular.forEach(content.deps, function(file) {
+      if (file.name !== 'angular.js') {
+        var isLocal = false;
+        for(var i=0;i<allFiles.length;i++) {
+          if(allFiles[i].name == file.name) {
+            isLocal = true;
+            break;
+          }
+        }
+        if(!(isLocal && !includeLocalFiles)) {
+          var assetUrl = angularUrls[file.name] || file.name;
+          html += makeScriptTag(assetUrl);
+        }
+      }
+    });
+
+    if(includeLocalFiles) {
+      angular.forEach(content.css, function(file, index) {
+        html += makeCssLinkTag(file.name);
+      });
+    }
+
+    return html;
+
+
+    function makeScriptTag(src) {
+      return '<script type="text/javascript" src="' + src + '"></script>\n';
+    };
+
+    function makeCssLinkTag(src) {
+      return '<link rel="stylesheet" type="text/css" href="' + src + '" />\n';
+    };
+  };
+};
+
+
+docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, prepareEditorAssetTags, prepareDefaultAppModule) {
+  return function(content) {
+    var hasRouting = false;
+    angular.forEach(content.deps, function(file) {
+      hasRouting = hasRouting || file.name == 'angular-route.js';
+    });
+    var indexHtmlContent = '<!doctype html>\n' +
+                           '<html ng-app="{{module}}">\n' +
+                           '  <head>\n' +
+                           '{{scriptDeps}}';
+
+    if(hasRouting) {
+        indexHtmlContent += '<script type="text/javascript">\n' +
+                            '//this is here to make plunkr work with AngularJS routing\n' +
+                            'angular.element(document.getElementsByTagName(\'head\')).append(' +
+                              'angular.element(\'<base href="\' + window.location.pathname + \'" />\')' +
+                            ');\n' +
+                            '</script>\n';
+    }
+
+    indexHtmlContent += '</head>\n' +
+                        '  <body>\n\n' +
+                        '{{indexContents}}\n\n' +
+                        '  </body>\n' +
+                        '</html>\n';
+
     indexProp = {
-      angularJSUrl: angularUrls['angular.js'],
-      scriptDeps: scriptDeps,
+      module: content.module,
+      scriptDeps: prepareEditorAssetTags(content, { includeLocalFiles : true }),
       indexContents: content.html[0].content
     };
+
+    var allFiles = [].concat(content.js, content.css, content.html, content.json);
+
+    if(!content.module) {
+      var moduleData = prepareDefaultAppModule(content);
+      indexProp.module = moduleData.module;
+
+      var found = false;
+      angular.forEach(content.js, function(file) {
+        if(file.name == 'script.js') {
+          file.content = moduleData.script + file.content;
+          found = true;
+        }
+      });
+      if(!found) {
+        indexProp.scriptDeps += '<script type="text/javascript" src="script.js"></script>\n';
+        allFiles.push({
+          name : 'script.js',
+          content : moduleData.script
+        });
+      }
+    };
+
     var postData = {};
+
     angular.forEach(allFiles, function(file, index) {
       if (file.content && file.name != 'index.html') {
         postData['files[' + file.name + ']'] = file.content;
@@ -191,7 +472,7 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
 
     postData['files[index.html]'] = templateMerge(indexHtmlContent, indexProp);
     postData['tags[]'] = "angularjs";
-    
+
     postData.private = true;
     postData.description = 'AngularJS Example Plunkr';
 
@@ -199,13 +480,14 @@ docsApp.serviceFactory.openPlunkr = function(templateMerge, formPostData, angula
   };
 };
 
-docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angularUrls) {
-
+docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, prepareEditorAssetTags, prepareDefaultAppModule) {
   var HTML = '<div ng-app=\"{{module}}\">\n{{html:2}}</div>',
-      CSS = '</style> <!-- Ugly Hack due to jsFiddle issue: http://goo.gl/BUfGZ --> \n' +
-        '{{head:0}}<style>\n​.ng-invalid { border: 1px solid red; }​\n{{css}}',
+      CSS = '</style> <!-- Ugly Hack to make remote files preload in jsFiddle --> \n' +
+        '{{head:0}}<style>{{css}}',
       SCRIPT = '{{script}}',
-      SCRIPT_CACHE = '\n\n<!-- {{name}} -->\n<script type="text/ng-template" id="{{name}}">\n{{content:2}}</script>';
+      SCRIPT_CACHE = '\n\n<!-- {{name}} -->\n<script type="text/ng-template" id="{{name}}">\n{{content:2}}</script>',
+      BASE_HREF_TAG = '<!--  Ugly Hack to make AngularJS routing work inside of jsFiddle -->\n' +
+                      '<base href="/" />\n\n';
 
   return function(content) {
     var prop = {
@@ -214,8 +496,11 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
           css: '',
           script: ''
         };
-
-    prop.head = templateMerge('<script src="{{url}}"></script>', {url: angularUrls['angular.js']});
+    if(!prop.module) {
+      var moduleData = prepareDefaultAppModule(content);
+      prop.script = moduleData.script;
+      prop.module = moduleData.module;
+    };
 
     angular.forEach(content.html, function(file, index) {
       if (index) {
@@ -225,6 +510,8 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
       }
     });
 
+    prop.head = prepareEditorAssetTags(content, { includeLocalFiles : false });
+
     angular.forEach(content.js, function(file, index) {
       prop.script += file.content;
     });
@@ -233,9 +520,18 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
       prop.css += file.content;
     });
 
+    var hasRouting = false;
+    angular.forEach(content.deps, function(file) {
+      hasRouting = hasRouting || file.name == 'angular-route.js';
+    });
+
+    var compiledHTML = templateMerge(HTML, prop);
+    if(hasRouting) {
+      compiledHTML = BASE_HREF_TAG + compiledHTML;
+    }
     formPostData("http://jsfiddle.net/api/post/library/pure/", {
       title: 'AngularJS Example',
-      html: templateMerge(HTML, prop),
+      html: compiledHTML,
       js: templateMerge(SCRIPT, prop),
       css: templateMerge(CSS, prop)
     });
@@ -243,13 +539,14 @@ docsApp.serviceFactory.openJsFiddle = function(templateMerge, formPostData, angu
 };
 
 
-docsApp.serviceFactory.sections = function sections() {
+docsApp.serviceFactory.sections = ['NG_PAGES', function sections(NG_PAGES) {
   var sections = {
     guide: [],
     api: [],
     tutorial: [],
     misc: [],
     cookbook: [],
+    error: [],
     getPage: function(sectionId, partialId) {
       var pages = sections[sectionId];
 
@@ -276,14 +573,27 @@ docsApp.serviceFactory.sections = function sections() {
   });
 
   return sections;
-};
+}];
 
 
 docsApp.controller.DocsController = function($scope, $location, $window, $cookies, sections) {
+  $scope.fold = function(url) {
+    if(url) {
+      $scope.docs_fold = '/notes/' + url;
+      if(/\/build/.test($window.location.href)) {
+        $scope.docs_fold = '/build/docs' + $scope.docs_fold;
+      }
+      window.scrollTo(0,0);
+    }
+    else {
+      $scope.docs_fold = null;
+    }
+  };
   var OFFLINE_COOKIE_NAME = 'ng-offline',
-      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
+      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)|(error)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
       GLOBALS = /^angular\.([^\.]+)$/,
+      ERROR = /^([a-zA-Z0-9_$]+:)?([a-zA-Z0-9_$]+)$/,
       MODULE = /^((?:(?!^angular\.)[^\.])+)$/,
       MODULE_MOCK = /^angular\.mock\.([^\.]+)$/,
       MODULE_DIRECTIVE = /^((?:(?!^angular\.)[^\.])+)\.directive:([^\.]+)$/,
@@ -310,7 +620,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       last: this.$last,
       active: page1 && this.currentPage == page1 || page2 && this.currentPage == page2
     };
-  }
+  };
 
   $scope.submitForm = function() {
     $scope.bestMatch && $location.path($scope.bestMatch.page.url);
@@ -347,14 +657,15 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     guide: 'Developer Guide',
     misc: 'Miscellaneous',
     tutorial: 'Tutorial',
-    cookbook: 'Examples'
+    cookbook: 'Examples',
+    error: 'Error Reference'
   };
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
       var parts = path.split('/'),
         sectionId = parts[1],
-        partialId = parts[2],
+        partialId = parts.slice(2).join('/'),
         sectionName = SECTION_NAME[sectionId] || sectionId,
         page = sections.getPage(sectionId, partialId);
 
@@ -429,7 +740,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     $location.path('/api').replace();
   }
   // bind escape to hash reset callback
-  angular.element(window).bind('keydown', function(e) {
+  angular.element(window).on('keydown', function(e) {
     if (e.keyCode === 27) {
       $scope.$apply(function() {
         $scope.subpage = false;
@@ -442,9 +753,12 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
    ***********************************/
 
   function updateSearch() {
-    var cache = {},
+    var moduleCache = {},
+        namespaceCache = {},
         pages = sections[$location.path().split('/')[1]],
         modules = $scope.modules = [],
+        namespaces = $scope.namespaces = [],
+        globalErrors = $scope.globalErrors = [],
         otherPages = $scope.pages = [],
         search = $scope.search,
         bestMatch = {page: null, rank:0};
@@ -462,7 +776,16 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       if (page.id == 'index') {
         //skip
       } else if (page.section != 'api') {
-        otherPages.push(page);
+        if (page.section === 'error') {
+          match = id.match(ERROR);
+          if (match[1] !== undefined) {
+            namespace(match[1].replace(/:/g, '')).errors.push(page);
+          } else {
+            globalErrors.push(page);
+          }
+        } else {
+          otherPages.push(page);
+        }
       } else if (id == 'angular.Module') {
         module('ng').types.push(page);
       } else if (match = id.match(GLOBALS)) {
@@ -490,29 +813,44 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     /*************/
 
     function module(name) {
-      var module = cache[name];
+      var module = moduleCache[name];
+
       if (!module) {
-        module = cache[name] = {
+        module = moduleCache[name] = {
           name: name,
           url: 'api/' + name,
           globals: [],
           directives: [],
           services: [],
           service: function(name) {
-            var service =  cache[this.name + ':' + name];
+            var service =  moduleCache[this.name + ':' + name];
             if (!service) {
               service = {name: name};
-              cache[this.name + ':' + name] = service;
+              moduleCache[this.name + ':' + name] = service;
               this.services.push(service);
             }
             return service;
           },
           types: [],
           filters: []
-        }
+        };
         modules.push(module);
       }
       return module;
+    }
+
+    function namespace(name) {
+      var namespace = namespaceCache[name];
+
+      if (!namespace) {
+        namespace = namespaceCache[name] = {
+          name: name,
+          url: 'error/' + name,
+          errors: []
+        };
+        namespaces.push(namespace);
+      }
+      return namespace;
     }
 
     function rank(page, terms) {
@@ -560,13 +898,17 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
     angular.element(document.getElementById('disqus_thread')).html('');
   }
-}
+};
 
 
-angular.module('docsApp', ['ngResource', 'ngCookies', 'ngSanitize', 'bootstrap', 'bootstrapPrettify']).
+angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', 'ngAnimate', 'bootstrap', 'bootstrapPrettify', 'docsData']).
   config(function($locationProvider) {
     $locationProvider.html5Mode(true).hashPrefix('!');
   }).
   factory(docsApp.serviceFactory).
   directive(docsApp.directive).
   controller(docsApp.controller);
+
+angular.forEach(docsApp.filter, function (docsAppFilter, filterName) {
+  angular.module('docsApp').filter(filterName, docsAppFilter);
+});

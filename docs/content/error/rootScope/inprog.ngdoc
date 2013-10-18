@@ -1,0 +1,74 @@
+@ngdoc error
+@name $rootScope:inprog
+@fullName Action Already In Progress
+@description
+
+At any point in time there can be only one `$digest` or $apply operation in progress.
+The stack trace of this error allows you to trace the origin of the currently executing $apply or $digest call.
+
+`$digest` or `$apply` are processing operational states of the Scope - data-structure in Angular that provides context for models and enables model mutation observation.
+
+Trying to reenter a `$digest` or `$apply` while one of them is already in progress is typically a sign of programming error that needs to be fixed.
+
+This error is often seen when interacting with an API that is sometimes sync and sometimes async.
+
+For example:
+
+```
+function MyController() {
+  thirdPartyComponent.getData(function(someData) {
+    scope.$apply(function() {
+      scope.someData = someData;
+    });
+  });
+}
+```
+
+The controller constructor is always instantiated from within an $apply cycle, so if the third-party component called our callback synchronously, we'd be trying to enter the $apply again.
+
+To resolve this type of issue, either fix the api to be always synchronous or asynchronous or wrap the call to the api with setTimeout call to make it always asynchronous.
+
+
+Other situation that leads to this error is when you are trying to reuse a function to by using it as a callback for code that is called by various apis inside and outside of $apply.
+
+For example:
+
+```
+myApp.directive('myDirective', function() {
+  return {
+    link: function($scope, $element) {
+      function doSomeWork() {
+        $scope.$apply(function() {
+           // do work here, and update the model
+        };
+      }
+
+      $element.on('click', doSomeWork);
+      doSomeWork(); // << this will throw an exception because templates are compiled within $apply
+    }
+  }
+});
+
+```
+
+The fix for the example above looks like this:
+```
+myApp.directive('myDirective', function() {
+  return {
+    link: function($scope, $element) {
+      function doSomeWork() {
+           // do work here, and update the model
+      }
+
+      $element.on('click', function() {
+        $scope.$apply(doSomeWork); // <<< the $apply call was moved to the callsite that doesn't execute in $apply call already
+      });
+
+      doSomeWork();
+    }
+  }
+});
+
+```
+
+To learn more about Angular processing model please check out the {@link guide/concepts concepts doc} as well as the {@link api/ng.$rootScope.Scope api} doc.

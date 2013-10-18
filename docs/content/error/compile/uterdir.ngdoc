@@ -1,0 +1,34 @@
+@ngdoc error
+@name $compile:uterdir
+@fullName Unterminated Directive
+@description
+
+This error occurs when using multi-element directives and a `directive-start` attribute fails to form a matching pair with a corresponding `directive-end` attribute.
+A `directive-start` should have a matching `directive-end` on a sibling node in the DOM. For instance,
+
+```
+<table>
+  <tr ng-repeat-start="item in list">I get repeated</tr>
+  <tr ng-repeat-end>I also get repeated</tr>
+</table>
+```
+
+is a valid example.
+
+This error can occur in several different ways. One is by leaving out the `directive-end` attribute, like so:
+
+```
+<div>
+  <span foo-start></span>
+</div>
+```
+
+Another is by nesting a `directive-end` inside of `directive-start`, or vice versa:
+
+```
+<div>
+  <span foo-start><span foo-end></span></span>
+</div>
+```
+
+To avoid this error, make sure each `directive-start` you use has a matching `directive-end` on a sibling node in the DOM.

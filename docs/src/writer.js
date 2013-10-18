@@ -2,43 +2,48 @@
  * All writing related code here. This is so that we can separate the async code from sync code
  * for testability
  */
+var pathUtils = require('path');
 var qfs = require('q-fs');
 var Q = require('qq');
-var OUTPUT_DIR = 'build/docs/';
+var OUTPUT_DIR = pathUtils.join('build','docs');
+var TEMPLATES_DIR = pathUtils.join('docs','src','templates');
 var fs = require('fs');
 
 exports.output = output;
 function output(file, content) {
-  var fullPath = OUTPUT_DIR + file;
-  var dir = parent(fullPath);
-  return Q.when(exports.makeDir(dir), function(error) {
-    qfs.write(fullPath, exports.toString(content));
+  var fullPath = pathUtils.join(OUTPUT_DIR,file);
+  var dir = pathUtils.dirname(fullPath);
+  return Q.when(exports.makeDir(dir), function () {
+    return qfs.write(fullPath, exports.toString(content));
   });
-};
+}
 
 //recursively create directory
 exports.makeDir = function(p) {
-  var parts = p.split(/\//);
-  var path = ".";
+ p = pathUtils.normalize(p);
+ var parts = p.split(pathUtils.sep);
 
-  // Recursively rebuild directory structure
-  return qfs.exists(p).
-      then(function createPart(exists) {
-        if(!exists && parts.length) {
-          path += "/" + parts.shift();
-          return qfs.exists(path).then(function(exists) {
-            if (!exists) {
-              return qfs.makeDirectory(path).then(createPart, createPart);
-            } else {
-              return createPart();
-            }
-          });
-        }
-      });
+ var makePartialDir = function makePartialDir(path) {
+   return qfs.makeDirectory(path).then(function() {
+     if (parts.length) {
+       return makePartialDir(pathUtils.join(path, parts.shift()));
+     }
+   }, function(error) {
+     if (error.code !== 'EEXIST') {
+       throw error;
+     }
+     if (parts.length) {
+       return makePartialDir(pathUtils.join(path, parts.shift()));
+     }
+   });
+ };
+
+ return makePartialDir(pathUtils.join('.', parts.shift()));
 };
 
 exports.copyTemplate = function(filename) {
-  return exports.copy('docs/src/templates/' + filename, filename);
+  // Don't need to normalize here as `exports.copy` will do it for us
+  return exports.copy(pathUtils.join(TEMPLATES_DIR,filename), filename);
 };
 
 /* Copy files from one place to another.
@@ -47,13 +52,19 @@ exports.copyTemplate = function(filename) {
  * @param  transform{function=} transfromation function to be applied before return
  */
 exports.copy = function(from, to, transform) {
-  var args = Array.prototype.slice.call(arguments, 3);
+  var transformArgs = Array.prototype.slice.call(arguments, 3);
+
+  from = pathUtils.normalize(from);
+  to = pathUtils.normalize(to);
 
   // We have to use binary reading, Since some characters are unicode.
   return qfs.read(from, 'b').then(function(content) {
     if (transform) {
-      args.unshift(content.toString());
-      content = transform.apply(null, args);
+      // Pass any extra arguments, e.g.
+      // `copy(from, to, transform, extra1, extra2, ...)`
+      // to the transform function
+      transformArgs.unshift(content.toString());
+      content = transform.apply(null, transformArgs);
     }
     return output(to, content);
   });
@@ -62,6 +73,7 @@ exports.copy = function(from, to, transform) {
 
 exports.symlink = symlink;
 function symlink(from, to, type) {
+  // qfs will normalize the path arguments for us here
   return qfs.exists(to).then(function(exists) {
     if (!exists) {
       return qfs.symbolicLink(to, from, type);
@@ -72,9 +84,10 @@ function symlink(from, to, type) {
 
 exports.symlinkTemplate = symlinkTemplate;
 function symlinkTemplate(filename, type) {
-  var dest = OUTPUT_DIR + filename,
-      dirDepth = dest.split('/').length,
-      src = Array(dirDepth).join('../') + 'docs/src/templates/' + filename;
+  // pathUtils.join will normalize the filename for us
+  var dest = pathUtils.join(OUTPUT_DIR, filename),
+      dirDepth = dest.split(pathUtils.sep).length,
+      src = pathUtils.join(Array(dirDepth).join('..' + pathUtils.sep), TEMPLATES_DIR, filename);
   return symlink(src, dest, type);
 }
 
@@ -84,22 +97,29 @@ function symlinkTemplate(filename, type) {
  * @param replacements{obj} key and value pairs in which key will be replaced with value in content
  */
 exports.replace = function(content, replacements) {
-  for(key in replacements) {
+  for(var key in replacements) {
     content = content.replace(key, replacements[key]);
   }
   return content;
-}
+};
 
-exports.copyDir = function copyDir(dir) {
-  return qfs.listTree('docs/' + dir).then(function(files) {
+exports.copyDir = function copyDir(from, to) {
+  from = pathUtils.normalize(from);
+  to = pathUtils.normalize(to);
+  return qfs.listTree(from).then(function(files) {
     files.forEach(function(file) {
-      exports.copy(file, file.replace(/^docs\//, ''));
+      var path = to ? file.replace(from, to) : from;
+      // Not sure why this next line is here...
+      path = path.replace('/docs/build', '');
+      exports.copy(file, path);
     });
   });
 };
 
 exports.merge = function(srcs, to) {
-  return merge(srcs.map(function(src) { return 'docs/src/templates/' + src; }), to);
+  // pathUtils.join will normalize each of the srcs inside the mapping
+  to = pathUtils.normalize(to);
+  return merge(srcs.map(function(src) { return pathUtils.join(TEMPLATES_DIR, src); }), to);
 };
 
 function merge(srcs, to) {
@@ -122,13 +142,6 @@ function merge(srcs, to) {
 
 //----------------------- Synchronous Methods ----------------------------------
 
-function parent(file) {
-  var parts = file.split('/');
-  parts.pop();
-  return parts.join('/');
-}
-
-
 exports.toString = function toString(obj) {
   switch (typeof obj) {
   case 'string':
@@ -149,5 +162,5 @@ exports.toString = function toString(obj) {
 };
 
 
-function noop() {};
+function noop() {}
 

@@ -39,12 +39,14 @@ __`app/index.html`.__
 
 __`app/js/services.js`.__
 <pre>
-angular.module('phonecatServices', ['ngResource']).
-    factory('Phone', function($resource){
-  return $resource('phones/:phoneId.json', {}, {
-    query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
-  });
-});
+var phonecatServices = angular.module('phonecatServices', ['ngResource']);
+
+phonecatServices.factory('Phone', ['$resource',
+  function($resource){
+    return $resource('phones/:phoneId.json', {}, {
+      query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
+    });
+  }]);
 </pre>
 
 We used the module API to register a custom service using a factory function. We passed in the name
@@ -60,11 +62,11 @@ api/ng.$http $http} service.
 __`app/js/app.js`.__
 <pre>
 ...
-angular.module('phonecat', ['phonecatFilters', 'phonecatServices']).
+angular.module('phonecatApp', ['phonecatFilters', 'phonecatServices']).
 ...
 </pre>
 
-We need to add 'phonecatServices' to 'phonecat' application's requires array.
+We need to add the 'phonecatServices' module dependency to 'phonecatApp' module's requires array.
 
 
 ## Controller
@@ -79,16 +81,12 @@ __`app/js/controllers.js`.__
 <pre>
 ...
 
-function PhoneListCtrl($scope, Phone) {
+phonecatApp.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
   $scope.phones = Phone.query();
   $scope.orderProp = 'age';
-}
+}]);
 
-//PhoneListCtrl.$inject = ['$scope', 'Phone'];
-
-
-
-function PhoneDetailCtrl($scope, $routeParams, Phone) {
+phonecatApp.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
   $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
     $scope.mainImageUrl = phone.images[0];
   });
@@ -96,9 +94,7 @@ function PhoneDetailCtrl($scope, $routeParams, Phone) {
   $scope.setImage = function(imageUrl) {
     $scope.mainImageUrl = imageUrl;
   }
-}
-
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', 'Phone'];
+}]);
 </pre>
 
 Notice how in `PhoneListCtrl` we replaced:
@@ -135,7 +131,7 @@ The {@link api/ngResource.$resource $resource} service augments the response obj
 with methods for updating and deleting the resource. If we were to use the standard `toEqual`
 matcher, our tests would fail because the test values would not match the responses exactly. To
 solve the problem, we use a newly-defined `toEqualData` {@link
-http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine matcher}. When the
+https://github.com/pivotal/jasmine/wiki/Matchers Jasmine matcher}. When the
 `toEqualData` matcher compares two objects, it takes only object properties into account and
 ignores methods.
 
@@ -221,8 +217,8 @@ You should now see the following output in the Karma tab:
 
 # Summary
 
-There you have it!  We have created a web app in a relatively short amount of time. In the {@link
-the_end closing notes} we'll cover where to go from here.
+With the phone image swapper in place, we're ready for {@link step_12 step 12} (the last step!) to
+learn how to improve this application with animations.
 
 
 <ul doc-tutorial-nav="11"></ul>

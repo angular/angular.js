@@ -9,7 +9,8 @@
  *
  * @property {boolean} history Does the browser support html5 history api ?
  * @property {boolean} hashchange Does the browser support hashchange event ?
- * @property {boolean} supportsTransitions Does the browser support CSS transition events ?
+ * @property {boolean} transitions Does the browser support CSS transition events ?
+ * @property {boolean} animations Does the browser support CSS animation events ?
  *
  * @description
  * This is very simple implementation of testing browser's features.
@@ -18,11 +19,13 @@ function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
         android = int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
+        boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
         document = $document[0] || {},
         vendorPrefix,
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
         bodyStyle = document.body && document.body.style,
         transitions = false,
+        animations = false,
         match;
 
     if (bodyStyle) {
@@ -33,7 +36,18 @@ function $SnifferProvider() {
           break;
         }
       }
+
+      if(!vendorPrefix) {
+        vendorPrefix = ('WebkitOpacity' in bodyStyle) && 'webkit';
+      }
+
       transitions = !!(('transition' in bodyStyle) || (vendorPrefix + 'Transition' in bodyStyle));
+      animations  = !!(('animation' in bodyStyle) || (vendorPrefix + 'Animation' in bodyStyle));
+
+      if (android && (!transitions||!animations)) {
+        transitions = isString(document.body.style.webkitTransition);
+        animations = isString(document.body.style.webkitAnimation);
+      }
     }
 
 
@@ -42,7 +56,10 @@ function $SnifferProvider() {
       // so let's not use the history API at all.
       // http://code.google.com/p/android/issues/detail?id=17471
       // https://github.com/angular/angular.js/issues/904
-      history: !!($window.history && $window.history.pushState && !(android < 4)),
+
+      // older webit browser (533.9) on Boxee box has exactly the same problem as Android has
+      // so let's not use the history API also
+      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee),
       hashchange: 'onhashchange' in $window &&
                   // IE8 compatible mode lies
                   (!document.documentMode || document.documentMode > 7),
@@ -61,7 +78,8 @@ function $SnifferProvider() {
       },
       csp: document.securityPolicy ? document.securityPolicy.isActive : false,
       vendorPrefix: vendorPrefix,
-      supportsTransitions : transitions
+      transitions : transitions,
+      animations : animations
     };
   }];
 }

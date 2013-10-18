@@ -37,8 +37,7 @@ angular.module('phonecatFilters', []).filter('checkmark', function() {
 </pre>
 
 The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
-return one of two unicode characters we have chosen to represent true or false (`\u2713` and
-`\u2718`).
+return one of the two unicode characters we have chosen to represent true (`\u2713` -> ✓) or false (`\u2718` -> ✘).
 
 Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
 our main `phonecat` module.
@@ -46,7 +45,7 @@ our main `phonecat` module.
 __`app/js/app.js`:__
 <pre>
 ...
-angular.module('phonecat', ['phonecatFilters']).
+angular.module('phonecatApp', ['phonecatFilters']).
 ...
 </pre>
 
@@ -95,7 +94,6 @@ describe('filter', function() {
 
   beforeEach(module('phonecatFilters'));
 
-
   describe('checkmark', function() {
 
     it('should convert boolean values to unicode checkmark or cross',
@@ -107,8 +105,12 @@ describe('filter', function() {
 });
 </pre>
 
-Note that you need to configure our test injector with the `phonecatFilters` module before any of
-our filter tests execute.
+We must call `beforeEach(module('phonecatFilters'))` before any of
+our filter tests execute. This call loads our `phonecatFilters` module into the injector
+for this test run.
+
+Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
+access to the filter that we want to test.  See {@link api/angular.mock.inject angular.mock.inject()}.
 
 You should now see the following output in the Karma tab:
 

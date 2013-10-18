@@ -97,10 +97,15 @@ and included in your {@link http://docs.oracle.com/javase/tutorial/essential/env
 
   * `cd angular.js`
   * `npm install`
+  * `bower install`
 
 * {@link http://gruntjs.com Grunt}: We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   * `sudo npm install -g grunt-cli`
+
+* {@link http://bower.io/ Bower}: Bower is used to manage packages for the docs. Install the bower tool globally with:
+
+  * `sudo npm install -g bower`
 
 
 ## Creating a Github Account and Forking Angular
@@ -131,7 +136,11 @@ minified AngularJS files:
 
         npm install
 
-5. To build AngularJS, run:
+5. To add docs components
+
+        bower install
+
+6. To build AngularJS, run:
 
         grunt package
 
@@ -247,31 +256,27 @@ To create and submit a change:
    [print, sign and one of scan+email, fax or mail the form](http://code.google.com/legal/corporate-cla-v1.0.html).
 
 
-2. Create a new branch off the master for your changes:
+2. Create and checkout a new branch off the master branch for your changes:
 
-        git branch my-fix-branch
+        git checkout -b my-fix-branch master
 
-3. Check out the branch:
+3. Create your patch, make sure to have plenty of tests (that pass).
 
-        git checkout my-fix-branch
-
-4. Create your patch, make sure to have plenty of tests (that pass).
-
-5. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
+4. Commit your changes and create a descriptive commit message (the commit message is used to generate release notes,
    please check out our
    [commit message conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#)
    and our commit message presubmit hook `validate-commit-msg.js`):
 
         git commit -a
 
-6. Push your branch to Github:
+5. Push your branch to Github:
 
         git push origin my-fix-branch
 
-7. In Github, send a pull request to `angular:master`.
+6. In Github, send a pull request to `angular:master`.
 
 
-8. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
+7. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
 from the main (upstream) repository:
 
   1. To delete the branch in Github, run:

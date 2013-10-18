@@ -295,7 +295,12 @@ angular.scenario.dsl('select', function() {
       if (option.length) {
         select.val(value);
       } else {
-        option = select.find('option:contains("' + value + '")');
+        option = select.find('option').filter(function(){
+          return _jQuery(this).text() === value;
+        });
+        if (!option.length) {
+          option = select.find('option:contains("' + value + '")');
+        }
         if (option.length) {
           select.val(option.val());
         } else {
@@ -328,6 +333,8 @@ angular.scenario.dsl('select', function() {
  *    element(selector, label).count() get the number of elements that match selector
  *    element(selector, label).click() clicks an element
  *    element(selector, label).mouseover() mouseover an element
+ *    element(selector, label).mousedown() mousedown an element
+ *    element(selector, label).mouseup() mouseup an element
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
  *    element(selector, label).{method}() gets the value (as defined by jQuery, ex. val)
  *    element(selector, label).{method}(value) sets the value (as defined by jQuery, ex. val)
@@ -392,6 +399,22 @@ angular.scenario.dsl('element', function() {
     });
   };
 
+  chain.mousedown = function() {
+      return this.addFutureAction("element '" + this.label + "' mousedown", function($window, $document, done) {
+        var elements = $document.elements();
+        elements.trigger('mousedown');
+        done();
+      });
+    };
+
+  chain.mouseup = function() {
+      return this.addFutureAction("element '" + this.label + "' mouseup", function($window, $document, done) {
+        var elements = $document.elements();
+        elements.trigger('mouseup');
+        done();
+      });
+    };
+
   chain.query = function(fn) {
     return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
       fn.call(this, $document.elements(), done);
@@ -417,7 +440,7 @@ angular.scenario.dsl('element', function() {
       var args = arguments,
           futureName = (args.length == 0)
               ? "element '" + this.label + "' " + methodName
-              : futureName = "element '" + this.label + "' set " + methodName + " to '" + value + "'";
+              : "element '" + this.label + "' set " + methodName + " to '" + value + "'";
 
       return this.addFutureAction(futureName, function($window, $document, done) {
         var element = $document.elements();

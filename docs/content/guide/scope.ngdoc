@@ -165,7 +165,7 @@ Scopes are attached to the DOM as `$scope` data property, and can be retrieved f
 purposes. (It is unlikely that one would need to retrieve scopes in this way inside the
 application.) The location where the root scope is attached to the DOM is defined by the location
 of {@link api/ng.directive:ngApp `ng-app`} directive. Typically
-`ng-app` is placed an the `<html>` element, but it can be placed on other elements as well, if,
+`ng-app` is placed on the `<html>` element, but it can be placed on other elements as well, if,
 for example, only a portion of the view needs to be controlled by Angular.
 
 To examine the scope in the debugger:
