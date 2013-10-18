@@ -1153,6 +1153,7 @@ function bindJQuery() {
     JQLitePatchJQueryRemove('remove', true, true, false);
     JQLitePatchJQueryRemove('empty', false, false, false);
     JQLitePatchJQueryRemove('html', false, false, true);
+    JQLitePatchJQueryRemove('replaceWith', true, false, false);
   } else {
     jqLite = JQLite;
   }
