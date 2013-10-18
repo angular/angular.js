@@ -633,7 +633,99 @@ describe('jqLite', function() {
       expect(jqA.css('z-index')).toBeOneOf('7', 7);
       expect(jqA.css('zIndex')).toBeOneOf('7', 7);
     });
-  });
+
+    it('should correctly handle prefixing properties', function() {
+      if(_jqLiteMode) {
+        var jqA = jqLite(a),
+            unprefixedProperties = ['transform', 'transition', 'transition-property'],
+            cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
+            cssPropsLen = 0,
+            currentCssPropsLen = 0,
+            vendorPrefix = (function(style, properties){
+              var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+              var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+
+              function camelCase(name) {
+                return name.
+                  replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+                    return offset ? letter.toUpperCase() : letter;
+                  }).
+                  replace(MOZ_HACK_REGEXP, 'Moz$1');
+              }
+
+              function vendorPropName( style, name ) {
+                // shortcut for names that are not vendor prefixed
+                if ( name in style ) {
+                  return name;
+                }
+
+                // check for vendor prefixed names
+                var capName = name[0].toUpperCase() + name.slice(1),
+                    origName = name,
+                    i = cssPrefixes.length;
+
+                while ( i-- ) {
+                  name = cssPrefixes[ i ] + capName;
+                  if ( name in style ) {
+                    return name;
+                  }
+                }
+
+                return origName;
+              }
+
+              var prefixedProperties = [];
+
+              for(var i = 0; i < properties.length; i++) {
+                var origName = camelCase(properties[i]);
+                
+                properties[i] = vendorPropName(style, origName);
+
+                prefixedProperties.push(properties[i]);
+              }
+
+              return prefixedProperties;
+            }(jqA.prop('style'), unprefixedProperties));
+
+        for(var prop in jqLite.cssProps) {
+          currentCssPropsLen++;
+        }
+
+        jqA.css('transform', 'rotate(30deg)');
+        expect(jqA.prop('style')[vendorPrefix[0]]).toEqual('rotate(30deg)');
+        expect(jqLite.cssProps['transform']).toEqual(vendorPrefix[0]);
+        jqA.removeAttr('style');
+
+        jqA.css('transition', 'all');
+        expect(jqA.prop('style')[vendorPrefix[1]]).toContain('all');
+        expect(jqLite.cssProps['transition']).toEqual(vendorPrefix[1]);
+        jqA.removeAttr('style');
+
+        jqA.css('transition-property', 'opacity');
+        expect(jqA.prop('style')[vendorPrefix[2]]).toContain('opacity');
+        expect(jqLite.cssProps['transitionProperty']).toEqual(vendorPrefix[2]);
+        jqA.removeAttr('style');
+
+        jqA.css('-webkit-transition', 'all');
+        expect(jqA.css('-webkit-transition')).toContain('all');
+        expect(jqLite.cssProps['webkitTransition']).toEqual('webkitTransition');
+        jqA.removeAttr('style');
+
+        jqA.css('-moz-animation', 'foobar');
+        expect(jqA.css('-moz-animation')).toContain('foobar');
+        expect(jqLite.cssProps['MozAnimation']).toEqual('MozAnimation');
+        jqA.removeAttr('style');
+
+        for(var prop in jqLite.cssProps) {
+          cssPropsLen++;
+        }
+
+        cssPropsLen = cssPropsLen - currentCssPropsLen;
+
+        expect(cssPropsLen).toEqual(5);
+      }
+    });
+});
 
 
   describe('text', function() {

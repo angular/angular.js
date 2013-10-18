@@ -90,6 +90,8 @@ function jqNextId() { return ++jqId; }
 
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+var cssPrefixes = [ "Webkit", "O", "Moz", "ms" ];
+var cssProps = JQLite.cssProps = {};
 
 /**
  * Converts snake_case to camelCase.
@@ -102,6 +104,33 @@ function camelCase(name) {
       return offset ? letter.toUpperCase() : letter;
     }).
     replace(MOZ_HACK_REGEXP, 'Moz$1');
+}
+
+/**
+ * Vendor prefixed property name
+ * Return a css property mapped to a potentially vendor prefixed property
+ * @param style Elements style property
+ * @param name Name to prefix
+ */
+function vendorPropName( style, name ) {
+  // shortcut for names that are not vendor prefixed
+  if ( name in style ) {
+    return name;
+  }
+
+  // check for vendor prefixed names
+  var capName = name[0].toUpperCase() + name.slice(1),
+      origName = name,
+      i = cssPrefixes.length;
+
+  while ( i-- ) {
+    name = cssPrefixes[ i ] + capName;
+    if ( name in style ) {
+      return name;
+    }
+  }
+
+  return origName;
 }
 
 /////////////////////////////////////////////
@@ -395,7 +424,9 @@ forEach({
   hasClass: JQLiteHasClass,
 
   css: function(element, name, value) {
-    name = camelCase(name);
+    var origName = camelCase(name);
+
+    name = cssProps[origName] || (cssProps[origName] = vendorPropName(element.style, origName));
 
     if (isDefined(value)) {
       element.style[name] = value;
