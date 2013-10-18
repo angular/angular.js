@@ -379,44 +379,66 @@ describe("angular.scenario.dsl", function() {
         expect(mousedOver).toBe(true);
       });
 
-      it('should execute mousedown', function() {
-        var mousedDown;
-        doc.append('<div></div>');
-        doc.find('div').mousedown(function() {
-          mousedDown = true;
+      function _testTriggerEvent(elementSelector, eventName, keys, x, y) {
+        var eventObj = null;
+        doc.find(elementSelector).on(eventName, function(evt) {
+          eventObj = evt;
         });
-        $root.dsl.element('div').mousedown();
-        expect(mousedDown).toBe(true);
+        $root.dsl.element(elementSelector).trigger(eventName, keys, x, y);
+        expect(eventObj).toBeDefined();
+        expect(eventObj.clientX).toBe(x);
+        expect(eventObj.clientY).toBe(y);
+      }
+
+      function _testMouseEvent(elementSelector, eventName, x, y) {
+        var eventObj = null;
+        doc.find(elementSelector).on(eventName, function(evt) {
+          eventObj = evt;
+        });
+        $root.dsl.element(elementSelector)[eventName]([], x, y);
+        expect(eventObj).toBeDefined();
+        expect(eventObj.clientX).toBe(x);
+        expect(eventObj.clientY).toBe(y);
+      }
+
+      it('should execute mousedown', function() {
+        doc.append('<div></div>');
+        _testMouseEvent('div', 'mousedown', 123, 321);
       });
 
       it('should bubble up the mousedown event', function() {
-        var mousedDown;
         doc.append('<div id="outer"><div id="inner"></div></div>');
-        doc.find('#outer').mousedown(function() {
-          mousedDown = true;
-        });
-        $root.dsl.element('#inner').mousedown();
-        expect(mousedDown).toBe(true);
+        _testMouseEvent('#outer', 'mousedown', 123, 321);
       });
 
       it('should execute mouseup', function() {
-        var mousedUp;
         doc.append('<div></div>');
-        doc.find('div').mouseup(function() {
-          mousedUp = true;
-        });
-        $root.dsl.element('div').mouseup();
-        expect(mousedUp).toBe(true);
+        _testMouseEvent('div', 'mouseup', 123, 321);
       });
 
       it('should bubble up the mouseup event', function() {
-        var mousedUp;
         doc.append('<div id="outer"><div id="inner"></div></div>');
-        doc.find('#outer').mouseup(function() {
-          mousedUp = true;
-        });
-        $root.dsl.element('#inner').mouseup();
-        expect(mousedUp).toBe(true);
+        _testMouseEvent('#outer', 'mouseup', 123, 321);
+      });
+
+      it('should execute mousemove', function() {
+        doc.append('<div></div>');
+        _testMouseEvent('div', 'mousemove', 123, 321);
+      });
+
+      it('should bubble up the mousemove event', function() {
+        doc.append('<div id="outer"><div id="inner"></div></div>');
+        _testMouseEvent('#outer', 'mousemove', 123, 321);
+      });
+
+      it('should execute trigger event', function() {
+        doc.append('<div></div>');
+        _testTriggerEvent('div', 'mousemove', [], 123, 321);
+      });
+
+      it('should bubble up the trigger event', function() {
+        doc.append('<div id="outer"><div id="inner"></div></div>');
+        _testTriggerEvent('#outer', 'mousemove', [], 123, 321);
       });
 
       it('should count matching elements', function() {

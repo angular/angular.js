@@ -333,8 +333,10 @@ angular.scenario.dsl('select', function() {
  *    element(selector, label).count() get the number of elements that match selector
  *    element(selector, label).click() clicks an element
  *    element(selector, label).mouseover() mouseover an element
- *    element(selector, label).mousedown() mousedown an element
- *    element(selector, label).mouseup() mouseup an element
+ *    element(selector, label).mousedown(keys, x, y) mousedown an element with keys and mouse position
+ *    element(selector, label).mouseup(keys, x, y) mouseup an element with keys and mouse position
+ *    element(selector, label).mousemove(keys, x, y) mousemove an element with keys and mouse position
+ *    element(selector, label).trigger(eventName, keys, x, y) trigger eventName event on an element with keys and mouse position
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
  *    element(selector, label).{method}() gets the value (as defined by jQuery, ex. val)
  *    element(selector, label).{method}(value) sets the value (as defined by jQuery, ex. val)
@@ -399,18 +401,34 @@ angular.scenario.dsl('element', function() {
     });
   };
 
-  chain.mousedown = function() {
+  chain.mousedown = function(keys, x, y) {
       return this.addFutureAction("element '" + this.label + "' mousedown", function($window, $document, done) {
         var elements = $document.elements();
-        elements.trigger('mousedown');
+        elements.trigger('mousedown', keys, x, y);
         done();
       });
     };
 
-  chain.mouseup = function() {
+  chain.mouseup = function(keys, x, y) {
       return this.addFutureAction("element '" + this.label + "' mouseup", function($window, $document, done) {
         var elements = $document.elements();
-        elements.trigger('mouseup');
+        elements.trigger('mouseup', keys, x, y);
+        done();
+      });
+    };
+
+  chain.mousemove = function(keys, x, y) {
+      return this.addFutureAction("element '" + this.label + "' mousemove", function($window, $document, done) {
+        var elements = $document.elements();
+        elements.trigger('mousemove', keys, x, y);
+        done();
+      });
+    };
+
+  chain.trigger = function(eventName, keys, x, y) {
+      return this.addFutureAction("element '" + this.label + "' " + eventName, function($window, $document, done) {
+        var elements = $document.elements();
+        elements.trigger(eventName, keys, x, y);
         done();
       });
     };

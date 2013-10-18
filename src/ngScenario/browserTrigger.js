@@ -77,7 +77,14 @@
       element.style.posLeft;
 
       // TODO(vojta): create event objects with pressed keys to get it working on IE<9
-      var ret = element.fireEvent('on' + eventType);
+      var evnt = document.createEventObject();
+      evnt.clientX = x;
+      evnt.clientY = y;
+      evnt.ctlKey = pressed('ctrl');
+      evnt.altKey = pressed('alt');
+      evnt.shiftKey = pressed('shift');
+      evnt.returnValue = false;
+      var ret = element.fireEvent('on' + eventType, evnt);
       if (inputType == 'submit') {
         while(element) {
           if (element.nodeName.toLowerCase() == 'form') {
