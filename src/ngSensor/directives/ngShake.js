@@ -24,10 +24,6 @@ ngSensor.directive('ngShake', [
         var INTENSE = 10; // Intense
         var TIMEOUT = 500; // Timeout in ms
 
-        function difference(num1, num2) {
-            return (num1 > num2) ? num1 - num2 : num2 - num1;
-        }
-
         return function (scope, element, attr) {
             var callback = $parse(attr.ngShake);
             var last = {};
@@ -39,7 +35,7 @@ ngSensor.directive('ngShake', [
                 angular.forEach(['x', 'y', 'z'], function (axis) {
                     var current = acceleration[axis];
                     if (!angular.isUndefined(last)) {
-                        if (difference(last[axis], current) > INTENSE) {
+                        if (Math.abs(last[axis] - current) > INTENSE) {
                             var currentTimestamp = new Date().getTime();
                             if (lastTrigger + TIMEOUT < currentTimestamp) {
                                 scope.$apply(function () {
