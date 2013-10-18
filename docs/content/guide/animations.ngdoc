@@ -253,13 +253,13 @@ The table below explains in detail which animation events are triggered
 
 | Directive                                                                           | Supported Animations                     |
 |-------------------------------------------------------------------------------------|------------------------------------------|
-| {@link api/ng.directive:ngRepeat#animations ngRepeat}                               | enter, leave, and move                   |
-| {@link api/ngRoute.directive:ngView#animations ngView}                              | enter and leave                          |
-| {@link api/ng.directive:ngInclude#animations ngInclude}                             | enter and leave                          |
-| {@link api/ng.directive:ngSwitch#animations ngSwitch}                               | enter and leave                          |
-| {@link api/ng.directive:ngIf#animations ngIf}                                       | enter and leave                          |
-| {@link api/ng.directive:ngShow#animations ngClass or &#123;&#123;class&#125;&#125;} | add and remove                           |
-| {@link api/ng.directive:ngShow#animations ngShow & ngHide}                          | add and remove (the ng-hide class value) |
+| {@link api/ng.directive:ngRepeat#usage_animations ngRepeat}                               | enter, leave, and move                   |
+| {@link api/ngRoute.directive:ngView#usage_animations ngView}                              | enter and leave                          |
+| {@link api/ng.directive:ngInclude#usage_animations ngInclude}                             | enter and leave                          |
+| {@link api/ng.directive:ngSwitch#usage_animations ngSwitch}                               | enter and leave                          |
+| {@link api/ng.directive:ngIf#usage_animations ngIf}                                       | enter and leave                          |
+| {@link api/ng.directive:ngShow#usage_animations ngClass or &#123;&#123;class&#125;&#125;} | add and remove                           |
+| {@link api/ng.directive:ngShow#usage_animations ngShow & ngHide}                          | add and remove (the ng-hide class value) |
 
 For a full breakdown of the steps involved during each animation event, refer to the {@link api/ngAnimate.$animate API docs}.
 

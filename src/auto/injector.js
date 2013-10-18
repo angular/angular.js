@@ -276,26 +276,26 @@ function annotate(fn) {
  * factories** are functions which, in turn, are created by a **service provider**.
  * The **service providers** are constructor functions. When instantiated they must contain a property
  * called `$get`, which holds the **service factory** function.
- * 
+ *
  * When you request a service, the {@link AUTO.$injector $injector} is responsible for finding the
  * correct **service provider**, instantiating it and then calling its `$get` **service factory**
  * function to get the instance of the **service**.
- * 
+ *
  * Often services have no configuration options and there is no need to add methods to the service
  * provider.  The provider will be no more than a constructor function with a `$get` property. For
  * these cases the {@link AUTO.$provide $provide} service has additional helper methods to register
  * services without specifying a provider.
  *
- * * {@link AUTO.$provide#provider provider(provider)} - registers a **service provider** with the
+ * * {@link AUTO.$provide#methods_provider provider(provider)} - registers a **service provider** with the
  *     {@link AUTO.$injector $injector}
- * * {@link AUTO.$provide#constant constant(obj)} - registers a value/object that can be accessed by
+ * * {@link AUTO.$provide#methods_constant constant(obj)} - registers a value/object that can be accessed by
  *     providers and services.
- * * {@link AUTO.$provide#value value(obj)} - registers a value/object that can only be accessed by
+ * * {@link AUTO.$provide#methods_value value(obj)} - registers a value/object that can only be accessed by
  *     services, not providers.
- * * {@link AUTO.$provide#factory factory(fn)} - registers a service **factory function**, `fn`, that
+ * * {@link AUTO.$provide#methods_factory factory(fn)} - registers a service **factory function**, `fn`, that
  *     will be wrapped in a **service provider** object, whose `$get` property will contain the given
  *     factory function.
- * * {@link AUTO.$provide#service service(class)} - registers a **constructor function**, `class` that
+ * * {@link AUTO.$provide#methods_service service(class)} - registers a **constructor function**, `class` that
  *     will be wrapped in a **service provider** object, whose `$get` property will instantiate a new
  *     object using the given constructor function.
  *
@@ -310,7 +310,7 @@ function annotate(fn) {
  *
  * Register a **provider function** with the {@link AUTO.$injector $injector}. Provider functions are
  * constructor functions, whose instances are responsible for "providing" a factory for a service.
- * 
+ *
  * Service provider names start with the name of the service they provide followed by `Provider`.
  * For example, the {@link ng.$log $log} service has a provider called {@link ng.$logProvider $logProvider}.
  *
@@ -334,7 +334,7 @@ function annotate(fn) {
  * @example
  *
  * The following example shows how to create a simple event tracking service and register it using
- * {@link AUTO.$provide#provider $provide.provider()}.
+ * {@link AUTO.$provide#methods_provider $provide.provider()}.
  *
  * <pre>
  *  // Define the eventTracker provider
@@ -414,7 +414,7 @@ function annotate(fn) {
  * @returns {Object} registered provider instance
  *
  * @example
- * Here is an example of registering a service 
+ * Here is an example of registering a service
  * <pre>
  *   $provide.factory('ping', ['$http', function($http) {
  *     return function ping() {
@@ -441,7 +441,7 @@ function annotate(fn) {
  * This is short for registering a service where its provider's `$get` property is the service
  * constructor function that will be used to instantiate the service instance.
  *
- * You should use {@link AUTO.$provide#service $provide.service(class)} if you define your service
+ * You should use {@link AUTO.$provide#methods_service $provide.service(class)} if you define your service
  * as a type/class. This is common when using {@link http://coffeescript.org CoffeeScript}.
  *
  * @param {string} name The name of the instance.
@@ -449,14 +449,14 @@ function annotate(fn) {
  * @returns {Object} registered provider instance
  *
  * @example
- * Here is an example of registering a service using {@link AUTO.$provide#service $provide.service(class)}
+ * Here is an example of registering a service using {@link AUTO.$provide#methods_service $provide.service(class)}
  * that is defined as a CoffeeScript class.
  * <pre>
  *   class Ping
  *     constructor: (@$http)->
  *     send: ()=>
  *       @$http.get('/ping')
- *  
+ *
  *   $provide.service('ping', ['$http', Ping])
  * </pre>
  * You would then inject and use this service like this:
@@ -481,7 +481,7 @@ function annotate(fn) {
  * Value services are similar to constant services, except that they cannot be injected into a module
  * configuration function (see {@link angular.Module#config}) but they can be overridden by an Angular
  * {@link AUTO.$provide#decorator decorator}.
- * 
+ *
  * @param {string} name The name of the instance.
  * @param {*} value The value.
  * @returns {Object} registered provider instance
@@ -490,9 +490,9 @@ function annotate(fn) {
  * Here are some examples of creating value services.
  * <pre>
  *   $provide.constant('ADMIN_USER', 'admin');
- *   
+ *
  *   $provide.constant('RoleLookup', { admin: 0, writer: 1, reader: 2 });
- *   
+ *
  *   $provide.constant('halfOf', function(value) {
  *     return value / 2;
  *   });
@@ -519,9 +519,9 @@ function annotate(fn) {
  * Here a some examples of creating constants:
  * <pre>
  *   $provide.constant('SHARD_HEIGHT', 306);
- *   
+ *
  *   $provide.constant('MY_COLOURS', ['red', 'blue', 'grey']);
- *   
+ *
  *   $provide.constant('double', function(value) {
  *     return value * 2;
  *   });
