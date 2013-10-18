@@ -633,6 +633,47 @@ describe('jqLite', function() {
       expect(jqA.css('z-index')).toBeOneOf('7', 7);
       expect(jqA.css('zIndex')).toBeOneOf('7', 7);
     });
+
+    it('should correctly handle prefixing properties', function() {
+      var jqA = jqLite(a),
+          unprefixedProperties = ['transform', 'transition'],
+          cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
+          vendorPrefix = (function(style, properties){
+            var prefixedProperties = [];
+
+            for(var i = 0; i < properties.length; i++) {
+              if(properties[i] in style) {
+                prefixedProperties.push(properties[i]);
+                continue;
+              }
+
+              var capName = properties[i][0].toUpperCase() + properties[i].slice(1);
+
+              for(var k = 0; k < cssPrefixes.length; k++) {
+                properties[i] = cssPrefixes[k] + capName;
+                if(properties[i] in style) {
+                  prefixedProperties.push(properties[i].replace(/[A-Z]/g, function(match) {
+                      return '-'+match.toLowerCase();
+                  }));
+                }
+              }
+            }
+
+            return prefixedProperties;
+          }(a.style, unprefixedProperties));
+
+      jqA.css('transform', 'rotate(30deg)');
+      expect(jqA.attr('style')).toContain(vendorPrefix[0]);
+      jqA.removeAttr('style');
+
+      jqA.css('transition', 'all');
+      expect(jqA.attr('style')).toContain(vendorPrefix[1]);
+      jqA.removeAttr('style');
+
+      jqA.css('-webkit-transition', 'all');
+      expect(jqA.css('-webkit-transition')).toEqual('all');
+      jqA.removeAttr('style');
+    });
   });
 
 

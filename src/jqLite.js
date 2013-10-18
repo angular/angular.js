@@ -104,6 +104,35 @@ function camelCase(name) {
     replace(MOZ_HACK_REGEXP, 'Moz$1');
 }
 
+/**
+ * Vendor prefixed property name
+ * Return a css property mapped to a potentially vendor prefixed property
+ * @param style Elements style property
+ * @param name Name to prefix
+ */
+function vendorPropName( style, name ) {
+  var cssPrefixes = [ "Webkit", "O", "Moz", "ms" ];
+
+  // shortcut for names that are not vendor prefixed
+  if ( name in style ) {
+    return name;
+  }
+
+  // check for vendor prefixed names
+  var capName = name[0].toUpperCase() + name.slice(1),
+      origName = name,
+      i = cssPrefixes.length;
+
+  while ( i-- ) {
+    name = cssPrefixes[ i ] + capName;
+    if ( name in style ) {
+      return name;
+    }
+  }
+
+  return origName;
+}
+
 /////////////////////////////////////////////
 // jQuery mutation patch
 //
@@ -395,7 +424,7 @@ forEach({
   hasClass: JQLiteHasClass,
 
   css: function(element, name, value) {
-    name = camelCase(name);
+    name = vendorPropName(element.style, camelCase(name));
 
     if (isDefined(value)) {
       element.style[name] = value;
