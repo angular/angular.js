@@ -107,7 +107,7 @@ module `phonecatControllers`. By listing these two modules as dependencies of `p
 can use the directives and services they provide.
 
 Thus using the `config` API we request the `$routeProvider` to be injected into our config function
-and use the {@link api/ngRoute.$routeProvider#when `$routeProvider.when`} API to define our routes.
+and use the {@link api/ngRoute.$routeProvider#methods_when `$routeProvider.when`} API to define our routes.
 
 Our application routes are defined as follows:
 
