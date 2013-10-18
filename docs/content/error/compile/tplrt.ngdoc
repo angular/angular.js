@@ -4,7 +4,9 @@
 @description
 
 When a directive is declared with `template` (or `templateUrl`) and `replace` mode on, the template must have exactly one root element.
-Otherwise the replacement operation would result in a single element being replaced with multiple elements or nodes, which is unsupported and not commonly needed in practice.
+That is, the text of the template property or the referenced by the templateUrl must be contained within an html elemen.
+For example, '<p>blah blah blah</p>' instead of simply 'blah blah blah'.
+Otherwise the replacement operation would result in a single element (the directive) being replaced with multiple elements or nodes, which is unsupported and not commonly needed in practice.
 
 
 For example a directive with definition:
