@@ -488,7 +488,7 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                copy(data, value);
+                if(data !== value) copy(data, value);
                 value.$promise = promise;
               }
             }
