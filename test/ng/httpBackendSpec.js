@@ -436,13 +436,61 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 404 if no content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+      var originalUrlParsingNode = urlParsingNode;
 
-      $backend('GET', '/whatever/index.html', null, callback);
-      respond(0, '');
+      //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol
+      urlParsingNode = {
+        hash : "#/C:/",
+        host : "",
+        hostname : "",
+        href : "file:///C:/base#!/C:/foo",
+        pathname : "/C:/foo",
+        port : "",
+        protocol : "file:",
+        search : "",
+        setAttribute: angular.noop
+      };
+
+      try {
+
+        $backend = createHttpBackend($browser, MockXhr);
+
+        $backend('GET', '/whatever/index.html', null, callback);
+        respond(0, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.mostRecentCall.args[0]).toBe(404);
+
+      } finally {
+        urlParsingNode = originalUrlParsingNode;
+      }
+    });
+
+
+    it('should return original backend status code if different from 0', function () {
+      $backend = createHttpBackend($browser, MockXhr);
+
+      // request to http://
+      $backend('POST', 'http://rest_api/create_whatever', null, callback);
+      respond(201, '');
 
       expect(callback).toHaveBeenCalled();
-      expect(callback.mostRecentCall.args[0]).toBe(404);
+      expect(callback.mostRecentCall.args[0]).toBe(201);
+
+
+      // request to file://
+      $backend('POST', 'file://rest_api/create_whatever', null, callback);
+      respond(201, '');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(201);
+
+      // request to file:// with HTTP status >= 300
+      $backend('POST', 'file://rest_api/create_whatever', null, callback);
+      respond(503, '');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(503);
     });
   });
 });
