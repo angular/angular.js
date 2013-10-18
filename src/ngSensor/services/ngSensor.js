@@ -2,7 +2,7 @@
 
 function registerSensorService(eventType) {
     ngSensor.factory("$"+angular.lowercase(eventType.replace("Device","")),
-            ["$timeout","$window",function ($timeout, $window) {
+            ["$window", function ($window) {
                 return {
                     //TODO: (un-)register correct wording?
                     register  : function (callback) {
