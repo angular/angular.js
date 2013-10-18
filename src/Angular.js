@@ -809,7 +809,7 @@ function bind(self, fn) {
 function toJsonReplacer(key, value) {
   var val = value;
 
-  if (typeof key === 'string' && key.charAt(0) === '$') {
+  if (typeof key === 'string' && key.length > 1 && key.charAt(0) === '$') {
     val = undefined;
   } else if (isWindow(value)) {
     val = '$WINDOW';
