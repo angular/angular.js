@@ -393,6 +393,16 @@ describe('$httpBackend', function() {
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(404);
     });
+
+    it('should return backend status code', function () {
+      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
+
+      $backend('POST', 'http://rest_api/create_whatever', null, callback);
+      respond(201, '');
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(201);
+    });
   });
 });
 
