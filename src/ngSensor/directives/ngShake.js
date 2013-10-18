@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name ngMobile.directive:ngShake
+ * @name ngSensor.directive:ngShake
  *
  * @description
  * The `ngShake` directive allows you to specify custom behavior on shake event.
@@ -18,7 +18,7 @@
  * See {@link ng.directive:ngClick ngClick}
  */
 
-ngMobile.directive('ngShake', [
+ngSensor.directive('ngShake', [
     '$parse', '$motion',
     function ($parse, $motion) {
         var INTENSE = 10; // Intense

@@ -1,7 +1,7 @@
 'use strict';
 
 function registerSensorService(eventType) {
-    ngMobile.factory("$"+angular.lowercase(eventType.replace("Device","")),
+    ngSensor.factory("$"+angular.lowercase(eventType.replace("Device","")),
             ["$timeout","$window",function ($timeout, $window) {
                 return {
                     //TODO: (un-)register correct wording?
@@ -21,8 +21,15 @@ function registerSensorService(eventType) {
 
 //https://dvcs.w3.org/hg/dap/raw-file/tip/sensor-api/Overview.html#datatypes
 angular.forEach([
-    "DeviceOrientation","DeviceMotion","DeviceHumidity","DeviceLight",
-    "DeviceNoise","DevicePressure","DeviceProximity","DeviceTemperature"],
+    "DeviceOrientation",
+    "DeviceMotion",
+    "DeviceHumidity",
+    "DeviceLight",
+    "DeviceNoise",
+    "DevicePressure",
+    "DeviceProximity",
+    "DeviceTemperature"
+],
     function(eventName){
         registerSensorService(eventName);
     });
