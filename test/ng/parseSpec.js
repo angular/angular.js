@@ -591,6 +591,57 @@ describe('parser', function() {
       });
 
       describe('sandboxing', function() {
+        describe('private members', function() {
+          it('should NOT allow access to private members', function() {
+            forEach(['_name', 'name_', '_', '_name_'], function(name) {
+              function _testExpression(expression) {
+                scope.a = {b: name};
+                scope[name] = {a: scope.a};
+                scope.piece_1 = "XX" + name.charAt(0) + "XX";
+                scope.piece_2 = "XX" + name.substr(1) + "XX";
+                expect(function() {
+                  scope.$eval(expression);
+                }).toThrowMinErr(
+                        '$parse', 'isecprv', 'Referencing private fields in Angular expressions is disallowed! ' +
+                        'Expression: ' + expression);
+              }
+
+              function testExpression(expression) {
+                if (expression.indexOf('"NAME"') != -1) {
+                  var concatExpr = 'piece_1.substr(2, 1) + piece_2.substr(2, LEN)'.replace('LEN', name.length-1);
+                  _testExpression(expression.replace(/"NAME"/g, concatExpr));
+                  _testExpression(expression.replace(/"NAME"/g, '(' + concatExpr + ')'));
+                }
+                _testExpression(expression.replace(/NAME/g, name));
+              }
+
+              // Not all of these are exploitable.  The tests ensure that the contract is honored
+              // without caring about the implementation or exploitability.
+              testExpression('NAME');                testExpression('NAME = 1');
+              testExpression('(NAME)');              testExpression('(NAME) = 1');
+              testExpression('a.NAME');              testExpression('a.NAME = 1');
+              testExpression('NAME.b');              testExpression('NAME.b = 1');
+              testExpression('a.NAME.b');            testExpression('a.NAME.b = 1');
+              testExpression('NAME()');              testExpression('NAME() = 1');
+              testExpression('(NAME)()');            testExpression('(NAME = 1)()');
+              testExpression('(NAME).foo()');        testExpression('(NAME = 1).foo()');
+              testExpression('a.NAME()');            testExpression('a.NAME() = 1');
+              testExpression('a.NAME.foo()');        testExpression('a.NAME.foo()');
+              testExpression('foo(NAME)');           testExpression('foo(NAME = 1)');
+              testExpression('foo(a.NAME)');         testExpression('foo(a.NAME = 1)');
+              testExpression('foo(1, a.NAME)');      testExpression('foo(1, a.NAME = 1)');
+              testExpression('foo(a["NAME"])');      testExpression('foo(a["NAME"] = 1)');
+              testExpression('foo(1, a["NAME"])');   testExpression('foo(1, a["NAME"] = 1)');
+              testExpression('foo(b = a["NAME"])');  testExpression('foo(b = (a["NAME"] = 1))');
+              testExpression('a["NAME"]');           testExpression('a["NAME"] = 1');
+              testExpression('a["NAME"]()');
+              testExpression('a["NAME"].foo()');
+              testExpression('a.b["NAME"]');         testExpression('a.b["NAME"] = 1');
+              testExpression('a["b"]["NAME"]');      testExpression('a["b"]["NAME"] = 1');
+            });
+          });
+        });
+
         describe('Function constructor', function() {
           it('should NOT allow access to Function constructor in getter', function() {
             expect(function() {
@@ -651,17 +702,29 @@ describe('parser', function() {
             expect(function() {
               scope.$eval('{}.toString["constructor"]["constructor"] = 1');
             }).toThrowMinErr(
-                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
                     'Expression: {}.toString["constructor"]["constructor"] = 1');
 
 
             scope.key1 = "const";
             scope.key2 = "ructor";
             expect(function() {
+              scope.$eval('{}.toString[key1 + key2].foo');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString[key1 + key2].foo');
+
+            expect(function() {
+              scope.$eval('{}.toString[key1 + key2] = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString[key1 + key2] = 1');
+
+            expect(function() {
               scope.$eval('{}.toString[key1 + key2].foo = 1');
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                        'Expression: {}.toString[key1 + key2].foo = 1');
+                    'Expression: {}.toString[key1 + key2].foo = 1');
 
             expect(function() {
               scope.$eval('{}.toString["constructor"]["a"] = 1');
