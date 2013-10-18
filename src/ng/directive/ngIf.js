@@ -41,7 +41,7 @@
  * @priority 600
  * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
  *     the element is removed from the DOM tree. If it is truthy a copy of the compiled
- *     eleent is added to the DOM tree.
+ *     element is added to the DOM tree.
  *
  * @example
   <example animations="true">
