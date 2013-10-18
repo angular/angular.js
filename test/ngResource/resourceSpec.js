@@ -430,7 +430,7 @@ describe("resource", function() {
     expect(idBefore).toEqual(cc.id);
   });
 
-  it('should not mutate the resource object if response.data is the resource object', function() {
+  it('should not throw if response.data is the resource object', function() {
     var data = {id:{key:123}, number:'9876'};
     $httpBackend.expect('GET', '/CreditCard/123').respond(data);
 
