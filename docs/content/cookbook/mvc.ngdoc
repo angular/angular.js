@@ -125,4 +125,4 @@ board variable.
 * The view can call any controller function.
 * In this example, the `setUrl()` and `readUrl()` functions copy the game state to/from the URL's
 hash so the browser's back button will undo game steps. See deep-linking. This example calls {@link
-api/ng.$rootScope.Scope#$watch $watch()} to set up a listener that invokes `readUrl()` when needed.
+api/ng.$rootScope.Scope#methods_$watch $watch()} to set up a listener that invokes `readUrl()` when needed.

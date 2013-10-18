@@ -818,7 +818,7 @@ var VALID_CLASS = 'ng-valid',
        the control reads value from the DOM.  Each function is called, in turn, passing the value
        through to the next. Used to sanitize / convert the value as well as validation.
        For validation, the parsers should update the validity state using
-       {@link ng.directive:ngModel.NgModelController#$setValidity $setValidity()},
+       {@link ng.directive:ngModel.NgModelController#methods_$setValidity $setValidity()},
        and return `undefined` for invalid values.
 
  *
@@ -999,10 +999,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * @description
    * This is called when we need to determine if the value of the input is empty.
-   * 
+   *
    * For instance, the required directive does this to work out if the input has data or not.
    * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
-   * 
+   *
    * You can override this for input directives whose concept of being empty is different to the
    * default. The `checkboxInputType` directive does this because in its case a value of `false`
    * implies empty.
