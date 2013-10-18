@@ -58,8 +58,8 @@ The following demonstrates the various ways a Directive (ngBind in this case) ca
 During the compilation process the {@link api/ng.$compile compiler} matches text and
 attributes using the {@link api/ng.$interpolate $interpolate} service to see if they
 contain embedded expressions. These expressions are registered as {@link
-api/ng.$rootScope.Scope#$watch watches} which will be processed as part of the normal {@link
-api/ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is shown
+api/ng.$rootScope.Scope#methods_$watch watches} which will be processed as part of the normal {@link
+api/ng.$rootScope.Scope#methods_$digest digest} cycle. An example of interpolation is shown
 here:
 
 <pre>
@@ -112,7 +112,7 @@ Compilation of HTML happens in three phases:
   3. Link the template with a scope by calling the linking function returned from the previous step.
   This in turn will call the linking function of the individual directives allowing them to
   register any listeners on the elements and set up any {@link
-  api/ng.$rootScope.Scope#$watch watches} with the {@link
+  api/ng.$rootScope.Scope#methods_$watch watches} with the {@link
   api/ng.$rootScope.Scope scope}. The result is a live binding between the
   scope and the DOM (i.e., a change in the scope is reflected in the DOM).
 
@@ -294,7 +294,7 @@ Here's an example directive declared with a Directive Definition Object:
 
 In most cases you will not need such fine control, so the above can be simplified. You could still
 return a Directive Definition Object, but only set the 'link' function property of the Object
-and rely on the default values for other properties. 
+and rely on the default values for other properties.
 
 Therefore the above could be simplified as:
 
@@ -317,7 +317,7 @@ Therefore the above could be simplified as:
 The factory method is responsible for creating the directive. It is invoked only once, when the
 {@link api/ng.$compile compiler} matches the directive for the first time. You can
 perform any initialization work here. The method is invoked using the {@link
-api/AUTO.$injector#invoke $injector.invoke} which
+api/AUTO.$injector#methods_invoke $injector.invoke} which
 makes it injectable (subject to all of the rules of the injection annotation).
 
 ## Directive Definition Object
@@ -415,7 +415,7 @@ compiler}. The attributes are:
 
   * `template` - replace the current element with the contents of the given HTML. The replacement process
     migrates all of the attributes / classes from the old element to the new one. See the
-    {@link guide/directive#Components Creating Components} section below for more information.
+    {@link guide/directive#creating-components Creating Components} section below for more information.
 
     You can specify `template` as a string representing the template or as a function which takes
     two arguments `tElement` and `tAttrs` (described in the `compile` function api below) and
@@ -428,7 +428,7 @@ compiler}. The attributes are:
     You can specify `templateUrl` as a string representing the URL or as a function which takes two
     arguments `tElement` and `tAttrs` (described in the `compile` function api below) and returns
     a string value representing the url.  In either case, the template URL is passed through {@link
-    api/ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
+    api/ng.$sce#methods_getTrustedResourceUrl $sce.getTrustedResourceUrl}.
 
   * `replace` - specify where the template should be inserted. Defaults to `false`.
 
@@ -471,7 +471,7 @@ compile function takes the following arguments:
 
   * `tAttrs` - template attributes - Normalized list of attributes declared on this element shared
     between all directive compile functions. See {@link
-    guide/directive#Attributes Attributes}.
+    guide/directive#writing-directives_attributes Attributes}.
 
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
@@ -480,10 +480,10 @@ been cloned. For this reason it is not safe to do anything in the compile functi
 transformation that applies to all DOM clones. Specifically, DOM listener registration should be
 done in a linking function rather than in a compile function.
 
-A compile function can have a return value which can be either a function or an object. Returning a 
-(post-link) function is equivalent to registering the linking function via the 'link` property of 
-the config object when the compile function is empty. Returning an object with function(s) registered 
-via `pre` and `post` properties allows you to control when a linking function should be called during 
+A compile function can have a return value which can be either a function or an object. Returning a
+(post-link) function is equivalent to registering the linking function via the 'link` property of
+the config object when the compile function is empty. Returning an object with function(s) registered
+via `pre` and `post` properties allows you to control when a linking function should be called during
 the linking phase. See info about pre-linking and post-linking functions below.
 
 
@@ -498,7 +498,7 @@ executed after the template has been cloned. This is where most of the directive
 put.
 
   * `scope` - {@link api/ng.$rootScope.Scope Scope} - The scope to be used by the
-    directive for registering {@link api/ng.$rootScope.Scope#$watch watches}.
+    directive for registering {@link api/ng.$rootScope.Scope#methods_$watch watches}.
 
   * `iElement` - instance element - The element where the directive is to be used. It is safe to
     manipulate the children of the element only in `postLink` function since the children have
@@ -506,7 +506,7 @@ put.
 
   * `iAttrs` - instance attributes - Normalized list of attributes declared on this element shared
     between all directive linking functions. See {@link
-    guide/directive#Attributes Attributes}.
+    guide/directive#writing-directives_attributes Attributes}.
 
   * `controller` - a controller instance - A controller instance if at least one directive on the
     element defines a controller. The controller is shared among all the directives, which allows
