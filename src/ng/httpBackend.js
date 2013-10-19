@@ -66,6 +66,14 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       // always async
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
+
+          // Aborting AJAX requests in IE9 makes the XHR object's properties inaccessible and throws the following error:
+          // SCRIPT575: Could not complete the operation due to error c00c023f.
+          if (msie && msie == 9 && xhr.aborted) {
+            completeRequest(callback, 0, "", "");
+            return;
+          }
+
           var responseHeaders = xhr.getAllResponseHeaders();
 
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -98,6 +106,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     function timeoutRequest() {
       status = -1;
       jsonpDone && jsonpDone();
+      xhr && msie && msie == 9 && (xhr.aborted = true);
       xhr && xhr.abort();
     }
 
