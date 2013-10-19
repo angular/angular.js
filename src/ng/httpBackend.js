@@ -70,7 +70,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           // Aborting AJAX requests in IE9 makes the XHR object's properties inaccessible and throws the following error:
           // SCRIPT575: Could not complete the operation due to error c00c023f.
           if (msie && msie == 9 && xhr.aborted) {
-            completeRequest(callback, 0, "", "");
+            completeRequest(callback, -1, "", "");
             return;
           }
 
