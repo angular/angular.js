@@ -280,6 +280,10 @@ function JQLiteData(element, key, value) {
 
 function JQLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
+  
+  // use the native classList object
+  if (element.classList) return element.classList.contains(selector);
+  
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
@@ -287,11 +291,17 @@ function JQLiteHasClass(element, selector) {
 function JQLiteRemoveClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
+      cssClass = trim(cssClass);
+      if (element.classList) {
+        element.classList.remove(cssClass)
+      }
+      else {
+        element.setAttribute('class', trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
+          .replace(" " + cssClass + " ", " "))
+        );
+      }
     });
   }
 }
@@ -303,7 +313,10 @@ function JQLiteAddClass(element, cssClasses) {
 
     forEach(cssClasses.split(' '), function(cssClass) {
       cssClass = trim(cssClass);
-      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+      if (element.classList) {
+        element.classList.add(cssClass)
+      }
+      else if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
         existingClasses += cssClass + ' ';
       }
     });
