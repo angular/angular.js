@@ -308,8 +308,10 @@ function JQLiteRemoveClass(element, cssClasses) {
 
 function JQLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                            .replace(/[\n\t]/g, " ");
+    if (element.classList) {
+      var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                              .replace(/[\n\t]/g, " ");
+    }
 
     forEach(cssClasses.split(' '), function(cssClass) {
       cssClass = trim(cssClass);
@@ -321,7 +323,9 @@ function JQLiteAddClass(element, cssClasses) {
       }
     });
 
-    element.setAttribute('class', trim(existingClasses));
+    if (!element.classList) {
+      element.setAttribute('class', trim(existingClasses));
+    }
   }
 }
 
