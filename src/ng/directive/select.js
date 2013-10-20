@@ -126,10 +126,12 @@ var ngOptionsMinErr = minErr('ngOptions');
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
+// jshint maxlen: false
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                          //0000111110000000000022220000000000000000000000333300000000000000444444444444444000000000555555555555555000000066666666666666600000000000000007777000000000000000000088888
   var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/,
       nullModelCtrl = {$setViewValue: noop};
+// jshint maxlen: 100
 
   return {
     restrict: 'E',
@@ -210,7 +212,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
       // find "null" option
       for(var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
-        if (children[i].value == '') {
+        if (children[i].value === '') {
           emptyOption = nullOption = children.eq(i);
           break;
         }
@@ -233,16 +235,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      if (optionsExp) Options(scope, element, ngModelCtrl);
-      else if (multiple) Multiple(scope, element, ngModelCtrl);
-      else Single(scope, element, ngModelCtrl, selectCtrl);
+      if (optionsExp) setupAsOptions(scope, element, ngModelCtrl);
+      else if (multiple) setupAsMultiple(scope, element, ngModelCtrl);
+      else setupAsSingle(scope, element, ngModelCtrl, selectCtrl);
 
 
       ////////////////////////////
 
 
 
-      function Single(scope, selectElement, ngModelCtrl, selectCtrl) {
+      function setupAsSingle(scope, selectElement, ngModelCtrl, selectCtrl) {
         ngModelCtrl.$render = function() {
           var viewValue = ngModelCtrl.$viewValue;
 
@@ -267,7 +269,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      function Multiple(scope, selectElement, ctrl) {
+      function setupAsMultiple(scope, selectElement, ctrl) {
         var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
@@ -298,12 +300,14 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      function Options(scope, selectElement, ctrl) {
+      function setupAsOptions(scope, selectElement, ctrl) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw ngOptionsMinErr('iexp',
-            "Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
+            "Expected expression in form of " +
+            "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            " but got '{0}'. Element: {1}",
             optionsExp, startingTag(selectElement));
         }
 
@@ -315,9 +319,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             valuesFn = $parse(match[7]),
             track = match[8],
             trackFn = track ? $parse(match[8]) : null,
-            // This is an array of array of existing option groups in DOM. We try to reuse these if possible
-            // optionGroupsCache[0] is the options with no option group
-            // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
+            // This is an array of array of existing option groups in DOM.
+            // We try to reuse these if possible
+            // - optionGroupsCache[0] is the options with no option group
+            // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
             optionGroupsCache = [[{element: selectElement, label:''}]];
 
         if (nullOption) {
@@ -371,7 +376,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               key = selectElement.val();
               if (key == '?') {
                 value = undefined;
-              } else if (key == ''){
+              } else if (key === ''){
                 value = null;
               } else {
                 if (trackFn) {
@@ -399,7 +404,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         scope.$watch(render);
 
         function render() {
-          var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
+              // Temporary location for the option groups before we render them
+          var optionGroups = {'':[]},
               optionGroupNames = [''],
               optionGroupName,
               optionGroup,
@@ -448,7 +454,9 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals)) !== undefined;
+              selected = isDefined(
+                selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals))
+              );
             } else {
               if (trackFn) {
                 var modelCast = {};
@@ -460,9 +468,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             label = displayFn(scope, locals); // what will be seen by the user
-            label = label === undefined ? '' : label; // doing displayFn(scope, locals) || '' overwrites zero values
+
+            // doing displayFn(scope, locals) || '' overwrites zero values
+            label = isDefined(label) ? label : '';
             optionGroup.push({
-              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),   // either the index into array or key from object
+              // either the index into array or key from object
+              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),
               label: label,
               selected: selected                   // determine if we should be selected
             });
