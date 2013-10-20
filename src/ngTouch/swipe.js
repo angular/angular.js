@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
     /**
      * @ngdoc object
      * @name ngTouch.$swipe
