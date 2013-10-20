@@ -35,13 +35,13 @@ function $IntervalProvider() {
       */
     function interval(fn, delay, count, invokeApply) {
       var setInterval = $window.setInterval,
-          clearInterval = $window.clearInterval;
-
-      var deferred = $q.defer(),
+          clearInterval = $window.clearInterval,
+          deferred = $q.defer(),
           promise = deferred.promise,
-          count = (isDefined(count)) ? count : 0,
           iteration = 0,
           skipApply = (isDefined(invokeApply) && !invokeApply);
+      
+      count = isDefined(count) ? count : 0,
 
       promise.then(null, null, fn);
 

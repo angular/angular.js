@@ -274,30 +274,35 @@ function Browser(window, document, $log, $sniffer) {
    * It is not meant to be used directly, use the $cookie service instead.
    *
    * The return values vary depending on the arguments that the method was called with as follows:
-   * <ul>
-   *   <li>cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify it</li>
-   *   <li>cookies(name, value) -> set name to value, if value is undefined delete the cookie</li>
-   *   <li>cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)</li>
-   * </ul>
-   *
+   * 
+   * - cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify
+   *   it
+   * - cookies(name, value) -> set name to value, if value is undefined delete the cookie
+   * - cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that
+   *   way)
+   * 
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function(name, value) {
+    /* global escape: false, unescape: false */
     var cookieLength, cookieArray, cookie, i, index;
 
     if (name) {
       if (value === undefined) {
-        rawDocument.cookie = escape(name) + "=;path=" + cookiePath + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        rawDocument.cookie = escape(name) + "=;path=" + cookiePath +
+                                ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) + ';path=' + cookiePath).length + 1;
+          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) +
+                                ';path=' + cookiePath).length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
           // - 20 cookies per unique domain
           // - 4096 bytes per cookie
           if (cookieLength > 4096) {
-            $log.warn("Cookie '"+ name +"' possibly not set or overflowed because it was too large ("+
+            $log.warn("Cookie '"+ name +
+              "' possibly not set or overflowed because it was too large ("+
               cookieLength + " > 4096 bytes)!");
           }
         }
@@ -312,7 +317,7 @@ function Browser(window, document, $log, $sniffer) {
           cookie = cookieArray[i];
           index = cookie.indexOf('=');
           if (index > 0) { //ignore nameless cookies
-            var name = unescape(cookie.substring(0, index));
+            name = unescape(cookie.substring(0, index));
             // the first value that is seen for a cookie is the most
             // specific one.  values for the same cookie name that
             // follow are for less specific paths.
@@ -362,7 +367,8 @@ function Browser(window, document, $log, $sniffer) {
    * Cancels a deferred task identified with `deferId`.
    *
    * @param {*} deferId Token returned by the `$browser.defer` function.
-   * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfully canceled.
+   * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfully
+   *                    canceled.
    */
   self.defer.cancel = function(deferId) {
     if (pendingDeferIds[deferId]) {

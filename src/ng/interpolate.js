@@ -12,31 +12,31 @@ var $interpolateMinErr = minErr('$interpolate');
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
  *
  * @example
-   <doc:example module="customInterpolationApp">
-     <doc:source>
-      <script>
-        var customInterpolationApp = angular.module('customInterpolationApp', []);
+<doc:example module="customInterpolationApp">
+<doc:source>
+<script>
+  var customInterpolationApp = angular.module('customInterpolationApp', []);
 
-        customInterpolationApp.config(function($interpolateProvider) {
-          $interpolateProvider.startSymbol('//');
-          $interpolateProvider.endSymbol('//');
-        });
+  customInterpolationApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('//');
+    $interpolateProvider.endSymbol('//');
+  });
 
 
-        customInterpolationApp.controller('DemoController', function DemoController() {
-            this.label = "This bindings is brought you you by // interpolation symbols.";
-        });
-      </script>
-      <div ng-app="App" ng-controller="DemoController as demo">
-          //demo.label//
-      </div>
-     </doc:source>
-     <doc:scenario>
-       it('should interpolate binding with custom symbols', function() {
-         expect(binding('demo.label')).toBe('This bindings is brought you you by // interpolation symbols.');
-       });
- </doc:scenario>
-   </doc:example>
+  customInterpolationApp.controller('DemoController', function DemoController() {
+      this.label = "This binding is brought you by // interpolation symbols.";
+  });
+</script>
+<div ng-app="App" ng-controller="DemoController as demo">
+    //demo.label//
+</div>
+</doc:source>
+<doc:scenario>
+ it('should interpolate binding with custom symbols', function() {
+  expect(binding('demo.label')).toBe('This binding is brought you by // interpolation symbols.');
+ });
+</doc:scenario>
+</doc:example>
  */
 function $InterpolateProvider() {
   var startSymbol = '{{';
@@ -116,8 +116,8 @@ function $InterpolateProvider() {
      *    result through {@link ng.$sce#methods_getTrusted $sce.getTrusted(interpolatedResult,
      *    trustedContext)} before returning it.  Refer to the {@link ng.$sce $sce} service that
      *    provides Strict Contextual Escaping for details.
-     * @returns {function(context)} an interpolation function which is used to compute the interpolated
-     *    string. The function has these parameters:
+     * @returns {function(context)} an interpolation function which is used to compute the
+     *    interpolated string. The function has these parameters:
      *
      *    * `context`: an object against which any expressions embedded in the strings are evaluated
      *      against.
@@ -155,12 +155,12 @@ function $InterpolateProvider() {
         length = 1;
       }
 
-      // Concatenating expressions makes it hard to reason about whether some combination of concatenated
-      // values are unsafe to use and could easily lead to XSS.  By requiring that a single
-      // expression be used for iframe[src], object[src], etc., we ensure that the value that's used
-      // is assigned or constructed by some JS code somewhere that is more testable or make it
-      // obvious that you bound the value to some user controlled value.  This helps reduce the load
-      // when auditing for XSS issues.
+      // Concatenating expressions makes it hard to reason about whether some combination of
+      // concatenated values are unsafe to use and could easily lead to XSS.  By requiring that a
+      // single expression be used for iframe[src], object[src], etc., we ensure that the value
+      // that's used is assigned or constructed by some JS code somewhere that is more testable or
+      // make it obvious that you bound the value to some user controlled value.  This helps reduce
+      // the load when auditing for XSS issues.
       if (trustedContext && parts.length > 1) {
           throw $interpolateMinErr('noconcat',
               "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
@@ -180,7 +180,7 @@ function $InterpolateProvider() {
                 } else {
                   part = $sce.valueOf(part);
                 }
-                if (part == null || part == undefined) {
+                if (part === null || isUndefined(part)) {
                   part = '';
                 } else if (typeof part != 'string') {
                   part = toJson(part);
@@ -191,7 +191,8 @@ function $InterpolateProvider() {
             return concat.join('');
           }
           catch(err) {
-            var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text, err.toString());
+            var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text,
+                err.toString());
             $exceptionHandler(newErr);
           }
         };
@@ -216,7 +217,7 @@ function $InterpolateProvider() {
      */
     $interpolate.startSymbol = function() {
       return startSymbol;
-    }
+    };
 
 
     /**
@@ -233,7 +234,7 @@ function $InterpolateProvider() {
      */
     $interpolate.endSymbol = function() {
       return endSymbol;
-    }
+    };
 
     return $interpolate;
   }];
