@@ -10,7 +10,7 @@ describe('$interpolate', function() {
 
   it('should return undefined when there are no bindings and textOnly is set to true',
       inject(function($interpolate) {
-    expect($interpolate('some text', true)).toBeUndefined();
+    expect($interpolate('some text', true)).toBeNull();
   }));
 
   it('should suppress falsy objects', inject(function($interpolate) {
@@ -70,7 +70,7 @@ describe('$interpolate', function() {
   describe('interpolating in a trusted context', function() {
     var sce;
     beforeEach(function() {
-      function log() {};
+      function log() {}
       var fakeLog = {log: log, warn: log, info: log, error: log};
       module(function($provide, $sceProvider) {
         $provide.value('$log', fakeLog);
@@ -273,5 +273,51 @@ describe('$interpolate', function() {
       expect($interpolate.endSymbol()).toBe('))');
     }));
   });
+
+  describe('custom $$beWatched', function () {
+    it('should call the listener correctly when values change during digest',
+        inject(function ($rootScope, $interpolate) {
+      var nbCalls = 0, value;
+      $rootScope.$watch($interpolate('{{a}}-{{b}}'), function (_value) {
+        value = _value;
+        switch(++nbCalls) {
+          case 1:
+          case 2:
+            $rootScope.b++;
+            break;
+          case 3:
+          case 4:
+            $rootScope.a++;
+            break;
+        }
+      });
+      $rootScope.$apply(function () {
+        $rootScope.a = $rootScope.b = 0;
+      });
+      expect(value).toBe("2-2");
+      expect(nbCalls).toBe(5);
+    }));
+
+    it('should call the listener correctly when the interpolation is watched multiple times',
+        inject(function ($rootScope, $interpolate) {
+      var interpolateFn = $interpolate('{{a}}-{{b}}'), nbCalls = 0;
+      $rootScope.$watch(interpolateFn, function(){
+        nbCalls++;
+      });
+      $rootScope.$watch(interpolateFn, function(){
+        nbCalls++;
+      });
+
+      $rootScope.$apply(function () {
+        $rootScope.a = $rootScope.b = 0;
+      });
+      expect(nbCalls).toBe(2);
+
+      $rootScope.$apply(function () {
+        $rootScope.a = $rootScope.b = 1;
+      });
+      expect(nbCalls).toBe(4);
+    }));
+  })
 
 });

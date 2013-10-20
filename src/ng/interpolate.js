@@ -127,12 +127,11 @@ function $InterpolateProvider() {
       var startIndex,
           endIndex,
           index = 0,
-          parts = [],
           length = text.length,
           hasInterpolation = false,
-          fn,
+          fn = null,
           exp,
-          concat = [];
+          parts = [];
 
       while(index < length) {
         if ( ((startIndex = text.indexOf(startSymbol, index)) != -1) &&
@@ -149,10 +148,9 @@ function $InterpolateProvider() {
         }
       }
 
-      if (!(length = parts.length)) {
+      if (!parts.length) {
         // we added, nothing, must have been an empty string.
         parts.push('');
-        length = 1;
       }
 
       // Concatenating expressions makes it hard to reason about whether some combination of
@@ -169,25 +167,29 @@ function $InterpolateProvider() {
       }
 
       if (!mustHaveExpression  || hasInterpolation) {
-        concat.length = length;
-        fn = function(context) {
+        var concat = new Array(parts.length),
+            expressions = {};
+        forEach(parts, function (value, index) {
+          if (isFunction(value)) {
+            expressions[index] = value;
+            concat[index] = '';
+          } else {
+            concat[index] = value;
+          }
+        });
+        // computes all the interpolations and returns the resulting string
+        // a specific index might already be computed (cz of the scope's dirty-checking),
+        // and so its expression shouldn't be executed a 2nd time
+        // also populates the lastValues of custom watchers for internal dirty-checking
+        var getTextValue = function (scope, computedIndex, computedValue, lastValues) {
           try {
-            for(var i = 0, ii = length, part; i<ii; i++) {
-              if (typeof (part = parts[i]) == 'function') {
-                part = part(context);
-                if (trustedContext) {
-                  part = $sce.getTrusted(trustedContext, part);
-                } else {
-                  part = $sce.valueOf(part);
-                }
-                if (part === null || isUndefined(part)) {
-                  part = '';
-                } else if (typeof part != 'string') {
-                  part = toJson(part);
-                }
-              }
-              concat[i] = part;
-            }
+            forEach(expressions, function (expression, index) {
+              concat[index] = index == computedIndex
+                  ? computedValue
+                  : getStringValue(expression(scope));
+
+              if (lastValues) lastValues[index] = concat[index];
+            });
             return concat.join('');
           }
           catch(err) {
@@ -196,10 +198,63 @@ function $InterpolateProvider() {
             $exceptionHandler(newErr);
           }
         };
+        var getStringValue = function (value) {
+          value = trustedContext
+              ? $sce.getTrusted(trustedContext, value)
+              : $sce.valueOf(value);
+
+          if (value === null || isUndefined(value)) {
+            return '';
+          }
+          return isString(value) ? value : toJson(value);
+        };
+
+        fn = function(scope) {
+          return getTextValue(scope);
+        };
         fn.exp = text;
         fn.parts = parts;
-        return fn;
+
+        // watches each interpolation separately for performance
+        fn.$$beWatched = function (scope, origListener, objectEquality) {
+          var lastTextValue, lastValues = {}, watchersRm = [];
+
+          forEach(expressions, function (expression, index) {
+            watchersRm.push(scope.$watch(function watchInterpolatedExpr(scope) {
+              try {
+                return getStringValue(expression(scope));
+              } catch (err) {
+                var newErr = $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}",
+                  text, err.toString());
+                $exceptionHandler(newErr);
+              }
+            }, listenerOf(index), objectEquality));
+          });
+
+          function listenerOf(index) {
+            return function interpolatedExprListener(value, oldValue) {
+              // we only invoke the origListener if the current value
+              // is not equal to the last computed value
+              // ex: if in `{{a}}-{{b}}` both values change in a digest,
+              // the listener of `a` gets invoked first, we compute the string
+              // and invoke the origListener once,
+              // and ignore it when the listener of `b` gets triggered
+              // (unless the value of `b` changes again since the last computation)
+              if (value !== lastValues[index]) {
+                var textValue = getTextValue(scope, index, value, lastValues);
+                origListener.call(this, textValue,
+                  value === oldValue ? textValue : lastTextValue, scope);
+                lastTextValue = textValue;
+              }
+            };
+          }
+
+          return function compositeWatchersRm() {
+            forEach(watchersRm, function(wRm){ wRm(); });
+          };
+        };
       }
+      return fn;
     }
 
 
@@ -239,4 +294,3 @@ function $InterpolateProvider() {
     return $interpolate;
   }];
 }
-
