@@ -280,10 +280,6 @@ function JQLiteData(element, key, value) {
 
 function JQLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
-  
-  // use the native classList object
-  if (element.classList) return element.classList.contains(selector);
-  
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
@@ -291,41 +287,28 @@ function JQLiteHasClass(element, selector) {
 function JQLiteRemoveClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
-      cssClass = trim(cssClass);
-      if (element.classList) {
-        element.classList.remove(cssClass)
-      }
-      else {
-        element.setAttribute('class', trim(
+      element.setAttribute('class', trim(
           (" " + (element.getAttribute('class') || '') + " ")
           .replace(/[\n\t]/g, " ")
-          .replace(" " + cssClass + " ", " "))
-        );
-      }
+          .replace(" " + trim(cssClass) + " ", " "))
+      );
     });
   }
 }
 
 function JQLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
-    if (element.classList) {
-      var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                              .replace(/[\n\t]/g, " ");
-    }
+    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                            .replace(/[\n\t]/g, " ");
 
     forEach(cssClasses.split(' '), function(cssClass) {
       cssClass = trim(cssClass);
-      if (element.classList) {
-        element.classList.add(cssClass)
-      }
-      else if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
+      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
         existingClasses += cssClass + ' ';
       }
     });
 
-    if (!element.classList) {
-      element.setAttribute('class', trim(existingClasses));
-    }
+    element.setAttribute('class', trim(existingClasses));
   }
 }
 
