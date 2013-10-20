@@ -516,6 +516,14 @@ function map(obj, iterator, context) {
   return results;
 }
 
+function every(array, fun) {
+  for (var i = 0; i < array.length; i++) {
+    if (i in array && !fun.call(array, array[i], i, Object(array))) {
+        return false;
+    }
+  }
+  return true;
+}
 
 /**
  * @description

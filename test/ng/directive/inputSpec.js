@@ -726,50 +726,138 @@ describe('input', function() {
   });
 
   describe('email', function() {
+    describe('should validate e-mail', function(){
+      it('when used simply', function() {
+        compileInput('<input type="email" ng-model="email" name="alias" />');
+        var widget = scope.form.alias;
 
-    it('should validate e-mail', function() {
-      compileInput('<input type="email" ng-model="email" name="alias" />');
+        changeInputValueTo('vojta@google.com');
+        expect(scope.email).toBe('vojta@google.com');
+        expect(inputElm).toBeValid();
+        expect(widget.$error.email).toBe(false);
 
-      var widget = scope.form.alias;
-      changeInputValueTo('vojta@google.com');
+        changeInputValueTo('invalid@');
+        expect(scope.email).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.email).toBeTruthy();
+      });
+      it('when used with ngList (default separator)', function() {
+        compileInput('<input ng-list type="email" ng-model="email" name="alias" />');
+        var widget = scope.form.alias;
 
-      expect(scope.email).toBe('vojta@google.com');
-      expect(inputElm).toBeValid();
-      expect(widget.$error.email).toBe(false);
+        changeInputValueTo('vojta@google.com');
+        expect(scope.email).toEqual(['vojta@google.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.email).toBe(false);
 
-      changeInputValueTo('invalid@');
-      expect(scope.email).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-      expect(widget.$error.email).toBeTruthy();
+        changeInputValueTo('vojta@google.com, igor.minar@gmail.com');
+        expect(scope.email).toEqual(['vojta@google.com', 'igor.minar@gmail.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.email).toBe(false);
+
+        changeInputValueTo('invalid@');
+        expect(scope.email).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.email).toBeTruthy();
+      });
+      it('when used with ngList (custom separator)', function() {
+        compileInput('<input ng-list=";" type="email" ng-model="email" name="alias" />');
+
+        var widget = scope.form.alias;
+        changeInputValueTo('vojta@google.com');
+        expect(scope.email).toEqual(['vojta@google.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.email).toBe(false);
+
+        changeInputValueTo('vojta@google.com;igor.minar@gmail.com');
+        expect(scope.email).toEqual(['vojta@google.com', 'igor.minar@gmail.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.email).toBe(false);
+
+        changeInputValueTo('vojta@google.com, dorosh@google.com');
+        expect(scope.email).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.email).toBeTruthy();
+
+
+        changeInputValueTo('invalid@');
+        expect(scope.email).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.email).toBeTruthy();
+      });
     });
 
 
-    describe('EMAIL_REGEXP', function() {
-
+    describe('EMAIL_REGEXP', function(){
       it('should validate email', function() {
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
         expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
       });
     });
+
   });
 
 
   describe('url', function() {
+    describe('should validate url', function(){
+      it('when used simply', function() {
+        compileInput('<input type="url" ng-model="url" name="alias" />');
+        var widget = scope.form.alias;
 
-    it('should validate url', function() {
-      compileInput('<input type="url" ng-model="url" name="alias" />');
-      var widget = scope.form.alias;
+        changeInputValueTo('http://www.something.com');
+        expect(scope.url).toBe('http://www.something.com');
+        expect(inputElm).toBeValid();
+        expect(widget.$error.url).toBe(false);
 
-      changeInputValueTo('http://www.something.com');
-      expect(scope.url).toBe('http://www.something.com');
-      expect(inputElm).toBeValid();
-      expect(widget.$error.url).toBe(false);
+        changeInputValueTo('invalid.com');
+        expect(scope.url).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.url).toBeTruthy();
+      });
+      it('when used with ngList (default separator)', function() {
+        compileInput('<input ng-list type="url" ng-model="url" name="alias" />');
 
-      changeInputValueTo('invalid.com');
-      expect(scope.url).toBeUndefined();
-      expect(inputElm).toBeInvalid();
-      expect(widget.$error.url).toBeTruthy();
+        var widget = scope.form.alias;
+        changeInputValueTo('http://www.something.com');
+        expect(scope.url).toEqual(['http://www.something.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.url).toBe(false);
+
+        changeInputValueTo('http://www.something.com, http://www.somethingelse.com');
+        expect(scope.url).toEqual(['http://www.something.com', 'http://www.somethingelse.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.url).toBe(false);
+
+        changeInputValueTo('http:');
+        expect(scope.url).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.url).toBeTruthy();
+      });
+      it('when used with ngList (custom separator)', function() {
+        compileInput('<input ng-list=";" type="url" ng-model="url" name="alias" />');
+
+        var widget = scope.form.alias;
+        changeInputValueTo('http://www.something.com');
+        expect(scope.url).toEqual(['http://www.something.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.url).toBe(false);
+
+        changeInputValueTo('http://www.something.com;http://www.somethingelse.com');
+        expect(scope.url).toEqual(['http://www.something.com', 'http://www.somethingelse.com']);
+        expect(inputElm).toBeValid();
+        expect(widget.$error.url).toBe(false);
+
+        changeInputValueTo('http://www.something.com, http://www.somethingelse.com');
+        expect(scope.url).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.url).toBeTruthy();
+
+        changeInputValueTo('http:');
+        expect(scope.url).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+        expect(widget.$error.url).toBeTruthy();
+      });
     });
 
 
