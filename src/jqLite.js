@@ -821,7 +821,7 @@ forEach({
 
   triggerHandler: function(element, eventName, eventData) {
     var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
-    
+
     eventData = eventData || [];
 
     var event = [{

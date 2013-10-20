@@ -263,12 +263,12 @@ function $HttpProvider() {
      *
      * Complete list of shortcut methods:
      *
-     * - {@link ng.$http#get $http.get}
-     * - {@link ng.$http#head $http.head}
-     * - {@link ng.$http#post $http.post}
-     * - {@link ng.$http#put $http.put}
-     * - {@link ng.$http#delete $http.delete}
-     * - {@link ng.$http#jsonp $http.jsonp}
+     * - {@link ng.$http#methods_get $http.get}
+     * - {@link ng.$http#methods_head $http.head}
+     * - {@link ng.$http#methods_post $http.post}
+     * - {@link ng.$http#methods_put $http.put}
+     * - {@link ng.$http#methods_delete $http.delete}
+     * - {@link ng.$http#methods_jsonp $http.jsonp}
      *
      *
      * # Setting HTTP Headers

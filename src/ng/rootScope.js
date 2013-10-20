@@ -40,10 +40,14 @@
  * @methodOf ng.$rootScopeProvider
  * @description
  *
- * Sets the number of digest iterations the scope should attempt to execute before giving up and
- * assuming that the model is unstable.
+ * Sets the number of `$digest` iterations the scope should attempt to execute before giving up and assuming that the model is unstable.
  *
  * The current default is 10 iterations.
+ *
+ * In complex applications it's possible that the dependencies between `$watch`s will result in several digest iterations.
+ * However if an application needs more than the default 10 digest iterations for its model to stabilize then you should investigate what is causing the model to continuously change during the digest.
+ *
+ * Increasing the TTL could have performance implications, so you should not change it without proper justification.
  *
  * @param {number} limit The number of digest iterations.
  */
@@ -81,7 +85,7 @@ function $RootScopeProvider(){
      * @description
      * A root scope can be retrieved using the {@link ng.$rootScope $rootScope} key from the
      * {@link AUTO.$injector $injector}. Child scopes are created using the
-     * {@link ng.$rootScope.Scope#$new $new()} method. (Most scopes are created automatically when
+     * {@link ng.$rootScope.Scope#methods_$new $new()} method. (Most scopes are created automatically when
      * compiled HTML template is executed.)
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
@@ -462,9 +466,9 @@ function $RootScopeProvider(){
        *
        * Usually, you don't call `$digest()` directly in
        * {@link ng.directive:ngController controllers} or in
-       * {@link ng.$compileProvider#directive directives}.
+       * {@link ng.$compileProvider#methods_directive directives}.
        * Instead, you should call {@link ng.$rootScope.Scope#$apply $apply()} (typically from within a
-       * {@link ng.$compileProvider#directive directives}), which will force a `$digest()`.
+       * {@link ng.$compileProvider#methods_directive directives}), which will force a `$digest()`.
        *
        * If you want to be notified whenever `$digest()` is called,
        * you can register a `watchExpression` function with {@link ng.$rootScope.Scope#$watch $watch()}

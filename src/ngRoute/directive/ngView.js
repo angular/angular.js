@@ -23,6 +23,7 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * The enter and leave animation occur concurrently.
  *
  * @scope
+ * @priority 400
  * @example
     <example module="ngViewExample" deps="angular-route.js" animations="true">
       <file name="index.html">
@@ -176,7 +177,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
   return {
     restrict: 'ECA',
     terminal: true,
-    priority: 1000,
+    priority: 400,
     transclude: 'element',
     compile: function(element, attr, linker) {
       return function(scope, $element, attr) {

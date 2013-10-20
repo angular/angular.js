@@ -730,6 +730,20 @@ describe('parser', function() {
                     '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
                     'disallowed! Expression: getDoc()');
           }));
+
+          it('should NOT allow calling functions on Window or DOM', inject(function($window, $document) {
+            scope.a = {b: { win: $window, doc: $document }};
+            expect(function() {
+              scope.$eval('a.b.win.alert(1)', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is ' +
+                    'disallowed! Expression: a.b.win.alert(1)');
+            expect(function() {
+              scope.$eval('a.b.doc.on("click")', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: a.b.doc.on("click")');
+          }));
         });
       });
 

@@ -384,8 +384,7 @@ your own JavaScript animation library is beyond the scope of this tutorial. For 
 `jQuery.animate`, see the {@link http://api.jquery.com/animate/ jQuery documentation}.
 
 <div class="alert alert-error">
-  <h4>Important:</h4>
-  Be sure to use jQuery version `1.10.2`. AngularJS does not yet support jQuery `2.x`.
+  **Important:** Be sure to use jQuery version `1.10.x`. AngularJS does not yet support jQuery `2.x`.
 </div>
 
 The `addClass` and `removeClass` callback functions are called whenever an a class is added or removed
@@ -413,7 +412,7 @@ do any cleanup necessary for when the animation finishes.
 
 # Summary
 
-There you have it! Animations are in place. Hopefully this has shown you how you can improve
-your AngularJS web application to have an awesome layer of animated interactivity.
+There you have it!  We have created a web app in a relatively short amount of time. In the {@link
+the_end closing notes} we'll cover where to go from here.
 
 <ul doc-tutorial-nav="12"></ul>

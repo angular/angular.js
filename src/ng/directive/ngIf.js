@@ -17,7 +17,7 @@
  * position within the DOM, such as the `:first-child` or `:last-child` pseudo-classes.
  *
  * Note that when an element is removed using `ngIf` its scope is destroyed and a new scope
- * is created when the element is restored.  The scope created within `ngIf` inherits from 
+ * is created when the element is restored.  The scope created within `ngIf` inherits from
  * its parent scope using
  * {@link https://github.com/angular/angular.js/wiki/The-Nuances-of-Scope-Prototypal-Inheritance prototypal inheritance}.
  * An important implication of this is if `ngModel` is used within `ngIf` to bind to
@@ -25,7 +25,7 @@
  * variable within the child scope will override (hide) the value in the parent scope.
  *
  * Also, `ngIf` recreates elements using their compiled state. An example of this behavior
- * is if an element's class attribute is directly modified after it's compiled, using something like 
+ * is if an element's class attribute is directly modified after it's compiled, using something like
  * jQuery's `.addClass()` method, and the element is later removed. When `ngIf` recreates the element
  * the added class will be lost because the original compiled state is used to regenerate the element.
  *
@@ -38,6 +38,7 @@
  *
  * @element ANY
  * @scope
+ * @priority 600
  * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
  *     the element is removed from the DOM tree. If it is truthy a copy of the compiled
  *     eleent is added to the DOM tree.
@@ -80,7 +81,7 @@
 var ngIfDirective = ['$animate', function($animate) {
   return {
     transclude: 'element',
-    priority: 1000,
+    priority: 600,
     terminal: true,
     restrict: 'A',
     compile: function (element, attr, transclude) {

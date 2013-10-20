@@ -1042,10 +1042,12 @@ describe('$compile', function() {
               templateUrl: 'template.html'
             }));
           });
-          inject(function($compile){
+          inject(function($compile, $httpBackend){
+            $httpBackend.whenGET('template.html').respond('<p>template.html</p>');
             expect(function() {
               $compile('<div><div class="sync async"></div></div>');
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [sync, async] asking for template on: '+
+              $httpBackend.flush();
+            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [async, sync] asking for template on: '+
                 '<div class="sync async">');
           });
         });
@@ -1205,7 +1207,7 @@ describe('$compile', function() {
         ));
 
 
-        it('should work when directive is a repeater', inject(
+        it('should work when directive is in a repeater', inject(
           function($compile, $httpBackend, $rootScope) {
             $httpBackend.expect('GET', 'hello.html').
                 respond('<span>i=<span ng-transclude></span>;</span>');
@@ -1317,7 +1319,7 @@ describe('$compile', function() {
       });
 
 
-      describe('template as function', function() {
+      describe('templateUrl as function', function() {
 
         beforeEach(module(function() {
           directive('myDirective', valueFn({
@@ -2745,23 +2747,81 @@ describe('$compile', function() {
     });
 
 
-    it('should only allow one transclude per element', function() {
+    it('should only allow one content transclusion per element', function() {
       module(function() {
         directive('first', valueFn({
-          scope: {},
-          restrict: 'CA',
-          transclude: 'content'
+          transclude: true
         }));
         directive('second', valueFn({
-          restrict: 'CA',
-          transclude: 'content'
+          transclude: true
         }));
       });
       inject(function($compile) {
         expect(function() {
-          $compile('<div class="first second"></div>');
+          $compile('<div first="" second=""></div>');
+        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+      });
+    });
+
+
+    it('should only allow one element transclusion per element', function() {
+      module(function() {
+        directive('first', valueFn({
+          transclude: 'element'
+        }));
+        directive('second', valueFn({
+          transclude: 'element'
+        }));
+      });
+      inject(function($compile) {
+        expect(function() {
+          $compile('<div first second></div>');
         }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
-            '<div class="first second ng-isolate-scope ng-scope">');
+                '<!-- first:  -->');
+      });
+    });
+
+
+    it('should only allow one element transclusion per element when directives have different priorities', function() {
+      // we restart compilation in this case and we need to remember the duplicates during the second compile
+      // regression #3893
+      module(function() {
+        directive('first', valueFn({
+          transclude: 'element',
+          priority: 100
+        }));
+        directive('second', valueFn({
+          transclude: 'element'
+        }));
+      });
+      inject(function($compile) {
+        expect(function() {
+          $compile('<div first second></div>');
+        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+      });
+    });
+
+
+    it('should only allow one element transclusion per element when async replace directive is in the mix', function() {
+      module(function() {
+        directive('template', valueFn({
+          templateUrl: 'template.html',
+          replace: true
+        }));
+        directive('first', valueFn({
+          transclude: 'element',
+          priority: 100
+        }));
+        directive('second', valueFn({
+          transclude: 'element'
+        }));
+      });
+      inject(function($compile, $httpBackend) {
+        $httpBackend.expectGET('template.html').respond('<p second>template.html</p>');
+        $compile('<div template first></div>');
+        expect(function() {
+          $httpBackend.flush();
+        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
       });
     });
 

@@ -28,7 +28,7 @@
  * can then be used to link {@link ng.$rootScope.Scope scope} and the template together.
  *
  * The compilation is a process of walking the DOM tree and trying to match DOM elements to
- * {@link ng.$compileProvider#directive directives}. For each match it
+ * {@link ng.$compileProvider#methods_directive directives}. For each match it
  * executes corresponding template function and collects the
  * instance functions into a single template function which is then returned.
  *
@@ -186,7 +186,7 @@ function $CompileProvider($provide) {
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
           function($injector, $exceptionHandler) {
             var directives = [];
-            forEach(hasDirectives[name], function(directiveFactory) {
+            forEach(hasDirectives[name], function(directiveFactory, index) {
               try {
                 var directive = $injector.invoke(directiveFactory);
                 if (isFunction(directive)) {
@@ -195,6 +195,7 @@ function $CompileProvider($provide) {
                   directive.compile = valueFn(directive.link);
                 }
                 directive.priority = directive.priority || 0;
+                directive.index = index;
                 directive.name = directive.name || name;
                 directive.require = directive.require || (directive.controller && directive.name);
                 directive.restrict = directive.restrict || 'A';
@@ -454,8 +455,7 @@ function $CompileProvider($provide) {
       }
     };
 
-    var urlSanitizationNode = $document[0].createElement('a'),
-        startSymbol = $interpolate.startSymbol(),
+    var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
         denormalizeTemplate = (startSymbol == '{{' || endSymbol  == '}}')
             ? identity
@@ -469,7 +469,7 @@ function $CompileProvider($provide) {
 
     //================================
 
-    function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective) {
+    function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can modify it.
         $compileNodes = jqLite($compileNodes);
@@ -481,7 +481,7 @@ function $CompileProvider($provide) {
           $compileNodes[index] = node = jqLite(node).wrap('<span></span>').parent()[0];
         }
       });
-      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority, ignoreDirective);
+      var compositeLinkFn = compileNodes($compileNodes, transcludeFn, $compileNodes, maxPriority, ignoreDirective, previousCompileContext);
       return function publicLinkFn(scope, cloneConnectFn){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
@@ -528,7 +528,7 @@ function $CompileProvider($provide) {
      * @param {number=} max directive priority
      * @returns {?function} A composite linking function of all of the matched directives or null.
      */
-    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective) {
+    function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective, previousCompileContext) {
       var linkFns = [],
           nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
 
@@ -539,7 +539,7 @@ function $CompileProvider($provide) {
         directives = collectDirectives(nodeList[i], [], attrs, i == 0 ? maxPriority : undefined, ignoreDirective);
 
         nodeLinkFn = (directives.length)
-            ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement, null, [], [])
+            ? applyDirectivesToNode(directives, nodeList[i], attrs, transcludeFn, $rootElement, null, [], [], previousCompileContext)
             : null;
 
         childLinkFn = (nodeLinkFn && nodeLinkFn.terminal || !nodeList[i].childNodes || !nodeList[i].childNodes.length)
@@ -550,6 +550,7 @@ function $CompileProvider($provide) {
         linkFns.push(nodeLinkFn);
         linkFns.push(childLinkFn);
         linkFnFound = (linkFnFound || nodeLinkFn || childLinkFn);
+        previousCompileContext = null; //use the previous context only for the first element in the virtual group
       }
 
       // return a linking function if we have found anything, null otherwise
@@ -750,23 +751,26 @@ function $CompileProvider($provide) {
      *        scope argument is auto-generated to the new child of the transcluded parent scope.
      * @param {JQLite} jqCollection If we are working on the root of the compile tree then this
      *        argument has the root jqLite array so that we can replace nodes on it.
-     * @param {Object=} ignoreDirective An optional directive that will be ignored when compiling
+     * @param {Object=} originalReplaceDirective An optional directive that will be ignored when compiling
      *        the transclusion.
      * @param {Array.<Function>} preLinkFns
      * @param {Array.<Function>} postLinkFns
+     * @param {Object} previousCompileContext Context used for previous compilation of the current node
      * @returns linkFn
      */
     function applyDirectivesToNode(directives, compileNode, templateAttrs, transcludeFn, jqCollection,
-        originalReplaceDirective, preLinkFns, postLinkFns) {
+        originalReplaceDirective, preLinkFns, postLinkFns, previousCompileContext) {
+      previousCompileContext = previousCompileContext || {};
+
       var terminalPriority = -Number.MAX_VALUE,
-          newScopeDirective = null,
-          newIsolateScopeDirective = null,
-          templateDirective = null,
+          newScopeDirective,
+          newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective,
+          templateDirective = previousCompileContext.templateDirective,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
           directiveName,
           $template,
-          transcludeDirective,
+          transcludeDirective = previousCompileContext.transcludeDirective,
           replaceDirective = originalReplaceDirective,
           childTranscludeFn = transcludeFn,
           controllerDirectives,
@@ -815,19 +819,27 @@ function $CompileProvider($provide) {
         }
 
         if (directiveValue = directive.transclude) {
-          assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
-          transcludeDirective = directive;
+          // Special case ngRepeat so that we don't complain about duplicate transclusion, ngRepeat knows how to handle
+          // this on its own.
+          if (directiveName !== 'ngRepeat') {
+            assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
+            transcludeDirective = directive;
+          }
 
           if (directiveValue == 'element') {
             terminalPriority = directive.priority;
-            $template = groupScan(compileNode, attrStart, attrEnd)
+            $template = groupScan(compileNode, attrStart, attrEnd);
             $compileNode = templateAttrs.$$element =
                 jqLite(document.createComment(' ' + directiveName + ': ' + templateAttrs[directiveName] + ' '));
             compileNode = $compileNode[0];
             replaceWith(jqCollection, jqLite(sliceArgs($template)), compileNode);
 
             childTranscludeFn = compile($template, transcludeFn, terminalPriority,
-                                        replaceDirective && replaceDirective.name);
+                                        replaceDirective && replaceDirective.name, {
+                                          newIsolateScopeDirective: newIsolateScopeDirective,
+                                          transcludeDirective: transcludeDirective,
+                                          templateDirective: templateDirective
+                                        });
           } else {
             $template = jqLite(JQLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
@@ -889,7 +901,11 @@ function $CompileProvider($provide) {
           }
 
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i), $compileNode,
-              templateAttrs, jqCollection, childTranscludeFn, preLinkFns, postLinkFns);
+              templateAttrs, jqCollection, childTranscludeFn, preLinkFns, postLinkFns, {
+                newIsolateScopeDirective: newIsolateScopeDirective,
+                transcludeDirective: transcludeDirective,
+                templateDirective: templateDirective
+              });
           ii = directives.length;
         } else if (directive.compile) {
           try {
@@ -1188,7 +1204,7 @@ function $CompileProvider($provide) {
 
 
     function compileTemplateUrl(directives, $compileNode, tAttrs,
-        $rootElement, childTranscludeFn, preLinkFns, postLinkFns) {
+        $rootElement, childTranscludeFn, preLinkFns, postLinkFns, previousCompileContext) {
       var linkQueue = [],
           afterTemplateNodeLinkFn,
           afterTemplateChildLinkFn,
@@ -1231,7 +1247,7 @@ function $CompileProvider($provide) {
           directives.unshift(derivedSyncDirective);
 
           afterTemplateNodeLinkFn = applyDirectivesToNode(directives, compileNode, tAttrs,
-              childTranscludeFn, $compileNode, origAsyncDirective, preLinkFns, postLinkFns);
+              childTranscludeFn, $compileNode, origAsyncDirective, preLinkFns, postLinkFns, previousCompileContext);
           forEach($rootElement, function(node, i) {
             if (node == compileNode) {
               $rootElement[i] = $compileNode[0];
@@ -1278,7 +1294,10 @@ function $CompileProvider($provide) {
      * Sorting function for bound directives.
      */
     function byPriority(a, b) {
-      return b.priority - a.priority;
+      var diff = b.priority - a.priority;
+      if (diff !== 0) return diff;
+      if (a.name !== b.name) return (a.name < b.name) ? -1 : 1;
+      return a.index - b.index;
     }
 
 
