@@ -183,6 +183,7 @@ tag to your `index.html` file as shown below.
 
 __`app/index.html`:__
 <pre>
+<!doctype html>
 <html lang="en" ng-app="phonecatApp">
 <head>
 ...
