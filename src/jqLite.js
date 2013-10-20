@@ -280,6 +280,9 @@ function JQLiteData(element, key, value) {
 
 function JQLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
+  
+  if (element.classList) return element.classList.contains(trim(selector));
+  
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
