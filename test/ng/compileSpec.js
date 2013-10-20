@@ -3672,6 +3672,43 @@ describe('$compile', function() {
     });
 
 
+    it('should get required parent controller', function() {
+      module(function() {
+        directive('nested', function(log) {
+          return {
+            require: '^^?nested',
+            controller: function($scope) {},
+            link: function(scope, element, attrs, controller) {
+              log(!!controller);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div nested><div nested></div></div>')($rootScope);
+        expect(log).toEqual('true; false');
+      });
+    });
+
+
+    it('should throw if required parent is not found', function() {
+      module(function() {
+        directive('nested', function() {
+          return {
+            require: '^^nested',
+            controller: function($scope) {},
+            link: function(scope, element, attrs, controller) {}
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        expect(function() {
+          element = $compile('<div nested></div>')($rootScope);
+        }).toThrowMinErr('$compile', 'ctreq', "Controller 'nested', required by directive 'nested', can't be found!");
+      });
+    });
+
+
     it('should get required controller via linkingFn (template)', function() {
       module(function() {
         directive('dirA', function() {

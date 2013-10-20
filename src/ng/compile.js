@@ -212,7 +212,10 @@
  * * (no prefix) - Locate the required controller on the current element. Throw an error if not found.
  * * `?` - Attempt to locate the required controller or pass `null` to the `link` fn if not found.
  * * `^` - Locate the required controller by searching the element and its parents. Throw an error if not found.
+ * * `^^` - Locate the required controller by searching the element's parents. Throw an error if not found.
  * * `?^` - Attempt to locate the required controller by searching the element and its parents or pass
+ *   `null` to the `link` fn if not found.
+ * * `?^^` - Attempt to locate the required controller by searching the element's parents, or pass
  *   `null` to the `link` fn if not found.
  *
  *
@@ -567,7 +570,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w_\-]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\d\w_\-]+)(?:\:([^;]+))?;?)/,
-      ALL_OR_NOTHING_ATTRS = makeMap('ngSrc,ngSrcset,src,srcset');
+      ALL_OR_NOTHING_ATTRS = makeMap('ngSrc,ngSrcset,src,srcset'),
+      REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -1589,14 +1593,26 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       function getControllers(directiveName, require, $element, elementControllers) {
         var value, retrievalMethod = 'data', optional = false;
+        var $searchElement = $element;
+        var match;
         if (isString(require)) {
-          while((value = require.charAt(0)) == '^' || value == '?') {
-            require = require.substr(1);
-            if (value == '^') {
-              retrievalMethod = 'inheritedData';
-            }
-            optional = optional || value == '?';
+          match = require.match(REQUIRE_PREFIX_REGEXP);
+          require = require.substring(match[0].length);
+
+          if (match[3]) {
+            if (match[1]) match[3] = null;
+            else match[1] = match[3];
           }
+          if (match[1] === '^') {
+            retrievalMethod = 'inheritedData';
+          } else if (match[1] === '^^') {
+            retrievalMethod = 'inheritedData';
+            $searchElement = $element.parent();
+          }
+          if (match[2] === '?') {
+            optional = true;
+          }
+
           value = null;
 
           if (elementControllers && retrievalMethod === 'data') {
@@ -1604,7 +1620,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               value = value.instance;
             }
           }
-          value = value || $element[retrievalMethod]('$' + require + 'Controller');
+          value = value || $searchElement[retrievalMethod]('$' + require + 'Controller');
 
           if (!value && !optional) {
             throw $compileMinErr('ctreq',
