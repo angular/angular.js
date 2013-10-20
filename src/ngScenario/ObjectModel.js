@@ -66,7 +66,7 @@ angular.scenario.ObjectModel = function(runner) {
 
   runner.on('StepBegin', function(spec, step) {
     var it = self.getSpec(spec.id);
-    var step = new angular.scenario.ObjectModel.Step(step.name);
+    step = new angular.scenario.ObjectModel.Step(step.name);
     it.steps.push(step);
 
     // forward the event
@@ -140,8 +140,9 @@ angular.scenario.ObjectModel.prototype.on = function(eventName, listener) {
  */
 angular.scenario.ObjectModel.prototype.emit = function(eventName) {
   var self = this,
-      args = Array.prototype.slice.call(arguments, 1),
-      eventName = eventName.toLowerCase();
+      args = Array.prototype.slice.call(arguments, 1);
+  
+  eventName = eventName.toLowerCase();
 
   if (this.listeners[eventName]) {
     angular.forEach(this.listeners[eventName], function(listener) {

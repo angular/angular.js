@@ -20,8 +20,8 @@
    *
    * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
    * @param {string} eventType Optional event type
-   * @param {Object=} eventData An optional object which contains additional event data (such as x,y coordinates, keys, etc...) that
-   * are passed into the event when triggered
+   * @param {Object=} eventData An optional object which contains additional event data (such as x,y
+   * coordinates, keys, etc...) that are passed into the event when triggered
    */
   window.browserTrigger = function browserTrigger(element, eventType, eventData) {
     if (element && !element.nodeName) element = element[0];
@@ -124,8 +124,8 @@
         evnt = document.createEvent('MouseEvents');
         x = x || 0;
         y = y || 0;
-        evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'), pressed('alt'),
-            pressed('shift'), pressed('meta'), 0, element);
+        evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
+            pressed('alt'), pressed('shift'), pressed('meta'), 0, element);
       }
 
       /* we're unable to change the timeStamp value directly so this
@@ -155,5 +155,5 @@
 
       return finalProcessDefault;
     }
-  }
+  };
 }());
