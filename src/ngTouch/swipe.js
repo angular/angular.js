@@ -21,7 +21,7 @@
 
 ngTouch.factory('$swipe', [function() {
   // The total distance in any direction before we make the call on swipe vs. scroll.
-  var MOVE_BUFFER_RADIUS = 10;
+  var DEFAULT_MOVE_BUFFER_RADIUS = 10;
 
   function getCoordinates(event) {
     var touches = event.touches && event.touches.length ? event.touches : [event];
@@ -67,7 +67,7 @@ ngTouch.factory('$swipe', [function() {
      * as described above.
      *
      */
-    bind: function(element, eventHandlers) {
+    bind: function(element, eventHandlers, config) {
       // Absolute total movement, used to control swipe vs. scroll.
       var totalX, totalY;
       // Coordinates of the start position.
@@ -76,6 +76,10 @@ ngTouch.factory('$swipe', [function() {
       var lastPos;
       // Whether a swipe is active.
       var active = false;
+
+      if(!config) config = {};
+      config.moveXBufferRadius = config.moveXBufferRadius || DEFAULT_MOVE_BUFFER_RADIUS;
+      config.moveYBufferRadius = config.moveYBufferRadius || DEFAULT_MOVE_BUFFER_RADIUS;
 
       element.on('touchstart mousedown', function(event) {
         startCoords = getCoordinates(event);
@@ -108,12 +112,12 @@ ngTouch.factory('$swipe', [function() {
 
         lastPos = coords;
 
-        if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
+        if (totalX < config.moveXBufferRadius && totalY < config.moveYBufferRadius) {
           return;
         }
 
         // One of totalX or totalY has exceeded the buffer, so decide on swipe vs. scroll.
-        if (totalY > totalX) {
+        if (totalY > totalX && totalY > config.moveYBufferRadius) {
           // Allow native scrolling to take over.
           active = false;
           eventHandlers['cancel'] && eventHandlers['cancel'](event);
