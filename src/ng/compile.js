@@ -841,7 +841,7 @@ function $CompileProvider($provide) {
                                           templateDirective: templateDirective
                                         });
           } else {
-            $template = jqLite(JQLiteClone(compileNode)).contents();
+            $template = jqLite(jqLiteClone(compileNode)).contents();
             $compileNode.html(''); // clear contents
             childTranscludeFn = compile($template, transcludeFn);
           }
