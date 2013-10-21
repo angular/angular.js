@@ -1,5 +1,13 @@
 'use strict';
 
+/* global
+
+  -JQLitePrototype,
+  -addEventListenerFn,
+  -removeEventListenerFn,
+  -BOOLEAN_ATTR
+*/
+
 //////////////////////////////////
 //JQLite
 //////////////////////////////////
@@ -129,6 +137,7 @@ function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArgu
   jQuery.fn[name] = removePatch;
 
   function removePatch(param) {
+    // jshint -W040
     var list = filterElems && param ? [this.filter(param)] : [this],
         fireEvent = dispatchThis,
         set, setIndex, setLength,
@@ -218,7 +227,7 @@ function jqLiteOff(element, type, fn, unsupported) {
   }
 }
 
-function JQLiteRemoveData(element, name) {
+function jqLiteRemoveData(element, name) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId];
 
@@ -252,14 +261,14 @@ function jqLiteExpandoStore(element, key, value) {
   }
 }
 
-function JQLiteData(element, key, value) {
-  var data = JQLiteExpandoStore(element, 'data'),
+function jqLiteData(element, key, value) {
+  var data = jqLiteExpandoStore(element, 'data'),
       isSetter = isDefined(value),
       keyDefined = !isSetter && isDefined(key),
       isSimpleGetter = keyDefined && !isObject(key);
 
   if (!data && !isSimpleGetter) {
-    JQLiteExpandoStore(element, 'data', data = {});
+    jqLiteExpandoStore(element, 'data', data = {});
   }
 
   if (isSetter) {
@@ -296,7 +305,7 @@ function jqLiteRemoveClass(element, cssClasses) {
   }
 }
 
-function JQLiteAddClass(element, cssClasses) {
+function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
                             .replace(/[\n\t]/g, " ");
@@ -361,7 +370,9 @@ var JQLitePrototype = JQLite.prototype = {
     } else {
       this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
       // we can not use jqLite since we are not done loading and jQuery could be loaded later.
+      // jshint -W064
       JQLite(window).on('load', trigger); // fallback to window.onload for others
+      // jshint +W064
     }
   },
   toString: function() {
@@ -420,7 +431,7 @@ forEach({
     element.removeAttribute(name);
   },
 
-  hasClass: JQLiteHasClass,
+  hasClass: jqLiteHasClass,
 
   css: function(element, name, value) {
     name = camelCase(name);
@@ -496,7 +507,7 @@ forEach({
     return getText;
 
     function getText(element, value) {
-      var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType]
+      var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType];
       if (isUndefined(value)) {
         return textProp ? element[textProp] : '';
       }
@@ -525,7 +536,7 @@ forEach({
       return element.innerHTML;
     }
     for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-      JQLiteDealoc(childNodes[i]);
+      jqLiteDealoc(childNodes[i]);
     }
     element.innerHTML = value;
   }
@@ -558,7 +569,7 @@ forEach({
         // we are a read, so read the first child.
         var value = fn.$dv;
         // Only if we have $dv do we iterate over all, otherwise it is just the first element.
-        var jj = value == undefined ? Math.min(this.length, 1) : this.length;
+        var jj = (value === undefined) ? Math.min(this.length, 1) : this.length;
         for (var j = 0; j < jj; j++) {
           var nodeValue = fn(this[j], arg1, arg2);
           value = value ? value + nodeValue : nodeValue;
@@ -604,7 +615,7 @@ function createEventHandler(element, events) {
     }
 
     event.isDefaultPrevented = function() {
-      return event.defaultPrevented || event.returnValue == false;
+      return event.defaultPrevented || event.returnValue === false;
     };
 
     forEach(events[type || event.type], function(fn) {
@@ -655,6 +666,7 @@ forEach({
         if (type == 'mouseenter' || type == 'mouseleave') {
           var contains = document.body.contains || document.body.compareDocumentPosition ?
           function( a, b ) {
+            // jshint bitwise: false
             var adown = a.nodeType === 9 ? a.documentElement : a,
             bup = b && b.parentNode;
             return a === bup || !!( bup && bup.nodeType === 1 && (
@@ -694,7 +706,7 @@ forEach({
           addEventListenerFn(element, type, handle);
           events[type] = [];
         }
-        eventFns = events[type]
+        eventFns = events[type];
       }
       eventFns.push(fn);
     });
@@ -823,9 +835,9 @@ forEach({
   JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
     for(var i=0; i < this.length; i++) {
-      if (value == undefined) {
+      if (isUndefined(value)) {
         value = fn(this[i], arg1, arg2, arg3);
-        if (value !== undefined) {
+        if (isDefined(value)) {
           // any function which returns a value needs to be wrapped
           value = jqLite(value);
         }
@@ -833,7 +845,7 @@ forEach({
         jqLiteAddNodes(value, fn(this[i], arg1, arg2, arg3));
       }
     }
-    return value == undefined ? this : value;
+    return isDefined(value) ? value : this;
   };
 
   // bind legacy bind/unbind to on/off
