@@ -44,5 +44,8 @@
       "type": "MIT",
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {
+    "grunt-contrib-jshint": "~0.6.4"
+  }
 }
