@@ -164,7 +164,7 @@ To make CSS selectors work with custom elements, the custom element name must be
         </script>
       <![endif]-->
       <style>
-        ng\\:view {
+        ng\:view {
           display: block;
           border: 1px solid red;
         }
