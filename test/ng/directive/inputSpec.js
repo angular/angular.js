@@ -667,6 +667,21 @@ describe('input', function() {
         expect(scope.value).toBe(100);
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should validate even if min value changes on-the-fly', function(done) {
+        scope.min = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+        scope.$digest();
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 0;
+        scope.$digest(function () {
+          expect(inputElm).toBeValid();
+          done();
+        });
+      });
     });
 
 
@@ -685,6 +700,21 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
         expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if max value changes on-the-fly', function(done) {
+        scope.max = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+        scope.$digest();
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest(function () {
+          expect(inputElm).toBeInvalid();
+          done();
+        });
       });
     });
 
