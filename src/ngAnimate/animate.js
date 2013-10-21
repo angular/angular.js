@@ -199,6 +199,7 @@ angular.module('ngAnimate', ['ng'])
     var forEach = angular.forEach;
     var selectors = $animateProvider.$$selectors;
 
+    var ELEMENT_NODE = 1;
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
     var rootAnimateState = {running:true};
@@ -583,7 +584,12 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function cancelChildAnimations(element) {
-        angular.forEach(element[0].querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
+        var node = element[0];
+        if(node.nodeType != ELEMENT_NODE) {
+          return;
+        }
+
+        angular.forEach(node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
           element = angular.element(element);
           var data = element.data(NG_ANIMATE_STATE);
           if(data) {
@@ -639,8 +645,7 @@ angular.module('ngAnimate', ['ng'])
       var durationKey = 'Duration',
           propertyKey = 'Property',
           delayKey = 'Delay',
-          animationIterationCountKey = 'IterationCount',
-          ELEMENT_NODE = 1;
+          animationIterationCountKey = 'IterationCount';
 
       var NG_ANIMATE_PARENT_KEY = '$ngAnimateKey';
       var lookupCache = {};
