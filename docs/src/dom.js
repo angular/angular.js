@@ -4,17 +4,49 @@
 
 exports.DOM = DOM;
 exports.htmlEscape = htmlEscape;
+exports.normalizeHeaderToId = normalizeHeaderToId;
 
 //////////////////////////////////////////////////////////
 
 function htmlEscape(text){
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\{\{/g, '<span>{{</span>')
+          .replace(/\}\}/g, '<span>}}</span>');
+}
+
+function nonEmpty(header) {
+  return !!header;
+}
+
+function idFromCurrentHeaders(headers) {
+  if (headers.length === 1) return headers[0];
+  // Do not include the first level title, as that's the title of the page.
+  return headers.slice(1).filter(nonEmpty).join('_');
+}
+
+function normalizeHeaderToId(header) {
+  if (typeof header !== 'string') {
+    return '';
+  }
+
+  return header.toLowerCase()
+      .replace(/<.*>/g, '')         // html tags
+      .replace(/[\!\?\:\.\']/g, '') // special characters
+      .replace(/&#\d\d;/g, '')      // html entities
+      .replace(/\(.*\)/mg, '')      // stuff in parenthesis
+      .replace(/\s$/, '')           // trailing spaces
+      .replace(/\s+/g, '-');        // replace whitespaces with dashes
 }
 
 
 function DOM() {
   this.out = [];
   this.headingDepth = 0;
+  this.currentHeaders = [];
+  this.anchors = [];
 }
 
 var INLINE_TAGS = {
@@ -39,16 +71,28 @@ DOM.prototype = {
   },
 
   html: function(html) {
-    if (html) {
-      var headingDepth = this.headingDepth;
-      for ( var i = 10; i > 0; --i) {
-        html = html
-          .replace(new RegExp('(<\/?h)' + i + '(>)', 'gm'), function(all, start, end){
-            return start + (i + headingDepth) + end;
-          });
-      }
-      this.out.push(html);
-    }
+    if (!html) return;
+
+    var self = this;
+    // rewrite header levels, add ids and collect the ids
+    html = html.replace(/<h(\d)(.*?)>([\s\S]+?)<\/h\1>/gm, function(_, level, attrs, content) {
+      level = parseInt(level, 10) + self.headingDepth; // change header level based on the context
+
+      self.currentHeaders[level - 1] = normalizeHeaderToId(content);
+      self.currentHeaders.length = level;
+
+      var id = idFromCurrentHeaders(self.currentHeaders);
+      self.anchors.push(id);
+      return '<h' + level + attrs + ' id="' + id + '">' + content + '</h' + level + '>';
+    });
+
+    // collect anchors
+    html = html.replace(/<a name="(\w*)">/g, function(match, anchor) {
+      self.anchors.push(anchor);
+      return match;
+    });
+
+    this.out.push(html);
   },
 
   tag: function(name, attr, text) {
@@ -79,17 +123,18 @@ DOM.prototype = {
 
   h: function(heading, content, fn){
     if (content==undefined || (content instanceof Array && content.length == 0)) return;
+
     this.headingDepth++;
+    this.currentHeaders[this.headingDepth - 1] = normalizeHeaderToId(heading);
+    this.currentHeaders.length = this.headingDepth;
+
     var className = null,
         anchor = null;
     if (typeof heading == 'string') {
-      var id = heading.
-          replace(/\(.*\)/mg, '').
-          replace(/[^\d\w\$]/mg, '.').
-          replace(/-+/gm, '-').
-          replace(/-*$/gm, '');
+      var id = idFromCurrentHeaders(this.currentHeaders);
+      this.anchors.push(id);
       anchor = {'id': id};
-      var classNameValue = id.toLowerCase().replace(/[._]/mg, '-');
+      var classNameValue = this.currentHeaders[this.headingDepth - 1]
       if(classNameValue == 'hide') classNameValue = '';
       className = {'class': classNameValue};
     }

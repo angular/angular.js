@@ -5,24 +5,25 @@
  * @name ng.directive:ngController
  *
  * @description
- * The `ngController` directive assigns behavior to a scope. This is a key aspect of how angular
+ * The `ngController` directive attaches a controller class to the view. This is a key aspect of how angular
  * supports the principles behind the Model-View-Controller design pattern.
  *
  * MVC components in angular:
  *
- * * Model — The Model is data in scope properties; scopes are attached to the DOM.
- * * View — The template (HTML with data bindings) is rendered into the View.
- * * Controller — The `ngController` directive specifies a Controller class; the class has
- *   methods that typically express the business logic behind the application.
+ * * Model — The Model is scope properties; scopes are attached to the DOM where scope properties
+ *   are accessed through bindings.
+ * * View — The template (HTML with data bindings) that is rendered into the View.
+ * * Controller — The `ngController` directive specifies a Controller class; the class contains business
+ *   logic behind the application to decorate the scope with functions and values
  *
- * Note that an alternative way to define controllers is via the {@link ng.$route $route} service.
+ * Note that an alternative way to define controllers is via the {@link ngRoute.$route $route} service.
  *
  * @element ANY
  * @scope
  * @param {expression} ngController Name of a globally accessible constructor function or an
  *     {@link guide/expression expression} that on the current scope evaluates to a
- *     constructor function. The controller instance can further be published into the scope
- *     by adding `as localName` the controller name attribute.
+ *     constructor function. The controller instance can be published into a scope property
+ *     by specifying `as propertyName`.
  *
  * @example
  * Here is a simple form for editing user contact information. Adding, removing, clearing, and
@@ -30,37 +31,37 @@
  * easily be called from the angular markup. Notice that the scope becomes the `this` for the
  * controller's instance. This allows for easy access to the view data from the controller. Also
  * notice that any changes to the data are automatically reflected in the View without the need
- * for a manual update. The example is included in two different declaration styles based on
- * your style preferences.
+ * for a manual update. The example is shown in two different declaration styles you may use
+ * according to preference.
    <doc:example>
      <doc:source>
       <script>
-        function SettingsController() {
+        function SettingsController1() {
           this.name = "John Smith";
           this.contacts = [
             {type: 'phone', value: '408 555 1212'},
             {type: 'email', value: 'john.smith@example.org'} ];
           };
 
-        SettingsController.prototype.greet = function() {
+        SettingsController1.prototype.greet = function() {
           alert(this.name);
         };
 
-        SettingsController.prototype.addContact = function() {
+        SettingsController1.prototype.addContact = function() {
           this.contacts.push({type: 'email', value: 'yourname@example.org'});
         };
 
-        SettingsController.prototype.removeContact = function(contactToRemove) {
+        SettingsController1.prototype.removeContact = function(contactToRemove) {
          var index = this.contacts.indexOf(contactToRemove);
           this.contacts.splice(index, 1);
         };
 
-        SettingsController.prototype.clearContact = function(contact) {
+        SettingsController1.prototype.clearContact = function(contact) {
           contact.type = 'phone';
           contact.value = '';
         };
       </script>
-      <div ng-controller="SettingsController as settings">
+      <div id="ctrl-as-exmpl" ng-controller="SettingsController1 as settings">
         Name: <input type="text" ng-model="settings.name"/>
         [ <a href="" ng-click="settings.greet()">greet</a> ]<br/>
         Contact:
@@ -79,29 +80,26 @@
       </div>
      </doc:source>
      <doc:scenario>
-       it('should check controller', function() {
-         expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li:nth-child(1) input').val())
+       it('should check controller as', function() {
+         expect(element('#ctrl-as-exmpl>:input').val()).toBe('John Smith');
+         expect(element('#ctrl-as-exmpl li:nth-child(1) input').val())
            .toBe('408 555 1212');
-         expect(element('.doc-example-live li:nth-child(2) input').val())
+         expect(element('#ctrl-as-exmpl li:nth-child(2) input').val())
            .toBe('john.smith@example.org');
 
-         element('.doc-example-live li:first a:contains("clear")').click();
-         expect(element('.doc-example-live li:first input').val()).toBe('');
+         element('#ctrl-as-exmpl li:first a:contains("clear")').click();
+         expect(element('#ctrl-as-exmpl li:first input').val()).toBe('');
 
-         element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li:nth-child(3) input').val())
+         element('#ctrl-as-exmpl li:last a:contains("add")').click();
+         expect(element('#ctrl-as-exmpl li:nth-child(3) input').val())
            .toBe('yourname@example.org');
        });
      </doc:scenario>
    </doc:example>
-
-
-
     <doc:example>
      <doc:source>
       <script>
-        function SettingsController($scope) {
+        function SettingsController2($scope) {
           $scope.name = "John Smith";
           $scope.contacts = [
             {type:'phone', value:'408 555 1212'},
@@ -126,7 +124,7 @@
           };
         }
       </script>
-      <div ng-controller="SettingsController">
+      <div id="ctrl-exmpl" ng-controller="SettingsController2">
         Name: <input type="text" ng-model="name"/>
         [ <a href="" ng-click="greet()">greet</a> ]<br/>
         Contact:
@@ -146,17 +144,17 @@
      </doc:source>
      <doc:scenario>
        it('should check controller', function() {
-         expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li:nth-child(1) input').val())
+         expect(element('#ctrl-exmpl>:input').val()).toBe('John Smith');
+         expect(element('#ctrl-exmpl li:nth-child(1) input').val())
            .toBe('408 555 1212');
-         expect(element('.doc-example-live li:nth-child(2) input').val())
+         expect(element('#ctrl-exmpl li:nth-child(2) input').val())
            .toBe('john.smith@example.org');
 
-         element('.doc-example-live li:first a:contains("clear")').click();
-         expect(element('.doc-example-live li:first input').val()).toBe('');
+         element('#ctrl-exmpl li:first a:contains("clear")').click();
+         expect(element('#ctrl-exmpl li:first input').val()).toBe('');
 
-         element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li:nth-child(3) input').val())
+         element('#ctrl-exmpl li:last a:contains("add")').click();
+         expect(element('#ctrl-exmpl li:nth-child(3) input').val())
            .toBe('yourname@example.org');
        });
      </doc:scenario>

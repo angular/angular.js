@@ -68,6 +68,27 @@ describe('$timeout', function() {
   }));
 
 
+  it('should forget references to deferreds when callback called even if skipApply is true',
+      inject(function($timeout, $browser) {
+    // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
+    var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+
+    var promise1 = $timeout(function() {}, 0, false);
+    var promise2 = $timeout(function() {}, 100, false);
+    expect(cancelSpy).not.toHaveBeenCalled();
+
+    $timeout.flush(0);
+
+    // Promise1 deferred object should already be removed from the list and not cancellable
+    $timeout.cancel(promise1);
+    expect(cancelSpy).not.toHaveBeenCalled();
+
+    // Promise2 deferred object should not have been called and should be cancellable
+    $timeout.cancel(promise2);
+    expect(cancelSpy).toHaveBeenCalled();
+  }));
+
+
   describe('exception handling', function() {
 
     beforeEach(module(function($exceptionHandlerProvider) {
@@ -106,6 +127,20 @@ describe('$timeout', function() {
 
       expect(log).toEqual('error: Some Error');
     }));
+
+
+    it('should forget references to relevant deferred even when exception is thrown',
+        inject(function($timeout, $browser) {
+      // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
+      var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+
+      var promise = $timeout(function() { throw "Test Error"; }, 0, false);
+      $timeout.flush();
+
+      expect(cancelSpy).not.toHaveBeenCalled();
+      $timeout.cancel(promise);
+      expect(cancelSpy).not.toHaveBeenCalled();
+    }));
   });
 
 
@@ -130,6 +165,20 @@ describe('$timeout', function() {
     }));
 
 
+    it('should cancel the promise', inject(function($timeout, log) {
+      var promise = $timeout(noop);
+      promise.then(function(value) { log('promise success: ' + value); },
+                 function(err) { log('promise error: ' + err); },
+                 function(note) { log('promise update: ' + note); });
+      expect(log).toEqual([]);
+
+      $timeout.cancel(promise);
+      $timeout.flush();
+
+      expect(log).toEqual(['promise error: canceled']);
+    }));
+
+
     it('should return true if a task was successfully canceled', inject(function($timeout) {
       var task1 = jasmine.createSpy('task1'),
           task2 = jasmine.createSpy('task2'),
@@ -146,6 +195,22 @@ describe('$timeout', function() {
 
     it('should not throw a runtime exception when given an undefined promise', inject(function($timeout) {
       expect($timeout.cancel()).toBe(false);
+    }));
+
+
+    it('should forget references to relevant deferred', inject(function($timeout, $browser) {
+      // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
+      var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+
+      var promise = $timeout(function() {}, 0, false);
+
+      expect(cancelSpy).not.toHaveBeenCalled();
+      $timeout.cancel(promise);
+      expect(cancelSpy).toHaveBeenCalledOnce();
+
+      // Promise deferred object should already be removed from the list and not cancellable again
+      $timeout.cancel(promise);
+      expect(cancelSpy).toHaveBeenCalledOnce();
     }));
   });
 });

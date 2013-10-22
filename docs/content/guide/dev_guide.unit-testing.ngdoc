@@ -3,7 +3,7 @@
 @description
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
-comes with almost no-help from the compiler. For this reason we feel very strongly that any code
+comes with almost no help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
 Angular which makes testing your Angular applications easy. So there is no excuse for not testing.
 
@@ -248,10 +248,11 @@ function PasswordCtrl($scope) {
 and the test is straight forward
 
 <pre>
-var pc = new PasswordCtrl();
-pc.password('abc');
-pc.grade();
-expect(pc.strength).toEqual('weak');
+var $scope = {};
+var pc = $controller('PasswordCtrl', { $scope: $scope });
+$scope.password = 'abc';
+$scope.grade();
+expect($scope.strength).toEqual('weak');
 </pre>
 
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
@@ -294,14 +295,14 @@ app.directive('aGreatEye', function () {
     return {
         restrict: 'E',
         replace:  true,
-        template: '<h1>lidless, wreathed in flame</h1>'
+        template: '<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>'
     };
 });
 </pre>
 
 This directive is used as a tag `<a-great-eye></a-great-eye>`. It replaces the entire tag with the
-template `<h1>lidless, wreathed in flame</h1>`. Now we are going to write a jasmine unit test to
-verify this functionality.
+template `<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>`. Now we are going to write a jasmine unit test to
+verify this functionality. Note that the expression `{{1 + 1}}` times will also be evaluated in the rendered content.
 
 <pre>
 describe('Unit testing great quotes', function() {
@@ -322,30 +323,19 @@ describe('Unit testing great quotes', function() {
     it('Replaces the element with the appropriate content', function() {
         // Compile a piece of HTML containing the directive
         var element = $compile("<a-great-eye></a-great-eye>")($rootScope);
+        // fire all the watches, so the scope expression {{1 + 1}} will be evaluated
+        $rootScope.$digest();
         // Check that the compiled element contains the templated content
-        expect(element.html()).toContain("lidless, wreathed in flame");
+        expect(element.html()).toContain("lidless, wreathed in flame, 2 times");
     });
 });
 </pre>
 
 We inject the $compile service and $rootScope before each jasmine test. The $compile service is used
 to render the aGreatEye directive. After rendering the directive we ensure that the directive has
-replaced the content and "lidless, wreathed in flame" is present.
+replaced the content and "lidless, wreathed in flame, 2 times" is present.
 
-## Mocks
-oue
-
-## Global State Isolation
-oue
-
-# Preferred way of Testing
-uo
-
-## JavaScriptTestDriver
-ou
-
-## Jasmine
-ou
 
 ## Sample project
-uoe
+See the {@link https://github.com/angular/angular-seed angular-seed} project for an example.
+

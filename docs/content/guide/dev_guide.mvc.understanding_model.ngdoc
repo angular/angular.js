@@ -28,7 +28,7 @@ occurs in controllers:
 
 * Use an {@link expression angular expression} with an assignment operator in templates:
 
-         <button ng-click="{{foos='ball'}}">Click me</button>
+         <button ng-click="{{foo='bar'}}">Click me</button>
 
 * Use {@link api/ng.directive:ngInit ngInit directive} in templates (for toy/example apps
 only, not recommended for real applications):

@@ -64,7 +64,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     frame = self.getFrame_();
 
     frame.load(function() {
-      frame.unbind();
+      frame.off();
       try {
         var $window = self.getWindow_();
 
@@ -75,7 +75,8 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
           //          we don't need that for our tests, but it should be done
           $window.angular.resumeBootstrap([['$provide', function($provide) {
             $provide.decorator('$sniffer', function($delegate) {
-              $delegate.supportsTransitions = false;
+              $delegate.transitions = false;
+              $delegate.animations = false;
               return $delegate;
             });
           }]]);

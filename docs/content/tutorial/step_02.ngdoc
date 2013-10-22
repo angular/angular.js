@@ -33,7 +33,7 @@ The view component is constructed by Angular from this template:
 
 __`app/index.html`:__
 <pre>
-<html ng-app>
+<html ng-app="phonecatApp">
 <head>
   ...
   <script src="lib/angular/angular.js"></script>
@@ -47,6 +47,7 @@ __`app/index.html`:__
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
+
 </body>
 </html>
 </pre>
@@ -60,63 +61,73 @@ We replaced the hard-coded phone list with the
 repeater tells Angular to create a `<li>` element for each phone in the list using the first `<li>`
 tag as the template.
 
-* As we've learned in step 0, the curly braces around `phone.name` and `phone.snippet` denote
+We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
+__controller__ to the DOM at this point.
+
+* As we've learned in {@link step_00 step 0}, the curly braces around `phone.name` and `phone.snippet` denote
 bindings. As opposed to evaluating constants, these expressions are referring to our application
 model, which was set up in our `PhoneListCtrl` controller.
 
-      <img class="diagram" src="img/tutorial/tutorial_02.png">
-
+<img class="diagram" src="img/tutorial/tutorial_02.png">
 
 ## Model and Controller
 
-The data __model__ (a simple array  of phones in object literal notation) is instantiated within
-the `PhoneListCtrl` __controller__:
+The data __model__ (a simple array  of phones in object literal notation) is now instantiated within
+the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor function that takes a
+`$scope` parameter:
 
 __`app/js/controllers.js`:__
 <pre>
-function PhoneListCtrl($scope) {
+
+var phonecatApp = angular.module('phonecatApp', []);
+
+phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
   $scope.phones = [
-    {"name": "Nexus S",
-     "snippet": "Fast just got faster with Nexus S."},
-    {"name": "Motorola XOOM™ with Wi-Fi",
-     "snippet": "The Next, Next Generation tablet."},
-    {"name": "MOTOROLA XOOM™",
-     "snippet": "The Next, Next Generation tablet."}
+    {'name': 'Nexus S',
+     'snippet': 'Fast just got faster with Nexus S.'},
+    {'name': 'Motorola XOOM™ with Wi-Fi',
+     'snippet': 'The Next, Next Generation tablet.'},
+    {'name': 'MOTOROLA XOOM™',
+     'snippet': 'The Next, Next Generation tablet.'}
   ];
-}
+});
+
 </pre>
 
+Here we declared a controller called `PhoneListCtrl` and registered it in an AngularJS
+module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
+module name as the module to load when bootstrapping the Angular application.
 
-
-
-Although the controller is not yet doing very much controlling, it is playing a crucial role. By
-providing context for our data model, the controller allows us to establish data-binding between
+Although the controller is not yet doing very much, it plays a crucial role. By providing context
+for our data model, the controller allows us to establish data-binding between
 the model and the view. We connected the dots between the presentation, data, and logic components
 as follows:
 
-* `PhoneListCtrl` — the name of our controller function (located in the JavaScript file
-`controllers.js`), matches the value of the
-{@link api/ng.directive:ngController ngController} directive located
-on the `<body>` tag.
+* The {@link api/ng.directive:ngController ngController} directive, located on the `<body>` tag,
+references the the name of our controller, `PhoneListCtrl` (located in the JavaScript file
+`controllers.js`).
 
-* The phone data is then attached to the *scope* (`$scope`) that was injected into our controller
-function. The controller scope is a prototypical descendant of the root scope that was created
-when the application bootstrapped. This controller scope is available to all bindings located within
+* The `PhoneListCtrl` controller attaches the phone data to the `$scope` that was injected into our
+controller function. This *scope* is a prototypical descendant of the *root scope* that was created
+when the application was defined. This controller scope is available to all bindings located within
 the `<body ng-controller="PhoneListCtrl">` tag.
 
-  The concept of a scope in Angular is crucial; a scope can be seen as the glue which allows the
+### Scope
+
+The concept of a scope in Angular is crucial. A scope can be seen as the glue which allows the
 template, model and controller to work together. Angular uses scopes, along with the information
 contained in the template, data model, and controller, to keep models and views separate, but in
 sync. Any changes made to the model are reflected in the view; any changes that occur in the view
 are reflected in the model.
 
-  To learn more about Angular scopes, see the {@link api/ng.$rootScope.Scope angular scope documentation}.
+To learn more about Angular scopes, see the {@link api/ng.$rootScope.Scope angular scope documentation}.
 
 
 ## Tests
 
-The "Angular way" makes it easy to test code as it is being developed. Take a look at the following
-unit test for your newly created controller:
+The "Angular way" of separating controller from the view, makes it easy to test code as it is being
+developed. If our controller is available on the global namespace then we can simply instantiate it
+with a mock `scope` object. Take a look at the following unit test for our controller:
 
 __`test/unit/controllersSpec.js`:__
 <pre>
@@ -134,11 +145,33 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
-The test verifies that we have three records in the phones array and the example demonstrates how
-easy it is to create a unit test for code in Angular. Since testing is such a critical part of
-software development, we make it easy to create tests in Angular so that developers are encouraged
-to write them.
+The test instantiates `PhoneListCtrl` and verifies that the phones array property on the scope
+contains three records. This example demonstrates how easy it is to create a unit test for code in
+Angular. Since testing is such a critical part of software development, we make it easy to create
+tests in Angular so that developers are encouraged to write them.
 
+### Testing non-Global Controllers
+In practice, you will not want to have your controller functions in the global namespace.  In this
+case Angular provides a service, `$controller`, which will retrieve your controller by name.  Here
+is the same test using `$controller`:
+
+__`test/unit/controllersSpec.js`:__
+<pre>
+describe('PhoneCat controllers', function() {
+
+  describe('PhoneListCtrl', function(){
+
+    it('should create "phones" model with 3 phones', inject(function($controller) {
+      var scope = {},
+          ctrl = $controller('PhoneListCtrl', { $scope: scope });
+
+      expect(scope.phones.length).toBe(3);
+    }));
+  });
+});
+</pre>
+
+### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
 this tutorial in Jasmine. You can learn about Jasmine on the {@link
@@ -150,7 +183,7 @@ http://karma-runner.github.io/ Karma}. To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
 `./scripts/test.sh` to start the Karma server (the config file necessary to start the server
-is located at `./config/testacular.conf.js`).
+is located at `./config/karma.conf.js`).
 
 2. Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
    the background. Karma will use this browser for test execution.

@@ -284,6 +284,27 @@ describe('$http', function() {
         });
       });
 
+
+      it('should allow replacement of the headers object', function() {
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) {
+                config.headers = {foo: 'intercepted'};
+                return config;
+              }
+            };
+          });
+        });
+        inject(function($http, $httpBackend, $rootScope) {
+          $httpBackend.expect('GET', '/url', null, function (headers) {
+            return angular.equals(headers, {foo: 'intercepted'});
+          }).respond('');
+          $http.get('/url');
+          $rootScope.$apply();
+        });
+      });
+
       it('should reject the http promise if an interceptor fails', function() {
         var reason = new Error('interceptor failed');
         module(function($httpProvider) {
@@ -684,6 +705,15 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should set default headers for PATCH request', function() {
+        $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
+          return headers['Accept'] == 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] == 'application/json;charset=utf-8';
+        }).respond('');
+
+        $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
+        $httpBackend.flush();
+      });
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
@@ -708,6 +738,21 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
+      it('should override default headers with custom in a case insensitive manner', function() {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
+          return headers['accept'] == 'Rewritten' &&
+                 headers['content-type'] == 'Content-Type Rewritten' &&
+                 headers['Accept'] === undefined &&
+                 headers['Content-Type'] === undefined;
+        }).respond('');
+
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
+          'accept': 'Rewritten',
+          'content-type': 'Content-Type Rewritten'
+        }});
+        $httpBackend.flush();
+      });
+
       it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
         $browser.cookies('XSRF-TOKEN', 'secret');
         $browser.url('http://host.com/base');
@@ -725,7 +770,12 @@ describe('$http', function() {
           return !headers.hasOwnProperty('Content-Type');
         }).respond('');
 
+        $httpBackend.expect('POST', '/url2', undefined, function(headers) {
+          return !headers.hasOwnProperty('content-type');
+        }).respond('');
+
         $http({url: '/url', method: 'POST'});
+        $http({url: '/url2', method: 'POST', headers: {'content-type': 'Rewritten'}});
         $httpBackend.flush();
       });
 
@@ -752,6 +802,28 @@ describe('$http', function() {
         $http({url: '/url', method: 'DELETE', headers: {}});
         $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'})
         $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'})
+
+        $httpBackend.flush();
+      }));
+
+      it('should send execute result if header value is function', inject(function() {
+        var headerConfig = {'Accept': function() { return 'Rewritten'; }};
+
+        function checkHeaders(headers) {
+          return headers['Accept'] == 'Rewritten';
+        }
+
+        $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('POST', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PUT', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('PATCH', '/url', undefined, checkHeaders).respond('');
+        $httpBackend.expect('DELETE', '/url', undefined, checkHeaders).respond('');
+
+        $http({url: '/url', method: 'GET', headers: headerConfig});
+        $http({url: '/url', method: 'POST', headers: headerConfig});
+        $http({url: '/url', method: 'PUT', headers: headerConfig});
+        $http({url: '/url', method: 'PATCH', headers: headerConfig});
+        $http({url: '/url', method: 'DELETE', headers: headerConfig});
 
         $httpBackend.flush();
       }));
@@ -1176,6 +1248,20 @@ describe('$http', function() {
       });
 
 
+      it('should allow the cached value to be an empty string', function () {
+        cache.put('/abc', '');
+
+        callback.andCallFake(function (response, status, headers) {
+          expect(response).toBe('');
+          expect(status).toBe(200);
+        });
+
+        $http({method: 'GET', url: '/abc', cache: cache}).success(callback);
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalled();
+      });
+
+
       it('should default to status code 200 and empty headers if cache contains a non-array element',
           inject(function($rootScope) {
             cache.put('/myurl', 'simple response');
@@ -1261,6 +1347,33 @@ describe('$http', function() {
           $httpBackend.flush();
         });
       });
+    });
+
+
+    describe('timeout', function() {
+
+      it('should abort requests when timeout promise resolves', inject(function($q) {
+        var canceler = $q.defer();
+
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({method: 'GET', url: '/some', timeout: canceler.promise}).error(
+            function(data, status, headers, config) {
+              expect(data).toBeUndefined();
+              expect(status).toBe(0);
+              expect(headers()).toEqual({});
+              expect(config.url).toBe('/some');
+              callback();
+            });
+
+        $rootScope.$apply(function() {
+          canceler.resolve();
+        });
+
+        expect(callback).toHaveBeenCalled();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
     });
 
 
@@ -1376,26 +1489,5 @@ describe('$http', function() {
     });
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
-  });
-
-  describe('isSameDomain', function() {
-    it('should support various combinations of urls', function() {
-      expect(isSameDomain('path/morepath',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('http://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'https://www.adomain.com')).toBe(true);
-      expect(isSameDomain('//www.adomain.com/path',
-                          'http://www.adomain.com:1234')).toBe(false);
-      expect(isSameDomain('https://www.adomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.adomain.com:1234/path',
-                          'http://www.adomain.com')).toBe(false);
-      expect(isSameDomain('http://www.anotherdomain.com/path',
-                          'http://www.adomain.com')).toBe(false);
-    });
   });
 });

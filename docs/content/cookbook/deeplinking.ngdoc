@@ -30,9 +30,9 @@ In this example we have a simple app which consist of two screens:
 * Welcome: url `welcome` Show the user contact information.
 * Settings: url `settings` Show an edit screen for user contact information.
 
-<example module="deepLinking" deps="angular-sanitize.js">
+<example module="deepLinking" deps="angular-route.js, angular-sanitize.js">
  <file name="script.js">
-   angular.module('deepLinking', ['ngSanitize'])
+   angular.module('deepLinking', ['ngRoute', 'ngSanitize'])
      .config(function($routeProvider) {
         $routeProvider.
           when("/welcome",  {templateUrl:'welcome.html',  controller:WelcomeCntl}).
@@ -141,11 +141,11 @@ In this example we have a simple app which consist of two screens:
 # Things to notice
 
 * Routes are defined in the `AppCntl` class. The initialization of the controller causes the
-  initialization of the {@link api/ng.$route $route} service with the proper URL
+  initialization of the {@link api/ngRoute.$route $route} service with the proper URL
   routes.
-* The  {@link api/ng.$route $route} service then watches the URL and instantiates the
+* The  {@link api/ngRoute.$route $route} service then watches the URL and instantiates the
   appropriate controller when the URL changes.
-* The  {@link api/ng.directive:ngView ngView} widget loads the
+* The  {@link api/ngRoute.directive:ngView ngView} widget loads the
   view when the URL changes. It also sets the view scope to the newly instantiated controller.
 * Changing the URL is sufficient to change the controller and view. It makes no difference whether
-  the URL is changed programatically or by the user.
+  the URL is changed programmatically or by the user.

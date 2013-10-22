@@ -24,7 +24,7 @@ There are only three ways an object or a function can get a hold of its dependen
 
 
 The first two options of creating or looking up dependencies are not optimal because they hard
-code the dependency. This make it difficult, if not impossible, to modify the dependencies.
+code the dependency. This makes it difficult, if not impossible, to modify the dependencies.
 This is especially problematic in tests, where it is often desirable to provide mock dependencies
 for test isolation.
 
@@ -102,20 +102,20 @@ dependency lookup responsibility to the injector by declaring the dependencies a
 
 Notice that by having the `ng-controller` instantiate the class, it can satisfy all of the
 dependencies of `MyController` without the controller ever knowing about the injector. This is
-the best outcome. The application code simply ask for the dependencies it needs, without having to
+the best outcome. The application code simply asks for the dependencies it needs, without having to
 deal with the injector. This setup does not break the Law of Demeter.
 
-# Dependency Annotation
+## Dependency Annotation
 
-How does the injector know what service needs to be injected? 
+How does the injector know what service needs to be injected?
 
 The application developer needs to provide annotation information that the injector uses in order
-to resolve the dependencies. Throughout Angular certain API functions are invoked using the
+to resolve the dependencies. Throughout Angular, certain API functions are invoked using the
 injector, as per the API documentation. The injector needs to know what services to inject into
 the function. Below are three equivalent ways of annotating your code with service name
 information. These can be used interchangeably as you see fit and are equivalent.
 
-# Inferring Dependencies
+### Inferring Dependencies
 
 The simplest way to get hold of the dependencies, is to assume that the function parameter names
 are the names of the dependencies.
@@ -134,10 +134,10 @@ While straightforward, this method will not work with JavaScript minifiers/obfus
 rename the method parameter names. This makes this way of annotating only useful for {@link
 http://www.pretotyping.org/ pretotyping}, and demo applications.
 
-# `$inject` Annotation
+### `$inject` Annotation
 
 To allow the minifers to rename the function parameters and still be able to inject right services
-the function needs to be annotate with the `$inject` property. The `$inject` property is an array
+the function needs to be annotated with the `$inject` property. The `$inject` property is an array
 of service names to inject.
 
 <pre>
@@ -147,13 +147,15 @@ of service names to inject.
   MyController.$inject = ['$scope', 'greeter'];
 </pre>
 
+In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
+Using above code snippet as an example, '$scope' will be injected into 'renamed$scope' and 'greeter' into 'renamedGreeter'.
 Care must be taken that the `$inject` annotation is kept in sync with the actual arguments in the
 function declaration.
 
 This method of annotation is useful for controller declarations since it assigns the annotation
 information with the function.
 
-# Inline Annotation
+### Inline Annotation
 
 Sometimes using the `$inject` annotation style is not convenient such as when annotating
 directives.
@@ -189,27 +191,29 @@ For this reason the third annotation style is provided as well.
 Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
 where injection is supported.
 
-# Where can I use DI?
+## Where can I use DI?
 
 DI is pervasive throughout Angular. It is typically used in controllers and factory methods. 
 
-## DI in controllers
+### DI in controllers
 
 Controllers are classes which are responsible for application behavior. The recommended way of 
-declaring controllers is:
+declaring controllers is using the array notation:
 
 <pre>
-  var MyController = function($scope, dep1, dep2) {
+  someModule.controller('MyController', ['$scope', 'dep1', 'dep2', function($scope, dep1, dep2) {
     ...
     $scope.aMethod = function() {
       ...
     }
-  }
-  MyController.$inject = ['$scope', 'dep1', 'dep2'];
+    ...
+  }]);
 </pre>
 
+This avoids the creation of global functions for controllers and also protects against minification.
 
-## Factory methods
+
+### Factory methods
 
 Factory methods are responsible for creating most objects in Angular. Examples are directives,
 services, and filters. The factory methods are registered with the module, and the recommended way

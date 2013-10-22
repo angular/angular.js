@@ -7,8 +7,7 @@
 This page explains the Angular initialization process and how you can manually initialize Angular
 if necessary.
 
-
-# Angular `<script>` Tag
+## Angular `<script>` Tag
 
 This example shows the recommended path for integrating Angular with what we call automatic
 initialization.
@@ -50,7 +49,7 @@ initialization.
 
 
 
-# Automatic Initialization
+## Automatic Initialization
 
 Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
 evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
@@ -76,16 +75,14 @@ If the {@link api/ng.directive:ngApp `ng-app`} directive is found then Angular w
 
 
 
-# Manual Initialization
+## Manual Initialization
 
 
 If you need to have more control over the initialization process, you can use a manual
 bootstrapping method instead. Examples of when you'd need to do this include using script loaders
 or the need to perform an operation before Angular compiles a page.
 
-
-Here is an example of manually initializing Angular. The example is equivalent to using the {@link
-api/ng.directive:ngApp ng-app} directive.
+Here is an example of manually initializing Angular:
 
 <pre>
 <!doctype html>
@@ -95,17 +92,37 @@ api/ng.directive:ngApp ng-app} directive.
     <script src="http://code.angularjs.org/angular.js"></script>
     <script>
        angular.element(document).ready(function() {
-         angular.bootstrap(document);
+         angular.module('myApp', []);
+         angular.bootstrap(document, ['myApp']);
        });
     </script>
   </body>
 </html>
 </pre>
 
+Note that we have provided the name of our application module to be loaded into the injector as the second
+parameter of the {@link api/angular.bootstrap} function. Notice that `angular.bootstrap` will not create modules 
+on the fly. You must create any custom {@link guide/module modules} before you pass them as a parameter. 
+
 This is the sequence that your code should follow:
 
-  1. After the page and all of the code is loaded, find the root of the HTML template, which is
-  typically the root of the document.
+  1. After the page and all of the code is loaded, find the root element of your AngularJS
+  application, which is typically the root of the document.
 
-  2. Call {@link api/angular.bootstrap} to {@link compiler compile} the template into an
+  2. Call {@link api/angular.bootstrap} to {@link compiler compile} the element into an
   executable, bi-directionally bound application.
+
+## Deferred Bootstrap
+
+This features enables tools like Batarang and test runners to
+hook into angular's bootstrap process and sneak in more modules
+into the DI registry which can replace or augment DI services for
+the purpose of instrumentation or mocking out heavy dependencies.
+
+If `window.name` contains prefix `NG_DEFER_BOOTSTRAP!` when
+{@link api/angular.bootstrap} is called, the bootstrap process will be paused
+until `angular.resumeBootstrap()` is called.
+
+`angular.resumeBootstrap()` takes an optional array of modules that
+should be added to the original list of modules that the app was
+about to be bootstrapped with.

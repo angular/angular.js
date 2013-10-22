@@ -1,5 +1,7 @@
 'use strict';
 
+var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
+
 describe('ngMock', function() {
   var noop = angular.noop;
 
@@ -158,83 +160,360 @@ describe('ngMock', function() {
 
 
   describe('$log', function() {
-    var $log;
-    beforeEach(inject(['$log', function(log) {
-      $log = log;
-    }]));
+    angular.forEach([true, false], function(debugEnabled) {
+      describe('debug ' + debugEnabled, function() {
+        beforeEach(module(function($logProvider) {
+          $logProvider.debugEnabled(debugEnabled);
+        }));
 
-    afterEach(inject(function($log){
-      $log.reset();
-    }));
+        afterEach(inject(function($log){
+          $log.reset();
+        }));
 
-    it('should provide log method', function() {
-      expect(function() { $log.log(''); }).not.toThrow();
+        it("should skip debugging output if disabled (" + debugEnabled + ")", inject(function($log) {
+            $log.log('fake log');
+            $log.info('fake log');
+            $log.warn('fake log');
+            $log.error('fake log');
+            $log.debug('fake log');
+            expect($log.log.logs).toContain(['fake log']);
+            expect($log.info.logs).toContain(['fake log']);
+            expect($log.warn.logs).toContain(['fake log']);
+            expect($log.error.logs).toContain(['fake log']);
+            if (debugEnabled) {
+              expect($log.debug.logs).toContain(['fake log']);
+            } else {
+              expect($log.debug.logs).toEqual([]);
+            }
+          }));
+      });
     });
 
-    it('should provide info method', function() {
-      expect(function() { $log.info(''); }).not.toThrow();
-    });
+    describe('debug enabled (default)', function() {
+      var $log;
+      beforeEach(inject(['$log', function(log) {
+        $log = log;
+      }]));
 
-    it('should provide warn method', function() {
-      expect(function() { $log.warn(''); }).not.toThrow();
-    });
+      afterEach(inject(function($log){
+        $log.reset();
+      }));
 
-    it('should provide error method', function() {
-      expect(function() { $log.error(''); }).not.toThrow();
-    });
+      it('should provide the log method', function() {
+        expect(function() { $log.log(''); }).not.toThrow();
+      });
 
-    it('should store log messages', function() {
-      $log.log('fake log');
-      expect($log.log.logs).toContain(['fake log']);
-    });
+      it('should provide the info method', function() {
+        expect(function() { $log.info(''); }).not.toThrow();
+      });
 
-    it('should store info messages', function() {
-      $log.info('fake log');
-      expect($log.info.logs).toContain(['fake log']);
-    });
+      it('should provide the warn method', function() {
+        expect(function() { $log.warn(''); }).not.toThrow();
+      });
 
-    it('should store warn messages', function() {
-      $log.warn('fake log');
-      expect($log.warn.logs).toContain(['fake log']);
-    });
+      it('should provide the error method', function() {
+        expect(function() { $log.error(''); }).not.toThrow();
+      });
 
-    it('should store error messages', function() {
-      $log.error('fake log');
-      expect($log.error.logs).toContain(['fake log']);
-    });
+      it('should provide the debug method', function() {
+        expect(function() { $log.debug(''); }).not.toThrow();
+      });
 
-    it('should assertEmpty', function(){
-      try {
+      it('should store log messages', function() {
+        $log.log('fake log');
+        expect($log.log.logs).toContain(['fake log']);
+      });
+
+      it('should store info messages', function() {
+        $log.info('fake log');
+        expect($log.info.logs).toContain(['fake log']);
+      });
+
+      it('should store warn messages', function() {
+        $log.warn('fake log');
+        expect($log.warn.logs).toContain(['fake log']);
+      });
+
+      it('should store error messages', function() {
+        $log.error('fake log');
+        expect($log.error.logs).toContain(['fake log']);
+      });
+
+      it('should store debug messages', function() {
+        $log.debug('fake log');
+        expect($log.debug.logs).toContain(['fake log']);
+      });
+
+      it('should assertEmpty', function(){
+        try {
+          $log.error(Error('MyError'));
+          $log.warn(Error('MyWarn'));
+          $log.info(Error('MyInfo'));
+          $log.log(Error('MyLog'));
+          $log.debug(Error('MyDebug'));
+          $log.assertEmpty();
+        } catch (error) {
+          error = error.message || error;
+          expect(error).toMatch(/Error: MyError/m);
+          expect(error).toMatch(/Error: MyWarn/m);
+          expect(error).toMatch(/Error: MyInfo/m);
+          expect(error).toMatch(/Error: MyLog/m);
+          expect(error).toMatch(/Error: MyDebug/m);
+        } finally {
+          $log.reset();
+        }
+      });
+
+      it('should reset state', function(){
         $log.error(Error('MyError'));
         $log.warn(Error('MyWarn'));
         $log.info(Error('MyInfo'));
         $log.log(Error('MyLog'));
-        $log.assertEmpty();
-      } catch (error) {
-        error = error.message || error;
-        expect(error).toMatch(/Error: MyError/m);
-        expect(error).toMatch(/Error: MyWarn/m);
-        expect(error).toMatch(/Error: MyInfo/m);
-        expect(error).toMatch(/Error: MyLog/m);
-      } finally {
         $log.reset();
-      }
+        var passed = false;
+        try {
+          $log.assertEmpty(); // should not throw error!
+          passed = true;
+        } catch (e) {
+          passed = e;
+        }
+        expect(passed).toBe(true);
+      });
+    });
+  });
+
+
+  describe('$interval', function() {
+    it('should run tasks repeatedly', inject(function($interval) {
+      var counter = 0;
+      $interval(function() { counter++; }, 1000);
+
+      expect(counter).toBe(0);
+
+      $interval.flush(1000);
+      expect(counter).toBe(1);
+
+      $interval.flush(1000);
+
+      expect(counter).toBe(2);
+    }));
+
+
+    it('should call $apply after each task is executed', inject(function($interval, $rootScope) {
+      var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+      $interval(noop, 1000);
+      expect(applySpy).not.toHaveBeenCalled();
+
+      $interval.flush(1000);
+      expect(applySpy).toHaveBeenCalledOnce();
+
+      applySpy.reset();
+
+      $interval(noop, 1000);
+      $interval(noop, 1000);
+      $interval.flush(1000);
+      expect(applySpy.callCount).toBe(3);
+    }));
+
+
+    it('should NOT call $apply if invokeApply is set to false',
+        inject(function($interval, $rootScope) {
+      var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+      $interval(noop, 1000, 0, false);
+      expect(applySpy).not.toHaveBeenCalled();
+
+      $interval.flush(2000);
+      expect(applySpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should allow you to specify the delay time', inject(function($interval) {
+      var counter = 0;
+      $interval(function() { counter++; }, 123);
+
+      expect(counter).toBe(0);
+
+      $interval.flush(122);
+      expect(counter).toBe(0);
+
+      $interval.flush(1);
+      expect(counter).toBe(1);
+    }));
+
+
+    it('should allow you to specify a number of iterations', inject(function($interval) {
+      var counter = 0;
+      $interval(function() {counter++}, 1000, 2);
+
+      $interval.flush(1000);
+      expect(counter).toBe(1);
+      $interval.flush(1000);
+      expect(counter).toBe(2);
+      $interval.flush(1000);
+      expect(counter).toBe(2);
+    }));
+
+
+    describe('flush', function() {
+      it('should move the clock forward by the specified time', inject(function($interval) {
+        var counterA = 0;
+        var counterB = 0;
+        $interval(function() { counterA++; }, 100);
+        $interval(function() { counterB++; }, 401);
+
+        $interval.flush(200);
+        expect(counterA).toEqual(2);
+
+        $interval.flush(201);
+        expect(counterA).toEqual(4);
+        expect(counterB).toEqual(1);
+      }));
     });
 
-    it('should reset state', function(){
-      $log.error(Error('MyError'));
-      $log.warn(Error('MyWarn'));
-      $log.info(Error('MyInfo'));
-      $log.log(Error('MyLog'));
-      $log.reset();
-      var passed = false;
-      try {
-        $log.assertEmpty(); // should not throw error!
-        passed = true;
-      } catch (e) {
-        passed = e;
-      }
-      expect(passed).toBe(true);
+
+    it('should return a promise which will be updated with the count on each iteration',
+        inject(function($interval) {
+      var log = [],
+          promise = $interval(function() { log.push('tick'); }, 1000);
+
+      promise.then(function(value) { log.push('promise success: ' + value); },
+                   function(err) { log.push('promise error: ' + err); },
+                   function(note) { log.push('promise update: ' + note); });
+      expect(log).toEqual([]);
+
+      $interval.flush(1000);
+      expect(log).toEqual(['tick', 'promise update: 0']);
+
+      $interval.flush(1000);
+      expect(log).toEqual(['tick', 'promise update: 0', 'tick', 'promise update: 1']);
+    }));
+
+
+    it('should return a promise which will be resolved after the specified number of iterations',
+        inject(function($interval) {
+      var log = [],
+          promise = $interval(function() { log.push('tick'); }, 1000, 2);
+
+      promise.then(function(value) { log.push('promise success: ' + value); },
+                   function(err) { log.push('promise error: ' + err); },
+                   function(note) { log.push('promise update: ' + note); });
+      expect(log).toEqual([]);
+
+      $interval.flush(1000);
+      expect(log).toEqual(['tick', 'promise update: 0']);
+      $interval.flush(1000);
+
+      expect(log).toEqual([
+          'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2']);
+
+    }));
+
+
+    describe('exception handling', function() {
+      beforeEach(module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      }));
+
+
+      it('should delegate exception to the $exceptionHandler service', inject(
+          function($interval, $exceptionHandler) {
+        $interval(function() { throw "Test Error"; }, 1000);
+        expect($exceptionHandler.errors).toEqual([]);
+
+        $interval.flush(1000);
+        expect($exceptionHandler.errors).toEqual(["Test Error"]);
+
+        $interval.flush(1000);
+        expect($exceptionHandler.errors).toEqual(["Test Error", "Test Error"]);
+      }));
+
+
+      it('should call $apply even if an exception is thrown in callback', inject(
+          function($interval, $rootScope) {
+        var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+
+        $interval(function() { throw "Test Error"; }, 1000);
+        expect(applySpy).not.toHaveBeenCalled();
+
+        $interval.flush(1000);
+        expect(applySpy).toHaveBeenCalled();
+      }));
+
+
+      it('should still update the interval promise when an exception is thrown',
+          inject(function($interval) {
+        var log = [],
+            promise = $interval(function() { throw "Some Error"; }, 1000);
+
+        promise.then(function(value) { log.push('promise success: ' + value); },
+                   function(err) { log.push('promise error: ' + err); },
+                   function(note) { log.push('promise update: ' + note); });
+        $interval.flush(1000);
+
+        expect(log).toEqual(['promise update: 0']);
+      }));
+    });
+
+
+    describe('cancel', function() {
+      it('should cancel tasks', inject(function($interval) {
+        var task1 = jasmine.createSpy('task1', 1000),
+            task2 = jasmine.createSpy('task2', 1000),
+            task3 = jasmine.createSpy('task3', 1000),
+            promise1, promise3;
+
+        promise1 = $interval(task1, 200);
+        $interval(task2, 1000);
+        promise3 = $interval(task3, 333);
+
+        $interval.cancel(promise3);
+        $interval.cancel(promise1);
+        $interval.flush(1000);
+
+        expect(task1).not.toHaveBeenCalled();
+        expect(task2).toHaveBeenCalledOnce();
+        expect(task3).not.toHaveBeenCalled();
+      }));
+
+
+      it('should cancel the promise', inject(function($interval, $rootScope) {
+        var promise = $interval(noop, 1000),
+            log = [];
+        promise.then(function(value) { log.push('promise success: ' + value); },
+                   function(err) { log.push('promise error: ' + err); },
+                   function(note) { log.push('promise update: ' + note); });
+        expect(log).toEqual([]);
+
+        $interval.flush(1000);
+        $interval.cancel(promise);
+        $interval.flush(1000);
+        $rootScope.$apply(); // For resolving the promise -
+                             // necessary since q uses $rootScope.evalAsync.
+
+        expect(log).toEqual(['promise update: 0', 'promise error: canceled']);
+      }));
+
+
+      it('should return true if a task was successfully canceled', inject(function($interval) {
+        var task1 = jasmine.createSpy('task1'),
+            task2 = jasmine.createSpy('task2'),
+            promise1, promise2;
+
+        promise1 = $interval(task1, 1000, 1);
+        $interval.flush(1000);
+        promise2 = $interval(task2, 1000, 1);
+
+        expect($interval.cancel(promise1)).toBe(false);
+        expect($interval.cancel(promise2)).toBe(true);
+      }));
+
+
+      it('should not throw a runtime exception when given an undefined promise',
+          inject(function($interval) {
+        expect($interval.cancel()).toBe(false);
+      }));
     });
   });
 
@@ -351,6 +630,35 @@ describe('ngMock', function() {
       $timeout.flush();
       expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
     }));
+
+
+    it('should check against the delay if provided within timeout', inject(function($timeout) {
+      $timeout(noop, 100);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+
+      $timeout(noop, 1000);
+      $timeout.flush(100);
+      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow();
+
+      $timeout.flush(900);
+      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+    }));
+
+
+    it('should assert against the delay value', inject(function($timeout) {
+      var count = 0;
+      var iterate = function() {
+        count++;
+      };
+
+      $timeout(iterate, 100);
+      $timeout(iterate, 123);
+      $timeout.flush(100);
+      expect(count).toBe(1);
+      $timeout.flush(123);
+      expect(count).toBe(2);
+    }));
   });
 
 
@@ -378,10 +686,14 @@ describe('ngMock', function() {
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
 
-
-    it('should be published on window', function(){
-      expect(window.dump instanceof Function).toBe(true);
-    });
+    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope){
+      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
+      // things like hasOwnProperty even if it is explicitly defined on the actual object!
+      if (msie<=8) return;
+      $rootScope.hasOwnProperty = 'X';
+      expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
+      expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
+    }));
   });
 
 
@@ -425,9 +737,9 @@ describe('ngMock', function() {
       // through the code makes the test pass. Viva IE!!!
       angular.element(document.body).append(div)
 
-      div.bind('click', function() { log += 'click1;'});
-      div.bind('click', function() { log += 'click2;'});
-      div.bind('mousemove', function() { log += 'mousemove;'});
+      div.on('click', function() { log += 'click1;'});
+      div.on('click', function() { log += 'click2;'});
+      div.on('mousemove', function() { log += 'mousemove;'});
 
       browserTrigger(div, 'click');
       browserTrigger(div, 'mousemove');
@@ -454,6 +766,42 @@ describe('ngMock', function() {
     });
 
     describe('module', function() {
+
+      describe('object literal format', function() {
+        var mock = { log: 'module' };
+        
+        beforeEach(function() {
+          module({
+              'service': mock,
+              'other': { some: 'replacement'}
+            },
+            'ngResource',
+            function ($provide) { $provide.value('example', 'win'); }
+          );
+        });
+
+        it('should inject the mocked module', function() {
+          inject(function(service) {
+            expect(service).toEqual(mock);
+          });
+        });
+        
+        it('should support multiple key value pairs', function() {
+          inject(function(service, other) {
+            expect(other.some).toEqual('replacement');
+            expect(service).toEqual(mock);
+          });
+        });
+
+        it('should integrate with string and function', function() {
+          inject(function(service, $resource, example) {
+            expect(service).toEqual(mock);
+            expect($resource).toBeDefined();
+            expect(example).toEqual('win');
+          });
+        });
+      });
+
       describe('in DSL', function() {
         it('should load module', module(function() {
           log += 'module';
@@ -798,6 +1146,24 @@ describe('ngMock', function() {
     });
 
 
+    it('should abort requests when timeout promise resolves', function() {
+      hb.expect('GET', '/url1').respond(200);
+
+      var canceler, then = jasmine.createSpy('then').andCallFake(function(fn) {
+        canceler = fn;
+      });
+
+      hb('GET', '/url1', null, callback, null, {then: then});
+      expect(typeof canceler).toBe('function');
+
+      canceler();  // simulate promise resolution
+
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      hb.verifyNoOutstandingExpectation();
+      hb.verifyNoOutstandingRequest();
+    });
+
+
     it('should throw an exception if no response defined', function() {
       hb.when('GET', '/test');
       expect(function() {
@@ -953,6 +1319,19 @@ describe('ngMock', function() {
       });
 
 
+      it('should accept data as function', function() {
+        var dataValidator = function(data) {
+          var json = angular.fromJson(data);
+          return !!json.id && json.status === 'N';
+        };
+        var exp = new MockHttpExpectation('POST', '/url', dataValidator);
+
+        expect(exp.matchData({})).toBe(false);
+        expect(exp.match('POST', '/url', '{"id": "xxx", "status": "N"}')).toBe(true);
+        expect(exp.match('POST', '/url', {"id": "xxx", "status": "N"})).toBe(true);
+      });
+
+
       it('should ignore data only if undefined (not null or false)', function() {
         var exp = new MockHttpExpectation('POST', '/url', null);
         expect(exp.matchData(null)).toBe(true);
@@ -1004,10 +1383,10 @@ describe('ngMockE2E', function() {
     describe('passThrough()', function() {
       it('should delegate requests to the real backend when passThrough is invoked', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
-        hb('GET', '/passThrough/23', null, callback);
+        hb('GET', '/passThrough/23', null, callback, {}, null, true);
 
-        expect(realHttpBackend).
-            toHaveBeenCalledOnceWith('GET', '/passThrough/23', null, callback, undefined);
+        expect(realHttpBackend).toHaveBeenCalledOnceWith(
+            'GET', '/passThrough/23', null, callback, {}, null, true);
       });
     });
 

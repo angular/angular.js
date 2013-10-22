@@ -1,9 +1,19 @@
 'use strict';
 
+var $sanitizeMinErr = angular.$$minErr('$sanitize');
+
 /**
  * @ngdoc overview
  * @name ngSanitize
  * @description
+ *
+ * # ngSanitize
+ *
+ * The `ngSanitize` module provides functionality to sanitize HTML.
+ *
+ * {@installModule sanitize}
+ *
+ * See {@link ngSanitize.$sanitize `$sanitize`} for usage.
  */
 
 /*
@@ -42,68 +52,71 @@
    <doc:example module="ngSanitize">
      <doc:source>
        <script>
-         function Ctrl($scope) {
+         function Ctrl($scope, $sce) {
            $scope.snippet =
              '<p style="color:blue">an html\n' +
              '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
              'snippet</p>';
+           $scope.deliberatelyTrustDangerousSnippet = function() {
+             return $sce.trustAsHtml($scope.snippet);
+           };
          }
        </script>
        <div ng-controller="Ctrl">
           Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
            <table>
              <tr>
-               <td>Filter</td>
+               <td>Directive</td>
+               <td>How</td>
                <td>Source</td>
                <td>Rendered</td>
              </tr>
-             <tr id="html-filter">
-               <td>html filter</td>
-               <td>
-                 <pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre>
-               </td>
-               <td>
-                 <div ng-bind-html="snippet"></div>
-               </td>
+             <tr id="bind-html-with-sanitize">
+               <td>ng-bind-html</td>
+               <td>Automatically uses $sanitize</td>
+               <td><pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng-bind-html="snippet"></div></td>
              </tr>
-             <tr id="escaped-html">
-               <td>no filter</td>
+             <tr id="bind-html-with-trust">
+               <td>ng-bind-html</td>
+               <td>Bypass $sanitize by explicitly trusting the dangerous value</td>
+               <td><pre>&lt;div ng-bind-html="deliberatelyTrustDangerousSnippet()"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng-bind-html="deliberatelyTrustDangerousSnippet()"></div></td>
+             </tr>
+             <tr id="bind-default">
+               <td>ng-bind</td>
+               <td>Automatically escapes</td>
                <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
                <td><div ng-bind="snippet"></div></td>
-             </tr>
-             <tr id="html-unsafe-filter">
-               <td>unsafe html filter</td>
-               <td><pre>&lt;div ng-bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng-bind-html-unsafe="snippet"></div></td>
              </tr>
            </table>
          </div>
      </doc:source>
      <doc:scenario>
-       it('should sanitize the html snippet ', function() {
-         expect(using('#html-filter').element('div').html()).
+       it('should sanitize the html snippet by default', function() {
+         expect(using('#bind-html-with-sanitize').element('div').html()).
            toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
        });
 
-       it('should escape snippet without any filter', function() {
-         expect(using('#escaped-html').element('div').html()).
-           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
-                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
-                "snippet&lt;/p&gt;");
-       });
-
-       it('should inline raw snippet if filtered as unsafe', function() {
-         expect(using('#html-unsafe-filter').element("div").html()).
+       it('should inline raw snippet if bound to a trusted value', function() {
+         expect(using('#bind-html-with-trust').element("div").html()).
            toBe("<p style=\"color:blue\">an html\n" +
                 "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
                 "snippet</p>");
        });
 
+       it('should escape snippet without any filter', function() {
+         expect(using('#bind-default').element('div').html()).
+           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+                "snippet&lt;/p&gt;");
+       });
+
        it('should update', function() {
-         input('snippet').enter('new <b>text</b>');
-         expect(using('#html-filter').binding('snippet')).toBe('new <b>text</b>');
-         expect(using('#escaped-html').element('div').html()).toBe("new &lt;b&gt;text&lt;/b&gt;");
-         expect(using('#html-unsafe-filter').binding("snippet")).toBe('new <b>text</b>');
+         input('snippet').enter('new <b onclick="alert(1)">text</b>');
+         expect(using('#bind-html-with-sanitize').element('div').html()).toBe('new <b>text</b>');
+         expect(using('#bind-html-with-trust').element('div').html()).toBe('new <b onclick="alert(1)">text</b>');
+         expect(using('#bind-default').element('div').html()).toBe("new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
        });
      </doc:scenario>
    </doc:example>
@@ -122,8 +135,9 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   BEGIN_TAG_REGEXP = /^</,
   BEGING_END_TAGE_REGEXP = /^<\s*\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
+  DOCTYPE_REGEXP = /<!DOCTYPE([^>]*?)>/i,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
-  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/,
+  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
 
@@ -197,14 +211,22 @@ function htmlParser( html, handler ) {
 
       // Comment
       if ( html.indexOf("<!--") === 0 ) {
-        index = html.indexOf("-->");
+        // comments containing -- are not allowed unless they terminate the comment
+        index = html.indexOf("--", 4);
 
-        if ( index >= 0 ) {
+        if ( index >= 0 && html.lastIndexOf("-->", index) === index) {
           if (handler.comment) handler.comment( html.substring( 4, index ) );
           html = html.substring( index + 3 );
           chars = false;
         }
+      // DOCTYPE
+      } else if ( DOCTYPE_REGEXP.test(html) ) {
+        match = html.match( DOCTYPE_REGEXP );
 
+        if ( match ) {
+          html = html.replace( match[0] , '');
+          chars = false;
+        }
       // end tag
       } else if ( BEGING_END_TAGE_REGEXP.test(html) ) {
         match = html.match( END_TAG_REGEXP );
@@ -250,7 +272,7 @@ function htmlParser( html, handler ) {
     }
 
     if ( html == last ) {
-      throw "Parse Error: " + html;
+      throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block of html: {0}", html);
     }
     last = html;
   }
@@ -277,10 +299,10 @@ function htmlParser( html, handler ) {
 
     var attrs = {};
 
-    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQoutedValue, unqoutedValue) {
+    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQuotedValue, unquotedValue) {
       var value = doubleQuotedValue
-        || singleQoutedValue
-        || unqoutedValue
+        || singleQuotedValue
+        || unquotedValue
         || '';
 
       attrs[name] = decodeEntities(value);

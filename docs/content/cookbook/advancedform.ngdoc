@@ -38,13 +38,8 @@ detection, and preventing invalid form submission.
        $scope.form.contacts.push({type:'', value:''});
      };
 
-     $scope.removeContact = function(contact) {
-       var contacts = $scope.form.contacts;
-       for (var i = 0, ii = contacts.length; i < ii; i++) {
-         if (contact === contacts[i]) {
-           contacts.splice(i, 1);
-         }
-       }
+     $scope.removeContact = function(index) {
+       $scope.form.contacts.splice(index, 1);
      };
 
      $scope.isCancelDisabled = function() {
@@ -83,7 +78,7 @@ detection, and preventing invalid form submission.
            <option>IM</option>
          </select>
          <input type="text" ng-model="contact.value" required/>
-          [ <a href="" ng-click="removeContact(contact)">X</a> ]
+          [ <a href="" ng-click="removeContact($index)">X</a> ]
        </div>
      <button ng-click="cancel()" ng-disabled="isCancelDisabled()">Cancel</button>
      <button ng-click="save()" ng-disabled="isSaveDisabled()">Save</button>

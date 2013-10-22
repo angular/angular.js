@@ -25,18 +25,19 @@ GitHub}:
 __`app/js/controllers.js`:__
 <pre>
 ...
-function PhoneDetailCtrl($scope, $routeParams, $http) {
-  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-    $scope.phone = data;
-    $scope.mainImageUrl = data.images[0];
-  });
+var phonecatControllers = angular.module('phonecatControllers',[]);
 
-  $scope.setImage = function(imageUrl) {
-    $scope.mainImageUrl = imageUrl;
-  }
-}
+phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
+  function($scope, $routeParams, $http) {
+    $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+      $scope.phone = data;
+      $scope.mainImageUrl = data.images[0];
+    });
 
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
+    $scope.setImage = function(imageUrl) {
+      $scope.mainImageUrl = imageUrl;
+    }
+  }]);
 </pre>
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
@@ -104,7 +105,7 @@ __`test/e2e/scenarios.js`:__
 
 You can now rerun `./scripts/e2e-test.sh` or refresh the browser tab with the end-to-end test
 runner to see the tests run, or you can see them running on {@link
-http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
+http://angular.github.com/angular-phonecat/step-10/test/e2e/runner.html
 Angular's server}.
 
 # Experiments
@@ -134,7 +135,7 @@ template remains operational.
 
 # Summary
 
-With the phone image swapper in place, we're ready for {@link step_11 step 11} (the last step!) to
+With the phone image swapper in place, we're ready for {@link step_11 step 11} to
 learn an even better way to fetch data.
 
 

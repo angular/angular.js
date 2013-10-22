@@ -67,13 +67,64 @@ describe('ngBind*', function() {
   });
 
 
-  describe('ngBindHtmlUnsafe', function() {
+  describe('ngBindHtml', function() {
+    describe('SCE disabled', function() {
+      beforeEach(function() {
+        module(function($sceProvider) { $sceProvider.enabled(false); });
+      });
 
-    it('should set unsafe html', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
-      $rootScope.html = '<div onclick="">hello</div>';
-      $rootScope.$digest();
-      expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
-    }));
+      it('should set html', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+        $rootScope.html = '<div onclick="">hello</div>';
+        $rootScope.$digest();
+        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+    });
+
+
+    describe('SCE enabled', function() {
+      it('should NOT set html for untrusted values', inject(function($rootScope, $compile) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+        $rootScope.html = '<div onclick="">hello</div>';
+        expect($rootScope.$digest).toThrow();
+      }));
+
+      it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+        $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
+        expect($rootScope.$digest).toThrow();
+      }));
+
+      it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+        $rootScope.html = $sce.trustAsHtml('<div onclick="">hello</div>');
+        $rootScope.$digest();
+        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+
+      it('should watch the string value to avoid infinite recursion', inject(function($rootScope, $compile, $sce) {
+        // Ref: https://github.com/angular/angular.js/issues/3932
+        // If the binding is a function that creates a new value on every call via trustAs, we'll
+        // trigger an infinite digest if we don't take care of it.
+        element = $compile('<div ng-bind-html="getHtml()"></div>')($rootScope);
+        $rootScope.getHtml = function() {
+          return $sce.trustAsHtml('<div onclick="">hello</div>');
+        };
+        $rootScope.$digest();
+        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+      }));
+
+      describe('when $sanitize is available', function() {
+        beforeEach(function() { module('ngSanitize'); });
+
+        it('should sanitize untrusted html', inject(function($rootScope, $compile) {
+          element = $compile('<div ng-bind-html="html"></div>')($rootScope);
+          $rootScope.html = '<div onclick="">hello</div>';
+          $rootScope.$digest();
+          expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
+        }));
+      });
+    });
+
   });
 });

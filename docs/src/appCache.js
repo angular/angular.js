@@ -61,7 +61,7 @@ function appCacheTemplate() {
           "syntaxhighlighter/syntaxhighlighter-combined.js",
           "../angular.min.js",
           "docs-combined.js",
-          "docs-keywords.js",
+          "docs-data.js",
           "docs-combined.css",
           "syntaxhighlighter/syntaxhighlighter-combined.css",
           "img/texture_1.png",

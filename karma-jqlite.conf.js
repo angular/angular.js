@@ -1,14 +1,16 @@
-var angularFiles = require(__dirname + '/angularFiles.js');
+var angularFiles = require('./angularFiles');
+var sharedConfig = require('./karma-shared.conf');
 
-files = angularFiles.mergeFiles(JASMINE, JASMINE_ADAPTER, 'jstd');
-exclude = ['**/*jasmine*/**', '**/*jstd*/**'].concat(angularFiles.files.jstdExclude);
+module.exports = function(config) {
+  sharedConfig(config, {testName: 'AngularJS: jqLite', logFile: 'karma-jqlite.log'});
 
-autoWatch = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
+  config.set({
+    files: angularFiles.mergeFilesFor('karma'),
+    exclude: angularFiles.mergeFilesFor('karmaExclude'),
 
-junitReporter = {
-  outputFile: 'test_out/jqlite.xml',
-  suite: 'jqLite'
+    junitReporter: {
+      outputFile: 'test_out/jqlite.xml',
+      suite: 'jqLite'
+    }
+  });
 };

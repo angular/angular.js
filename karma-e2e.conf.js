@@ -1,20 +1,25 @@
-var angularFiles = require(__dirname + '/angularFiles.js');
+var sharedConfig = require('./karma-shared.conf');
 
-files = [ANGULAR_SCENARIO, ANGULAR_SCENARIO_ADAPTER, 'build/docs/docs-scenario.js'];
+module.exports = function(config) {
+  sharedConfig(config, {testName: 'AngularJS: e2e', logFile: 'karma-e2e.log'});
 
-autoWatch = false;
-singleRun = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
+  config.set({
+    frameworks: [],
+    files: [
+      'build/angular-scenario.js',
+      'node_modules/karma-ng-scenario/lib/adapter.js',
+      'build/docs/docs-scenario.js'
+    ],
 
-proxies = {
-  // angular.js, angular-resource.js, etc
-  '/angular': 'http://localhost:8000/build/angular',
-  '/': 'http://localhost:8000/build/docs/'
-};
+    proxies: {
+      // angular.js, angular-resource.js, etc
+      '/angular': 'http://localhost:8000/build/angular',
+      '/': 'http://localhost:8000/build/docs/'
+    },
 
-junitReporter = {
-  outputFile: 'test_out/e2e.xml',
-  suite: 'E2E'
+    junitReporter: {
+      outputFile: 'test_out/e2e.xml',
+      suite: 'E2E'
+    }
+  });
 };

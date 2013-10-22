@@ -85,20 +85,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false if document.securityPolicy.isActive not available', function() {
+    it('should be false by default', function() {
       expect(sniffer({}).csp).toBe(false);
     });
-
-
-    it('should use document.securityPolicy.isActive if available', function() {
-      var createDocumentWithCSP = function(csp) {
-        return {securityPolicy: {isActive: csp}};
-      };
-
-      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
-      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
-    });
   });
+
 
   describe('vendorPrefix', function() {
 
@@ -112,7 +103,7 @@ describe('$sniffer', function() {
         else if(/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
         }
-        else if(/ie/i.test(ua)) {
+        else if(/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         else if(/opera/i.test(ua)) {
@@ -122,13 +113,125 @@ describe('$sniffer', function() {
       });
     });
 
+    it('should still work for an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.vendorPrefix).toBe('webkit');
+      });
+    });
+
   });
 
-  describe('supportsTransitions', function() {
+  describe('animations', function() {
+    it('should be either true or false', function() {
+      inject(function($sniffer) {
+        expect($sniffer.animations).not.toBe(undefined);
+      });
+    });
+
+    it('should be false when there is no animation style', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
+    it('should be true with vendor-specific animations', function() {
+      module(function($provide) {
+        var animationStyle = 'some_animation 2s linear';
+        var doc = {
+          body : {
+            style : {
+              WebkitAnimation : animationStyle,
+              MozAnimation : animationStyle,
+              OAnimation : animationStyle
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+
+    it('should be true with w3c-style animations', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              animation : 'some_animation 2s linear'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+
+    it('should be true on android with older body style properties', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              webkitAnimation: ''
+            }
+          }
+        };
+        var win = {
+          navigator: {
+            userAgent: 'android 2'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(true);
+      });
+    });
+
+    it('should be true when an older version of Webkit is used', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              WebkitOpacity: '0'
+            }
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+      });
+      inject(function($sniffer) {
+        expect($sniffer.animations).toBe(false);
+      });
+    });
+
+  });
+
+  describe('transitions', function() {
 
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).not.toBe(undefined);
+        expect($sniffer.transitions).not.toBe(undefined);
       });
     });
 
@@ -142,7 +245,7 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(false);
+        expect($sniffer.transitions).toBe(false);
       });
     });
 
@@ -161,7 +264,7 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(true);
+        expect($sniffer.transitions).toBe(true);
       });
     });
 
@@ -177,9 +280,57 @@ describe('$sniffer', function() {
         $provide.value('$document', jqLite(doc));
       });
       inject(function($sniffer) {
-        expect($sniffer.supportsTransitions).toBe(true);
+        expect($sniffer.transitions).toBe(true);
       });
     });
 
+    it('should be true on android with older body style properties', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {
+              webkitTransition: ''
+            }
+          }
+        };
+        var win = {
+          navigator: {
+            userAgent: 'android 2'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.transitions).toBe(true);
+      });
+    });
+
+  });
+
+
+  describe('history', function() {
+    it('should be true on Boxee box with an older version of Webkit', function() {
+      module(function($provide) {
+        var doc = {
+          body : {
+            style : {}
+          }
+        };
+        var win = {
+          history: {
+            pushState: noop
+          },
+          navigator: {
+            userAgent: 'boxee (alpha/Darwin 8.7.1 i386 - 0.9.11.5591)'
+          }
+        };
+        $provide.value('$document', jqLite(doc));
+        $provide.value('$window', win);
+      });
+      inject(function($sniffer) {
+        expect($sniffer.history).toBe(false);
+      });
+    });
   });
 });

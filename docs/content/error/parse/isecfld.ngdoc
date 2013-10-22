@@ -1,0 +1,18 @@
+@ngdoc error
+@name $parse:isecfld
+@fullName Referencing 'constructor' Field in Expression
+@description
+
+Occurs when an expression attempts to access an objects constructor field.
+
+AngularJS bans constructor access from within expressions since constructor
+access is a known way to execute arbitrary Javascript code.
+
+To resolve this error, avoid constructor access.  As a last resort, alias
+the constructor and access it through the alias instead.
+
+Example expression that would result in this error:
+
+```
+<div>{{user.constructor.name}}</div>
+```

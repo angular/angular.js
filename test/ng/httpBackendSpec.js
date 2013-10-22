@@ -1,20 +1,35 @@
 describe('$httpBackend', function() {
 
   var $backend, $browser, callbacks,
-      xhr, fakeDocument, callback;
+      xhr, fakeDocument, callback,
+      fakeTimeoutId = 0;
 
   // TODO(vojta): should be replaced by $defer mock
   function fakeTimeout(fn, delay) {
     fakeTimeout.fns.push(fn);
     fakeTimeout.delays.push(delay);
+    fakeTimeout.ids.push(++fakeTimeoutId);
+    return fakeTimeoutId;
   }
 
   fakeTimeout.fns = [];
   fakeTimeout.delays = [];
+  fakeTimeout.ids = [];
   fakeTimeout.flush = function() {
     var len = fakeTimeout.fns.length;
     fakeTimeout.delays = [];
+    fakeTimeout.ids = [];
     while (len--) fakeTimeout.fns.shift()();
+  };
+  fakeTimeout.cancel = function(id) {
+    var i = indexOf(fakeTimeout.ids, id);
+    if (i >= 0) {
+      fakeTimeout.fns.splice(i, 1);
+      fakeTimeout.delays.splice(i, 1);
+      fakeTimeout.ids.splice(i, 1);
+      return true;
+    }
+    return false;
   };
 
 
@@ -53,6 +68,12 @@ describe('$httpBackend', function() {
     expect(xhr.$$async).toBe(true);
   });
 
+  it('should pass null to send if no body is set', function() {
+    $backend('GET', '/some-url', null, noop);
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$data).toBe(null);
+  });
 
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
@@ -80,6 +101,22 @@ describe('$httpBackend', function() {
     });
   });
 
+  it('should set requested headers even if they have falsy values', function() {
+    $backend('POST', 'URL', null, noop, {
+      'X-header1': 0,
+      'X-header2': '',
+      'X-header3': false,
+      'X-header4': undefined
+    });
+
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$reqHeaders).toEqual({
+      'X-header1': 0,
+      'X-header2': '',
+      'X-header3': false
+    });
+  });
 
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
@@ -102,6 +139,65 @@ describe('$httpBackend', function() {
   });
 
 
+  it('should abort request on timeout promise resolution', inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(-1);
+    });
+
+    $backend('GET', '/url', null, callback, {}, $timeout(noop, 2000));
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    $timeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
+  it('should not abort resolved request on timeout promise resolution', inject(function($timeout) {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    $backend('GET', '/url', null, callback, {}, $timeout(noop, 2000));
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+
+    $timeout.flush();
+    expect(xhr.abort).not.toHaveBeenCalled();
+  }));
+
+
+  it('should cancel timeout on completion', function() {
+    callback.andCallFake(function(status, response) {
+      expect(status).toBe(200);
+    });
+
+    $backend('GET', '/url', null, callback, {}, 2000);
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    expect(fakeTimeout.delays[0]).toBe(2000);
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+
+    expect(fakeTimeout.delays.length).toBe(0);
+    expect(xhr.abort).not.toHaveBeenCalled();
+  });
+
+
   it('should register onreadystatechange callback before sending', function() {
     // send() in IE6, IE7 is sync when serving from cache
     function SyncXhr() {
@@ -116,9 +212,6 @@ describe('$httpBackend', function() {
       };
 
       this.getAllResponseHeaders = valueFn('');
-      // for temporary Firefox CORS workaround
-      // see https://github.com/angular/angular.js/issues/1468
-      this.getResponseHeader = valueFn('');
     }
 
     callback.andCallFake(function(status, response) {
@@ -239,6 +332,21 @@ describe('$httpBackend', function() {
     });
 
 
+    it('should abort request on timeout', function() {
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(-1);
+      });
+
+      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback, null, 2000);
+      expect(fakeDocument.$$scripts.length).toBe(1);
+      expect(fakeTimeout.delays[0]).toBe(2000);
+
+      fakeTimeout.flush();
+      expect(fakeDocument.$$scripts.length).toBe(0);
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
   });
@@ -255,7 +363,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -265,19 +373,8 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
-
-      $backend('GET', '/whatever/index.html', null, callback);
-      respond(0, 'SOME CONTENT');
-
-      expect(callback).toHaveBeenCalled();
-      expect(callback.mostRecentCall.args[0]).toBe(200);
-    });
-
-
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -287,7 +384,7 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should convert 0 to 200 if content - relative url', function() {
+    it('should convert 0 to 404 if no content - relative url', function() {
       $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);

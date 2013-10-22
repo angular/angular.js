@@ -1,6 +1,4 @@
-build/
-angularjs.netrc
-jstd.log
+/build/
 .DS_Store
 gen_docs.disable
 test.disable
@@ -8,7 +6,14 @@ regression/temp*.html
 performance/temp*.html
 .idea/workspace.xml
 *~
+*.swp
 angular.js.tmproj
-node_modules
+/node_modules/
+/components/
+/bower_components/
 angular.xcodeproj
 .idea
+.agignore
+libpeerconnection.log
+npm-debug.log
+/tmp/

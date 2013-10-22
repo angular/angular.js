@@ -7,7 +7,7 @@
         headEl = document.head,
         angularVersion = {
           current: '"NG_VERSION_FULL"', // rewrite during build
-          stable: '"NG_VERSION_STABLE"'
+          cdn: '"NG_VERSION_CDN"'
         };
 
     addTag('script', {src: path('angular-scenario.js')}, function() {
@@ -34,7 +34,7 @@
 
     function path(name) {
       return production
-          ? 'http://code.angularjs.org/' + angularVersion.stable + '/' + name
+          ? 'http://code.angularjs.org/' + angularVersion.cdn + '/' + name
           : '../' + name;
     }
   </script>

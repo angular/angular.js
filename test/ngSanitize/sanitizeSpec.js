@@ -15,7 +15,7 @@ describe('HTML', function() {
   describe('htmlParser', function() {
     if (angular.isUndefined(window.htmlParser)) return;
 
-    var handler, start, text;
+    var handler, start, text, comment;
     beforeEach(function() {
       handler = {
           start: function(tag, attrs, unary){
@@ -24,7 +24,7 @@ describe('HTML', function() {
                 attrs: attrs,
                 unary: unary
             };
-            // Since different browsers handle newlines differenttly we trim
+            // Since different browsers handle newlines differently we trim
             // so that it is easier to write tests.
             angular.forEach(attrs, function(value, key) {
               attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '')
@@ -35,8 +35,40 @@ describe('HTML', function() {
           },
           end:function(tag) {
             expect(tag).toEqual(start.tag);
+          },
+          comment:function(comment_) {
+            comment = comment_;
           }
       };
+    });
+
+    it('should parse comments', function() {
+      htmlParser('<!--FOOBAR-->', handler);
+      expect(comment).toEqual('FOOBAR');
+    });
+
+    it('should throw an exception for invalid comments', function() {
+      var caught=false;
+      try {
+        htmlParser('<!-->', handler);
+      }
+      catch (ex) {
+        caught = true;
+        // expected an exception due to a bad parse
+      }
+      expect(caught).toBe(true);
+    });
+
+    it('double-dashes are not allowed in a comment', function() {
+      var caught=false;
+      try {
+        htmlParser('<!-- -- -->', handler);
+      }
+      catch (ex) {
+        caught = true;
+        // expected an exception due to a bad parse
+      }
+      expect(caught).toBe(true);
     });
 
     it('should parse basic format', function() {
@@ -78,6 +110,13 @@ describe('HTML', function() {
 
   it('should remove script', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
+  });
+
+  it('should remove DOCTYPE header', function() {
+    expectHTML('<!DOCTYPE html>').toEqual('');
+    expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n"http://www.w3.org/TR/html4/strict.dtd">').toEqual('');
+    expectHTML('a<!DOCTYPE html>c.').toEqual('ac.');
+    expectHTML('a<!DocTyPe html>c.').toEqual('ac.');
   });
 
   it('should remove nested script', function() {
@@ -227,10 +266,15 @@ describe('HTML', function() {
 
       it('should be URI', function() {
         expect(isUri('http://abc')).toBeTruthy();
+        expect(isUri('HTTP://abc')).toBeTruthy();
         expect(isUri('https://abc')).toBeTruthy();
+        expect(isUri('HTTPS://abc')).toBeTruthy();
         expect(isUri('ftp://abc')).toBeTruthy();
+        expect(isUri('FTP://abc')).toBeTruthy();
         expect(isUri('mailto:me@example.com')).toBeTruthy();
+        expect(isUri('MAILTO:me@example.com')).toBeTruthy();
         expect(isUri('tel:123-123-1234')).toBeTruthy();
+        expect(isUri('TEL:123-123-1234')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
       });
 
@@ -282,6 +326,7 @@ describe('HTML', function() {
         expect(' &#14; java\u0000\u0000script:alert("D");').not.toBeValidUrl();
       });
     });
+
 
   });
 });

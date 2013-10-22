@@ -1,14 +1,16 @@
-var angularFiles = require(__dirname + '/angularFiles.js');
+var angularFiles = require('./angularFiles');
+var sharedConfig = require('./karma-shared.conf');
 
-files = angularFiles.mergeFiles(JASMINE, JASMINE_ADAPTER, 'jstdJquery');
-exclude = ['**/*jasmine*/**', '**/*jstd*/**'].concat(angularFiles.files.jstdJqueryExclude);
+module.exports = function(config) {
+  sharedConfig(config, {testName: 'AngularJS: jQuery', logFile: 'karma-jquery.log'});
 
-autoWatch = true;
-logLevel = LOG_INFO;
-logColors = true;
-browsers = ['Chrome'];
+  config.set({
+    files: angularFiles.mergeFilesFor('karmaJquery'),
+    exclude: angularFiles.mergeFilesFor('karmaJqueryExclude'),
 
-junitReporter = {
-  outputFile: 'test_out/jquery.xml',
-  suite: 'jQuery'
+    junitReporter: {
+      outputFile: 'test_out/jquery.xml',
+      suite: 'jQuery'
+    }
+  });
 };

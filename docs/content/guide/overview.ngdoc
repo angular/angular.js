@@ -8,28 +8,28 @@
 AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template
 language and lets you extend HTML's syntax to express your application's components clearly and
 succinctly. Out of the box, it eliminates much of the code you currently write through data
-binding and dependency injection. And it all happens in JavaScript within the browser making it an
-ideal partner with any server technology.
+binding and dependency injection. And it all happens in JavaScript within the browser, making it
+an ideal partner with any server technology.
 
 Angular is what HTML would have been had it been designed for applications. HTML is a great
 declarative language for static documents. It does not contain much in the way of creating
-applications, and as a result building web applications is an exercise in *what do I have to do, so
-that I trick the browser in to doing what I want.*
+applications, and as a result building web applications is an exercise in *what do I have to do
+to trick the browser into doing what I want.*
 
-The impedance mismatch between dynamic applications and static documents is often solved as:
+The impedance mismatch between dynamic applications and static documents is often solved with:
 
-  * **library** - a collection of functions which are useful when writing web apps. Your code is
+  * **a library** - a collection of functions which are useful when writing web apps. Your code is
     in charge and it calls into the library when it sees fit. E.g., `jQuery`.
   * **frameworks** - a particular implementation of a web application, where your code fills in
     the details. The framework is in charge and it calls into your code when it needs something
-    app specific. E.g., `knockout`, `sproutcore`, etc.
+    app specific. E.g., `knockout`, `ember`, etc.
 
 
 Angular takes another approach. It attempts to minimize the impedance mismatch between document
 centric HTML and what an application needs by creating new HTML constructs. Angular teaches the
 browser new syntax through a construct we call directives. Examples include:
 
-  * Data binding as in `{{}}`.
+  * Data binding, as in `{{}}`.
   * DOM control structures for repeating/hiding DOM fragments.
   * Support for forms and form validation.
   * Attaching code-behind to DOM elements.
@@ -37,13 +37,13 @@ browser new syntax through a construct we call directives. Examples include:
 
 
 
-## End-to-end solution
+## A complete client-side solution
 
-Angular tries to be an end-to-end solution, when building a web application. This means it is
-not a single piece in an overall puzzle of building a web application, but an end-to-end solution.
-This makes Angular opinionated about how a CRUD application should be built. But while it is
-opinionated, it also tries to make sure that its opinion is just a starting point, which you can
-easily change. Angular comes with the following out-of-the-box:
+Angular is not a single piece in the overall puzzle of building the client-side of a web
+application. It handles all of the DOM and AJAX glue code you once wrote by hand and puts it in a
+well-defined structure. This makes Angular opinionated about how a CRUD application should be
+built. But while it is opinionated, it also tries to make sure that its opinion is just a
+starting point you can easily change. Angular comes with the following out-of-the-box:
 
   * Everything you need to build a CRUD app in a cohesive set: data-binding, basic templating
     directives, form validation, routing, deep-linking, reusable components, dependency injection.
@@ -56,12 +56,12 @@ easily change. Angular comes with the following out-of-the-box:
 Angular simplifies application development by presenting a higher level of abstraction to the
 developer. Like any abstraction, it comes at a cost of flexibility. In other words not every app
 is a good fit for Angular. Angular was built for the CRUD application in mind. Luckily CRUD
-applications represent at least 90% of the web applications. But to understand what Angular is
+applications represent the majority of web applications. But to understand what Angular is
 good at one also has to understand when an app is not a good fit for Angular.
 
-Games, and GUI editors are examples of very intensive and tricky DOM manipulation. These kinds of
-apps are different from CRUD apps, and as a result are not a good fit for Angular. In these cases
-using something closer to bare metal such as `jQuery` may be a better fit.
+Games and GUI editors are examples of applications with intensive and tricky DOM manipulation.
+These kinds of apps are different from CRUD apps, and as a result are probably not a good fit for Angular.
+In these cases it may be better to use a library with a lower level of abstraction, such as `jQuery`.
 
 
 # An Introductory Angular Example
@@ -99,7 +99,7 @@ concepts which the application developer may face:
     </div>
   </file>
   <file name="scenario.js">
-    it('should show of angular binding', function() {
+    it('should show off angular binding', function() {
       expect(binding('qty * cost')).toEqual('$19.95');
       input('qty').enter('2');
       input('cost').enter('5.00');
@@ -134,7 +134,7 @@ These input widgets look normal enough, but consider these points:
     Model-View-Controller design pattern.
   * Note that the HTML widget {@link api/ng.directive:input input}
     has special powers. The input invalidates itself by turning red when you enter invalid data or
-    leave the the input fields blank. These new widget behaviors make it easier to implement field
+    leave the input fields blank. These new widget behaviors make it easier to implement field
     validation common in CRUD applications.
 
 And finally, the mysterious `{{ double curly braces }}`:
@@ -151,7 +151,7 @@ into output that looks like money."
 
 Notice that we achieved this application behavior not by calling Angular methods, nor by
 implementing application specific behavior as a framework. We achieved the behavior because the
-browser behaved more in line with what is needed for a dynamic web application rather then what is
+browser behaved more in line with what is needed for a dynamic web application rather than what is
 needed for a static document. Angular has lowered the impedance mismatch to the point where no
 library/framework calls are needed.
 
@@ -175,7 +175,7 @@ expressing business logic.
 
 
 
-Angular frees you from the following pain:
+Angular frees you from the following pains:
 
   * **Registering callbacks:** Registering callbacks clutters your code, making it hard to see the
     forest for the trees. Removing common boilerplate code such as callbacks is a good thing. It

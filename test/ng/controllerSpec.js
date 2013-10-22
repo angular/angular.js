@@ -57,6 +57,13 @@ describe('$controller', function() {
       expect(scope.foo).toBe('bar');
       expect(ctrl instanceof FooCtrl).toBe(true);
     });
+
+
+    it('should throw an exception if a controller is called "hasOwnProperty"', function () {
+      expect(function() {
+        $controllerProvider.register('hasOwnProperty', function($scope) {});
+      }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");
+    });
   });
 
 
@@ -90,13 +97,49 @@ describe('$controller', function() {
   });
 
 
-  it('should publish controller instance into scope', function() {
+  it('should instantiate controller defined on window', inject(function($window) {
     var scope = {};
+    var Foo = function() {};
 
-    $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+    $window.a = {Foo: Foo};
 
-    var foo = $controller('FooCtrl as foo', {$scope: scope});
-    expect(scope.foo).toBe(foo);
-    expect(scope.foo.mark).toBe('foo');
+    var foo = $controller('a.Foo', {$scope: scope});
+    expect(foo).toBeDefined();
+    expect(foo instanceof Foo).toBe(true);
+  }));
+
+
+  describe('ctrl as syntax', function() {
+
+    it('should publish controller instance into scope', function() {
+      var scope = {};
+
+      $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
+
+
+    it('should allow controllers with dots', function() {
+      var scope = {};
+
+      $controllerProvider.register('a.b.FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('a.b.FooCtrl as foo', {$scope: scope});
+      expect(scope.foo).toBe(foo);
+      expect(scope.foo.mark).toBe('foo');
+    });
+
+
+    it('should throw an error if $scope is not provided', function() {
+      $controllerProvider.register('a.b.FooCtrl', function() { this.mark = 'foo'; });
+
+      expect(function() {
+        $controller('a.b.FooCtrl as foo');
+      }).toThrowMinErr("$controller", "noscp", "Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
+
+    });
   });
 });
