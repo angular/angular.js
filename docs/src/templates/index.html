@@ -198,15 +198,15 @@
                    autocomplete="off" />
           </form>
           <div ng-show="hasResults" class="search-results">
-            <a href="" ng-click="hideResults()" class="search-close">
-              <span class="icon-remove-sign"></span>
-            </a>
             <div ng-repeat="(key, value) in results" class="search-group" ng-class="colClassName">
               <h4>{{ key }}</h4>
               <div ng-repeat="item in value" class="search-result">
                 <a ng-click="hideResults()" href="{{ item.url }}">{{ item.shortName }}</a>
               </div>
             </div>
+            <a href="" ng-click="hideResults()" class="search-close">
+              <span class="icon-remove-sign"></span>
+            </a>
           </div>
         </div>
       </div>
