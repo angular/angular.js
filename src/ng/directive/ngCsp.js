@@ -21,7 +21,7 @@
  *
  * In order to use this feature put the `ngCsp` directive on the root element of the application.
  *
- * *Note: This directive is only available in the ng-csp and data-ng-csp attribute form.*
+ * *Note: This directive is only available in the `ng-csp` and `data-ng-csp` attribute form.*
  *
  * @example
  * This example shows how to apply the `ngCsp` directive to the `html` tag.
