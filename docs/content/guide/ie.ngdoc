@@ -148,7 +148,16 @@ In IE, the behavior is that the `BODY` element has three children:
 
 ## CSS Styling of Custom Tag Names
 
-To make CSS selectors work with custom elements, the custom element name must be pre-created with 
+There are two approaches to styling custom elements in legacy Internet Explorer: The
+JavaScript declaration method, and the namespaced “end element” method (see below).
+
+The JavaScript declaration method also updates IE’s CSS engine, and thus allows you to
+use the element name in the CSS selector.  Whereas the namespaced ”end element” method,
+which “enables” the custom elements without updating IE’s CSS engine, does instead
+rely on the [the good news](#long-version_the-good-news) that legacy IE, even for
+custom elements**(!)**, recognizes both known and unknown attributes in selectors.
+
+name must be pre-created with 
 `document.createElement('my-tag')` regardless of XML namespace.
 
 <pre>
@@ -185,3 +194,263 @@ To make CSS selectors work with custom elements, the custom element name must be
 
 
 
+@ngdoc overview
+@name Developer Guide: Internet Explorer Compatibility
+@description
+
+# Overview
+
+This document describes the Internet Explorer (IE) idiosyncrasies when dealing with custom HTML
+attributes and tags. Read this document if you are planning on deploying your Angular application
+on IE v8.0 or earlier.
+
+# Short Version
+
+To make your Angular application work on IE please make sure that:
+
+  1. You polyfill JSON.stringify if necessary (IE7 will need this). You can use
+     [JSON2](https://github.com/douglascrockford/JSON-js) or
+     [JSON3](http://bestiejs.github.com/json3/) polyfills for this.
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org">
+         <head>
+           <!--[if lte IE 8]>
+             <script src="/path/to/json2.js"></script>
+           <![endif]-->
+         </head>
+         <body>
+           ...
+         </body>
+       </html>
+     </pre>
+
+  2. add `id="ng-app"` to the root element in conjunction with `ng-app` attribute
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
+         ...
+       </html>
+     </pre>
+
+  3. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
+     `<div ng-view>` instead), or
+
+  4. if you **do use** custom element tags **and** need to target both IE8, IE7 and IE6, then you must take these steps to make IE happy:
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
+         <head>
+           <!--[if lte IE 8]>
+             <script>
+               document.createElement('ng-include');
+               document.createElement('ng-pluralize');
+               document.createElement('ng-view');
+     
+               // Optionally these for CSS
+               document.createElement('ng:include');
+               document.createElement('ng:pluralize');
+               document.createElement('ng:view');
+             </script>
+           <![endif]-->
+         </head>
+         <body>
+           ...
+         </body>
+       </html>
+     </pre>
+
+     The **important** parts are:
+
+    * `xmlns:ng` - *namespace* - you need one namespace for each custom tag you are planning on
+      using.
+   
+    * `document.createElement(yourTagName)` - *creation of custom tag names* - Since this is an
+      issue only for older version of IE you need to load it conditionally. For each tag which does
+      not have namespace and which is not defined in HTML you need to pre-declare it to make IE
+      happy.
+
+  5. but if you **only** need to make IE8 happy (including IE8 or above in compatibility mode)
+     **and** wants to take advantage of the [good news](#long-version_the-good-news) that IE, even in unknown elements, supports both known *and* unknown attributes as selectors *and* you don’t need colon prefixed elements, there there there is an alternative hack – the *namespaced “end element” method*:
+     <pre>
+       <!DOCTYPE HTML>
+       </x xmlns="x" />
+       <!-- The above namespaced “end element” does wonders in IE8 -->
+       <html id="ng-app" ng-app="optionalModuleName">
+       <!-- There is no need to declare the ng namespace -->
+         <head>
+             <meta charset="UTF-8"/>
+             <style>
+               /* Styling unknown element with a well known
+                  class selector: */ 
+               *.ng-foo {display:block;width:200px;height:200px;
+                         color:green;background:yellow;font:bold 24px/1 serif;
+                         border:double}
+               /* Styling unknown element with by using an unknown
+                  attribute as attribute selector: */ 
+               *[ng-bar]{display:block;width:200px;height:200px;
+                         color:yellow;background:green;font:bold 24px/1 sans-serif;
+                         border:double;}
+             </style>
+         </head>
+         <body>
+           <ng-foo class="ng-foo">foo</ng-foo>
+           <ng-bar ng-bar>bar</ng-bar>
+           <!-- The method has no effect on colon prefixed elments,
+                however: --> 
+           <ng:bar class="ng-foo">baz</ng-baz>
+         </body>
+     </pre>
+
+     The **important** parts are:
+
+    * place an *unknown*, namespaced “end element” right after the DOCTYPE: <code>&lt;/x xmlns="x" /></code> 
+
+    * To create styles that work in legacy IE, do all styling of the custom elements based on attribute selectors and *avoid* using the tag name of custom elements in selectors.
+
+    **Note:** The name of the “end elment” must not be equoal to the name of an end tag that legacy IE (including IE9) already knows. For instance, you should not pick <code>&lt;/ie xmlns="ie"/></code> — this will not work.  
+    **Note:** The “end element” is of course not valid, but will disappear from the DOM in all browsers. However, for validity, it should of course be hidden in a conditional comment.
+
+# Long Version
+
+Legacy IE has issues with element tag names which are not standard HTML tag names. These fall into two
+categories, and each category has its own fix.
+
+  * If the tag name starts with `my:` prefix than it is considered an XML namespace and must
+    have corresponding namespace declaration on `<html xmlns:my="ignored">`
+
+  * If the tag has no `:` but it is not a standard HTML tag, then it must
+    * **either** be pre-created using `document.createElement('my-tag')`
+    * **or** be enabled via a namespaced “end element” <code>&lt;/x xmlns="x" /></code> that *should* go right after the DOCTYPE
+
+  * If you are planning on styling the custom tag via CSS selectors that refer to the
+    *name* of the custom tag, like `foo{}`, then the tag *must* – regardless of XML namespace – be
+    pre-created using `document.createElement('my-tag')`.
+
+  * If you can avoid the using tag name in your CSS selector, and rely on attribute based
+    selectors, then you do not need to use JavaScript to pre-create. Instead you need the
+    namedpaced “end element”, preferably right after the DOCTYPE. 
+
+
+## The Good News
+
+The good news is that these restrictions only apply to element tag names, and not to element
+attribute names. So this requires no special handling in IE: `<div my-tag your:tag></div>`. And these good news are also why, with the namespaced “end element” method, attribute selectors do work, despite that IE’s CSS engine with this method doesn’t know the tag name.
+
+
+## What happens if I fail to do this?
+
+Suppose you have HTML with unknown tag `mytag` (this could also be `my:tag` or `my-tag` with same
+result):
+
+<pre>
+  <html>
+    <body>
+      <mytag>some text</mytag>
+    </body>
+  </html>
+</pre>
+
+It should parse into the following DOM:
+
+<pre>
+#document
+  +- HTML
+     +- BODY
+        +- mytag
+           +- #text: some text
+</pre>
+
+The expected behavior is that the `BODY` element has a child element `mytag`, which in turn has
+the text `some text`.
+
+But this is not what IE does (if the above fixes are not included):
+
+<pre>
+#document
+  +- HTML
+     +- BODY
+        +- mytag
+        +- #text: some text
+        +- /mytag
+</pre>
+
+In IE, the behavior is that the `BODY` element has three children:
+
+  1. A self closing `mytag`. Example of self closing tag is `<br/>`. The trailing `/` is optional,
+  but the `<br>` tag is not allowed to have any children, and browsers consider `<br>some
+  text</br>` as three siblings not a `<br>` with `some text` as child.
+
+  2. A text node with `some text`. This should have been a child of `mytag` above, not a sibling.
+
+  3. A corrupt self closing `/mytag`. This is corrupt since element names are not allowed to have
+  the `/` character. Furthermore this closing element should not be part of the DOM since it is
+  only used to delineate the structure of the DOM.
+
+
+## CSS Styling of Custom Tag Names
+
+There are two approaches to styling custom elements in legacy Internet Explorer: The
+JavaScript based declarative method, and the attribute method.
+
+The JavaScript based method allows you to use the element name in the CSS selector. With this method, however, the element name must be pre-created with `document.createElement('my-tag')` regardless of XML namespace.
+
+The attribute basedmethod does instead rely on the [good news](#long-version_the-good-news) that unkown attributes do *not* need to be declared *and* on the fact that known attributes work even in unknown elements. While this method allows you to avoid some JavaScript declarations, it does instead require that each custom element has an attribute (or eventually that the element can be selected via the universal selector).
+
+### The JavaScript based method
+
+<pre>
+  <html xmlns:ng="needed for ng: namespace">
+    <head>
+      <!--[if lte IE 8]>
+        <script>
+          // needed to make ng-include parse properly
+          document.createElement('ng-include');
+
+          // needed to enable CSS reference
+          document.createElement('ng:view');
+        </script>
+      <![endif]-->
+      <style>
+        ng\:view {
+          display: block;
+          border: 1px solid red;
+          height:1em;
+        }
+
+        ng-include {
+          display: block;
+          border: 1px solid blue;
+          height:1em;
+        }
+      </style>
+    </head>
+    <body>
+      <ng:view></ng:view>
+      <ng-include></ng-include>
+      ...
+    </body>
+  </html>
+</pre>
+    
+### The namespaced “end element” method
+
+<pre>
+ <!DOCTYPE html>
+ <!--[if ie]></x xmlns="x"/><![endif]-->
+ <html>
+   <head>
+     <style>
+       *.ngInclude {
+         display: block;
+         border: 1px solid blue;
+         height:1em;
+       }
+     </style>
+   </head>
+   <body>
+     <ng-include class="ngInclude"></ng-include>
+     ...
+   </body>
+ </html>
+</pre>
