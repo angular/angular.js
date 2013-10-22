@@ -622,10 +622,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     };
   };
 
-  $scope.submitForm = function() {
-    $scope.bestMatch && $location.path($scope.bestMatch.page.url);
-  };
-
   $scope.afterPartialLoaded = function() {
     var currentPageId = $location.path();
     $scope.partialTitle = $scope.currentPage.shortName;
@@ -660,6 +656,9 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     cookbook: 'Examples',
     error: 'Error Reference'
   };
+
+  populateComponentsList(); 
+
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
@@ -674,9 +673,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       if (!$scope.currentPage) {
         $scope.partialTitle = 'Error: Page Not Found!';
       }
-
-      updateSearch();
-
 
       // Update breadcrumbs
       var breadcrumb = $scope.breadcrumb = [],
@@ -717,10 +713,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     }
   });
 
-  $scope.$watch('search', updateSearch);
-
-
-
   /**********************************
    Initialize
    ***********************************/
@@ -752,26 +744,21 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
    Private methods
    ***********************************/
 
-  function updateSearch() {
+  function populateComponentsList() {
+    var area = $location.path().split('/')[1];
+    area = /^index-\w/.test(area) ? 'api' : area;
     var moduleCache = {},
         namespaceCache = {},
-        pages = sections[$location.path().split('/')[1]],
+        pages = sections[area],
         modules = $scope.modules = [],
         namespaces = $scope.namespaces = [],
         globalErrors = $scope.globalErrors = [],
         otherPages = $scope.pages = [],
-        search = $scope.search,
-        bestMatch = {page: null, rank:0};
+        search = $scope.search;
 
     angular.forEach(pages, function(page) {
       var match,
         id = page.id;
-
-      if (!(match = rank(page, search))) return;
-
-      if (match.rank > bestMatch.rank) {
-        bestMatch = match;
-      }
 
       if (page.id == 'index') {
         //skip
@@ -807,10 +794,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       }
 
     });
-
-    $scope.bestMatch = bestMatch;
-
-    /*************/
 
     function module(name) {
       var module = moduleCache[name];
@@ -851,28 +834,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         namespaces.push(namespace);
       }
       return namespace;
-    }
-
-    function rank(page, terms) {
-      var ranking = {page: page, rank:0},
-        keywords = page.keywords,
-        title = page.shortName.toLowerCase();
-
-      terms && angular.forEach(terms.toLowerCase().split(' '), function(term) {
-        var index;
-
-        if (ranking) {
-          if (keywords.indexOf(term) == -1) {
-            ranking = null;
-          } else {
-            ranking.rank ++; // one point for each term found
-            if ((index = title.indexOf(term)) != -1) {
-              ranking.rank += 20 - index; // ten points if you match title
-            }
-          }
-        }
-      });
-      return ranking;
     }
   }
 

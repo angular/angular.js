@@ -45,62 +45,62 @@
 
 /* =============================== */
 
-.form-search .dropdown-menu {
+.side-navigation .dropdown-menu {
   margin-left: 10px;
 }
 
-.form-search .code {
+.side-navigation .code {
   font-family: monospace;
   font-weight: bold;
   font-size: 13px;
   color: black;
 }
 
-.form-search > ul.nav > li.module {
+.side-navigation > ul.nav > li.module {
   background-color: #d3d3d3;
 }
 
-.form-search > ul.nav > li.section {
+.side-navigation > ul.nav > li.section {
   background-color: #ebebeb;
   min-height: 14px;
 }
 
-.form-search > ul.nav > li.last {
+.side-navigation > ul.nav > li.last {
   padding-bottom: 1em;
 }
 
-.form-search > ul.nav > li.last + li.api-list-item {
+.side-navigation > ul.nav > li.last + li.api-list-item {
   margin-top:-1em;
   padding-bottom: 1em;
 }
 
-.form-search .well {
+.side-navigation .well {
   border-color: #d3d3d3;
   padding-top: 0;
   padding-bottom: 0;
   margin-bottom: 15px;
 }
 
-.form-search .well .nav-header {
+.side-navigation .well .nav-header {
   text-transform: none;
   margin-top: 0;
   margin-left: -15px;
   margin-right: -15px;
 }
 
-.form-search .well .nav-header a {
+.side-navigation .well .nav-header a {
   text-transform: none;
   color: black;
 }
-.form-search .well .nav-header a:hover {
+.side-navigation .well .nav-header a:hover {
   background-color: inherit;
 }
 
-.form-search .well li {
+.side-navigation .well li {
   line-height: 14px;
 }
 
-.form-search .well .guide {
+.side-navigation .well .guide {
   float: right;
   padding-top: 0;
   color: gray;
