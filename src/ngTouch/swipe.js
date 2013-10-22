@@ -23,12 +23,17 @@ ngTouch.factory('$swipe', [function() {
   // The total distance in any direction before we make the call on swipe vs. scroll.
   var MOVE_BUFFER_RADIUS = 10;
 
+  function getTouches(event) {
+    event = event.originalEvent || event;
+    return event.changedTouches && event.changedTouches.length
+      ? event.changedTouches
+      : event.touches && event.touches.length
+        ? event.touches
+        : [event];
+  }
+
   function getCoordinates(event) {
-    var touches = event.touches && event.touches.length ? event.touches : [event];
-    var e = (event.changedTouches && event.changedTouches[0]) ||
-        (event.originalEvent && event.originalEvent.changedTouches &&
-            event.originalEvent.changedTouches[0]) ||
-        touches[0].originalEvent || touches[0];
+    var e = getTouches(event)[0];
 
     return {
       x: e.clientX,

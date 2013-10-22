@@ -110,6 +110,15 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     return false; // No allowable region; bust it.
   }
 
+  function getTouches(event) {
+    event = event.originalEvent || event;
+    return event.changedTouches && event.changedTouches.length
+      ? event.changedTouches
+      : event.touches && event.touches.length
+        ? event.touches
+        : [event];
+  }
+
   // Global click handler that prevents the click if it's in a bustable zone and preventGhostClick
   // was called recently.
   function onClick(event) {
@@ -117,7 +126,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
-    var touches = event.touches && event.touches.length ? event.touches : [event];
+    var touches = getTouches(event);
     var x = touches[0].clientX;
     var y = touches[0].clientY;
     // Work around desktop Webkit quirk where clicking a label will fire two clicks (on the label
@@ -146,7 +155,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
   function onTouchStart(event) {
-    var touches = event.touches && event.touches.length ? event.touches : [event];
+    var touches = getTouches(event);
     var x = touches[0].clientX;
     var y = touches[0].clientY;
     touchCoordinates.push(x, y);
@@ -202,10 +211,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
       startTime = Date.now();
 
-      var touches = event.touches && event.touches.length ? event.touches : [event];
-      var e = touches[0].originalEvent || touches[0];
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
+      var touches = getTouches(event);
+      touchStartX = touches[0].clientX;
+      touchStartY = touches[0].clientY;
     });
 
     element.on('touchmove', function(event) {
@@ -219,11 +227,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
 
-      var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
-          ((event.touches && event.touches.length) ? event.touches : [event]);
-      var e = touches[0].originalEvent || touches[0];
-      var x = e.clientX;
-      var y = e.clientY;
+      var touches = getTouches(event);
+      var x = touches[0].clientX;
+      var y = touches[0].clientY;
       var dist = Math.sqrt( Math.pow(x - touchStartX, 2) + Math.pow(y - touchStartY, 2) );
 
       if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
