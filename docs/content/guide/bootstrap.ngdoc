@@ -114,7 +114,7 @@ This is the sequence that your code should follow:
 
 ## Deferred Bootstrap
 
-This features enables tools like Batarang and test runners to
+This feature enables tools like Batarang and test runners to
 hook into angular's bootstrap process and sneak in more modules
 into the DI registry which can replace or augment DI services for
 the purpose of instrumentation or mocking out heavy dependencies.
