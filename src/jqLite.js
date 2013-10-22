@@ -97,7 +97,7 @@ var jqCache = JQLite.cache = {},
 function jqNextId() { return ++jqId; }
 
 
-var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g, CLASS_NAMES_REGEXP = /\s+/g, SPACE = ' ';
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
 var jqLiteMinErr = minErr('jqLite');
 
@@ -280,35 +280,49 @@ function JQLiteData(element, key, value) {
 
 function JQLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
-  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-      indexOf( " " + selector + " " ) > -1);
+  selector = trim(selector);
+  return element.classList && selector ? element.classList.contains(selector) :
+    ((SPACE + (element.getAttribute('class') || '').replace(CLASS_NAMES_REGEXP, SPACE) + SPACE).
+      indexOf(SPACE + selector + SPACE) > -1);
 }
 
 function JQLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
+  if (cssClasses) {
+    var arrCssClasses = trim(cssClasses).split(CLASS_NAMES_REGEXP);
+    if (element.classList) {
+      forEach(arrCssClasses, function (cssClass) {
+        cssClass && element.classList.remove(cssClass);
+      });
+    } else if (element.setAttribute) {
+      var existingClasses = (SPACE + (element.getAttribute('class') || '').replace(CLASS_NAMES_REGEXP, SPACE) + SPACE);
+
+      forEach(arrCssClasses, function (cssClass) {
+        trim(existingClasses.replace(SPACE + cssClass + SPACE, SPACE));
+      });
+
+      element.setAttribute('class', trim(existingClasses));
+    }
   }
 }
 
 function JQLiteAddClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                            .replace(/[\n\t]/g, " ");
+  if (cssClasses) {
+    var arrCssClasses = trim(cssClasses).split(CLASS_NAMES_REGEXP);
+    if (element.classList) {
+      forEach(arrCssClasses, function (cssClass) {
+        cssClass && element.classList.add(cssClass);
+      });
+    } else if (element.setAttribute) {
+      var existingClasses = (SPACE + (element.getAttribute('class') || '').replace(CLASS_NAMES_REGEXP, SPACE) + SPACE);
 
-    forEach(cssClasses.split(' '), function(cssClass) {
-      cssClass = trim(cssClass);
-      if (existingClasses.indexOf(' ' + cssClass + ' ') === -1) {
-        existingClasses += cssClass + ' ';
-      }
-    });
+      forEach(arrCssClasses, function (cssClass) {
+        if (existingClasses.indexOf(SPACE + cssClass + SPACE) === -1) {
+          existingClasses += cssClass + SPACE;
+        }
+      });
 
-    element.setAttribute('class', trim(existingClasses));
+      element.setAttribute('class', trim(existingClasses));
+    }
   }
 }
 
