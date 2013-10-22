@@ -52,6 +52,6 @@ var ngInitDirective = ngDirective({
       pre: function(scope, element, attrs) {
         scope.$eval(attrs.ngInit);
       }
-    }
+    };
   }
 });

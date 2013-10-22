@@ -224,11 +224,11 @@ function $HttpProvider() {
      * called for such responses.
      * 
      * # Calling $http from outside AngularJS
-     * The `$http` service will not actually send the request until the next `$digest()` is executed.
-     * Normally this is not an issue, since almost all the time your call to `$http` will be from within
-     * a `$apply()` block.
-     * If you are calling `$http` from outside Angular, then you should wrap it in a call to `$apply`
-     * to cause a $digest to occur and also to handle errors in the block correctly.
+     * The `$http` service will not actually send the request until the next `$digest()` is
+     * executed. Normally this is not an issue, since almost all the time your call to `$http` will
+     * be from within a `$apply()` block.
+     * If you are calling `$http` from outside Angular, then you should wrap it in a call to
+     * `$apply` to cause a $digest to occur and also to handle errors in the block correctly.
      *
      * ```
      * $scope.$apply(function() {
@@ -237,10 +237,11 @@ function $HttpProvider() {
      * ```
      *
      * # Writing Unit Tests that use $http
-     * When unit testing you are mostly responsible for scheduling the `$digest` cycle. If you do not
-     * trigger a `$digest` before calling `$httpBackend.flush()` then the request will not have been
-     * made and `$httpBackend.expect(...)` expectations will fail.  The solution is to run the code
-     * that calls the `$http()` method inside a $apply block as explained in the previous section.
+     * When unit testing you are mostly responsible for scheduling the `$digest` cycle. If you do
+     * not trigger a `$digest` before calling `$httpBackend.flush()` then the request will not have
+     * been made and `$httpBackend.expect(...)` expectations will fail.  The solution is to run the
+     * code that calls the `$http()` method inside a $apply block as explained in the previous
+     * section.
      *
      * ```
      * $httpBackend.expectGET(...);
@@ -300,22 +301,24 @@ function $HttpProvider() {
      *
      * Request transformations:
      *
-     * - If the `data` property of the request configuration object contains an object, serialize it into
-     *   JSON format.
+     * - If the `data` property of the request configuration object contains an object, serialize it
+     *   into JSON format.
      *
      * Response transformations:
      *
      *  - If XSRF prefix is detected, strip it (see Security Considerations section below).
      *  - If JSON response is detected, deserialize it using a JSON parser.
      *
-     * To globally augment or override the default transforms, modify the `$httpProvider.defaults.transformRequest` and
-     * `$httpProvider.defaults.transformResponse` properties. These properties are by default an
-     * array of transform functions, which allows you to `push` or `unshift` a new transformation function into the
-     * transformation chain. You can also decide to completely override any default transformations by assigning your
+     * To globally augment or override the default transforms, modify the
+     * `$httpProvider.defaults.transformRequest` and `$httpProvider.defaults.transformResponse`
+     * properties. These properties are by default an array of transform functions, which allows you
+     * to `push` or `unshift` a new transformation function into the transformation chain. You can
+     * also decide to completely override any default transformations by assigning your
      * transformation functions to these properties directly without the array wrapper.
      *
-     * Similarly, to locally override the request/response transforms, augment the `transformRequest` and/or
-     * `transformResponse` properties of the configuration object passed into `$http`.
+     * Similarly, to locally override the request/response transforms, augment the
+     * `transformRequest` and/or `transformResponse` properties of the configuration object passed
+     * into `$http`.
      *
      *
      * # Caching
@@ -353,16 +356,16 @@ function $HttpProvider() {
      *
      * There are two kinds of interceptors (and two kinds of rejection interceptors):
      *
-     *   * `request`: interceptors get called with http `config` object. The function is free to modify
-     *     the `config` or create a new one. The function needs to return the `config` directly or as a
-     *     promise.
-     *   * `requestError`: interceptor gets called when a previous interceptor threw an error or resolved
-     *      with a rejection.
-     *   * `response`: interceptors get called with http `response` object. The function is free to modify
-     *     the `response` or create a new one. The function needs to return the `response` directly or as a
-     *     promise.
-     *   * `responseError`: interceptor gets called when a previous interceptor threw an error or resolved
-     *      with a rejection.
+     *   * `request`: interceptors get called with http `config` object. The function is free to
+     *     modify the `config` or create a new one. The function needs to return the `config`
+     *     directly or as a promise.
+     *   * `requestError`: interceptor gets called when a previous interceptor threw an error or
+     *     resolved with a rejection.
+     *   * `response`: interceptors get called with http `response` object. The function is free to
+     *     modify the `response` or create a new one. The function needs to return the `response`
+     *     directly or as a promise.
+     *   * `responseError`: interceptor gets called when a previous interceptor threw an error or
+     *     resolved with a rejection.
      *
      *
      * <pre>
@@ -511,9 +514,10 @@ function $HttpProvider() {
      * cookie called `XSRF-TOKEN` on the first HTTP GET request. On subsequent XHR requests the
      * server can verify that the cookie matches `X-XSRF-TOKEN` HTTP header, and therefore be sure
      * that only JavaScript running on your domain could have sent the request. The token must be
-     * unique for each user and must be verifiable by the server (to prevent the JavaScript from making
-     * up its own tokens). We recommend that the token is a digest of your site's authentication
-     * cookie with a {@link https://en.wikipedia.org/wiki/Salt_(cryptography) salt} for added security.
+     * unique for each user and must be verifiable by the server (to prevent the JavaScript from
+     * making up its own tokens). We recommend that the token is a digest of your site's
+     * authentication cookie with a {@link https://en.wikipedia.org/wiki/Salt_(cryptography) salt}
+     * for added security.
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
      * properties of either $httpProvider.defaults, or the per-request config object.
@@ -524,18 +528,21 @@ function $HttpProvider() {
      *
      *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)
      *    - **url** – `{string}` – Absolute or relative URL of the resource that is being requested.
-     *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned to
-     *      `?key1=value1&key2=value2` after the url. If the value is not a string, it will be JSONified.
+     *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned
+     *      to `?key1=value1&key2=value2` after the url. If the value is not a string, it will be
+     *      JSONified.
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings or functions which return strings representing
-     *      HTTP headers to send to the server. If the return value of a function is null, the header will
-     *      not be sent.
+     *      HTTP headers to send to the server. If the return value of a function is null, the
+     *      header will not be sent.
      *    - **xsrfHeaderName** – `{string}` – Name of HTTP header to populate with the XSRF token.
      *    - **xsrfCookieName** – `{string}` – Name of cookie containing the XSRF token.
-     *    - **transformRequest** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+     *    - **transformRequest** –
+     *      `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
      *      request body and headers and returns its transformed (typically serialized) version.
-     *    - **transformResponse** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+     *    - **transformResponse** –
+     *      `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
      *      transform function or an array of such functions. The transform function takes the http
      *      response body and headers and returns its transformed (typically deserialized) version.
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
@@ -558,7 +565,8 @@ function $HttpProvider() {
      *   these functions are destructured representation of the response object passed into the
      *   `then` method. The response object has these properties:
      *
-     *   - **data** – `{string|Object}` – The response body transformed with the transform functions.
+     *   - **data** – `{string|Object}` – The response body transformed with the transform
+     *     functions.
      *   - **status** – `{number}` – HTTP status code of the response.
      *   - **headers** – `{function([headerName])}` – Header getter function.
      *   - **config** – `{Object}` – The configuration object that was used to generate the request.
@@ -568,75 +576,82 @@ function $HttpProvider() {
      *
      *
      * @example
-      <example>
-        <file name="index.html">
-          <div ng-controller="FetchCtrl">
-            <select ng-model="method">
-              <option>GET</option>
-              <option>JSONP</option>
-            </select>
-            <input type="text" ng-model="url" size="80"/>
-            <button ng-click="fetch()">fetch</button><br>
-            <button ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
-            <button ng-click="updateModel('JSONP', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
-            <button ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
-            <pre>http status code: {{status}}</pre>
-            <pre>http response data: {{data}}</pre>
-          </div>
-        </file>
-        <file name="script.js">
-          function FetchCtrl($scope, $http, $templateCache) {
-            $scope.method = 'GET';
-            $scope.url = 'http-hello.html';
+<example>
+<file name="index.html">
+  <div ng-controller="FetchCtrl">
+    <select ng-model="method">
+      <option>GET</option>
+      <option>JSONP</option>
+    </select>
+    <input type="text" ng-model="url" size="80"/>
+    <button ng-click="fetch()">fetch</button><br>
+    <button ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+    <button
+      ng-click="updateModel('JSONP',
+                    'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
+      Sample JSONP
+    </button>
+    <button
+      ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
+        Invalid JSONP
+      </button>
+    <pre>http status code: {{status}}</pre>
+    <pre>http response data: {{data}}</pre>
+  </div>
+</file>
+<file name="script.js">
+  function FetchCtrl($scope, $http, $templateCache) {
+    $scope.method = 'GET';
+    $scope.url = 'http-hello.html';
 
-            $scope.fetch = function() {
-              $scope.code = null;
-              $scope.response = null;
+    $scope.fetch = function() {
+      $scope.code = null;
+      $scope.response = null;
 
-              $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
-                success(function(data, status) {
-                  $scope.status = status;
-                  $scope.data = data;
-                }).
-                error(function(data, status) {
-                  $scope.data = data || "Request failed";
-                  $scope.status = status;
-              });
-            };
+      $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
+        success(function(data, status) {
+          $scope.status = status;
+          $scope.data = data;
+        }).
+        error(function(data, status) {
+          $scope.data = data || "Request failed";
+          $scope.status = status;
+      });
+    };
 
-            $scope.updateModel = function(method, url) {
-              $scope.method = method;
-              $scope.url = url;
-            };
-          }
-        </file>
-        <file name="http-hello.html">
-          Hello, $http!
-        </file>
-        <file name="scenario.js">
-          it('should make an xhr GET request', function() {
-            element(':button:contains("Sample GET")').click();
-            element(':button:contains("fetch")').click();
-            expect(binding('status')).toBe('200');
-            expect(binding('data')).toMatch(/Hello, \$http!/);
-          });
+    $scope.updateModel = function(method, url) {
+      $scope.method = method;
+      $scope.url = url;
+    };
+  }
+</file>
+<file name="http-hello.html">
+  Hello, $http!
+</file>
+<file name="scenario.js">
+  it('should make an xhr GET request', function() {
+    element(':button:contains("Sample GET")').click();
+    element(':button:contains("fetch")').click();
+    expect(binding('status')).toBe('200');
+    expect(binding('data')).toMatch(/Hello, \$http!/);
+  });
 
-          it('should make a JSONP request to angularjs.org', function() {
-            element(':button:contains("Sample JSONP")').click();
-            element(':button:contains("fetch")').click();
-            expect(binding('status')).toBe('200');
-            expect(binding('data')).toMatch(/Super Hero!/);
-          });
+  it('should make a JSONP request to angularjs.org', function() {
+    element(':button:contains("Sample JSONP")').click();
+    element(':button:contains("fetch")').click();
+    expect(binding('status')).toBe('200');
+    expect(binding('data')).toMatch(/Super Hero!/);
+  });
 
-          it('should make JSONP request to invalid URL and invoke the error handler',
-              function() {
-            element(':button:contains("Invalid JSONP")').click();
-            element(':button:contains("fetch")').click();
-            expect(binding('status')).toBe('0');
-            expect(binding('data')).toBe('Request failed');
-          });
-        </file>
-      </example>
+  it('should make JSONP request to invalid URL and invoke the error handler',
+      function() {
+    element(':button:contains("Invalid JSONP")').click();
+    element(':button:contains("fetch")').click();
+    expect(binding('status')).toBe('0');
+    expect(binding('data')).toBe('Request failed');
+  });
+</file>
+</example>
      */
     function $http(requestConfig) {
       var config = {
@@ -996,7 +1011,7 @@ function $HttpProvider() {
           if (!params) return url;
           var parts = [];
           forEachSorted(params, function(value, key) {
-            if (value == null || value == undefined) return;
+            if (value === null || isUndefined(value)) return;
             if (!isArray(value)) value = [value];
 
             forEach(value, function(v) {

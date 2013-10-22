@@ -81,7 +81,8 @@ function urlResolve(url) {
     hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
     hostname: urlParsingNode.hostname,
     port: urlParsingNode.port,
-    pathname: urlParsingNode.pathname && urlParsingNode.pathname.charAt(0) === '/' ? urlParsingNode.pathname : '/' + urlParsingNode.pathname
+    pathname: urlParsingNode.pathname && urlParsingNode.pathname.charAt(0) === '/' ?
+        urlParsingNode.pathname : '/' + urlParsingNode.pathname
   };
 }
 

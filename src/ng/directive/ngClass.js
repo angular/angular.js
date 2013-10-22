@@ -6,7 +6,7 @@ function classDirective(name, selector) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-        var oldVal = undefined;
+        var oldVal;
 
         scope.$watch(attr[name], ngClassWatchAction, true);
 
@@ -17,6 +17,7 @@ function classDirective(name, selector) {
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
+            // jshint bitwise: false
             var mod = $index & 1;
             if (mod !== old$index & 1) {
               if (mod === selector) {
@@ -63,7 +64,7 @@ function classDirective(name, selector) {
           }
 
           return classVal;
-        };
+        }
       }
     };
   };

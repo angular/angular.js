@@ -100,5 +100,5 @@ function limitToFilter(){
     }
 
     return out;
-  }
+  };
 }
