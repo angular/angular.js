@@ -85,20 +85,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false if document.securityPolicy.isActive not available', function() {
+    it('should be false by default', function() {
       expect(sniffer({}).csp).toBe(false);
     });
-
-
-    it('should use document.securityPolicy.isActive if available', function() {
-      var createDocumentWithCSP = function(csp) {
-        return {securityPolicy: {isActive: csp}};
-      };
-
-      expect(sniffer({}, createDocumentWithCSP(false)).csp).toBe(false);
-      expect(sniffer({}, createDocumentWithCSP(true)).csp).toBe(true);
-    });
   });
+
 
   describe('vendorPrefix', function() {
 

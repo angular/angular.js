@@ -6,8 +6,8 @@
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of angular's built-in {@link api/ng services} called {@link
-api/ng.$http $http}. We will use angular's {@link guide/di dependency
+from our server using one of Angular's built-in {@link api/ng services} called {@link
+api/ng.$http $http}. We will use Angular's {@link guide/di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 
@@ -42,12 +42,12 @@ Following is a sample of the file:
 
 ## Controller
 
-We'll use angular's {@link api/ng.$http $http} service in our controller to make an HTTP
+We'll use Angular's {@link api/ng.$http $http} service in our controller to make an HTTP
 request to your web server to fetch the data in the `app/phones/phones.json` file. `$http` is just
 one of several built-in {@link guide/dev_guide.services angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
-Services are managed by angular's {@link guide/di DI subsystem}. Dependency injection
+Services are managed by Angular's {@link guide/di DI subsystem}. Dependency injection
 helps to make your web apps both well-structured (e.g., separate components for presentation, data,
 and control) and loosely coupled (dependencies between components are not resolved by the
 components themselves, but by the DI subsystem).
@@ -56,7 +56,7 @@ __`app/js/controllers.js:`__
 <pre>
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
+phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope, $http) {
   $http.get('phones/phones.json').success(function(data) {
     $scope.phones = data;
   });
@@ -92,16 +92,22 @@ dependencies.
 <img  class="diagram" src="img/tutorial/xhr_service_final.png">
 
 
-### '$' Prefix Naming Convention
+### `$` Prefix Naming Convention
 
 You can create your own services, and in fact we will do exactly that in step 11. As a naming
-convention, angular's built-in services, Scope methods and a few other angular APIs have a '$'
-prefix in front of the name.  Don't use a '$' prefix when naming your services and models, in order
-to avoid any possible naming collisions.
+convention, angular's built-in services, Scope methods and a few other Angular APIs have a `$`
+prefix in front of the name.
+
+The `$` prefix is there to namespace Angular-provided services.
+To prevent collisions it's best to avoid naming your services and models anything that begins with a `$`.
+
+If you inspect a Scope, you may also notice some properties that begin with `$$`. These
+properties are considered private, and should not be accessed or modified.
+
 
 ### A Note on Minification
 
-Since angular infers the controller's dependencies from the names of arguments to the controller's
+Since Angular infers the controller's dependencies from the names of arguments to the controller's
 constructor function, if you were to {@link http://en.wikipedia.org/wiki/Minification_(programming)
 minify} the JavaScript code for `PhoneListCtrl` controller, all of its function arguments would be
 minified as well, and the dependency injector would not be able to identify services correctly.
@@ -111,25 +117,42 @@ There are two ways to overcome issues caused by minification:
 * You can create a `$inject` property on the controller function which holds an array of strings.
   Each string in the array is the name of the service to inject for the corresponding parameter.
   In the case of our example we would write:
-
+<pre>
     function PhoneListCtrl($scope, $http) {...}
     PhoneListCtrl.$inject = ['$scope', '$http'];
     phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-
+</pre>
 * Use the inline bracket notation which wraps the function to be injected into an array of strings
   (representing the dependency names) followed by the function to be injected:
-
+<pre>
     function PhoneListCtrl($scope, $http) {...}
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-
+</pre>
 Both of these methods work with any function that can be injected by Angular, so it's up to your
 project's style guide to decide which one you use.
 
 When using the second method, it is common to provide the constructor function inline as an
 anonymous function when registering the controller:
-
+<pre>
     phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
+</pre>
 
+From this point onward, we're going to use the inline method in the tutorial. With that in mind,
+let's add the annotations to our `PhoneListCtrl`:
+
+__`app/js/controllers.js:`__
+<pre>
+var phonecatApp = angular.module('phonecatApp', []);
+
+phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
+  function PhoneListCtrl($scope, $http) {
+    $http.get('phones/phones.json').success(function(data) {
+      $scope.phones = data;
+    });
+
+    $scope.orderProp = 'age';
+  }]);
+</pre>
 
 ## Test
 
@@ -192,7 +215,7 @@ native APIs and the global state associated with them — both of which make tes
 HTTP request and tell it what to respond with. Note that the responses are not returned until we call
 the `$httpBackend.flush` method.
 
-Now, we will make assertions to verify that the `phones` model doesn't exist on `scope` before
+Now we will make assertions to verify that the `phones` model doesn't exist on `scope` before
 the response is received:
 
 <pre>
@@ -230,7 +253,7 @@ You should now see the following output in the Karma tab:
   displayed in json format.
 
 * In the `PhoneListCtrl` controller, pre-process the http response by limiting the number of phones
-to the first 5 in the list. Use the following code in the $http callback:
+to the first 5 in the list. Use the following code in the `$http` callback:
 
          $scope.phones = data.splice(0, 5);
 

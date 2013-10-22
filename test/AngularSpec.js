@@ -348,6 +348,46 @@ describe('angular', function() {
   });
 
 
+  describe('csp', function() {
+    var originalSecurityPolicy;
+
+    beforeEach(function() {
+      originalSecurityPolicy = document.securityPolicy;
+    });
+
+    afterEach(function() {
+      document.securityPolicy = originalSecurityPolicy;
+    });
+
+
+    it('should return the false when CSP is not enabled (the default)', function() {
+      expect(csp()).toBe(false);
+    });
+
+
+    it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
+      document.securityPolicy = {isActive: true};
+      expect(csp()).toBe(true);
+    });
+
+    it('should return the true when CSP is enabled manually via [ng-csp]', function() {
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[ng-csp]') return {};
+      });
+      expect(csp()).toBe(true);
+    });
+
+
+    it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[data-ng-csp]') return {};
+      });
+      expect(csp()).toBe(true);
+      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');
+    });
+  });
+
+
   describe('parseKeyValue', function() {
     it('should parse a string into key-value pairs', function() {
       expect(parseKeyValue('')).toEqual({});

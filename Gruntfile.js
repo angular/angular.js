@@ -8,7 +8,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-compress');
-  grunt.loadNpmTasks('grunt-contrib-jasmine-node');
+  grunt.loadNpmTasks('grunt-jasmine-node');
   grunt.loadNpmTasks('grunt-ddescribe-iit');
   grunt.loadNpmTasks('grunt-merge-conflict');
   grunt.loadNpmTasks('grunt-parallel');
@@ -193,8 +193,8 @@ module.exports = function(grunt) {
       process: ['build/docs/*.html', 'build/docs/.htaccess']
     },
 
-    "jasmine-node": {
-      run: { spec: 'docs/spec' }
+    "jasmine_node": {
+      projectRoot: 'docs/spec'
     },
 
     "ddescribe-iit": {
@@ -256,7 +256,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
   grunt.registerTask('test:e2e', 'Run the end to end tests with Karma and keep a test server running in the background', ['connect:testserver', 'tests:end2end']);
-  grunt.registerTask('test:docgen', ['jasmine-node']);
+  grunt.registerTask('test:docgen', ['jasmine_node']);
   grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
 
   grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);

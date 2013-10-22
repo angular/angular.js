@@ -445,7 +445,7 @@ angular.mock.$LogProvider = function() {
  * @description
  * Mock implementation of the $interval service.
  *
- * Use {@link ngMock.$interval#flush `$interval.flush(millis)`} to
+ * Use {@link ngMock.$interval#methods_flush `$interval.flush(millis)`} to
  * move forward by `millis` milliseconds and trigger any functions scheduled to run in that
  * time.
  *
@@ -454,7 +454,7 @@ angular.mock.$LogProvider = function() {
  * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
  *   indefinitely.
  * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
- *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
+ *   will invoke `fn` within the {@link ng.$rootScope.Scope#methods_$apply $apply} block.
  * @returns {promise} A promise which will be notified on each iteration.
  */
 angular.mock.$IntervalProvider = function() {
@@ -467,9 +467,9 @@ angular.mock.$IntervalProvider = function() {
     var $interval = function(fn, delay, count, invokeApply) {
       var deferred = $q.defer(),
           promise = deferred.promise,
-          count = (isDefined(count)) ? count : 0,
+          count = (angular.isDefined(count)) ? count : 0,
           iteration = 0,
-          skipApply = (isDefined(invokeApply) && !invokeApply);
+          skipApply = (angular.isDefined(invokeApply) && !invokeApply);
 
       promise.then(null, null, fn);
 
@@ -769,7 +769,7 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
         }
       };
 
-      forEach(['enter','leave','move','addClass','removeClass'], function(method) {
+      angular.forEach(['enter','leave','move','addClass','removeClass'], function(method) {
         animate[method] = function() {
           var params = arguments;
           animate.queue.push({
@@ -1951,7 +1951,7 @@ angular.mock.clearDataCache = function() {
    *
    * @param {...(string|Function|Object)} fns any number of modules which are represented as string
    *        aliases or as anonymous module initialization functions. The modules are used to
-   *        configure the injector. The 'ng' and 'ngMock' modules are automatically loaded. If an 
+   *        configure the injector. The 'ng' and 'ngMock' modules are automatically loaded. If an
    *        object literal is passed they will be register as values in the module, the key being
    *        the module name and the value being what is returned.
    */
@@ -1994,17 +1994,17 @@ angular.mock.clearDataCache = function() {
    * ## Resolving References (Underscore Wrapping)
    * Often, we would like to inject a reference once, in a `beforeEach()` block and reuse this
    * in multiple `it()` clauses. To be able to do this we must assign the reference to a variable
-   * that is declared in the scope of the `describe()` block. Since we would, most likely, want 
+   * that is declared in the scope of the `describe()` block. Since we would, most likely, want
    * the variable to have the same name of the reference we have a problem, since the parameter
    * to the `inject()` function would hide the outer variable.
    *
    * To help with this, the injected parameters can, optionally, be enclosed with underscores.
    * These are ignored by the injector when the reference name is resolved.
-   * 
+   *
    * For example, the parameter `_myService_` would be resolved as the reference `myService`.
    * Since it is available in the function body as _myService_, we can then assign it to a variable
    * defined in an outer scope.
-   * 
+   *
    * ```
    * // Defined out reference variable outside
    * var myService;
@@ -2012,15 +2012,15 @@ angular.mock.clearDataCache = function() {
    * // Wrap the parameter in underscores
    * beforeEach( inject( function(_myService_){
    *   myService = _myService_;
-   * })); 
+   * }));
    *
    * // Use myService in a series of tests.
    * it('makes use of myService', function() {
    *   myService.doStuff();
    * });
-   * 
+   *
    * ```
-   * 
+   *
    * See also {@link angular.mock.module angular.mock.module}
    *
    * ## Example
@@ -2060,7 +2060,7 @@ angular.mock.clearDataCache = function() {
    *   });
    *
    * </pre>
-   * 
+   *
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
   window.inject = angular.mock.inject = function() {
