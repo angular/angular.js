@@ -56,6 +56,70 @@ describe("ngAnimate", function() {
         expect($animate.enabled(1)).toBe(true);
         expect($animate.enabled()).toBe(true);
       });
+
+      it('should place a hard disable on all child animations', function() {
+        var count = 0;
+        module(function($animateProvider) {
+          $animateProvider.register('.animated', function() {
+            return {
+              addClass : function(element, className, done) {
+                count++;
+                done();
+              }
+            }
+          });
+        });
+        inject(function($compile, $rootScope, $animate, $sniffer, $rootElement, $timeout) {
+          $animate.enabled(true);
+
+          var elm1 = $compile('<div class="animated"></div>')($rootScope);
+          var elm2 = $compile('<div class="animated"></div>')($rootScope);
+          $rootElement.append(elm1);
+          angular.element(document.body).append($rootElement);
+
+          $animate.addClass(elm1, 'klass');
+          expect(count).toBe(1);
+
+          $animate.enabled(false);
+
+          $animate.addClass(elm1, 'klass2');
+          expect(count).toBe(1);
+
+          $animate.enabled(true);
+
+          elm1.append(elm2);
+
+          $animate.addClass(elm2, 'klass');
+          expect(count).toBe(2);
+
+          $animate.enabled(false, elm1);
+
+          $animate.addClass(elm2, 'klass2');
+          expect(count).toBe(2);
+        });
+      });
+
+      it('should skip animations if the element is attached to the $rootElement', function() {
+        var count = 0;
+        module(function($animateProvider) {
+          $animateProvider.register('.animated', function() {
+            return {
+              addClass : function(element, className, done) {
+                count++;
+                done();
+              }
+            }
+          });
+        });
+        inject(function($compile, $rootScope, $animate, $sniffer, $rootElement, $timeout) {
+          $animate.enabled(true);
+
+          var elm1 = $compile('<div class="animated"></div>')($rootScope);
+
+          $animate.addClass(elm1, 'klass2');
+          expect(count).toBe(0);
+        });
+      });
     });
 
     describe("with polyfill", function() {
@@ -1956,4 +2020,28 @@ describe("ngAnimate", function() {
     expect(element.hasClass('red-add')).toBe(false); 
     expect(element.hasClass('yellow-add')).toBe(true);
   }));
+
+  it('should enable and disable animations properly on the root element', function() {
+    var count = 0;
+    module(function($animateProvider) {
+      $animateProvider.register('.animated', function() {
+        return {
+          addClass : function(element, className, done) {
+            count++;
+            done();
+          }
+        }
+      });
+    });
+    inject(function($compile, $rootScope, $animate, $sniffer, $rootElement, $timeout) {
+
+      $rootElement.addClass('animated');
+      $animate.addClass($rootElement, 'green');
+      expect(count).toBe(1);
+
+      $animate.addClass($rootElement, 'red');
+      expect(count).toBe(2);
+    });
+  });
+
 });

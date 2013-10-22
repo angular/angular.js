@@ -205,9 +205,9 @@ angular.module('ngAnimate', ['ng'])
     var ELEMENT_NODE = 1;
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
-    var rootAnimateState = {running:true};
-    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope',
-                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope) {
+    var rootAnimateState = {disabled:true};
+    $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope', '$document',
+                            function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope,   $document) {
 
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
 
@@ -466,18 +466,17 @@ angular.module('ngAnimate', ['ng'])
               }
               else {
                 var data = element.data(NG_ANIMATE_STATE) || {};
-                data.structural = true;
-                data.running = true;
+                data.disabled = true;
                 element.data(NG_ANIMATE_STATE, data);
               }
             break;
 
             case 1:
-              rootAnimateState.running = !value;
+              rootAnimateState.disabled = !value;
             break;
 
             default:
-              value = !rootAnimateState.running;
+              value = !rootAnimateState.disabled;
             break;
           }
           return !!value;
@@ -498,7 +497,6 @@ angular.module('ngAnimate', ['ng'])
           parent = after ? after.parent() : element.parent();
         }
 
-        var disabledAnimation = { running : true };
         var matches = lookup(animationLookup);
         var isClassBased = event == 'addClass' || event == 'removeClass';
         var ngAnimateState = element.data(NG_ANIMATE_STATE) || {};
@@ -507,7 +505,7 @@ angular.module('ngAnimate', ['ng'])
         //the element is not currently attached to the document body or then completely close
         //the animation if any matching animations are not found at all.
         //NOTE: IE8 + IE9 should close properly (run done()) in case a NO animation is not found.
-        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || matches.length == 0) {
+        if (animationsDisabled(element, parent) || matches.length === 0) {
           done();
           return;
         }
@@ -528,7 +526,7 @@ angular.module('ngAnimate', ['ng'])
 
         //this would mean that an animation was not allowed so let the existing
         //animation do it's thing and close this one early
-        if(animations.length == 0) {
+        if(animations.length === 0) {
           onComplete && onComplete();
           return;
         }
@@ -622,8 +620,39 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function cleanup(element) {
-        element.removeClass(NG_ANIMATE_CLASS_NAME);
-        element.removeData(NG_ANIMATE_STATE);
+        if(element[0] == $rootElement[0]) {
+          if(!rootAnimateState.disabled) {
+            rootAnimateState.running = false;
+            rootAnimateState.structural = false;
+          }
+        }
+        else {
+          element.removeClass(NG_ANIMATE_CLASS_NAME);
+          element.removeData(NG_ANIMATE_STATE);
+        }
+      }
+
+      function animationsDisabled(element, parent) {
+        if(element == $rootElement) {
+          return rootAnimateState.disabled || rootAnimateState.running;
+        }
+
+        var validState;
+        do {
+          //the element did not reach the root element which means that it
+          //is not apart of the DOM. Therefore there is no reason to do
+          //any animations on it
+          if(parent.length === 0 || parent[0] == $document[0]) return true;
+
+          var state = parent.data(NG_ANIMATE_STATE);
+          if(state && (state.disabled != null || state.running != null)) {
+            validState = state;
+            break;
+          }
+        }
+        while(parent = parent.parent());
+
+        return validState ? (validState.disabled || validState.running) : true;
       }
     }]);
 
