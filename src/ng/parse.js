@@ -6,58 +6,65 @@ var promiseWarning;
 
 // Sandboxing Angular Expressions
 // ------------------------------
-// Angular expressions are generally considered safe because these expressions only have direct access to $scope and
-// locals. However, one can obtain the ability to execute arbitrary JS code by obtaining a reference to native JS
-// functions such as the Function constructor.
+// Angular expressions are generally considered safe because these expressions only have direct
+// access to $scope and locals. However, one can obtain the ability to execute arbitrary JS code by
+// obtaining a reference to native JS functions such as the Function constructor.
 //
 // As an example, consider the following Angular expression:
 //
 //   {}.toString.constructor(alert("evil JS code"))
 //
-// We want to prevent this type of access. For the sake of performance, during the lexing phase we disallow any "dotted"
-// access to any member named "constructor".
+// We want to prevent this type of access. For the sake of performance, during the lexing phase we
+// disallow any "dotted" access to any member named "constructor".
 //
-// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor while evaluating
-// the expression, which is a stronger but more expensive test. Since reflective calls are expensive anyway, this is not
-// such a big deal compared to static dereferencing.
+// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor
+// while evaluating the expression, which is a stronger but more expensive test. Since reflective
+// calls are expensive anyway, this is not such a big deal compared to static dereferencing.
 //
-// This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits against the
-// expression language, but not to prevent exploits that were enabled by exposing sensitive JavaScript or browser apis
-// on Scope. Exposing such objects on a Scope is never a good practice and therefore we are not even trying to protect
-// against interaction with an object explicitly exposed in this way.
+// This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits
+// against the expression language, but not to prevent exploits that were enabled by exposing
+// sensitive JavaScript or browser apis on Scope. Exposing such objects on a Scope is never a good
+// practice and therefore we are not even trying to protect against interaction with an object
+// explicitly exposed in this way.
 //
-// A developer could foil the name check by aliasing the Function constructor under a different name on the scope.
+// A developer could foil the name check by aliasing the Function constructor under a different
+// name on the scope.
 //
-// In general, it is not possible to access a Window object from an angular expression unless a window or some DOM
-// object that has a reference to window is published onto a Scope.
+// In general, it is not possible to access a Window object from an angular expression unless a
+// window or some DOM object that has a reference to window is published onto a Scope.
 
 function ensureSafeMemberName(name, fullExpression) {
   if (name === "constructor") {
     throw $parseMinErr('isecfld',
-        'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}', fullExpression);
+        'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
   }
   return name;
-};
+}
 
 function ensureSafeObject(obj, fullExpression) {
   // nifty check if obj is Function that is fast and works across iframes and other contexts
   if (obj && obj.constructor === obj) {
     throw $parseMinErr('isecfn',
-        'Referencing Function in Angular expressions is disallowed! Expression: {0}', fullExpression);
+        'Referencing Function in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
   } else if (// isWindow(obj)
       obj && obj.document && obj.location && obj.alert && obj.setInterval) {
     throw $parseMinErr('isecwindow',
-        'Referencing the Window in Angular expressions is disallowed! Expression: {0}', fullExpression);
+        'Referencing the Window in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
   } else if (// isElement(obj)
       obj && (obj.nodeName || (obj.on && obj.find))) {
     throw $parseMinErr('isecdom',
-        'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}', fullExpression);
+        'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}',
+        fullExpression);
   } else {
     return obj;
   }
 }
 
 var OPERATORS = {
+    /* jshint bitwise : false */
     'null':function(){return null;},
     'true':function(){return true;},
     'false':function(){return false;},
@@ -71,7 +78,10 @@ var OPERATORS = {
         return a;
       }
       return isDefined(b)?b:undefined;},
-    '-':function(self, locals, a,b){a=a(self, locals); b=b(self, locals); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
+    '-':function(self, locals, a,b){
+          a=a(self, locals); b=b(self, locals);
+          return (isDefined(a)?a:0)-(isDefined(b)?b:0);
+        },
     '*':function(self, locals, a,b){return a(self, locals)*b(self, locals);},
     '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
     '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
@@ -92,6 +102,7 @@ var OPERATORS = {
     '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
     '!':function(self, locals, a){return !a(self, locals);}
 };
+/* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
 
@@ -192,8 +203,9 @@ Lexer.prototype = {
   },
 
   isWhitespace: function(ch) {
+    // IE treats non-breaking space as \u00A0
     return (ch === ' ' || ch === '\r' || ch === '\t' ||
-            ch === '\n' || ch === '\v' || ch === '\u00A0'); // IE treats non-breaking space as \u00A0
+            ch === '\n' || ch === '\v' || ch === '\u00A0');
   },
 
   isIdent: function(ch) {
@@ -960,7 +972,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             pathVal = pathVal.$$v;
           }
           return pathVal;
-        }
+        };
 }
 
 function getterFn(path, options, fullExp) {
@@ -976,20 +988,22 @@ function getterFn(path, options, fullExp) {
       fn;
 
   if (options.csp) {
-    fn = (pathKeysLength < 6)
-        ? cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp, options)
-        : function(scope, locals) {
-          var i = 0, val;
-          do {
-            val = cspSafeGetterFn(
-                    pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++], fullExp, options
-                  )(scope, locals);
+    if (pathKeysLength < 6) {
+      fn = cspSafeGetterFn(pathKeys[0], pathKeys[1], pathKeys[2], pathKeys[3], pathKeys[4], fullExp,
+                          options);
+    } else {
+      fn = function(scope, locals) {
+        var i = 0, val;
+        do {
+          val = cspSafeGetterFn(pathKeys[i++], pathKeys[i++], pathKeys[i++], pathKeys[i++],
+                                pathKeys[i++], fullExp, options)(scope, locals);
 
-            locals = undefined; // clear after first iteration
-            scope = val;
-          } while (i < pathKeysLength);
-          return val;
-        }
+          locals = undefined; // clear after first iteration
+          scope = val;
+        } while (i < pathKeysLength);
+        return val;
+      };
+    }
   } else {
     var code = 'var l, fn, p;\n';
     forEach(pathKeys, function(key, index) {
@@ -1015,7 +1029,9 @@ function getterFn(path, options, fullExp) {
     });
     code += 'return s;';
 
-    var evaledFnGetter = Function('s', 'k', 'pw', code); // s=scope, k=locals, pw=promiseWarning
+    /* jshint -W054 */
+    var evaledFnGetter = new Function('s', 'k', 'pw', code); // s=scope, k=locals, pw=promiseWarning
+    /* jshint +W054 */
     evaledFnGetter.toString = function() { return code; };
     fn = function(scope, locals) {
       return evaledFnGetter(scope, locals, promiseWarning);
@@ -1079,7 +1095,8 @@ function getterFn(path, options, fullExp) {
  * @function
  *
  * @description
- * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse} service.
+ * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse}
+ *  service.
  */
 function $ParseProvider() {
   var cache = {};
@@ -1101,35 +1118,40 @@ function $ParseProvider() {
    *
    * **This feature is deprecated, see deprecation notes below for more info**
    *
-   * If set to true (default is false), $parse will unwrap promises automatically when a promise is found at any part of
-   * the expression. In other words, if set to true, the expression will always result in a non-promise value.
+   * If set to true (default is false), $parse will unwrap promises automatically when a promise is
+   * found at any part of the expression. In other words, if set to true, the expression will always
+   * result in a non-promise value.
    *
-   * While the promise is unresolved, it's treated as undefined, but once resolved and fulfilled, the fulfillment value
-   * is used in place of the promise while evaluating the expression.
+   * While the promise is unresolved, it's treated as undefined, but once resolved and fulfilled,
+   * the fulfillment value is used in place of the promise while evaluating the expression.
    *
    * **Deprecation notice**
    *
-   * This is a feature that didn't prove to be wildly useful or popular, primarily because of the dichotomy between data
-   * access in templates (accessed as raw values) and controller code (accessed as promises).
+   * This is a feature that didn't prove to be wildly useful or popular, primarily because of the
+   * dichotomy between data access in templates (accessed as raw values) and controller code
+   * (accessed as promises).
    *
-   * In most code we ended up resolving promises manually in controllers anyway and thus unifying the model access there.
+   * In most code we ended up resolving promises manually in controllers anyway and thus unifying
+   * the model access there.
    *
    * Other downsides of automatic promise unwrapping:
    *
    * - when building components it's often desirable to receive the raw promises
    * - adds complexity and slows down expression evaluation
-   * - makes expression code pre-generation unattractive due to the amount of code that needs to be generated
+   * - makes expression code pre-generation unattractive due to the amount of code that needs to be
+   *   generated
    * - makes IDE auto-completion and tool support hard
    *
    * **Warning Logs**
    *
-   * If the unwrapping is enabled, Angular will log a warning about each expression that unwraps a promise (to reduce
-   * the noise, each expression is logged only once). To disable this logging use
+   * If the unwrapping is enabled, Angular will log a warning about each expression that unwraps a
+   * promise (to reduce the noise, each expression is logged only once). To disable this logging use
    * `$parseProvider.logPromiseWarnings(false)` api.
    *
    *
    * @param {boolean=} value New value.
-   * @returns {boolean|self} Returns the current setting when used as getter and self if used as setter.
+   * @returns {boolean|self} Returns the current setting when used as getter and self if used as
+   *                         setter.
    */
   this.unwrapPromises = function(value) {
     if (isDefined(value)) {
@@ -1156,7 +1178,8 @@ function $ParseProvider() {
    * This setting applies only if `$parseProvider.unwrapPromises` setting is set to true as well.
    *
    * @param {boolean=} value New value.
-   * @returns {boolean|self} Returns the current setting when used as getter and self if used as setter.
+   * @returns {boolean|self} Returns the current setting when used as getter and self if used as
+   *                         setter.
    */
  this.logPromiseWarnings = function(value) {
     if (isDefined(value)) {

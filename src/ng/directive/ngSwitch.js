@@ -161,7 +161,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
         }
       });
     }
-  }
+  };
 }];
 
 var ngSwitchWhenDirective = ngDirective({

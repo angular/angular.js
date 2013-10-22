@@ -66,21 +66,23 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *
  *   Where:
  *
- *   - **`action`** – {string} – The name of action. This name becomes the name of the method on your
- *     resource object.
- *   - **`method`** – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *     and `JSONP`.
- *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of the
- *     parameter value is a function, it will be executed every time when a param value needs to be
- *     obtained for a request (unless the param was overridden).
- *   - **`url`** – {string} – action specific `url` override. The url templating is supported just like
- *     for the resource-level urls.
- *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array, see
- *     `returns` section.
- *   - **`transformRequest`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *   - **`action`** – {string} – The name of action. This name becomes the name of the method on
+ *     your resource object.
+ *   - **`method`** – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`,
+ *     `DELETE`, and `JSONP`.
+ *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of
+ *     the parameter value is a function, it will be executed every time when a param value needs to
+ *     be obtained for a request (unless the param was overridden).
+ *   - **`url`** – {string} – action specific `url` override. The url templating is supported just
+ *     like for the resource-level urls.
+ *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array,
+ *     see `returns` section.
+ *   - **`transformRequest`** –
+ *     `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
  *     request body and headers and returns its transformed (typically serialized) version.
- *   - **`transformResponse`** – `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
+ *   - **`transformResponse`** –
+ *     `{function(data, headersGetter)|Array.<function(data, headersGetter)>}` –
  *     transform function or an array of such functions. The transform function takes the http
  *     response body and headers and returns its transformed (typically deserialized) version.
  *   - **`cache`** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
@@ -148,14 +150,15 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *
  *     On success, the promise is resolved with the same resource instance or collection object,
  *     updated with data from server. This makes it easy to use in
- *     {@link ngRoute.$routeProvider resolve section of $routeProvider.when()} to defer view rendering
- *     until the resource(s) are loaded.
+ *     {@link ngRoute.$routeProvider resolve section of $routeProvider.when()} to defer view
+ *     rendering until the resource(s) are loaded.
  *
- *     On failure, the promise is resolved with the {@link ng.$http http response} object,
- *     without the `resource` property.
+ *     On failure, the promise is resolved with the {@link ng.$http http response} object, without
+ *     the `resource` property.
  *
- *   - `$resolved`: `true` after first server interaction is completed (either with success or rejection),
- *     `false` before that. Knowing if the Resource has been resolved is useful in data-binding.
+ *   - `$resolved`: `true` after first server interaction is completed (either with success or
+ *      rejection), `false` before that. Knowing if the Resource has been resolved is useful in
+ *      data-binding.
  *
  * @example
  *
@@ -199,7 +202,8 @@ var $resourceMinErr = angular.$$minErr('$resource');
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
  *
- * Calling these methods invoke `$http` on the `url` template with the given `method`, `params` and `headers`.
+ * Calling these methods invoke `$http` on the `url` template with the given `method`, `params` and
+ * `headers`.
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
@@ -231,48 +235,52 @@ var $resourceMinErr = angular.$$minErr('$resource');
 
    Let's look at what a buzz client created with the `$resource` service looks like:
     <doc:example>
-      <doc:source jsfiddle="false">
-       <script>
-         function BuzzController($resource) {
-           this.userId = 'googlebuzz';
-           this.Activity = $resource(
-             'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
-             {alt:'json', callback:'JSON_CALLBACK'},
-             {get:{method:'JSONP', params:{visibility:'@self'}}, replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}}
-           );
+    <doc:source jsfiddle="false">
+    <script>
+     function BuzzController($resource) {
+       this.userId = 'googlebuzz';
+       this.Activity = $resource(
+         'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+         {alt:'json', callback:'JSON_CALLBACK'},
+         {
+           get:{method:'JSONP', params:{visibility:'@self'}},
+           replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}
          }
+       );
+     }
 
-         BuzzController.prototype = {
-           fetch: function() {
-             this.activities = this.Activity.get({userId:this.userId});
-           },
-           expandReplies: function(activity) {
-             activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
-           }
-         };
-         BuzzController.$inject = ['$resource'];
-       </script>
+     BuzzController.prototype = {
+       fetch: function() {
+         this.activities = this.Activity.get({userId:this.userId});
+       },
+       expandReplies: function(activity) {
+         activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
+       }
+     };
+     BuzzController.$inject = ['$resource'];
+    </script>
 
-       <div ng-controller="BuzzController">
-         <input ng-model="userId"/>
-         <button ng-click="fetch()">fetch</button>
-         <hr/>
-         <div ng-repeat="item in activities.data.items">
-           <h1 style="font-size: 15px;">
-             <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-             <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-             <a href ng-click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
-           </h1>
-           {{item.object.content | html}}
-           <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-             <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-             <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
-           </div>
-         </div>
+    <div ng-controller="BuzzController">
+     <input ng-model="userId"/>
+     <button ng-click="fetch()">fetch</button>
+     <hr/>
+     <div ng-repeat="item in activities.data.items">
+       <h1 style="font-size: 15px;">
+         <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+         <a href ng-click="expandReplies(item)" style="float: right;">Expand replies:
+           {{item.links.replies[0].count}}</a>
+       </h1>
+       {{item.object.content | html}}
+       <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+         <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+         <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
        </div>
-      </doc:source>
-      <doc:scenario>
-      </doc:scenario>
+     </div>
+    </div>
+    </doc:source>
+    <doc:scenario>
+    </doc:scenario>
     </doc:example>
  */
 angular.module('ngResource', ['ng']).
@@ -313,9 +321,9 @@ angular.module('ngResource', ['ng']).
 
 
     /**
-     * This method is intended for encoding *key* or *value* parts of query component. We need a custom
-     * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
-     * encoded per http://tools.ietf.org/html/rfc3986:
+     * This method is intended for encoding *key* or *value* parts of query component. We need a
+     * custom method because encodeURIComponent is too aggressive and encodes stuff that doesn't
+     * have to be encoded per http://tools.ietf.org/html/rfc3986:
      *    query       = *( pchar / "/" / "?" )
      *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
      *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -350,8 +358,9 @@ angular.module('ngResource', ['ng']).
           if (param === 'hasOwnProperty') {
             throw $resourceMinErr('badname', "hasOwnProperty is not a valid parameter name.");
           }
-          if (!(new RegExp("^\\d+$").test(param)) && param && (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
-              urlParams[param] = true;
+          if (!(new RegExp("^\\d+$").test(param)) && param &&
+               (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
+            urlParams[param] = true;
           }
         });
         url = url.replace(/\\:/g, ':');
@@ -394,7 +403,7 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function ResourceFactory(url, paramDefaults, actions) {
+    function resourceFactory(url, paramDefaults, actions) {
       var route = new Route(url);
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
@@ -404,7 +413,8 @@ angular.module('ngResource', ['ng']).
         actionParams = extend({}, paramDefaults, actionParams);
         forEach(actionParams, function(value, key){
           if (isFunction(value)) { value = value(); }
-          ids[key] = value && value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
+          ids[key] = value && value.charAt && value.charAt(0) == '@' ?
+            getter(data, value.substr(1)) : value;
         });
         return ids;
       }
@@ -423,6 +433,7 @@ angular.module('ngResource', ['ng']).
         Resource[name] = function(a1, a2, a3, a4) {
           var params = {}, data, success, error;
 
+          /* jshint -W086 */ /* (purposefully fall through case statements) */
           switch(arguments.length) {
           case 4:
             error = a4;
@@ -454,14 +465,18 @@ angular.module('ngResource', ['ng']).
           case 0: break;
           default:
             throw $resourceMinErr('badargs',
-              "Expected up to 4 arguments [params, data, success, error], got {0} arguments", arguments.length);
+              "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
+              arguments.length);
           }
+          /* jshint +W086 */ /* (purposefully fall through case statements) */
 
           var isInstanceCall = data instanceof Resource;
           var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
           var httpConfig = {};
-          var responseInterceptor = action.interceptor && action.interceptor.response || defaultResponseInterceptor;
-          var responseErrorInterceptor = action.interceptor && action.interceptor.responseError || undefined;
+          var responseInterceptor = action.interceptor && action.interceptor.response ||
+                                    defaultResponseInterceptor;
+          var responseErrorInterceptor = action.interceptor && action.interceptor.responseError ||
+                                    undefined;
 
           forEach(action, function(value, key) {
             if (key != 'params' && key != 'isArray' && key != 'interceptor') {
@@ -470,18 +485,23 @@ angular.module('ngResource', ['ng']).
           });
 
           if (hasBody) httpConfig.data = data;
-          route.setUrlParams(httpConfig, extend({}, extractParams(data, action.params || {}), params), action.url);
+          route.setUrlParams(httpConfig,
+                             extend({}, extractParams(data, action.params || {}), params),
+                             action.url);
 
           var promise = $http(httpConfig).then(function(response) {
             var data = response.data,
                 promise = value.$promise;
 
             if (data) {
-              if ( angular.isArray(data) != !!action.isArray ) {
-                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected response' +
-                  ' to contain an {0} but got an {1}',
+              // Need to convert action.isArray to boolean in case it is undefined
+              // jshint -W018
+              if ( angular.isArray(data) !== (!!action.isArray) ) {
+                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected ' +
+                  'response to contain an {0} but got an {1}',
                   action.isArray?'array':'object', angular.isArray(data)?'array':'object');
               }
+              // jshint +W018
               if (action.isArray) {
                 value.length = 0;
                 forEach(data, function(item) {
@@ -539,11 +559,11 @@ angular.module('ngResource', ['ng']).
       });
 
       Resource.bind = function(additionalParamDefaults){
-        return ResourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
+        return resourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
       };
 
       return Resource;
     }
 
-    return ResourceFactory;
+    return resourceFactory;
   }]);

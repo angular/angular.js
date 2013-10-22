@@ -179,12 +179,13 @@ angular.scenario.dsl('using', function() {
  */
 angular.scenario.dsl('binding', function() {
   return function(name) {
-    return this.addFutureAction("select binding '" + name + "'", function($window, $document, done) {
-      var values = $document.elements().bindings($window.angular.element, name);
-      if (!values.length) {
-        return done("Binding selector '" + name + "' did not match.");
-      }
-      done(null, values[0]);
+    return this.addFutureAction("select binding '" + name + "'",
+      function($window, $document, done) {
+        var values = $document.elements().bindings($window.angular.element, name);
+        if (!values.length) {
+          return done("Binding selector '" + name + "' did not match.");
+        }
+        done(null, values[0]);
     });
   };
 });
@@ -201,28 +202,31 @@ angular.scenario.dsl('input', function() {
   var supportInputEvent =  'oninput' in document.createElement('div') && msie != 9;
 
   chain.enter = function(value, event) {
-    return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
-      var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
-      input.val(value);
-      input.trigger(event || (supportInputEvent ? 'input' : 'change'));
-      done();
+    return this.addFutureAction("input '" + this.name + "' enter '" + value + "'",
+      function($window, $document, done) {
+        var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
+        input.val(value);
+        input.trigger(event || (supportInputEvent ? 'input' : 'change'));
+        done();
     });
   };
 
   chain.check = function() {
-    return this.addFutureAction("checkbox '" + this.name + "' toggle", function($window, $document, done) {
-      var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':checkbox');
-      input.trigger('click');
-      done();
+    return this.addFutureAction("checkbox '" + this.name + "' toggle",
+      function($window, $document, done) {
+        var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':checkbox');
+        input.trigger('click');
+        done();
     });
   };
 
   chain.select = function(value) {
-    return this.addFutureAction("radio button '" + this.name + "' toggle '" + value + "'", function($window, $document, done) {
-      var input = $document.
-        elements('[ng\\:model="$1"][value="$2"]', this.name, value).filter(':radio');
-      input.trigger('click');
-      done();
+    return this.addFutureAction("radio button '" + this.name + "' toggle '" + value + "'",
+      function($window, $document, done) {
+        var input = $document.
+          elements('[ng\\:model="$1"][value="$2"]', this.name, value).filter(':radio');
+        input.trigger('click');
+        done();
     });
   };
 
@@ -244,33 +248,37 @@ angular.scenario.dsl('input', function() {
  * Usage:
  *    repeater('#products table', 'Product List').count() number of rows
  *    repeater('#products table', 'Product List').row(1) all bindings in row as an array
- *    repeater('#products table', 'Product List').column('product.name') all values across all rows in an array
+ *    repeater('#products table', 'Product List').column('product.name') all values across all rows
+ *    in an array
  */
 angular.scenario.dsl('repeater', function() {
   var chain = {};
 
   chain.count = function() {
-    return this.addFutureAction("repeater '" + this.label + "' count", function($window, $document, done) {
-      try {
-        done(null, $document.elements().length);
-      } catch (e) {
-        done(null, 0);
-      }
+    return this.addFutureAction("repeater '" + this.label + "' count",
+      function($window, $document, done) {
+        try {
+          done(null, $document.elements().length);
+        } catch (e) {
+          done(null, 0);
+        }
     });
   };
 
   chain.column = function(binding) {
-    return this.addFutureAction("repeater '" + this.label + "' column '" + binding + "'", function($window, $document, done) {
-      done(null, $document.elements().bindings($window.angular.element, binding));
+    return this.addFutureAction("repeater '" + this.label + "' column '" + binding + "'",
+      function($window, $document, done) {
+        done(null, $document.elements().bindings($window.angular.element, binding));
     });
   };
 
   chain.row = function(index) {
-    return this.addFutureAction("repeater '" + this.label + "' row '" + index + "'", function($window, $document, done) {
-      var matches = $document.elements().slice(index, index + 1);
-      if (!matches.length)
-        return done('row ' + index + ' out of bounds');
-      done(null, matches.bindings($window.angular.element));
+    return this.addFutureAction("repeater '" + this.label + "' row '" + index + "'",
+      function($window, $document, done) {
+        var matches = $document.elements().slice(index, index + 1);
+        if (!matches.length)
+          return done('row ' + index + ' out of bounds');
+        done(null, matches.bindings($window.angular.element));
     });
   };
 
@@ -289,36 +297,38 @@ angular.scenario.dsl('select', function() {
   var chain = {};
 
   chain.option = function(value) {
-    return this.addFutureAction("select '" + this.name + "' option '" + value + "'", function($window, $document, done) {
-      var select = $document.elements('select[ng\\:model="$1"]', this.name);
-      var option = select.find('option[value="' + value + '"]');
-      if (option.length) {
-        select.val(value);
-      } else {
-        option = select.find('option').filter(function(){
-          return _jQuery(this).text() === value;
-        });
-        if (!option.length) {
-          option = select.find('option:contains("' + value + '")');
-        }
+    return this.addFutureAction("select '" + this.name + "' option '" + value + "'",
+      function($window, $document, done) {
+        var select = $document.elements('select[ng\\:model="$1"]', this.name);
+        var option = select.find('option[value="' + value + '"]');
         if (option.length) {
-          select.val(option.val());
+          select.val(value);
         } else {
-            return done("option '" + value + "' not found");
+          option = select.find('option').filter(function(){
+            return _jQuery(this).text() === value;
+          });
+          if (!option.length) {
+            option = select.find('option:contains("' + value + '")');
+          }
+          if (option.length) {
+            select.val(option.val());
+          } else {
+              return done("option '" + value + "' not found");
+          }
         }
-      }
-      select.trigger('change');
-      done();
+        select.trigger('change');
+        done();
     });
   };
 
   chain.options = function() {
     var values = arguments;
-    return this.addFutureAction("select '" + this.name + "' options '" + values + "'", function($window, $document, done) {
-      var select = $document.elements('select[multiple][ng\\:model="$1"]', this.name);
-      select.val(values);
-      select.trigger('change');
-      done();
+    return this.addFutureAction("select '" + this.name + "' options '" + values + "'",
+      function($window, $document, done) {
+        var select = $document.elements('select[multiple][ng\\:model="$1"]', this.name);
+        select.val(values);
+        select.trigger('change');
+        done();
     });
   };
 
@@ -350,74 +360,81 @@ angular.scenario.dsl('element', function() {
   var chain = {};
 
   chain.count = function() {
-    return this.addFutureAction("element '" + this.label + "' count", function($window, $document, done) {
-      try {
-        done(null, $document.elements().length);
-      } catch (e) {
-        done(null, 0);
-      }
+    return this.addFutureAction("element '" + this.label + "' count",
+      function($window, $document, done) {
+        try {
+          done(null, $document.elements().length);
+        } catch (e) {
+          done(null, 0);
+        }
     });
   };
 
   chain.click = function() {
-    return this.addFutureAction("element '" + this.label + "' click", function($window, $document, done) {
-      var elements = $document.elements();
-      var href = elements.attr('href');
-      var eventProcessDefault = elements.trigger('click')[0];
+    return this.addFutureAction("element '" + this.label + "' click",
+      function($window, $document, done) {
+        var elements = $document.elements();
+        var href = elements.attr('href');
+        var eventProcessDefault = elements.trigger('click')[0];
 
-      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
-        this.application.navigateTo(href, function() {
+        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+          this.application.navigateTo(href, function() {
+            done();
+          }, done);
+        } else {
           done();
-        }, done);
-      } else {
-        done();
-      }
+        }
     });
   };
 
   chain.dblclick = function() {
-    return this.addFutureAction("element '" + this.label + "' dblclick", function($window, $document, done) {
-      var elements = $document.elements();
-      var href = elements.attr('href');
-      var eventProcessDefault = elements.trigger('dblclick')[0];
+    return this.addFutureAction("element '" + this.label + "' dblclick",
+      function($window, $document, done) {
+        var elements = $document.elements();
+        var href = elements.attr('href');
+        var eventProcessDefault = elements.trigger('dblclick')[0];
 
-      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
-        this.application.navigateTo(href, function() {
+        if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
+          this.application.navigateTo(href, function() {
+            done();
+          }, done);
+        } else {
           done();
-        }, done);
-      } else {
-        done();
-      }
+        }
     });
   };
 
   chain.mouseover = function() {
-    return this.addFutureAction("element '" + this.label + "' mouseover", function($window, $document, done) {
-      var elements = $document.elements();
-      elements.trigger('mouseover');
-      done();
+    return this.addFutureAction("element '" + this.label + "' mouseover",
+      function($window, $document, done) {
+        var elements = $document.elements();
+        elements.trigger('mouseover');
+        done();
     });
   };
 
   chain.mousedown = function() {
-      return this.addFutureAction("element '" + this.label + "' mousedown", function($window, $document, done) {
-        var elements = $document.elements();
-        elements.trigger('mousedown');
-        done();
+      return this.addFutureAction("element '" + this.label + "' mousedown",
+        function($window, $document, done) {
+          var elements = $document.elements();
+          elements.trigger('mousedown');
+          done();
       });
     };
 
   chain.mouseup = function() {
-      return this.addFutureAction("element '" + this.label + "' mouseup", function($window, $document, done) {
-        var elements = $document.elements();
-        elements.trigger('mouseup');
-        done();
+      return this.addFutureAction("element '" + this.label + "' mouseup",
+        function($window, $document, done) {
+          var elements = $document.elements();
+          elements.trigger('mouseup');
+          done();
       });
     };
 
   chain.query = function(fn) {
-    return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
-      fn.call(this, $document.elements(), done);
+    return this.addFutureAction('element ' + this.label + ' custom query',
+      function($window, $document, done) {
+        fn.call(this, $document.elements(), done);
     });
   };
 
@@ -426,7 +443,8 @@ angular.scenario.dsl('element', function() {
       var args = arguments,
           futureName = (args.length == 1)
               ? "element '" + this.label + "' get " + methodName + " '" + name + "'"
-              : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" + value + "'";
+              : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" +
+                value + "'";
 
       return this.addFutureAction(futureName, function($window, $document, done) {
         var element = $document.elements();
@@ -438,7 +456,7 @@ angular.scenario.dsl('element', function() {
   angular.forEach(VALUE_METHODS, function(methodName) {
     chain[methodName] = function(value) {
       var args = arguments,
-          futureName = (args.length == 0)
+          futureName = (args.length === 0)
               ? "element '" + this.label + "' " + methodName
               : "element '" + this.label + "' set " + methodName + " to '" + value + "'";
 

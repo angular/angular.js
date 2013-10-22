@@ -159,6 +159,7 @@ function outputLocale(localeInfo, localeID) {
   localeObj.id = correctedLocaleId(localeID);
 
   var prefix =
+      "'use strict';\n" +
       'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
           'var PLURAL_CATEGORY = {' +
           'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +

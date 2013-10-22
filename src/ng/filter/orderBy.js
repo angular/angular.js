@@ -135,5 +135,5 @@ function orderByFilter($parse){
         return t1 < t2 ? -1 : 1;
       }
     }
-  }
+  };
 }

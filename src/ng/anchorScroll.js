@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @ngdoc function
  * @name ng.$anchorScroll

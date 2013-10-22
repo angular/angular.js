@@ -50,75 +50,80 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *
  * @example
    <doc:example module="ngSanitize">
-     <doc:source>
-       <script>
-         function Ctrl($scope, $sce) {
-           $scope.snippet =
-             '<p style="color:blue">an html\n' +
-             '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
-             'snippet</p>';
-           $scope.deliberatelyTrustDangerousSnippet = function() {
-             return $sce.trustAsHtml($scope.snippet);
-           };
-         }
-       </script>
-       <div ng-controller="Ctrl">
-          Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
-           <table>
-             <tr>
-               <td>Directive</td>
-               <td>How</td>
-               <td>Source</td>
-               <td>Rendered</td>
-             </tr>
-             <tr id="bind-html-with-sanitize">
-               <td>ng-bind-html</td>
-               <td>Automatically uses $sanitize</td>
-               <td><pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng-bind-html="snippet"></div></td>
-             </tr>
-             <tr id="bind-html-with-trust">
-               <td>ng-bind-html</td>
-               <td>Bypass $sanitize by explicitly trusting the dangerous value</td>
-               <td><pre>&lt;div ng-bind-html="deliberatelyTrustDangerousSnippet()"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng-bind-html="deliberatelyTrustDangerousSnippet()"></div></td>
-             </tr>
-             <tr id="bind-default">
-               <td>ng-bind</td>
-               <td>Automatically escapes</td>
-               <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng-bind="snippet"></div></td>
-             </tr>
-           </table>
-         </div>
-     </doc:source>
-     <doc:scenario>
-       it('should sanitize the html snippet by default', function() {
-         expect(using('#bind-html-with-sanitize').element('div').html()).
-           toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
-       });
+   <doc:source>
+     <script>
+       function Ctrl($scope, $sce) {
+         $scope.snippet =
+           '<p style="color:blue">an html\n' +
+           '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+           'snippet</p>';
+         $scope.deliberatelyTrustDangerousSnippet = function() {
+           return $sce.trustAsHtml($scope.snippet);
+         };
+       }
+     </script>
+     <div ng-controller="Ctrl">
+        Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
+       <table>
+         <tr>
+           <td>Directive</td>
+           <td>How</td>
+           <td>Source</td>
+           <td>Rendered</td>
+         </tr>
+         <tr id="bind-html-with-sanitize">
+           <td>ng-bind-html</td>
+           <td>Automatically uses $sanitize</td>
+           <td><pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng-bind-html="snippet"></div></td>
+         </tr>
+         <tr id="bind-html-with-trust">
+           <td>ng-bind-html</td>
+           <td>Bypass $sanitize by explicitly trusting the dangerous value</td>
+           <td>
+           <pre>&lt;div ng-bind-html="deliberatelyTrustDangerousSnippet()"&gt;
+&lt;/div&gt;</pre>
+           </td>
+           <td><div ng-bind-html="deliberatelyTrustDangerousSnippet()"></div></td>
+         </tr>
+         <tr id="bind-default">
+           <td>ng-bind</td>
+           <td>Automatically escapes</td>
+           <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng-bind="snippet"></div></td>
+         </tr>
+       </table>
+       </div>
+   </doc:source>
+   <doc:scenario>
+     it('should sanitize the html snippet by default', function() {
+       expect(using('#bind-html-with-sanitize').element('div').html()).
+         toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
+     });
 
-       it('should inline raw snippet if bound to a trusted value', function() {
-         expect(using('#bind-html-with-trust').element("div").html()).
-           toBe("<p style=\"color:blue\">an html\n" +
-                "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
-                "snippet</p>");
-       });
+     it('should inline raw snippet if bound to a trusted value', function() {
+       expect(using('#bind-html-with-trust').element("div").html()).
+         toBe("<p style=\"color:blue\">an html\n" +
+              "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
+              "snippet</p>");
+     });
 
-       it('should escape snippet without any filter', function() {
-         expect(using('#bind-default').element('div').html()).
-           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
-                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
-                "snippet&lt;/p&gt;");
-       });
+     it('should escape snippet without any filter', function() {
+       expect(using('#bind-default').element('div').html()).
+         toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+              "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+              "snippet&lt;/p&gt;");
+     });
 
-       it('should update', function() {
-         input('snippet').enter('new <b onclick="alert(1)">text</b>');
-         expect(using('#bind-html-with-sanitize').element('div').html()).toBe('new <b>text</b>');
-         expect(using('#bind-html-with-trust').element('div').html()).toBe('new <b onclick="alert(1)">text</b>');
-         expect(using('#bind-default').element('div').html()).toBe("new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
-       });
-     </doc:scenario>
+     it('should update', function() {
+       input('snippet').enter('new <b onclick="alert(1)">text</b>');
+       expect(using('#bind-html-with-sanitize').element('div').html()).toBe('new <b>text</b>');
+       expect(using('#bind-html-with-trust').element('div').html()).toBe(
+         'new <b onclick="alert(1)">text</b>');
+       expect(using('#bind-default').element('div').html()).toBe(
+         "new &lt;b onclick=\"alert(1)\"&gt;text&lt;/b&gt;");
+     });
+   </doc:scenario>
    </doc:example>
  */
 var $sanitize = function(html) {
@@ -129,7 +134,8 @@ var $sanitize = function(html) {
 
 
 // Regular Expressions for parsing tags and attributes
-var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
+var START_TAG_REGEXP =
+       /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
   END_TAG_REGEXP = /^<\s*\/\s*([\w:-]+)[^>]*>/,
   ATTR_REGEXP = /([\w:-]+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,
   BEGIN_TAG_REGEXP = /^</,
@@ -138,7 +144,8 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   DOCTYPE_REGEXP = /<!DOCTYPE([^>]*?)>/i,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
-  NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
+  // Match everything outside of normal chars and " (quote character)
+  NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
 
 
 // Good source of info about elements and attributes
@@ -153,23 +160,29 @@ var voidElements = makeMap("area,br,col,hr,img,wbr");
 // http://dev.w3.org/html5/spec/Overview.html#optional-tags
 var optionalEndTagBlockElements = makeMap("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr"),
     optionalEndTagInlineElements = makeMap("rp,rt"),
-    optionalEndTagElements = angular.extend({}, optionalEndTagInlineElements, optionalEndTagBlockElements);
+    optionalEndTagElements = angular.extend({},
+                                            optionalEndTagInlineElements,
+                                            optionalEndTagBlockElements);
 
 // Safe Block Elements - HTML5
-var blockElements = angular.extend({}, optionalEndTagBlockElements, makeMap("address,article,aside," +
-        "blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,h6," +
-        "header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul"));
+var blockElements = angular.extend({}, optionalEndTagBlockElements, makeMap("address,article," +
+        "aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5," +
+        "h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul"));
 
 // Inline Elements - HTML5
-var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b,bdi,bdo," +
-        "big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,samp,small," +
-        "span,strike,strong,sub,sup,time,tt,u,var"));
+var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b," +
+        "bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s," +
+        "samp,small,span,strike,strong,sub,sup,time,tt,u,var"));
 
 
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
 
-var validElements = angular.extend({}, voidElements, blockElements, inlineElements, optionalEndTagElements);
+var validElements = angular.extend({},
+                                   voidElements,
+                                   blockElements,
+                                   inlineElements,
+                                   optionalEndTagElements);
 
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap");
@@ -258,21 +271,21 @@ function htmlParser( html, handler ) {
       }
 
     } else {
-      html = html.replace(new RegExp("(.*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'), function(all, text){
-        text = text.
-          replace(COMMENT_REGEXP, "$1").
-          replace(CDATA_REGEXP, "$1");
+      html = html.replace(new RegExp("(.*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
+        function(all, text){
+          text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
 
-        if (handler.chars) handler.chars( decodeEntities(text) );
+          if (handler.chars) handler.chars( decodeEntities(text) );
 
-        return "";
+          return "";
       });
 
       parseEndTag( "", stack.last() );
     }
 
     if ( html == last ) {
-      throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block of html: {0}", html);
+      throw $sanitizeMinErr('badparse', "The sanitizer was unable to parse the following block " +
+                                        "of html: {0}", html);
     }
     last = html;
   }
@@ -299,13 +312,14 @@ function htmlParser( html, handler ) {
 
     var attrs = {};
 
-    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQuotedValue, unquotedValue) {
-      var value = doubleQuotedValue
-        || singleQuotedValue
-        || unquotedValue
-        || '';
+    rest.replace(ATTR_REGEXP,
+      function(match, name, doubleQuotedValue, singleQuotedValue, unquotedValue) {
+        var value = doubleQuotedValue
+          || singleQuotedValue
+          || unquotedValue
+          || '';
 
-      attrs[name] = decodeEntities(value);
+        attrs[name] = decodeEntities(value);
     });
     if (handler.start) handler.start( tagName, attrs, unary );
   }
@@ -377,12 +391,12 @@ function htmlSanitizeWriter(buf){
       if (!ignore && specialElements[tag]) {
         ignore = tag;
       }
-      if (!ignore && validElements[tag] == true) {
+      if (!ignore && validElements[tag] === true) {
         out('<');
         out(tag);
         angular.forEach(attrs, function(value, key){
           var lkey=angular.lowercase(key);
-          if (validAttrs[lkey]==true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
+          if (validAttrs[lkey]===true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
             out(' ');
             out(key);
             out('="');
@@ -395,7 +409,7 @@ function htmlSanitizeWriter(buf){
     },
     end: function(tag){
         tag = angular.lowercase(tag);
-        if (!ignore && validElements[tag] == true) {
+        if (!ignore && validElements[tag] === true) {
           out('</');
           out(tag);
           out('>');

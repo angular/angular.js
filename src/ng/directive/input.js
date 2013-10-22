@@ -1,5 +1,13 @@
 'use strict';
 
+/* global
+
+    -VALID_CLASS,
+    -INVALID_CLASS,
+    -PRISTINE_CLASS,
+    -DIRTY_CLASS
+*/
+
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
@@ -939,22 +947,22 @@ var VALID_CLASS = 'ng-valid',
  * <example module="badIsolatedDirective">
     <file name="script.js">
 		angular.module('badIsolatedDirective', []).directive('bad', function() {
-		  return {
-		    require: 'ngModel',
-		    scope: { },
-		    template: '<input ng-model="innerModel">',
-		    link: function(scope, element, attrs, ngModel) {
-		      scope.$watch('innerModel', function(value) {
-		        console.log(value);
-		        ngModel.$setViewValue(value);
-		      });
-		    }
-		  };
+      return {
+        require: 'ngModel',
+        scope: { },
+        template: '<input ng-model="innerModel">',
+        link: function(scope, element, attrs, ngModel) {
+          scope.$watch('innerModel', function(value) {
+            console.log(value);
+            ngModel.$setViewValue(value);
+          });
+        }
+      };
 		});
     </file>
     <file name="index.html">
-	    <input ng-model="someModel">
-	    <div bad ng-model="someModel"></div>
+      <input ng-model="someModel">
+      <div bad ng-model="someModel"></div>
     </file>
  * </example>
  *
@@ -1047,7 +1055,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
    */
   this.$setValidity = function(validationErrorKey, isValid) {
+    // Purposeful use of ! here to cast isValid to boolean in case it is undefined
+    // jshint -W018
     if ($error[validationErrorKey] === !isValid) return;
+    // jshint +W018
 
     if (isValid) {
       if ($error[validationErrorKey]) invalidCount--;
@@ -1127,7 +1138,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         } catch(e) {
           $exceptionHandler(e);
         }
-      })
+      });
     }
   };
 

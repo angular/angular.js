@@ -18,5 +18,6 @@
  */
 
 // define ngTouch module
+/* global -ngTouch */
 var ngTouch = angular.module('ngTouch', []);
 

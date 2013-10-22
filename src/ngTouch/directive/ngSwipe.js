@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
 /**
  * @ngdoc directive
  * @name ngTouch.directive:ngSwipeLeft
@@ -7,7 +9,8 @@
  * @description
  * Specify custom behavior when an element is swiped to the left on a touchscreen device.
  * A leftward swipe is a quick, right-to-left slide of the finger.
- * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag too.
+ * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
+ * too.
  *
  * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
@@ -36,7 +39,8 @@
  * @description
  * Specify custom behavior when an element is swiped to the right on a touchscreen device.
  * A rightward swipe is a quick, left-to-right slide of the finger.
- * Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag too.
+ * Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag
+ * too.
  *
  * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *

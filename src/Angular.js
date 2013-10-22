@@ -1,5 +1,88 @@
 'use strict';
 
+/* We need to tell jshint what variables are being exported */
+/* global
+    -angular,
+    -msie,
+    -jqLite,
+    -jQuery,
+    -slice,
+    -push,
+    -toString,
+    -ngMinErr,
+    -_angular,
+    -angularModule,
+    -nodeName_,
+    -uid,
+
+    -lowercase,
+    -uppercase,
+    -manualLowercase,
+    -manualUppercase,
+    -nodeName_,
+    -isArrayLike,
+    -forEach,
+    -sortedKeys,
+    -forEachSorted,
+    -reverseParams,
+    -nextUid,
+    -setHashKey,
+    -extend,
+    -int,
+    -inherit,
+    -noop,
+    -identity,
+    -valueFn,
+    -isUndefined,
+    -isDefined,
+    -isObject,
+    -isString,
+    -isNumber,
+    -isDate,
+    -isArray,
+    -isFunction,
+    -isRegExp,
+    -isWindow,
+    -isScope,
+    -isFile,
+    -isBoolean,
+    -trim,
+    -isElement,
+    -makeMap,
+    -map,
+    -size,
+    -includes,
+    -indexOf,
+    -arrayRemove,
+    -isLeafNode,
+    -copy,
+    -shallowCopy,
+    -equals,
+    -csp,
+    -concat,
+    -sliceArgs,
+    -bind,
+    -toJsonReplacer,
+    -toJson,
+    -fromJson,
+    -toBoolean,
+    -startingTag,
+    -tryDecodeURIComponent,
+    -parseKeyValue,
+    -toKeyValue,
+    -encodeUriSegment,
+    -encodeUriQuery,
+    -angularInit,
+    -bootstrap,
+    -snake_case,
+    -bindJQuery,
+    -assertArg,
+    -assertArgFn,
+    -assertNotHasOwnProperty,
+    -getter
+
+*/
+
 ////////////////////////////////////
 
 /**
@@ -27,11 +110,13 @@ var uppercase = function(string){return isString(string) ? string.toUpperCase() 
 
 
 var manualLowercase = function(s) {
+  /* jshint bitwise: false */
   return isString(s)
       ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
 };
 var manualUppercase = function(s) {
+  /* jshint bitwise: false */
   return isString(s)
       ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
@@ -77,7 +162,8 @@ if (isNaN(msie)) {
 /**
  * @private
  * @param {*} obj
- * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, String ...)
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments,
+ *                   String ...)
  */
 function isArrayLike(obj) {
   if (obj == null || isWindow(obj)) {
@@ -171,7 +257,7 @@ function forEachSorted(obj, iterator, context) {
  * @returns {function(*, string)}
  */
 function reverseParams(iteratorFn) {
-  return function(value, key) { iteratorFn(key, value) };
+  return function(value, key) { iteratorFn(key, value); };
 }
 
 /**
@@ -530,17 +616,17 @@ function map(obj, iterator, context) {
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
  */
 function size(obj, ownPropsOnly) {
-  var size = 0, key;
+  var count = 0, key;
 
   if (isArray(obj) || isString(obj)) {
     return obj.length;
   } else if (isObject(obj)){
     for (key in obj)
       if (!ownPropsOnly || obj.hasOwnProperty(key))
-        size++;
+        count++;
   }
 
-  return size;
+  return count;
 }
 
 
@@ -637,7 +723,8 @@ function isLeafNode (node) {
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) {
-    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
+    throw ngMinErr('cpws',
+      "Can't copy! Making copies of Window or Scope instances is not supported.");
   }
 
   if (!destination) {
@@ -654,7 +741,8 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
+    if (source === destination) throw ngMinErr('cpi',
+      "Can't copy! Source and destination are identical.");
     if (isArray(source)) {
       destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
@@ -698,8 +786,8 @@ function shallowCopy(src, dst) {
  * @function
  *
  * @description
- * Determines if two objects or two values are equivalent. Supports value types, regular expressions, arrays and
- * objects.
+ * Determines if two objects or two values are equivalent. Supports value types, regular
+ * expressions, arrays and objects.
  *
  * Two objects or values are considered equivalent if at least one of the following is true:
  *
@@ -776,6 +864,7 @@ function sliceArgs(args, startIndex) {
 }
 
 
+/* jshint -W101 */
 /**
  * @ngdoc function
  * @name angular.bind
@@ -784,14 +873,15 @@ function sliceArgs(args, startIndex) {
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
  * `fn`). You can supply optional `args` that are prebound to the function. This feature is also
- * known as [partial application](http://en.wikipedia.org/wiki/Partial_application), as distinguished
- * from [function currying](http://en.wikipedia.org/wiki/Currying#Contrast_with_partial_function_application).
+ * known as [partial application](http://en.wikipedia.org/wiki/Partial_application), as
+ * distinguished from [function currying](http://en.wikipedia.org/wiki/Currying#Contrast_with_partial_function_application).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
  * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
+/* jshint +W101 */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
@@ -951,10 +1041,12 @@ function toKeyValue(obj) {
   forEach(obj, function(value, key) {
     if (isArray(value)) {
       forEach(value, function(arrayValue) {
-        parts.push(encodeUriQuery(key, true) + (arrayValue === true ? '' : '=' + encodeUriQuery(arrayValue, true)));
+        parts.push(encodeUriQuery(key, true) +
+                   (arrayValue === true ? '' : '=' + encodeUriQuery(arrayValue, true)));
       });
     } else {
-    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
+    parts.push(encodeUriQuery(key, true) +
+               (value === true ? '' : '=' + encodeUriQuery(value, true)));
     }
   });
   return parts.length ? parts.join('&') : '';
@@ -1016,8 +1108,8 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * designates the root of the application and is typically placed
  * at the root of the page.
  *
- * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in an
- * HTML document you must manually bootstrap them using {@link angular.bootstrap}.
+ * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in
+ * an HTML document you must manually bootstrap them using {@link angular.bootstrap}.
  * Applications cannot be nested.
  *
  * In the example below if the `ngApp` directive were not placed
@@ -1091,7 +1183,8 @@ function angularInit(element, bootstrap) {
  * @param {Element} element DOM element which is the root of angular application.
  * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
  *     Each item in the array should be the name of a predefined module or a (DI annotated)
- *     function that will be invoked by the injector as a run block. See: {@link angular.module modules}
+ *     function that will be invoked by the injector as a run block.
+ *     See: {@link angular.module modules}
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
@@ -1156,10 +1249,11 @@ function bindJQuery() {
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
-    // Method signature: JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
-    JQLitePatchJQueryRemove('remove', true, true, false);
-    JQLitePatchJQueryRemove('empty', false, false, false);
-    JQLitePatchJQueryRemove('html', false, false, true);
+    // Method signature:
+    //     jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
+    jqLitePatchJQueryRemove('remove', true, true, false);
+    jqLitePatchJQueryRemove('empty', false, false, false);
+    jqLitePatchJQueryRemove('html', false, false, true);
   } else {
     jqLite = JQLite;
   }

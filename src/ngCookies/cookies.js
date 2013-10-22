@@ -75,7 +75,8 @@ angular.module('ngCookies', ['ng']).
 
 
       /**
-       * Pushes all the cookies from the service to the browser and verifies if all cookies were stored.
+       * Pushes all the cookies from the service to the browser and verifies if all cookies were
+       * stored.
        */
       function push() {
         var name,

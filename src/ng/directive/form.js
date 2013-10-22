@@ -1,6 +1,6 @@
 'use strict';
 
-
+/* global -nullFormCtrl */
 var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,

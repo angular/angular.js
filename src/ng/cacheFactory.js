@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @ngdoc object
  * @name ng.$cacheFactory
@@ -13,8 +15,9 @@
  *
  *  cache.put("key", "value");
  *  cache.put("another key", "another value");
- * 
- *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); // Since we've specified no options on creation
+ *
+ *  // We've specified no options on creation
+ *  expect(cache.info()).toEqual({id: 'cacheId', size: 2}); 
  * 
  * </pre>
  *
@@ -27,7 +30,8 @@
  * @returns {object} Newly created cache object with the following set of methods:
  *
  * - `{object}` `info()` — Returns id, size, and options of cache.
- * - `{{*}}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache and returns it.
+ * - `{{*}}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache and returns
+ *   it.
  * - `{{*}}` `get({string} key)` — Returns cached value for `key` or undefined for cache miss.
  * - `{void}` `remove({string} key)` — Removes a key-value pair from the cache.
  * - `{void}` `removeAll()` — Removes all cached values.
@@ -194,9 +198,9 @@ function $CacheFactoryProvider() {
  * @name ng.$templateCache
  *
  * @description
- * The first time a template is used, it is loaded in the template cache for quick retrieval. You can
- * load templates directly into the cache in a `script` tag, or by consuming the `$templateCache`
- * service directly.
+ * The first time a template is used, it is loaded in the template cache for quick retrieval. You
+ * can load templates directly into the cache in a `script` tag, or by consuming the
+ * `$templateCache` service directly.
  * 
  * Adding via the `script` tag:
  * <pre>
@@ -210,8 +214,8 @@ function $CacheFactoryProvider() {
  * </html>
  * </pre>
  * 
- * **Note:** the `script` tag containing the template does not need to be included in the `head` of the document, but 
- * it must be below the `ng-app` definition.
+ * **Note:** the `script` tag containing the template does not need to be included in the `head` of
+ * the document, but it must be below the `ng-app` definition.
  * 
  * Adding via the $templateCache service:
  * 

@@ -1,3 +1,6 @@
+'use strict';
+/* jshint maxlen: false */
+
 /**
  * @ngdoc overview
  * @name ngAnimate
@@ -474,7 +477,7 @@ angular.module('ngAnimate', ['ng'])
             break;
 
             default:
-              value = !rootAnimateState.running
+              value = !rootAnimateState.running;
             break;
           }
           return !!value;
@@ -505,7 +508,7 @@ angular.module('ngAnimate', ['ng'])
 
         //skip the animation if animations are disabled, a parent is already being animated
         //or the element is not currently attached to the document body.
-        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || animations.length == 0) {
+        if ((parent.inheritedData(NG_ANIMATE_STATE) || disabledAnimation).running || animations.length === 0) {
           done();
           return;
         }
@@ -686,7 +689,7 @@ angular.module('ngAnimate', ['ng'])
                 var aDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
 
                 if(aDuration > 0) {
-                  aDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey]) || 1;
+                  aDuration *= parseInt(elementStyles[animationProp + animationIterationCountKey], 10) || 1;
                 }
 
                 animationDuration = Math.max(aDuration, animationDuration);
@@ -782,7 +785,7 @@ angular.module('ngAnimate', ['ng'])
             if(cancelled) {
               done();
             }
-          }
+          };
         }
         else {
           element.removeClass(className);

@@ -243,10 +243,10 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         } else {
           trackByIdArrayFn = function(key, value) {
             return hashKey(value);
-          }
+          };
           trackByIdObjFn = function(key) {
             return key;
-          }
+          };
         }
 
         match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
@@ -308,7 +308,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
            trackById = trackByIdFn(key, value, index);
            assertNotHasOwnProperty(trackById, '`track by` id');
            if(lastBlockMap.hasOwnProperty(trackById)) {
-             block = lastBlockMap[trackById]
+             block = lastBlockMap[trackById];
              delete lastBlockMap[trackById];
              nextBlockMap[trackById] = block;
              nextBlockOrder[index] = block;
@@ -356,9 +356,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 nextNode = nextNode.nextSibling;
               } while(nextNode && nextNode[NG_REMOVED]);
 
-              if (block.startNode == nextNode) {
-                // do nothing
-              } else {
+              if (block.startNode != nextNode) {
                 // existing item which got moved
                 $animate.move(getBlockElements(block), null, jqLite(previousNode));
               }
@@ -374,7 +372,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             childScope.$first = (index === 0);
             childScope.$last = (index === (arrayLength - 1));
             childScope.$middle = !(childScope.$first || childScope.$last);
-            childScope.$odd = !(childScope.$even = index%2==0);
+            // jshint bitwise: false
+            childScope.$odd = !(childScope.$even = (index&1) === 0);
+            // jshint bitwise: true
 
             if (!block.startNode) {
               linker(childScope, function(clone) {

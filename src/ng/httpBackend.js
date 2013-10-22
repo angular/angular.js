@@ -1,4 +1,7 @@
+'use strict';
+
 var XHR = window.XMLHttpRequest || function() {
+  /* global ActiveXObject */
   try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
@@ -69,7 +72,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           var responseHeaders = xhr.getAllResponseHeaders();
 
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-          // response and responseType properties were introduced in XHR Level2 spec (supported by IE10)
+          // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
           completeRequest(callback,
               status || xhr.status,
               (xhr.responseType ? xhr.response : xhr.responseText),

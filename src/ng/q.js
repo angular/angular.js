@@ -50,8 +50,8 @@
  * </pre>
  *
  * At first it might not be obvious why this extra complexity is worth the trouble. The payoff
- * comes in the way of
- * [guarantees that promise and deferred APIs make](https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md).
+ * comes in the way of guarantees that promise and deferred APIs make, see
+ * https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md.
  *
  * Additionally the promise api allows for composition that is very hard to do with the
  * traditional callback ([CPS](http://en.wikipedia.org/wiki/Continuation-passing_style)) approach.
@@ -98,8 +98,9 @@
  *   provide a progress indication, before the promise is resolved or rejected.
  *
  *   This method *returns a new promise* which is resolved or rejected via the return value of the
- *   `successCallback`, `errorCallback`. It also notifies via the return value of the `notifyCallback`
- *   method. The promise can not be resolved or rejected from the notifyCallback method.
+ *   `successCallback`, `errorCallback`. It also notifies via the return value of the
+ *   `notifyCallback` method. The promise can not be resolved or rejected from the notifyCallback
+ *   method.
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
@@ -115,8 +116,8 @@
  *
  * # Chaining promises
  *
- * Because calling the `then` method of a promise returns a new derived promise, it is easily possible
- * to create a chain of promises:
+ * Because calling the `then` method of a promise returns a new derived promise, it is easily
+ * possible to create a chain of promises:
  *
  * <pre>
  *   promiseB = promiseA.then(function(result) {
@@ -479,9 +480,9 @@ function qFactory(nextTick, exceptionHandler) {
    *
    * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
    * @returns {Promise} Returns a single promise that will be resolved with an array/hash of values,
-   *   each value corresponding to the promise at the same index/key in the `promises` array/hash. If any of
-   *   the promises is resolved with a rejection, this resulting promise will be rejected with the
-   *   same rejection value.
+   *   each value corresponding to the promise at the same index/key in the `promises` array/hash.
+   *   If any of the promises is resolved with a rejection, this resulting promise will be rejected
+   *   with the same rejection value.
    */
   function all(promises) {
     var deferred = defer(),

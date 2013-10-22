@@ -104,7 +104,7 @@ var ngIfDirective = ['$animate', function($animate) {
             });
           }
         });
-      }
+      };
     }
-  }
+  };
 }];

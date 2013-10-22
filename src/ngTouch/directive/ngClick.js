@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
 /**
  * @ngdoc directive
  * @name ngTouch.directive:ngClick
