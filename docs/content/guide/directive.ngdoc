@@ -481,7 +481,7 @@ transformation that applies to all DOM clones. Specifically, DOM listener regist
 done in a linking function rather than in a compile function.
 
 A compile function can have a return value which can be either a function or an object. Returning a
-(post-link) function is equivalent to registering the linking function via the 'link` property of
+(post-link) function is equivalent to registering the linking function via the `link` property of
 the config object when the compile function is empty. Returning an object with function(s) registered
 via `pre` and `post` properties allows you to control when a linking function should be called during
 the linking phase. See info about pre-linking and post-linking functions below.
