@@ -37,12 +37,15 @@ function parseAppUrl(relativeUrl, locationObj) {
     relativeUrl = '/' + relativeUrl;
   }
   var match = urlResolve(relativeUrl);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname);
+  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
+      match.pathname.substring(1) : match.pathname);
   locationObj.$$search = parseKeyValue(match.search);
   locationObj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
-  if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') locationObj.$$path = '/' + locationObj.$$path;
+  if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
+    locationObj.$$path = '/' + locationObj.$$path;
+  }
 }
 
 
@@ -50,10 +53,11 @@ function parseAppUrl(relativeUrl, locationObj) {
  *
  * @param {string} begin
  * @param {string} whole
- * @returns {string} returns text from whole after begin or undefined if it does not begin with expected string.
+ * @returns {string} returns text from whole after begin or undefined if it does not begin with
+ *                   expected string.
  */
 function beginsWith(begin, whole) {
-  if (whole.indexOf(begin) == 0) {
+  if (whole.indexOf(begin) === 0) {
     return whole.substr(begin.length);
   }
 }
@@ -98,7 +102,8 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$parse = function(url) {
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
-      throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
+      throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url,
+          appBaseNoFile);
     }
 
     parseAppUrl(pathUrl, this);
@@ -137,7 +142,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     } else if (appBaseNoFile == url + '/') {
       return appBaseNoFile;
     }
-  }
+  };
 }
 
 
@@ -170,7 +175,8 @@ function LocationHashbangUrl(appBase, hashPrefix) {
           : '';
 
     if (!isString(withoutHashUrl)) {
-      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
+      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
+          hashPrefix);
     }
     parseAppUrl(withoutHashUrl, this);
     this.$$compose();
@@ -192,7 +198,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     if(stripHash(appBase) == stripHash(url)) {
       return url;
     }
-  }
+  };
 }
 
 
@@ -221,7 +227,7 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
     } else if ( appBaseNoFile === url + '/') {
       return appBaseNoFile;
     }
-  }
+  };
 }
 
 
@@ -360,10 +366,12 @@ LocationHashbangInHtml5Url.prototype =
    *
    * Change search part when called with parameter and return `$location`.
    *
-   * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or hash object. Hash object
-   *    may contain an array of values, which will be decoded as duplicates in the url.
+   * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or
+   * hash object. Hash object may contain an array of values, which will be decoded as duplicates in
+   * the url.
+   * 
    * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
-   *    single search parameter. If the value is `null`, the parameter will be deleted.
+   * single search parameter. If the value is `null`, the parameter will be deleted.
    *
    * @return {string} search
    */
@@ -377,11 +385,12 @@ LocationHashbangInHtml5Url.prototype =
         } else if (isObject(search)) {
           this.$$search = search;
         } else {
-          throw $locationMinErr('isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
+          throw $locationMinErr('isrcharg',
+              'The first argument of the `$location#search()` call must be a string or an object.');
         }
         break;
       default:
-        if (paramValue == undefined || paramValue == null) {
+        if (isUndefined(paramValue) || paramValue === null) {
           delete this.$$search[search];
         } else {
           this.$$search[search] = paramValue;
@@ -573,7 +582,8 @@ function $LocationProvider(){
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
-        if ($rootScope.$broadcast('$locationChangeStart', newUrl, $location.absUrl()).defaultPrevented) {
+        if ($rootScope.$broadcast('$locationChangeStart', newUrl,
+                                  $location.absUrl()).defaultPrevented) {
           $browser.url($location.absUrl());
           return;
         }

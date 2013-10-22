@@ -5,9 +5,9 @@
  * @name ng.$filterProvider
  * @description
  *
- * Filters are just functions which transform input to an output. However filters need to be Dependency Injected. To
- * achieve this a filter definition consists of a factory function which is annotated with dependencies and is
- * responsible for creating a filter function.
+ * Filters are just functions which transform input to an output. However filters need to be
+ * Dependency Injected. To achieve this a filter definition consists of a factory function which is
+ * annotated with dependencies and is responsible for creating a filter function.
  *
  * <pre>
  *   // Filter registration
@@ -30,7 +30,9 @@
  *   }
  * </pre>
  *
- * The filter function is registered with the `$injector` under the filter name suffix with `Filter`.
+ * The filter function is registered with the `$injector` under the filter name suffix with
+ * `Filter`.
+ * 
  * <pre>
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
@@ -107,6 +109,18 @@ function $FilterProvider($provide) {
   }];
 
   ////////////////////////////////////////
+  
+  /* global
+    currencyFilter: false,
+    dateFilter: false,
+    filterFilter: false,
+    jsonFilter: false,
+    limitToFilter: false,
+    lowercaseFilter: false,
+    numberFilter: false,
+    orderByFilter: false,
+    uppercaseFilter: false,
+  */
 
   register('currency', currencyFilter);
   register('date', dateFilter);

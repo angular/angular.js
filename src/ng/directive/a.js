@@ -39,6 +39,6 @@ var htmlAnchorDirective = valueFn({
           event.preventDefault();
         }
       });
-    }
+    };
   }
 });

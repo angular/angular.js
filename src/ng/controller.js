@@ -27,7 +27,7 @@ function $ControllerProvider() {
   this.register = function(name, constructor) {
     assertNotHasOwnProperty(name, 'controller');
     if (isObject(name)) {
-      extend(controllers, name)
+      extend(controllers, name);
     } else {
       controllers[name] = constructor;
     }
@@ -77,7 +77,9 @@ function $ControllerProvider() {
 
       if (identifier) {
         if (!(locals && typeof locals.$scope == 'object')) {
-          throw minErr('$controller')('noscp', "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.", constructor || expression.name, identifier);
+          throw minErr('$controller')('noscp',
+              "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.",
+              constructor || expression.name, identifier);
         }
 
         locals.$scope[identifier] = instance;
