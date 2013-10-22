@@ -1308,6 +1308,17 @@ describe('ngMock', function() {
         expect(exp.match('GET', 'x')).toBe(false);
         expect(exp.match('GET', 'a/x')).toBe(false);
       });
+      
+      
+      it('should accept url as function', function() {
+        var urlValidator = function(url) {
+          return url !== '/not-accepted';
+        };
+        var exp = new MockHttpExpectation('POST', urlValidator);
+
+        expect(exp.match('POST', '/url')).toBe(true);
+        expect(exp.match('POST', '/not-accepted')).toBe(false);
+      });
 
 
       it('should accept data as regexp', function() {
