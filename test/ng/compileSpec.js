@@ -2282,6 +2282,60 @@ describe('$compile', function() {
     });
 
 
+    it('should get required controller via linkingFn (template)', function() {
+      module(function() {
+        directive('dirA', function() {
+          return {
+            controller: function() {
+              this.name = 'dirA';
+            }
+          };
+        });
+        directive('dirB', function(log) {
+          return {
+            require: 'dirA',
+            template: '<p>dirB</p>',
+            link: function(scope, element, attrs, dirAController) {
+              log('dirAController.name: ' + dirAController.name);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div dir-a dir-b></div>')($rootScope);
+        expect(log).toEqual('dirAController.name: dirA');
+      });
+    });
+
+
+    it('should get required controller via linkingFn (templateUrl)', function() {
+      module(function() {
+        directive('dirA', function() {
+          return {
+            controller: function() {
+              this.name = 'dirA';
+            }
+          };
+        });
+        directive('dirB', function(log) {
+          return {
+            require: 'dirA',
+            templateUrl: 'dirB.html',
+            link: function(scope, element, attrs, dirAController) {
+              log('dirAController.name: ' + dirAController.name);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope, $templateCache) {
+        $templateCache.put('dirB.html', '<p>dirB</p>');
+        element = $compile('<div dir-a dir-b></div>')($rootScope);
+        $rootScope.$digest();
+        expect(log).toEqual('dirAController.name: dirA');
+      });
+    });
+
+
     it('should support controllerAs', function() {
       module(function() {
         directive('main', function() {

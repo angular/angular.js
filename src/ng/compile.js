@@ -1117,16 +1117,16 @@ function $CompileProvider($provide) {
 
       var terminalPriority = -Number.MAX_VALUE,
           newScopeDirective,
+          controllerDirectives = previousCompileContext.controllerDirectives,
           newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective,
           templateDirective = previousCompileContext.templateDirective,
+          transcludeDirective = previousCompileContext.transcludeDirective,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
           directiveName,
           $template,
-          transcludeDirective = previousCompileContext.transcludeDirective,
           replaceDirective = originalReplaceDirective,
           childTranscludeFn = transcludeFn,
-          controllerDirectives,
           linkFn,
           directiveValue;
 
@@ -1191,9 +1191,10 @@ function $CompileProvider($provide) {
 
             childTranscludeFn = compile($template, transcludeFn, terminalPriority,
                                         replaceDirective && replaceDirective.name, {
+                                          controllerDirectives: controllerDirectives,
                                           newIsolateScopeDirective: newIsolateScopeDirective,
-                                          transcludeDirective: transcludeDirective,
-                                          templateDirective: templateDirective
+                                          templateDirective: templateDirective,
+                                          transcludeDirective: transcludeDirective
                                         });
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
@@ -1259,9 +1260,10 @@ function $CompileProvider($provide) {
 
           nodeLinkFn = compileTemplateUrl(directives.splice(i, directives.length - i), $compileNode,
               templateAttrs, jqCollection, childTranscludeFn, preLinkFns, postLinkFns, {
+                controllerDirectives: controllerDirectives,
                 newIsolateScopeDirective: newIsolateScopeDirective,
-                transcludeDirective: transcludeDirective,
-                templateDirective: templateDirective
+                templateDirective: templateDirective,
+                transcludeDirective: transcludeDirective
               });
           ii = directives.length;
         } else if (directive.compile) {
@@ -1415,7 +1417,7 @@ function $CompileProvider($provide) {
                   return parentGet(parentScope, locals);
                 };
                 break;
-              
+
               default:
                 throw $compileMinErr('iscp',
                     "Invalid isolate scope definition for directive '{0}'." +
@@ -1819,7 +1821,7 @@ function directiveNormalize(name) {
 /**
  * @ngdoc object
  * @name ng.$compile.directive.Attributes
- * 
+ *
  * @description
  * A shared object between directive compile / linking functions which contains normalized DOM
  * element attributes. The the values reflect current binding state `{{ }}`. The normalization is
