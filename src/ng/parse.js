@@ -887,6 +887,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
   ensureSafeMemberName(key4, fullExp);
 
   function checkPathVal (pathVal) {
+    var promise;
     if (pathVal && pathVal.then) {
       promiseWarning(fullExp);
       if (!("$$v" in pathVal)) {
@@ -920,8 +921,8 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           return pathVal;
         }
       : function cspSafePromiseEnabledGetter(scope, locals) {
-          var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope,
-              promise;
+          var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
+              
 
           if (pathVal === null || pathVal === undefined) return pathVal;
 
