@@ -813,7 +813,7 @@ Doc.prototype = {
           dom.text(prefix);
           dom.text(param.optional ? '[' : '');
           var parts = param.name.split('|');
-          dom.text(parts[skipSelf ? 0 : 1] || parts[0]);
+          dom.text(dashCase(parts[skipSelf ? 0 : 1] || parts[0]));
         }
         if (BOOLEAN_ATTR[param.name]) {
           dom.text(param.optional ? ']' : '');
