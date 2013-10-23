@@ -2,6 +2,15 @@
 @name Developer Guide: HTML Compiler
 @description
 
+<div class="alert alert-warning">
+**Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
+
+If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
+If you just want to create custom directives, we recommend the {@link guide/directive directives guide}.
+If you want a deeper look into Angular's compilation process, you're in the right place.
+</div>
+
+
 # Overview
 
 Angular's {@link api/ng.$compile HTML compiler} allows the developer to teach the
@@ -27,9 +36,9 @@ All of this compilation takes place in the web browser; no server side or pre-co
 involved.
 
 
-# Compiler
+## Compiler
 
-Compiler is an angular service which traverses the DOM looking for attributes. The compilation
+Compiler is an Angular service which traverses the DOM looking for attributes. The compilation
 process happens in two phases.
 
   1. **Compile:** traverse the DOM and collect all of the directives. The result is a linking
@@ -44,7 +53,7 @@ for each item in a collection. Having a compile and link phase improves performa
 cloned template only needs to be compiled once, and then linked once for each clone instance.
 
 
-# Directive
+## Directive
 
 A directive is a behavior which should be triggered when specific HTML constructs are encountered
 during the compilation process. The directives can be placed in element names, attributes, class
@@ -108,35 +117,260 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
 </example>
 
 
-The presence of the `draggable` attribute on any element gives the element new behavior. The beauty of
-this approach is that we have taught the browser a new trick. We have extended the vocabulary of
-what the browser understands in a way which is natural to anyone who is familiar with HTML
-principles.
+The presence of the `draggable` attribute on any element gives the element new behavior.
+We extended the vocabulary of the browser in a way which is natural to anyone who is familiar with the principles of HTML.
 
 
-# Understanding View
+## Understanding View
 
-There are many templating systems out there. Most of them consume a static string template and
+Most other templating systems consume a static string template and
 combine it with data, resulting in a new string. The resulting text is then `innerHTML`ed into
 an element.
 
 <img src="img/One_Way_Data_Binding.png">
 
 This means that any changes to the data need to be re-merged with the template and then
-`innerHTML`ed into the DOM. Some of the issues with this approach are: reading user input and merging it with data,
-clobbering user input by overwriting it, managing the whole update process, and lack of behavior
-expressiveness.
+`innerHTML`ed into the DOM. Some of the issues with this approach are:
 
-Angular is different. The Angular compiler consumes the DOM with directives, not string templates.
+1. reading user input and merging it with data
+2. clobbering user input by overwriting it
+3. managing the whole update process
+4. lack of behavior expressiveness
+
+Angular is different. The Angular compiler consumes the DOM, not string templates.
 The result is a linking function, which when combined with a scope model results in a live view. The
-view and scope model bindings are transparent. No action from the developer is needed to update
-the view. And because no `innerHTML` is used there are no issues of clobbering user input.
+view and scope model bindings are transparent. The developer does not need to make any special calls to update
+the view. And because `innerHTML` is not used, you won't accidentally clobber user input.
 Furthermore, Angular directives can contain not just text bindings, but behavioral constructs as
 well.
 
 <img src="img/Two_Way_Data_Binding.png">
 
-The Angular approach produces a stable DOM. This means that the DOM element instance bound to a model
+The Angular approach produces a stable DOM. The DOM element instance bound to a model
 item instance does not change for the lifetime of the binding. This means that the code can get
 hold of the elements and register event handlers and know that the reference will not be destroyed
 by template data merge.
+
+
+
+## How directives are compiled
+
+It's important to note that Angular operates on DOM nodes rather than strings. Usually, you don't
+notice this restriction because when a page loads, the web browser parses HTML into the DOM automatically.
+
+However it's important to keep this in mind when calling `$compile` yourself, because passing it a string
+will fail. Instead, use `angular.element` to convert a string to DOM before passing elements into
+Angular's `$compile` service.
+
+HTML compilation happens in three phases:
+
+  1. {@link api/ng.$compile `$compile`} traverses the DOM and matches directives.
+
+  If the compiler finds than an element matches a directive, then the directive is added to the list of
+  directives that match the DOM element. A single element may match multiple directives.
+
+  2. Once all directives matching a DOM element have been identified, the compiler sorts the directives
+  by their `priority`.
+
+  Each directive's `compile` functions are executed. Each `compile` function has a chance to
+  modify the DOM. Each `compile` function returns a `link` function. These functions are composed into
+  a "combined" link function, which invokes each directive's returned `link` function.
+
+  3. `$compile` links the template with the scope by calling the combined linking function from the previous step.
+  This in turn will call the linking function of the individual directives, registering listeners on the elements
+  and setting up {@link api/ng.$rootScope.Scope#methods_$watch `$watch`s} with the {@link api/ng.$rootScope.Scope `scope`}
+  as each directive is configured to do.
+
+The result of this is a live binding between the scope and the DOM. So at this point, a change in
+a model on the compiled scope will be reflected in the DOM.
+
+Below is the corresponding code using the `$compile` service.
+This should help give you an idea of what Angular does internally.
+
+<pre>
+  var $compile = ...; // injected into your code
+  var scope = ...;
+
+  var html = '<div ng-bind="exp"></div>';
+
+  // Step 1: parse HTML into DOM element
+  var template = angular.element(html);
+
+  // Step 2: compile the template
+  var linkFn = $compile(template);
+
+  // Step 3: link the compiled template with the scope.
+  linkFn(scope);
+</pre>
+
+### The difference between Compile and Link
+
+At this point you may wonder why the compile process has separate compile and link phases. The
+short answer is that compile and link separation is needed any time a change in a model causes
+a change in the **structure** of the DOM.
+
+It's rare for directives to have a **compile function**, since most directives are concerned with
+working with a specific DOM element instance rather than changing its overall structure.
+
+Directives often have a **link function**. A link function allows the directive to register
+listeners to the specific cloned DOM element instance as well as to copy content into the DOM
+from the scope.
+
+<div class="alert alert-success">
+**Best Practice:** Any operation which can be shared among the instance of directives should be
+moved to the compile function for performance reasons.
+</div>
+
+#### An Example of "Compile" Versus "Link"
+
+To understand, let's look at a real-world example with `ngRepeat`:
+
+<pre>
+Hello {{user}}, you have these actions:
+<ul>
+  <li ng-repeat="action in user.actions">
+    {{action.description}}
+  </li>
+</ul>
+</pre>
+
+When the above example is compiled, the compiler visits every node and looks for directives.
+
+`{{user}}` matches the {@link api/ng.$interpolate interpolation directive}
+and `ng-repeat` matches the {@link api/ng.directive:ngRepeat `ngRepeat` directive}.
+
+But {@link api/ng.directive:ngRepeat ngRepeat} has a dilemma.
+
+It needs to be able to clone new `<li>` elements for every `action` in `user.actions`.
+This initially seems trivial, but it becomes more complicated when you consider that `user.actions`
+might have items added to it later. This means that it needs to save a clean copy of the `<li>`
+element for cloning purposes.
+
+As new `action`s are inserted, the template `<li>` element needs to be cloned and inserted into `ul`.
+But cloning the `<li>` element is not enough. It also needs to compile the `<li>` so that its
+directives, like `{{action.description}}`, evaluate against the right {@link api/ng.$rootScope.Scope scope}.
+
+
+A naive approach to solving this problem would be to simply insert a copy of the `<li>` element and
+then compile it.
+The problem with this approach is that compiling on every `<li>` element that we clone would duplicate
+a lot of the work. Specifically, we'd be traversing `<li>` each time before cloning it to find the
+directives. This would cause the compilation process to be slower, in turn making applications
+less responsive when inserting new nodes.
+
+The solution is to break the compilation process into two phases:
+
+the **compile phase** where all of the directives are identified and sorted by priority,
+and a **linking phase** where any work which "links" a specific instance of the
+{@link api/ng.$rootScope.Scope scope} and the specific instance of an `<li>` is performed.
+
+<div class="alert alert-warning">
+**Note:** *Link* means setting up listeners on the DOM and setting up `$watch` on the Scope to
+keep the two in sync.
+</div>
+
+{@link api/ng.directive:ngRepeat `ngRepeat`} works by preventing the compilation process from
+descending into the `<li>` element so it can make a clone of the original and handle inserting
+and removing DOM nodes itself.
+
+Instead the {@link api/ng.directive:ngRepeat `ngRepeat`} directive compiles `<li>` separately.
+The result of the `<li>` element compilation is a linking function which contains all of the
+directives contained in the `<li>` element, ready to be attached to a specific clone of the `<li>`
+element.
+
+At runtime the {@link api/ng.directive:ngRepeat `ngRepeat`} watches the expression and as items
+are added to the array it clones the `<li>` element, creates a new
+{@link api/ng.$rootScope.Scope scope} for the cloned `<li>` element and calls the link function
+on the cloned `<li>`.
+
+
+
+### Understanding How Scopes Work with Transclused Directives
+
+One of the most common use cases for directives is to create reusable components.
+
+Below is a pseudo code showing how a simplified dialog component may work.
+
+<pre>
+<div>
+  <button ng-click="show=true">show</button>
+
+  <dialog title="Hello {{username}}."
+          visible="show"
+          on-cancel="show = false"
+          on-ok="show = false; doSomething()">
+     Body goes here: {{username}} is {{title}}.
+  </dialog>
+</div>
+</pre>
+
+Clicking on the "show" button will open the dialog. The dialog will have a title, which is
+data bound to `username`, and it will also have a body which we would like to transclude
+into the dialog.
+
+Here is an example of what the template definition for the `dialog` widget may look like.
+
+<pre>
+<div ng-show="visible">
+  <h3>{{title}}</h3>
+  <div class="body" ng-transclude></div>
+  <div class="footer">
+    <button ng-click="onOk()">Save changes</button>
+    <button ng-click="onCancel()">Close</button>
+  </div>
+</div>
+</pre>
+
+This will not render properly, unless we do some scope magic.
+
+The first issue we have to solve is that the dialog box template expects `title` to be defined, but
+the place of instantiation would like to bind to `username`. Furthermore the buttons expect the
+`onOk` and `onCancel` functions to be present in the scope. This limits the usefulness of the
+widget. To solve the mapping issue we use the `locals` to create local variables which the template
+expects as follows:
+
+<pre>
+  scope: {
+    title: '@',             // the title uses the data-binding from the parent scope
+    onOk: '&',              // create a delegate onOk function
+    onCancel: '&',          // create a delegate onCancel function
+    visible: '='            // set up visible to accept data-binding
+  }
+</pre>
+
+Creating local properties on widget scope creates two problems:
+
+  1. isolation - if the user forgets to set `title` attribute of the dialog widget the dialog
+     template will bind to parent scope property. This is unpredictable and undesirable.
+
+  2. transclusion - the transcluded DOM can see the widget locals, which may overwrite the
+     properties which the transclusion needs for data-binding. In our example the `title`
+     property of the widget clobbers the `title` property of the transclusion.
+
+
+To solve the issue of lack of isolation, the directive declares a new `isolated` scope. An
+isolated scope does not prototypically inherit from the child scope, and therefore we don't have
+to worry about accidentally clobbering any properties.
+
+However `isolated` scope creates a new problem: if a transcluded DOM is a child of the widget
+isolated scope then it will not be able to bind to anything. For this reason the transcluded scope
+is a child of the original scope, before the widget created an isolated scope for its local
+variables. This makes the transcluded and widget isolated scope siblings.
+
+This may seem to be unexpected complexity, but it gives the widget user and developer the least
+surprise.
+
+Therefore the final directive definition looks something like this:
+
+<pre>
+transclude: true,
+scope: {
+    title: '@',             // the title uses the data-binding from the parent scope
+    onOk: '&',              // create a delegate onOk function
+    onCancel: '&',          // create a delegate onCancel function
+    visible: '='            // set up visible to accept data-binding
+},
+restrict: 'E',
+replace: true
+</pre>
+
