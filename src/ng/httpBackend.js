@@ -135,7 +135,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     script.type = 'text/javascript';
     script.src = url;
 
-    if (msie) {
+    if (msie && isDefined(script.onreadystatechange)) {
       script.onreadystatechange = function() {
         if (/loaded|complete/.test(script.readyState)) doneWrapper();
       };
