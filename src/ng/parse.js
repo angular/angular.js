@@ -886,6 +886,18 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
   ensureSafeMemberName(key3, fullExp);
   ensureSafeMemberName(key4, fullExp);
 
+  function checkPathVal (pathVal) {
+    if (pathVal && pathVal.then) {
+      promiseWarning(fullExp);
+      if (!("$$v" in pathVal)) {
+        promise = pathVal;
+        promise.$$v = undefined;
+        promise.then(function(val) { promise.$$v = val; });
+      }
+      pathVal = pathVal.$$v;
+    }
+  }
+
   return !options.unwrapPromises
       ? function cspSafeGetter(scope, locals) {
           var pathVal = (locals && locals.hasOwnProperty(key0)) ? locals : scope;
@@ -914,63 +926,23 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           if (pathVal === null || pathVal === undefined) return pathVal;
 
           pathVal = pathVal[key0];
-          if (pathVal && pathVal.then) {
-            promiseWarning(fullExp);
-            if (!("$$v" in pathVal)) {
-              promise = pathVal;
-              promise.$$v = undefined;
-              promise.then(function(val) { promise.$$v = val; });
-            }
-            pathVal = pathVal.$$v;
-          }
+          checkPathVal(pathVal);
           if (!key1 || pathVal === null || pathVal === undefined) return pathVal;
 
           pathVal = pathVal[key1];
-          if (pathVal && pathVal.then) {
-            promiseWarning(fullExp);
-            if (!("$$v" in pathVal)) {
-              promise = pathVal;
-              promise.$$v = undefined;
-              promise.then(function(val) { promise.$$v = val; });
-            }
-            pathVal = pathVal.$$v;
-          }
+          checkPathVal(pathVal);
           if (!key2 || pathVal === null || pathVal === undefined) return pathVal;
 
           pathVal = pathVal[key2];
-          if (pathVal && pathVal.then) {
-            promiseWarning(fullExp);
-            if (!("$$v" in pathVal)) {
-              promise = pathVal;
-              promise.$$v = undefined;
-              promise.then(function(val) { promise.$$v = val; });
-            }
-            pathVal = pathVal.$$v;
-          }
+          checkPathVal(pathVal);
           if (!key3 || pathVal === null || pathVal === undefined) return pathVal;
 
           pathVal = pathVal[key3];
-          if (pathVal && pathVal.then) {
-            promiseWarning(fullExp);
-            if (!("$$v" in pathVal)) {
-              promise = pathVal;
-              promise.$$v = undefined;
-              promise.then(function(val) { promise.$$v = val; });
-            }
-            pathVal = pathVal.$$v;
-          }
+          checkPathVal(pathVal);
           if (!key4 || pathVal === null || pathVal === undefined) return pathVal;
 
           pathVal = pathVal[key4];
-          if (pathVal && pathVal.then) {
-            promiseWarning(fullExp);
-            if (!("$$v" in pathVal)) {
-              promise = pathVal;
-              promise.$$v = undefined;
-              promise.then(function(val) { promise.$$v = val; });
-            }
-            pathVal = pathVal.$$v;
-          }
+          checkPathVal(pathVal);
           return pathVal;
         };
 }
