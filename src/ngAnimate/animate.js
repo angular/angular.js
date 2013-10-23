@@ -541,6 +541,16 @@ angular.module('ngAnimate', ['ng'])
           (ngAnimateState.done || noop)();
         }
 
+        //There is no point in perform a class-based animation if the element already contains
+        //(on addClass) or doesn't contain (on removeClass) the className being animated.
+        //The reason why this is being called after the previous animations are cancelled
+        //is so that the CSS classes present on the element can be properly examined.
+        if((event == 'addClass'    && element.hasClass(className)) ||
+           (event == 'removeClass' && !element.hasClass(className))) {
+          onComplete && onComplete();
+          return;
+        }
+
         element.data(NG_ANIMATE_STATE, {
           running:true,
           structural:!isClassBased,
