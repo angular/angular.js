@@ -132,7 +132,7 @@ function MyClass() {
 </pre>
 
 However, where does the serviceRegistry come from? if it is:
-* `new`-ed up, the the test has no chance to reset the services for testing
+* `new`-ed up, the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
 
