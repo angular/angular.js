@@ -9,7 +9,8 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *
  * # ngResource
  *
- * The `ngResource` module provides interaction support with RESTful services via the $resource service.
+ * The `ngResource` module provides interaction support with RESTful services
+ * via the $resource service.
  *
  * {@installModule resource}
  *
