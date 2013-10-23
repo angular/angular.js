@@ -728,7 +728,7 @@ angular.module('ngAnimate', ['ng'])
       function animate(element, className, done) {
 
         var cacheKey = getCacheKey(element);
-        if(getElementAnimationDetails(element, cacheKey, true).transitionDuration > 0) {
+        if(getElementAnimationDetails(element, cacheKey + ' ' + className, true).transitionDuration > 0) {
 
           done();
           return;
