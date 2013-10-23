@@ -345,6 +345,7 @@ describe("ngAnimate", function() {
 
         $animate.enabled(true);
 
+        element.addClass('ng-hide');
         $animate.removeClass(element, 'ng-hide');
         expect(element.text()).toBe('memento');
       }));
@@ -616,7 +617,7 @@ describe("ngAnimate", function() {
             ss.addRule('.ng-hide-add', style);
             ss.addRule('.ng-hide-remove', style);
 
-            element = $compile(html('<div>1</div>'))($rootScope);
+            element = $compile(html('<div class="ng-hide">1</div>'))($rootScope);
             element.addClass('custom');
 
             $animate.removeClass(element, 'ng-hide');
@@ -627,6 +628,7 @@ describe("ngAnimate", function() {
               expect(element.hasClass('ng-hide-remove-active')).toBe(true);
             }
 
+            element.removeClass('ng-hide');
             $animate.addClass(element, 'ng-hide');
             expect(element.hasClass('ng-hide-remove')).toBe(false); //added right away
 
@@ -1052,20 +1054,58 @@ describe("ngAnimate", function() {
     });
 
     describe("addClass / removeClass", function() {
+      var captured;
       beforeEach(function() {
         module(function($animateProvider, $provide) {
           $animateProvider.register('.klassy', function($timeout) {
             return {
               addClass : function(element, className, done) {
+                captured = 'addClass-' + className;
                 $timeout(done, 500, false);
               },
               removeClass : function(element, className, done) {
+                captured = 'removeClass-' + className;
                 $timeout(done, 3000, false);
               }
             }
           });
         });
       });
+
+      it("should not perform an animation, and the followup DOM operation, if the class is " +
+         "already present during addClass or not present during removeClass on the element",
+        inject(function($animate, $rootScope, $sniffer, $rootElement, $timeout) {
+
+        var element = jqLite('<div class="klassy"></div>');
+        $rootElement.append(element);
+        body.append($rootElement);
+
+        //skipped animations
+        captured = 'none';
+        $animate.removeClass(element, 'some-class');
+        expect(element.hasClass('some-class')).toBe(false);
+        expect(captured).toBe('none');
+
+        element.addClass('some-class');
+
+        captured = 'nothing';
+        $animate.addClass(element, 'some-class');
+        expect(captured).toBe('nothing');
+        expect(element.hasClass('some-class')).toBe(true);
+
+        //actual animations
+        captured = 'none';
+        $animate.removeClass(element, 'some-class');
+        $timeout.flush();
+        expect(element.hasClass('some-class')).toBe(false);
+        expect(captured).toBe('removeClass-some-class');
+
+        captured = 'nothing';
+        $animate.addClass(element, 'some-class');
+        $timeout.flush();
+        expect(element.hasClass('some-class')).toBe(true);
+        expect(captured).toBe('addClass-some-class');
+      }));
 
       it("should add and remove CSS classes after an animation even if no animation is present",
         inject(function($animate, $rootScope, $sniffer, $rootElement) {
