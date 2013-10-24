@@ -135,6 +135,77 @@ function $RootScopeProvider(){
       this.$$isolateBindings = {};
     }
 
+    function scopeDispatch(scope, name, args, propagate) {
+      var empty = [],
+          namedListeners,
+          // $dispatch events never propagate
+          stopPropagation = propagate === false,
+          _ = {
+            target: scope,
+            next: scope,
+            current: scope,
+          },
+          listeners,
+          event = {
+            name: name,
+            targetScope: scope,
+            preventDefault: function() {
+              event.defaultPrevented = true;
+            },
+            defaultPrevented: false
+          },
+          listenerArgs = concat([event], args, 1),
+          i, length;
+
+      if (propagate !== scopePropagateDepthFirst) {
+        // Non-$broadcast dispatches are cancellable
+        event.stopPropagation = function() {stopPropagation = true;};
+      }
+
+      //down while you can, then up and next sibling or up and next sibling until back at root
+      do {
+        _.current = _.next;
+        event.currentScope = _.current;
+        listeners = _.current.$$listeners[name] || [];
+        for (i=0, length = listeners.length; i<length; i++) {
+          // if listeners were deregistered, defragment the array
+          if (!listeners[i]) {
+            listeners.splice(i, 1);
+            i--;
+            length--;
+            continue;
+          }
+
+          try {
+            listeners[i].apply(null, listenerArgs);
+          } catch(e) {
+            $exceptionHandler(e);
+          }
+        }
+
+        if (stopPropagation) return event;
+
+      } while (propagate(_));
+
+      return event;
+    }
+
+    function scopePropagateParent(_) {
+      return _.next = _.current.$parent;
+    }
+
+    function scopePropagateDepthFirst(_) {
+      // Insanity Warning: scope depth-first traversal
+      // yes, this code is a bit crazy, but it works and we have tests to prove it!
+      // this piece should be kept in sync with the traversal in $digest
+      if (!(_.next = (_.current.$$childHead || (_.current !== _.target && _.current.$$nextSibling)))) {
+        while(_.current !== _.target && !(_.next = _.current.$$nextSibling)) {
+          _.current = _.current.$parent;
+        }
+      }
+      return (_.current = _.next);
+    }
+
     /**
      * @ngdoc property
      * @name ng.$rootScope.Scope#$id
@@ -860,48 +931,7 @@ function $RootScopeProvider(){
        * @return {Object} Event object (see {@link ng.$rootScope.Scope#$on}).
        */
       $emit: function(name, args) {
-        var empty = [],
-            namedListeners,
-            scope = this,
-            stopPropagation = false,
-            event = {
-              name: name,
-              targetScope: scope,
-              stopPropagation: function() {stopPropagation = true;},
-              preventDefault: function() {
-                event.defaultPrevented = true;
-              },
-              defaultPrevented: false
-            },
-            listenerArgs = concat([event], arguments, 1),
-            i, length;
-
-        do {
-          namedListeners = scope.$$listeners[name] || empty;
-          event.currentScope = scope;
-          for (i=0, length=namedListeners.length; i<length; i++) {
-
-            // if listeners were deregistered, defragment the array
-            if (!namedListeners[i]) {
-              namedListeners.splice(i, 1);
-              i--;
-              length--;
-              continue;
-            }
-            try {
-              //allow all listeners attached to the current scope to run
-              namedListeners[i].apply(null, listenerArgs);
-            } catch (e) {
-              $exceptionHandler(e);
-            }
-          }
-          //if any listener on the current scope stops propagation, prevent bubbling
-          if (stopPropagation) return event;
-          //traverse upwards
-          scope = scope.$parent;
-        } while (scope);
-
-        return event;
+        return scopeDispatch(this, name, arguments, scopePropagateParent);
       },
 
 
@@ -928,52 +958,7 @@ function $RootScopeProvider(){
        * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
-        var target = this,
-            current = target,
-            next = target,
-            event = {
-              name: name,
-              targetScope: target,
-              preventDefault: function() {
-                event.defaultPrevented = true;
-              },
-              defaultPrevented: false
-            },
-            listenerArgs = concat([event], arguments, 1),
-            listeners, i, length;
-
-        //down while you can, then up and next sibling or up and next sibling until back at root
-        do {
-          current = next;
-          event.currentScope = current;
-          listeners = current.$$listeners[name] || [];
-          for (i=0, length = listeners.length; i<length; i++) {
-            // if listeners were deregistered, defragment the array
-            if (!listeners[i]) {
-              listeners.splice(i, 1);
-              i--;
-              length--;
-              continue;
-            }
-
-            try {
-              listeners[i].apply(null, listenerArgs);
-            } catch(e) {
-              $exceptionHandler(e);
-            }
-          }
-
-          // Insanity Warning: scope depth-first traversal
-          // yes, this code is a bit crazy, but it works and we have tests to prove it!
-          // this piece should be kept in sync with the traversal in $digest
-          if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
-            while(current !== target && !(next = current.$$nextSibling)) {
-              current = current.$parent;
-            }
-          }
-        } while ((current = next));
-
-        return event;
+        return scopeDispatch(this, name, arguments, scopePropagateDepthFirst);
       }
     };
 
