@@ -221,7 +221,7 @@ more information about scope inheritance.
         <div ng-controller="ChildCtrl">
           <p>Good {{timeOfDay}}, {{name}}!</p>
 
-          <div ng-controller="BabyCtrl">
+          <div ng-controller="GrandChildCtrl">
             <p>Good {{timeOfDay}}, {{name}}!</p>
           </div>
         </div>
@@ -242,7 +242,7 @@ more information about scope inheritance.
       myApp.controller('ChildCtrl', ['$scope', function($scope){
         $scope.name = 'Mattie';
       }]);
-      myApp.controller('BabyCtrl', ['$scope', function($scope){
+      myApp.controller('GrandChildCtrl', ['$scope', function($scope){
         $scope.timeOfDay = 'evening';
         $scope.name = 'Gingerbreak Baby';
       }]);
@@ -257,7 +257,7 @@ scopes being created for our view:
 - The `MainCtrl` scope, which contains `timeOfDay` and `name` properties
 - The `ChildCtrl` scope, which inherits the `timeOfDay` property but overrides (hides) the `name`
 property from the previous
-- The `BabyCtrl` scope, which overrides (hides) both the `timeOfDay` property defined in `MainCtrl`
+- The `GrandChildCtrl` scope, which overrides (hides) both the `timeOfDay` property defined in `MainCtrl`
 and the `name` property defined in `ChildCtrl`
 
 Inheritance works with methods in the same way as it does with properties. So in our previous
@@ -312,7 +312,7 @@ in your test that exists in the DOM:
 
 <pre>
 describe('state', function() {
-    var mainScope, childScope, babyScope;
+    var mainScope, childScope, grandChildScope;
 
     beforeEach(module('myApp'));
 
@@ -321,8 +321,8 @@ describe('state', function() {
         $controller('MainCtrl', {$scope: mainScope});
         childScope = mainScope.$new();
         $controller('ChildCtrl', {$scope: childScope});
-        babyScope = childScope.$new();
-        $controller('BabyCtrl', {$scope: babyScope});
+        grandChildScope = childScope.$new();
+        $controller('GrandChildCtrl', {$scope: grandChildScope});
     }));
 
     it('should have over and selected', function() {
@@ -330,8 +330,8 @@ describe('state', function() {
         expect(mainScope.name).toBe('Nikki');
         expect(childScope.timeOfDay).toBe('morning');
         expect(childScope.name).toBe('Mattie');
-        expect(babyScope.timeOfDay).toBe('evening');
-        expect(babyScope.name).toBe('Gingerbreak Baby');
+        expect(grandChildScope.timeOfDay).toBe('evening');
+        expect(grandChildScope.name).toBe('Gingerbreak Baby');
     });
 });
 </pre>
