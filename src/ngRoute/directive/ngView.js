@@ -19,9 +19,9 @@ ngRouteModule.directive('ngView', ngViewFactory);
  * @animations
  * enter - animation is used to bring new content into the browser.
  * leave - animation is used to animate existing content away.
- *
- * The enter and leave animation occur concurrently.
- *
+ 
+  The enter and leave animation occur concurrently.
+ 
  * @scope
  * @priority 400
  * @example
