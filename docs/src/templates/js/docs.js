@@ -726,6 +726,8 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         $scope.partialTitle = 'Error: Page Not Found!';
       }
 
+      populateComponentsList();
+
       // Update breadcrumbs
       var breadcrumb = $scope.breadcrumb = [],
         match;
