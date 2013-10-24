@@ -1717,33 +1717,37 @@ function $CompileProvider($provide) {
       }
 
       directives.push({
-        priority: -100,
-        compile: valueFn(function attrInterpolateLinkFn(scope, element, attr) {
-          var $$observers = (attr.$$observers || (attr.$$observers = {}));
+        priority: 100,
+        compile: function() {
+            return {
+              pre: function attrInterpolatePreLinkFn(scope, element, attr) {
+                var $$observers = (attr.$$observers || (attr.$$observers = {}));
 
-          if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
-            throw $compileMinErr('nodomevents',
-                "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
-                "ng- versions (such as ng-click instead of onclick) instead.");
+                if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
+                  throw $compileMinErr('nodomevents',
+                      "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
+                          "ng- versions (such as ng-click instead of onclick) instead.");
+                }
+
+                // we need to interpolate again, in case the attribute value has been updated
+                // (e.g. by another directive's compile function)
+                interpolateFn = $interpolate(attr[name], true, getTrustedContext(node, name));
+
+                // if attribute was updated so that there is no interpolation going on we don't want to
+                // register any observers
+                if (!interpolateFn) return;
+
+                // TODO(i): this should likely be attr.$set(name, iterpolateFn(scope) so that we reset the
+                // actual attr value
+                attr[name] = interpolateFn(scope);
+                ($$observers[name] || ($$observers[name] = [])).$$inter = true;
+                (attr.$$observers && attr.$$observers[name].$$scope || scope).
+                    $watch(interpolateFn, function interpolateFnWatchAction(value) {
+                      attr.$set(name, value);
+                    });
+              }
+            };
           }
-
-          // we need to interpolate again, in case the attribute value has been updated
-          // (e.g. by another directive's compile function)
-          interpolateFn = $interpolate(attr[name], true, getTrustedContext(node, name));
-
-          // if attribute was updated so that there is no interpolation going on we don't want to
-          // register any observers
-          if (!interpolateFn) return;
-
-          // TODO(i): this should likely be attr.$set(name, iterpolateFn(scope) so that we reset the
-          // actual attr value
-          attr[name] = interpolateFn(scope);
-          ($$observers[name] || ($$observers[name] = [])).$$inter = true;
-          (attr.$$observers && attr.$$observers[name].$$scope || scope).
-            $watch(interpolateFn, function interpolateFnWatchAction(value) {
-              attr.$set(name, value);
-            });
-        })
       });
     }
 
