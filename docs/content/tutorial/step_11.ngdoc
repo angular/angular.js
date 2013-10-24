@@ -62,7 +62,7 @@ api/ng.$http $http} service.
 __`app/js/app.js`.__
 <pre>
 ...
-angular.module('phonecatApp', ['phonecatFilters', 'phonecatServices']).
+angular.module('phonecatApp', ['ngRoute', 'phonecatControllers','phonecatFilters', 'phonecatServices']).
 ...
 </pre>
 
