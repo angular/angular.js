@@ -959,6 +959,26 @@ function $RootScopeProvider(){
        */
       $broadcast: function(name, args) {
         return scopeDispatch(this, name, arguments, scopePropagateDepthFirst);
+      },
+
+
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$dispatch
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Dispatches an event `name` to each listener on the current scope, without propagating to
+       * parents or children. This strategy would typically be used in directives which need to
+       * communicate with surrounding scopes without worrying about propagation.
+       *
+       * @param {string} name Event name to broadcast.
+       * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link ng.$rootScope.Scope#$on}
+       */
+      $dispatch: function(name, args) {
+        return scopeDispatch(this, name, arguments, false);
       }
     };
 
