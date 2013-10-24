@@ -418,6 +418,7 @@ function $HttpProvider() {
      *       'response': function(response) {
      *          // same as above
      *       }
+     *     };
      *   });
      * </pre>
      *
