@@ -168,7 +168,7 @@ For example, we could fix the example above by instead writing:
 ## Creating Directives
 
 First let's talk about the API for registering directives. Much like controllers, directives are registered on
-modules. To register a controller, you use the `module.directive` API. `module.directive` takes the
+modules. To register a directive, you use the `module.directive` API. `module.directive` takes the
 {@link guide/directive#creating-custom-directives_matching-directives normalized} directive name followed
 by a **factory function.** This factory function should return
 an object with the different options to tell `$compile` how the directive should behave when matched.
