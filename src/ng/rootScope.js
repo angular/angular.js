@@ -240,6 +240,8 @@ function $RootScopeProvider(){
        * can compare the `newVal` and `oldVal`. If these two values are identical (`===`) then the
        * listener was called due to initialization.
        *
+       * The example below contains an illustration of using a function as your $watch listener
+       *
        *
        * # Example
        * <pre>
@@ -261,6 +263,23 @@ function $RootScopeProvider(){
            scope.name = 'adam';
            scope.$digest();
            expect(scope.counter).toEqual(1);
+
+           var food;
+           scope.secondCounter = 0;
+
+           expect(scope.secondCounter).toEqual(0);
+           scope.$watch(function() { return food; }, function(newValue, oldValue) { scope.secondCounter = scope.secondCounter + 1; });
+           expect(scope.secondCounter).toEqual(0);
+
+           scope.$digest();
+           // no variable change
+           expect(scope.counter).toEqual(1);
+           expect(scope.secondCounter).toEqual(0);
+
+           food = 'cheeseburger';
+           scope.$digest();
+           expect(scope.counter).toEqual(2);
+           expect(scope.secondCounter).toEqual(1);
        * </pre>
        *
        *
