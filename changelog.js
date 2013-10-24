@@ -16,7 +16,6 @@ var LINK_ISSUE = '[#%s](https://github.com/angular/angular.js/issues/%s)';
 var LINK_COMMIT = '[%s](https://github.com/angular/angular.js/commit/%s)';
 
 var EMPTY_COMPONENT = '$$';
-var MAX_SUBJECT_LENGTH = 80;
 
 
 var warn = function() {
@@ -52,11 +51,6 @@ var parseRawCommit = function(raw) {
   if (!match || !match[1] || !match[3]) {
     warn('Incorrect message: %s %s', msg.hash, msg.subject);
     return null;
-  }
-
-  if (match[3].length > MAX_SUBJECT_LENGTH) {
-    warn('Too long subject: %s %s', msg.hash, msg.subject);
-    match[3] = match[3].substr(0, MAX_SUBJECT_LENGTH);
   }
 
   msg.type = match[1];
