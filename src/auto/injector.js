@@ -414,7 +414,7 @@ function annotate(fn) {
  * Register a **service factory**, which will be called to return the service instance.
  * This is short for registering a service where its provider consists of only a `$get` property,
  * which is the given service factory function.
- * You should use {@link AUTO.$provide#factory $provide.factor(getFn)} if you do not need to
+ * You should use {@link AUTO.$provide#factory $provide.factory(getFn)} if you do not need to
  * configure your service in a provider.
  *
  * @param {string} name The name of the instance.
