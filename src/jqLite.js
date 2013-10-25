@@ -809,7 +809,11 @@ forEach({
   },
 
   find: function(element, selector) {
-    return element.getElementsByTagName(selector);
+    if (element.nodeType==3) {
+      return [];
+    } else {
+      return element.getElementsByTagName(selector);
+    }
   },
 
   clone: jqLiteClone,
