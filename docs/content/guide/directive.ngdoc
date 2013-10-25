@@ -98,7 +98,7 @@ The other forms shown above are accepted for legacy reasons but we advise you to
 `$compile` can match directives based on element names, attributes, class names, as well as comments.
 
 All of the Angular-provided directives match attribute name, tag name, comments, or class name.
-The following demonstrates the various ways a directive (`ngBind` in this case) can be referenced from within a template:
+The following demonstrates the various ways a directive (`myDir` in this case) can be referenced from within a template:
 
 ```html
 <my-dir></my-dir>
