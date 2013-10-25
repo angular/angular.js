@@ -1547,13 +1547,17 @@ function $CompileProvider($provide) {
         }
       });
 
+      if (src.hasOwnProperty('style')) { 
+        dst['style'] = $element.attr('style') + ';';
+      }
+
       // copy the new attributes on the old attrs object
       forEach(src, function(value, key) {
         if (key == 'class') {
           safeAddClass($element, value);
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
-          $element.attr('style', $element.attr('style') + ';' + value);
+          dst['style'] += value + ';';
           // `dst` will never contain hasOwnProperty as DOM parser won't let it.
           // You will get an "InvalidCharacterError: DOM Exception 5" error if you
           // have an attribute like "has-own-property" or "data-has-own-property", etc.
