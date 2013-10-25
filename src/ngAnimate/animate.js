@@ -144,6 +144,57 @@
  * immediately resulting in a DOM element that is at its final state. This final state is when the DOM element
  * has no CSS transition/animation classes applied to it.
  *
+ * <h3>CSS Staggering Animations</h3>
+ * A Staggering animation is a collection of animations that are issued with a slight delay in between each successive operation resulting in a
+ * curtain-like effect. The ngAnimate module, as of 1.2.0, supports staggering animations and the stagger effect can be
+ * performed by creating a **ng-EVENT-stagger** CSS class and attaching that class to the base CSS class used for
+ * the animation. The style property expected within the stagger class can either be a **transition-delay** or an
+ * **animation-delay** property (or both if your animation contains both transitions and keyframe animations).
+ *
+ * <pre>
+ * .my-animation.ng-enter {
+ *   /&#42; standard transition code &#42;/
+ * }
+ * .my-animation.ng-enter-stagger {
+ *   /&#42; this will have a 100ms delay between each successive leave animation &#42;/
+ *   -webkit-transition-delay: 0.1s;
+ *   transition-delay: 0.1s;
+ *
+ *   /&#42; in case the stagger doesn't work then these two values
+ *    must be set to 0 to avoid an accidental CSS inheritance &#42;/
+ *   -webkit-transition-duration: 0s;
+ *   transition-duration: 0s;
+ * }
+ * .my-animation.ng-enter.ng-enter-active {
+ *   /&#42; standard transition styles &#42;/
+ * }
+ * </pre>
+ *
+ * Staggering animations work by default in ngRepeat (so long as the CSS class is defiend). Outside of ngRepeat, to use staggering animations
+ * on your own, they can be triggered by firing multiple calls to the same event on $animate. However, the restrictions surrounding this
+ * are that each of the elements must have the same CSS className value as well as the same parent element. A stagger operation
+ * will also be reset if more than 10ms has passed after the last animation has been fired.
+ *
+ * The following code will issue the **ng-leave-stagger** event on the element provided:
+ *
+ * <pre>
+ * var kids = parent.children();
+ *
+ * $animate.leave(kids[0]); //stagger index=0
+ * $animate.leave(kids[1]); //stagger index=1
+ * $animate.leave(kids[2]); //stagger index=2
+ * $animate.leave(kids[3]); //stagger index=3
+ * $animate.leave(kids[4]); //stagger index=4
+ *
+ * $timeout(function() {
+ *   //stagger has reset itself
+ *   $animate.leave(kids[5]); //stagger index=0
+ *   $animate.leave(kids[6]); //stagger index=1
+ * }, 100, false);
+ * </pre>
+ *
+ * Stagger animations are currently only supported within CSS-defined animations.
+ *
  * <h2>JavaScript-defined Animations</h2>
  * In the event that you do not want to use CSS3 transitions or CSS3 animations or if you wish to offer animations on browsers that do not
  * yet support CSS transitions/animations, then you can make use of JavaScript animations defined inside of your AngularJS module.
@@ -672,7 +723,7 @@ angular.module('ngAnimate', ['ng'])
       var forEach = angular.forEach;
 
       // Detect proper transitionend/animationend event names.
-      var transitionProp, transitionendEvent, animationProp, animationendEvent;
+      var prefix = '', transitionProp, transitionendEvent, animationProp, animationendEvent;
 
       // If unprefixed events are not supported but webkit-prefixed are, use the latter.
       // Otherwise, just use W3C names, browsers not supporting them at all will just ignore them.
@@ -683,6 +734,7 @@ angular.module('ngAnimate', ['ng'])
       // Also, the only modern browser that uses vendor prefixes for transitions/keyframes is webkit
       // therefore there is no reason to test anymore for other vendor prefixes: http://caniuse.com/#search=transition
       if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+        prefix = '-webkit-';
         transitionProp = 'WebkitTransition';
         transitionendEvent = 'webkitTransitionEnd transitionend';
       } else {
@@ -691,6 +743,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+        prefix = '-webkit-';
         animationProp = 'WebkitAnimation';
         animationendEvent = 'webkitAnimationEnd animationend';
       } else {
@@ -722,6 +775,13 @@ angular.module('ngAnimate', ['ng'])
         }, 10, false);
       }
 
+      function applyStyle(node, style) {
+        var oldStyle = node.getAttribute('style') || '';
+        var newStyle = (oldStyle.length > 0 ? '; ' : '') + style;
+        node.setAttribute('style', newStyle);
+        return oldStyle;
+      }
+
       function getElementAnimationDetails(element, cacheKey, onlyCheckTransition) {
         var data = cacheKey ? lookupCache[cacheKey] : null;
         if(!data) {
@@ -751,6 +811,7 @@ angular.module('ngAnimate', ['ng'])
             }
           });
           data = {
+            total : 0,
             transitionDelay : transitionDelay,
             animationDelay : animationDelay,
             transitionDuration : transitionDuration,
@@ -782,7 +843,6 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function animate(element, className, done) {
-
         var cacheKey = getCacheKey(element);
         if(getElementAnimationDetails(element, cacheKey, true).transitionDuration > 0) {
 
@@ -790,9 +850,25 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
+        var eventCacheKey = cacheKey + ' ' + className;
+        var ii = lookupCache[eventCacheKey] ? ++lookupCache[eventCacheKey].total : 0;
+
+        var stagger = {};
+        if(ii > 0) {
+          var staggerClassName = className + '-stagger';
+          var staggerCacheKey = cacheKey + ' ' + staggerClassName;
+          var applyClasses = !lookupCache[staggerCacheKey];
+
+          applyClasses && element.addClass(staggerClassName);
+
+          stagger = getElementAnimationDetails(element, staggerCacheKey);
+
+          applyClasses && element.removeClass(staggerClassName);
+        }
+
         element.addClass(className);
 
-        var timings = getElementAnimationDetails(element, cacheKey + ' ' + className);
+        var timings = getElementAnimationDetails(element, eventCacheKey);
 
         /* there is no point in performing a reflow if the animation
            timeout is empty (this would cause a flicker bug normally
@@ -815,12 +891,21 @@ angular.module('ngAnimate', ['ng'])
             activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
           });
 
-          // This triggers a reflow which allows for the transition animation to kick in.
-          var css3AnimationEvents = animationendEvent + ' ' + transitionendEvent;
+          var formerStyle, css3AnimationEvents = animationendEvent + ' ' + transitionendEvent;
 
+          // This triggers a reflow which allows for the transition animation to kick in.
           afterReflow(function() {
             if(timings.transitionDuration > 0) {
               node.style[transitionProp + propertyKey] = '';
+              if(ii > 0 && stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
+                formerStyle = applyStyle(node, prefix + 'transition-delay: ' +
+                  (ii * stagger.transitionDelay + timings.transitionDelay) + 's');
+              }
+            }
+
+            if(ii > 0 && stagger.animationDelay > 0 && stagger.animationDuration === 0) {
+              formerStyle = applyStyle(node, prefix + 'animation-delay: ' +
+                (ii * stagger.animationDelay + timings.animationDelay) + 's');
             }
             element.addClass(activeClassName);
           });
@@ -836,6 +921,11 @@ angular.module('ngAnimate', ['ng'])
             element.removeClass(className);
             element.removeClass(activeClassName);
             element.removeData(NG_ANIMATE_CLASS_KEY);
+            if(formerStyle != null) {
+              formerStyle.length > 0 ?
+                node.setAttribute('style', formerStyle) :
+                node.removeAttribute('style');
+            }
 
             // Only when the animation is cancelled is the done()
             // function not called for this animation therefore
