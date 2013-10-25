@@ -94,6 +94,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "de-de",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;},
+  "zipCode" : "^[0-9]{5}$"
 });
 }]);
