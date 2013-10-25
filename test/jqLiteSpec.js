@@ -1335,6 +1335,12 @@ describe('jqLite', function() {
       expect(innerDiv.length).toEqual(1);
       expect(innerDiv.html()).toEqual('text');
     });
+
+    it('should find child by name and not care about text nodes', function() {
+      var divs = jqLite('<div><span>aa</span></div>text<div><span>bb</span></div>');
+      var innerSpan = divs.find('span');
+      expect(innerSpan.length).toEqual(2);
+    });
   });
 
 
