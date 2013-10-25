@@ -34,7 +34,8 @@ ngTouch.factory('$swipe', [function() {
 
     return {
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
+      event: event
     };
   }
 
