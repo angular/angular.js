@@ -41,6 +41,11 @@ it('should filter results', function() {
 });
 });
 </pre>
+
+Note that
+[`input('user')`](https://github.com/angular/angular.js/blob/master/docs/content/guide/dev_guide.e2e-testing.ngdoc#L119)
+finds the `<input>` element with `ng-model="user"` not `name="user"`.
+
 This scenario describes the requirements of a Buzz Client, specifically, that it should be able to
 filter the stream of the user. It starts by entering a value in the input field with ng-model="user", clicking
 the only button on the page, and then it verifies that there are 10 items listed. It then enters
