@@ -324,7 +324,7 @@ Here is an example of what the template definition for the `dialog` widget may l
 This will not render properly, unless we do some scope magic.
 
 The first issue we have to solve is that the dialog box template expects `title` to be defined, but
-the place of instantiation would like to bind to `username`. Furthermore the buttons expect the
+in place of instantiation we would like to bind it to `username`. Furthermore the buttons expect the
 `onOk` and `onCancel` functions to be present in the scope. This limits the usefulness of the
 widget. To solve the mapping issue we use the `locals` to create local variables which the template
 expects as follows:
