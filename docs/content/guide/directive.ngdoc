@@ -16,22 +16,21 @@ how to implement them.
 
 ## What are Directives?
 
-At a high level, directives are instructions for AngularJS's
-{@link api/ng.$compile HTML Compiler (`$compile`)} that tell the
-compiler to attach a given behavior to a DOM node when a certain marker (such as an attribute, element
-name, or comment) appears in the DOM.
+At a high level, directives are markers on a DOM element (such as an attribute, element
+name, or CSS class) that tell AngularJS's **HTML compiler** ({@link api/ng.$compile `$compile`}) to
+attach a specified behavior to that DOM element or even transform the DOM element and its children.
 
-The process is simple. Angular comes with a set of these directives, like `ngBind`, `ngModel`, and `ngView`.
+Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngView`.
 Much like you create controllers and services, you can create your own directives for Angular to use.
-Then, when Angular {@link guide/bootstrap bootstraps}, Angular's {@link guide/compiler HTML compiler} matches
-directives against the HTML. This allows directives to register behavior or transform the DOM.
+When Angular {@link guide/bootstrap bootstraps} your application, the
+{@link guide/compiler HTML compiler} traverses the DOM matching directives against the DOM elements.
 
 <div class="alert alert-info">
 **What does it mean to "compile" an HTML template?**
 
 For AngularJS, "compilation" means attaching event listeners to the HTML to make it interactive.
-The reason we use the term "compile" is that the recursive process of attaching this listeners
-mirrors the compilation process of
+The reason we use the term "compile" is that the recursive process of attaching directives
+mirrors the process of compiling source code in
 {@link http://en.wikipedia.org/wiki/Compiled_languages compiled programming languages}.
 </div>
 
@@ -53,9 +52,12 @@ The following also **matches** `ngModel`:
 <input data-ng:model="foo">
 ```
 
-Angular **normalizes** an element's tag and attribute name to determine which elements match which directives.
-We typically refer to directives by their camel-case **normalized** name (e.g. `ngModel`).
-However directives are typically invoked by adding dash-delimited attribute names to your HTML (e.g. `ng-model`).
+Angular **normalizes** an element's tag and attribute name to determine which elements match which
+directives. We typically refer to directives by their case-sensitive
+{@link http://en.wikipedia.org/wiki/CamelCase camelCase} **normalized** name (e.g. `ngModel`). 
+However, in the DOM, we refer to directives by case-insensitive forms, typically using
+{@link http://en.wikipedia.org/wiki/Letter_case#Computers dash-delimited} attributes on DOM elements
+(e.g. `ng-model`).
 
 The **normalization** process is as follows:
 
