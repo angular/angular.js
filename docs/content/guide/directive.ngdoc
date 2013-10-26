@@ -17,7 +17,7 @@ how to implement them.
 ## What are Directives?
 
 At a high level, directives are instructions for AngularJS's
-{@link api/ng.$compile HTML Compiler (`$compile`)} that tell the
+{@link api/ng.$compile HTML Compiler (`$compile`)}. A directive tells the
 compiler to attach a given behavior to a DOM node when a certain marker (such as an attribute, element
 name, or comment) appears in the DOM.
 
