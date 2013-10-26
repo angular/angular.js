@@ -15,6 +15,13 @@ If your issue appears to be a bug, and hasn't been reported, open a new issue.
 Help us to maximize the effort we can spend fixing issues and adding new
 features, by not reporting duplicate issues.
 
+#### Note to Localization Pull Requests 
+
+Angular.js currently uses the [Google Closure I18N library](https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/), which 
+means that any changes to the localization would be lost the next time that 
+we update the Google Closure library. The recommended approach would be to
+submit a patch to the I18N project directly, instead of submitting it here.
+
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
