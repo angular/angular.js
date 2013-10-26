@@ -1547,7 +1547,7 @@ function $CompileProvider($provide) {
         }
       });
 
-      if (src.hasOwnProperty('style')) { 
+      if (src.hasOwnProperty('style')) {
         dst['style'] = $element.attr('style') + ';';
       }
 
