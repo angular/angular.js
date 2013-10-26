@@ -25,7 +25,7 @@ regardless of whether they pass or fail.
 In addition to the above elements, scenarios may also contain helper functions to avoid duplicating
 code in the `it` blocks.
 
-Here is an example of a simple scenario:
+Here is an example of a simple scenario (note: the [input function](https://github.com/angular/angular.js/blob/master/docs/content/guide/dev_guide.e2e-testing.ngdoc#L119) looks for ng-model, not name attribute):
 <pre>
 describe('Buzz Client', function() {
 it('should filter results', function() {
