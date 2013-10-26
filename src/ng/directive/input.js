@@ -492,8 +492,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // min length validator
   if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
     var minLengthValidator = function(value) {
+      var minlength = int(attr.ngMinlength);
       if (!ctrl.$isEmpty(value) && value.length < minlength) {
         ctrl.$setValidity('minlength', false);
         return undefined;
@@ -509,8 +509,8 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // max length validator
   if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
+      var maxlength = int(attr.ngMaxlength);
       if (!ctrl.$isEmpty(value) && value.length > maxlength) {
         ctrl.$setValidity('maxlength', false);
         return undefined;
