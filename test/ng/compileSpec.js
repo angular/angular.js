@@ -588,6 +588,24 @@ describe('$compile', function() {
           expect(element).toHaveClass('class_2');
         }));
 
+        it('should merge interpolated css style attr during replace',
+            function() {
+          module(function($interpolateProvider, $compileProvider) {
+            $compileProvider.directive('testReplaceWithStyleInterpolationDir', function() {
+              return {
+                replace: true,
+                template: '<div style="top: {{ topVal }}px"></div>'
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            element = $compile('<div test-replace-with-style-interpolation-dir />')($rootScope);
+            $rootScope.topVal = 1979;
+            $rootScope.$digest();
+            expect(element.css('top')).toBe('1979px');
+          });
+        });
 
         it('should merge interpolated css class', inject(function($compile, $rootScope) {
           element = $compile('<div class="one {{cls}} three" replace></div>')($rootScope);
