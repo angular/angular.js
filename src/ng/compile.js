@@ -1338,6 +1338,11 @@ function $CompileProvider($provide) {
             value.push(getControllers(require, $element));
           });
         }
+         else if (isObject(require)) {
+            value = {};
+            forEach(require, function(requireVal, requireKey) {
+                value[requireKey] = getControllers(requireVal, $element);
+            });
         return value;
       }
 
