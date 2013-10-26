@@ -1191,9 +1191,13 @@ function $CompileProvider($provide) {
 
             childTranscludeFn = compile($template, transcludeFn, terminalPriority,
                                         replaceDirective && replaceDirective.name, {
-                                          controllerDirectives: controllerDirectives,
-                                          newIsolateScopeDirective: newIsolateScopeDirective,
-                                          templateDirective: templateDirective,
+                                          // Don't pass in:
+                                          // - controllerDirectives - otherwise we'll create duplicates controllers
+                                          // - newIsolateScopeDirective or templateDirective - combining templates with
+                                          //   element transclusion doesn't make sense.
+                                          //
+                                          // We need only transcludeDirective so that we prevent putting transclusion
+                                          // on the same element more than once.
                                           transcludeDirective: transcludeDirective
                                         });
           } else {

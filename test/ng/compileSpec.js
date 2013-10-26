@@ -3179,6 +3179,47 @@ describe('$compile', function() {
           expect(log).toEqual('compile:elementTrans; compile:regularTrans; regular');
         });
       });
+
+
+      it('should instantiate high priority controllers only once, but low priority ones each time we transclude',
+          function() {
+        module(function() {
+          directive('elementTrans', function(log) {
+            return {
+              transclude: 'element',
+              priority: 50,
+              controller: function($transclude, $element) {
+                log('controller:elementTrans');
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+              }
+            };
+          });
+          directive('normalDir', function(log) {
+            return {
+              controller: function() {
+                log('controller:normalDir');
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div element-trans normal-dir></div></div>')($rootScope);
+          expect(log).toEqual([
+            'controller:elementTrans',
+            'controller:normalDir',
+            'controller:normalDir',
+            'controller:normalDir'
+          ]);
+        });
+      });
     });
 
 
