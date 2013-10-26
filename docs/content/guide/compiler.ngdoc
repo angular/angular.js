@@ -166,7 +166,7 @@ HTML compilation happens in three phases:
 
   1. {@link api/ng.$compile `$compile`} traverses the DOM and matches directives.
 
-  If the compiler finds than an element matches a directive, then the directive is added to the list of
+  If the compiler finds that an element matches a directive, then the directive is added to the list of
   directives that match the DOM element. A single element may match multiple directives.
 
   2. Once all directives matching a DOM element have been identified, the compiler sorts the directives
