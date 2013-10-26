@@ -12,11 +12,11 @@ var mock, notify;
 beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
 
-  module(function($provide) {
+  angular.mock.module(function($provide) {
     $provide.value('$window', mock);
   });
 
-  inject(function($injector) {
+  angular.mock.inject(function($injector) {
     notify = $injector.get('notify');
   });
 });
