@@ -66,7 +66,7 @@ and follow the instructions for setting up your computer.
          <a href="http://git-scm.com/download">the Git site</a>.</p></li>
       <li><p>Clone the angular-phonecat repository located at
       <a href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
-      <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
+      <pre>git clone https://github.com/angular/angular-phonecat.git</pre>
       <p>This command creates the <code>angular-phonecat</code> directory in your current
 directory.</p></li>
       <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
@@ -94,7 +94,7 @@ to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></l
                <a href="http://git-scm.com/download">the Git site</a>.</p></li>
       <li><p>Clone the angular-phonecat repository located at <a
       href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
-      <pre>git clone git://github.com/angular/angular-phonecat.git</pre>
+      <pre>git clone https://github.com/angular/angular-phonecat.git</pre>
       <p>This command creates the <code>angular-phonecat</code> directory in your current directory.</p></li>
       <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
       <pre>cd angular-phonecat</pre>
