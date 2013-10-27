@@ -265,7 +265,7 @@ function FormController(element, attrs) {
  *
  * - If a form has only one input field then hitting enter in this field triggers form submit
  * (`ngSubmit`)
- * - if a form has has 2+ input fields and no buttons or input[type=submit] then hitting enter
+ * - if a form has 2+ input fields and no buttons or input[type=submit] then hitting enter
  * doesn't trigger submit
  * - if a form has one or more input fields and one or more buttons or input[type=submit] then
  * hitting enter in any of the input fields will trigger the click handler on the *first* button or
