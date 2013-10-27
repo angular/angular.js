@@ -217,7 +217,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
      });
    </pre>
  *
- * It's worth noting that the success callback for `get`, `query` and other method gets passed
+ * It's worth noting that the success callback for `get`, `query` and other methods gets passed
  * in the response that came from the server as well as $http header getter function, so one
  * could rewrite the above example and get access to http headers as:
  *
