@@ -454,6 +454,20 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
+  it('should not update the model between "compositionstart" and "compositionend"', function() {
+    compileInput('<input type="text" ng-model="name" name="alias"" />');
+    changeInputValueTo('a');
+    expect(scope.name).toEqual('a');
+    if (!(msie < 9)) {
+      browserTrigger(inputElm, 'compositionstart');
+      changeInputValueTo('adam');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'compositionend');
+    }
+    changeInputValueTo('adam');
+    expect(scope.name).toEqual('adam');
+  });
+
   describe('"paste" and "cut" events', function() {
     beforeEach(function() {
       // Force browser to report a lack of an 'input' event
