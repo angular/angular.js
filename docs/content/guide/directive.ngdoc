@@ -748,15 +748,15 @@ element?
           element.on('mousedown', function(event) {
             // Prevent default dragging of selected content
             event.preventDefault();
-            startX = event.screenX - x;
-            startY = event.screenY - y;
+            startX = event.pageX - x;
+            startY = event.pageY - y;
             $document.on('mousemove', mousemove);
             $document.on('mouseup', mouseup);
           });
 
           function mousemove(event) {
-            y = event.screenY - startY;
-            x = event.screenX - startX;
+            y = event.pageY - startY;
+            x = event.pageX - startX;
             element.css({
               top: y + 'px',
               left:  x + 'px'
