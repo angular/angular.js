@@ -128,15 +128,27 @@ This is a short list of libraries with specific support and documentation for wo
 
 ## Learning Resources
 
-* **Books: **[AngularJS](http://www.amazon.com/AngularJS-Brad-Green/dp/1449344852), [Mastering Web App Development](http://www.amazon.com/Mastering-Web-Application-Development-AngularJS/dp/1782161821), [AngularJS Directives](http://www.amazon.com/AngularJS-Directives-Alex-Vanston/dp/1783280336), [Developing an AngularJS Edge](http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K)
+###Books
+* [AngularJS](http://www.amazon.com/AngularJS-Brad-Green/dp/1449344852) by Brad Green and Shyam Seshadri
+* [Mastering Web App Development](http://www.amazon.com/Mastering-Web-Application-Development-AngularJS/dp/1782161821) by Pawel Kozlowski and Pete Bacon Darwin
+* [AngularJS Directives](http://www.amazon.com/AngularJS-Directives-Alex-Vanston/dp/1783280336) by Alex Vanston
+* [Recipes With AngularJS](http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48) by Frederik Dietz
+* [Developing an AngularJS Edge](http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K) by Christopher Hiller
 
-* **Videos: **[egghead.io](http://egghead.io/), [Angular on YouTube](http://youtube.com/angularjs)
+###Videos:
+* [egghead.io](http://egghead.io/),
+* [Angular on YouTube](http://youtube.com/angularjs)
 
-* **Courses (free online):** [thinkster.io](http://thinkster.io), [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1)
-
-* **Courses ($ online):** [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs), [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/), [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html)
-
-* **Courses ($ onsite):** [angularbootcamp.com](http://angularbootcamp.com/)
+###Courses
+* **Free on-line:**
+  [thinkster.io](http://thinkster.io),
+  [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1)
+* **Paid on-line:**
+  [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs),
+  [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/),
+  [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html)
+* **Paid on-site:**
+  [angularbootcamp.com](http://angularbootcamp.com/)
 
 ## Getting Help
 
