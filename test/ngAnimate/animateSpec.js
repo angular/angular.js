@@ -120,6 +120,46 @@ describe("ngAnimate", function() {
           expect(count).toBe(0);
         });
       });
+
+      it('should check enable/disable animations up until the $rootElement element', function() {
+        var rootElm = jqLite('<div></div>');
+
+        var captured = false;
+        module(function($provide, $animateProvider) {
+          $provide.value('$rootElement', rootElm);
+          $animateProvider.register('.ani', function() {
+            return {
+              addClass : function(element, className, done) {
+                captured = true;
+                done();
+              }
+            }
+          });
+        });
+        inject(function($animate, $rootElement, $rootScope, $compile, $timeout) {
+          var initialState;
+          angular.bootstrap(rootElm, ['ngAnimate']);
+
+          $animate.enabled(true);
+
+          var element = $compile('<div class="ani"></div>')($rootScope);
+          rootElm.append(element);
+
+          expect(captured).toBe(false);
+          $animate.addClass(element, 'red');
+          expect(captured).toBe(true);
+
+          captured = false;
+          $animate.enabled(false);
+
+          $animate.addClass(element, 'blue');
+          expect(captured).toBe(false);
+
+          //clean up the mess
+          $animate.enabled(false, rootElm);
+          dealoc(rootElm);
+        });
+      });
     });
 
     describe("with polyfill", function() {
