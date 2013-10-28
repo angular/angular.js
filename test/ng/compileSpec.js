@@ -2757,229 +2757,468 @@ describe('$compile', function() {
 
 
   describe('transclude', function() {
-    it('should compile get templateFn', function() {
-      module(function() {
-        directive('trans', function(log) {
-          return {
+
+    describe('content transclusion', function() {
+
+      it('should support transclude directive', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: 'content',
+              replace: true,
+              scope: true,
+              template: '<ul><li>W:{{$parent.$id}}-{{$id}};</li><li ng-transclude></li></ul>'
+            }
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div><div trans>T:{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
+              ($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toEqual('W:001-002;T:001-003;');
+          expect(jqLite(element.find('span')[0]).text()).toEqual('T:001-003');
+          expect(jqLite(element.find('span')[1]).text()).toEqual(';');
+        });
+      });
+
+
+      it('should transclude transcluded content', function() {
+        module(function() {
+          directive('book', valueFn({
+            transclude: 'content',
+            template: '<div>book-<div chapter>(<div ng-transclude></div>)</div></div>'
+          }));
+          directive('chapter', valueFn({
+            transclude: 'content',
+            templateUrl: 'chapter.html'
+          }));
+          directive('section', valueFn({
+            transclude: 'content',
+            template: '<div>section-!<div ng-transclude></div>!</div></div>'
+          }));
+          return function($httpBackend) {
+            $httpBackend.
+                expect('GET', 'chapter.html').
+                respond('<div>chapter-<div section>[<div ng-transclude></div>]</div></div>');
+          }
+        });
+        inject(function(log, $rootScope, $compile, $httpBackend) {
+          element = $compile('<div><div book>paragraph</div></div>')($rootScope);
+          $rootScope.$apply();
+
+          expect(element.text()).toEqual('book-');
+
+          $httpBackend.flush();
+          $rootScope.$apply();
+          expect(element.text()).toEqual('book-chapter-section-![(paragraph)]!');
+        });
+      });
+
+
+      it('should only allow one content transclusion per element', function() {
+        module(function() {
+          directive('first', valueFn({
+            transclude: true
+          }));
+          directive('second', valueFn({
+            transclude: true
+          }));
+        });
+        inject(function($compile) {
+          expect(function() {
+            $compile('<div first="" second=""></div>');
+          }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+        });
+      });
+
+
+      it('should remove transclusion scope, when the DOM is destroyed', function() {
+        module(function() {
+          directive('box', valueFn({
+            transclude: true,
+            scope: { name: '=', show: '=' },
+            template: '<div><h1>Hello: {{name}}!</h1><div ng-transclude></div></div>',
+            link: function(scope, element) {
+              scope.$watch(
+                  'show',
+                  function(show) {
+                    if (!show) {
+                      element.find('div').find('div').remove();
+                    }
+                  }
+              );
+            }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          $rootScope.username = 'Misko';
+          $rootScope.select = true;
+          element = $compile(
+              '<div><div box name="username" show="select">user: {{username}}</div></div>')
+              ($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toEqual('Hello: Misko!user: Misko');
+
+          var widgetScope = $rootScope.$$childHead;
+          var transcludeScope = widgetScope.$$nextSibling;
+          expect(widgetScope.name).toEqual('Misko');
+          expect(widgetScope.$parent).toEqual($rootScope);
+          expect(transcludeScope.$parent).toEqual($rootScope);
+
+          $rootScope.select = false;
+          $rootScope.$apply();
+          expect(element.text()).toEqual('Hello: Misko!');
+          expect(widgetScope.$$nextSibling).toEqual(null);
+        });
+      });
+
+
+      it('should add a $$transcluded property onto the transcluded scope', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              replace: true,
+              scope: true,
+              template: '<div><span>I:{{$$transcluded}}</span><div ng-transclude></div></div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')
+              ($rootScope);
+          $rootScope.$apply();
+          expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
+          expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
+        });
+      });
+
+
+      it('should clear contents of the ng-translude element before appending transcluded content', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude>old stuff! </div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans>unicorn!</div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><span>unicorn!</span></div>');
+        });
+      });
+
+
+      it('should throw on an ng-translude element inside no transclusion directive', function() {
+        inject(function ($rootScope, $compile) {
+          // we need to do this because different browsers print empty attributres differently
+          try {
+            $compile('<div><div ng-transclude></div></div>')($rootScope);
+          } catch(e) {
+            expect(e.message).toMatch(new RegExp(
+                '^\\\[ngTransclude:orphan\\\] ' +
+                    'Illegal use of ngTransclude directive in the template! ' +
+                    'No parent directive that requires a transclusion found\. ' +
+                    'Element: <div ng-transclude.+'));
+          }
+        });
+      });
+
+
+      it('should make the result of a transclusion available to the parent directive in post-linking phase' +
+          '(template)', function() {
+        module(function() {
+          directive('trans', function(log) {
+            return {
+              transclude: true,
+              template: '<div ng-transclude></div>',
+              link: {
+                pre: function($scope, $element) {
+                  log('pre(' + $element.text() + ')');
+                },
+                post: function($scope, $element) {
+                  log('post(' + $element.text() + ')');
+                }
+              }
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('pre(); post(unicorn!)');
+        });
+      });
+
+
+      it('should make the result of a transclusion available to the parent directive in post-linking phase' +
+          '(templateUrl)', function() {
+        // when compiling an async directive the transclusion is always processed before the directive
+        // this is different compared to sync directive. delaying the transclusion makes little sense.
+
+        module(function() {
+          directive('trans', function(log) {
+            return {
+              transclude: true,
+              templateUrl: 'trans.html',
+              link: {
+                pre: function($scope, $element) {
+                  log('pre(' + $element.text() + ')');
+                },
+                post: function($scope, $element) {
+                  log('post(' + $element.text() + ')');
+                }
+              }
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile, $templateCache) {
+          $templateCache.put('trans.html', '<div ng-transclude></div>');
+
+          element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('pre(); post(unicorn!)');
+        });
+      });
+
+
+      it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase' +
+          '(template)', function() {
+        module(function() {
+          directive('replacedTrans', function(log) {
+            return {
+              transclude: true,
+              replace: true,
+              template: '<div ng-transclude></div>',
+              link: {
+                pre: function($scope, $element) {
+                  log('pre(' + $element.text() + ')');
+                },
+                post: function($scope, $element) {
+                  log('post(' + $element.text() + ')');
+                }
+              }
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('pre(); post(unicorn!)');
+        });
+      });
+
+
+      it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase' +
+          ' (templateUrl)', function() {
+        module(function() {
+          directive('replacedTrans', function(log) {
+            return {
+              transclude: true,
+              replace: true,
+              templateUrl: 'trans.html',
+              link: {
+                pre: function($scope, $element) {
+                  log('pre(' + $element.text() + ')');
+                },
+                post: function($scope, $element) {
+                  log('post(' + $element.text() + ')');
+                }
+              }
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile, $templateCache) {
+          $templateCache.put('trans.html', '<div ng-transclude></div>');
+
+          element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('pre(); post(unicorn!)');
+        });
+      });
+    });
+
+
+    describe('element transclusion', function() {
+
+      it('should support basic element transclusion', function() {
+        module(function() {
+          directive('trans', function(log) {
+            return {
+              transclude: 'element',
+              priority: 2,
+              controller: function($transclude) { this.$transclude = $transclude; },
+              compile: function(element, attrs, template) {
+                log('compile: ' + angular.mock.dump(element));
+                return function(scope, element, attrs, ctrl) {
+                  log('link');
+                  var cursor = element;
+                  template(scope.$new(), function(clone) {cursor.after(cursor = clone)});
+                  ctrl.$transclude(function(clone) {cursor.after(clone)});
+                };
+              }
+            }
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div><div high-log trans="text" log>{{$parent.$id}}-{{$id}};</div></div>')
+              ($rootScope);
+          $rootScope.$apply();
+          expect(log).toEqual('compile: <!-- trans: text -->; link; LOG; LOG; HIGH');
+          expect(element.text()).toEqual('001-002;001-003;');
+        });
+      });
+
+
+      it('should only allow one element transclusion per element', function() {
+        module(function() {
+          directive('first', valueFn({
+            transclude: 'element'
+          }));
+          directive('second', valueFn({
+            transclude: 'element'
+          }));
+        });
+        inject(function($compile) {
+          expect(function() {
+            $compile('<div first second></div>');
+          }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
+                  '<!-- first:  -->');
+        });
+      });
+
+
+      it('should only allow one element transclusion per element when directives have different priorities', function() {
+        // we restart compilation in this case and we need to remember the duplicates during the second compile
+        // regression #3893
+        module(function() {
+          directive('first', valueFn({
             transclude: 'element',
-            priority: 2,
-            controller: function($transclude) { this.$transclude = $transclude; },
-            compile: function(element, attrs, template) {
-              log('compile: ' + angular.mock.dump(element));
-              return function(scope, element, attrs, ctrl) {
-                log('link');
-                var cursor = element;
-                template(scope.$new(), function(clone) {cursor.after(cursor = clone)});
-                ctrl.$transclude(function(clone) {cursor.after(clone)});
+            priority: 100
+          }));
+          directive('second', valueFn({
+            transclude: 'element'
+          }));
+        });
+        inject(function($compile) {
+          expect(function() {
+            $compile('<div first second></div>');
+          }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+        });
+      });
+
+
+      it('should only allow one element transclusion per element when async replace directive is in the mix', function() {
+        module(function() {
+          directive('template', valueFn({
+            templateUrl: 'template.html',
+            replace: true
+          }));
+          directive('first', valueFn({
+            transclude: 'element',
+            priority: 100
+          }));
+          directive('second', valueFn({
+            transclude: 'element'
+          }));
+        });
+        inject(function($compile, $httpBackend) {
+          $httpBackend.expectGET('template.html').respond('<p second>template.html</p>');
+          $compile('<div template first></div>');
+          expect(function() {
+            $httpBackend.flush();
+          }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
+        });
+      });
+
+
+      it('should support transcluded element on root content', function() {
+        var comment;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            compile: function(element, attr, linker) {
+              return function(scope, element, attr) {
+                comment = element;
               };
             }
-          }
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          var element = jqLite('<div>before<div transclude></div>after</div>').contents();
+          expect(element.length).toEqual(3);
+          expect(nodeName_(element[1])).toBe('DIV');
+          $compile(element)($rootScope);
+          expect(nodeName_(element[1])).toBe('#comment');
+          expect(nodeName_(comment)).toBe('#comment');
         });
       });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div><div high-log trans="text" log>{{$parent.$id}}-{{$id}};</div></div>')
-            ($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('compile: <!-- trans: text -->; link; LOG; LOG; HIGH');
-        expect(element.text()).toEqual('001-002;001-003;');
-      });
-    });
 
 
-    it('should support transclude directive', function() {
-      module(function() {
-        directive('trans', function() {
-          return {
-            transclude: 'content',
-            replace: true,
-            scope: true,
-            template: '<ul><li>W:{{$parent.$id}}-{{$id}};</li><li ng-transclude></li></ul>'
-          }
-        });
-      });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div><div trans>T:{{$parent.$id}}-{{$id}}<span>;</span></div></div>')
-            ($rootScope);
-        $rootScope.$apply();
-        expect(element.text()).toEqual('W:001-002;T:001-003;');
-        expect(jqLite(element.find('span')[0]).text()).toEqual('T:001-003');
-        expect(jqLite(element.find('span')[1]).text()).toEqual(';');
-      });
-    });
-
-
-    it('should transclude transcluded content', function() {
-      module(function() {
-        directive('book', valueFn({
-          transclude: 'content',
-          template: '<div>book-<div chapter>(<div ng-transclude></div>)</div></div>'
-        }));
-        directive('chapter', valueFn({
-          transclude: 'content',
-          templateUrl: 'chapter.html'
-        }));
-        directive('section', valueFn({
-          transclude: 'content',
-          template: '<div>section-!<div ng-transclude></div>!</div></div>'
-        }));
-        return function($httpBackend) {
-          $httpBackend.
-              expect('GET', 'chapter.html').
-              respond('<div>chapter-<div section>[<div ng-transclude></div>]</div></div>');
-        }
-      });
-      inject(function(log, $rootScope, $compile, $httpBackend) {
-        element = $compile('<div><div book>paragraph</div></div>')($rootScope);
-        $rootScope.$apply();
-
-        expect(element.text()).toEqual('book-');
-
-        $httpBackend.flush();
-        $rootScope.$apply();
-        expect(element.text()).toEqual('book-chapter-section-![(paragraph)]!');
-      });
-    });
-
-
-    it('should only allow one content transclusion per element', function() {
-      module(function() {
-        directive('first', valueFn({
-          transclude: true
-        }));
-        directive('second', valueFn({
-          transclude: true
-        }));
-      });
-      inject(function($compile) {
-        expect(function() {
-          $compile('<div first="" second=""></div>');
-        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
-      });
-    });
-
-
-    it('should only allow one element transclusion per element', function() {
-      module(function() {
-        directive('first', valueFn({
-          transclude: 'element'
-        }));
-        directive('second', valueFn({
-          transclude: 'element'
-        }));
-      });
-      inject(function($compile) {
-        expect(function() {
-          $compile('<div first second></div>');
-        }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
-                '<!-- first:  -->');
-      });
-    });
-
-
-    it('should only allow one element transclusion per element when directives have different priorities', function() {
-      // we restart compilation in this case and we need to remember the duplicates during the second compile
-      // regression #3893
-      module(function() {
-        directive('first', valueFn({
-          transclude: 'element',
-          priority: 100
-        }));
-        directive('second', valueFn({
-          transclude: 'element'
-        }));
-      });
-      inject(function($compile) {
-        expect(function() {
-          $compile('<div first second></div>');
-        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
-      });
-    });
-
-
-    it('should only allow one element transclusion per element when async replace directive is in the mix', function() {
-      module(function() {
-        directive('template', valueFn({
-          templateUrl: 'template.html',
-          replace: true
-        }));
-        directive('first', valueFn({
-          transclude: 'element',
-          priority: 100
-        }));
-        directive('second', valueFn({
-          transclude: 'element'
-        }));
-      });
-      inject(function($compile, $httpBackend) {
-        $httpBackend.expectGET('template.html').respond('<p second>template.html</p>');
-        $compile('<div template first></div>');
-        expect(function() {
-          $httpBackend.flush();
-        }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
-      });
-    });
-
-
-    it('should remove transclusion scope, when the DOM is destroyed', function() {
-      module(function() {
-        directive('box', valueFn({
-          transclude: 'content',
-          scope: { name: '=', show: '=' },
-          template: '<div><h1>Hello: {{name}}!</h1><div ng-transclude></div></div>',
-          link: function(scope, element) {
-            scope.$watch(
-                'show',
-                function(show) {
-                  if (!show) {
-                    element.find('div').find('div').remove();
-                  }
-                }
-            );
-          }
-        }));
-      });
-      inject(function($compile, $rootScope) {
-        $rootScope.username = 'Misko';
-        $rootScope.select = true;
-        element = $compile(
-            '<div><div box name="username" show="select">user: {{username}}</div></div>')
-              ($rootScope);
-        $rootScope.$apply();
-        expect(element.text()).toEqual('Hello: Misko!user: Misko');
-
-        var widgetScope = $rootScope.$$childHead;
-        var transcludeScope = widgetScope.$$nextSibling;
-        expect(widgetScope.name).toEqual('Misko');
-        expect(widgetScope.$parent).toEqual($rootScope);
-        expect(transcludeScope.$parent).toEqual($rootScope);
-
-        $rootScope.select = false;
-        $rootScope.$apply();
-        expect(element.text()).toEqual('Hello: Misko!');
-        expect(widgetScope.$$nextSibling).toEqual(null);
-      });
-    });
-
-
-    it('should support transcluded element on root content', function() {
-      var comment;
-      module(function() {
-        directive('transclude', valueFn({
-          transclude: 'element',
-          compile: function(element, attr, linker) {
-            return function(scope, element, attr) {
-              comment = element;
+      it('should terminate compilation only for element trasclusion', function() {
+        module(function() {
+          directive('elementTrans', function(log) {
+            return {
+              transclude: 'element',
+              priority: 50,
+              compile: log.fn('compile:elementTrans')
             };
-          }
-        }));
+          });
+          directive('regularTrans', function(log) {
+            return {
+              transclude: true,
+              priority: 50,
+              compile: log.fn('compile:regularTrans')
+            };
+          });
+        });
+        inject(function(log, $compile, $rootScope) {
+          $compile('<div><div element-trans log="elem"></div><div regular-trans log="regular"></div></div>')($rootScope);
+          expect(log).toEqual('compile:elementTrans; compile:regularTrans; regular');
+        });
       });
-      inject(function($compile, $rootScope) {
-        var element = jqLite('<div>before<div transclude></div>after</div>').contents();
-        expect(element.length).toEqual(3);
-        expect(nodeName_(element[1])).toBe('DIV');
-        $compile(element)($rootScope);
-        expect(nodeName_(element[1])).toBe('#comment');
-        expect(nodeName_(comment)).toBe('#comment');
+
+
+      it('should instantiate high priority controllers only once, but low priority ones each time we transclude',
+          function() {
+        module(function() {
+          directive('elementTrans', function(log) {
+            return {
+              transclude: 'element',
+              priority: 50,
+              controller: function($transclude, $element) {
+                log('controller:elementTrans');
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+                $transclude(function(clone) {
+                  $element.after(clone);
+                });
+              }
+            };
+          });
+          directive('normalDir', function(log) {
+            return {
+              controller: function() {
+                log('controller:normalDir');
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          element = $compile('<div><div element-trans normal-dir></div></div>')($rootScope);
+          expect(log).toEqual([
+            'controller:elementTrans',
+            'controller:normalDir',
+            'controller:normalDir',
+            'controller:normalDir'
+          ]);
+        });
       });
     });
 
@@ -2992,198 +3231,6 @@ describe('$compile', function() {
 
       expect(element.text()).toBe('-->|x|');
     }));
-
-
-    it('should add a $$transcluded property onto the transcluded scope', function() {
-      module(function() {
-        directive('trans', function() {
-          return {
-            transclude: true,
-            replace: true,
-            scope: true,
-            template: '<div><span>I:{{$$transcluded}}</span><div ng-transclude></div></div>'
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')
-            ($rootScope);
-        $rootScope.$apply();
-        expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
-        expect(jqLite(element.find('span')[1]).text()).toEqual('T:true');
-      });
-    });
-
-
-    it('should clear contents of the ng-translude element before appending transcluded content',
-        function() {
-      module(function() {
-        directive('trans', function() {
-          return {
-            transclude: true,
-            template: '<div ng-transclude>old stuff! </div>'
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div trans>unicorn!</div>')($rootScope);
-        $rootScope.$apply();
-        expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><span>unicorn!</span></div>');
-      });
-    });
-
-
-    it('should throw on an ng-translude element inside no transclusion directive', function() {
-      inject(function ($rootScope, $compile) {
-        // we need to do this because different browsers print empty attributres differently
-        try {
-          $compile('<div><div ng-transclude></div></div>')($rootScope);
-        } catch(e) {
-          expect(e.message).toMatch(new RegExp(
-              '^\\\[ngTransclude:orphan\\\] ' +
-              'Illegal use of ngTransclude directive in the template! ' +
-              'No parent directive that requires a transclusion found\. ' +
-              'Element: <div ng-transclude.+'));
-        }
-      });
-    });
-
-
-    it('should make the result of a transclusion available to the parent directive in post-linking phase (template)',
-        function() {
-      module(function() {
-        directive('trans', function(log) {
-          return {
-            transclude: true,
-            template: '<div ng-transclude></div>',
-            link: {
-              pre: function($scope, $element) {
-                log('pre(' + $element.text() + ')');
-              },
-              post: function($scope, $element) {
-                log('post(' + $element.text() + ')');
-              }
-            }
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('pre(); post(unicorn!)');
-      });
-    });
-
-
-    it('should make the result of a transclusion available to the parent directive in post-linking phase (templateUrl)',
-        function() {
-          // when compiling an async directive the transclusion is always processed before the directive
-          // this is different compared to sync directive. delaying the transclusion makes little sense.
-
-      module(function() {
-        directive('trans', function(log) {
-          return {
-            transclude: true,
-            templateUrl: 'trans.html',
-            link: {
-              pre: function($scope, $element) {
-                log('pre(' + $element.text() + ')');
-              },
-              post: function($scope, $element) {
-                log('post(' + $element.text() + ')');
-              }
-            }
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile, $templateCache) {
-        $templateCache.put('trans.html', '<div ng-transclude></div>');
-
-        element = $compile('<div trans><span>unicorn!</span></div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('pre(); post(unicorn!)');
-      });
-    });
-
-
-    it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase (template)',
-        function() {
-      module(function() {
-        directive('replacedTrans', function(log) {
-          return {
-            transclude: true,
-            replace: true,
-            template: '<div ng-transclude></div>',
-            link: {
-              pre: function($scope, $element) {
-                log('pre(' + $element.text() + ')');
-              },
-              post: function($scope, $element) {
-                log('post(' + $element.text() + ')');
-              }
-            }
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile) {
-        element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('pre(); post(unicorn!)');
-      });
-    });
-
-
-    it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase (templateUrl)',
-        function() {
-      module(function() {
-        directive('replacedTrans', function(log) {
-          return {
-            transclude: true,
-            replace: true,
-            templateUrl: 'trans.html',
-            link: {
-              pre: function($scope, $element) {
-                log('pre(' + $element.text() + ')');
-              },
-              post: function($scope, $element) {
-                log('post(' + $element.text() + ')');
-              }
-            }
-          };
-        });
-      });
-      inject(function(log, $rootScope, $compile, $templateCache) {
-        $templateCache.put('trans.html', '<div ng-transclude></div>');
-
-        element = $compile('<div replaced-trans><span>unicorn!</span></div>')($rootScope);
-        $rootScope.$apply();
-        expect(log).toEqual('pre(); post(unicorn!)');
-      });
-    });
-
-
-    it('should terminate compilation only for element trasclusion', function() {
-      module(function() {
-        directive('elementTrans', function(log) {
-          return {
-            transclude: 'element',
-            priority: 50,
-            compile: log.fn('compile:elementTrans')
-          };
-        });
-        directive('regularTrans', function(log) {
-          return {
-            transclude: true,
-            priority: 50,
-            compile: log.fn('compile:regularTrans')
-          };
-        });
-      });
-      inject(function(log, $compile, $rootScope) {
-        $compile('<div><div element-trans log="elem"></div><div regular-trans log="regular"></div></div>')($rootScope);
-        expect(log).toEqual('compile:elementTrans; compile:regularTrans; regular');
-      });
-    });
   });
 
 
