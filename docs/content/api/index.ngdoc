@@ -5,7 +5,7 @@
 # AngularJS API Docs
 Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
 
-The docs are organized into **modules** which contain various components of an AngularJS application.
+The documentation is organized into **modules** which contain various components of an AngularJS application.
 These components are directives, services, filters, providers, types, global APIs and testing mocks.
 
 ## {@link ng ng (core module)}
