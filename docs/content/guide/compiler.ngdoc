@@ -285,7 +285,7 @@ on the cloned `<li>`.
 
 
 
-### Understanding How Scopes Work with Transclused Directives
+### Understanding How Scopes Work with Transcluded Directives
 
 One of the most common use cases for directives is to create reusable components.
 
