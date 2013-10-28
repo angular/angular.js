@@ -296,7 +296,7 @@ function annotate(fn) {
  *     providers and services.
  * * {@link AUTO.$provide#methods_value value(obj)} - registers a value/object that can only be accessed by
  *     services, not providers.
- * * {@link AUTO.$provide#factory factory(fn)} - registers a service **factory function**, `fn`,
+ * * {@link AUTO.$provide#methods_factory factory(fn)} - registers a service **factory function**, `fn`,
  *     that will be wrapped in a **service provider** object, whose `$get` property will contain the
  *     given factory function.
  * * {@link AUTO.$provide#methods_service service(class)} - registers a **constructor function**, `class` that
