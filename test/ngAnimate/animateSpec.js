@@ -1817,6 +1817,42 @@ describe("ngAnimate", function() {
 //      expect(element.hasClass('hiding')).toBe(false);
 //    });
 //  });
+  it("should remove all the previous classes when the next animation is applied before a reflow", function() {
+    var fn, interceptedClass;
+    module(function($animateProvider) {
+      $animateProvider.register('.three', function() {
+        return {
+          move : function(element, done) {
+            fn = function() {
+              done();
+            }
+            return function() {
+              interceptedClass = element.attr('class');
+            }
+          }
+        }
+      });
+    });
+    inject(function($compile, $rootScope, $animate, $timeout) {
+      var parent = html($compile('<div class="parent"></div>')($rootScope));
+      var one = $compile('<div class="one"></div>')($rootScope);
+      var two = $compile('<div class="two"></div>')($rootScope);
+      var three = $compile('<div class="three klass"></div>')($rootScope);
+
+      parent.append(one);
+      parent.append(two);
+      parent.append(three);
+
+      $animate.move(three, null, two);
+      $rootScope.$digest();
+
+      $animate.move(three, null, one);
+      $rootScope.$digest();
+
+      //this means that the former animation was cleaned up before the new one starts
+      expect(interceptedClass.indexOf('ng-animate') >= 0).toBe(false);
+    });
+  });
 
   it("should provide the correct CSS class to the addClass and removeClass callbacks within a JS animation", function() {
     module(function($animateProvider) {
