@@ -705,13 +705,16 @@ angular.module('ngAnimate', ['ng'])
           //the element did not reach the root element which means that it
           //is not apart of the DOM. Therefore there is no reason to do
           //any animations on it
-          if(parent.length === 0 || parent[0] == $document[0]) return true;
+          if(parent.length === 0) return true;
 
-          var state = parent.data(NG_ANIMATE_STATE);
+          var isRoot = parent[0] == $rootElement[0];
+          var state = isRoot ? rootAnimateState : parent.data(NG_ANIMATE_STATE);
           if(state && (state.disabled != null || state.running != null)) {
             validState = state;
             break;
           }
+
+          if(isRoot) return true;
         }
         while(parent = parent.parent());
 
