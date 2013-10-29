@@ -391,10 +391,12 @@ describe('input', function() {
     compileInput('<input type="text" ng-model="name" name="alias"" />');
     changeInputValueTo('a');
     expect(scope.name).toEqual('a');
-    browserTrigger(inputElm, 'compositionstart');
-    changeInputValueTo('adam');
-    expect(scope.name).toEqual('a');
-    browserTrigger(inputElm, 'compositionend');
+    if (!(msie < 9)) {
+      browserTrigger(inputElm, 'compositionstart');
+      changeInputValueTo('adam');
+      expect(scope.name).toEqual('a');
+      browserTrigger(inputElm, 'compositionend');
+    }
     changeInputValueTo('adam');
     expect(scope.name).toEqual('adam');
   });
