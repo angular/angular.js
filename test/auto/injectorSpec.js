@@ -86,6 +86,93 @@ describe('injector', function() {
   it('should create a new $injector for the run phase', inject(function($injector) {
     expect($injector).not.toBe(providerInjector);
   }));
+ 
+
+  describe('loadNewModules', function() {
+    it('should be defined on $injector', function() {
+      var injector = createInjector([]);
+      expect(injector.loadNewModules).toBeDefined();
+    });
+
+
+    it('should allow new modules to be added after injector creation and their runBlocks executed', function() {
+      var log = '';
+      angular.module('0', [], function(){ log += '0'; }).run(function() { log += '1'; });
+      var injector = createInjector(['0']);
+      log += '2';
+      angular.module('a', [], function(){ log += 'a'; }).run(function() { log += 'A'; });
+      angular.module('b', ['a'], function(){ log += 'b'; }).run(function() { log += 'B'; });
+      injector.loadNewModules([
+          'b',
+          valueFn(function() { log += 'C'; }),
+          [valueFn(function() { log += 'D'; })]
+      ]);
+      expect(log).toEqual('012abABCD');
+    });
+
+
+    it('should be able to register a service from a new module', function() {
+      var injector = createInjector([]);
+      angular.module('a');
+      angular.module('a').service('aService', function() {
+        return {
+          sayHello: function() { return 'Hello'; }
+        }
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function(aService) {
+        expect(aService.sayHello()).toEqual('Hello');
+      });
+    });
+
+
+    it('should be able to register a controller from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a');
+      angular.module('a').controller('aController', function($scope) {
+        $scope.test = 'b';
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function($controller) {
+        var scope = {};
+        $controller('aController', {$scope: scope});
+        expect(scope.test).toEqual('b');
+      });
+    });
+
+
+    it('should be able to register a filter from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a');
+      angular.module('a').filter('aFilter', function() {
+        return function(input) { return input + " filtered"; }
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function($filter) {
+        var filter = $filter('aFilter');
+        expect(filter('test')).toEqual('test filtered');
+      });
+    });
+
+
+    it('should be able to register a directive from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a');
+      angular.module('a').directive('aDirective', function() {
+        return {  template: 'test directive' }
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function($compile, $rootScope) {
+        var scope = $rootScope.$new();
+        var html = '<div a-directive></div>';
+        var elem = angular.element(html);
+        $compile(elem)(scope);  // compile and link
+        scope.$digest();
+        expect(elem.text()).toEqual("test directive");
+        elem.remove();
+      });
+    });
+  });
 
 
   describe('invoke', function() {
