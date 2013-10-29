@@ -1263,6 +1263,50 @@ describe('$location', function() {
       })
     );
 
+    // don't run next tests on IE<9, as SVG isn't supported
+    if (!(msie < 9)) {
+     it('should listen on click events on href and prevent browser default in hashbang mode in svg', function() {
+        module(function() {
+          return function($rootElement, $compile, $rootScope) {
+            // innerHTML isn't available in SVGs and jqLite doesn't handle namespaced elements
+            $rootElement.html('');
+
+            var svgNs = "http://www.w3.org/2000/svg";
+            var svg = document.createElementNS(svgNs, 'svg');
+            $rootElement[0].appendChild(svg);
+
+            var a = document.createElementNS(svgNs, 'a');
+            a.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'http://server/#/somePath');
+            a.textContent = 'link';
+            svg.appendChild(a);
+
+            $compile($rootElement)($rootScope);
+            jqLite(document.body).append($rootElement);
+          }
+        });
+
+        inject(function($location, $rootScope, $browser, $rootElement) {
+          var log = '',
+              link = $rootElement.find('a');
+
+
+          $rootScope.$on('$locationChangeStart', function(event) {
+            event.preventDefault();
+            log += '$locationChangeStart';
+          });
+          $rootScope.$on('$locationChangeSuccess', function() {
+            throw new Error('after cancellation in hashbang mode');
+          });
+
+          browserTrigger(link, 'click');
+
+          expect(log).toEqual('$locationChangeStart');
+          expect($browser.url()).toEqual('http://server/');
+
+          dealoc($rootElement);
+        });
+      });
+    }
 
     it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
