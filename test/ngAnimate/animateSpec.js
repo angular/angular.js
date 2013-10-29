@@ -96,6 +96,11 @@ describe("ngAnimate", function() {
 
           $animate.addClass(elm2, 'klass2');
           expect(count).toBe(2);
+
+          var root = angular.element($rootElement[0]);
+          $rootElement.addClass('animated');
+          $animate.addClass(root, 'klass2');
+          expect(count).toBe(3);
         });
       });
 
