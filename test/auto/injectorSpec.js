@@ -86,6 +86,29 @@ describe('injector', function() {
   it('should create a new $injector for the run phase', inject(function($injector) {
     expect($injector).not.toBe(providerInjector);
   }));
+ 
+
+  describe('loadNewModules', function() {
+    it('should be defined on $injector', function() {
+      var injector = createInjector([]);
+      expect(injector.loadNewModules).toBeDefined();
+    });
+
+    it('should allow new modules to be added after injector creation and their runBlocks executed', function() {
+      var log = '';
+      angular.module('0', [], function(){ log += '0'; }).run(function() { log += '1'; });
+      var injector = createInjector(['0']);
+      log += '2';
+      angular.module('a', [], function(){ log += 'a'; }).run(function() { log += 'A'; });
+      angular.module('b', ['a'], function(){ log += 'b'; }).run(function() { log += 'B'; });
+      injector.loadNewModules([
+          'b',
+          valueFn(function() { log += 'C'; }),
+          [valueFn(function() { log += 'D'; })]
+      ]);
+      expect(log).toEqual('012abABCD');
+    });
+  });
 
 
   describe('invoke', function() {

@@ -599,8 +599,11 @@ function createInjector(modulesToLoad) {
             return instanceInjector.invoke(provider.$get, provider);
           }));
 
+  instanceInjector.loadNewModules = function(mods) {
+      forEach(loadModules(mods), function(fn) { instanceInjector.invoke(fn || noop); });
+  };
 
-  forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
+  instanceInjector.loadNewModules(modulesToLoad);
 
   return instanceInjector;
 
