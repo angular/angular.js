@@ -697,7 +697,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function animationsDisabled(element, parent) {
-        if(element == $rootElement) {
+        if(element[0] == $rootElement[0]) {
           return rootAnimateState.disabled || rootAnimateState.running;
         }
 
