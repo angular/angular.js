@@ -54,15 +54,7 @@ and follow the instructions for setting up your computer.
 <div class="tabbable" show="true">
   <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux">
     <ol>
-      <li><p>You will need Node.js and Karma to run unit tests, so please verify that you have
-      <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
-      and that the <code>node</code> executable is on your <code>PATH</code> by running the following
-      command in a terminal window:</p>
-      <pre>node --version</pre>
-      <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> if you
-      don't have it already:</p>
-      <pre>npm install -g karma</pre>
-      <li><p>You'll also need Git, which you can get from
+      <li><p>You'll need Git, which you can get from
          <a href="http://git-scm.com/download">the Git site</a>.</p></li>
       <li><p>Clone the angular-phonecat repository located at
       <a href="https://github.com/angular/angular-phonecat">Github</a> by running the following command:</p>
@@ -71,8 +63,19 @@ and follow the instructions for setting up your computer.
 directory.</p></li>
       <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
       <pre>cd angular-phonecat</pre>
-      <p>The tutorial instructions assume you are running all commands from the <code>angular-phonecat</code>
+      <p>The tutorial instructions, from now on, assume you are running all commands from the <code>angular-phonecat</code>
 directory.</p></li>
+      <li><p>You will also need Node.js and Karma to run unit tests, so please verify that you have
+      <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+      and that the <code>node</code> executable is on your <code>PATH</code> by running the following
+      command in a terminal window:</p></li>
+      <pre>node --version</pre>
+      <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> and its plugins if you
+      don't have it already:</p>
+      <pre>
+      npm install -g karma
+      npm install
+      </pre></li>
       <li><p>You will need an http server running on your system. Mac and Linux machines typically
 have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
 to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></li>
