@@ -63,7 +63,7 @@ of the Controller on the `$scope` service provided by Angular. See the guide on
 # Adding Behavior to a Scope Object
 
 In order to react to events or execute computation in the view we must provide behavior to the
-scope. We add behavior the scope by attaching methods to the `$scope` object.  These methods are
+scope. We add behavior to the scope by attaching methods to the `$scope` object.  These methods are
 then available to be called from the template/view.
 
 The following example uses a Controller to add a method to the scope, which doubles a number:
