@@ -21,9 +21,9 @@ This module is provided by default and contains the core components of AngularJS
 
       <p>
         Some examples include:
-          {@link ng.ngClick ngClick},
-          {@link ng.ngInclude ngInclude},
-          {@link ng.ngInclude ngRepeat},
+          {@link ng.directive:ngClick ngClick},
+          {@link ng.directive:ngInclude ngInclude},
+          {@link ng.directive:ngRepeat ngRepeat},
           etc… <br />
       </p>
     </td>
