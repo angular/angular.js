@@ -19,7 +19,7 @@ describe('injector.modules', function() {
         .info({ version: '1.2' })
         .provider('test', ['$injector', function($injector) {
           providerInjector = $injector;
-          return { $get: function() {} };
+          return {$get: function() {}};
         }]);
       module('test1');
       // needed to ensure that the provider blocks are executed
@@ -151,6 +151,164 @@ describe('injector', function() {
   it('should create a new $injector for the run phase', inject(function($injector) {
     expect($injector).not.toBe(providerInjector);
   }));
+
+
+  describe('loadNewModules', function() {
+    it('should be defined on $injector', function() {
+      var injector = createInjector([]);
+      expect(injector.loadNewModules).toEqual(jasmine.any(Function));
+    });
+
+    it('should allow new modules to be added after injector creation', function() {
+      angular.module('initial', []);
+      var injector = createInjector(['initial']);
+      expect(injector.modules['initial']).toBeDefined();
+      expect(injector.modules['lazy']).toBeUndefined();
+      angular.module('lazy', []);
+      injector.loadNewModules(['lazy']);
+      expect(injector.modules['lazy']).toBeDefined();
+    });
+
+    it('should execute runBlocks of new modules', function() {
+      var log = [];
+      angular.module('initial', []).run(function() { log.push('initial'); });
+      var injector = createInjector(['initial']);
+      log.push('created');
+
+      angular.module('a', []).run(function() { log.push('a'); });
+      injector.loadNewModules(['a']);
+      expect(log).toEqual(['initial', 'created', 'a']);
+    });
+
+    it('should execute configBlocks of new modules', function() {
+      var log = [];
+      angular.module('initial', []).config(function() { log.push('initial'); });
+      var injector = createInjector(['initial']);
+      log.push('created');
+
+      angular.module('a', [], function() { log.push('config1'); }).config(function() { log.push('config2'); });
+      injector.loadNewModules(['a']);
+      expect(log).toEqual(['initial', 'created', 'config1', 'config2']);
+    });
+
+    it('should execute runBlocks and configBlocks in the correct order', function() {
+      var log = [];
+      angular.module('initial', [], function() { log.push(1); })
+        .config(function() { log.push(2); })
+        .run(function() { log.push(3); });
+      var injector = createInjector(['initial']);
+      log.push('created');
+
+      angular.module('a', [], function() { log.push(4); })
+        .config(function() { log.push(5); })
+        .run(function() { log.push(6); });
+      injector.loadNewModules(['a']);
+      expect(log).toEqual([1, 2, 3, 'created', 4, 5, 6]);
+    });
+
+    it('should load dependent modules', function() {
+      angular.module('initial', []);
+      var injector = createInjector(['initial']);
+      expect(injector.modules['initial']).toBeDefined();
+      expect(injector.modules['lazy1']).toBeUndefined();
+      expect(injector.modules['lazy2']).toBeUndefined();
+      angular.module('lazy1', ['lazy2']);
+      angular.module('lazy2', []);
+      injector.loadNewModules(['lazy1']);
+      expect(injector.modules['lazy1']).toBeDefined();
+      expect(injector.modules['lazy2']).toBeDefined();
+    });
+
+    it('should execute blocks of new modules in the correct order', function() {
+      var log = [];
+      angular.module('initial', []);
+      var injector = createInjector(['initial']);
+
+      angular.module('lazy1', ['lazy2'], function() { log.push('lazy1-1'); })
+        .config(function() { log.push('lazy1-2'); })
+        .run(function() { log.push('lazy1-3'); });
+      angular.module('lazy2', [], function() { log.push('lazy2-1'); })
+        .config(function() { log.push('lazy2-2'); })
+        .run(function() { log.push('lazy2-3'); });
+
+      injector.loadNewModules(['lazy1']);
+      expect(log).toEqual(['lazy2-1', 'lazy2-2', 'lazy1-1', 'lazy1-2', 'lazy2-3', 'lazy1-3']);
+    });
+
+    it('should not reload a module that is already loaded', function() {
+      var log = [];
+      angular.module('initial', []).run(function() { log.push('initial'); });
+      var injector = createInjector(['initial']);
+      expect(log).toEqual(['initial']);
+
+      injector.loadNewModules(['initial']);
+      expect(log).toEqual(['initial']);
+
+      angular.module('a', []).run(function() { log.push('a'); });
+      injector.loadNewModules(['a']);
+      expect(log).toEqual(['initial', 'a']);
+      injector.loadNewModules(['a']);
+      expect(log).toEqual(['initial', 'a']);
+
+      angular.module('b', ['a']).run(function() { log.push('b'); });
+      angular.module('c', []).run(function() { log.push('c'); });
+      angular.module('d', ['b', 'c']).run(function() { log.push('d'); });
+      injector.loadNewModules(['d']);
+      expect(log).toEqual(['initial', 'a', 'b', 'c', 'd']);
+    });
+
+    it('should be able to register a service from a new module', function() {
+      var injector = createInjector([]);
+      angular.module('a', []).factory('aService', function() {
+        return {sayHello: function() { return 'Hello'; }};
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function(aService) {
+        expect(aService.sayHello()).toEqual('Hello');
+      });
+    });
+
+
+    it('should be able to register a controller from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a', []).controller('aController', function($scope) {
+        $scope.test = 'b';
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function($controller) {
+        var scope = {};
+        $controller('aController', {$scope: scope});
+        expect(scope.test).toEqual('b');
+      });
+    });
+
+
+    it('should be able to register a filter from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a', []).filter('aFilter', function() {
+        return function(input) { return input + ' filtered'; };
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function(aFilterFilter) {
+        expect(aFilterFilter('test')).toEqual('test filtered');
+      });
+    });
+
+
+    it('should be able to register a directive from a new module', function() {
+      var injector = createInjector(['ng']);
+      angular.module('a', []).directive('aDirective', function() {
+        return {template: 'test directive'};
+      });
+      injector.loadNewModules(['a']);
+      injector.invoke(function($compile, $rootScope) {
+        var elem = $compile('<div a-directive></div>')($rootScope);  // compile and link
+        $rootScope.$digest();
+        expect(elem.text()).toEqual('test directive');
+        elem.remove();
+      });
+    });
+  });
 
   it('should have a false strictDi property', inject(function($injector) {
     expect($injector.strictDi).toBe(false);
