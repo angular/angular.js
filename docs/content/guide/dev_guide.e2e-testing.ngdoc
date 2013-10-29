@@ -5,7 +5,7 @@
 
 **If you're starting a new Angular project, you may want to look into
 using {@link https://github.com/angular/protractor Protractor}, as it is going to
-replace the currrent method of E2E Testing in the near future.**
+replace the current method of E2E Testing in the near future.**
 
 As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
 verify the correctness of new features, catch bugs and notice regressions.
