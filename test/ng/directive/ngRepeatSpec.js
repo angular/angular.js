@@ -119,6 +119,26 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('age:20|codename:20|dogname:Bingo|prodname:Bingo|wealth:20|');
   });
 
+
+  iit('should throw infinite digest error when model is unstable', function() {
+    element = $compile(
+        '<ul>' +
+          '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
+        '</ul>')(scope);
+
+    scope.friends = function() {
+      return [
+        {name: 'John', id: 1},
+        {name: 'Patrick', id: 2}
+      ];
+    };
+
+    scope.$digest();
+    
+    expect($exceptionHandler.errors.shift().message).toMatch(/\[\$rootScope:infdig]/);
+  });
+
+
   describe('track by', function() {
     it('should track using expression function', function() {
       element = $compile(
