@@ -79,7 +79,8 @@
     -assertArg,
     -assertArgFn,
     -assertNotHasOwnProperty,
-    -getter
+    -getter,
+    -getBlockElements
 
 */
 
@@ -1317,4 +1318,26 @@ function getter(obj, path, bindFnToScope) {
     return bind(lastInstance, obj);
   }
   return obj;
+}
+
+/**
+ * Return the siblings between `startNode` and `endNode`, inclusive
+ * @param {Object} object with `startNode` and `endNode` properties
+ * @returns jQlite object containing the elements
+ */
+function getBlockElements(block) {
+  if (block.startNode === block.endNode) {
+    return jqLite(block.startNode);
+  }
+
+  var element = block.startNode;
+  var elements = [element];
+
+  do {
+    element = element.nextSibling;
+    if (!element) break;
+    elements.push(element);
+  } while (element !== block.endNode);
+
+  return jqLite(elements);
 }

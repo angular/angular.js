@@ -108,22 +108,4 @@ var ngIfDirective = ['$animate', function($animate) {
       };
     }
   };
-
-  // TODO(bford): this helper was copypasta'd from ngRepeat
-  function getBlockElements(block) {
-    if (block.startNode === block.endNode) {
-      return jqLite(block.startNode);
-    }
-
-    var element = block.startNode;
-    var elements = [element];
-
-    do {
-      element = element.nextSibling;
-      if (!element) break;
-      elements.push(element);
-    } while (element !== block.endNode);
-
-    return jqLite(elements);
-  }
 }];
