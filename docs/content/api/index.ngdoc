@@ -40,7 +40,7 @@ This module is provided by default and contains the core components of AngularJS
         Some examples include:
           {@link ng.$compile $compile},
           {@link ng.$http $http},
-          {@link ng.$routeParams $routeParams},
+          {@link ngRoute.$routeParams $routeParams},
           {@link ng.$location $location},
           etc…
       <p>
@@ -146,7 +146,7 @@ or JavaScript callbacks.
       {@link ngAnimate JS-based animations}
     </td>
     <td>
-      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
+      Use {@link angular.Module#methods_animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
 </table>
