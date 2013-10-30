@@ -15,6 +15,8 @@
  * It also watches the `$location.hash()` and scrolls whenever it changes to match any anchor.
  * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
  * 
+ * It requires Angular library version 1.2.x
+ * 
  * @example
    <example>
      <file name="index.html">
