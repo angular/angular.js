@@ -138,7 +138,7 @@ describe('parser', function() {
     });
 
     it('should tokenize function invocation', function() {
-      var tokens = lex("a()")
+      var tokens = lex("a()");
       expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
     });
 
@@ -199,15 +199,19 @@ describe('parser', function() {
   }]));
 
 
-  forEach([true, false], function(cspEnabled) {
+  forEach([[true, true],[!0, !1],[!1, !0],[false, false]], function(options /* [csp, unwrapPromises] */) {
+    var cspEnabled = options[0], unwrapPromisesEnabled = options[1];
 
-    describe('csp ' + cspEnabled, function() {
+    describe('csp ' + cspEnabled + ", unwrapPromises " + unwrapPromisesEnabled, function() {
+
+      beforeEach(module(function ($parseProvider) {
+        $parseProvider.unwrapPromises(unwrapPromisesEnabled);
+      }));
 
       beforeEach(inject(function ($rootScope, $sniffer) {
         scope = $rootScope;
         $sniffer.csp = cspEnabled;
       }));
-
 
       it('should parse expressions', function() {
         expect(scope.$eval("-1")).toEqual(-1);
@@ -590,6 +594,12 @@ describe('parser', function() {
         expect(scope.$eval('bool.toString()')).toBe('false');
       });
 
+      it('should evaluate expressions with line terminators', function() {
+        scope.a = "a";
+        scope.b = {c: "bc"};
+        expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
+      });
+
       describe('sandboxing', function() {
         describe('Function constructor', function() {
           it('should NOT allow access to Function constructor in getter', function() {
@@ -768,7 +778,7 @@ describe('parser', function() {
           // User defined value assigned to constructor.
           scope.foo.constructor = function constructor() {
             return "custom constructor";
-          }
+          };
           // Dot operator should still block it.
           expect(function() {
             scope.$eval('foo.constructor()', scope)

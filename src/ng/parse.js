@@ -1017,7 +1017,10 @@ function getterFn(path, options, fullExp) {
                       : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
               (options.unwrapPromises
                 ? 'if (s && s.then) {\n' +
-                  ' pw("' + fullExp.replace(/\"/g, '\\"') + '");\n' +
+                  ' pw("' +
+                  fullExp.replace(/\"/g, '\\"').replace(/[\r\n]/g, function (lineEnding) {
+                    return lineEnding === '\n' ? '\\n' : '\\r';
+                  }) + '");\n' +
                   ' if (!("$$v" in s)) {\n' +
                     ' p=s;\n' +
                     ' p.$$v = undefined;\n' +
