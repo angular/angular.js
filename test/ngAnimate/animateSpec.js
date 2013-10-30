@@ -1723,6 +1723,29 @@ describe("ngAnimate", function() {
     });
   });
 
+  it("should not perform the active class animation if the animation has been cancelled before the reflow occurs", function() {
+    inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
+      if(!$sniffer.transitions) return;
+
+      ss.addRule('.animated.ng-enter', '-webkit-transition: 2s linear all;' +
+                                               'transition: 2s linear all;');
+
+      var element = html($compile('<div>...</div>')($rootScope));
+      var child = $compile('<div class="animated">...</div>')($rootScope);
+
+      $animate.enter(child, element);
+      $rootScope.$digest();
+
+      expect(child.hasClass('ng-enter')).toBe(true);
+
+      $animate.leave(child);
+      $rootScope.$digest();
+
+      $timeout.flush();
+      expect(child.hasClass('ng-enter-active')).toBe(false);
+    });
+  });
+
 //  it("should add and remove CSS classes and perform CSS animations during the process",
 //    inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
 //
