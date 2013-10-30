@@ -15,14 +15,14 @@ convention they match the service IDs, which has added benefits discussed below.
 
 <pre>
 function myController($loc, $log) {
-this.firstMethod = function() {
- // use $location service
- $loc.setHash();
-};
-this.secondMethod = function() {
- // use $log service
- $log.info('...');
-};
+  this.firstMethod = function() {
+    // use $location service
+    $loc.setHash();
+  };
+  this.secondMethod = function() {
+    // use $log service
+    $log.info('...');
+  };
 }
 // which services to inject ?
 myController.$inject = ['$location', '$log'];
