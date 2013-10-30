@@ -207,7 +207,7 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   }
 };
 
-docsApp.directive.docModuleComponents = ['sections', function(sections) {
+docsApp.directive.docModuleComponents = ['sections', '$anchorScroll', '$timeout', function(sections, $anchorScroll, $timeout) {
   return {
     template: '  <div class="component-breakdown">' +
               '    <h2>Module Components</h2>' +
@@ -246,9 +246,14 @@ docsApp.directive.docModuleComponents = ['sections', function(sections) {
         }
       });
       $scope.components = components;
-    }]
+    }],
+    link: function() {
+      // This directive creates new HTML that contains anchors. We need to give the browser the
+      // opportunity to scroll to them after they have been rendered.
+      $timeout($anchorScroll);
+    }
   };
-}]
+}];
 
 docsApp.directive.docTutorialNav = function(templateMerge) {
   var pages = [
