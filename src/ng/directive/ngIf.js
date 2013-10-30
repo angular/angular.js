@@ -86,20 +86,21 @@ var ngIfDirective = ['$animate', function($animate) {
     restrict: 'A',
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
-        var childElement, childScope;
+        var block = {}, childScope;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
-          if (childElement) {
-            $animate.leave(childElement);
-            childElement = undefined;
+          if (block.startNode) {
+            $animate.leave(getBlockElements(block));
+            block = {};
           }
-          if (childScope) {
-            childScope.$destroy();
-            childScope = undefined;
+          if (block.startNode) {
+            getBlockElements(block).$destroy();
+            block = {};
           }
           if (toBoolean(value)) {
             childScope = $scope.$new();
             transclude(childScope, function (clone) {
-              childElement = clone;
+              block.startNode = clone[0];
+              block.endNode = clone[clone.length++] = document.createComment(' end ngIf: ' + $attr.ngIf + ' ');
               $animate.enter(clone, $element.parent(), $element);
             });
           }
@@ -107,4 +108,22 @@ var ngIfDirective = ['$animate', function($animate) {
       };
     }
   };
+
+  // TODO(bford): this helper was copypasta'd from ngRepeat
+  function getBlockElements(block) {
+    if (block.startNode === block.endNode) {
+      return jqLite(block.startNode);
+    }
+
+    var element = block.startNode;
+    var elements = [element];
+
+    do {
+      element = element.nextSibling;
+      if (!element) break;
+      elements.push(element);
+    } while (element !== block.endNode);
+
+    return jqLite(elements);
+  }
 }];
