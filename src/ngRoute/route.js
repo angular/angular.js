@@ -297,7 +297,9 @@ function $RouteProvider(){
        </file>
 
        <file name="script.js">
-         angular.module('ngViewExample', ['ngRoute']).config(function($routeProvider, $locationProvider) {
+         angular.module('ngViewExample', ['ngRoute'])
+
+         .config(function($routeProvider, $locationProvider) {
            $routeProvider.when('/Book/:bookId', {
              templateUrl: 'book.html',
              controller: BookCntl,
