@@ -443,6 +443,16 @@ scope: {
 //...
 ```
 
+It's also important to mention that when you bind the variable to an attribute in the HTML, that attribute's name MUST be in lowercase.
+
+```html
+// This won't work (possiblePartner in camelcase)
+<my-customer customer="naomi" possiblePartner="igor"></my-customer>
+
+// This will work (possiblepartner in lowercase)
+<my-customer customer="naomi" possiblepartner="igor"></my-customer>
+```
+
 Besides making it possible to bind different data to the scope inside a directive, using an isolated scope has another
 effect.
 
