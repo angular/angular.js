@@ -214,6 +214,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     transclude: 'element',
     priority: 1000,
     terminal: true,
+    $$tlb: true,
     compile: function(element, attr, linker) {
       return function($scope, $element, $attr){
         var expression = $attr.ngRepeat;
