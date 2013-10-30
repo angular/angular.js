@@ -60,6 +60,43 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(9);
   });
 
+  it('should play nice with ngInclude on the same element', inject(function($templateCache) {
+    $templateCache.put('test.html', [200, '{{value}}', {}]);
+
+    $scope.value = 'first';
+    element.append($compile(
+      '<div ng-if="value==\'first\'" ng-include="\'test.html\'"></div>'
+    )($scope));
+    $scope.$apply();
+    expect(element.text()).toBe('first');
+
+    $scope.value = 'later';
+    $scope.$apply();
+    expect(element.text()).toBe('');
+  }));
+
+  it('should work with multiple elements', function() {
+    $scope.show = true;
+    $scope.things = [1, 2, 3];
+    element.append($compile(
+      '<div>before;</div>' +
+        '<div ng-if-start="show">start;</div>' +
+        '<div ng-repeat="thing in things">{{thing}};</div>' +
+        '<div ng-if-end>end;</div>' +
+        '<div>after;</div>'
+    )($scope));
+    $scope.$apply();
+    expect(element.text()).toBe('before;start;1;2;3;end;after;');
+
+    $scope.things.push(4);
+    $scope.$apply();
+    expect(element.text()).toBe('before;start;1;2;3;4;end;after;');
+
+    $scope.show = false;
+    $scope.$apply();
+    expect(element.text()).toBe('before;after;');
+  });
+
   it('should restore the element to its compiled state', function() {
     $scope.value = true;
     makeIf('value');

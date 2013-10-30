@@ -1175,7 +1175,7 @@ function $CompileProvider($provide) {
         if (directiveValue = directive.transclude) {
           // Special case ngRepeat so that we don't complain about duplicate transclusion, ngRepeat
           // knows how to handle this on its own.
-          if (directiveName !== 'ngRepeat') {
+          if (directiveName !== 'ngRepeat' && directiveName !== 'ngIf') {
             assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
             transcludeDirective = directive;
           }
