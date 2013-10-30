@@ -99,6 +99,7 @@
     "assertArgFn": false,
     "assertNotHasOwnProperty": false,
     "getter": false,
+    "getBlockElements": false,
 
     /* AngularPublic.js */
     "version": false,
