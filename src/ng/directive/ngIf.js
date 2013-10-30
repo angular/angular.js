@@ -84,6 +84,7 @@ var ngIfDirective = ['$animate', function($animate) {
     priority: 600,
     terminal: true,
     restrict: 'A',
+    $$tlb: true,
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
         var block = {}, childScope;
