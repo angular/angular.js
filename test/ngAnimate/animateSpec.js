@@ -784,6 +784,59 @@ describe("ngAnimate", function() {
       });
 
       describe("Transitions", function() {
+        it("should only apply the fallback transition property unless all properties are being animated",
+          inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
+
+          if (!$sniffer.animations) return;
+
+          ss.addRule('.all.ng-enter',  '-webkit-transition:1s linear all;' +
+                                               'transition:1s linear all');
+
+          ss.addRule('.one.ng-enter',  '-webkit-transition:1s linear color;' +
+                                               'transition:1s linear color');
+
+          var element = $compile('<div></div>')($rootScope);
+          var child = $compile('<div class="all">...</div>')($rootScope);
+          $rootElement.append(element);
+          var body = jqLite($document[0].body);
+          body.append($rootElement);
+
+          $animate.enter(child, element);
+          $rootScope.$digest();
+          $timeout.flush();
+
+          expect(child.attr('style') || '').not.toContain('transition-property');
+          expect(child.hasClass('ng-animate')).toBe(true);
+          expect(child.hasClass('ng-animate-active')).toBe(true);
+
+          browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+          $timeout.flush();
+
+          expect(child.hasClass('ng-animate')).toBe(false);
+          expect(child.hasClass('ng-animate-active')).toBe(false);
+
+          child.remove();
+
+          var child2 = $compile('<div class="one">...</div>')($rootScope);
+
+          $animate.enter(child2, element);
+          $rootScope.$digest();
+          $timeout.flush();
+
+          //IE removes the -ms- prefix when placed on the style
+          var fallbackProperty = $sniffer.msie ? 'zoom' : 'clip';
+          var regExp = new RegExp("transition-property:\\s+color\\s*,\\s*" + fallbackProperty + "\\s*;");
+          expect(child2.attr('style') || '').toMatch(regExp);
+          expect(child2.hasClass('ng-animate')).toBe(true);
+          expect(child2.hasClass('ng-animate-active')).toBe(true);
+
+          browserTrigger(child2,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
+          $timeout.flush();
+
+          expect(child2.hasClass('ng-animate')).toBe(false);
+          expect(child2.hasClass('ng-animate-active')).toBe(false);
+        }));
+
         it("should skip transitions if disabled and run when enabled",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
@@ -1013,7 +1066,7 @@ describe("ngAnimate", function() {
           $rootScope.$digest();
           $timeout.flush();
 
-          expect(elements[0].attr('style')).toBeFalsy();
+          expect(elements[0].attr('style')).not.toContain('transition-delay');
           expect(elements[1].attr('style')).toMatch(/transition-delay: 2\.1\d*s,\s*4\.1\d*s/);
           expect(elements[2].attr('style')).toMatch(/transition-delay: 2\.2\d*s,\s*4\.2\d*s/);
           expect(elements[3].attr('style')).toMatch(/transition-delay: 2\.3\d*s,\s*4\.3\d*s/);
@@ -1030,7 +1083,7 @@ describe("ngAnimate", function() {
         ss.addRule('.ani.ng-enter, .ani.ng-leave',
           '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
           'animation:my_animation 1s 1s, your_animation 1s 2s;' +
-          '-webkit-transition:1s linear all 0s;' + 
+          '-webkit-transition:1s linear all 1s;' + 
           'transition:1s linear all 1s;');
 
         ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
@@ -1731,6 +1784,7 @@ describe("ngAnimate", function() {
     expect(child.css(propertyKey)).toBe('background-color');
     child.remove();
 
+    child = $compile('<div class="ani">...</div>')($rootScope);
     child.attr('class','trans');
     $animate.enter(child, element);
     $rootScope.$digest();

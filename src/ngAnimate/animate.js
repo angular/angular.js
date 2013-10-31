@@ -790,16 +790,22 @@ angular.module('ngAnimate', ['ng'])
         if(!data) {
           var transitionDuration = 0, transitionDelay = 0,
               animationDuration = 0, animationDelay = 0,
-              transitionDelayStyle, animationDelayStyle;
+              transitionDelayStyle, animationDelayStyle,
+              transitionDurationStyle,
+              transitionPropertyStyle;
 
           //we want all the styles defined before and after
           forEach(element, function(element) {
             if (element.nodeType == ELEMENT_NODE) {
               var elementStyles = $window.getComputedStyle(element) || {};
 
-              transitionDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]), transitionDuration);
+              transitionDurationStyle = elementStyles[transitionProp + durationKey];
+
+              transitionDuration = Math.max(parseMaxTime(transitionDurationStyle), transitionDuration);
 
               if(!onlyCheckTransition) {
+                transitionPropertyStyle = elementStyles[transitionProp + propertyKey];
+
                 transitionDelayStyle = elementStyles[transitionProp + delayKey];
 
                 transitionDelay  = Math.max(parseMaxTime(transitionDelayStyle), transitionDelay);
@@ -820,12 +826,14 @@ angular.module('ngAnimate', ['ng'])
           });
           data = {
             total : 0,
+            transitionPropertyStyle: transitionPropertyStyle,
+            transitionDurationStyle: transitionDurationStyle,
             transitionDelayStyle: transitionDelayStyle,
-            transitionDelay : transitionDelay,
-            transitionDuration : transitionDuration,
+            transitionDelay: transitionDelay,
+            transitionDuration: transitionDuration,
             animationDelayStyle: animationDelayStyle,
-            animationDelay : animationDelay,
-            animationDuration : animationDuration
+            animationDelay: animationDelay,
+            animationDuration: animationDuration
           };
           if(cacheKey) {
             lookupCache[cacheKey] = data;
@@ -896,7 +904,7 @@ angular.module('ngAnimate', ['ng'])
             node.style[transitionProp + propertyKey] = 'none';
           }
 
-          var activeClassName = '';
+          var activeClassName = 'ng-animate-active ';
           forEach(className.split(' '), function(klass, i) {
             activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
           });
@@ -910,25 +918,38 @@ angular.module('ngAnimate', ['ng'])
               return;
             }
 
+            var applyFallbackStyle, style = '';
             if(timings.transitionDuration > 0) {
               node.style[transitionProp + propertyKey] = '';
+
+              var propertyStyle = timings.transitionPropertyStyle;
+              if(propertyStyle.indexOf('all') == -1) {
+                applyFallbackStyle = true;
+                var fallbackProperty = $sniffer.msie ? '-ms-zoom' : 'clip';
+                style += prefix + 'transition-property: ' + propertyStyle + ', ' + fallbackProperty + '; ';
+                style += prefix + 'transition-duration: ' + timings.transitionDurationStyle + ', ' + timings.transitionDuration + 's; ';
+              }
             }
 
             if(ii > 0) {
-              var staggerStyle = '';
               if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
-                staggerStyle += prefix + 'transition-delay: ' +
-                                prepareStaggerDelay(timings.transitionDelayStyle, stagger.transitionDelay, ii) + '; ';
+                var delayStyle = timings.transitionDelayStyle;
+                if(applyFallbackStyle) {
+                  delayStyle += ', ' + timings.transitionDelay + 's';
+                }
+
+                style += prefix + 'transition-delay: ' +
+                         prepareStaggerDelay(delayStyle, stagger.transitionDelay, ii) + '; ';
               }
 
               if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
-                staggerStyle += prefix + 'animation-delay: ' +
-                                prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, ii) + '; ';
+                style += prefix + 'animation-delay: ' +
+                         prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, ii) + '; ';
               }
+            }
 
-              if(staggerStyle.length > 0) {
-                formerStyle = applyStyle(node, staggerStyle);
-              }
+            if(style.length > 0) {
+              formerStyle = applyStyle(node, style);
             }
 
             element.addClass(activeClassName);
