@@ -218,7 +218,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       return function($scope, $element, $attr){
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn, trackByIdFn,
+          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
@@ -276,6 +276,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               childScope,
               key, value, // key/value of iteration
               trackById,
+              trackByIdFn,
               collectionKeys,
               block,       // last object information {scope, element, id}
               nextBlockOrder = [],
