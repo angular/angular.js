@@ -1130,7 +1130,24 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       value = fn(value);
     });
 
-    if (this.$modelValue !== value) {
+    // patch by ttsiodras: Javascript can't compare Dates!
+    // Look at this in your node:
+    //
+    //    $ node
+    //    var a = new Date(0);
+    //    var b = new Date(0);
+    //    a !== b
+    //    (prints true)
+    //
+    // Which means that we need to do special handling when the model is a Date (cast to number via '+')
+    // otherwise ngChange will trigger all the time, even when we just enter an input and leave...
+    var comparisonResult = this.$modelValue !== value;
+    var toClass = {}.toString;
+    if (toClass.call(this.$modelValue) == '[object Date]' || toClass.call(value) == '[object Date]')
+        comparisonResult = +this.$modelValue !== +value;
+
+    //if (this.$modelValue !== value) {
+    if (comparisonResult) {
       this.$modelValue = value;
       ngModelSet($scope, value);
       forEach(this.$viewChangeListeners, function(listener) {
