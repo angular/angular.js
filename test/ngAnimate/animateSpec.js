@@ -697,7 +697,7 @@ describe("ngAnimate", function() {
 
           ss.addRule('.ani.ng-enter, .ani.ng-leave, .ani-fake.ng-enter, .ani-fake.ng-leave',
             '-webkit-animation:1s my_animation;' + 
-            'transition:1s my_animation;');
+            'animation:1s my_animation;');
 
           ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
             '-webkit-animation-delay:0.1s;' +
@@ -746,6 +746,40 @@ describe("ngAnimate", function() {
           expect(elements[2].attr('style')).not.toMatch(/animation-delay: 0\.2\d*s/);
           expect(elements[3].attr('style')).not.toMatch(/animation-delay: 0\.3\d*s/);
           expect(elements[4].attr('style')).not.toMatch(/animation-delay: 0\.4\d*s/);
+        }));
+
+        it("should stagger items when multiple animation durations/delays are defined",
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+          if(!$sniffer.transitions) return;
+
+          $animate.enabled(true);
+
+          ss.addRule('.ani.ng-enter, .ani.ng-leave',
+            '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
+            'animation:my_animation 1s 1s, your_animation 1s 2s;');
+
+          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+            '-webkit-animation-delay:0.1s;' +
+            'animation-delay:0.1s;');
+
+          var container = $compile(html('<div></div>'))($rootScope);
+
+          var elements = [];
+          for(var i = 0; i < 4; i++) {
+            var newScope = $rootScope.$new();
+            var element = $compile('<div class="ani"></div>')(newScope);
+            $animate.enter(element, container);
+            elements.push(element);
+          };
+
+          $rootScope.$digest();
+          $timeout.flush();
+
+          expect(elements[0].attr('style')).toBeFalsy();
+          expect(elements[1].attr('style')).toMatch(/animation-delay: 1\.1\d*s,\s*2\.1\d*s/);
+          expect(elements[2].attr('style')).toMatch(/animation-delay: 1\.2\d*s,\s*2\.2\d*s/);
+          expect(elements[3].attr('style')).toMatch(/animation-delay: 1\.3\d*s,\s*2\.3\d*s/);
         }));
       });
 
@@ -950,7 +984,87 @@ describe("ngAnimate", function() {
           expect(elements[3].attr('style')).not.toMatch(/transition-delay: 0\.3\d*s/);
           expect(elements[4].attr('style')).not.toMatch(/transition-delay: 0\.4\d*s/);
         }));
+
+        it("should stagger items when multiple transition durations/delays are defined",
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+          if(!$sniffer.transitions) return;
+
+          $animate.enabled(true);
+
+          ss.addRule('.ani.ng-enter, .ani.ng-leave',
+            '-webkit-transition:1s linear color 2s, 3s linear font-size 4s;' + 
+            'transition:1s linear color 2s, 3s linear font-size 4s;');
+
+          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+            '-webkit-transition-delay:0.1s;' +
+            'transition-delay:0.1s;');
+
+          var container = $compile(html('<div></div>'))($rootScope);
+
+          var elements = [];
+          for(var i = 0; i < 4; i++) {
+            var newScope = $rootScope.$new();
+            var element = $compile('<div class="ani"></div>')(newScope);
+            $animate.enter(element, container);
+            elements.push(element);
+          };
+
+          $rootScope.$digest();
+          $timeout.flush();
+
+          expect(elements[0].attr('style')).toBeFalsy();
+          expect(elements[1].attr('style')).toMatch(/transition-delay: 2\.1\d*s,\s*4\.1\d*s/);
+          expect(elements[2].attr('style')).toMatch(/transition-delay: 2\.2\d*s,\s*4\.2\d*s/);
+          expect(elements[3].attr('style')).toMatch(/transition-delay: 2\.3\d*s,\s*4\.3\d*s/);
+        }));
       });
+
+      it("should apply staggering to both transitions and keyframe animations when used within the same animation",
+        inject(function($animate, $rootScope, $compile, $sniffer, $timeout, $document, $rootElement) {
+
+        if(!$sniffer.transitions) return;
+
+        $animate.enabled(true);
+
+        ss.addRule('.ani.ng-enter, .ani.ng-leave',
+          '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
+          'animation:my_animation 1s 1s, your_animation 1s 2s;' +
+          '-webkit-transition:1s linear all 0s;' + 
+          'transition:1s linear all 1s;');
+
+        ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+          '-webkit-transition-delay:0.1s;' +
+          'transition-delay:0.1s;' +
+          '-webkit-animation-delay:0.2s;' +
+          'animation-delay:0.2s;');
+
+        var container = $compile(html('<div></div>'))($rootScope);
+
+        var elements = [];
+        for(var i = 0; i < 3; i++) {
+          var newScope = $rootScope.$new();
+          var element = $compile('<div class="ani"></div>')(newScope);
+          $animate.enter(element, container);
+          elements.push(element);
+        };
+
+        $rootScope.$digest();
+        $timeout.flush();
+
+        expect(elements[0].attr('style')).toBeFalsy();
+
+        expect(elements[1].attr('style')).toMatch(/transition-delay:\s+1.1\d*/);
+        expect(elements[1].attr('style')).toMatch(/animation-delay: 1\.2\d*s,\s*2\.2\d*s/);
+
+        expect(elements[2].attr('style')).toMatch(/transition-delay:\s+1.2\d*/);
+        expect(elements[2].attr('style')).toMatch(/animation-delay: 1\.4\d*s,\s*2\.4\d*s/);
+
+        for(var i = 0; i < 3; i++) {
+          browserTrigger(elements[i],'transitionend', { timeStamp: Date.now() + 22000, elapsedTime: 22000 });
+          expect(elements[i].attr('style')).toBeFalsy();
+        }
+      }));
     });
 
     describe('animation evaluation', function () {
