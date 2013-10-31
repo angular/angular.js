@@ -789,7 +789,8 @@ angular.module('ngAnimate', ['ng'])
         var data = cacheKey ? lookupCache[cacheKey] : null;
         if(!data) {
           var transitionDuration = 0, transitionDelay = 0,
-              animationDuration = 0, animationDelay = 0;
+              animationDuration = 0, animationDelay = 0,
+              transitionDelayStyle, animationDelayStyle;
 
           //we want all the styles defined before and after
           forEach(element, function(element) {
@@ -799,9 +800,13 @@ angular.module('ngAnimate', ['ng'])
               transitionDuration = Math.max(parseMaxTime(elementStyles[transitionProp + durationKey]), transitionDuration);
 
               if(!onlyCheckTransition) {
-                transitionDelay  = Math.max(parseMaxTime(elementStyles[transitionProp + delayKey]), transitionDelay);
+                transitionDelayStyle = elementStyles[transitionProp + delayKey];
 
-                animationDelay   = Math.max(parseMaxTime(elementStyles[animationProp + delayKey]), animationDelay);
+                transitionDelay  = Math.max(parseMaxTime(transitionDelayStyle), transitionDelay);
+
+                animationDelayStyle = elementStyles[animationProp + delayKey];
+
+                animationDelay   = Math.max(parseMaxTime(animationDelayStyle), animationDelay);
 
                 var aDuration  = parseMaxTime(elementStyles[animationProp + durationKey]);
 
@@ -815,9 +820,11 @@ angular.module('ngAnimate', ['ng'])
           });
           data = {
             total : 0,
+            transitionDelayStyle: transitionDelayStyle,
             transitionDelay : transitionDelay,
-            animationDelay : animationDelay,
             transitionDuration : transitionDuration,
+            animationDelayStyle: animationDelayStyle,
+            animationDelay : animationDelay,
             animationDuration : animationDuration
           };
           if(cacheKey) {
@@ -905,16 +912,25 @@ angular.module('ngAnimate', ['ng'])
 
             if(timings.transitionDuration > 0) {
               node.style[transitionProp + propertyKey] = '';
-              if(ii > 0 && stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
-                formerStyle = applyStyle(node, prefix + 'transition-delay: ' +
-                  (ii * stagger.transitionDelay + timings.transitionDelay) + 's');
+            }
+
+            if(ii > 0) {
+              var staggerStyle = '';
+              if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
+                staggerStyle += prefix + 'transition-delay: ' +
+                                prepareStaggerDelay(timings.transitionDelayStyle, stagger.transitionDelay, ii) + '; ';
+              }
+
+              if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
+                staggerStyle += prefix + 'animation-delay: ' +
+                                prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, ii) + '; ';
+              }
+
+              if(staggerStyle.length > 0) {
+                formerStyle = applyStyle(node, staggerStyle);
               }
             }
 
-            if(ii > 0 && stagger.animationDelay > 0 && stagger.animationDuration === 0) {
-              formerStyle = applyStyle(node, prefix + 'animation-delay: ' +
-                (ii * stagger.animationDelay + timings.animationDelay) + 's');
-            }
             element.addClass(activeClassName);
           });
 
@@ -946,6 +962,15 @@ angular.module('ngAnimate', ['ng'])
         else {
           element.removeClass(className);
           done();
+        }
+
+        function prepareStaggerDelay(delayStyle, staggerDelay, index) {
+          var style = '';
+          angular.forEach(delayStyle.split(','), function(val, i) {
+            style += (i > 0 ? ',' : '') +
+                     (index * staggerDelay + parseInt(val, 10)) + 's';
+          });
+          return style;
         }
 
         function onAnimationProgress(event) {
