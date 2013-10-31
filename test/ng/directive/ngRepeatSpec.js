@@ -120,22 +120,61 @@ describe('ngRepeat', function() {
   });
 
 
-  iit('should throw infinite digest error when model is unstable', function() {
-    element = $compile(
-        '<ul>' +
-          '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
-        '</ul>')(scope);
+  describe('model stability', function() {
 
-    scope.friends = function() {
-      return [
-        {name: 'John', id: 1},
-        {name: 'Patrick', id: 2}
-      ];
-    };
+    it('should throw infinite digest error when model is unstable', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
+          '</ul>')(scope);
 
-    scope.$digest();
-    
-    expect($exceptionHandler.errors.shift().message).toMatch(/\[\$rootScope:infdig]/);
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1},
+          {name: 'Patrick', id: 2}
+        ];
+      };
+
+      expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+    });
+
+
+    it('should not run into infinite digest if $$hashKey was defined by the developer', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
+          '</ul>')(scope);
+
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1, $$hashKey: function() { return 3; }},
+          {name: 'Patrick', id: 2, $$hashKey: function() { return 4; }}
+        ];
+      };
+
+      scope.$digest();
+
+      expect(element.text()).toBe('John|Patrick|');
+    });
+
+
+    it('should not run into infinite digest if `track by id` was defined by the developer', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends() track by friend.id">{{friend.name}}|</li>' +
+          '</ul>')(scope);
+
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1},
+          {name: 'Patrick', id: 2}
+        ];
+      };
+
+      scope.$digest();
+
+      expect(element.text()).toBe('John|Patrick|');
+    });
   });
 
 

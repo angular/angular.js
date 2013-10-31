@@ -218,7 +218,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       return function($scope, $element, $attr){
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
+          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn, trackByIdFn,
           lhs, rhs, valueIdentifier, keyIdentifier,
           hashFnLocals = {$id: hashKey};
 
@@ -265,7 +265,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         var lastBlockMap = {};
 
         //watch props
-        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+        $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
           var index, length,
               previousNode = $element[0],     // current position of the node
               nextNode,
@@ -276,7 +276,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               childScope,
               key, value, // key/value of iteration
               trackById,
-              trackByIdFn,
               collectionKeys,
               block,       // last object information {scope, element, id}
               nextBlockOrder = [],
@@ -389,7 +388,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             }
           }
           lastBlockMap = nextBlockMap;
-        });
+        },  trackByIdExpFn || trackByIdArrayFn,
+            trackByIdExpFn || trackByIdObjFn
+        );
       };
     }
   };
