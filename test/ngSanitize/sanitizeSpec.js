@@ -276,6 +276,7 @@ describe('HTML', function() {
         expect(isUri('tel:123-123-1234')).toBeTruthy();
         expect(isUri('TEL:123-123-1234')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
+        expect(isUri('/anchor')).toBeTruthy();
       });
 
       it('should not be URI', function() {
