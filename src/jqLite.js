@@ -817,15 +817,16 @@ forEach({
   triggerHandler: function(element, eventName, eventData) {
     var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName];
 
-    eventData = eventData || [];
-
-    var event = [{
+    var ev = {
+      type: eventName,
+      target: element,
+      currentTarget: element,
       preventDefault: noop,
       stopPropagation: noop
-    }];
+    };
 
     forEach(eventFns, function(fn) {
-      fn.apply(element, event.concat(eventData));
+      fn.call(element, ev, eventData);
     });
   }
 }, function(fn, name){
