@@ -147,7 +147,7 @@ var START_TAG_REGEXP =
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
   // Match everything outside of normal chars and " (quote character)
-  NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
+  NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!\u0400-\u04FF])/g;
 
 
 // Good source of info about elements and attributes
