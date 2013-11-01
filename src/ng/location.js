@@ -371,7 +371,8 @@ LocationHashbangInHtml5Url.prototype =
    * the url.
    * 
    * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
-   * single search parameter. If the value is `null`, the parameter will be deleted.
+   * single search parameter. If `paramValue` is an array, it will set the parameter as a 
+   * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
    * @return {string} search
    */
