@@ -145,7 +145,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
       var myApp = angular.module('spicyApp1', []);
 
       myApp.controller('SpicyCtrl', ['$scope', function($scope){
-          $scope.spicy = 'very';
+          $scope.spice = 'very';
           
           $scope.chiliSpicy = function() {
               $scope.spice = 'chili';
