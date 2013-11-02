@@ -312,7 +312,7 @@ describe('ngInclude', function() {
   }));
 
 
-  describe('autoscoll', function() {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {
@@ -328,33 +328,58 @@ describe('ngInclude', function() {
       };
     }
 
-    function changeTplAndValueTo(template, value) {
-      return function($rootScope, $browser) {
-        $rootScope.$apply(function() {
-          $rootScope.tpl = template;
-          $rootScope.value = value;
-        });
-      };
-    }
-
-    beforeEach(module(spyOnAnchorScroll()));
+    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
     beforeEach(inject(
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
 
-
     it('should call $anchorScroll if autoscroll attribute is present', inject(
         compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
-        changeTplAndValueTo('template.html'), function() {
+        function($rootScope, $animate, $timeout) {
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+      });
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
 
-    it('should call $anchorScroll if autoscroll evaluates to true', inject(
-        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
-        changeTplAndValueTo('template.html', true),
-        changeTplAndValueTo('another.html', 'some-string'),
-        changeTplAndValueTo('template.html', 100), function() {
+    it('should call $anchorScroll if autoscroll evaluates to true',
+      inject(function($rootScope, $compile, $animate, $timeout) {
+
+      element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = true;
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'another.html';
+        $rootScope.value = 'some-string';
+      });
+
+      $animate.flushNext('leave');
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function() {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = 100;
+      });
+
+      $animate.flushNext('leave');
+      $animate.flushNext('enter');
+      $timeout.flush();
+
       expect(autoScrollSpy).toHaveBeenCalled();
       expect(autoScrollSpy.callCount).toBe(3);
     }));
@@ -362,17 +387,54 @@ describe('ngInclude', function() {
 
     it('should not call $anchorScroll if autoscroll attribute is not present', inject(
         compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
-        changeTplAndValueTo('template.html'), function() {
+        function($rootScope, $animate, $timeout) {
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
 
-    it('should not call $anchorScroll if autoscroll evaluates to false', inject(
-        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
-        changeTplAndValueTo('template.html', false),
-        changeTplAndValueTo('template.html', undefined),
-        changeTplAndValueTo('template.html', null), function() {
+    it('should not call $anchorScroll if autoscroll evaluates to false',
+      inject(function($rootScope, $compile, $animate, $timeout) {
+
+      element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = false;
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = undefined;
+      });
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = null;
+      });
+
       expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+    it('should only call $anchorScroll after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
+        function($rootScope, $animate, $timeout) {
+          expect(autoScrollSpy).not.toHaveBeenCalled();
+
+          $rootScope.$apply("tpl = 'template.html'");
+          $animate.flushNext('enter');
+          $timeout.flush();
+
+          expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
   });
 });
