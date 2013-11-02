@@ -333,4 +333,8 @@ describe('$sniffer', function() {
       });
     });
   });
+
+  it('should return true for msie when internet explorer is being used', inject(function($sniffer) {
+    expect($sniffer.msie > 0).toBe(window.navigator.appName == 'Microsoft Internet Explorer');
+  }));
 });

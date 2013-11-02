@@ -83,7 +83,8 @@ function $SnifferProvider() {
       csp: csp(),
       vendorPrefix: vendorPrefix,
       transitions : transitions,
-      animations : animations
+      animations : animations,
+      msie : msie
     };
   }];
 }
