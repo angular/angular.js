@@ -178,6 +178,13 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
         };
 
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
+          var afterAnimation = function() {
+
+              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                $anchorScroll();
+              }
+
+          };
           var thisChangeId = ++changeCounter;
 
           if (src) {
@@ -192,13 +199,8 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                 currentElement = clone;
 
                 currentElement.html(response);
-                $animate.enter(currentElement, null, $element);
+                $animate.enter(currentElement, null, $element, afterAnimation);
                 $compile(currentElement.contents())(currentScope);
-
-                if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                  $anchorScroll();
-                }
-
                 currentScope.$emit('$includeContentLoaded');
                 scope.$eval(onloadExp);
               });

@@ -322,6 +322,18 @@ describe('ngInclude', function() {
       };
     }
 
+    function spyOnAnimateEnter() {
+      return function($animate) {
+        spyOn($animate, 'enter').andCallThrough();
+      };
+    }
+
+    function runEnterAnimation($animate) {
+      if ($animate.enter.mostRecentCall) {
+        $animate.enter.mostRecentCall.args[3]();
+      }
+    }
+
     function compileAndLink(tpl) {
       return function($compile, $rootScope) {
         element = $compile(tpl)($rootScope);
@@ -329,15 +341,17 @@ describe('ngInclude', function() {
     }
 
     function changeTplAndValueTo(template, value) {
-      return function($rootScope, $browser) {
+      return function($rootScope, $browser, $animate) {
         $rootScope.$apply(function() {
           $rootScope.tpl = template;
           $rootScope.value = value;
         });
+        runEnterAnimation($animate);
       };
     }
 
     beforeEach(module(spyOnAnchorScroll()));
+    beforeEach(inject(spyOnAnimateEnter()));
     beforeEach(inject(
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
@@ -373,6 +387,16 @@ describe('ngInclude', function() {
         changeTplAndValueTo('template.html', undefined),
         changeTplAndValueTo('template.html', null), function() {
       expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+    it('should only call $anchorScroll after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
+        function($rootScope, $animate) {
+          $rootScope.$apply("tpl = 'template.html'");
+          expect($animate.enter).toHaveBeenCalledOnce();
+          expect(autoScrollSpy).not.toHaveBeenCalled();
+          runEnterAnimation($animate);
+          expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
   });
 });
