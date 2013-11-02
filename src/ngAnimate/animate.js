@@ -898,6 +898,11 @@ angular.module('ngAnimate', ['ng'])
 
           // This triggers a reflow which allows for the transition animation to kick in.
           afterReflow(function() {
+            if(!element.hasClass(className)) {
+              done();
+              return;
+            }
+
             if(timings.transitionDuration > 0) {
               node.style[transitionProp + propertyKey] = '';
               if(ii > 0 && stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
