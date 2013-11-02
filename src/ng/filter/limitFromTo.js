@@ -94,7 +94,7 @@ function limitFromToFilter(){
 
     if (limit > 0) {
       i = offset;
-      n = limit-offset;
+      n = limit;
     } else {
       i = input.length + limit;
       n = input.length;
