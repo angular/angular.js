@@ -76,7 +76,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
           // response will fallback to responseText for IE running in legacy document standards mode
           completeRequest(callback,
               status || xhr.status,
-              (xhr.responseType ? xhr.response || xhr.responseText : xhr.responseText),
+              (xhr.response || xhr.responseText),
               responseHeaders);
         }
       };
