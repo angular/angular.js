@@ -116,6 +116,7 @@ function $FilterProvider($provide) {
     filterFilter: false,
     jsonFilter: false,
     limitToFilter: false,
+    limitFromToFilter: false,
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
@@ -127,6 +128,7 @@ function $FilterProvider($provide) {
   register('filter', filterFilter);
   register('json', jsonFilter);
   register('limitTo', limitToFilter);
+  register('limitFromTo', limitFromToFilter);
   register('lowercase', lowercaseFilter);
   register('number', numberFilter);
   register('orderBy', orderByFilter);
