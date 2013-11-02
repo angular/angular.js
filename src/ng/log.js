@@ -6,7 +6,7 @@
  * @requires $window
  *
  * @description
- * Simple service for logging. Default implementation writes the message
+ * Simple service for logging. Default implementation safely writes the message
  * into the browser's console (if present).
  * 
  * The main purpose of this service is to simplify debugging and troubleshooting.
