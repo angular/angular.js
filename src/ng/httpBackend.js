@@ -73,9 +73,10 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+          // response will fallback to responseText for IE running in legacy document standards mode
           completeRequest(callback,
               status || xhr.status,
-              (xhr.responseType ? xhr.response : xhr.responseText),
+              (xhr.responseType ? xhr.response || xhr.responseText : xhr.responseText),
               responseHeaders);
         }
       };
