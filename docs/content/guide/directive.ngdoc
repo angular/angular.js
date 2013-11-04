@@ -704,7 +704,7 @@ behavior to it.
       <my-dialog on-close="increment()">
         Check out the contents, {{name}}!
       </my-dialog>
-      Dialog has been closed {{count}} times.
+      Dialog has been closed {{count}} time<span ng-show="count != 1">s</span>!
     </div>
   </file>
   <file name="my-dialog-close.html">
