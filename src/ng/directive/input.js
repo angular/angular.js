@@ -1222,7 +1222,7 @@ var ngModelDirective = function() {
 
       formCtrl.$addControl(modelCtrl);
 
-      element.on('$destroy', function() {
+      scope.$on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
       });
     }
