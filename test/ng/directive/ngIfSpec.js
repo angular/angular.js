@@ -36,13 +36,33 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(0);
   });
 
-  it('should create a new scope', function () {
+  it('should create a new scope every time the expression evaluates to true', function () {
     $scope.$apply('value = true');
     element.append($compile(
       '<div ng-if="value"><span ng-init="value=false"></span></div>'
     )($scope));
     $scope.$apply();
     expect(element.children('div').length).toBe(1);
+  });
+
+  it('should destroy the child scope every time the expression evaluates to false', function() {
+    $scope.value = true;
+    element.append($compile(
+        '<div ng-if="value"></div>'
+    )($scope));
+    $scope.$apply();
+
+    var childScope = element.children().scope();
+    var destroyed = false;
+
+    childScope.$on('$destroy', function() {
+      destroyed = true;
+    });
+
+    $scope.value = false;
+    $scope.$apply();
+
+    expect(destroyed).toBe(true);
   });
 
   it('should play nice with other elements beside it', function () {

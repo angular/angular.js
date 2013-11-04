@@ -941,7 +941,7 @@ var VALID_CLASS = 'ng-valid',
  * When the directive updates the model value, calling `ngModel.$setViewValue()` the property
  * on the outer scope will not be updated. However you can get around this by using $parent.
  *
- * Here is an example of this situation.  You'll notice that the first div is not updating the input. 
+ * Here is an example of this situation.  You'll notice that the first div is not updating the input.
  * However the second div can update the input properly.
  *
  * <example module="badIsolatedDirective">
@@ -1222,7 +1222,7 @@ var ngModelDirective = function() {
 
       formCtrl.$addControl(modelCtrl);
 
-      element.on('$destroy', function() {
+      scope.$on('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);
       });
     }
