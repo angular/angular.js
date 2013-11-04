@@ -81,9 +81,15 @@ DOM.prototype = {
       self.currentHeaders[level - 1] = normalizeHeaderToId(content);
       self.currentHeaders.length = level;
 
-      var id = idFromCurrentHeaders(self.currentHeaders);
+      var id, idAttr = /\sid=["'](.+?)["']/.exec(attrs);
+      if (idAttr === null) {
+        id = idFromCurrentHeaders(self.currentHeaders);
+        attrs += ' id="' + id + '"';
+      } else {
+        id = idAttr[1];
+      }
       self.anchors.push(id);
-      return '<h' + level + attrs + ' id="' + id + '">' + content + '</h' + level + '>';
+      return '<h' + level + attrs + '>' + content + '</h' + level + '>';
     });
 
     // collect anchors
