@@ -675,11 +675,9 @@ behavior to it.
     angular.module('docsIsoFnBindExample', [])
       .controller('Ctrl', function($scope, $timeout) {
         $scope.name = 'Tobias';
-        $scope.hideDialog = function () {
-          $scope.dialogIsHidden = true;
-          $timeout(function () {
-            $scope.dialogIsHidden = false;
-          }, 2000);
+        $scope.count = 0;
+        $scope.increment = function () {
+          $scope.count++;
         };
       })
       .directive('myDialog', function() {
@@ -687,22 +685,31 @@ behavior to it.
           restrict: 'E',
           transclude: true,
           scope: {
-            'close': '&onClose'
+            'onClose': '&onClose'
           },
-          templateUrl: 'my-dialog-close.html'
+          templateUrl: 'my-dialog-close.html',
+          link: function (scope, element, attrs) {
+            scope.close = function () {
+              scope.dialogIsHidden = true;
+              $timeout(function () {
+                scope.dialogIsHidden = false;
+              }, 2000);
+            };
+          }
         };
       });
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-dialog ng-hide="dialogIsHidden" on-close="dialogIsHidden = true">
+      <my-dialog on-close="increment()">
         Check out the contents, {{name}}!
       </my-dialog>
+      Dialog has been closed {{count}} times.
     </div>
   </file>
   <file name="my-dialog-close.html">
-    <div class="alert">
-      <a href class="close" ng-click="close()">&times;</a>
+    <div class="alert" ng-hide="dialogIsHidden">
+      <a href class="close" ng-click="close();onClose()">&times;</a>
       <div ng-transclude></div>
     </div>
   </file>
@@ -714,7 +721,8 @@ in the context of the scope where its registered.
 We saw earlier how to use `=prop` in the `scope` option, but in the above example, we're using
 `&prop` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
 to invoke it, but maintaining the original scope of the function. So when a user clicks the
-`x` in the dialog, it runs `Ctrl`'s `close` function.
+`x` in the dialog, it runs the directives `close` function, and then the `Ctrl`'s `increment`
+function, which is passed as the directives `onClose` function.
 
 <div class="alert alert-success">
 **Best Practice:** use `&prop` in the `scope` option when you want your directive
