@@ -634,8 +634,9 @@ redefines `name` as `Jeff`. What do you think the `{{name}}` binding will resolv
         return {
           restrict: 'E',
           transclude: true,
+          scope: {},
           templateUrl: 'my-dialog.html',
-          link: function (element, scope) {
+          link: function (scope, element) {
             scope.name = 'Jeff';
           }
         };
@@ -658,6 +659,9 @@ the `{{name}}` binding is still `Tobias`.
 The `transclude` option changes the way scopes are nested. It makes it so that the **contents** of a
 transcluded directive have whatever scope is outside the directive, rather than whatever scope is on
 the inside. In doing so, it gives the contents access to the outside scope.
+
+Note that if the directive did not create its own scope, then `scope` in `scope.name = 'Jeff';` would
+reference the outside scope and we would see `Jeff` in the output.
 
 This behavior makes sense for a directive that wraps some content, because otherwise you'd have to
 pass in each model you wanted to use separately. If you have to pass in each model that you want to
