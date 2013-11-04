@@ -219,7 +219,7 @@ describe("ngAnimate", function() {
           return function($animate, $compile, $rootScope, $rootElement) {
             element = $compile('<div></div>')($rootScope);
 
-            angular.forEach(['.ng-hide-add', '.ng-hide-remove', '.ng-enter', '.ng-leave', '.ng-move'], function(selector) {
+            forEach(['.ng-hide-add', '.ng-hide-remove', '.ng-enter', '.ng-leave', '.ng-move'], function(selector) {
               ss.addRule(selector, '-webkit-transition:1s linear all;' +
                                            'transition:1s linear all;');
             });
@@ -371,11 +371,10 @@ describe("ngAnimate", function() {
         expect(child.attr('class')).toContain('ng-leave');
         expect(child.attr('class')).toContain('ng-leave-active');
         browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
-        $timeout.flush();
       }));
 
       it("should not run if animations are disabled",
-        inject(function($animate, $rootScope) {
+        inject(function($animate, $rootScope, $timeout, $sniffer) {
 
         $animate.enabled(false);
 
@@ -392,6 +391,9 @@ describe("ngAnimate", function() {
 
         element.addClass('ng-hide');
         $animate.removeClass(element, 'ng-hide');
+        if($sniffer.transitions) {
+          $timeout.flush();
+        }
         expect(element.text()).toBe('memento');
       }));
 
@@ -403,7 +405,9 @@ describe("ngAnimate", function() {
 
         expect(element).toBeShown();
         $animate.addClass(child, 'ng-hide');
-        expect(child).toBeShown();
+        if($sniffer.transitions) {
+          expect(child).toBeShown();
+        }
 
         $animate.leave(child);
         $rootScope.$digest();
@@ -546,7 +550,7 @@ describe("ngAnimate", function() {
 
       describe("Animations", function() {
         it("should properly detect and make use of CSS Animations",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
           ss.addRule('.ng-hide-add',
                          '-webkit-animation: some_animation 4s linear 0s 1 alternate;' +
@@ -562,13 +566,14 @@ describe("ngAnimate", function() {
 
           $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
+            $timeout.flush();
             browserTrigger(element,'animationend', { timeStamp: Date.now() + 4000, elapsedTime: 4 });
           }
           expect(element).toBeShown();
         }));
 
         it("should properly detect and make use of CSS Animations with multiple iterations",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
           var style = '-webkit-animation-duration: 2s;' +
                       '-webkit-animation-iteration-count: 3;' +
@@ -585,13 +590,14 @@ describe("ngAnimate", function() {
 
           $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
+            $timeout.flush();
             browserTrigger(element,'animationend', { timeStamp: Date.now() + 6000, elapsedTime: 6 });
           }
           expect(element).toBeShown();
         }));
 
         it("should fallback to the animation duration if an infinite iteration is provided",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
           var style = '-webkit-animation-duration: 2s;' +
                       '-webkit-animation-iteration-count: infinite;' +
@@ -608,13 +614,14 @@ describe("ngAnimate", function() {
 
           $animate.removeClass(element, 'ng-hide');
           if ($sniffer.animations) {
+            $timeout.flush();
             browserTrigger(element,'animationend', { timeStamp: Date.now() + 2000, elapsedTime: 2 });
           }
           expect(element).toBeShown();
         }));
 
         it("should not consider the animation delay is provided",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
           var style = '-webkit-animation-duration: 2s;' +
                       '-webkit-animation-delay: 10s;' +
@@ -633,6 +640,7 @@ describe("ngAnimate", function() {
 
           $animate.removeClass(element, 'ng-hide');
           if ($sniffer.transitions) {
+            $timeout.flush();
             browserTrigger(element,'animationend', { timeStamp : Date.now() + 20000, elapsedTime: 10 });
           }
           expect(element).toBeShown();
@@ -861,13 +869,14 @@ describe("ngAnimate", function() {
 
           $animate.removeClass(element, 'ng-hide');
           if ($sniffer.transitions) {
+            $timeout.flush();
             browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
           }
           expect(element).toBeShown();
         }));
 
         it("should skip animations if disabled and run when enabled picking the longest specified duration",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
             var style = '-webkit-transition-duration: 1s, 2000ms, 1s;' +
                         '-webkit-transition-property: height, left, opacity;' +
@@ -879,13 +888,16 @@ describe("ngAnimate", function() {
 
             element = $compile(html('<div>foo</div>'))($rootScope);
             element.addClass('ng-hide');
+
             $animate.removeClass(element, 'ng-hide');
+
             if ($sniffer.transitions) {
-              expect(element).toBeHidden();
+              $timeout.flush();
               var now = Date.now();
               browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
               browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
               browserTrigger(element,'transitionend', { timeStamp: now + 2000, elapsedTime: 2 });
+              expect(element.hasClass('ng-animate')).toBe(false);
             }
             expect(element).toBeShown();
           }));
@@ -916,6 +928,7 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
+              $timeout.flush();
               var now = Date.now();
               browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
               browserTrigger(element,'transitionend', { timeStamp: now + 3000, elapsedTime: 3 });
@@ -925,7 +938,7 @@ describe("ngAnimate", function() {
         }));
 
         it("should animate for the highest duration",
-          inject(function($animate, $rootScope, $compile, $sniffer) {
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
             var style = '-webkit-transition:1s linear all 2s;' +
                                 'transition:1s linear all 2s;' +
                         '-webkit-animation:my_ani 10s 1s;' +
@@ -941,9 +954,14 @@ describe("ngAnimate", function() {
 
             $animate.removeClass(element, 'ng-hide');
             if ($sniffer.transitions) {
-              browserTrigger(element,'animationend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
+              $timeout.flush();
             }
             expect(element).toBeShown();
+            if ($sniffer.transitions) {
+              expect(element.hasClass('ng-animate-active')).toBe(true);
+              browserTrigger(element,'animationend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
+              expect(element.hasClass('ng-animate-active')).toBe(false);
+            }
         }));
 
         it("should finish the previous transition when a new animation is started",
@@ -1503,12 +1521,13 @@ describe("ngAnimate", function() {
         });
 
         if($sniffer.transitions) {
-          $timeout.flush();
-          expect(element.hasClass('klass')).toBe(false);
           expect(element.hasClass('klass-add')).toBe(true);
+          $timeout.flush();
+          expect(element.hasClass('klass')).toBe(true);
           expect(element.hasClass('klass-add-active')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3 });
         }
+        $timeout.flush();
 
         //this cancels out the older animation
         $animate.removeClass(element,'klass', function() {
@@ -1516,12 +1535,13 @@ describe("ngAnimate", function() {
         });
 
         if($sniffer.transitions) {
+          expect(element.hasClass('klass-remove')).toBe(true);
+
           $timeout.flush();
-          expect(element.hasClass('klass')).toBe(true);
+          expect(element.hasClass('klass')).toBe(false);
           expect(element.hasClass('klass-add')).toBe(false);
           expect(element.hasClass('klass-add-active')).toBe(false);
 
-          expect(element.hasClass('klass-remove')).toBe(true);
           browserTrigger(element,'transitionend', { timeStamp: Date.now() + 3000, elapsedTime: 3 });
         }
         $timeout.flush();
@@ -2079,7 +2099,7 @@ describe("ngAnimate", function() {
     });
   });
 
-  it("should skip ngAnimate animations when any pre-existing CSS transitions are present on the element", function() {
+  it("should not skip ngAnimate animations when any pre-existing CSS transitions are present on the element", function() {
     inject(function($compile, $rootScope, $animate, $timeout, $sniffer) {
       if(!$sniffer.transitions) return;
 
@@ -2103,7 +2123,7 @@ describe("ngAnimate", function() {
       }
       catch(e) {}
 
-      expect(empty).toBe(true);
+      expect(empty).toBe(false);
     });
   });
 
@@ -2143,22 +2163,22 @@ describe("ngAnimate", function() {
 
   it("should cancel all child animations when a leave or move animation is triggered on a parent element", function() {
 
-    var animationState;
+    var step, animationState;
     module(function($animateProvider) {
       $animateProvider.register('.animan', function($timeout) {
         return {
           enter : function(element, done) {
             animationState = 'enter';
-            $timeout(done, 0, false);
-            return function() {
-              animationState = 'enter-cancel';
+            step = done;
+            return function(cancelled) {
+              animationState = cancelled ? 'enter-cancel' : animationState;
             }
           },
           addClass : function(element, className, done) {
             animationState = 'addClass';
-            $timeout(done, 0, false);
-            return function() {
-              animationState = 'addClass-cancel';
+            step = done;
+            return function(cancelled) {
+              animationState = cancelled ? 'addClass-cancel' : animationState;
             }
           }
         };
@@ -2193,14 +2213,17 @@ describe("ngAnimate", function() {
       }
 
       expect(animationState).toBe('enter-cancel');
+
       $rootScope.$digest();
       $timeout.flush();
 
       $animate.addClass(child, 'something');
+      if($sniffer.transitions) {
+        $timeout.flush();
+      }
       expect(animationState).toBe('addClass');
       if($sniffer.transitions) {
         expect(child.hasClass('something-add')).toBe(true);
-        $timeout.flush();
         expect(child.hasClass('something-add-active')).toBe(true);
       }
 
@@ -2229,7 +2252,7 @@ describe("ngAnimate", function() {
     $timeout.flush();
     expect(element[0].querySelectorAll('.ng-enter-active').length).toBe(5);
 
-    angular.forEach(element.children(), function(kid) {
+    forEach(element.children(), function(kid) {
       browserTrigger(kid, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
     });
 
@@ -2401,7 +2424,7 @@ describe("ngAnimate", function() {
       $timeout.flush();
 
       //called three times since the classname is the same
-      expect(count).toBe(3);
+      expect(count).toBe(2);
 
       dealoc(element);
       count = 0;
@@ -2414,12 +2437,12 @@ describe("ngAnimate", function() {
       $rootScope.$digest();
       $timeout.flush();
 
-      expect(count).toBe(40);
+      expect(count).toBe(20);
     });
   });
 
   it("should cancel an ongoing class-based animation only if the new class contains transition/animation CSS code",
-    inject(function($compile, $rootScope, $animate, $sniffer) {
+    inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
 
     if (!$sniffer.transitions) return;
 
@@ -2474,6 +2497,67 @@ describe("ngAnimate", function() {
 
       $animate.addClass($rootElement, 'red');
       expect(count).toBe(2);
+    });
+  });
+
+  it('should perform pre and post animations', function() {
+    var steps = []; 
+    module(function($animateProvider) {
+      $animateProvider.register('.class-animate', function() {
+        return {
+          beforeAddClass : function(element, className, done) {
+            steps.push('before');
+            done();
+          },
+          addClass : function(element, className, done) {
+            steps.push('after');
+            done();
+          }
+        };
+      });
+    });
+    inject(function($animate, $rootScope, $compile, $rootElement, $timeout) {
+      $animate.enabled(true);
+
+      var element = $compile('<div class="class-animate"></div>')($rootScope);
+      $rootElement.append(element);
+
+      $animate.addClass(element, 'red');
+
+      expect(steps).toEqual(['before','after']);
+    });
+  });
+
+  it('should treat the leave event always as a before event and discard the beforeLeave function', function() {
+    var parentID, steps = []; 
+    module(function($animateProvider) {
+      $animateProvider.register('.animate', function() {
+        return {
+          beforeLeave : function(element, done) {
+            steps.push('before');
+            done();
+          },
+          leave : function(element, done) {
+            parentID = element.parent().attr('id');
+            steps.push('after');
+            done();
+          }
+        };
+      });
+    });
+    inject(function($animate, $rootScope, $compile, $rootElement) {
+      $animate.enabled(true);
+
+      var element = $compile('<div id="parentGuy"></div>')($rootScope);
+      var child = $compile('<div class="animate"></div>')($rootScope);
+      $rootElement.append(element);
+      element.append(child);
+
+      $animate.leave(child);
+      $rootScope.$digest();
+
+      expect(steps).toEqual(['after']);
+      expect(parentID).toEqual('parentGuy');
     });
   });
 
