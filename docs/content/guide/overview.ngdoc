@@ -88,7 +88,10 @@ concepts which the application developer may face:
       <br>
       <br>
       <table>
-       <tr><td>Quantity</td><td>Cost</td></tr>
+       <tr>
+         <td>Quantity</td>
+         <td>Cost</td>
+       </tr>
        <tr>
          <td><input type="number" ng-pattern="/\d+/" step="1" min="0" ng-model="qty" required ></td>
          <td><input type="number" ng-model="cost" required ></td>
