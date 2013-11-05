@@ -2450,7 +2450,7 @@ describe('$compile', function() {
 
 
     it('should require controller of an isolate directive from a non-isolate directive on the ' +
-       'same element', function() {
+        'same element', function() {
       var IsolateController = function() {};
       var isolateDirControllerInNonIsolateDirective;
 
@@ -2476,6 +2476,79 @@ describe('$compile', function() {
 
         expect(isolateDirControllerInNonIsolateDirective).toBeDefined();
         expect(isolateDirControllerInNonIsolateDirective instanceof IsolateController).toBe(true);
+      });
+    });
+
+
+    it('should share isolate scope with replaced directives', function() {
+      var normalScope;
+      var isolateScope;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            template: '<span ng-init="name=\'WORKS\'">{{name}}</span>',
+            link: function(s) {
+              isolateScope = s;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            link: function(s) {
+              normalScope = s;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(normalScope).toBe($rootScope);
+        expect(normalScope.name).toEqual(undefined);
+        expect(isolateScope.name).toEqual('WORKS');
+        $rootScope.$digest();
+        expect(element.text()).toEqual('WORKS');
+      });
+    });
+
+
+    it('should share isolate scope with replaced directives', function() {
+      var normalScope;
+      var isolateScope;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            templateUrl: 'main.html',
+            link: function(s) {
+              isolateScope = s;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            link: function(s) {
+              normalScope = s;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('main.html', '<span ng-init="name=\'WORKS\'">{{name}}</span>');
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+        $rootScope.$apply();
+
+        expect(normalScope).toBe($rootScope);
+        expect(normalScope.name).toEqual(undefined);
+        expect(isolateScope.name).toEqual('WORKS');
+        expect(element.text()).toEqual('WORKS');
       });
     });
 
