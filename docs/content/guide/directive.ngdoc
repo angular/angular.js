@@ -636,7 +636,7 @@ redefines `name` as `Jeff`. What do you think the `{{name}}` binding will resolv
           transclude: true,
           scope: {},
           templateUrl: 'my-dialog.html',
-          link: function (scope, element) {
+          link: function (scope) {
             scope.name = 'Jeff';
           }
         };
