@@ -152,7 +152,7 @@ describe('ngdoc', function() {
 
     it('should replace text between two <pre></pre> tags', function() {
       expect(new Doc().markdown('<pre>x</pre>\n# One\n<pre>b</pre>')).
-        toMatch('</pre>\n<h1>One</h1>\n<pre');
+        toMatch('</pre>\n<h1 id="one">One</h1>\n<pre');
     });
 
     it('should replace inline variable type hints', function() {
@@ -441,7 +441,7 @@ describe('ngdoc', function() {
         expect(doc.description).
           toBe('<div class="a-page"><p>foo \n' +
                '<pre class="prettyprint linenums">abc</pre>\n' +
-               '<h1>bah</h1>\n' +
+               '<h1 id="bah">bah</h1>\n' +
                '<p>foo \n' +
                '<pre class="prettyprint linenums">cba</pre>\n</div>');
       });
