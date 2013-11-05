@@ -294,6 +294,6 @@ module.exports = function(grunt) {
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('package-without-bower', ['clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'test:docgen']);
   grunt.registerTask('default', ['package']);
 };
