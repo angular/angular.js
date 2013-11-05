@@ -621,7 +621,6 @@ describe('ngRepeat', function() {
           '<div>' +
             '<!-- ngRepeat: i in items -->' +
             '<div ng-repeat="i in items" rr="">1|</div>' +
-            '<!-- end ngRepeat: i in items -->' +
             '<div ng-repeat="i in items" rr="">2|</div>' +
             '<!-- end ngRepeat: i in items -->' +
           '</div>'
@@ -653,7 +652,6 @@ describe('ngRepeat', function() {
           '<div>' +
               '<!-- ngRepeat: i in items -->' +
               '<div ng-repeat="i in items" rr="">1|</div>' +
-              '<!-- end ngRepeat: i in items -->' +
               '<div ng-repeat="i in items" rr="">2|</div>' +
               '<!-- end ngRepeat: i in items -->' +
               '</div>'
@@ -759,9 +757,7 @@ describe('ngRepeat', function() {
 
       // Note: COMMENT_NODE === 8
       expect(children[0].nextSibling.nodeType).toBe(8);
-      expect(children[0].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
       expect(children[1].nextSibling.nodeType).toBe(8);
-      expect(children[1].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
       expect(children[2].nextSibling.nodeType).toBe(8);
       expect(children[2].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
     }
