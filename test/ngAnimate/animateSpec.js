@@ -132,7 +132,7 @@ describe("ngAnimate", function() {
         var captured = false;
         module(function($provide, $animateProvider) {
           $provide.value('$rootElement', rootElm);
-          $animateProvider.register('.ani', function() {
+          $animateProvider.register('.capture-animation', function() {
             return {
               addClass : function(element, className, done) {
                 captured = true;
@@ -147,7 +147,7 @@ describe("ngAnimate", function() {
 
           $animate.enabled(true);
 
-          var element = $compile('<div class="ani"></div>')($rootScope);
+          var element = $compile('<div class="capture-animation"></div>')($rootScope);
           rootElm.append(element);
 
           expect(captured).toBe(false);
@@ -695,17 +695,17 @@ describe("ngAnimate", function() {
 
           $animate.enabled(true);
 
-          ss.addRule('.ani.ng-enter, .ani.ng-leave, .ani-fake.ng-enter, .ani-fake.ng-leave',
+          ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave, .real-animation-fake.ng-enter, .real-animation-fake.ng-leave',
             '-webkit-animation:1s my_animation;' + 
             'animation:1s my_animation;');
 
-          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+          ss.addRule('.real-animation.ng-enter-stagger, .real-animation.ng-leave-stagger',
             '-webkit-animation-delay:0.1s;' +
             '-webkit-animation-duration:0s;' +
             'animation-delay:0.1s;' + 
             'animation-duration:0s;');
 
-          ss.addRule('.ani-fake.ng-enter-stagger, .ani-fake.ng-leave-stagger',
+          ss.addRule('.fake-animation.ng-enter-stagger, .fake-animation.ng-leave-stagger',
             '-webkit-animation-delay:0.1s;' +
             '-webkit-animation-duration:1s;' +
             'animation-delay:0.1s;' + 
@@ -716,7 +716,7 @@ describe("ngAnimate", function() {
           var elements = [];
           for(var i = 0; i < 5; i++) {
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani"></div>')(newScope);
+            var element = $compile('<div class="real-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements.push(element);
           };
@@ -733,7 +733,7 @@ describe("ngAnimate", function() {
           for(var i = 0; i < 5; i++) {
             dealoc(elements[i]);
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani-fake"></div>')(newScope);
+            var element = $compile('<div class="fake-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements[i] = element;
           };
@@ -755,11 +755,11 @@ describe("ngAnimate", function() {
 
           $animate.enabled(true);
 
-          ss.addRule('.ani.ng-enter, .ani.ng-leave',
+          ss.addRule('.stagger-animation.ng-enter, .stagger-animation.ng-leave',
             '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
             'animation:my_animation 1s 1s, your_animation 1s 2s;');
 
-          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+          ss.addRule('.stagger-animation.ng-enter-stagger, .stagger-animation.ng-leave-stagger',
             '-webkit-animation-delay:0.1s;' +
             'animation-delay:0.1s;');
 
@@ -768,7 +768,7 @@ describe("ngAnimate", function() {
           var elements = [];
           for(var i = 0; i < 4; i++) {
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani"></div>')(newScope);
+            var element = $compile('<div class="stagger-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements.push(element);
           };
@@ -985,17 +985,17 @@ describe("ngAnimate", function() {
 
           $animate.enabled(true);
 
-          ss.addRule('.ani.ng-enter, .ani.ng-leave, .ani-fake.ng-enter, .ani-fake.ng-leave',
+          ss.addRule('.real-animation.ng-enter, .real-animation.ng-leave, .real-animation-fake.ng-enter, .real-animation-fake.ng-leave',
             '-webkit-transition:1s linear all;' + 
             'transition:1s linear all;');
 
-          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+          ss.addRule('.real-animation.ng-enter-stagger, .real-animation.ng-leave-stagger',
             '-webkit-transition-delay:0.1s;' +
             '-webkit-transition-duration:0s;' +
             'transition-delay:0.1s;' + 
             'transition-duration:0s;');
 
-          ss.addRule('.ani-fake.ng-enter-stagger, .ani-fake.ng-leave-stagger',
+          ss.addRule('.fake-animation.ng-enter-stagger, .fake-animation.ng-leave-stagger',
             '-webkit-transition-delay:0.1s;' +
             '-webkit-transition-duration:1s;' +
             'transition-delay:0.1s;' + 
@@ -1006,7 +1006,7 @@ describe("ngAnimate", function() {
           var elements = [];
           for(var i = 0; i < 5; i++) {
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani"></div>')(newScope);
+            var element = $compile('<div class="real-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements.push(element);
           };
@@ -1023,7 +1023,7 @@ describe("ngAnimate", function() {
           for(var i = 0; i < 5; i++) {
             dealoc(elements[i]);
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani-fake"></div>')(newScope);
+            var element = $compile('<div class="fake-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements[i] = element;
           };
@@ -1045,11 +1045,11 @@ describe("ngAnimate", function() {
 
           $animate.enabled(true);
 
-          ss.addRule('.ani.ng-enter, .ani.ng-leave',
+          ss.addRule('.stagger-animation.ng-enter, .ani.ng-leave',
             '-webkit-transition:1s linear color 2s, 3s linear font-size 4s;' + 
             'transition:1s linear color 2s, 3s linear font-size 4s;');
 
-          ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+          ss.addRule('.stagger-animation.ng-enter-stagger, .ani.ng-leave-stagger',
             '-webkit-transition-delay:0.1s;' +
             'transition-delay:0.1s;');
 
@@ -1058,7 +1058,7 @@ describe("ngAnimate", function() {
           var elements = [];
           for(var i = 0; i < 4; i++) {
             var newScope = $rootScope.$new();
-            var element = $compile('<div class="ani"></div>')(newScope);
+            var element = $compile('<div class="stagger-animation"></div>')(newScope);
             $animate.enter(element, container);
             elements.push(element);
           };
@@ -1080,13 +1080,13 @@ describe("ngAnimate", function() {
 
         $animate.enabled(true);
 
-        ss.addRule('.ani.ng-enter, .ani.ng-leave',
+        ss.addRule('.stagger-animation.ng-enter, .stagger-animation.ng-leave',
           '-webkit-animation:my_animation 1s 1s, your_animation 1s 2s;' + 
           'animation:my_animation 1s 1s, your_animation 1s 2s;' +
           '-webkit-transition:1s linear all 1s;' + 
           'transition:1s linear all 1s;');
 
-        ss.addRule('.ani.ng-enter-stagger, .ani.ng-leave-stagger',
+        ss.addRule('.stagger-animation.ng-enter-stagger, .stagger-animation.ng-leave-stagger',
           '-webkit-transition-delay:0.1s;' +
           'transition-delay:0.1s;' +
           '-webkit-animation-delay:0.2s;' +
@@ -1097,7 +1097,7 @@ describe("ngAnimate", function() {
         var elements = [];
         for(var i = 0; i < 3; i++) {
           var newScope = $rootScope.$new();
-          var element = $compile('<div class="ani"></div>')(newScope);
+          var element = $compile('<div class="stagger-animation"></div>')(newScope);
           $animate.enter(element, container);
           elements.push(element);
         };
@@ -1763,8 +1763,8 @@ describe("ngAnimate", function() {
 
     if (!$sniffer.animations) return;
 
-    ss.addRule('.ani.ng-enter', '-webkit-animation: my_animation 2s linear;' +
-                                        'animation: my_animation 2s linear');
+    ss.addRule('.sleek-animation.ng-enter', '-webkit-animation: my_animation 2s linear;' +
+                                            'animation: my_animation 2s linear');
 
     ss.addRule('.trans.ng-enter',  '-webkit-transition:1s linear all;' +
                                            'transition:1s linear all');
@@ -1772,7 +1772,7 @@ describe("ngAnimate", function() {
     var propertyKey = ($sniffer.vendorPrefix == 'Webkit' ? '-webkit-' : '') + 'transition-property';
 
     var element = html($compile('<div>...</div>')($rootScope));
-    var child = $compile('<div class="ani">...</div>')($rootScope);
+    var child = $compile('<div class="skeep-animation">...</div>')($rootScope);
     child.css(propertyKey,'background-color');
 
     $animate.enter(child, element);
@@ -1784,7 +1784,7 @@ describe("ngAnimate", function() {
     expect(child.css(propertyKey)).toBe('background-color');
     child.remove();
 
-    child = $compile('<div class="ani">...</div>')($rootScope);
+    child = $compile('<div class="sleek-animation">...</div>')($rootScope);
     child.attr('class','trans');
     $animate.enter(child, element);
     $rootScope.$digest();
