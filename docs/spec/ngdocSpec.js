@@ -114,17 +114,8 @@ describe('ngdoc', function() {
         function property(name) {
           return function(obj) {return obj[name];};
         }
-        function noop() {}
-        function doc(type, name){
-          return {
-              id: name,
-              ngdoc: type,
-              keywords: noop
-          };
-        }
-
-        var dev_guide_overview = doc('overview', 'dev_guide.overview');
-        var dev_guide_bootstrap = doc('function', 'dev_guide.bootstrap');
+        var dev_guide_overview = new Doc({ngdoc:'overview', id:'dev_guide.overview', text: ''});
+        var dev_guide_bootstrap = new Doc({ngdoc:'function', id:'dev_guide.bootstrap', text: ''});
 
         it('should put angular.fn() in front of dev_guide.overview, etc', function() {
           expect(ngdoc.metadata([dev_guide_overview, dev_guide_bootstrap]).map(property('id')))
