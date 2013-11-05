@@ -1426,7 +1426,7 @@ describe('$compile', function() {
             return {
               restrict: 'CA',
               link: {pre: function(scope) {
-                log('log-' + scope.$id + '-' + scope.$parent.$id);
+                log('log-' + scope.$id + '-' + (scope.$parent && scope.$parent.$id || 'no-parent'));
               }}
             };
           });
@@ -1443,7 +1443,7 @@ describe('$compile', function() {
         it('should allow creation of new isolated scopes for directives', inject(
             function($rootScope, $compile, log) {
           element = $compile('<div><span iscope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('log-002-001; LOG; 002');
+          expect(log).toEqual('log-001-no-parent; LOG; 002');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -2130,6 +2130,62 @@ describe('$compile', function() {
       expect(componentScope).not.toBe(regularScope);
       expect(componentScope.$parent).toBe(regularScope)
     }));
+
+    it('should not give the isolate scope to other directive template', function() {
+      module(function() {
+        directive('otherTplDir', function() {
+          return {
+            template: 'value: {{value}}'
+          };
+        });
+      });
+
+      inject(function($rootScope) {
+        compile('<div my-component other-tpl-dir>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
+
+    it('should not give the isolate scope to other directive template (with templateUrl)', function() {
+      module(function() {
+        directive('otherTplDir', function() {
+          return {
+            templateUrl: 'other.html'
+          };
+        });
+      });
+
+      inject(function($rootScope, $templateCache) {
+        $templateCache.put('other.html', 'value: {{value}}')
+        compile('<div my-component other-tpl-dir>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
+
+    it('should not give the isolate scope to regular child elements', function() {
+      inject(function($rootScope) {
+        compile('<div my-component>value: {{value}}</div>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
 
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
