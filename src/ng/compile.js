@@ -1480,8 +1480,13 @@ function $CompileProvider($provide) {
         }
 
         // RECURSION
-        // TODO(vojta): only pass isolate if the isolate directive has template
-        childLinkFn && childLinkFn(isolateScope || scope, linkNode.childNodes, undefined, boundTranscludeFn);
+        // We only pass the isolate scope, if the isolate directive has a template,
+        // otherwise the child elements do not belong to the isolate directive.
+        var scopeToChild = scope;
+        if (newIsolateScopeDirective && (newIsolateScopeDirective.template || newIsolateScopeDirective.templateUrl === null)) {
+          scopeToChild = isolateScope;
+        }
+        childLinkFn && childLinkFn(scopeToChild, linkNode.childNodes, undefined, boundTranscludeFn);
 
         // POSTLINKING
         for(i = postLinkFns.length - 1; i >= 0; i--) {
