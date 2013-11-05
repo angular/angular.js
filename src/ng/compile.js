@@ -1237,16 +1237,16 @@ function $CompileProvider($provide) {
 
             // combine directives from the original node and from the template:
             // - take the array of directives for this element
-            // - split it into two parts, those that were already applied and those that weren't
-            // - collect directives from the template, add them to the second group and sort them
-            // - append the second group with new directives to the first group
-            directives = directives.concat(
-                collectDirectives(
-                    compileNode,
-                    directives.splice(i + 1, directives.length - (i + 1)),
-                    newTemplateAttrs
-                )
-            );
+            // - split it into two parts, those that already applied (processed) and those that weren't (unprocessed)
+            // - collect directives from the template and sort them by priority
+            // - combine directives as: processed + template + unprocessed
+            var templateDirectives = collectDirectives(compileNode, [], newTemplateAttrs);
+            var unprocessedDirectives = directives.splice(i + 1, directives.length - (i + 1));
+
+            if (newIsolateScopeDirective) {
+              markDirectivesAsIsolate(templateDirectives);
+            }
+            directives = directives.concat(templateDirectives).concat(unprocessedDirectives);
             mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
 
             ii = directives.length;
@@ -1303,13 +1303,13 @@ function $CompileProvider($provide) {
         if (pre) {
           if (attrStart) pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
           pre.require = directive.require;
-          if (newIsolateScopeDirective === directive) pre.isolateScope = true;
+          if (newIsolateScopeDirective === directive || directive.$$isolateScope) pre.isolateScope = true;
           preLinkFns.push(pre);
         }
         if (post) {
           if (attrStart) post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
           post.require = directive.require;
-          if (newIsolateScopeDirective === directive) post.isolateScope = true;
+          if (newIsolateScopeDirective === directive || directive.$$isolateScope) post.isolateScope = true;
           postLinkFns.push(post);
         }
       }
@@ -1501,6 +1501,12 @@ function $CompileProvider($provide) {
       }
     }
 
+    function markDirectivesAsIsolate(directives) {
+      // mark all directives as needing isolate scope.
+      for (var j = 0, jj = directives.length; j < jj; j++) {
+        directives[j] = inherit(directives[j], {$$isolateScope: true});
+      }
+    }
 
     /**
      * looks up the directive and decorates it with exception handling and proper parameters. We
@@ -1616,7 +1622,12 @@ function $CompileProvider($provide) {
 
             tempTemplateAttrs = {$attr: {}};
             replaceWith($rootElement, $compileNode, compileNode);
-            collectDirectives(compileNode, directives, tempTemplateAttrs);
+            var templateDirectives = collectDirectives(compileNode, [], tempTemplateAttrs);
+
+            if (isObject(origAsyncDirective.scope)) {
+              markDirectivesAsIsolate(templateDirectives);
+            }
+            directives = templateDirectives.concat(directives);
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;
