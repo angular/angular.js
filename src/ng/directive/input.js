@@ -542,6 +542,13 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     return ctrl.$isEmpty(value) ? '' : '' + value;
   });
 
+  var refreshView = function() {
+    var value = element.val();
+    if (value == ctrl.$viewValue) {
+      ctrl.$setViewValue(value);
+    }
+  };
+
   if (attr.min) {
     var minValidator = function(value) {
       var min = parseFloat(attr.min);
@@ -554,6 +561,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       }
     };
 
+    attr.$observe('min', refreshView);
     ctrl.$parsers.push(minValidator);
     ctrl.$formatters.push(minValidator);
   }
@@ -570,6 +578,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       }
     };
 
+    attr.$observe('max', refreshView);
     ctrl.$parsers.push(maxValidator);
     ctrl.$formatters.push(maxValidator);
   }
