@@ -214,6 +214,7 @@ Doc.prototype = {
   },
 
   shortDescription : function() {
+    if (!this.description) return this.description;
     var text = this.description.split("\n")[0];
     text = text.replace(/<.+?\/?>/g, '');
     text = text.replace(/{/g,'&#123;');
