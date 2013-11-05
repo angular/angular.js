@@ -1375,7 +1375,7 @@ describe('$compile', function() {
                   return function (scope, element) {
                     iscope = scope;
                     log(scope.$id);
-                    expect(element.data('$scope')).toBe(scope);
+                    expect(element.data('$isolateScope')).toBe(scope);
                   };
                 }
               };
@@ -1416,7 +1416,7 @@ describe('$compile', function() {
                   return function (scope, element) {
                     iscope = scope;
                     log(scope.$id);
-                    expect(element.data('$scope')).toBe(scope);
+                    expect(element.data('$isolateScope')).toBe(scope);
                   };
                 }
               };
@@ -1535,7 +1535,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
-                '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
+                '<div class="iscope-a; scope-b">');
           })
         );
 
@@ -2085,7 +2085,7 @@ describe('$compile', function() {
 
 
   describe('isolated locals', function() {
-    var componentScope;
+    var componentScope, regularScope;
 
     beforeEach(module(function() {
       directive('myComponent', function() {
@@ -2112,6 +2112,23 @@ describe('$compile', function() {
           scope: { attr: 'xxx' }
         };
       });
+      directive('storeScope', function() {
+        return {
+          link: function(scope) {
+            regularScope = scope;
+          }
+        }
+      });
+    }));
+
+    it('should give other directives the parent scope', inject(function($rootScope) {
+      compile('<div><input type="text" my-component store-scope ng-model="value"></div>');
+      $rootScope.$apply(function() {
+        $rootScope.value = 'from-parent';
+      });
+      expect(element.find('input').val()).toBe('from-parent');
+      expect(componentScope).not.toBe(regularScope);
+      expect(componentScope.$parent).toBe(regularScope)
     }));
 
     describe('attribute', function() {
@@ -2372,6 +2389,68 @@ describe('$compile', function() {
         element = $compile('<div dir-a dir-b></div>')($rootScope);
         $rootScope.$digest();
         expect(log).toEqual('dirAController.name: dirA');
+      });
+    });
+
+
+    it('should require controller of an isolate directive from a non-isolate directive on the ' +
+       'same element', function() {
+      var IsolateController = function() {};
+      var isolateDirControllerInNonIsolateDirective;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            scope: {},
+            controller: IsolateController
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            require: 'isolate',
+            link: function(_, __, ___, isolateDirController) {
+              isolateDirControllerInNonIsolateDirective = isolateDirController;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(isolateDirControllerInNonIsolateDirective).toBeDefined();
+        expect(isolateDirControllerInNonIsolateDirective instanceof IsolateController).toBe(true);
+      });
+    });
+
+
+    it('should require controller of a non-isolate directive from an isolate directive on the ' +
+       'same element', function() {
+      var NonIsolateController = function() {};
+      var nonIsolateDirControllerInIsolateDirective;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            scope: {},
+            require: 'nonIsolate',
+            link: function(_, __, ___, nonIsolateDirController) {
+              nonIsolateDirControllerInIsolateDirective = nonIsolateDirController;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            controller: NonIsolateController
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(nonIsolateDirControllerInIsolateDirective).toBeDefined();
+        expect(nonIsolateDirControllerInIsolateDirective instanceof NonIsolateController).toBe(true);
       });
     });
 
