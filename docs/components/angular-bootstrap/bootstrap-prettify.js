@@ -192,7 +192,7 @@ directive.ngEvalJavascript = ['getEmbeddedTemplate', function(getEmbeddedTemplat
 
 
 directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location', '$sniffer', '$animate',
-                function($templateCache,   $browser,  docsRootScope, $location,   $sniffer, $animate) {
+                function($templateCache,   $browser,  docsRootScope, $location,   $sniffer,   $animate) {
   return {
     terminal: true,
     link: function(scope, element, attrs) {
@@ -205,6 +205,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         $provide.value('$anchorScroll', angular.noop);
         $provide.value('$browser', $browser);
         $provide.value('$sniffer', $sniffer);
+        $provide.value('$animate', $animate);
         $provide.provider('$location', function() {
           this.$get = ['$rootScope', function($rootScope) {
             docsRootScope.$on('$locationChangeSuccess', function(event, oldUrl, newUrl) {
@@ -227,6 +228,11 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
         }]);
         $provide.decorator('$rootScope', ['$delegate', function($delegate) {
           embedRootScope = $delegate;
+
+          // Since we are teleporting the $animate service, which relies on the $$postDigestQueue
+          // we need the embedded scope to use the same $$postDigestQueue as the outer scope
+          embedRootScope.$$postDigestQueue = docsRootScope.$$postDigestQueue;
+
           deregisterEmbedRootScope = docsRootScope.$watch(function embedRootScopeDigestWatch() {
             embedRootScope.$digest();
           });
