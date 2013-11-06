@@ -60,6 +60,8 @@ of the Controller on the `$scope` service provided by Angular. See the guide on
 {@link http://docs.angularjs.org/guide/di Dependency Injection} for more information.
 
 
+**NOTE**: To pass more than one service into controller initialization, services must be comma separated as {@link guide/di#di.controllers follows}.
+
 # Adding Behavior to a Scope Object
 
 In order to react to events or execute computation in the view we must provide behavior to the
