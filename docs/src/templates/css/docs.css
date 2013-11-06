@@ -531,3 +531,11 @@ pre ol li {
   padding-bottom:30px;
   border-bottom:1px solid #aaa;
 }
+
+td.success {
+  background-color: #dff0d8;
+}
+
+td.error {
+  background-color: #f2dede;
+}
