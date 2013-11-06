@@ -698,4 +698,106 @@ describe('ngView animations', function() {
       }
     });
   });
+
+
+  describe('autoscroll', function () {
+    var autoScrollSpy;
+
+    function spyOnAnchorScroll() {
+      return function($provide, $routeProvider) {
+        autoScrollSpy = jasmine.createSpy('$anchorScroll');
+        $provide.value('$anchorScroll', autoScrollSpy);
+        $routeProvider.when('/foo', {
+          controller: angular.noop,
+          template: '<div></div>'
+        });
+      };
+    }
+
+    function spyOnAnimateEnter() {
+      return function($animate) {
+        spyOn($animate, 'enter').andCallThrough();
+      };
+    }
+
+    function compileAndLink(tpl) {
+      return function($compile, $rootScope, $location) {
+        element = $compile(tpl)($rootScope);
+      };
+    }
+
+    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
+    beforeEach(inject(spyOnAnimateEnter()));
+
+    it('should call $anchorScroll if autoscroll attribute is present', inject(
+        compileAndLink('<div><ng:view autoscroll></ng:view></div>'),
+        function($rootScope, $animate, $timeout, $location) {
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+
+
+    it('should call $anchorScroll if autoscroll evaluates to true', inject(
+        compileAndLink('<div><ng:view src="tpl" autoscroll="value"></ng:view></div>'),
+        function($rootScope, $animate, $timeout, $location) {
+
+      $rootScope.value = true;
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+
+
+    it('should not call $anchorScroll if autoscroll attribute is not present', inject(
+        compileAndLink('<div><ng:view></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should not call $anchorScroll if autoscroll evaluates to false', inject(
+        compileAndLink('<div><ng:view autoscroll="value"></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+
+      $rootScope.value = false;
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should only call $anchorScroll after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:view autoscroll></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+          $location.path('/foo');
+
+          expect($animate.enter).not.toHaveBeenCalled();
+          $rootScope.$digest();
+
+          expect(autoScrollSpy).not.toHaveBeenCalled();
+
+          $animate.flushNext('enter');
+          $timeout.flush();
+
+          expect($animate.enter).toHaveBeenCalledOnce();
+          expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+  });
 });
