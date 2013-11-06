@@ -35,8 +35,8 @@ ngRouteModule.directive('ngView', ngViewFactory);
           <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
           <a href="Book/Scarlet">Scarlet Letter</a><br/>
 
-          <div class="example-animate-container">
-            <div ng-view class="view-example"></div>
+          <div class="view-animate-container">
+            <div ng-view class="view-animate"></div>
           </div>
           <hr />
 
@@ -64,7 +64,9 @@ ngRouteModule.directive('ngView', ngViewFactory);
       </file>
 
       <file name="animations.css">
-        .example-animate-container {
+        .view-animate-container {
+          position:relative;
+          height:100px!important;
           position:relative;
           background:white;
           border:1px solid black;
@@ -72,14 +74,12 @@ ngRouteModule.directive('ngView', ngViewFactory);
           overflow:hidden;
         }
 
-        .example-animate-container > div {
+        .view-animate {
           padding:10px;
         }
 
-        .view-example.ng-enter, .view-example.ng-leave {
+        .view-animate.ng-enter, .view-animate.ng-leave {
           -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
           transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
 
           display:block;
@@ -94,20 +94,13 @@ ngRouteModule.directive('ngView', ngViewFactory);
           padding:10px;
         }
 
-        .example-animate-container {
-          position:relative;
-          height:100px;
-        }
-
-        .view-example.ng-enter {
+        .view-animate.ng-enter {
           left:100%;
         }
-        .view-example.ng-enter.ng-enter-active {
+        .view-animate.ng-enter.ng-enter-active {
           left:0;
         }
-
-        .view-example.ng-leave { }
-        .view-example.ng-leave.ng-leave-active {
+        .view-animate.ng-leave.ng-leave-active {
           left:-100%;
         }
       </file>
