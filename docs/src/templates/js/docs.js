@@ -207,28 +207,29 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   }
 };
 
-docsApp.directive.docModuleComponents = ['sections', function(sections) {
+docsApp.directive.docModuleComponents = function() {
   return {
     template: '  <div class="component-breakdown">' +
               '    <h2>Module Components</h2>' +
-              '    <div ng-repeat="(key, section) in components">' + 
-              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' + 
-              '      <table class="definition-table">' + 
-              '        <tr>' + 
-              '          <th>Name</th>' + 
-              '          <th>Description</th>' + 
-              '        </tr>' + 
-              '        <tr ng-repeat="component in section.components">' + 
-              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' + 
-              '          <td>{{ component.shortDescription }}</td>' + 
-              '        </tr>' + 
-              '      </table>' + 
+              '    <div ng-repeat="(key, section) in components">' +
+              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' +
+              '      <table class="definition-table">' +
+              '        <tr>' +
+              '          <th>Name</th>' +
+              '          <th>Description</th>' +
+              '        </tr>' +
+              '        <tr ng-repeat="component in section.components">' +
+              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' +
+              '          <td>{{ component.shortDescription }}</td>' +
+              '        </tr>' +
+              '      </table>' +
               '    </div>' +
               '  </div>',
     scope : {
       module : '@docModuleComponents'
     },
-    controller : ['$scope', function($scope) {
+    controller : ['$scope', '$anchorScroll', '$timeout', 'sections',
+      function($scope, $anchorScroll, $timeout, sections) {
       var validTypes = ['property','function','directive','service','object','filter'];
       var components = {};
       angular.forEach(sections.api, function(item) {
@@ -239,16 +240,17 @@ docsApp.directive.docModuleComponents = ['sections', function(sections) {
             components[type] = components[type] || {
               title : type,
               type : type,
-              components : [] 
+              components : []
             };
             components[type].components.push(item);
           }
         }
       });
       $scope.components = components;
+      $timeout($anchorScroll, 0, false);
     }]
   };
-}]
+};
 
 docsApp.directive.docTutorialNav = function(templateMerge) {
   var pages = [
@@ -411,7 +413,7 @@ docsApp.serviceFactory.prepareDefaultAppModule = function() {
     var moduleName = 'App';
     return {
       module : moduleName,
-      script : "angular.module('" + moduleName + "', [" + 
+      script : "angular.module('" + moduleName + "', [" +
           (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
     };
   };
@@ -709,7 +711,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     error: 'Error Reference'
   };
 
-  populateComponentsList(); 
+  populateComponentsList();
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
