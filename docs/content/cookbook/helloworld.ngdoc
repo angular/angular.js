@@ -34,6 +34,6 @@ Take a look through the source and note:
 * There is no need for listener registration and event firing on change events.
 * The implicit presence of the `name` variable which is in the root {@link api/ng.$rootScope.Scope scope}.
 * The double curly brace `{{markup}}`, which binds the name variable to the greeting text.
-* The concept of {@link guide/dev_guide.templates.databinding data binding}, which reflects any
+* The concept of {@link guide/databinding data binding}, which reflects any
 changes to the
   input field in the greeting text.

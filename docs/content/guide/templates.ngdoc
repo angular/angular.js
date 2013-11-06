@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Understanding Angular Templates
+@name Angular Templates
 @description
 
 An Angular template is the declarative specification that, along with information from the model

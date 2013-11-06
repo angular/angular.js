@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Templates: Data Binding in Angular
+@name Data Binding
 @description
 
 Data-binding in Angular web apps is the automatic synchronization of data between the model and view
@@ -35,4 +35,4 @@ isolation without the view and the related DOM/browser dependency.
 ## Related Topics
 
 * {@link scope Angular Scopes}
-* {@link dev_guide.templates Angular Templates}
+* {@link templates Angular Templates}

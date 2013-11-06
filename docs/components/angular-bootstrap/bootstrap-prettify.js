@@ -169,21 +169,23 @@ directive.ngSetHtml = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
 directive.ngEvalJavascript = ['getEmbeddedTemplate', function(getEmbeddedTemplate) {
   return {
     compile: function (element, attr) {
-      var script = getEmbeddedTemplate(attr.ngEvalJavascript);
-
-      try {
-        if (window.execScript) { // IE
-          window.execScript(script || '""'); // IE complains when evaling empty string
-        } else {
-          window.eval(script);
+      var fileNames = attr.ngEvalJavascript.split(' ');
+      angular.forEach(fileNames, function(fileName) {
+        var script = getEmbeddedTemplate(fileName);
+        try {
+          if (window.execScript) { // IE
+            window.execScript(script || '""'); // IE complains when evaling empty string
+          } else {
+            window.eval(script + '//@ sourceURL=' + fileName);
+          }
+        } catch (e) {
+          if (window.console) {
+            window.console.log(script, '\n', e);
+          } else {
+            window.alert(e);
+          }
         }
-      } catch (e) {
-        if (window.console) {
-          window.console.log(script, '\n', e);
-        } else {
-          window.alert(e);
-        }
-      }
+      });
     }
   };
 }];

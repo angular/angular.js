@@ -51,6 +51,8 @@ initialization.
 
 ## Automatic Initialization
 
+<img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
+
 Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
 evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
 for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.

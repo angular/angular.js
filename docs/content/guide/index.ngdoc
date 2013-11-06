@@ -6,9 +6,11 @@
 
 Everything you need to know about AngularJS
 
-## First steps
+* {@link guide/introduction What is AngularJS?}
 
-Just starting with Angular?  These links will give you a solid foundation to start building apps.
+* {@link guide/concepts Conceptual Overview}
+
+## Tutorials
 
 * {@link tutorial/index Official AngularJS Tutorial}
 
@@ -26,7 +28,7 @@ Just starting with Angular?  These links will give you a solid foundation to sta
 
 In Angular applications, you move the job of filling page templates with data from the server to the client.  The result is a system better structured for dynamic page updates.  Below are the core features you'll use.
 
-* {@link guide/dev_guide.templates.databinding Data binding}
+* {@link guide/databinding Data binding}
 
 * {@link guide/expression Expressions}
 
@@ -41,8 +43,6 @@ In Angular applications, you move the job of filling page templates with data fr
 ### Application Structure
 
 * **Blog post: **[When to use directives, controllers or services](http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/)
-
-* **Separation of concerns:** {@link guide/dev_guide.mvc Model-View-Controller}
 
 * **App wiring:** {@link guide/di Dependency injection}
 
