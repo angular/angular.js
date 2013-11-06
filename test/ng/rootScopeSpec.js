@@ -127,6 +127,15 @@ describe('Scope', function() {
       });
     });
 
+    it('should clear phase if an exception interrupt $digest cycle', function() {
+      inject(function($rootScope) {
+        $rootScope.$watch('a', function() {throw new Error('abc');});
+        $rootScope.a = 1;
+        try { $rootScope.$digest(); } catch(e) { }
+        expect($rootScope.$$phase).toBeNull();
+      });
+    });
+
 
     it('should fire watches in order of addition', inject(function($rootScope) {
       // this is not an external guarantee, just our own sanity
