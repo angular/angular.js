@@ -8,6 +8,17 @@ Welcome to the AngularJS API docs page. These pages contain the AngularJS refere
 The documentation is organized into **modules** which contain various components of an AngularJS application.
 These components are directives, services, filters, providers, types, global APIs and testing mocks.
 
+<div class="alert alert-info">
+**Angular Namspaces `$` and `$$`**
+
+To prevent accidental name collisions with your code,
+Angular prefixes names of public objects with `$` and names of private objects with `$$`.
+Please do not use the `$` or `$$` prefix in your code.
+</div>
+
+## Angular Namespace
+
+
 ## {@link ng ng (core module)}
 This module is provided by default and contains the core components of AngularJS.
 

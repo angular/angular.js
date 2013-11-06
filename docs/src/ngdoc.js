@@ -1181,7 +1181,7 @@ var GUIDE_PRIORITY = [
   'dev_guide.services.$location',
   'dev_guide.services',
 
-  'dev_guide.templates.databinding',
+  'databinding',
   'dev_guide.templates.css-styling',
   'dev_guide.templates.filters.creating_filters',
   'dev_guide.templates.filters',

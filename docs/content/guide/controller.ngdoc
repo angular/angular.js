@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: About MVC in Angular: Understanding the Controller Component
+@name Controllers
 @description
 
 # Understanding Controllers
@@ -85,7 +85,7 @@ expression in the template:
     </div>
 </pre>
 
-As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
+As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
 the scope are available in the template/view, and can be invoked via angular expressions
 and `ng` event handler directives (e.g. {@link api/ng.directive:ngClick ngClick}).
@@ -105,7 +105,7 @@ Do not use Controllers for:
 - Any kind of DOM manipulation — Controllers should contain only business logic. DOM
 manipulation (the presentation logic of an application) is well known for being hard to test.
 Putting any presentation logic into Controllers significantly affects testability of the business
-logic. Angular offers {@link dev_guide.templates.databinding databinding} for automatic DOM manipulation. If
+logic. Angular offers {@link databinding databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
 - Input formatting — Use {@link forms angular form controls} instead.
@@ -126,7 +126,7 @@ directive} or {@link api/ngRoute.$route $route service}.
 To illustrate further how Controller components work in Angular, let's create a little app with the
 following components:
 
-- A {@link dev_guide.templates template} with two buttons and a simple message
+- A {@link templates template} with two buttons and a simple message
 - A model consisting of a string named `spice`
 - A Controller with two functions that set the value of `spice`
 
@@ -336,11 +336,5 @@ describe('state', function() {
 });
 </pre>
 
-
-## Related Topics
-
-* {@link dev_guide.mvc About MVC in Angular}
-* {@link dev_guide.mvc.understanding_model Understanding the Model Component}
-* {@link dev_guide.mvc.understanding_view Understanding the View Component}
 
 
