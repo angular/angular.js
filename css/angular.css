@@ -18,5 +18,5 @@ ng\:form {
  * animations. The clip (!ie) and zoom (ie) CSS properties are used
  * since they trigger a transition without making the browser
  * animate anything and they're both highly underused CSS properties */
-.ng-animate { clip:rect(1px, auto, auto, 0); -ms-zoom:1.0001; }
-.ng-animate-active { clip:rect(0, auto, auto, 0); -ms-zoom:1; }
+.ng-animate-start { clip:rect(0, auto, auto, 0); -ms-zoom:1.0001; }
+.ng-animate-active { clip:rect(-1px, auto, auto, 0); -ms-zoom:1; }
