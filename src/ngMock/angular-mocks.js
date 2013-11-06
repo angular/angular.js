@@ -562,7 +562,7 @@ angular.mock.$IntervalProvider = function() {
  */
 (function() {
   var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
-  
+
   function jsonStringToDate(string) {
     var match;
     if (match = string.match(R_ISO8061_STR)) {
@@ -776,7 +776,12 @@ angular.mock.animate = angular.module('mock.animate', ['ng'])
         enabled : $delegate.enabled,
         flushNext : function(name) {
           var tick = animate.queue.shift();
-          expect(tick.method).toBe(name);
+
+          if (!tick) throw new Error('No animation to be flushed');
+          if(tick.method !== name) {
+            throw new Error('The next animation is not "' + name +
+              '", but is "' + tick.method + '"');
+          }
           tick.fn();
           return tick;
         }
@@ -1191,7 +1196,7 @@ function createHttpBackendMock($rootScope, $delegate, $browser) {
    * @returns {requestHandler} Returns an object with `respond` method that controls how a matched
    *   request is handled.
    *
-   *  - respond – 
+   *  - respond –
    *      `{function([status,] data[, headers])|function(function(method, url, data, headers)}`
    *    – The respond method takes a set of static data to be returned or a function that can return
    *    an array containing response status (number), response data (string) and response headers
