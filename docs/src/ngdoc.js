@@ -1331,6 +1331,9 @@ function checkBrokenLinks(docs) {
 
   docs.forEach(function(doc) {
     byFullId[doc.section + '/' + doc.id] = doc;
+    if (doc.section === 'api') {
+      doc.anchors.push('directive', 'service', 'filter', 'function');
+    }
   });
 
   docs.forEach(function(doc) {
