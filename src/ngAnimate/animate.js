@@ -8,7 +8,7 @@
  *
  * # ngAnimate
  *
- * The `ngAnimate` module provides support for JavaScript and CSS3 animation hooks within core and custom directives.
+ * The `ngAnimate` module provides support for JavaScript, CSS3 transition and CSS3 keyframe animation hooks within existing core and custom directives.
  *
  * {@installModule animate}
  *
@@ -17,8 +17,8 @@
  * # Usage
  *
  * To see animations in action, all that is required is to define the appropriate CSS classes
- * or to register a JavaScript animation via the $animation service. The directives that support animation automatically are:
- * `ngRepeat`, `ngInclude`, `ngSwitch`, `ngShow`, `ngHide` and `ngView`. Custom directives can take advantage of animation
+ * or to register a JavaScript animation via the myModule.animation() function. The directives that support animation automatically are:
+ * `ngRepeat`, `ngInclude`, `ngIf`, `ngSwitch`, `ngShow`, `ngHide`, `ngView` and `ngClass`. Custom directives can take advantage of animation
  * by using the `$animate` service.
  *
  * Below is a more detailed breakdown of the supported animation events provided by pre-existing ng directives:
@@ -39,11 +39,8 @@
  *
  * <pre>
  * <style type="text/css">
- * .slide.ng-enter > div,
- * .slide.ng-leave > div {
+ * .slide.ng-enter, .slide.ng-leave {
  *   -webkit-transition:0.5s linear all;
- *   -moz-transition:0.5s linear all;
- *   -o-transition:0.5s linear all;
  *   transition:0.5s linear all;
  * }
  *
@@ -78,9 +75,7 @@
  * &#42;/
  * .reveal-animation.ng-enter {
  *  -webkit-transition: 1s linear all; /&#42; Safari/Chrome &#42;/
- *  -moz-transition: 1s linear all; /&#42; Firefox &#42;/
- *  -o-transition: 1s linear all; /&#42; Opera &#42;/
- *  transition: 1s linear all; /&#42; IE10+ and Future Browsers &#42;/
+ *  transition: 1s linear all; /&#42; All other modern browsers and IE10+ &#42;/
  *
  *  /&#42; The animation preparation code &#42;/
  *  opacity: 0;
@@ -108,19 +103,9 @@
  * <style type="text/css">
  * .reveal-animation.ng-enter {
  *   -webkit-animation: enter_sequence 1s linear; /&#42; Safari/Chrome &#42;/
- *   -moz-animation: enter_sequence 1s linear; /&#42; Firefox &#42;/
- *   -o-animation: enter_sequence 1s linear; /&#42; Opera &#42;/
  *   animation: enter_sequence 1s linear; /&#42; IE10+ and Future Browsers &#42;/
  * }
  * &#64-webkit-keyframes enter_sequence {
- *   from { opacity:0; }
- *   to { opacity:1; }
- * }
- * &#64-moz-keyframes enter_sequence {
- *   from { opacity:0; }
- *   to { opacity:1; }
- * }
- * &#64-o-keyframes enter_sequence {
  *   from { opacity:0; }
  *   to { opacity:1; }
  * }
@@ -154,6 +139,9 @@
  * <pre>
  * .my-animation.ng-enter {
  *   /&#42; standard transition code &#42;/
+ *   -webkit-transition: 1s linear all;
+ *   transition: 1s linear all;
+ *   opacity:0;
  * }
  * .my-animation.ng-enter-stagger {
  *   /&#42; this will have a 100ms delay between each successive leave animation &#42;/
@@ -167,6 +155,7 @@
  * }
  * .my-animation.ng-enter.ng-enter-active {
  *   /&#42; standard transition styles &#42;/
+ *   opacity:1;
  * }
  * </pre>
  *
@@ -209,16 +198,22 @@
  *       return function(cancelled) {
  *         //this (optional) function will be called when the animation
  *         //completes or when the animation is cancelled (the cancelled
- *         //flag will (be set to true if cancelled).
+ *         //flag will be set to true if cancelled).
  *       }
  *     }
  *     leave: function(element, done) { },
  *     move: function(element, done) { },
  *
+ *     //animation that can be triggered before the class is added
  *     beforeAddClass: function(element, className, done) { },
+ *
+ *     //animation that can be triggered after the class is added
  *     addClass: function(element, className, done) { },
  *
+ *     //animation that can be triggered before the class is removed
  *     beforeRemoveClass: function(element, className, done) { },
+ *
+ *     //animation that can be triggered after the class is removed
  *     removeClass: function(element, className, done) { }
  *   }
  * });
@@ -228,7 +223,7 @@
  * a javascript callback function. When an animation is triggered, $animate will look for a matching animation which fits
  * the element's CSS class attribute value and then run the matching animation event function (if found).
  * In other words, if the CSS classes present on the animated element match any of the JavaScript animations then the callback function
- * be executed. It should be also noted that only simple class selectors are allowed.
+ * be executed. It should be also noted that only simple, single class selectors are allowed (compound class selectors are not supported).
  *
  * Within a JavaScript animation, an object containing various event callback animation functions is expected to be returned.
  * As explained above, these callbacks are triggered based on the animation event. Therefore if an enter animation is run,
@@ -244,9 +239,9 @@ angular.module('ngAnimate', ['ng'])
    * @name ngAnimate.$animateProvider
    * @description
    *
-   * The `$AnimationProvider` allows developers to register and access custom JavaScript animations directly inside
-   * of a module. When an animation is triggered, the $animate service will query the $animation function to find any
-   * animations that match the provided name value.
+   * The `$animateProvider` allows developers to register JavaScript animation event handlers directly inside of a module.
+   * When an animation is triggered, the $animate service will query the $animate service to find any animations that match
+   * the provided name value.
    *
    * Requires the {@link ngAnimate `ngAnimate`} module to be installed.
    *
@@ -298,12 +293,11 @@ angular.module('ngAnimate', ['ng'])
       /**
        * @ngdoc object
        * @name ngAnimate.$animate
-       * @requires $timeout, $sniffer, $rootElement
        * @function
        *
        * @description
-       * The `$animate` service provides animation detection support while performing DOM operations (enter, leave and move)
-       * as well as during addClass and removeClass operations. When any of these operations are run, the $animate service
+       * The `$animate` service provides animation detection support while performing DOM operations (enter, leave and move) as well as during addClass and removeClass operations.
+       * When any of these operations are run, the $animate service
        * will examine any JavaScript-defined animations (which are defined by using the $animateProvider provider object)
        * as well as any CSS-defined animations against the CSS classes present on the element once the DOM operation is run.
        *
@@ -328,22 +322,23 @@ angular.module('ngAnimate', ['ng'])
          *
          * Below is a breakdown of each step that occurs during enter animation:
          *
-         * | Animation Step                                                                               | What the element class attribute looks like   |
-         * |----------------------------------------------------------------------------------------------|-----------------------------------------------|
-         * | 1. $animate.enter(...) is called                                                             | class="my-animation"                          |
-         * | 2. element is inserted into the parentElement element or beside the afterElement element     | class="my-animation"                          |
-         * | 3. $animate runs any JavaScript-defined animations on the element                            | class="my-animation"                          |
-         * | 4. the .ng-enter class is added to the element                                               | class="my-animation ng-enter"                 |
-         * | 5. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-enter"                 |
-         * | 6. the .ng-enter-active class is added (this triggers the CSS transition/animation)          | class="my-animation ng-enter ng-enter-active" |
-         * | 7. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-enter ng-enter-active" |
-         * | 8. The animation ends and both CSS classes are removed from the element                      | class="my-animation"                          |
-         * | 9. The doneCallback() callback is fired (if provided)                                        | class="my-animation"                          |
+         * | Animation Step                                                                               | What the element class attribute looks like |
+         * |----------------------------------------------------------------------------------------------|---------------------------------------------|
+         * | 1. $animate.enter(...) is called                                                             | class="my-animation"                        |
+         * | 2. element is inserted into the parentElement element or beside the afterElement element     | class="my-animation"                        |
+         * | 3. $animate runs any JavaScript-defined animations on the element                            | class="my-animation ng-animate"             |
+         * | 4. the .ng-enter class is added to the element                                               | class="my-animation ng-animate ng-enter"    |
+         * | 5. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-animate ng-enter"    |
+         * | 6. $animate waits for 10ms (this performs a reflow)                                          | class="my-animation ng-animate ng-enter"    |
+         * | 7. the .ng-enter-active and .ng-animate-active classes are added (this triggers the CSS transition/animation) | class="my-animation ng-animate ng-animate-active ng-enter ng-enter-active" |
+         * | 8. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-animate ng-animate-active ng-enter ng-enter-active" |
+         * | 9. The animation ends and all generated CSS classes are removed from the element             | class="my-animation"                        |
+         * | 10. The doneCallback() callback is fired (if provided)                                       | class="my-animation"                        |
          *
          * @param {jQuery/jqLite element} element the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} parentElement the parent element of the element that will be the focus of the enter animation
          * @param {jQuery/jqLite element} afterElement the sibling element (which is the previous element) of the element that will be the focus of the enter animation
-         * @param {function()=} doneCallback callback function that will be called once the animation is complete
+         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         enter : function(element, parentElement, afterElement, doneCallback) {
           this.enabled(false, element);
@@ -365,20 +360,21 @@ angular.module('ngAnimate', ['ng'])
          *
          * Below is a breakdown of each step that occurs during enter animation:
          *
-         * | Animation Step                                                                               | What the element class attribute looks like  |
-         * |----------------------------------------------------------------------------------------------|----------------------------------------------|
-         * | 1. $animate.leave(...) is called                                                             | class="my-animation"                         |
-         * | 2. $animate runs any JavaScript-defined animations on the element                            | class="my-animation"                         |
-         * | 3. the .ng-leave class is added to the element                                               | class="my-animation ng-leave"                |
-         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-leave"                |
-         * | 5. the .ng-leave-active class is added (this triggers the CSS transition/animation)          | class="my-animation ng-leave ng-leave-active |
-         * | 6. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-leave ng-leave-active |
-         * | 7. The animation ends and both CSS classes are removed from the element                      | class="my-animation"                         |
-         * | 8. The element is removed from the DOM                                                       | ...                                          |
-         * | 9. The doneCallback() callback is fired (if provided)                                        | ...                                          |
+         * | Animation Step                                                                               | What the element class attribute looks like |
+         * |----------------------------------------------------------------------------------------------|---------------------------------------------|
+         * | 1. $animate.leave(...) is called                                                             | class="my-animation"                        |
+         * | 2. $animate runs any JavaScript-defined animations on the element                            | class="my-animation ng-animate"             |
+         * | 3. the .ng-leave class is added to the element                                               | class="my-animation ng-animate ng-leave"    |
+         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-animate ng-leave"    |
+         * | 5. $animate waits for 10ms (this performs a reflow)                                          | class="my-animation ng-animate ng-leave"    |
+         * | 6. the .ng-leave-active and .ng-animate-active classes is added (this triggers the CSS transition/animation) | class="my-animation ng-animate ng-animate-active ng-leave ng-leave-active" |
+         * | 7. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-animate ng-animate-active ng-leave ng-leave-active" |
+         * | 8. The animation ends and all generated CSS classes are removed from the element             | class="my-animation"                        |
+         * | 9. The element is removed from the DOM                                                       | ...                                         |
+         * | 10. The doneCallback() callback is fired (if provided)                                       | ...                                         |
          *
          * @param {jQuery/jqLite element} element the element that will be the focus of the leave animation
-         * @param {function()=} doneCallback callback function that will be called once the animation is complete
+         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         leave : function(element, doneCallback) {
           cancelChildAnimations(element);
@@ -407,18 +403,19 @@ angular.module('ngAnimate', ['ng'])
          * |----------------------------------------------------------------------------------------------|---------------------------------------------|
          * | 1. $animate.move(...) is called                                                              | class="my-animation"                        |
          * | 2. element is moved into the parentElement element or beside the afterElement element        | class="my-animation"                        |
-         * | 3. $animate runs any JavaScript-defined animations on the element                            | class="my-animation"                        |
-         * | 4. the .ng-move class is added to the element                                                | class="my-animation ng-move"                |
-         * | 5. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-move"                |
-         * | 6. the .ng-move-active class is added (this triggers the CSS transition/animation)           | class="my-animation ng-move ng-move-active" |
-         * | 7. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-move ng-move-active" |
-         * | 8. The animation ends and both CSS classes are removed from the element                      | class="my-animation"                        |
-         * | 9. The doneCallback() callback is fired (if provided)                                        | class="my-animation"                        |
+         * | 3. $animate runs any JavaScript-defined animations on the element                            | class="my-animation ng-animate"             |
+         * | 4. the .ng-move class is added to the element                                                | class="my-animation ng-animate ng-move"     |
+         * | 5. $animate scans the element styles to get the CSS transition/animation duration and delay  | class="my-animation ng-animate ng-move"     |
+         * | 6. $animate waits for 10ms (this performs a reflow)                                          | class="my-animation ng-animate ng-move"     |
+         * | 7. the .ng-move-active and .ng-animate-active classes is added (this triggers the CSS transition/animation) | class="my-animation ng-animate ng-animate-active ng-move ng-move-active" |
+         * | 8. $animate waits for X milliseconds for the animation to complete                           | class="my-animation ng-animate ng-animate-active ng-move ng-move-active" |
+         * | 9. The animation ends and all generated CSS classes are removed from the element             | class="my-animation"                        |
+         * | 10. The doneCallback() callback is fired (if provided)                                       | class="my-animation"                        |
          *
          * @param {jQuery/jqLite element} element the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} parentElement the parentElement element of the element that will be the focus of the move animation
          * @param {jQuery/jqLite element} afterElement the sibling element (which is the previous element) of the element that will be the focus of the move animation
-         * @param {function()=} doneCallback callback function that will be called once the animation is complete
+         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         move : function(element, parentElement, afterElement, doneCallback) {
           cancelChildAnimations(element);
@@ -438,25 +435,26 @@ angular.module('ngAnimate', ['ng'])
          * Triggers a custom animation event based off the className variable and then attaches the className value to the element as a CSS class.
          * Unlike the other animation methods, the animate service will suffix the className value with {@type -add} in order to provide
          * the animate service the setup and active CSS classes in order to trigger the animation (this will be skipped if no CSS transitions
-         * or keyframes are defined on the -add CSS class).
+         * or keyframes are defined on the -add or base CSS class).
          *
          * Below is a breakdown of each step that occurs during addClass animation:
          *
          * | Animation Step                                                                                 | What the element class attribute looks like |
          * |------------------------------------------------------------------------------------------------|---------------------------------------------|
-         * | 1. $animate.addClass(element, 'super') is called                                               | class=""                                    |
-         * | 2. $animate runs any JavaScript-defined animations on the element                              | class=""                                    |
-         * | 3. the .super-add class is added to the element                                                | class="super-add"                           |
-         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay    | class="super-add"                           |
-         * | 5. the .super-add-active class is added (this triggers the CSS transition/animation)           | class="super-add super-add-active"          |
-         * | 6. $animate waits for X milliseconds for the animation to complete                             | class="super-add super-add-active"          |
-         * | 7. The animation ends and both CSS classes are removed from the element                        | class=""                                    |
-         * | 8. The super class is added to the element                                                     | class="super"                               |
-         * | 9. The doneCallback() callback is fired (if provided)                                          | class="super"                               |
+         * | 1. $animate.addClass(element, 'super') is called                                               | class="my-animation"                        |
+         * | 2. $animate runs any JavaScript-defined animations on the element                              | class="my-animation ng-animate"             |
+         * | 3. the .super-add class are added to the element                                               | class="my-animation ng-animate super-add"   |
+         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay    | class="my-animation ng-animate super-add"   |
+         * | 5. $animate waits for 10ms (this performs a reflow)                                            | class="my-animation ng-animate super-add"   |
+         * | 6. the .super, .super-add-active and .ng-animate-active classes are added (this triggers the CSS transition/animation) | class="my-animation ng-animate ng-animate-active super super-add super-add-active"          |
+         * | 7. $animate waits for X milliseconds for the animation to complete                             | class="my-animation super-add super-add-active"  |
+         * | 8. The animation ends and all generated CSS classes are removed from the element               | class="my-animation super"                  |
+         * | 9. The super class is kept on the element                                                      | class="my-animation super"                  |
+         * | 10. The doneCallback() callback is fired (if provided)                                         | class="my-animation super"                  |
          *
          * @param {jQuery/jqLite element} element the element that will be animated
-         * @param {string} className the CSS class that will be animated and then attached to the element
-         * @param {function()=} done callback function that will be called once the animation is complete
+         * @param {string} className the CSS class that will be added to the element and then animated
+         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         addClass : function(element, className, doneCallback) {
           performAnimation('addClass', className, element, null, null, function() {
@@ -473,24 +471,26 @@ angular.module('ngAnimate', ['ng'])
          * Triggers a custom animation event based off the className variable and then removes the CSS class provided by the className value
          * from the element. Unlike the other animation methods, the animate service will suffix the className value with {@type -remove} in
          * order to provide the animate service the setup and active CSS classes in order to trigger the animation (this will be skipped if
-         * no CSS transitions or keyframes are defined on the -remove CSS class).
+         * no CSS transitions or keyframes are defined on the -remove or base CSS classes).
          *
          * Below is a breakdown of each step that occurs during removeClass animation:
          *
          * | Animation Step                                                                                | What the element class attribute looks like     |
-         * |-----------------------------------------------------------------------------------------------|-------------------------------------------------|
-         * | 1. $animate.removeClass(element, 'super') is called                                           | class="super"                                   |
-         * | 2. $animate runs any JavaScript-defined animations on the element                             | class="super"                                   |
-         * | 3. the .super-remove class is added to the element                                            | class="super super-remove"                      |
-         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay   | class="super super-remove"                      |
-         * | 5. the .super-remove-active class is added (this triggers the CSS transition/animation)       | class="super super-remove super-remove-active"  |
-         * | 6. $animate waits for X milliseconds for the animation to complete                            | class="super super-remove super-remove-active"  |
-         * | 7. The animation ends and both CSS all three classes are removed from the element             | class=""                                        |
-         * | 8. The doneCallback() callback is fired (if provided)                                         | class=""                                        |
+         * |-----------------------------------------------------------------------------------------------|---------------------------------------------|
+         * | 1. $animate.removeClass(element, 'super') is called                                           | class="my-animation super"                  |
+         * | 2. $animate runs any JavaScript-defined animations on the element                             | class="my-animation super ng-animate"       |
+         * | 3. the .super-add class are added to the element                                              | class="my-animation super ng-animate super-remove"|
+         * | 4. $animate scans the element styles to get the CSS transition/animation duration and delay   | class="my-animation super ng-animate super-add"   |
+         * | 5. $animate waits for 10ms (this performs a reflow)                                           | class="my-animation super ng-animate super-add"   |
+         * | 6. the .super-remove-active and .ng-animate-active classes are added and .super is removed (this triggers the CSS transition/animation) | class="my-animation ng-animate ng-animate-active super-remove super-remove-active"          |
+         * | 7. $animate waits for X milliseconds for the animation to complete                            | class="my-animation ng-animate ng-animate-active super-remove super-remove-active"   |
+         * | 8. The animation ends and all generated CSS classes are removed from the element              | class="my-animation"                        |
+         * | 9. The doneCallback() callback is fired (if provided)                                         | class="my-animation"                        |
+         *
          *
          * @param {jQuery/jqLite element} element the element that will be animated
          * @param {string} className the CSS class that will be animated and then removed from the element
-         * @param {function()=} done callback function that will be called once the animation is complete
+         * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         removeClass : function(element, className, doneCallback) {
           performAnimation('removeClass', className, element, null, null, function() {
