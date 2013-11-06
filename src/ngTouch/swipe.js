@@ -88,9 +88,11 @@ ngTouch.factory('$swipe', [function() {
         eventHandlers['start'] && eventHandlers['start'](startCoords, event);
       });
 
-      element.on('touchcancel', function(event) {
-        active = false;
-        eventHandlers['cancel'] && eventHandlers['cancel'](event);
+      element.on('touchcancel mouseleave', function(event) {
+        if (active) {
+          active = false;
+          eventHandlers['cancel'] && eventHandlers['cancel'](event);
+        }
       });
 
       element.on('touchmove mousemove', function(event) {
