@@ -2,450 +2,383 @@
 @name Conceptual Overview
 @description
 
-# Overview
+There are some concepts within Angular that you should understand before creating your first application.
+This section touches all important parts of Angular really quickly using a simple example.
+However, it won't explain all details.
+For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
 
-This document gives a quick overview of the main angular components and how they work together.
-These are:
+| Concept          | Description                     |
+|------------------|------------------------------------------|
+|{@link concepts#template Template}          | HTML with additional markup |
+|{@link concepts#directive Directives}        | extend HTML with custom attributes and elements |
+|{@link concepts#model Model}             | the data that is shown to the user and with which the user interacts |
+|{@link concepts#scope Scope}             | context where the model is stored so that directives and expressions can access it |
+|{@link concepts#expression Expressions}       | access variables and functions from the scope |
+|{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions |
+|{@link concepts#filter Filter}            | formats the value of an expression for display to the user |
+|{@link concepts#view View}              | what the user sees (the DOM) |
+|{@link concepts#databinding Data Binding}      | sync data between the model and the view |
+|{@link concepts#controller Controller}        | the business logic behind views |
+|{@link concepts#di Dependency Injection} | Creates and wires objects / functions |
+|{@link concepts#injector Injector}          | dependency injection container |
+|{@link concepts#module Module}            | configures the Injector |
+|{@link concepts#service Service}           | reusable business logic independent of views |
 
-  * {@link concepts#startup startup} - bring up hello world
-  * {@link concepts#runtime runtime} - overview of angular runtime
-  * {@link concepts#scope scope} - the glue between the view and the controller
-  * {@link concepts#controller controller} - application behavior
-  * {@link concepts#model model} - your application data
-  * {@link concepts#view view} - what the user sees
-  * {@link concepts#directives directives} - extend HTML vocabulary
-  * {@link concepts#filters filters} - format the data in user locale
-  * {@link concepts#injector injector} - assembles your application
-  * {@link concepts#module module} - configures the injector
-  * {@link concepts#angular_namespace `$`} - angular namespace
 
-<a name="startup"></a>
-# Startup
+# A first example: Data binding
 
-This is how we get the ball rolling (refer to the diagram and example below):
+In the following we will build a form to calculate the costs of an invoice in different currencies.
 
-<img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
+Let's start with input fields for quantity and cost whose values are multiplied to produce the total of the invoice:
 
-  1. The browser loads the HTML and parses it into a DOM
-  2. The browser loads `angular.js` script
-  3. Angular waits for `DOMContentLoaded` event
-  4. Angular looks for {@link api/ng.directive:ngApp ng-app}
-    {@link guide/directive directive}, which designates the application boundary
-  5. The {@link guide/module Module} specified in {@link
-     api/ng.directive:ngApp ng-app} (if any) is used to configure
-     the {@link api/AUTO.$injector $injector}
-  6. The {@link api/AUTO.$injector $injector} is used to create the {@link
-     api/ng.$compile $compile} service as well as {@link
-     api/ng.$rootScope $rootScope}
-  7. The {@link api/ng.$compile $compile} service is used to compile the DOM and link
-     it   with {@link api/ng.$rootScope $rootScope}
-  8. The {@link api/ng.directive:ngInit ng-init} {@link
-     guide/directive directive} assigns `World` to the `name` property on the {@link guide/scope
-     scope}
-  9. The `{{name}}` {@link api/ng.$interpolate interpolates} the expression to
-     `Hello World!`
 
 <example>
   <file name="index.html">
-    <p ng-init=" name='World' ">Hello {{name}}!</p>
+      <div ng-init="qty=1;cost=2">
+        <b>Invoice:</b>
+        <div>
+          Quantity: <input type="number" ng-model="qty" required >
+        </div>
+        <div>
+          Costs: <input type="number" ng-model="cost" required >
+        </div>
+        <div>
+          <b>Total:</b> {{qty * cost | currency}}
+        </div>
+      </div>
   </file>
 </example>
 
+Try out the Live Preview above, and then let's walk through the example and describe what's going on.
 
-<a name="runtime"></a>
-# Runtime
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding1.png">
 
-<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-runtime.png">
+This looks like normal HTML, with some new markup. In Angular, a file like this is called a
+<a name="template">"{@link templates template}"</a>. When Angular starts your application, it parses and 
+processes this new markup from the template using the so called <a name="compiler">"{@link compiler compiler}"</a>.
+The loaded, transformed and rendered DOM is then called the <a name="view">"view"</a>.
 
-The diagram and the example below describe how Angular interacts with the browser's event loop.
+The first kind of new markup are the so called <a name="directive">"{@link directive directives}"</a>.
+They apply special behavior to attributes or elements in the HTML. In the example above we use the 
+{@link api/ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
+initializes our application. Angular also defines a directive for the {@link api/ng.directive:input `input`}
+element that adds extra behavior to the element. E.g. it is able to automatically validate that the entered 
+text is non empty by evaluating the `required` attribute. 
+The {@link api/ng.directive:ngModel `ng-model`} directive stores/updates
+the value of the input field into/from a variable and shows the validation state of the input field by 
+adding css classes. In the example we use these css classes to mark an empty input field with a red border.
 
-  1. The browser's event-loop waits for an event to arrive. An event is a user interaction, timer event,
-     or network event (response from a server).
-  2. The event's callback gets executed. This enters the JavaScript context. The callback can
-      modify the DOM structure.
-  3. Once the callback executes, the browser leaves the JavaScript context and
-     re-renders the view based on DOM changes.
-
-Angular modifies the normal JavaScript flow by providing its own event processing loop. This
-splits the JavaScript into classical and Angular execution context. Only operations which are
-applied in Angular execution context will benefit from Angular data-binding, exception handling,
-property watching, etc... You can also use $apply() to enter Angular execution context from JavaScript. Keep in
-mind that in most places (controllers, services) $apply has already been called for you by the
-directive which is handling the event. An explicit call to $apply is needed only when
-implementing custom event callbacks, or when working with third-party library callbacks.
-
-  1. Enter Angular execution context by calling {@link guide/scope scope}`.`{@link
-     api/ng.$rootScope.Scope#methods_$apply $apply}`(stimulusFn)`. Where `stimulusFn` is
-     the work you wish to do in Angular execution context.
-  2. Angular executes the `stimulusFn()`, which typically modifies application state.
-  3. Angular enters the {@link api/ng.$rootScope.Scope#methods_$digest $digest} loop. The
-     loop is made up of two smaller loops which process {@link
-     api/ng.$rootScope.Scope#methods_$evalAsync $evalAsync} queue and the {@link
-     api/ng.$rootScope.Scope#methods_$watch $watch} list. The {@link
-     api/ng.$rootScope.Scope#methods_$digest $digest} loop keeps iterating until the model
-     stabilizes, which means that the {@link api/ng.$rootScope.Scope#methods_$evalAsync
-     $evalAsync} queue is empty and the {@link api/ng.$rootScope.Scope#methods_$watch
-     $watch} list does not detect any changes.
-  4. The {@link api/ng.$rootScope.Scope#methods_$evalAsync $evalAsync} queue is used to
-     schedule work which needs to occur outside of current stack frame, but before the browser's
-     view render. This is usually done with `setTimeout(0)`, but the `setTimeout(0)` approach
-     suffers from slowness and may cause view flickering since the browser renders the view after
-     each event.
-  5. The {@link api/ng.$rootScope.Scope#methods_$watch $watch} list is a set of expressions
-     which may have changed since last iteration. If a change is detected then the `$watch`
-     function is called which typically updates the DOM with the new value.
-  6. Once the Angular {@link api/ng.$rootScope.Scope#methods_$digest $digest} loop finishes
-     the execution leaves the Angular and JavaScript context. This is followed by the browser
-     re-rendering the DOM to reflect any changes.
-
-
-Here is the explanation of how the `Hello world` example achieves the data-binding effect when the
-user enters text into the text field.
-
-  1. During the compilation phase:
-     1. the {@link api/ng.directive:ngModel ng-model} and {@link
-        api/ng.directive:input input} {@link guide/directive
-        directive} set up a `keydown` listener on the `<input>` control.
-     2. the {@link api/ng.$interpolate &#123;&#123;name&#125;&#125; } interpolation
-        sets up a {@link api/ng.$rootScope.Scope#methods_$watch $watch} to be notified of
-        `name` changes.
-  2. During the runtime phase:
-     1. Pressing an '`X`' key causes the browser to emit a `keydown` event on the input control.
-     2. The {@link api/ng.directive:input input} directive
-        captures the change to the input's value and calls {@link
-        api/ng.$rootScope.Scope#methods_$apply $apply}`("name = 'X';")` to update the
-        application model inside the Angular execution context.
-     3. Angular applies the `name = 'X';` to the model.
-     4. The {@link api/ng.$rootScope.Scope#methods_$digest $digest} loop begins
-     5. The {@link api/ng.$rootScope.Scope#methods_$watch $watch} list detects a change
-        on the `name` property and notifies the {@link api/ng.$interpolate
-        &#123;&#123;name&#125;&#125; } interpolation, which in turn updates the DOM.
-     6. Angular exits the execution context, which in turn exits the `keydown` event and with it
-        the JavaScript execution context.
-     7. The browser re-renders the view with update text.
-
-<example>
-  <file name="index.html">
-    <input ng-model="name">
-    <p>Hello {{name}}!</p>
-  </file>
-</example>
-
-<a name="scope"></a>
-#Scope
-
-The {@link guide/scope scope} is responsible for detecting changes to the model section and
-provides the execution context for expressions. The scopes are nested in a hierarchical structure
-which closely follow the DOM structure. (See individual directive documentation to see which
-directives cause a creation of new scopes.)
-
-The following example demonstrates how the `name` {@link guide/expression expression} will evaluate
-into a different value depending on which scope it is evaluated in. The example is followed by
-a diagram depicting the scope boundaries.
-
-<div class="show-scope">
-<example>
-  <file name="index.html">
-    <div ng-controller="GreetCtrl">
-      Hello {{name}}!
-    </div>
-    <div ng-controller="ListCtrl">
-      <ol>
-        <li ng-repeat="name in names">{{name}}</li>
-      </ol>
-    </div>
-  </file>
-  <file name="script.js">
-    function GreetCtrl($scope) {
-      $scope.name = 'World';
-    }
-
-    function ListCtrl($scope) {
-      $scope.names = ['Igor', 'Misko', 'Vojta'];
-    }
-  </file>
-  <file name="style.css">
-    .show-scope .doc-example-live.ng-scope,
-    .show-scope .doc-example-live .ng-scope  {
-      border: 1px solid red;
-      margin: 3px;
-    }
-  </file>
-</example>
+<div class="alert alert-info">
+**Custom directives to access the DOM**: In Angular, the only place where an application touches the DOM is
+ within directives. This is good as artifacts that access the DOM are hard to test.
+ If you need to access the DOM directly you should write a custom directive for this. The
+ {@link directive directives guide} explains how to do this.
 </div>
 
-<img class="center" src="img/guide/concepts-scope.png">
+The second kind of new markup are the double curly braces `{{ expression | filter }}`:
+When the compiler encounters this markup, it will replace it with the evaluated value of the markup.
+An <a name="expression">"{@link expression expression}"</a> in a template is a JavaScript-like code snippet that allows
+to read and write variables. Note that those variables are not global variables.
+Just like variables in a JavaScript function live in a scope,
+Angular provides a <a name="scope">"{@link scope scope}"</a> for the variables accessible to expressions.
+The values that are stored in variables on the scope are referred to as the <a name="model">"model"</a>
+in the rest of the documentation.
+Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
+and multiply them together".
+
+The example above also contains a <a name="filter">"{@link dev_guide.templates.filters filter}"</a>.
+A filter formats the value of an expression for display to the user.
+In the example above, the filter {@link api/ng.filter:currency `currency`} formats a number
+into an output that looks like money.
+
+The important thing in the example is that angular provides _live_ bindings:
+Whenever the input values change, the value of the expressions are automatically
+recalculated and the DOM is updated with their values.
+The concept behind this is <a name="databinding">"{@link databinding two-way data binding}"</a>.
 
 
-<a name="controller"></a>
-# Controller
+# Adding UI logic: Controllers
 
-<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-controller.png">
+Let's add some more logic to the example to
+allow to enter and calculate the costs in different currencies and also pay the invoice.
 
-A controller is the code behind the view. Its job is to construct the model and publish it to the
-view along with callback methods. The view is a projection of the scope onto the template (the
-HTML). The scope is the glue which marshals the model to the view and forwards the events to the
-controller.
+<example module="invoice1">
+  <file name="invoice1.js">
+    angular.module('invoice1', [])
+      .controller('InvoiceController', function() {
+        this.qty = 1;
+        this.cost = 2;
+        this.inCurr = 'EUR';
+        this.currencies = ['USD', 'EUR', 'CNY'];
+        this.usdToForeignRates = {
+          USD: 1,
+          EUR: 0.74,
+          CNY: 6.09
+        };
 
-The separation of the controller and the view is important because:
-
-  * The controller is written in JavaScript. JavaScript is imperative. Imperative is a good fit
-    for specifying application behavior. The controller should not contain any rendering
-    information (DOM references or HTML fragments).
-  * The view template is written in HTML. HTML is declarative. Declarative is a good fit for
-    specifying UI. The View should not contain any behavior.
-  * Since the controller is unaware of the view, there could be many views for the same
-    controller. This is important for re-skinning, device specific views (i.e. mobile vs desktop),
-    and testability.
-
-<example>
-  <file name="index.html">
-    <div ng-controller="MyCtrl">
-      Hello {{name}}!
-      <button ng-click="action()">
-        OK
-      </button>
-    </div>
-  </file>
-  <file name="script.js">
-    function MyCtrl($scope) {
-      $scope.action = function() {
-        $scope.name = 'OK';
-      }
-
-      $scope.name = 'World';
-    }
-  </file>
-</example>
-
-
-<a name="model"></a>
-# Model
-
-<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-model.png">
-
-The model is the data which is merged with the template to produce the view. To be able to
-render the model into the view, the model has to be able to be referenced from the scope. Unlike many
-other frameworks Angular makes no restrictions or requirements on the model. There are no classes
-to inherit from or special accessor methods for accessing or changing the model. The model can be
-primitive, object hash, or a full object Type. In short the model is a plain JavaScript object.
-
-
-<a name="view"></a>
-# View
-
-<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-view.png">
-
-The view is what the user sees. The view begins its life as a template, is merged with the
-model and finally rendered into the browser DOM. Angular takes a very different approach to
-rendering the view compared to most other templating systems.
-
-  * **Others** - Most templating systems begin as an HTML string with special templating markup.
-    Often the template markup breaks the HTML syntax which means that the template can not be
-    edited by an HTML editor. The template string is then parsed by the template engine, and
-    merged with the data. The result of the merge is an HTML string. The HTML string is then
-    written to the browser using the `.innerHTML`, which causes the browser to render the HTML.
-    When the model changes the whole process needs to be repeated. The granularity of the template
-    is the granularity of the DOM updates. The key here is that the templating system manipulates
-    strings.
-  * **Angular** - Angular is different, since its templating system works on DOM objects not on
-    strings. The template is still written in an HTML string, but it is HTML (not HTML with
-    template sprinkled in.) The browser parses the HTML into the DOM, and the DOM becomes the input to
-    the template engine known as the {@link api/ng.$compile compiler}. The compiler
-    looks for {@link guide/directive directives} which in turn set up {@link
-    api/ng.$rootScope.Scope#methods_$watch watches} on the model. The result is a
-    continuously updating view which does not need template model re-merging. Your model becomes
-    the single source-of-truth for your view.
-
-<example>
-  <file name="index.html">
-    <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
-      <input ng-model="list" ng-list> <br>
-      <input ng-model="list" ng-list> <br>
-      <pre>list={{list}}</pre> <br>
-      <ol>
-        <li ng-repeat="item in list">
-          {{item}}
-        </li>
-      </ol>
-    </div>
-  </file>
-</example>
-
-
-<a name="directives"></a>
-# Directives
-
-A directive is a behavior or DOM transformation which is triggered by the presence of a custom attribute,
-element name, class name or comment. A directive allows you to extend the HTML vocabulary in a
-declarative fashion. Following is an example which enables data-binding for the `contenteditable`
-in HTML.
-
-<example module="directive">
-  <file name="script.js">
-    angular.module('directive', []).directive('contenteditable', function() {
-      return {
-        require: 'ngModel',
-        link: function(scope, elm, attrs, ctrl) {
-          // view -> model
-          elm.on('blur', function() {
-            scope.$apply(function() {
-              ctrl.$setViewValue(elm.html());
-            });
-          });
-
-          // model -> view
-          ctrl.$render = function(value) {
-            elm.html(value);
-          };
-
-          // load init value from DOM
-          ctrl.$setViewValue(elm.html());
-        }
-      };
-    });
-  </file>
-  <file name="index.html">
-    <div contentEditable="true" ng-model="content">Edit Me</div>
-    <pre>model = {{content}}</pre>
-  </file>
-  <file name="style.css">
-    div[contentEditable] {
-      cursor: pointer;
-      background-color: #D0D0D0;
-      margin-bottom: 1em;
-      padding: 1em;
-    }
-  </file>
-</example>
-
-<a name="filters"></a>
-# Filters
-
-{@link api/ng.$filter Filters} perform data transformation. Typically
-they are used in conjunction with the locale to format the data in locale specific output.
-They follow the spirit of UNIX filters and use similar syntax `|` (pipe).
-
-<example>
-  <file name="index.html">
-    <div ng-init="list = ['Chrome', 'Safari', 'Firefox', 'IE'] ">
-      Number formatting: {{ 1234567890 | number }} <br>
-      array filtering <input ng-model="predicate">
-      {{ list | filter:predicate | json }}
-    </div>
-  </file>
-</example>
-
-
-<a name="module"></a>
-<a name="injector"></a>
-# Modules and the Injector
-
-<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png">
-
-The {@link api/AUTO.$injector injector} is a service locator. There is a single
-{@link api/AUTO.$injector injector} per Angular {@link
-api/ng.directive:ngApp application}. The {@link
-api/AUTO.$injector injector} provides a way to look up an object instance by its
-name. The injector keeps an internal cache of all objects so that repeated calls to get the same
-object name result in the same instance. If the object does not exist, then the {@link
-api/AUTO.$injector injector} asks the instance factory to create a new instance.
-
-A {@link api/angular.Module module} is a way to configure the injector's instance factory, known
-as a {@link api/AUTO.$provide provider}.
-
-<pre>
-  // Create a module
-  var myModule = angular.module('myModule', [])
-
-  // Configure the injector
-  myModule.factory('serviceA', function() {
-    return {
-      // instead of {}, put your object creation here
-    };
-  });
-
-  // create an injector and configure it from 'myModule'
-  var $injector = angular.injector(['myModule']);
-
-  // retrieve an object from the injector by name
-  var serviceA = $injector.get('serviceA');
-
-  // always true because of instance cache
-  $injector.get('serviceA') === $injector.get('serviceA');
-</pre>
-
-
-But the real magic of the {@link api/AUTO.$injector injector} is that it can be
-used to {@link api/AUTO.$injector#methods_invoke call} methods and {@link
-api/AUTO.$injector#methods_instantiate instantiate} types. This subtle feature is what
-allows the methods and types to ask for their dependencies instead of having to look for them.
-
-<pre>
-  // You write functions such as this one.
-  function doSomething(serviceA, serviceB) {
-    // do something here.
-  }
-
-  // Angular provides the injector for your application
-  var $injector = ...;
-
-  ///////////////////////////////////////////////
-  // the old-school way of getting dependencies.
-  var serviceA = $injector.get('serviceA');
-  var serviceB = $injector.get('serviceB');
-
-  // now call the function
-  doSomething(serviceA, serviceB);
-
-  ///////////////////////////////////////////////
-  // the cool way of getting dependencies.
-  // the $injector will supply the arguments to the function automatically
-  $injector.invoke(doSomething); // This is how the framework calls your functions
-</pre>
-
-Notice that the only thing you needed to write was the function, and list the dependencies in the
-function arguments. When angular calls the function, it will use the {@link
-api/AUTO.$injector#methods_invoke call} which will automatically fill the function
-arguments.
-
-Examine the `ClockCtrl` below, and notice how it lists the dependencies in the constructor. When the
-{@link api/ng.directive:ngController ng-controller} instantiates
-the controller it automatically provides the dependencies. There is no need to create
-dependencies, look for dependencies, or even get a reference to the injector.
-
-<example module="timeExampleModule">
-  <file name="index.html">
-    <div ng-controller="ClockCtrl">
-      Current time is: {{ time.now }}
-    </div>
-  </file>
-  <file name="script.js">
-    angular.module('timeExampleModule', []).
-      // Declare new object called time,
-      // which will be available for injection
-      factory('time', function($timeout) {
-        var time = {};
-
-        (function tick() {
-          time.now = new Date().toString();
-          $timeout(tick, 1000);
-        })();
-        return time;
+        this.total = function total(outCurr) {
+          return this.convertCurrency(this.qty * this.cost, this.inCurr, outCurr);
+        };
+        this.convertCurrency = function convertCurrency(amount, inCurr, outCurr) {
+          return amount * this.usdToForeignRates[outCurr] * 1 / this.usdToForeignRates[inCurr];
+        };
+        this.pay = function pay() {
+          window.alert("Thanks!");
+        };
       });
-
-    // Notice that you can simply ask for time
-    // and it will be provided. No need to look for it.
-    function ClockCtrl($scope, time) {
-      $scope.time = time;
-    }
+  </file>
+  <file name="index.html">
+      <div ng-controller="InvoiceController as invoice">
+        <b>Invoice:</b>
+        <div>
+          Quantity: <input type="number" ng-model="invoice.qty" required >
+        </div>
+        <div>
+          Costs: <input type="number" ng-model="invoice.cost" required >
+          <select ng-model="invoice.inCurr">
+            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          </select>
+        </div>
+        <div>
+          <b>Total:</b>
+          <span ng-repeat="c in invoice.currencies">
+            {{invoice.total(c) | currency:c}}
+          </span>
+          <button ng-click="invoice.pay()">Pay</button>
+        </div>
+      </div>
   </file>
 </example>
 
+What changed?
 
-<a name="angular_namespace"></a>
-# Angular Namespace
+First, there is a new JavaScript file that contains a so called <a name="controller">"{@link controller controller}"</a>.
+More exactly, the file contains a constructor function that creates the actual controller instance.
+The purpose of controllers is to expose variables and functionality to expressions and directives.
 
-To prevent accidental name collision, Angular prefixes names of objects which could potentially
-collide with `$`. Please do not use the `$` prefix in your code as it may accidentally collide
-with Angular code.
+Besides the new file that contains the controller code we also added a
+{@link api/ng.directive:ngController `ng-controller`} directive to the HTML.
+This directive tells angular that the new `InvoiceController` is responsible for the element with the directive
+and all of the element's children.
+The syntax `InvoiceController as invoice` tells Angular to instantiate the controller
+and save it in the variable `invoice` in the current scope.
+
+We also changed all expressions in the page to read and write variables within that
+controller instance by prefixing them with `invoice.` . The possible currencies are defined in the controller
+and added to the template using {@link api/ng.directive:ngRepeat `ng-repeat`}.
+As the controller contains a `total` function
+we are also able to bind the result of that function to the DOM using `{{ invoice.total(...) }}`.
+
+Again, this binding is live, i.e. the DOM will be automatically updated
+whenever the result of the function changes.
+The button to pay the invoice uses the directive {@link api/ng.directive:ngClick `ngClick`}. This will evaluate the
+corresponding expression whenever the button is clicked.
+
+In the new JavaScript file we are also creating a {@link concepts#module module}
+at which we register the controller. We will talk about modules in the next section.
+
+The following graphic shows how everything works together after we introduced the controller:
+
+<img style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding2.png">
+
+# View independent business logic: Services
+
+Right now, the `InvoiceController` contains all logic of our example. When the application grows it
+is a good practise to move view independent logic from the controller into a so called
+<a name="service">"{@link dev_guide.services service}"</a>, so it can be reused by other parts
+of the application as well. Later on, we could also change that service to load the exchange rates
+from the web, e.g. by calling the Yahoo Finance API, without changing the controller.
+
+Let's refactor our example and move the currency conversion into a service in another file:
+
+<example module="invoice2">
+  <file name="finance2.js">
+    angular.module('finance2', [])
+      .factory('currencyConverter', function() {
+        var currencies = ['USD', 'EUR', 'CNY'],
+            usdToForeignRates = {
+          USD: 1,
+          EUR: 0.74,
+          CNY: 6.09
+        };
+        return {
+          currencies: currencies,
+          convert: convert
+        };
+
+        function convert(amount, inCurr, outCurr) {
+          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
+        }
+      });
+  </file>
+  <file name="invoice2.js">
+    angular.module('invoice2', ['finance2'])
+      .controller('InvoiceController', ['currencyConverter', function(currencyConverter) {
+        this.qty = 1;
+        this.cost = 2;
+        this.inCurr = 'EUR';
+        this.currencies = currencyConverter.currencies;
+
+        this.total = function total(outCurr) {
+          return currencyConverter.convert(this.qty * this.cost, this.inCurr, outCurr);
+        };
+        this.pay = function pay() {
+          window.alert("Thanks!");
+        };
+      }]);
+  </file>
+  <file name="index.html">
+      <div ng-controller="InvoiceController as invoice">
+        <b>Invoice:</b>
+        <div>
+          Quantity: <input type="number" ng-model="invoice.qty" required >
+        </div>
+        <div>
+          Costs: <input type="number" ng-model="invoice.cost" required >
+          <select ng-model="invoice.inCurr">
+            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          </select>
+        </div>
+        <div>
+          <b>Total:</b>
+          <span ng-repeat="c in invoice.currencies">
+            {{invoice.total(c) | currency:c}}
+          </span>
+          <button ng-click="invoice.pay()">Pay</button>
+        </div>
+      </div>
+  </file>
+</example>
+
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-service.png">
+
+What changed?
+We moved the `convertCurrency` function and the definition of the existing currencies
+into the new file `finance.js`. But how does the controller
+get a hold of the now separated function?
+
+This is where <a name="di">"{@link di Dependency Injection}"</a> comes into play.
+Dependency Injection (DI) is a software design pattern that
+deals with how objects and functions get created and how they get a hold of their dependencies.
+Everything within Angular (directives, filters, controllers,
+services, ...) is created and wired using dependency injection. Within Angular,
+the DI container is called the <a name="injector">"{@link di injector}"</a>.
+
+To use DI, there needs to be a place where all the things that should work together are registered.
+In Angular, this is the purpose of the so called <a name="module">"{@link module modules}"</a>.
+When Angular starts, it will use the configuration of the module with the name defined by the `ng-app` directive,
+including the configuration of all modules that this module depends on.
+
+In the example above:
+The template contains the directive `ng-app="invoice"`. This tells Angular
+to use the `invoice` module as the main module for the application.
+The code snippet `angular.module('invoice', ['finance'])`  specifies that the `invoice` module depends on the
+`finance` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
+
+Now that Angular knows of all the parts of the application, it needs to create them.
+In the previous section we saw that controllers are created using a factory function.
+For services there are multiple ways to define their factory
+(see the {@link dev_guide.services service guide}).
+In the example above, we are using a function that returns the `currencyConverter` function as the factory
+for the service.
+
+Back to the initial question: How does the `InvoiceController` get a reference to the `currencyConverter` function?
+In Angular, this is done by simply defining arguments on the constructor function. With this, the injector
+is able to create the objects in the right order and pass the previously created objects into the
+factories of the objects that depend on them.
+In our example, the `InvoiceController` has an argument named `currencyConverter`. By this, Angular knows about the
+dependency between the controller and the service and calls the controller with the service instance as argument.
+
+The last thing that changed in the example between the previous section and this section is that we
+now pass an array to the `module.controller` function, instead of a plain function. The array first
+contains the names of the service dependencies that the controller needs. The last entry
+in the array is the controller constructor function.
+Angular uses this array syntax to define the dependencies so that the DI also works after minifying
+the code, which will most probably rename the argument name of the controller constructor function
+to something shorter like `a`.
+
+# Accessing the backend
+
+Let's finish our example by fetching the exchange rates from the Yahoo Finance API.
+The following example shows how this is done with Angular:
+
+<example module="invoice3">
+  <file name="invoice3.js">
+    angular.module('invoice3', ['finance3'])
+      .controller('InvoiceController', ['currencyConverter', function(currencyConverter) {
+        this.qty = 1;
+        this.cost = 2;
+        this.inCurr = 'EUR';
+        this.currencies = currencyConverter.currencies;
+
+        this.total = function total(outCurr) {
+          return currencyConverter.convert(this.qty * this.cost, this.inCurr, outCurr);
+        };
+        this.pay = function pay() {
+          window.alert("Thanks!");
+        };
+      }]);
+  </file>
+  <file name="finance3.js">
+    angular.module('finance3', [])
+      .factory('currencyConverter', ['$http', function($http) {
+        var YAHOO_FINANCE_URL_PATTERN =
+              'http://query.yahooapis.com/v1/public/yql?q=select * from '+
+              'yahoo.finance.xchange where pair in ("PAIRS")&format=json&'+
+              'env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK',
+            currencies = ['USD', 'EUR', 'CNY'],
+            usdToForeignRates = {};
+        refresh();
+        return {
+          currencies: currencies,
+          convert: convert,
+          refresh: refresh
+        };
+
+        function convert(amount, inCurr, outCurr) {
+          return amount * usdToForeignRates[outCurr] * 1 / usdToForeignRates[inCurr];
+        }
+
+        function refresh() {
+          var url = YAHOO_FINANCE_URL_PATTERN.
+                     replace('PAIRS', 'USD' + currencies.join('","USD'));
+          return $http.jsonp(url).success(function(data) {
+            var newUsdToForeignRates = {};
+            angular.forEach(data.query.results.rate, function(rate) {
+              var currency = rate.id.substring(3,6);
+              newUsdToForeignRates[currency] = window.parseFloat(rate.Rate);
+            });
+            usdToForeignRates = newUsdToForeignRates;
+          });
+        }
+      }]);
+  </file>
+  <file name="index.html">
+      <div ng-controller="InvoiceController as invoice">
+        <b>Invoice:</b>
+        <div>
+          Quantity: <input type="number" ng-model="invoice.qty" required >
+        </div>
+        <div>
+          Costs: <input type="number" ng-model="invoice.cost" required >
+          <select ng-model="invoice.inCurr">
+            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          </select>
+        </div>
+        <div>
+          <b>Total:</b>
+          <span ng-repeat="c in invoice.currencies">
+            {{invoice.total(c) | currency:c}}
+          </span>
+          <button ng-click="invoice.pay()">Pay</button>
+        </div>
+      </div>
+  </file>
+</example>
+
+What changed?
+Our `currencyConverter` service of the `finance` module now uses the
+{@link api/ng.$http $http} service, a builtin service provided by Angular
+for accessing the backend. It is a wrapper around [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+and [JSONP](http://en.wikipedia.org/wiki/JSONP) transports. Details can be found in the api docs of that service.
+
