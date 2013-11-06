@@ -7,6 +7,7 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
+If you're looking for the **directives API**, we recently moved it to {@link api/ng.$compile `$compile`}.
 </div>
 
 
