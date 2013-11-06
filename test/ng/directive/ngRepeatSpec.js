@@ -750,14 +750,12 @@ describe('ngRepeat', function() {
   });
 
 
-  it('should add separator comments after each item', inject(function ($compile, $rootScope) {
+  it('should add separator comment after end of block', inject(function ($compile, $rootScope) {
     var check = function () {
       var children = element.find('div');
       expect(children.length).toBe(3);
 
       // Note: COMMENT_NODE === 8
-      expect(children[0].nextSibling.nodeType).toBe(8);
-      expect(children[1].nextSibling.nodeType).toBe(8);
       expect(children[2].nextSibling.nodeType).toBe(8);
       expect(children[2].nextSibling.nodeValue).toBe(' end ngRepeat: val in values ');
     }
@@ -1027,6 +1025,34 @@ describe('ngRepeat', function() {
       $rootScope.books.push({title:'T3', description: 'D3'});
       $rootScope.$digest();
       expect(element.text()).toEqual('T1:D1;T2:D2;T3:D3;');
+    }));
+
+
+    it('should properly react to list change', inject(function ($compile, $rootScope) {
+      $rootScope.values = [1, 2, 3];
+      $rootScope.showMe = true;
+
+      element = $compile(
+        '<div>' +
+          '<div ng-repeat-start="val in values">val:{{val}};</div>' +
+          '<div ng-repeat-end>val-end:{{val}};</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$digest();
+      expect(element.find('div').length).toBe(6);
+
+      $rootScope.values.shift();
+      $rootScope.values.push(4);
+
+      $rootScope.$digest();
+      console.log(element.html());
+      console.log($rootScope.values);
+      expect(element.find('div').length).toBe(6);
+      expect(element.text()).not.toContain('val:1;');
+      expect(element.text()).not.toContain('val-end:1;');
+      expect(element.text()).toContain('val:4;');
+      expect(element.text()).toContain('val-end:4;');
     }));
 
 
