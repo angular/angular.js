@@ -200,7 +200,7 @@ previous example.
 
 Notice that the `SpicyCtrl` Controller now defines just one method called `spicy`, which takes one
 argument called `spice`. The template then refers to this Controller method and passes in a string
-constant `'chili'` in the binding for the first button and a model property `spice` (bound to an
+constant `'chili'` in the binding for the first button and a model property `customSpice` (bound to an
 input box) in the second button.
 
 ## Scope Inheritance Example
