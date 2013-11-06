@@ -815,6 +815,8 @@ angular.module('ngAnimate', ['ng'])
       var ANIMATION_ITERATION_COUNT_KEY = 'IterationCount';
       var NG_ANIMATE_PARENT_KEY = '$$ngAnimateKey';
       var NG_ANIMATE_CSS_DATA_KEY = '$$ngAnimateCSS3Data';
+      var NG_ANIMATE_FALLBACK_CLASS_NAME = 'ng-animate-start';
+      var NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME = 'ng-animate-active';
 
       var lookupCache = {};
       var parentCounter = 0;
@@ -954,11 +956,13 @@ angular.module('ngAnimate', ['ng'])
         var node = element[0];
         //temporarily disable the transition so that the enter styles
         //don't animate twice (this is here to avoid a bug in Chrome/FF).
+        var activeClassName = '';
         if(timings.transitionDuration > 0) {
+          element.addClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
+          activeClassName += NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME + ' ';
           node.style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
         }
 
-        var activeClassName = 'ng-animate-active ';
         forEach(className.split(' '), function(klass, i) {
           activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
         });
@@ -1118,6 +1122,7 @@ angular.module('ngAnimate', ['ng'])
 
       function animateClose(element, className) {
         element.removeClass(className);
+        element.removeClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
         element.removeData(NG_ANIMATE_CSS_DATA_KEY);
       }
 

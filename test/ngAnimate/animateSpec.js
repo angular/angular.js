@@ -814,7 +814,7 @@ describe("ngAnimate", function() {
           $timeout.flush();
 
           expect(child.attr('style') || '').not.toContain('transition-property');
-          expect(child.hasClass('ng-animate')).toBe(true);
+          expect(child.hasClass('ng-animate-start')).toBe(true);
           expect(child.hasClass('ng-animate-active')).toBe(true);
 
           browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
@@ -843,6 +843,53 @@ describe("ngAnimate", function() {
 
           expect(child2.hasClass('ng-animate')).toBe(false);
           expect(child2.hasClass('ng-animate-active')).toBe(false);
+        }));
+
+        it("should not apply the fallback classes if no animations are going on or if CSS animations are going on",
+          inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
+
+          if (!$sniffer.animations) return;
+
+          ss.addRule('.transitions',  '-webkit-transition:1s linear all;' +
+                                              'transition:1s linear all');
+
+          ss.addRule('.keyframes',  '-webkit-animation:my_animation 1s;' +
+                                            'animation:my_animation 1s');
+
+          var element = $compile('<div class="transitions">...</div>')($rootScope);
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          $animate.enabled(false);
+
+          $animate.addClass(element, 'klass');
+
+          expect(element.hasClass('ng-animate-start')).toBe(false);
+
+          element.removeClass('klass');
+
+          $animate.enabled(true);
+
+          $animate.addClass(element, 'klass');
+
+          $timeout.flush();
+
+          expect(element.hasClass('ng-animate-start')).toBe(true);
+          expect(element.hasClass('ng-animate-active')).toBe(true);
+
+          browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+
+          expect(element.hasClass('ng-animate-start')).toBe(false);
+          expect(element.hasClass('ng-animate-active')).toBe(false);
+
+          element.attr('class', 'keyframes');
+
+          $animate.addClass(element, 'klass2');
+
+          $timeout.flush();
+
+          expect(element.hasClass('ng-animate-start')).toBe(false);
+          expect(element.hasClass('ng-animate-active')).toBe(false);
         }));
 
         it("should skip transitions if disabled and run when enabled",
