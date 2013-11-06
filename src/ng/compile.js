@@ -1246,7 +1246,9 @@ function $CompileProvider($provide) {
             if (newIsolateScopeDirective) {
               markDirectivesAsIsolate(templateDirectives);
             }
-            directives = directives.concat(templateDirectives).concat(unprocessedDirectives);
+            var afterDirectives = [].concat(templateDirectives).concat(unprocessedDirectives);
+            afterDirectives.sort(byPriority)
+            directives = directives.concat(afterDirectives);
             mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
 
             ii = directives.length;
@@ -1628,6 +1630,7 @@ function $CompileProvider($provide) {
               markDirectivesAsIsolate(templateDirectives);
             }
             directives = templateDirectives.concat(directives);
+            directives.sort(byPriority);
             mergeTemplateAttributes(tAttrs, tempTemplateAttrs);
           } else {
             compileNode = beforeTemplateCompileNode;
