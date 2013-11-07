@@ -371,8 +371,8 @@ describe('ngClass animations', function() {
     });
     inject(function($compile, $rootScope, $rootElement, $animate, $timeout, $document) {
 
-      //since we skip animations upon first digest, this needs to be set to true
-      $animate.enabled(true);
+      // Enable animations by triggering the first item in the postDigest queue
+      digestQueue.shift()();
 
       $rootScope.val = 'crazy';
       var element = angular.element('<div ng-class="val"></div>');
