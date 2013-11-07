@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Angular Templates
+@name Templates
 @description
 
 An Angular template is the declarative specification that, along with information from the model
@@ -14,7 +14,7 @@ These are the types of Angular elements and element attributes you can use in a 
   augments an existing DOM element or represents a reusable DOM component - a widget.
 * {@link api/ng.$interpolate Markup} — The double
 curly brace notation `{{ }}` to bind expressions to elements is built-in angular markup.
-* {@link dev_guide.templates.filters Filter} — Formats your data for display to the user.
+* {@link filter Filter} — Formats your data for display to the user.
 * {@link forms Form controls} — Lets you validate user input.
 
 Note:  In addition to declaring the elements above in templates, you can also access these elements
@@ -49,7 +49,7 @@ eight.
 
 ## Related Topics
 
-* {@link dev_guide.templates.filters Angular Filters}
+* {@link filter Angular Filters}
 * {@link forms Angular Forms}
 
 ## Related API

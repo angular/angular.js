@@ -10,9 +10,6 @@
  * are taken from either the beginning or the end of the source array or string, as specified by
  * the value and sign (positive or negative) of `limit`.
  *
- * Note: This function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
- *
  * @param {Array|string} input Source array or string to be limited.
  * @param {string|number} limit The length of the returned array or string. If the `limit` number 
  *     is positive, `limit` number of items from the beginning of the source array/string are copied.
