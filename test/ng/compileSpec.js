@@ -2480,6 +2480,30 @@ describe('$compile', function() {
     });
 
 
+    it('should give the isolate scope to the controller of another replaced directives in the template', function() {
+      module(function() {
+        directive('testDirective', function() {
+          return {
+            replace: true,
+            restrict: 'E',
+            scope: {},
+            template: '<input type="checkbox" ng-model="model">'
+          };
+        });
+      });
+
+      inject(function($rootScope) {
+        compile('<div><test-directive></test-directive></div>');
+
+        element = element.children().eq(0);
+        expect(element[0].checked).toBe(false);
+        element.isolateScope().model = true;
+        $rootScope.$digest();
+        expect(element[0].checked).toBe(true);
+      });
+    });
+
+
     it('should share isolate scope with replaced directives', function() {
       var normalScope;
       var isolateScope;
