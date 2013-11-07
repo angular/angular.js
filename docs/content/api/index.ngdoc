@@ -9,7 +9,7 @@ The documentation is organized into **modules** which contain various components
 These components are directives, services, filters, providers, types, global APIs and testing mocks.
 
 <div class="alert alert-info">
-**Angular Namspaces `$` and `$$`**
+**Angular Namespaces `$` and `$$`**
 
 To prevent accidental name collisions with your code,
 Angular prefixes names of public objects with `$` and names of private objects with `$$`.

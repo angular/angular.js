@@ -86,7 +86,7 @@ in the rest of the documentation.
 Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
 and multiply them together".
 
-The example above also contains a <a name="filter">"{@link dev_guide.templates.filters filter}"</a>.
+The example above also contains a <a name="filter">"{@link filter filter}"</a>.
 A filter formats the value of an expression for display to the user.
 In the example above, the filter {@link api/ng.filter:currency `currency`} formats a number
 into an output that looks like money.
@@ -144,7 +144,7 @@ allow to enter and calculate the costs in different currencies and also pay the 
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
           </span>
-          <button ng-click="invoice.pay()">Pay</button>
+          <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
   </file>
@@ -244,7 +244,7 @@ Let's refactor our example and move the currency conversion into a service in an
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
           </span>
-          <button ng-click="invoice.pay()">Pay</button>
+          <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
   </file>
@@ -370,7 +370,7 @@ The following example shows how this is done with Angular:
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
           </span>
-          <button ng-click="invoice.pay()">Pay</button>
+          <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
   </file>

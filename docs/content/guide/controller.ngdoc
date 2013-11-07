@@ -109,7 +109,7 @@ logic. Angular offers {@link databinding databinding} for automatic DOM manipula
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
 - Input formatting — Use {@link forms angular form controls} instead.
-- Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
+- Output filtering — Use {@link filter angular filters} instead.
 - Sharing stateless or stateful code across Controllers — Use {@link dev_guide.services angular
 services} instead.
 - Managing the life-cycle of other components (for example, to create service instances).
