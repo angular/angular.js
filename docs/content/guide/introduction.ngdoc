@@ -106,9 +106,3 @@ Angular frees you from the following pains:
     to get started developing features quickly. As a bonus, you get full control over the
     initialization process in automated tests.
 
-
-# Watch a Presentation About Angular
-
-Here is a presentation on Angular from May 2012. The {@link http://mhevery.github.io/angular-demo-slides/index.html#/list corresponding slides} are also available.
-
-<iframe width="560" height="315" src="http://www.youtube.com/embed/bfrn5VNpwsg" frameborder="0" allowfullscreen></iframe>
