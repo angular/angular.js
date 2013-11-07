@@ -8,9 +8,6 @@
  * @description
  * Selects a subset of items from `array` and returns it as a new array.
  *
- * Note: This function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
- *
  * @param {Array} array The source array.
  * @param {string|Object|function()} expression The predicate to be used for selecting items from
  *   `array`.
