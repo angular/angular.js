@@ -393,7 +393,7 @@ outside, and then map the outer scope to a directive's inner scope. We can do th
         return {
           restrict: 'E',
           scope: {
-            customer: '=customer'
+            innercustomer: '=person'
           },
           templateUrl: 'my-customer.html'
         };
@@ -401,31 +401,31 @@ outside, and then map the outer scope to a directive's inner scope. We can do th
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-customer customer="naomi"></my-customer>
+      <my-customer person="naomi"></my-customer>
       <hr>
-      <my-customer customer="igor"></my-customer>
+      <my-customer person="igor"></my-customer>
     </div>
   </file>
   <file name="my-customer.html">
-    Name: {{customer.name}} Address: {{customer.address}}
+    Name: {{innercustomer.name}} Address: {{innercustomer.address}}
   </file>
 </example>
 
-Looking at `index.html`, the first `<my-customer>` element binds the inner scope's `customer` to `naomi`,
-which we have exposed on our controller's scope. The second binds `customer` to `igor`.
+Looking at `index.html`, the first `<my-customer>` element binds the inner scope's `innercustomer` to `naomi`,
+which we have exposed on our controller's scope. The second binds `innercustomer` to `igor`.
 
 Let's take a closer look at the scope option:
 
 ```javascript
 //...
 scope: {
-  customer: '=customer'
+  innercustomer: '=person'
 },
 //...
 ```
 
-The property name (`customer`) corresponds to the variable name of the `myCustomer` directive's isolated scope.
-The value of the property (`=customer`) tells `$compile` to bind to the `customer` attribute.
+The property name (`innercustomer`) corresponds to the variable name of the `myCustomer` directive's isolated scope.
+The value of the property (`=person`) tells `$compile` to bind to the `person` attribute.
 
 <div class="alert alert-warning">
 **Note:** These `=attr` attributes in the `scope` option of directives are normalized just like directive names.
@@ -462,7 +462,7 @@ from within our directive's template:
         return {
           restrict: 'E',
           scope: {
-            customer: '=customer'
+            innercustomer: '=person'
           },
           templateUrl: 'my-customer-plus-vojta.html'
         };
@@ -470,11 +470,11 @@ from within our directive's template:
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-customer customer="naomi"></my-customer>
+      <my-customer person="naomi"></my-customer>
     </div>
   </file>
   <file name="my-customer-plus-vojta.html">
-    Name: {{customer.name}} Address: {{customer.address}}
+    Name: {{innercustomer.name}} Address: {{innercustomer.address}}
     <hr>
     Name: {{vojta.name}} Address: {{vojta.address}}
   </file>
