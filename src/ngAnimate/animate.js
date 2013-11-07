@@ -256,17 +256,12 @@ angular.module('ngAnimate', ['ng'])
     var ELEMENT_NODE = 1;
     var NG_ANIMATE_STATE = '$$ngAnimateState';
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
-    var rootAnimateState = {running: true};
+    var rootAnimateState = {};
 
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope', '$document',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope,   $document) {
 
       $rootElement.data(NG_ANIMATE_STATE, rootAnimateState);
-
-      // disable animations during bootstrap, but once we bootstrapped, enable animations
-      $rootScope.$$postDigest(function() {
-        rootAnimateState.running = false;
-      });
 
       function lookup(name) {
         if (name) {

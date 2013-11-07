@@ -13,7 +13,6 @@ describe("ngAnimate", function() {
         $timeout.flush();
       } catch(e) {}
       $animate.enabled(true);
-      $rootScope.$digest();
     };
   }));
 
