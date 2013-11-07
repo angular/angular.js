@@ -1225,7 +1225,13 @@ function $CompileProvider($provide) {
                                '</div>').contents();
             compileNode = $template[0];
 
-            if ($template.length != 1 || compileNode.nodeType !== 1) {
+            if ($template.length != 1) {
+              throw $compileMinErr('tplmiss',
+                  "Template for directive '{0}' does not exist. {1}",
+                  directiveName, '');
+            }
+
+            if (compileNode.nodeType !== 1) {
               throw $compileMinErr('tplrt',
                   "Template for directive '{0}' must have exactly one root element. {1}",
                   directiveName, '');
@@ -1597,7 +1603,13 @@ function $CompileProvider($provide) {
             $template = jqLite('<div>' + trim(content) + '</div>').contents();
             compileNode = $template[0];
 
-            if ($template.length != 1 || compileNode.nodeType !== 1) {
+            if ($template.length != 1) {
+              throw $compileMinErr('tplmiss',
+                  "Template for directive '{0}' does not exist. {1}",
+                  origAsyncDirective.name, templateUrl);
+            }
+
+            if (compileNode.nodeType !== 1) {
               throw $compileMinErr('tplrt',
                   "Template for directive '{0}' must have exactly one root element. {1}",
                   origAsyncDirective.name, templateUrl);
