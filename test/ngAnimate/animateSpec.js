@@ -7,12 +7,13 @@ describe("ngAnimate", function() {
   var ss, body;
   beforeEach(module(function() {
     body = jqLite(document.body);
-    return function($window, $document, $animate, $timeout) {
+    return function($window, $document, $animate, $timeout, $rootScope) {
       ss = createMockStyleSheet($document, $window);
       try {
         $timeout.flush();
       } catch(e) {}
       $animate.enabled(true);
+      $rootScope.$digest();
     };
   }));
 
@@ -36,17 +37,7 @@ describe("ngAnimate", function() {
 
     describe("enable / disable", function() {
 
-      it("should work for all animations", function() {
-        var $animate, initialState = null;
-
-        angular.bootstrap(body, ['ngAnimate',function() {
-          return function(_$animate_) {
-            $animate = _$animate_;
-            initialState = $animate.enabled();
-          }
-        }]);
-
-        expect(initialState).toBe(false);
+      it("should work for all animations", inject(function($animate) {
 
         expect($animate.enabled()).toBe(true);
 
@@ -55,7 +46,7 @@ describe("ngAnimate", function() {
 
         expect($animate.enabled(1)).toBe(true);
         expect($animate.enabled()).toBe(true);
-      });
+      }));
 
       it('should place a hard disable on all child animations', function() {
         var count = 0;
