@@ -1440,7 +1440,7 @@ function $CompileProvider($provide) {
         if (controllerDirectives) {
           forEach(controllerDirectives, function(directive) {
             var locals = {
-              $scope: directive === newIsolateScopeDirective ? isolateScope : scope,
+              $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
               $transclude: boundTranscludeFn
