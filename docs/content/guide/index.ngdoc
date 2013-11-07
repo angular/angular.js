@@ -88,7 +88,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 * **Workflow:** [Yeoman.io](https://github.com/yeoman/generator-angular) and [Angular Yeoman Tutorial](http://www.sitepoint.com/kickstart-your-angularjs-development-with-yeoman-grunt-and-bower/)
 
-## Complimentary Libraries
+## Complementary Libraries
 
 This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at [ngmodules.org](http://ngmodules.org/).
 
