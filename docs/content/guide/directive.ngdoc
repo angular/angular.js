@@ -404,40 +404,43 @@ we call an **isolate scope**. To do this, we can use a directive's `scope` optio
         return {
           restrict: 'E',
           scope: {
-            customer: '=customer'
+            customerInfo: '=info'
           },
-          templateUrl: 'my-customer.html'
+          templateUrl: 'my-customer-iso.html'
         };
       });
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-customer customer="naomi"></my-customer>
+      <my-customer info="naomi"></my-customer>
       <hr>
-      <my-customer customer="igor"></my-customer>
+      <my-customer info="igor"></my-customer>
     </div>
   </file>
-  <file name="my-customer.html">
-    Name: {{customer.name}} Address: {{customer.address}}
+  <file name="my-customer-iso.html">
+    Name: {{customerInfo.name}} Address: {{customerInfo.address}}
   </file>
 </example>
 
-Looking at `index.html`, the first `<my-customer>` element binds the inner scope's `customer` to
-`naomi`, which we have exposed on our controller's scope. The second binds `customer` to `igor`.
+Looking at `index.html`, the first `<my-customer>` element binds the `info` attribute to `naomi`,
+which we have exposed on our controller's scope. The second binds `info` to `igor`.
 
 Let's take a closer look at the scope option:
 
 ```javascript
 //...
 scope: {
-  customer: '=customer'
+  customerInfo: '=info'
 },
 //...
 ```
 
-The property name (`customer`) corresponds to the variable name of the `myCustomer` directive's
-isolated scope. The value of the property (`=customer`) tells `$compile` to bind to the `customer`
-attribute.
+The **scope option** is an object that contains a property for each isolate scope binding.  In this
+case it has just one property:
+
+- Its name (`customerInfo`) corresponds to the
+directive's **isolate scope** property `customerInfo`.
+- Its value (`=info`) tells `$compile` to bind to the `info` attribute.
 
 <div class="alert alert-warning">
 **Note:** These `=attr` attributes in the `scope` option of directives are normalized just like
@@ -449,12 +452,12 @@ For cases where the attribute name is the same as the value you want to bind to 
 directive's scope, you can use this shorthand syntax:
 
 ```javascript
-//...
+...
 scope: {
-            // same as '=customer'
+  // same as '=customer'
   customer: '='
 },
-//...
+...
 ```
 
 Besides making it possible to bind different data to the scope inside a directive, using an isolated
@@ -475,7 +478,7 @@ within our directive's template:
         return {
           restrict: 'E',
           scope: {
-            customer: '=customer'
+            customerInfo: '=info'
           },
           templateUrl: 'my-customer-plus-vojta.html'
         };
@@ -483,11 +486,11 @@ within our directive's template:
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-customer customer="naomi"></my-customer>
+      <my-customer info="naomi"></my-customer>
     </div>
   </file>
   <file name="my-customer-plus-vojta.html">
-    Name: {{customer.name}} Address: {{customer.address}}
+    Name: {{customerInfo.name}} Address: {{customerInfo.address}}
     <hr>
     Name: {{vojta.name}} Address: {{vojta.address}}
   </file>
