@@ -901,7 +901,7 @@ function $CompileProvider($provide) {
       return linkFnFound ? compositeLinkFn : null;
 
       function compositeLinkFn(scope, nodeList, $rootElement, boundTranscludeFn) {
-        var nodeLinkFn, childLinkFn, node, childScope, childTranscludeFn, i, ii, n;
+        var nodeLinkFn, childLinkFn, node, $node, childScope, childTranscludeFn, i, ii, n;
 
         // copy nodeList so that linking doesn't break due to live list updates.
         var stableNodeList = [];
@@ -913,11 +913,13 @@ function $CompileProvider($provide) {
           node = stableNodeList[n];
           nodeLinkFn = linkFns[i++];
           childLinkFn = linkFns[i++];
+          $node = jqLite(node);
 
           if (nodeLinkFn) {
             if (nodeLinkFn.scope) {
-              childScope = scope.$new(isObject(nodeLinkFn.scope));
-              jqLite(node).data('$scope', childScope);
+              childScope = scope.$new();
+              $node.data('$scope', childScope);
+              safeAddClass($node, 'ng-scope');
             } else {
               childScope = scope;
             }
@@ -1155,10 +1157,8 @@ function $CompileProvider($provide) {
             assertNoDuplicate('new/isolated scope', newIsolateScopeDirective, directive,
                               $compileNode);
             if (isObject(directiveValue)) {
-              safeAddClass($compileNode, 'ng-isolate-scope');
               newIsolateScopeDirective = directive;
             }
-            safeAddClass($compileNode, 'ng-scope');
           }
         }
 
@@ -1291,7 +1291,7 @@ function $CompileProvider($provide) {
 
       }
 
-      nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope;
+      nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
       nodeLinkFn.transclude = transcludeDirective && childTranscludeFn;
 
       // might be normal or delayed nodeLinkFn depending on if templateUrl is present
@@ -1303,11 +1303,13 @@ function $CompileProvider($provide) {
         if (pre) {
           if (attrStart) pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
           pre.require = directive.require;
+          if (newIsolateScopeDirective === directive) pre.isolateScope = true;
           preLinkFns.push(pre);
         }
         if (post) {
           if (attrStart) post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
           post.require = directive.require;
+          if (newIsolateScopeDirective === directive) post.isolateScope = true;
           postLinkFns.push(post);
         }
       }
@@ -1348,7 +1350,7 @@ function $CompileProvider($provide) {
 
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var attrs, $element, i, ii, linkFn, controller;
+        var attrs, $element, i, ii, linkFn, controller, isolateScope;
 
         if (compileNode === linkNode) {
           attrs = templateAttrs;
@@ -1359,8 +1361,11 @@ function $CompileProvider($provide) {
 
         if (newIsolateScopeDirective) {
           var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
+          var $linkNode = jqLite(linkNode);
 
-          var parentScope = scope.$parent || scope;
+          isolateScope = scope.$new(true);
+          $linkNode.data('$isolateScope', isolateScope);
+          safeAddClass($linkNode, 'ng-isolate-scope');
 
           forEach(newIsolateScopeDirective.scope, function(definition, scopeName) {
             var match = definition.match(LOCAL_REGEXP) || [],
@@ -1370,19 +1375,19 @@ function $CompileProvider($provide) {
                 lastValue,
                 parentGet, parentSet;
 
-            scope.$$isolateBindings[scopeName] = mode + attrName;
+            isolateScope.$$isolateBindings[scopeName] = mode + attrName;
 
             switch (mode) {
 
               case '@':
                 attrs.$observe(attrName, function(value) {
-                  scope[scopeName] = value;
+                  isolateScope[scopeName] = value;
                 });
-                attrs.$$observers[attrName].$$scope = parentScope;
+                attrs.$$observers[attrName].$$scope = scope;
                 if( attrs[attrName] ) {
                   // If the attribute has been provided then we trigger an interpolation to ensure
                   // the value is there for use in the link fn
-                  scope[scopeName] = $interpolate(attrs[attrName])(parentScope);
+                  isolateScope[scopeName] = $interpolate(attrs[attrName])(scope);
                 }
                 break;
 
@@ -1393,23 +1398,23 @@ function $CompileProvider($provide) {
                 parentGet = $parse(attrs[attrName]);
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
-                  lastValue = scope[scopeName] = parentGet(parentScope);
+                  lastValue = isolateScope[scopeName] = parentGet(scope);
                   throw $compileMinErr('nonassign',
                       "Expression '{0}' used with directive '{1}' is non-assignable!",
                       attrs[attrName], newIsolateScopeDirective.name);
                 };
-                lastValue = scope[scopeName] = parentGet(parentScope);
-                scope.$watch(function parentValueWatch() {
-                  var parentValue = parentGet(parentScope);
+                lastValue = isolateScope[scopeName] = parentGet(scope);
+                isolateScope.$watch(function parentValueWatch() {
+                  var parentValue = parentGet(scope);
 
-                  if (parentValue !== scope[scopeName]) {
+                  if (parentValue !== isolateScope[scopeName]) {
                     // we are out of sync and need to copy
                     if (parentValue !== lastValue) {
                       // parent changed and it has precedence
-                      lastValue = scope[scopeName] = parentValue;
+                      lastValue = isolateScope[scopeName] = parentValue;
                     } else {
                       // if the parent can be assigned then do so
-                      parentSet(parentScope, parentValue = lastValue = scope[scopeName]);
+                      parentSet(scope, parentValue = lastValue = isolateScope[scopeName]);
                     }
                   }
                   return parentValue;
@@ -1418,8 +1423,8 @@ function $CompileProvider($provide) {
 
               case '&':
                 parentGet = $parse(attrs[attrName]);
-                scope[scopeName] = function(locals) {
-                  return parentGet(parentScope, locals);
+                isolateScope[scopeName] = function(locals) {
+                  return parentGet(scope, locals);
                 };
                 break;
 
@@ -1435,7 +1440,7 @@ function $CompileProvider($provide) {
         if (controllerDirectives) {
           forEach(controllerDirectives, function(directive) {
             var locals = {
-              $scope: scope,
+              $scope: directive === newIsolateScopeDirective ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
               $transclude: boundTranscludeFn
@@ -1467,7 +1472,7 @@ function $CompileProvider($provide) {
         for(i = 0, ii = preLinkFns.length; i < ii; i++) {
           try {
             linkFn = preLinkFns[i];
-            linkFn(scope, $element, attrs,
+            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
                 linkFn.require && getControllers(linkFn.require, $element));
           } catch (e) {
             $exceptionHandler(e, startingTag($element));
@@ -1475,13 +1480,19 @@ function $CompileProvider($provide) {
         }
 
         // RECURSION
-        childLinkFn && childLinkFn(scope, linkNode.childNodes, undefined, boundTranscludeFn);
+        // We only pass the isolate scope, if the isolate directive has a template,
+        // otherwise the child elements do not belong to the isolate directive.
+        var scopeToChild = scope;
+        if (newIsolateScopeDirective && (newIsolateScopeDirective.template || newIsolateScopeDirective.templateUrl === null)) {
+          scopeToChild = isolateScope;
+        }
+        childLinkFn && childLinkFn(scopeToChild, linkNode.childNodes, undefined, boundTranscludeFn);
 
         // POSTLINKING
         for(i = postLinkFns.length - 1; i >= 0; i--) {
           try {
             linkFn = postLinkFns[i];
-            linkFn(scope, $element, attrs,
+            linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
                 linkFn.require && getControllers(linkFn.require, $element));
           } catch (e) {
             $exceptionHandler(e, startingTag($element));
