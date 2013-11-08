@@ -14,8 +14,8 @@ describe('dom', function() {
       expect(dom.toString()).toContain('<h1 id="some-header">Some Header</h1>');
     });
 
-    it('should not add ids to h tags that have ids', function() {
-      dom.html('<h1 id="some-header">Some Header</h1>');
+    it('should override existing h tag ids', function() {
+      dom.html('<h1 id="header">Some Header</h1>');
       expect(dom.toString()).toContain('<h1 id="some-header">Some Header</h1>');
     });
 
