@@ -1303,13 +1303,17 @@ function $CompileProvider($provide) {
         if (pre) {
           if (attrStart) pre = groupElementsLinkFnWrapper(pre, attrStart, attrEnd);
           pre.require = directive.require;
-          if (newIsolateScopeDirective === directive || directive.$$isolateScope) pre.isolateScope = true;
+          if (newIsolateScopeDirective === directive || directive.$$isolateScope) {
+            pre = cloneAndAnnotateFn(pre, {isolateScope: true});
+          }
           preLinkFns.push(pre);
         }
         if (post) {
           if (attrStart) post = groupElementsLinkFnWrapper(post, attrStart, attrEnd);
           post.require = directive.require;
-          if (newIsolateScopeDirective === directive || directive.$$isolateScope) post.isolateScope = true;
+          if (newIsolateScopeDirective === directive || directive.$$isolateScope) {
+            post = cloneAndAnnotateFn(post, {isolateScope: true});
+          }
           postLinkFns.push(post);
         }
       }
@@ -1829,6 +1833,11 @@ function $CompileProvider($provide) {
 
       elementsToRemove[0] = newNode;
       elementsToRemove.length = 1;
+    }
+
+
+    function cloneAndAnnotateFn(fn, annotation) {
+      return extend(function() { return fn.apply(null, arguments); }, fn, annotation);
     }
   }];
 }
