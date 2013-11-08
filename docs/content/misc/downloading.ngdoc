@@ -9,20 +9,20 @@ This way, you don't have to download anything or maintain a local copy.
 There are two types of angular script URLs you can point to, one for development and one for
 production:
 
-* __angular-<version>.js__ — This is the human-readable, non-minified version, suitable for web
+* __angular.js__ — This is the human-readable, non-minified version, suitable for web
 development.
-* __angular-<version>.min.js__ — This is the minified version, which we strongly suggest you use in
+* __angular.min.js__ — This is the minified version, which we strongly suggest you use in
 production.
 
 To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.0.2:
+example points to the minified version 1.2.0:
 
 <pre>
   <!doctype html>
   <html ng-app>
     <head>
       <title>My Angular App</title>
-      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
     </head>
     <body>
     </body>
@@ -56,9 +56,12 @@ to minimize the size of the application that is downloaded by your user's browse
 * __`angular.zip`__ — This is a zip archive that contains all of the files released
 for this angular version. Use this file to get everything in a single download.
 
+* __`angular-route.js`__ — This file provides routing, deeplinking services, and directives for 
+angular apps. Your unit/integration test harness should load this file after `angular.js` is loaded.
+
 * __`angular-mocks.js`__ — This file contains an implementation of mocks that makes
 testing angular apps even easier. Your unit/integration test harness should load this file after
-`angular-<version>.js` is loaded.
+`angular.js` is loaded.
 
 * __`angular-scenario.js`__ — This file is a very nifty JavaScript file that allows you
 to write and execute end-to-end tests for angular applications.
