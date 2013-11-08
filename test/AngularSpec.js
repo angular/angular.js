@@ -474,6 +474,7 @@ describe('angular', function() {
   });
 
   describe("extend", function() {
+
     it('should not copy the private $$hashKey', function() {
       var src,dst;
       src = {};
@@ -483,6 +484,24 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
+
+    it('should copy the properties of the source object onto the destination object', function() {
+      var destination, source;
+      destination = {};
+			source = {foo: true};
+      destination = extend(destination, source);
+      expect(isDefined(destination.foo)).toBe(true);
+    });
+
+
+    it('ISSUE #4751 - should copy the length property of an object source to the destination object', function() {
+      var destination, source;
+      destination = {};
+      source = {radius: 30, length: 0};
+      destination = extend(destination, source);
+      expect(isDefined(destination.length)).toBe(true);
+      expect(isDefined(destination.radius)).toBe(true);
+    });
 
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
@@ -1045,6 +1064,42 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
+    });
+  });
+
+  describe('isArrayLike', function() {
+
+    it('should return false if passed a number', function() {
+      expect(isArrayLike(10)).toBe(false);
+    });
+
+    it('should return true if passed an array', function() {
+      expect(isArrayLike([1,2,3,4])).toBe(true);
+    });
+
+    it('should return true if passed an object', function() {
+      expect(isArrayLike({0:"test", 1:"bob", 2:"tree", length:3})).toBe(true);
+    });
+
+    it('should return true if passed arguments object', function() {
+      function test(a,b,c) {
+        expect(isArrayLike(arguments)).toBe(true);
+      }
+      test(1,2,3);
+    });
+
+    it('should return true if passed a nodelist', function() {
+      var nodes = document.body.childNodes;
+      expect(isArrayLike(nodes)).toBe(true);
+    });
+
+    it('should return false for objects with `length` but no matching indexable items', function() {
+      var obj = {
+        a: 'a',
+        b:'b',
+        length: 10
+      };
+      expect(isArrayLike(obj)).toBe(false);
     });
   });
 
