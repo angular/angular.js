@@ -23,31 +23,31 @@ below should still apply, but you may want to consult the
 
 <ul class="nav nav-list">
   <li class="nav-header">Summary of Breaking Changes</li>
-  <li><a href ="#ngroute-has-been-moved-into-its-own-module">ngRoute has been moved into its own module</a></li>
-  <li><a href ="#templates-no-longer-automatically-unwrap-promises">Templates no longer automatically unwrap promises</a></li>
-  <li><a href ="#syntax-for-named-wildcard-parameters-changed-in">Syntax for named wildcard parameters changed in <code>$route</code></a></li>
-  <li><a href ="#you-can-only-bind-one-expression-to">You can only bind one expression to <code>*[src]</code> or <code>*[ng-src]</code></a></li>
-  <li><a href ="#interpolations-inside-dom-event-handlers-are-now-disallowed">Interpolations inside DOM event handlers are now disallowed</a></li>
-  <li><a href ="#directives-cannot-end-with--start-or--end">Directives cannot end with -start or -end</a></li>
-  <li><a href ="#in-$q,-promisealways-has-been-renamed-promisefinally">In $q, promise.always has been renamed promise.finally</a></li>
-  <li><a href ="#ngmobile-is-now-ngtouch">ngMobile is now ngTouch</a></li>
-  <li><a href ="#resource$then-has-been-removed">resource.$then has been removed</a></li>
-  <li><a href ="#resource-methods-return-the-promise">Resource methods return the promise</a></li>
-  <li><a href ="#resource-promises-are-resolved-with-the-resource-instance">Resource promises are resolved with the resource instance</a></li>
-  <li><a href ="#$locationsearch-supports-multiple-keys">$location.search supports multiple keys</a></li>
-  <li><a href ="#nghtmlbindunsafe-has-been-removed-and-replaced-by-nghtmlbind">ngHtmlBindUnsafe has been removed and replaced by ngHtmlBind</a></li>
-  <li><a href ="#form-names-that-are-expressions-are-evaluated">Form names that are expressions are evaluated</a></li>
-  <li><a href ="#hasownproperty-disallowed-as-an-input-name">hasOwnProperty disallowed as an input name</a></li>
-  <li><a href ="#directives-order-of-postlink-functions-reversed">Directives: Order of postLink functions reversed</a></li>
-  <li><a href ="#directive-priority">Directive priority</a></li>
-  <li><a href ="#ngscenario">ngScenario</a></li>
-  <li><a href ="#nginclude-and-ngview-replace-its-entire-element-on-update">ngInclude and ngView replace its entire element on update</a></li>
-  <li><a href ="#urls-are-now-sanitized-against-a-whitelist">URLs are now sanitized against a whitelist</a></li>
-  <li><a href ="#isolate-scope-only-exposed-to-directives-with-property">Isolate scope only exposed to directives with <code>scope</code> property</a></li>
-  <li><a href ="#change-to-interpolation-priority">Change to interpolation priority</a></li>
-  <li><a href ="#underscore-prefixed/suffixed-prorperties-are-non-bindable">Underscore-prefixed/suffixed prorperties are non-bindable</a></li>
-  <li><a href ="#you-cannot-bind-to-select[multiple]">You cannot bind to select[multiple]</a></li>
-  <li><a href ="#uncommon-region-specific-local-files-were-removed-from-i18n">Uncommon region-specific local files were removed from i18n</a></li>
+  <li>{@link guide/migration#ngroute-has-been-moved-into-its-own-module ngRoute has been moved into its own module}</li>
+  <li>{@link guide/migration#templates-no-longer-automatically-unwrap-promises Templates no longer automatically unwrap promises}</li>
+  <li>{@link guide/migration#syntax-for-named-wildcard-parameters-changed-in Syntax for named wildcard parameters changed in <code>$route</code>}</li>
+  <li>{@link guide/migration#you-can-only-bind-one-expression-to You can only bind one expression to <code>*[src]</code> or <code>*[ng-src]</code>}</li>
+  <li>{@link guide/migration#interpolations-inside-dom-event-handlers-are-now-disallowed Interpolations inside DOM event handlers are now disallowed}</li>
+  <li>{@link guide/migration#directives-cannot-end-with--start-or--end Directives cannot end with -start or -end}</li>
+  <li>{@link guide/migration#in-$q,-promisealways-has-been-renamed-promisefinally In $q, promise.always has been renamed promise.finally}</li>
+  <li>{@link guide/migration#ngmobile-is-now-ngtouch ngMobile is now ngTouch}</li>
+  <li>{@link guide/migration#resource$then-has-been-removed resource.$then has been removed}</li>
+  <li>{@link guide/migration#resource-methods-return-the-promise Resource methods return the promise}</li>
+  <li>{@link guide/migration#resource-promises-are-resolved-with-the-resource-instance Resource promises are resolved with the resource instance}</li>
+  <li>{@link #guide/migration$locationsearch-supports-multiple-keys $location.search supports multiple keys}</li>
+  <li>{@link guide/migration#nghtmlbindunsafe-has-been-removed-and-replaced-by-nghtmlbind ngHtmlBindUnsafe has been removed and replaced by ngHtmlBind}</li>
+  <li>{@link guide/migration#form-names-that-are-expressions-are-evaluated Form names that are expressions are evaluated}</li>
+  <li>{@link guide/migration#hasownproperty-disallowed-as-an-input-name hasOwnProperty disallowed as an input name}</li>
+  <li>{@link guide/migration#directives-order-of-postlink-functions-reversed Directives: Order of postLink functions reversed}</li>
+  <li>{@link guide/migration#directive-priority Directive priority}</li>
+  <li>{@link guide/migration#ngscenario ngScenario}</li>
+  <li>{@link guide/migration#nginclude-and-ngview-replace-its-entire-element-on-update ngInclude and ngView replace its entire element on update}</li>
+  <li>{@link guide/migration#urls-are-now-sanitized-against-a-whitelist URLs are now sanitized against a whitelist}</li>
+  <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
+  <li>{@link guide/migration#change-to-interpolation-priority Change to interpolation priority}</li>
+  <li>{@link guide/migration#underscore-prefixed/suffixed-prorperties-are-non-bindable Underscore-prefixed/suffixed prorperties are non-bindable}</li>
+  <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
+  <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
 </ul>
 
 
