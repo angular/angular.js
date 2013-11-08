@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "version": "1.2.0",
-  "cdnVersion": "1.2.0-rc.3",
+  "cdnVersion": "1.2.0",
   "codename": "timely-delivery",
   "repository": {
     "type": "git",
