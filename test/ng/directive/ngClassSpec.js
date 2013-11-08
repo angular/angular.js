@@ -371,9 +371,6 @@ describe('ngClass animations', function() {
     });
     inject(function($compile, $rootScope, $rootElement, $animate, $timeout, $document) {
 
-      //since we skip animations upon first digest, this needs to be set to true
-      $animate.enabled(true);
-
       $rootScope.val = 'crazy';
       var element = angular.element('<div ng-class="val"></div>');
       jqLite($document[0].body).append($rootElement);
