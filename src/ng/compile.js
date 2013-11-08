@@ -1368,7 +1368,15 @@ function $CompileProvider($provide) {
           var $linkNode = jqLite(linkNode);
 
           isolateScope = scope.$new(true);
-          $linkNode.data('$isolateScope', isolateScope);
+
+          if (templateDirective && (templateDirective === newIsolateScopeDirective.$$originalDirective)) {
+            $linkNode.data('$isolateScope', isolateScope) ;
+          } else {
+            $linkNode.data('$isolateScopeNoTemplate', isolateScope);
+          }
+
+
+
           safeAddClass($linkNode, 'ng-isolate-scope');
 
           forEach(newIsolateScopeDirective.scope, function(definition, scopeName) {
@@ -1600,7 +1608,7 @@ function $CompileProvider($provide) {
           origAsyncDirective = directives.shift(),
           // The fact that we have to copy and patch the directive seems wrong!
           derivedSyncDirective = extend({}, origAsyncDirective, {
-            templateUrl: null, transclude: null, replace: null
+            templateUrl: null, transclude: null, replace: null, $$originalDirective: origAsyncDirective
           }),
           templateUrl = (isFunction(origAsyncDirective.templateUrl))
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)

@@ -151,6 +151,13 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
+    it('should retrieve isolate scope attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('$isolateScope', scope);
+      expect(element.isolateScope()).toBe(scope);
+      dealoc(element);
+    });
+
     it('should retrieve scope attached to the html element if its requested on the document',
         function() {
       var doc = jqLite(document),
@@ -177,6 +184,33 @@ describe('jqLite', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
       var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
       expect(deepChild.scope()).toBeFalsy();
+      dealoc(element);
+    });
+  });
+
+
+  describe('isolateScope', function() {
+
+    it('should retrieve isolate scope attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('$isolateScope', scope);
+      expect(element.isolateScope()).toBe(scope);
+      dealoc(element);
+    });
+
+
+    it('should not walk up the dom to find scope', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      element.data('$isolateScope', scope);
+      expect(deepChild.isolateScope()).toBeUndefined();
+      dealoc(element);
+    });
+
+
+    it('should return undefined when no scope was found', function() {
+      var element = jqLite('<div></div>');
+      expect(element.isolateScope()).toBeFalsy();
       dealoc(element);
     });
   });
