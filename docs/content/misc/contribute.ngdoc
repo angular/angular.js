@@ -81,8 +81,8 @@ grunt package
 
 
 <div class="alert alert-warning">
-**Note:** If you're using Windows you must run your command line with administrative privileges (right click, run as
-Administrator).
+**Note:** If you're using Windows, you must use an elevated command prompt (right click, run as
+Administrator). This is because `grunt package` creates some symbolic links.
 </div>
 
 The build output can be located under the `build` directory. It consists of the following files and
