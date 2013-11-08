@@ -177,8 +177,52 @@ function isArrayLike(obj) {
     return true;
   }
 
-  return isString(obj) || isArray(obj) || length === 0 ||
+  return isString(obj) || isArray(obj) || (!isObject(obj) && length === 0) ||
          typeof length === 'number' && length > 0 && (length - 1) in obj;
+}
+function isArrayLike(obj) {
+  // snake case is to avoid shadowing camel-cased globals
+  var length, objExists, isNodeList, isArguments, isSomeOtherObj, is_array, is_string, is_object;
+  objExists = isDefined(obj) && obj !== null;
+  length = objExists ? obj.length : false;
+  is_array = isArray(obj);
+  is_string = isString(obj);
+  is_object = isObject(obj);
+  isNodeList = objExists && obj.nodeType === 1 && length;
+	isArguments = objExists &&
+		(Object.prototype.toString.call(obj) === '[object Arguments]' ||
+		(Object.prototype.hasOwnProperty.call(obj, 'length')         &&
+		Object.prototype.hasOwnProperty.call(obj, 'callee')));
+	
+  // this only works if it doesn't return 'object' from typeof and isn't another arrayLike
+  isSomeOtherObj = objExists &&
+    !isNodeList              &&
+    !is_array                &&
+    !is_string               &&
+		!isArguments             &&
+    (
+      (!is_object   &&
+      length === 0) ||
+        (
+          isNumber(length) &&
+            length >= 0    &&
+            (length - 1) in obj
+        )
+    );
+  
+  return (
+    objExists      &&
+    !isWindow(obj) &&
+    (
+      (
+        isNodeList  ||
+        is_string   ||
+        is_array    ||
+				isArguments
+      ) ||
+      isSomeOtherObj
+    )
+  );
 }
 
 /**
@@ -210,7 +254,7 @@ function isArrayLike(obj) {
  */
 function forEach(obj, iterator, context) {
   var key;
-  if (obj) {
+  if (isDefined(obj) && obj !== null) {
     if (isFunction(obj)){
       for (key in obj) {
         if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
@@ -224,7 +268,7 @@ function forEach(obj, iterator, context) {
         iterator.call(context, obj[key], key);
     } else {
       for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
           iterator.call(context, obj[key], key);
         }
       }

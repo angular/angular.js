@@ -159,6 +159,23 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
+    it('should copy the properties of the source object onto the destination object', function(){
+      var destination, source;
+      destination = {};
+			source = {foo: true};
+      destination = extend(destination, source);
+      expect(isDefined(destination.foo)).toBe(true);
+    });
+
+		it('ISSUE #4751 - should copy the length property of an object source to the destination object', function(){
+			var destination, source;
+			destination = {};
+			source = {radius: 30, length: 0};
+			destination = extend(destination, source);
+			expect(isDefined(destination.length)).toBe(true);
+			expect(isDefined(destination.radius)).toBe(true);
+		});
+
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
       src = {};
@@ -437,6 +454,18 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
   });
+  });
+
+  describe('isArrayLike', function() {
+    it ('should return false if passed a number', function(){
+      expect(isArrayLike(10)).toBe(false)
+    });
+    it('should return true if passed an array', function() {
+      expect(isArrayLike([1,2,3,4])).toBe(true);
+    });
+    it('should return true if passed an object', function(){
+      expect(isArrayLike({0:"test", 1:"bob", 2:"tree", length:3})).toBe(true);
+    });
   });
 
 
