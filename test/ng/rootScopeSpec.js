@@ -392,6 +392,58 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(log).toEqual([]);
     }));
+    
+    describe('catching maximum call stack error', function() {
+      
+      // Browsers may not be consistent about the message that comes with
+      // a maximum call stack error.  But, we need to know the exact message
+      // because Chai requires us to pass an exact error message to toThrow.  So
+      // we generate a maximum call stack error and save the message.
+      var baseMessage;
+      try {
+        (function a() {
+            a();
+        })();
+      } catch(e) {
+        baseMessage = e.message;
+      }
+      
+      it('should have a useful message with a watched property', inject(function($rootScope) {
+        var log = '';
+        var b = {};
+        b.self = b;
+        $rootScope.b = b;
+        $rootScope.$watch('b', function(value) {
+          log +='!';
+          expect(value).toBe($rootScope.b);
+        }, true);
+
+        var message = baseMessage + ' - Could be circular reference in $watch(b)';
+        var exp = expect(function() {
+          $rootScope.$digest();
+        }).toThrow(message);
+      }));
+
+      it('should have a useful message with a watched function', inject(function($rootScope) {
+        var log = '';
+        var b = {};
+        b.self = b;
+        $rootScope.b = b;
+        var exp = function(s) { 
+          return s.b
+        };
+        $rootScope.$watch(exp, function(value) {
+          log +='!';
+          expect(value).toBe($rootScope.b);
+        }, true);
+
+        var message = baseMessage + ' - Could be circular reference in $watch('+exp.toString()+')';
+        var exp = expect(function() {
+          $rootScope.$digest();
+        }).toThrow(message);
+      }));
+      
+    });
 
     describe('$watchCollection', function() {
       var log, $rootScope, deregister;

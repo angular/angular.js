@@ -594,6 +594,12 @@ function $RootScopeProvider(){
                     }
                   }
                 } catch (e) {
+                  // catch maximum call stack errors
+                  if (e.name === 'RangeError') {
+                    var message = e.message + ' - Could be circular reference ';
+                    message = message + 'in $watch('+watch.exp+')';
+                    e = new RangeError(message);
+                  }
                   $exceptionHandler(e);
                 }
               }
