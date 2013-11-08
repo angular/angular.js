@@ -572,7 +572,7 @@ from within the isolate scope), change the isolate directive to use scope locals
 
 See [909cabd3](https://github.com/angular/angular.js/commit/909cabd36d779598763cc358979ecd85bb40d4d7),
 [#1924](https://github.com/angular/angular.js/issues/1924) and
-[#2500](https://github.com/angular/angular.js/issues/2500.
+[#2500](https://github.com/angular/angular.js/issues/2500).
 
 
 ## Change to interpolation priority
