@@ -126,13 +126,14 @@ a diagram depicting the scope boundaries.
     </div>
     <div ng-controller="ListCtrl">
       <ol>
-        <li ng-repeat="name in names">{{name}}</li>
+        <li ng-repeat="name in names">{{name}} from {{department}}</li>
       </ol>
     </div>
   </file>
   <file name="script.js">
-    function GreetCtrl($scope) {
+    function GreetCtrl($scope, $rootScope) {
       $scope.name = 'World';
+      $rootScope.department = 'Angular';
     }
 
     function ListCtrl($scope) {
@@ -153,7 +154,7 @@ a diagram depicting the scope boundaries.
 
 Notice that Angular automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
-child scopes are necessary because the repeater evaluates `{{employee.name}}` expression, but
+child scopes are necessary because the repeater evaluates `{{name}}` expression, but
 depending on which scope the expression is evaluated it produces different result. Similarly the
 evaluation of `{{department}}` prototypically inherits from root scope, as it is the only place
 where the `department` property is defined.
