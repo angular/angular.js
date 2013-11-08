@@ -11,12 +11,12 @@ See the [contributing guidelines](https://github.com/angular/angular.js/blob/mas
 for how to contribute your own code to AngularJS.
 
 
-1. <a href="#developing-angularjs_installing-dependencies">Installing Dependencies</a>
-2. <a href="#developing-angularjs_forking-angular-on-github">Forking Angular on Github</a>
-3. <a href="#developing-angularjs_building-angularjs">Building AngularJS</a>
-4. <a href="#developing-angularjs_running-a-local-development-web-server">Running a Local Development Web Server</a>
-5. <a href="#developing-angularjs_running-the-unit-test-suite">Running the Unit Test Suite</a>
-6. <a href="#developing-angularjs_running-the-end-to-end-test-suite">Running the End-to-end Test Suite</a>
+1. {@link #building-and-testing-angularjs_installing-dependencies Installing Dependencies}
+2. {@link #building-and-testing-angularjs_forking-angular-on-github Forking Angular on Github}
+3. {@link #building-and-testing-angularjs_building-angularjs Building AngularJS}
+4. {@link #building-and-testing-angularjs_running-a-local-development-web-server Running a Local Development Web Server}
+5. {@link #building-and-testing-angularjs_running-the-unit-test-suite Running the Unit Test Suite}
+6. {@link #building-and-testing-angularjs_running-the-end-to-end-test-suite Running the End-to-end Test Suite}
 
 ## Installing Dependencies
 
