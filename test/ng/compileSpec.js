@@ -2504,7 +2504,7 @@ describe('$compile', function() {
     });
 
 
-    it('should share isolate scope with replaced directives', function() {
+    it('should share isolate scope with replaced directives (template)', function() {
       var normalScope;
       var isolateScope;
 
@@ -2540,7 +2540,7 @@ describe('$compile', function() {
     });
 
 
-    it('should share isolate scope with replaced directives', function() {
+    it('should share isolate scope with replaced directives (templateUrl)', function() {
       var normalScope;
       var isolateScope;
 
@@ -2573,6 +2573,41 @@ describe('$compile', function() {
         expect(normalScope.name).toEqual(undefined);
         expect(isolateScope.name).toEqual('WORKS');
         expect(element.text()).toEqual('WORKS');
+      });
+    });
+
+
+    it('should not get confused about where to use isolate scope when a replaced directive is used multiple times',
+        function() {
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            template: '<span scope-tester="replaced"><span scope-tester="inside"></span></span>'
+          };
+        });
+        directive('scopeTester', function(log) {
+          return {
+            link: function($scope, $element) {
+              log($element.attr('scope-tester') + '=' + ($scope.$root === $scope ? 'non-isolate' : 'isolate'));
+            }
+          }
+        });
+      });
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<div>' +
+                             '<div isolate scope-tester="outside"></div>' +
+                             '<span scope-tester="sibling"></span>' +
+                           '</div>')($rootScope);
+
+        $rootScope.$digest();
+        expect(log).toEqual('inside=isolate; ' +
+                            'outside replaced=non-isolate; ' + // outside
+                            'outside replaced=isolate; ' + // replaced
+                            'sibling=non-isolate')
       });
     });
 
