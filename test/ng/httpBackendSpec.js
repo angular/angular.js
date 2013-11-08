@@ -42,7 +42,7 @@ describe('$httpBackend', function() {
         return {};
       }),
       body: {
-        appendChild: jasmine.createSpy('body.appendChid').andCallFake(function(script) {
+        appendChild: jasmine.createSpy('body.appendChild').andCallFake(function(script) {
           fakeDocument.$$scripts.push(script);
         }),
         removeChild: jasmine.createSpy('body.removeChild').andCallFake(function(script) {
