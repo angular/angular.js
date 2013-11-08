@@ -36,11 +36,19 @@ To make your Angular application work on IE please make sure that:
          ...
        </html>
      </pre>
+     
+  3. add `class="ng-app:optionalModuleName"` to the root element if you supply a module name to the `ng-app` attribute
+     <pre>
+       <!doctype html>
+       <html xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:optionalModuleName" ng-app="optionalModuleName">
+         ...
+       </html>
+     </pre>
 
-  3. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
+  4. you **do not** use custom element tags such as `<ng:view>` (use the attribute version
      `<div ng-view>` instead), or
 
-  4. if you **do use** custom element tags, then you must take these steps to make IE happy:
+  5. if you **do use** custom element tags, then you must take these steps to make IE happy:
      <pre>
        <!doctype html>
        <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="optionalModuleName">
