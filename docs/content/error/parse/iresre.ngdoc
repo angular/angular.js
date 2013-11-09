@@ -1,0 +1,19 @@
+@ngdoc error
+@name $parse:iresre
+@fullName Invalid matching pattern for tagging private fields
+@description
+
+Occurs when a non-regexp expression is assigned as the
+matching pattern used to tag private fields.
+
+Example that will throw this error:
+
+```
+$parseProvider.restrictFieldsMatching('priv');
+```
+
+If you want to tag private fields with a 'priv' preffix
+you should do this instead:
+```
+$parseProvider.restrictFieldsMatching(/priv/);
+```

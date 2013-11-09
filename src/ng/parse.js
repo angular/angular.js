@@ -3,6 +3,7 @@
 var $parseMinErr = minErr('$parse');
 var promiseWarningCache = {};
 var promiseWarning;
+var restrictFieldsMatching = /^_|_$/;
 
 // Sandboxing Angular Expressions
 // ------------------------------
@@ -47,7 +48,7 @@ function ensureSafeMemberName(name, fullExpression, allowConstructor) {
         'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
   }
-  if (name.charAt(0) === '_' || name.charAt(name.length-1) === '_') {
+  if (restrictFieldsMatching && (name.match(restrictFieldsMatching))) {
     throw $parseMinErr('isecprv',
         'Referencing private fields in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
@@ -1204,6 +1205,36 @@ function $ParseProvider() {
     } else {
       return $parseOptions.logPromiseWarnings;
     }
+  };
+
+
+  /**
+   * @ngdoc method
+   * @name ng.$parseProvider#restrictFieldsMatching
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * Allows using a custom regular expression for tagging private fields. You
+   * can turn off private fields by passing `null` as a parameter.
+   *
+   * The default is set to `/$_|_^/` which means every fields that begins or ends with an
+   * underscore.
+   *
+   * @param {RegExp=} value New value.
+   * @returns {RegExp} Returns the current setting
+   */
+  this.restrictFieldsMatching = function(value) {
+    if (isDefined(value)) {
+      if ((value === null) || (value instanceof RegExp)) {
+        restrictFieldsMatching = value;
+      }
+      else {
+        throw $parseMinErr('iresre',
+            'Invalid expression for matching private fields! Expression: {0}',
+            value);
+      }
+    }
+    return restrictFieldsMatching;
   };
 
 
