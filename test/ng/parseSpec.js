@@ -192,10 +192,11 @@ describe('parser', function() {
     });
   });
 
-  var $filterProvider, scope;
+  var $filterProvider, $parseProvider, scope;
 
-  beforeEach(module(['$filterProvider', function (filterProvider) {
+  beforeEach(module(['$filterProvider', '$parseProvider', function (filterProvider, parseProvider) {
     $filterProvider = filterProvider;
+    $parseProvider = parseProvider;
   }]));
 
 
@@ -640,6 +641,23 @@ describe('parser', function() {
               testExpression('a["b"]["NAME"]');      testExpression('a["b"]["NAME"] = 1');
             });
           });
+
+          it('should allow access to private members if allowPrivateFields is true', function() {
+            scope._name = 'foo';
+            expect(function() {
+              scope.$eval('_name');
+            }).toThrowMinErr(
+                        '$parse', 'isecprv', 'Referencing private fields in Angular expressions is disallowed! ' +
+                        'Expression: _name');
+            $parseProvider.allowPrivateFields(true);
+            expect($parseProvider.allowPrivateFields()).toBe(true);
+            expect(function() {
+              scope.$eval('_name');
+            }).not.toThrow();
+            $parseProvider.allowPrivateFields(false);
+            expect($parseProvider.allowPrivateFields()).toBe(false);
+          });
+
         });
 
         describe('Function constructor', function() {
