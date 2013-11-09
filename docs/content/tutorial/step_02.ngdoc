@@ -104,7 +104,7 @@ the model and the view. We connected the dots between the presentation, data, an
 as follows:
 
 * The {@link api/ng.directive:ngController ngController} directive, located on the `<body>` tag,
-references the the name of our controller, `PhoneListCtrl` (located in the JavaScript file
+references the name of our controller, `PhoneListCtrl` (located in the JavaScript file
 `controllers.js`).
 
 * The `PhoneListCtrl` controller attaches the phone data to the `$scope` that was injected into our
