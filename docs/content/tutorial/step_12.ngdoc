@@ -194,7 +194,7 @@ This time, instead of the `ng-repeat` element, let's add it to the element conta
 In order to do this, we'll have to make some small changes to the HTML code so that we can have more control over our
 animations between view changes.
 
-__`app/partials/phone-list.html`.__
+__`app/index.html`.__
 <pre>
 <div class="view-container">
   <div ng-view class="view-frame"></div>
