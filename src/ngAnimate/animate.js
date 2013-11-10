@@ -876,13 +876,6 @@ angular.module('ngAnimate', ['ng'])
         }, 10, false);
       }
 
-      function applyStyle(node, style) {
-        var oldStyle = node.getAttribute('style') || '';
-        var newStyle = (oldStyle.length > 0 ? '; ' : '') + style;
-        node.setAttribute('style', newStyle);
-        return oldStyle;
-      }
-
       function getElementAnimationDetails(element, cacheKey) {
         var data = cacheKey ? lookupCache[cacheKey] : null;
         if(!data) {
@@ -1057,10 +1050,9 @@ angular.module('ngAnimate', ['ng'])
         var maxDelayTime = Math.max(timings.transitionDelay, timings.animationDelay) * 1000;
         var startTime = Date.now();
         var css3AnimationEvents = ANIMATIONEND_EVENT + ' ' + TRANSITIONEND_EVENT;
-        var formerStyle;
         var ii = data.ii;
 
-        var applyFallbackStyle, style = '';
+        var applyFallbackStyle, style = '', appliedStyles = [];
         if(timings.transitionDuration > 0) {
           var propertyStyle = timings.transitionPropertyStyle;
           if(propertyStyle.indexOf('all') == -1) {
@@ -1068,6 +1060,8 @@ angular.module('ngAnimate', ['ng'])
             var fallbackProperty = $sniffer.msie ? '-ms-zoom' : 'border-spacing';
             style += CSS_PREFIX + 'transition-property: ' + propertyStyle + ', ' + fallbackProperty + '; ';
             style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + ', ' + timings.transitionDuration + 's; ';
+            appliedStyles.push(CSS_PREFIX + 'transition-property');
+            appliedStyles.push(CSS_PREFIX + 'transition-duration');
           }
         } else {
           unblockKeyframeAnimations(element);
@@ -1082,16 +1076,19 @@ angular.module('ngAnimate', ['ng'])
 
             style += CSS_PREFIX + 'transition-delay: ' +
                      prepareStaggerDelay(delayStyle, stagger.transitionDelay, ii) + '; ';
+            appliedStyles.push(CSS_PREFIX + 'transition-delay');
           }
 
           if(stagger.animationDelay > 0 && stagger.animationDuration === 0) {
             style += CSS_PREFIX + 'animation-delay: ' +
                      prepareStaggerDelay(timings.animationDelayStyle, stagger.animationDelay, ii) + '; ';
+            appliedStyles.push(CSS_PREFIX + 'animation-delay');
           }
         }
 
-        if(style.length > 0) {
-          formerStyle = applyStyle(node, style);
+        if(appliedStyles.length > 0) {
+          var oldStyle = node.getAttribute('style') || '';
+          node.setAttribute('style', oldStyle + ' ' + style);
         }
 
         element.on(css3AnimationEvents, onAnimationProgress);
@@ -1104,10 +1101,8 @@ angular.module('ngAnimate', ['ng'])
           element.off(css3AnimationEvents, onAnimationProgress);
           element.removeClass(activeClassName);
           animateClose(element, className);
-          if(formerStyle != null) {
-            formerStyle.length > 0 ?
-              node.setAttribute('style', formerStyle) :
-              node.removeAttribute('style');
+          for (var i in appliedStyles) {
+            node.style.removeProperty(appliedStyles[i]);
           }
         };
 
