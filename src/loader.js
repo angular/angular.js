@@ -87,6 +87,11 @@ function setupModuleLoader(window) {
 
         /** @type {!Array.<Function>} */
         var runBlocks = [];
+		/**
+		* Provider injector will be assigned after instance
+		* @type {null}
+		*/
+		var providerInjector = null;
 
         var config = invokeLater('$injector', 'invoke');
 
@@ -95,7 +100,16 @@ function setupModuleLoader(window) {
           // Private state
           _invokeQueue: invokeQueue,
           _runBlocks: runBlocks,
-
+	        /**
+	         * Set provider injector
+	         * @param injector
+	         * @private
+	         */
+	      _setInjector: function (injector) {
+		      if (!providerInjector) {
+			      providerInjector = injector;
+		      }
+	      },
           /**
            * @ngdoc property
            * @name angular.Module#requires
@@ -285,7 +299,14 @@ function setupModuleLoader(window) {
          */
         function invokeLater(provider, method, insertMethod) {
           return function() {
-            invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+	        var args = arguments;
+	        if (providerInjector) {
+		        providerInjector.invoke([provider, function(prov){
+			        prov[method].apply(prov, args);
+		        }]);
+	        } else {
+		        invokeQueue[insertMethod || 'push']([provider, method, args]);
+	        }
             return moduleInstance;
           };
         }
