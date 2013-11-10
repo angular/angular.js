@@ -34,7 +34,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#resource$then-has-been-removed resource.$then has been removed}</li>
   <li>{@link guide/migration#resource-methods-return-the-promise Resource methods return the promise}</li>
   <li>{@link guide/migration#resource-promises-are-resolved-with-the-resource-instance Resource promises are resolved with the resource instance}</li>
-  <li>{@link #guide/migration$locationsearch-supports-multiple-keys $location.search supports multiple keys}</li>
+  <li>{@link guide/migration#$locationsearch-supports-multiple-keys $location.search supports multiple keys}</li>
   <li>{@link guide/migration#nghtmlbindunsafe-has-been-removed-and-replaced-by-nghtmlbind ngHtmlBindUnsafe has been removed and replaced by ngHtmlBind}</li>
   <li>{@link guide/migration#form-names-that-are-expressions-are-evaluated Form names that are expressions are evaluated}</li>
   <li>{@link guide/migration#hasownproperty-disallowed-as-an-input-name hasOwnProperty disallowed as an input name}</li>
