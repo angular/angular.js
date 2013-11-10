@@ -10,6 +10,49 @@ describe('$location', function() {
     jqLite(document).off('click');
   });
 
+
+  describe('File Protocol', function () {
+    var urlParsingNodePlaceholder;
+
+    beforeEach(inject(function ($sniffer) {
+      if ($sniffer.msie) return;
+
+      urlParsingNodePlaceholder = urlParsingNode;
+
+      //temporarily overriding the DOM element
+      //with output from IE, if not in IE
+      urlParsingNode = {
+        hash : "#/C:/",
+        host : "",
+        hostname : "",
+        href : "file:///C:/base#!/C:/foo",
+        pathname : "/C:/foo",
+        port : "",
+        protocol : "file:",
+        search : "",
+        setAttribute: angular.noop
+      };
+    }));
+
+
+    afterEach(inject(function ($sniffer) {
+      if ($sniffer.msie) return;
+      //reset urlParsingNode
+      urlParsingNode = urlParsingNodePlaceholder;
+      expect(urlParsingNode.pathname).not.toBe('/C:/foo');
+    }));
+
+
+    it('should not include the drive name in path() on WIN', function (){
+      //See issue #4680 for details
+      url = new LocationHashbangUrl('file:///base', '#!');
+      url.$$parse('file:///base#!/foo?a=b&c#hash');
+
+      expect(url.path()).toBe('/foo');
+    });
+  });
+
+
   describe('NewUrl', function() {
     beforeEach(function() {
       url = new LocationHtml5Url('http://www.domain.com:9877/');

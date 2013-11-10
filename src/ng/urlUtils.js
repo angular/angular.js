@@ -7,7 +7,13 @@
 // exactly the behavior needed here.  There is little value is mocking these out for this
 // service.
 var urlParsingNode = document.createElement("a");
+/*
+Matches paths for file protocol on windows,
+such as /C:/foo/bar, and captures only /foo/bar.
+*/
+var windowsFilePathExp = /^\/?.*?:(\/.*)/;
 var originUrl = urlResolve(window.location.href, true);
+
 
 /**
  *
@@ -27,7 +33,7 @@ var originUrl = urlResolve(window.location.href, true);
  * browsers.  However, the parsed components will not be set if the URL assigned did not specify
  * them.  (e.g. if you assign a.href = "foo", then a.protocol, a.host, etc. will be empty.)  We
  * work around that by performing the parsing in a 2nd step by taking a previously normalized
- * URL (e.g. by assining to a.href) and assigning it a.href again.  This correctly populates the
+ * URL (e.g. by assigning to a.href) and assigning it a.href again.  This correctly populates the
  * properties such as protocol, hostname, port, etc.
  *
  * IE7 does not normalize the URL when assigned to an anchor node.  (Apparently, it does, if one
@@ -62,7 +68,9 @@ var originUrl = urlResolve(window.location.href, true);
  *
  */
 function urlResolve(url) {
-  var href = url;
+  var href = url,
+      pathname;
+
   if (msie) {
     // Normalize before parse.  Refer Implementation Notes on why this is
     // done in two steps on IE.
@@ -72,7 +80,23 @@ function urlResolve(url) {
 
   urlParsingNode.setAttribute('href', href);
 
-  // $$urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+  /*
+   * In Windows, on an anchor node on documents loaded from
+   * the filesystem, the browser will return a pathname
+   * prefixed with the drive name ('/C:/path') when a
+   * pathname without a drive is set:
+   *  * a.setAttribute('href', '/foo')
+   *   * a.pathname === '/C:/foo' //true
+   *
+   * Inside of Angular, we're always using pathnames that
+   * do not include drive names for routing.
+   */
+
+  pathname = removeWindowsDriveName(urlParsingNode.pathname);
+  pathname = (pathname.charAt(0) === '/') ? pathname : '/' + pathname;
+
+
+  // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
   return {
     href: urlParsingNode.href,
     protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
@@ -81,9 +105,15 @@ function urlResolve(url) {
     hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
     hostname: urlParsingNode.hostname,
     port: urlParsingNode.port,
-    pathname: urlParsingNode.pathname && urlParsingNode.pathname.charAt(0) === '/' ?
-        urlParsingNode.pathname : '/' + urlParsingNode.pathname
+    pathname: pathname
   };
+
+  function removeWindowsDriveName (path) {
+    var firstPathSegmentMatch;
+
+    firstPathSegmentMatch = windowsFilePathExp.exec(path);
+    return firstPathSegmentMatch ? firstPathSegmentMatch[1] : path;
+  }
 }
 
 
