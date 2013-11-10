@@ -116,10 +116,11 @@ Doing so generally makes it easier to determine what directives a given element 
 </div>
 
 <div class="alert alert-success">
-**Best Practice:** Comment directives were commonly used in places where the DOM API limits (e.g. inside `<table>` elements)
-to create directives that spanned multiple elements. AngularJS 1.2 introduces
-{@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`} as a better solution to this problem.
-Developers are encouraged to use this over custom comment directives when possible.
+**Best Practice:** Comment directives were commonly used in places where the DOM API limits the
+ability to create directives that spanned multiple elements (e.g. inside `<table>` elements).
+AngularJS 1.2 introduces {@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
+as a better solution to this problem. Developers are encouraged to use this over custom comment
+directives when possible.
 </div>
 
 
