@@ -420,6 +420,27 @@ describe("ngAnimate", function() {
         expect(element.children().length).toBe(0);
       }));
 
+      it("should retain existing styles of the animated element",
+        inject(function($animate, $rootScope, $sniffer, $timeout) {
+
+        element.append(child);
+        child.attr('style', 'width: 20px');
+        
+        $animate.addClass(child, 'ng-hide');
+        $animate.leave(child);
+        $rootScope.$digest();
+
+        if($sniffer.transitions) {
+          $timeout.flush();
+
+          //this is to verify that the existing style is appended with a semicolon automatically 
+          expect(child.attr('style')).toMatch(/width: 20px;.+?/i);
+          browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+        }
+        
+        expect(child.attr('style')).toMatch(/width: 20px/i);
+      }));
+
       it("should call the cancel callback when another animation is called on the same element",
         inject(function($animate, $rootScope, $sniffer, $timeout) {
 
@@ -974,6 +995,35 @@ describe("ngAnimate", function() {
             }
             expect(element).toBeShown();
         }));
+
+        it("should NOT overwrite styles with outdated values when animation completes",
+          inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+
+            if(!$sniffer.transitions) return;
+
+            var style = '-webkit-transition-duration: 1s, 2000ms, 1s;' +
+                        '-webkit-transition-property: height, left, opacity;' +
+                                'transition-duration: 1s, 2000ms, 1s;' +
+                                 'transition-property: height, left, opacity;';
+
+            ss.addRule('.ng-hide-add', style);
+            ss.addRule('.ng-hide-remove', style);
+
+            element = $compile(html('<div style="width: 100px">foo</div>'))($rootScope);
+            element.addClass('ng-hide');
+
+            $animate.removeClass(element, 'ng-hide');
+
+            $timeout.flush();
+
+            var now = Date.now();
+            browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
+            browserTrigger(element,'transitionend', { timeStamp: now + 1000, elapsedTime: 1 });
+
+            element.css('width', '200px');
+            browserTrigger(element,'transitionend', { timeStamp: now + 2000, elapsedTime: 2 });
+            expect(element.css('width')).toBe("200px");
+          }));
 
         it("should animate for the highest duration",
           inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
