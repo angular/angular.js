@@ -1216,7 +1216,7 @@ function bootstrap(element, modules) {
       }]
     );
 
-	module._setInjector(injector.$provider);
+	module.$setProviderInjector(injector.$provider);
 
     return injector;
   };

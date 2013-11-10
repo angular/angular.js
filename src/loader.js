@@ -100,15 +100,21 @@ function setupModuleLoader(window) {
           // Private state
           _invokeQueue: invokeQueue,
           _runBlocks: runBlocks,
-	        /**
-	         * Set provider injector
-	         * @param injector
-	         * @private
-	         */
-	      _setInjector: function (injector) {
+          /**
+          * @ngdoc method
+          * @name angular.Module#$setProviderInjector
+          * @propertyOf angular.Module
+          * @returns {Object}
+          * @description
+          * This method is used internaly by angular to set provider injector on application bootstrap process.
+          * Exposing  $provider to module after application bootstrap is required to register components after aplication bootstrap.
+          *
+          */
+	      $setProviderInjector: function (injector) {
 		      if (!providerInjector) {
 			      providerInjector = injector;
 		      }
+              return providerInjector;
 	      },
           /**
            * @ngdoc property
