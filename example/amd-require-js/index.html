@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-controller="RootController">
+<head>
+    <title>Amd loading with requirejs</title>
+
+</head>
+<body>
+<h1>{{header}}</h1>
+<ul>
+    <li>
+        <a href="#/">No route for index so thats an error</a>
+    </li>
+    <li>
+        <a href="#/home">Home</a>
+    </li>
+    <li>
+        <a href="#/test">Test</a>
+    </li>
+</ul>
+<div class="mainview" ng-view></div>
+<script src="../../bower_components/requirejs/require.js" data-main="./bootstrap.js" ></script>
+</body>
+</html>
