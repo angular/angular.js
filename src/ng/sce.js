@@ -427,7 +427,7 @@ function $SceDelegateProvider() {
  *
  * <pre class="prettyprint">
  *     <input ng-model="userHtml">
- *     <div ng-bind-html="{{userHtml}}">
+ *     <div ng-bind-html="userHtml">
  * </pre>
  *
  * Notice that `ng-bind-html` is bound to `{{userHtml}}` controlled by the user.  With SCE
