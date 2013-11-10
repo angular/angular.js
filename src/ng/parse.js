@@ -17,14 +17,11 @@ var promiseWarning;
 //   {}.toString.constructor(alert("evil JS code"))
 //
 // We want to prevent this type of access. For the sake of performance, during the lexing phase we
-// disallow any "dotted" access to any member named "constructor" or to any member whose name begins
-// or ends with an underscore.  The latter allows one to exclude the private / JavaScript only API
-// available on the scope and controllers from the context of an Angular expression.
+// disallow any "dotted" access to any member named "constructor".
 //
-// For reflective calls (a[b]), we check that the value of the lookup is not the Function
-// constructor, Window or DOM node while evaluating the expression, which is a stronger but more
-// expensive test. Since reflective calls are expensive anyway, this is not such a big deal compared
-// to static dereferencing.
+// For reflective calls (a[b]) we check that the value of the lookup is not the Function constructor
+// while evaluating the expression, which is a stronger but more expensive test. Since reflective
+// calls are expensive anyway, this is not such a big deal compared to static dereferencing.
 //
 // This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits
 // against the expression language, but not to prevent exploits that were enabled by exposing
@@ -38,18 +35,10 @@ var promiseWarning;
 // In general, it is not possible to access a Window object from an angular expression unless a
 // window or some DOM object that has a reference to window is published onto a Scope.
 
-function ensureSafeMemberName(name, fullExpression, allowConstructor) {
-  if (typeof name !== 'string' && toString.apply(name) !== "[object String]") {
-    return name;
-  }
-  if (name === "constructor" && !allowConstructor) {
+function ensureSafeMemberName(name, fullExpression) {
+  if (name === "constructor") {
     throw $parseMinErr('isecfld',
         'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-  }
-  if (name.charAt(0) === '_' || name.charAt(name.length-1) === '_') {
-    throw $parseMinErr('isecprv',
-        'Referencing private fields in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
   }
   return name;
@@ -735,10 +724,7 @@ Parser.prototype = {
 
     return extend(function(self, locals) {
       var o = obj(self, locals),
-          // In the getter, we will not block looking up "constructor" by name in order to support user defined
-          // constructors.  However, if value looked up is the Function constructor, we will still block it in the
-          // ensureSafeObject call right after we look up o[i] (a few lines below.)
-          i = ensureSafeMemberName(indexFn(self, locals), parser.text, true /* allowConstructor */),
+          i = indexFn(self, locals),
           v, p;
 
       if (!o) return undefined;
@@ -754,7 +740,7 @@ Parser.prototype = {
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = indexFn(self, locals);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var safe = ensureSafeObject(obj(self, locals), parser.text);
         return safe[key] = value;
