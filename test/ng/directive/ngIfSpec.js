@@ -28,6 +28,22 @@ describe('ngIf', function () {
     expect(element.children().length).toBe(1);
   });
 
+  it('should not add the element twice if the condition goes from true to true', function () {
+    $scope.hello = 'true1';
+    makeIf('hello');
+    expect(element.children().length).toBe(1);
+    $scope.$apply('hello = "true2"');
+    expect(element.children().length).toBe(1);
+  });
+
+  it('should not recreate the element if the condition goes from true to true', function () {
+    $scope.hello = 'true1';
+    makeIf('hello');
+    element.children().data('flag', true);
+    $scope.$apply('hello = "true2"');
+    expect(element.children().data('flag')).toBe(true);
+  });
+
   it('should create then remove the element if condition changes', function () {
     $scope.hello = true;
     makeIf('hello');
