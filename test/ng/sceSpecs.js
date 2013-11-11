@@ -302,6 +302,40 @@ describe('SCE', function() {
           /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
     });
 
+    it('should accept $templateCache-stored resourceUrls when passed `true`', inject(function($templateCache, $sce, $rootScope) {
+      $rootScope.template = 'test.tpl';
+      $templateCache.put('test.tpl', '<div>This is trusted because I put it here myself.</div>');
+      expect($sce.getTrustedResourceUrl('test.tpl', true)).toEqual('test.tpl');
+      expect($sce.parseAsResourceUrl("template", true)($rootScope)).toEqual('test.tpl');
+    }));
+
+    it('should reject $templateCache-stored resourceUrls by default', inject(function($templateCache, $sce, $rootScope) {
+      $rootScope.template = 'http://not-my-house.com/test.tpl';
+      $templateCache.put('http://not-my-house.com/test.tpl', '<div>This is trusted because I put it here myself.</div>');
+      expect(function() { $sce.getTrustedResourceUrl('http://not-my-house.com/test.tpl'); }).toThrowMinErr(
+        '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://not-my-house.com/test.tpl');
+      expect(function() { $sce.parseAsResourceUrl("template")($rootScope); }).toThrowMinErr(
+        '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://not-my-house.com/test.tpl');
+    }));
+
+    it('should accept cache-stored resourceUrls when passed cache name', inject(function($cacheFactory, $sce, $rootScope) {
+      var $templateCache = $cacheFactory('resourceUrls');
+      $rootScope.template = 'test.tpl';
+      $templateCache.put('test.tpl', '<div>This is trusted because I put it here myself.</div>');
+      expect($sce.getTrustedResourceUrl('test.tpl', 'resourceUrls')).toEqual('test.tpl');
+      expect($sce.parseAsResourceUrl("template", 'resourceUrls')($rootScope)).toEqual('test.tpl');
+    }));
+
+    it('should reject cache-stored resourceUrls by default', inject(function($cacheFactory, $sce, $rootScope) {
+      var $templateCache = $cacheFactory('resourceUrls');
+      $rootScope.template = 'http://not-my-house.com/test.tpl';
+      $templateCache.put('http://not-my-house.com/test.tpl', '<div>This is trusted because I put it here myself.</div>');
+      expect(function() { $sce.getTrustedResourceUrl('http://not-my-house.com/test.tpl'); }).toThrowMinErr(
+        '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://not-my-house.com/test.tpl');
+      expect(function() { $sce.parseAsResourceUrl("template")($rootScope); }).toThrowMinErr(
+        '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://not-my-house.com/test.tpl');
+    }));
+
     describe('adjustMatcher', function() {
       it('should rewrite regex into regex and add ^ & $ on either end', function() {
         expect(adjustMatcher(/a.*b/).exec('a.b')).not.toBeNull();

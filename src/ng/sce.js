@@ -205,14 +205,23 @@ function $SceDelegateProvider() {
     var htmlSanitizer = function htmlSanitizer(html) {
       throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
     };
+    var cacheFactory;
 
     if ($injector.has('$sanitize')) {
       htmlSanitizer = $injector.get('$sanitize');
     }
+    if ($injector.has('$cacheFactory')) {
+      cacheFactory = $injector.get('$cacheFactory');
+    }
 
-
-    function matchUrl(matcher, parsedUrl) {
+    function matchUrl(matcher, parsedUrl, cache) {
       if (matcher === 'self') {
+        if (cacheFactory && (cache === true || typeof cache === 'string')) {
+          cache = cacheFactory.get((cache === true && 'templates') || cache);
+          if (cache && typeof cache.get(parsedUrl.href) === 'string') {
+            return true;
+          }
+        }
         return urlIsSameOrigin(parsedUrl);
       } else {
         // definitely a regex.  See adjustMatchers()
@@ -220,12 +229,12 @@ function $SceDelegateProvider() {
       }
     }
 
-    function isResourceUrlAllowedByPolicy(url) {
+    function isResourceUrlAllowedByPolicy(url, cache) {
       var parsedUrl = urlResolve(url.toString());
       var i, n, allowed = false;
       // Ensure that at least one item from the whitelist allows this url.
       for (i = 0, n = resourceUrlWhitelist.length; i < n; i++) {
-        if (matchUrl(resourceUrlWhitelist[i], parsedUrl)) {
+        if (matchUrl(resourceUrlWhitelist[i], parsedUrl, cache)) {
           allowed = true;
           break;
         }
@@ -233,7 +242,7 @@ function $SceDelegateProvider() {
       if (allowed) {
         // Ensure that no item from the blacklist blocked this url.
         for (i = 0, n = resourceUrlBlacklist.length; i < n; i++) {
-          if (matchUrl(resourceUrlBlacklist[i], parsedUrl)) {
+          if (matchUrl(resourceUrlBlacklist[i], parsedUrl, cache)) {
             allowed = false;
             break;
           }
@@ -362,7 +371,7 @@ function $SceDelegateProvider() {
       // 1. sanitize the value for the requested type, or
       // 2. throw an exception.
       if (type === SCE_CONTEXTS.RESOURCE_URL) {
-        if (isResourceUrlAllowedByPolicy(maybeTrusted)) {
+        if (isResourceUrlAllowedByPolicy(maybeTrusted, arguments[2])) {
           return maybeTrusted;
         } else {
           throw $sceMinErr('insecurl',
@@ -796,8 +805,9 @@ function $SceProvider() {
       if (parsed.literal && parsed.constant) {
         return parsed;
       } else {
+        var args = Array.prototype.slice.call(arguments, 2);
         return function sceParseAsTrusted(self, locals) {
-          return sce.getTrusted(type, parsed(self, locals));
+          return sce.getTrusted.apply(null, concat([type, parsed(self, locals)], args));
         };
       }
     };
@@ -1068,10 +1078,10 @@ function $SceProvider() {
     forEach(SCE_CONTEXTS, function (enumValue, name) {
       var lName = lowercase(name);
       sce[camelCase("parse_as_" + lName)] = function (expr) {
-        return parse(enumValue, expr);
+        return parse.apply(null, concat([enumValue], arguments));
       };
       sce[camelCase("get_trusted_" + lName)] = function (value) {
-        return getTrusted(enumValue, value);
+        return getTrusted.apply(null, concat([enumValue], arguments));
       };
       sce[camelCase("trust_as_" + lName)] = function (value) {
         return trustAs(enumValue, value);
