@@ -629,11 +629,16 @@ function $LocationProvider(){
 
     // update browser
     var changeCounter = 0;
+    var oldTransition = [];
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = $browser.url();
       var currentReplace = $location.$$replace;
 
-      if (!changeCounter || oldUrl != $location.absUrl()) {
+      // Stop the same transition from being made twice in a short period of time
+      var madeTransition = (oldTransition.length && oldUrl == oldTransition[0] && $location.absUrl() == oldTransition[1]);
+
+      if (!madeTransition && (!changeCounter || oldUrl != $location.absUrl())) {
+        oldTransition.push(oldUrl, $location.absUrl());
         changeCounter++;
         $rootScope.$evalAsync(function() {
           if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
@@ -653,6 +658,7 @@ function $LocationProvider(){
     return $location;
 
     function afterLocationChange(oldUrl) {
+      setTimeout(function() { oldTransition.length = 0; }, 150);
       $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
     }
 }];
