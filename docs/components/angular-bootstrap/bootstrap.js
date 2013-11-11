@@ -193,7 +193,7 @@ directive.table = function() {
   return {
     restrict: 'E',
     link: function(scope, element, attrs) {
-      if (!attrs.class) {
+      if (!attrs['class']) {
         element.addClass('table table-bordered table-striped code-table');
       }
     }
