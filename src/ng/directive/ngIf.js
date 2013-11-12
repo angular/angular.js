@@ -60,7 +60,7 @@
       }
 
       /&#42;
-        The transition styles can also be placed on the CSS base class above 
+        The transition styles can also be placed on the CSS base class above
       &#42;/
       .animate-if.ng-enter, .animate-if.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
@@ -89,10 +89,10 @@ var ngIfDirective = ['$animate', function($animate) {
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
         var block, childScope;
+        var previousValue = false;
         $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
 
-          if (toBoolean(value)) {
-
+          function addChildren() {
             childScope = $scope.$new();
             transclude(childScope, function (clone) {
               block = {
@@ -101,9 +101,9 @@ var ngIfDirective = ['$animate', function($animate) {
               };
               $animate.enter(clone, $element.parent(), $element);
             });
+          }
 
-          } else {
-
+          function removeChildren() {
             if (childScope) {
               childScope.$destroy();
               childScope = null;
@@ -113,6 +113,14 @@ var ngIfDirective = ['$animate', function($animate) {
               $animate.leave(getBlockElements(block));
               block = null;
             }
+          }
+
+          if (toBoolean(value) && !previousValue) {
+            previousValue = true;
+            addChildren();
+          } else if (!toBoolean(value)) {
+            previousValue = false;
+            removeChildren();
           }
         });
       };
