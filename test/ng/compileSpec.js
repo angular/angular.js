@@ -504,6 +504,14 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithInterpolatedStyle', valueFn({
+            replace: true,
+            template: '<div style="width:{{1+1}}px">Replace with interpolated style!</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
         }));
 
 
@@ -581,13 +589,22 @@ describe('$compile', function() {
         }));
 
 
-        it('should handle interpolated css from replacing directive', inject(
+        it('should handle interpolated css class from replacing directive', inject(
             function($compile, $rootScope) {
           element = $compile('<div replace-with-interpolated-class></div>')($rootScope);
           $rootScope.$digest();
           expect(element).toHaveClass('class_2');
         }));
 
+        if (!msie || msie > 10) {
+          // style interpolation not working on IE<11.
+          it('should handle interpolated css style from replacing directive', inject(
+            function($compile, $rootScope) {
+              element = $compile('<div replace-with-interpolated-style></div>')($rootScope);
+              $rootScope.$digest();
+              expect(element.css('width')).toBe('2px');
+          }));
+        }
 
         it('should merge interpolated css class', inject(function($compile, $rootScope) {
           element = $compile('<div class="one {{cls}} three" replace></div>')($rootScope);
