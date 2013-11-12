@@ -1659,21 +1659,6 @@ angular.mock.$TimeoutDecorator = function($delegate, $browser) {
 
   /**
    * @ngdoc method
-   * @name ngMock.$timeout#flushNext
-   * @methodOf ngMock.$timeout
-   * @description
-   *
-   * Flushes the next timeout in the queue and compares it to the provided delay
-   *
-   * @param {number=} expectedDelay the delay value that will be asserted against the delay of the
-   *                  next timeout function
-   */
-  $delegate.flushNext = function(expectedDelay) {
-    $browser.defer.flushNext(expectedDelay);
-  };
-
-  /**
-   * @ngdoc method
    * @name ngMock.$timeout#verifyNoPendingTasks
    * @methodOf ngMock.$timeout
    * @description
