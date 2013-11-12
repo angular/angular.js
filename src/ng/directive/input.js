@@ -526,10 +526,9 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
-
   ctrl.$parsers.push(function(value) {
     var empty = ctrl.$isEmpty(value);
-    if (empty || NUMBER_REGEXP.test(value)) {
+    if (empty ||  NUMBER_REGEXP.test(value)) {
       ctrl.$setValidity('number', true);
       return value === '' ? null : (empty ? value : parseFloat(value));
     } else {
@@ -588,9 +587,14 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
-
+  var testedValid;
   var urlValidator = function(value) {
-    if (ctrl.$isEmpty(value) || URL_REGEXP.test(value)) {
+    if (isArray(value)) {
+      testedValid = value.every(function(val){return URL_REGEXP.test(val)})
+    } else {
+      testedValid = URL_REGEXP.test(value)
+    }
+    if (ctrl.$isEmpty(value) || testedValid) {
       ctrl.$setValidity('url', true);
       return value;
     } else {
@@ -607,7 +611,13 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    if (ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value)) {
+    var testedValid;
+    if (isArray(value)) {
+      testedValid = value.every(function(val){return EMAIL_REGEXP.test(val)})
+    } else {
+      testedValid = EMAIL_REGEXP.test(value)
+    }
+    if (ctrl.$isEmpty(value) || testedValid) {
       ctrl.$setValidity('email', true);
       return value;
     } else {
