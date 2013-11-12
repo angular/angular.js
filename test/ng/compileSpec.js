@@ -4232,6 +4232,76 @@ describe('$compile', function() {
     }));
   });
 
+  describe('form[action]', function() {
+    it('should pass through action attribute for the same domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
+      $rootScope.testUrl = "different_page";
+      $rootScope.$apply();
+      expect(element.attr('action')).toEqual('different_page');
+    }));
+
+    it('should clear out action attribute for a different domain', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
+      $rootScope.testUrl = "http://a.different.domain.example.com";
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "http://a.different.domain.example.com");
+    }));
+
+    it('should clear out JS action attribute', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
+      $rootScope.testUrl = "javascript:alert(1);";
+      expect(function() { $rootScope.$apply() }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "javascript:alert(1);");
+    }));
+
+    it('should clear out non-resource_url action attribute', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
+      expect($rootScope.$apply).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
+    }));
+
+    it('should pass through $sce.trustAs() values in action attribute', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
+      $rootScope.$apply();
+
+      expect(element.attr('action')).toEqual('javascript:doTrustedStuff()');
+    }));
+  });
+
+  if (!msie || msie >= 11) {
+    describe('iframe[srcdoc]', function() {
+      it('should NOT set iframe contents for untrusted values', inject(function($compile, $rootScope, $sce) {
+        element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
+        $rootScope.html = '<div onclick="">hello</div>';
+        expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
+            /Can't interpolate: {{html}}\n/.source +
+            /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
+      }));
+
+      it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
+        $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
+        expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
+            /Can't interpolate: {{html}}\n/.source +
+            /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
+      }));
+
+      it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {
+        element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
+        $rootScope.html = $sce.trustAsHtml('<div onclick="">hello</div>');
+        $rootScope.$digest();
+        expect(angular.lowercase(element[0].srcdoc)).toEqual('<div onclick="">hello</div>');
+      }));
+    });
+  }
+
   describe('ngAttr* attribute binding', function() {
 
     it('should bind after digest but not before', inject(function($compile, $rootScope) {
