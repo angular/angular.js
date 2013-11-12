@@ -81,7 +81,7 @@ Yes, Angular can use {@link http://jquery.com/ jQuery} if it's present in your a
 application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
 to its own implementation of the subset of jQuery that we call {@link api/angular.element  jQLite}.
 
-Due to a change to use `on()`/`off()` rather than `bind()`\`unbind()`, Angular 1.2 only operates with
+Due to a change to use `on()`/`off()` rather than `bind()`/`unbind()`, Angular 1.2 only operates with
 jQuery 1.7.1 or above.
 
 
