@@ -53,6 +53,7 @@ exports.ngVersions = function() {
   return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
 
   function expandVersions(versions, latestVersion) {
+    var RC_VERSION = /rc\d/;
     //copy the array to avoid changing the versions param data
     //the latest version is not on the git tags list, but
     //docs.angularjs.org will always point to master as of 1.2
@@ -63,19 +64,9 @@ exports.ngVersions = function() {
       var version = versions[i],
           split = version.split('.'),
           isMaster = version == latestVersion,
-          isStable = split[1] % 2 == 0;
+          isStable = split[1] % 2 === 0 && !RC_VERSION.test(version);
 
       var title = 'AngularJS - v' + version;
-
-      //anything that is stable before being unstable is a rc1 version
-      //just like with AngularJS 1.2.0rc1 (even though it's apart of the
-      //1.1.5 API
-      if(isMaster || (isStable && !firstUnstable)) {
-        isStable = false;
-      }
-      else {
-        firstUnstable = firstUnstable || version;
-      }
 
       var docsPath = version < '1.0.2' ?  'docs-' + version : 'docs';
 
