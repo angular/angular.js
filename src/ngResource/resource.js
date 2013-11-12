@@ -2,6 +2,28 @@
 
 var $resourceMinErr = angular.$$minErr('$resource');
 
+// Helper functions and regex to lookup a dotted path on an object
+// stopping at undefined/null.  The path must be composed of ASCII
+// identifiers (just like $parse)
+var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
+
+function isValidDottedPath(path) {
+  return (path != null && path !== '' && path !== 'hasOwnProperty' &&
+      MEMBER_NAME_REGEX.test('.' + path));
+}
+
+function lookupDottedPath(obj, path) {
+  if (!isValidDottedPath(path)) {
+    throw $resourceMinErr('badmember', 'Dotted member path "@{0}" is invalid.', path);
+  }
+  var keys = path.split('.');
+  for (var i = 0, ii = keys.length; i < ii && obj !== undefined; i++) {
+    var key = keys[i];
+    obj = (obj !== null) ? obj[key] : undefined;
+  }
+  return obj;
+}
+
 /**
  * @ngdoc overview
  * @name ngResource
@@ -285,7 +307,8 @@ var $resourceMinErr = angular.$$minErr('$resource');
     </doc:example>
  */
 angular.module('ngResource', ['ng']).
-  factory('$resource', ['$http', '$parse', '$q', function($http, $parse, $q) {
+  factory('$resource', ['$http', '$q', function($http, $q) {
+
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
@@ -297,10 +320,7 @@ angular.module('ngResource', ['ng']).
         forEach = angular.forEach,
         extend = angular.extend,
         copy = angular.copy,
-        isFunction = angular.isFunction,
-        getter = function(obj, path) {
-          return $parse(path)(obj);
-        };
+        isFunction = angular.isFunction;
 
     /**
      * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
@@ -415,7 +435,7 @@ angular.module('ngResource', ['ng']).
         forEach(actionParams, function(value, key){
           if (isFunction(value)) { value = value(); }
           ids[key] = value && value.charAt && value.charAt(0) == '@' ?
-            getter(data, value.substr(1)) : value;
+            lookupDottedPath(data, value.substr(1)) : value;
         });
         return ids;
       }
