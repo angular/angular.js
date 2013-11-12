@@ -499,13 +499,35 @@ describe("resource", function() {
     var currentGroup = 'students',
         Person = $resource('/Person/:group/:id', { group: function() { return currentGroup; }});
 
-
     $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
 
     var fedor = Person.get({id: 'fedor'});
     $httpBackend.flush();
 
     expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
+  });
+
+
+  it('should pass resource object to dynamic default parameters', function() {
+    var Person = $resource('/Person/:id', {
+      id: function(data) {
+        return data ? data.id : 'fedor';
+      }
+    });
+
+    $httpBackend.expect('GET', '/Person/fedor').respond(
+        {id: 'fedor', email: 'f@f.com', count: 1});
+
+    var fedor = Person.get();
+    $httpBackend.flush();
+
+    expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com', count: 1});
+
+    $httpBackend.expect('POST', '/Person/fedor').respond(
+        {id: 'fedor', email: 'f@f.com', count: 2});
+    fedor.$save();
+    $httpBackend.flush();
+    expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com', count: 2});
   });
 
 
