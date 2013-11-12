@@ -12,7 +12,7 @@ For a more in-depth explanation, have a look at the {@link tutorial/ tutorial}.
 |{@link concepts#template Template}          | HTML with additional markup |
 |{@link concepts#directive Directives}        | extend HTML with custom attributes and elements |
 |{@link concepts#model Model}             | the data that is shown to the user and with which the user interacts |
-|{@link concepts#scope Scope}             | context where the model is stored so that directives and expressions can access it |
+|{@link concepts#scope Scope}             | context where the model is stored so that controllers, directives and expressions can access it |
 |{@link concepts#expression Expressions}       | access variables and functions from the scope |
 |{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions |
 |{@link concepts#filter Filter}            | formats the value of an expression for display to the user |
