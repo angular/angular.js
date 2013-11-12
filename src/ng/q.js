@@ -165,7 +165,7 @@
  *      // Propagate promise resolution to 'then' functions using $apply().
  *      $rootScope.$apply();
  *      expect(resolvedValue).toEqual(123);
- *    });
+ *    }));
  *  </pre>
  */
 function $QProvider() {
