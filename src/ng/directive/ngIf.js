@@ -79,7 +79,7 @@
     </file>
   </example>
  */
-var ngIfDirective = ['$animate', function($animate) {
+var ngIfDirective = ['$animate', '$parse', function($animate, $parse) {
   return {
     transclude: 'element',
     priority: 600,
@@ -89,10 +89,12 @@ var ngIfDirective = ['$animate', function($animate) {
     compile: function (element, attr, transclude) {
       return function ($scope, $element, $attr) {
         var block, childScope;
-        $scope.$watch($attr.ngIf, function ngIfWatchAction(value) {
-
-          if (toBoolean(value)) {
-            if (!childScope) {
+        $scope.$watch(
+          function ngIfWatchExpression() {
+            return toBoolean($parse($attr.ngIf)($scope));
+          },
+          function ngIfWatchAction(value) {
+            if (value) {
               childScope = $scope.$new();
               transclude(childScope, function (clone) {
                 block = {
@@ -101,20 +103,19 @@ var ngIfDirective = ['$animate', function($animate) {
                 };
                 $animate.enter(clone, $element.parent(), $element);
               });
-            }
-          } else {
-
-            if (childScope) {
-              childScope.$destroy();
-              childScope = null;
-            }
-
-            if (block) {
-              $animate.leave(getBlockElements(block));
-              block = null;
+            } else {
+              if (childScope) {
+                childScope.$destroy();
+                childScope = null;
+              }
+  
+              if (block) {
+                $animate.leave(getBlockElements(block));
+                block = null;
+              }
             }
           }
-        });
+        );
       };
     }
   };
