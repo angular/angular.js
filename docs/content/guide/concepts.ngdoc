@@ -99,8 +99,8 @@ The concept behind this is <a name="databinding">"{@link databinding two-way dat
 
 # Adding UI logic: Controllers
 
-Let's add some more logic to the example to
-allow to enter and calculate the costs in different currencies and also pay the invoice.
+Let's add some more logic to the example that allows us to enter and calculate the costs in
+different currencies and also pay the invoice.
 
 <example module="invoice1">
   <file name="invoice1.js">
