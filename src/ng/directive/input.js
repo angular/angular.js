@@ -541,6 +541,13 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$formatters.push(function(value) {
     return ctrl.$isEmpty(value) ? '' : '' + value;
   });
+  
+  if (attr.min || attr.max) {
+    scope.$watch(
+      function() { return attr.min + '' + attr.max; },
+      function() { ctrl.$setViewValue(ctrl.$viewValue); }
+    );
+  }
 
   if (attr.min) {
     var minValidator = function(value) {

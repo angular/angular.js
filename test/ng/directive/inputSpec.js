@@ -735,19 +735,21 @@ describe('input', function() {
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
 
-      it('should validate even if min value changes on-the-fly', function(done) {
+      it('should validate even if min value changes on-the-fly', function() {
         scope.min = 10;
         compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
         scope.$digest();
 
         changeInputValueTo('5');
         expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
 
         scope.min = 0;
-        scope.$digest(function () {
-          expect(inputElm).toBeValid();
-          done();
-        });
+        scope.$digest();
+        expect(inputElm).toBeValid();
+        expect(scope.value).toBe(5);
+        expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
 
@@ -769,19 +771,21 @@ describe('input', function() {
         expect(scope.form.alias.$error.max).toBeFalsy();
       });
 
-      it('should validate even if max value changes on-the-fly', function(done) {
+      it('should validate even if max value changes on-the-fly', function() {
         scope.max = 10;
         compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
         scope.$digest();
 
         changeInputValueTo('5');
         expect(inputElm).toBeValid();
+        expect(scope.value).toBe(5);
+        expect(scope.form.alias.$error.max).toBeFalsy();
 
         scope.max = 0;
-        scope.$digest(function () {
-          expect(inputElm).toBeInvalid();
-          done();
-        });
+        scope.$digest();
+        expect(inputElm).toBeInvalid();
+        expect(scope.value).toBeFalsy();
+        expect(scope.form.alias.$error.max).toBeTruthy();
       });
     });
 
