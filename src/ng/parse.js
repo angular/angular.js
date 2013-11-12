@@ -18,7 +18,9 @@ var promiseWarning;
 //
 // We want to prevent this type of access. For the sake of performance, during the lexing phase we
 // disallow any "dotted" access to any member named "constructor" or to any member whose name begins
-// or ends with an underscore.  The latter allows one to exclude the private / JavaScript only API
+// or ends with an underscore (this is not enabled by default.  See
+// {@link ng.$parseProvider#blockPrivateSymbols blockPrivateSymbols}).
+// The latter allows one to exclude the private / JavaScript only API
 // available on the scope and controllers from the context of an Angular expression.
 //
 // For reflective calls (a[b]), we check that the value of the lookup is not the Function
@@ -38,16 +40,15 @@ var promiseWarning;
 // In general, it is not possible to access a Window object from an angular expression unless a
 // window or some DOM object that has a reference to window is published onto a Scope.
 
-function ensureSafeMemberName(name, fullExpression, allowConstructor) {
-  if (typeof name !== 'string' && toString.apply(name) !== "[object String]") {
-    return name;
-  }
+function ensureSafeMemberName(name, fullExpression, blockPrivateSymbols, allowConstructor) {
   if (name === "constructor" && !allowConstructor) {
     throw $parseMinErr('isecfld',
         'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
   }
-  if (name.charAt(0) === '_' || name.charAt(name.length-1) === '_') {
+  if (blockPrivateSymbols &&
+      (typeof name === 'string' || toString.apply(name) === "[object String]") &&
+      (name.charAt(0) === '_' || name.charAt(name.length-1) === '_')) {
     throw $parseMinErr('isecprv',
         'Referencing private fields in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
@@ -728,7 +729,8 @@ Parser.prototype = {
   },
 
   objectIndex: function(obj) {
-    var parser = this;
+    var parser = this,
+        blockPrivateSymbols = parser.options.blockPrivateSymbols;
 
     var indexFn = this.expression();
     this.consume(']');
@@ -738,7 +740,7 @@ Parser.prototype = {
           // In the getter, we will not block looking up "constructor" by name in order to support user defined
           // constructors.  However, if value looked up is the Function constructor, we will still block it in the
           // ensureSafeObject call right after we look up o[i] (a few lines below.)
-          i = ensureSafeMemberName(indexFn(self, locals), parser.text, true /* allowConstructor */),
+          i = ensureSafeMemberName(indexFn(self, locals), parser.text, blockPrivateSymbols, true /* allowConstructor */),
           v, p;
 
       if (!o) return undefined;
@@ -754,7 +756,7 @@ Parser.prototype = {
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = ensureSafeMemberName(indexFn(self, locals), parser.text, blockPrivateSymbols);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var safe = ensureSafeObject(obj(self, locals), parser.text);
         return safe[key] = value;
@@ -860,10 +862,11 @@ Parser.prototype = {
 function setter(obj, path, setValue, fullExp, options) {
   //needed?
   options = options || {};
+  var blockPrivateSymbols = options.blockPrivateSymbols;
 
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
-    key = ensureSafeMemberName(element.shift(), fullExp);
+    key = ensureSafeMemberName(element.shift(), fullExp, blockPrivateSymbols);
     var propertyObj = obj[key];
     if (!propertyObj) {
       propertyObj = {};
@@ -883,7 +886,7 @@ function setter(obj, path, setValue, fullExp, options) {
       obj = obj.$$v;
     }
   }
-  key = ensureSafeMemberName(element.shift(), fullExp);
+  key = ensureSafeMemberName(element.shift(), fullExp, blockPrivateSymbols);
   obj[key] = setValue;
   return setValue;
 }
@@ -896,11 +899,12 @@ var getterFnCache = {};
  * - http://jsperf.com/path-evaluation-simplified/7
  */
 function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
-  ensureSafeMemberName(key0, fullExp);
-  ensureSafeMemberName(key1, fullExp);
-  ensureSafeMemberName(key2, fullExp);
-  ensureSafeMemberName(key3, fullExp);
-  ensureSafeMemberName(key4, fullExp);
+  var blockPrivateSymbols = options.blockPrivateSymbols;
+  ensureSafeMemberName(key0, fullExp, blockPrivateSymbols);
+  ensureSafeMemberName(key1, fullExp, blockPrivateSymbols);
+  ensureSafeMemberName(key2, fullExp, blockPrivateSymbols);
+  ensureSafeMemberName(key3, fullExp, blockPrivateSymbols);
+  ensureSafeMemberName(key4, fullExp, blockPrivateSymbols);
 
   return !options.unwrapPromises
       ? function cspSafeGetter(scope, locals) {
@@ -1001,6 +1005,7 @@ function getterFn(path, options, fullExp) {
 
   var pathKeys = path.split('.'),
       pathKeysLength = pathKeys.length,
+      blockPrivateSymbols = options.blockPrivateSymbols,
       fn;
 
   if (options.csp) {
@@ -1023,7 +1028,7 @@ function getterFn(path, options, fullExp) {
   } else {
     var code = 'var l, fn, p;\n';
     forEach(pathKeys, function(key, index) {
-      ensureSafeMemberName(key, fullExp);
+      ensureSafeMemberName(key, fullExp, blockPrivateSymbols);
       code += 'if(s === null || s === undefined) return s;\n' +
               'l=s;\n' +
               's='+ (index
@@ -1120,7 +1125,8 @@ function $ParseProvider() {
   var $parseOptions = {
     csp: false,
     unwrapPromises: false,
-    logPromiseWarnings: true
+    logPromiseWarnings: true,
+    blockPrivateSymbols: false
   };
 
 
@@ -1206,6 +1212,35 @@ function $ParseProvider() {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name ng.$parseProvider#blockPrivateSymbols
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * If set to true (*default: false*), $parse will disallow access to
+   * properties whose names begin or end with an underscore character.
+   *
+   * This is good to enable, particularly if one is using the
+   * "controller as" pattern or if you would like to prevent access to
+   * some properties that are exposed on the scope chain but should not
+   * be available from template expressions.  In such a scheme, one
+   * would using a coding convention to ensure that any property that
+   * should not be available from a template expression begins or ends
+   * with an underscore character.
+   *
+   * @param {boolean=} value New value.
+   * @returns {boolean|self} Returns the current setting when used as
+   *                         getter and self if used as setter.
+   */
+  this.blockPrivateSymbols = function(value) {
+    if (isDefined(value)) {
+      $parseOptions.blockPrivateSymbols = !!value;
+      return this;
+    } else {
+      return $parseOptions.blockPrivateSymbols;
+    }
+  };
 
   this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
     $parseOptions.csp = $sniffer.csp;
