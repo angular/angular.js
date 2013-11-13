@@ -50,7 +50,7 @@ In the following example, we say that the `<input>` element **matches** the `ngM
 The following also **matches** `ngModel`:
 
 ```javascript
-<input data-ng:model="foo">
+<input data-ng-model="foo">
 ```
 
 Angular **normalizes** an element's tag and attribute name to determine which elements match which
