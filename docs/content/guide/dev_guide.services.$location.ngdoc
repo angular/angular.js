@@ -100,6 +100,9 @@ To configure the `$location` service, retrieve the
   prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
   default: `""`
 
+<strong>Note:</strong> If you do not configure the $locationProvider via $locationProvider.html5Mode() then $location.$$search() and other functions will return blank values.
+
+
 ### Example configuration
 <pre>
 $locationProvider.html5Mode(true).hashPrefix('!');
