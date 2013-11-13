@@ -192,10 +192,11 @@ describe('parser', function() {
     });
   });
 
-  var $filterProvider, scope;
+  var $filterProvider, scope, $parseProvider;
 
-  beforeEach(module(['$filterProvider', function (filterProvider) {
+  beforeEach(module(['$filterProvider', '$parseProvider', function (filterProvider, parseProvider) {
     $filterProvider = filterProvider;
+    $parseProvider = parseProvider;
   }]));
 
 
@@ -592,6 +593,7 @@ describe('parser', function() {
 
       describe('sandboxing', function() {
         describe('private members', function() {
+
           it('should NOT allow access to private members', function() {
             forEach(['_name', 'name_', '_', '_name_'], function(name) {
               function _testExpression(expression) {
@@ -639,6 +641,42 @@ describe('parser', function() {
               testExpression('a.b["NAME"]');         testExpression('a.b["NAME"] = 1');
               testExpression('a["b"]["NAME"]');      testExpression('a["b"]["NAME"] = 1');
             });
+          });
+
+          it('should allow disabling and custom tagging of private members', function() {
+            // test default behaviour
+            expect($parseProvider.restrictFieldsMatching()).toEqual(/^_|_$/);
+            scope._a = 1;
+            expect(function() {
+              scope.$eval('_a');
+            }).toThrowMinErr(
+                    '$parse', 'isecprv', 'Referencing private fields in Angular expressions is disallowed! ' +
+                    'Expression: _a');
+
+            // disable restricted field access
+            expect(function() {
+              $parseProvider.restrictFieldsMatching(null);
+              scope.$eval('_a');
+            }).not.toThrow();
+
+            // custom restricted fields
+            scope.privateVar = 1;
+            expect(function() {
+              $parseProvider.restrictFieldsMatching(/^priv/);
+              scope.$eval('privateVar');
+            }).toThrowMinErr(
+                    '$parse', 'isecprv', 'Referencing private fields in Angular expressions is disallowed! ' +
+                    'Expression: privateVar');
+
+            // invalid custom expression
+            expect(function() {
+              $parseProvider.restrictFieldsMatching('priv');
+            }).toThrowMinErr(
+                    '$parse', 'iresre', 'Invalid expression for matching private fields! ' +
+                    'Expression: priv');
+
+            // set default value again
+            $parseProvider.restrictFieldsMatching(/^_|_$/);
           });
         });
 
