@@ -66,7 +66,7 @@ directory.</p></li>
       <p>The tutorial instructions, from now on, assume you are running all commands from the <code>angular-phonecat</code>
 directory.</p></li>
       <li><p>You will also need Node.js and Karma to run unit tests, so please verify that you have
-      <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+      <a href="http://nodejs.org/">Node.js</a> v0.10 or better installed
       and that the <code>node</code> executable is on your <code>PATH</code> by running the following
       command in a terminal window:</p></li>
       <pre>node --version</pre>
