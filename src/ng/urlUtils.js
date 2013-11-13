@@ -67,7 +67,7 @@ var originUrl = urlResolve(window.location.href, true);
  *   | pathname      | The pathname, beginning with "/"
  *
  */
-function urlResolve(url) {
+function urlResolve(url, base) {
   var href = url,
       pathname;
 
@@ -92,9 +92,8 @@ function urlResolve(url) {
    * do not include drive names for routing.
    */
 
-  pathname = removeWindowsDriveName(urlParsingNode.pathname);
+  pathname = removeWindowsDriveName(urlParsingNode.pathname, url, base);
   pathname = (pathname.charAt(0) === '/') ? pathname : '/' + pathname;
-
 
   // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
   return {
@@ -107,13 +106,6 @@ function urlResolve(url) {
     port: urlParsingNode.port,
     pathname: pathname
   };
-
-  function removeWindowsDriveName (path) {
-    var firstPathSegmentMatch;
-
-    firstPathSegmentMatch = windowsFilePathExp.exec(path);
-    return firstPathSegmentMatch ? firstPathSegmentMatch[1] : path;
-  }
 }
 
 
@@ -128,4 +120,24 @@ function urlIsSameOrigin(requestUrl) {
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
   return (parsed.protocol === originUrl.protocol &&
           parsed.host === originUrl.host);
+}
+
+function removeWindowsDriveName (path, url, base) {
+  var firstPathSegmentMatch;
+
+  //Get the relative path from the input URL.
+  if (url.indexOf(base) === 0) {
+    url = url.replace(base, '');
+  }
+
+  /*
+   * The input URL intentionally contains a
+   * first path segment that ends with a colon.
+   */
+  if (windowsFilePathExp.exec(url)) {
+    return path;
+  }
+
+  firstPathSegmentMatch = windowsFilePathExp.exec(path);
+  return firstPathSegmentMatch ? firstPathSegmentMatch[1] : path;
 }
