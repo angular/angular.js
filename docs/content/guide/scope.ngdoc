@@ -140,8 +140,7 @@ a diagram depicting the scope boundaries.
     }
   </file>
   <file name="style.css">
-    .show-scope .doc-example-live.ng-scope,
-    .show-scope .doc-example-live .ng-scope  {
+    .ng-scope  {
       border: 1px solid red;
       margin: 3px;
     }
