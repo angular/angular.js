@@ -154,9 +154,7 @@ a diagram depicting the scope boundaries.
 Notice that Angular automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
 child scopes are necessary because the repeater evaluates `{{employee.name}}` expression, but
-depending on which scope the expression is evaluated it produces different result. Similarly the
-evaluation of `{{department}}` prototypically inherits from root scope, as it is the only place
-where the `department` property is defined.
+depending on which scope the expression is evaluated it produces different result.
 
 
 ## Retrieving Scopes from the DOM.
