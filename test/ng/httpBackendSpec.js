@@ -118,6 +118,25 @@ describe('$httpBackend', function() {
     });
   });
 
+  it('should not try to read response data when request is aborted', function() {
+    callback.andCallFake(function(status, response, headers) {
+      expect(status).toBe(-1);
+      expect(response).toBe(null);
+      expect(headers).toBe(null);
+    });
+    $backend('GET', '/url', null, callback, {}, 2000);
+    xhr = MockXhr.$$lastInstance;
+    spyOn(xhr, 'abort');
+
+    fakeTimeout.flush();
+    expect(xhr.abort).toHaveBeenCalledOnce();
+
+    xhr.status = 0;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(-1);

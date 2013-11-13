@@ -34,6 +34,8 @@ function $HttpBackendProvider() {
 }
 
 function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument, locationProtocol) {
+  var ABORTED = -1;
+
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
     var status;
@@ -69,13 +71,19 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
       // always async
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-          var responseHeaders = xhr.getAllResponseHeaders();
+          var responseHeaders = null,
+              response = null;
+
+          if(status !== ABORTED) {
+            responseHeaders = xhr.getAllResponseHeaders();
+            response = xhr.responseType ? xhr.response : xhr.responseText;
+          }
 
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
           completeRequest(callback,
               status || xhr.status,
-              (xhr.responseType ? xhr.response : xhr.responseText),
+              response,
               responseHeaders);
         }
       };
@@ -99,7 +107,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
 
 
     function timeoutRequest() {
-      status = -1;
+      status = ABORTED;
       jsonpDone && jsonpDone();
       xhr && xhr.abort();
     }
