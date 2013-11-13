@@ -324,9 +324,10 @@ function $HttpProvider() {
      *
      * # Caching
      *
-     * To enable caching, set the configuration property `cache` to `true`. When the cache is
-     * enabled, `$http` stores the response from the server in local cache. Next time the
-     * response is served from the cache without sending a request to the server.
+     * To enable caching, set the configuration property `cache` to `true` (local cache) or to a
+     * cache instance built with $cacheFactory. When the cache is enabled, `$http` stores the
+     * response from the server in the cache. Next time the response is served from the cache
+     * without sending a request to the server.
      *
      * Note that even if the response is served from cache, delivery of the data is asynchronous in
      * the same way that real requests are.
@@ -335,8 +336,8 @@ function $HttpProvider() {
      * cache, but the cache is not populated yet, only one request to the server will be made and
      * the remaining requests will be fulfilled using the response from the first request.
      *
-     * A custom default cache built with $cacheFactory can be provided in $http.defaults.cache.
-     * To skip it, set configuration property `cache` to `false`.
+     * A custom default cache built with $cacheFactory can also be provided in $http.defaults.cache.
+     * To use it, `cache` configuration property should be set to `true`.
      *
      *
      * # Interceptors
