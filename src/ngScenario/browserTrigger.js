@@ -34,7 +34,6 @@
 
     var inputType = (element.type) ? element.type.toLowerCase() : null,
         nodeName = element.nodeName.toLowerCase();
-
     if (!eventType) {
       eventType = {
         'text':            'change',
