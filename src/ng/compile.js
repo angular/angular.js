@@ -703,8 +703,8 @@ function $CompileProvider($provide) {
           nodeName = nodeName_(this.$$element);
 
           // sanitize a[href] and img[src] values
-          if ((nodeName === 'A' && key === 'href') ||
-              (nodeName === 'IMG' && key === 'src')) {
+          if ((nodeName === 'a' && key === 'href') ||
+              (nodeName === 'img' && key === 'src')) {
             // NOTE: urlResolve() doesn't support IE < 8 so we don't sanitize for that case.
             if (!msie || msie >= 8 ) {
               normalizedVal = urlResolve(value).href;
@@ -967,7 +967,7 @@ function $CompileProvider($provide) {
         case 1: /* Element */
           // use the node name: <directive>
           addDirective(directives,
-              directiveNormalize(nodeName_(node).toLowerCase()), 'E', maxPriority, ignoreDirective);
+              directiveNormalize(nodeName_(node)), 'E', maxPriority, ignoreDirective);
 
           // iterate over the attributes
           for (var attr, name, nName, ngAttrName, value, nAttrs = node.attributes,
@@ -1735,7 +1735,7 @@ function $CompileProvider($provide) {
     function getTrustedContext(node, attrNormalizedName) {
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
       if (attrNormalizedName == "xlinkHref" ||
-          (nodeName_(node) != "IMG" && (attrNormalizedName == "src" ||
+          (nodeName_(node) != "img" && (attrNormalizedName == "src" ||
                                         attrNormalizedName == "ngSrc"))) {
         return $sce.RESOURCE_URL;
       }
@@ -1749,7 +1749,7 @@ function $CompileProvider($provide) {
       if (!interpolateFn) return;
 
 
-      if (name === "multiple" && nodeName_(node) === "SELECT") {
+      if (name === "multiple" && nodeName_(node) === "select") {
         throw $compileMinErr("selmulti",
             "Binding to the 'multiple' attribute is not supported. Element: {0}",
             startingTag(node));

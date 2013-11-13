@@ -33,7 +33,7 @@
     var y = eventData.y;
 
     var inputType = (element.type) ? element.type.toLowerCase() : null,
-        nodeName = element.nodeName.toLowerCase();
+        nodeName = nodeName_(element);
 
     if (!eventType) {
       eventType = {
@@ -80,7 +80,7 @@
       var ret = element.fireEvent('on' + eventType);
       if (inputType == 'submit') {
         while(element) {
-          if (element.nodeName.toLowerCase() == 'form') {
+          if (nodeName_(element) == 'form') {
             element.fireEvent('onsubmit');
             break;
           }
