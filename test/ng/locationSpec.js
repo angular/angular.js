@@ -34,7 +34,6 @@ describe('$location', function() {
       };
     }));
 
-
     afterEach(inject(function ($sniffer) {
       if ($sniffer.msie) return;
       //reset urlParsingNode
@@ -49,6 +48,14 @@ describe('$location', function() {
       url.$$parse('file:///base#!/foo?a=b&c#hash');
 
       expect(url.path()).toBe('/foo');
+    });
+
+
+    it('should include the drive name if it was provided in the input url', function () {
+      url = new LocationHashbangUrl('file:///base', '#!');
+      url.$$parse('file:///base#!/C:/foo?a=b&c#hash');
+
+      expect(url.path()).toBe('/C:/foo');
     });
   });
 
