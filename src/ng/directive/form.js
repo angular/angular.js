@@ -21,7 +21,7 @@ var nullFormCtrl = {
  * @property {Object} $error Is an object hash, containing references to all invalid controls or
  *  forms, where:
  *
- *  - keys are validation tokens (error names) — such as `required`, `url` or `email`),
+ *  - keys are validation tokens (error names) — such as `required`, `url` or `email`,
  *  - values are arrays of controls or forms that are invalid with given error.
  *
  * @description
