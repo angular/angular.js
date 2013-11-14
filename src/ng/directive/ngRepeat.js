@@ -365,7 +365,9 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
             if (!block.startNode) {
               linker(childScope, function(clone) {
-                clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
+                  if(childScope.$last) {
+                    clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
+                  }
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
                 block.scope = childScope;
