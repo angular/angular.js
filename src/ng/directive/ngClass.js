@@ -128,10 +128,10 @@ function classDirective(name, selector) {
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
 
-         input('bold').check();
+         input('important').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
 
-         input('red').check();
+         input('error').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
        });
 
