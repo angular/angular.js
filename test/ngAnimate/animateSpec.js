@@ -2599,4 +2599,38 @@ describe("ngAnimate", function() {
     });
   });
 
+  it('should only perform the DOM operation once',
+    inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+    if (!$sniffer.transitions) return;
+
+    ss.addRule('.base-class', '-webkit-transition:1s linear all;' +
+                                      'transition:1s linear all;');
+
+    $animate.enabled(true);
+
+    var element = $compile('<div class="base-class one two"></div>')($rootScope);
+    $rootElement.append(element);
+    jqLite($document[0].body).append($rootElement);
+
+    $animate.removeClass(element, 'base-class one two');
+
+    //still true since we're before the reflow
+    expect(element.hasClass('base-class')).toBe(true);
+
+    //this will cancel the remove animation
+    $animate.addClass(element, 'base-class one two');
+
+    //the cancellation was a success and the class was added right away
+    //since there was no successive animation for the after animation
+    expect(element.hasClass('base-class')).toBe(true);
+
+    //the reflow...
+    $timeout.flush();
+
+    //the reflow DOM operation was commenced but it ran before so it
+    //shouldn't run agaun
+    expect(element.hasClass('base-class')).toBe(true);
+  }));
+
 });
