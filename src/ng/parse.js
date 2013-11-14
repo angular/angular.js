@@ -38,7 +38,7 @@ var promiseWarning;
 // In general, it is not possible to access a Window object from an angular expression unless a
 // window or some DOM object that has a reference to window is published onto a Scope.
 
-function ensureSafeMemberName(name, fullExpression, allowConstructor) {
+function ensureSafeMemberName(name, fullExpression, allowConstructor, allowPrivate) {
   if (typeof name !== 'string' && toString.apply(name) !== "[object String]") {
     return name;
   }
@@ -47,7 +47,7 @@ function ensureSafeMemberName(name, fullExpression, allowConstructor) {
         'Referencing "constructor" field in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
   }
-  if (name.charAt(0) === '_' || name.charAt(name.length-1) === '_') {
+  if (!allowPrivate && (name.charAt(0) === '_' || name.charAt(name.length-1) === '_')) {
     throw $parseMinErr('isecprv',
         'Referencing private fields in Angular expressions is disallowed! Expression: {0}',
         fullExpression);
@@ -738,7 +738,7 @@ Parser.prototype = {
           // In the getter, we will not block looking up "constructor" by name in order to support user defined
           // constructors.  However, if value looked up is the Function constructor, we will still block it in the
           // ensureSafeObject call right after we look up o[i] (a few lines below.)
-          i = ensureSafeMemberName(indexFn(self, locals), parser.text, true /* allowConstructor */),
+          i = ensureSafeMemberName(indexFn(self, locals), parser.text, true /* allowConstructor */, parser.options.allowPrivateFields),
           v, p;
 
       if (!o) return undefined;
@@ -754,7 +754,7 @@ Parser.prototype = {
       return v;
     }, {
       assign: function(self, value, locals) {
-        var key = ensureSafeMemberName(indexFn(self, locals), parser.text);
+        var key = ensureSafeMemberName(indexFn(self, locals), parser.text, false, parser.options.allowPrivateFields);
         // prevent overwriting of Function.constructor which would break ensureSafeObject check
         var safe = ensureSafeObject(obj(self, locals), parser.text);
         return safe[key] = value;
@@ -863,7 +863,7 @@ function setter(obj, path, setValue, fullExp, options) {
 
   var element = path.split('.'), key;
   for (var i = 0; element.length > 1; i++) {
-    key = ensureSafeMemberName(element.shift(), fullExp);
+    key = ensureSafeMemberName(element.shift(), fullExp, false, options.allowPrivateFields);
     var propertyObj = obj[key];
     if (!propertyObj) {
       propertyObj = {};
@@ -883,7 +883,7 @@ function setter(obj, path, setValue, fullExp, options) {
       obj = obj.$$v;
     }
   }
-  key = ensureSafeMemberName(element.shift(), fullExp);
+  key = ensureSafeMemberName(element.shift(), fullExp, false, options.allowPrivateFields);
   obj[key] = setValue;
   return setValue;
 }
@@ -896,11 +896,12 @@ var getterFnCache = {};
  * - http://jsperf.com/path-evaluation-simplified/7
  */
 function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
-  ensureSafeMemberName(key0, fullExp);
-  ensureSafeMemberName(key1, fullExp);
-  ensureSafeMemberName(key2, fullExp);
-  ensureSafeMemberName(key3, fullExp);
-  ensureSafeMemberName(key4, fullExp);
+
+  ensureSafeMemberName(key0, fullExp, false, options.allowPrivateFields);
+  ensureSafeMemberName(key1, fullExp, false, options.allowPrivateFields);
+  ensureSafeMemberName(key2, fullExp, false, options.allowPrivateFields);
+  ensureSafeMemberName(key3, fullExp, false, options.allowPrivateFields);
+  ensureSafeMemberName(key4, fullExp, false, options.allowPrivateFields);
 
   return !options.unwrapPromises
       ? function cspSafeGetter(scope, locals) {
@@ -1023,7 +1024,7 @@ function getterFn(path, options, fullExp) {
   } else {
     var code = 'var l, fn, p;\n';
     forEach(pathKeys, function(key, index) {
-      ensureSafeMemberName(key, fullExp);
+      ensureSafeMemberName(key, fullExp, false, options.allowPrivateFields);
       code += 'if(s === null || s === undefined) return s;\n' +
               'l=s;\n' +
               's='+ (index
@@ -1120,7 +1121,8 @@ function $ParseProvider() {
   var $parseOptions = {
     csp: false,
     unwrapPromises: false,
-    logPromiseWarnings: true
+    logPromiseWarnings: true,
+    allowPrivateFields: false
   };
 
 
@@ -1206,6 +1208,29 @@ function $ParseProvider() {
     }
   };
 
+  /**
+   * @ngdoc method
+   * @name ng.$parseProvider#allowPrivateFields
+   * @methodOf ng.$parseProvider
+   * @description
+   *
+   * Controls whether Angular should allow private fields (fields beginning with "_") within
+   * expressions.
+   *
+   * The default is set to `false`.
+   *
+   * @param {boolean=} value New value.
+   * @returns {boolean|self} Returns the current setting when used as a getter and self is used as
+   *                         setter.
+   */
+  this.allowPrivateFields = function(value) {
+     if (isDefined(value)) {
+       $parseOptions.allowPrivateFields = value;
+     return this;
+     } else {
+       return $parseOptions.allowPrivateFields;
+     }
+  };
 
   this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
     $parseOptions.csp = $sniffer.csp;
