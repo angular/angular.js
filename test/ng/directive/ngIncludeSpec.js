@@ -439,6 +439,36 @@ describe('ngInclude', function() {
   });
 });
 
+describe('ngInclude and transcludes', function() {
+  it('should allow access to directive controller from children when used in a replace template', function() {
+    var controller;
+    module(function($compileProvider) {
+      var directive = $compileProvider.directive;
+      directive('template', valueFn({
+        template: '<div ng-include="\'include.html\'"></div>',
+        replace: true,
+        controller: function() {
+          this.flag = true;
+        }
+      }));
+      directive('test', valueFn({
+        require: '^template',
+        link: function(scope, el, attr, ctrl) {
+          controller = ctrl;
+        }
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('<div><div test></div></div>');
+      var element = $compile('<div><div template></div></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(controller.flag).toBe(true);
+      dealoc(element);
+    });
+  });
+});
+
 describe('ngInclude animations', function() {
   var body, element, $rootElement;
 
