@@ -514,6 +514,44 @@ describe('ngView', function() {
   });
 });
 
+describe('ngView and transcludes', function() {
+  it('should allow access to directive controller from children when used in a replace template', function() {
+    var controller;
+    module('ngRoute');
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/view', {templateUrl: 'view.html'});
+      var directive = $compileProvider.directive;
+      directive('template', function() {
+        return {
+          template: '<div ng-view></div>',
+          replace: true,
+          controller: function() {
+            this.flag = true;
+          }
+        };
+      });
+
+      directive('test', function() {
+        return {
+          require: '^template',
+          link: function(scope, el, attr, ctrl) {
+            controller = ctrl;
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend, $location) {
+      $httpBackend.expectGET('view.html').respond('<div><div test></div></div>');
+      var element = $compile('<div><div template></div></div>')($rootScope);
+      $location.url('/view');
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(controller.flag).toBe(true);
+      dealoc(element);
+    });
+  });
+});
+
 describe('ngView animations', function() {
   var body, element, $rootElement;
 

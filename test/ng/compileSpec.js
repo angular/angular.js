@@ -3438,6 +3438,113 @@ describe('$compile', function() {
           expect(log).toEqual('pre(); post(unicorn!)');
         });
       });
+
+      it('should copy the directive controller to all clones', function() {
+        var transcludeCtrl, cloneCount = 2;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              transcludeCtrl = this;
+            },
+            link: function(scope, el, attr, ctrl, $transclude) {
+              var i;
+              for (i=0; i<cloneCount; i++) {
+                $transclude(cloneAttach);
+              }
+
+              function cloneAttach(clone) {
+                el.append(clone);
+              }
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><span></span></div>')($rootScope);
+          var children = element.children(), i;
+          expect(transcludeCtrl).toBeDefined();
+
+          expect(element.data('$transcludeController')).toBe(transcludeCtrl);
+          for (i=0; i<cloneCount; i++) {
+            expect(children.eq(i).data('$transcludeController')).toBeUndefined();
+          }
+        });
+      });
+
+      it('should provide the $transclude controller local as 5th argument to the pre and post-link function', function() {
+        var ctrlTransclude, preLinkTransclude, postLinkTransclude;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              ctrlTransclude = $transclude;
+            },
+            compile: function() {
+              return {
+                pre: function(scope, el, attr, ctrl, $transclude) {
+                  preLinkTransclude = $transclude;
+                },
+                post: function(scope, el, attr, ctrl, $transclude) {
+                  postLinkTransclude = $transclude;
+                }
+              };
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude></div>')($rootScope);
+          expect(ctrlTransclude).toBeDefined();
+          expect(ctrlTransclude).toBe(preLinkTransclude);
+          expect(ctrlTransclude).toBe(postLinkTransclude);
+        });
+      });
+
+      it('should allow an optional scope argument in $transclude', function() {
+        var capturedChildCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(scope, function(clone) {
+                element.append(clone);
+              });
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude>{{$id}}</div>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toBe($rootScope.$id);
+        });
+
+      });
+
+      it('should expose the directive controller to transcluded children', function() {
+        var capturedChildCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function() {
+            },
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(function(clone) {
+                element.append(clone);
+              });
+            }
+          }));
+          directive('child', valueFn({
+            require: '^transclude',
+            link: function(scope, element, attr, ctrl) {
+              capturedChildCtrl = ctrl;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          expect(capturedChildCtrl).toBeTruthy();
+        });
+
+      });
     });
 
 
@@ -3470,7 +3577,6 @@ describe('$compile', function() {
           expect(element.text()).toEqual('001-002;001-003;');
         });
       });
-
 
       it('should only allow one element transclusion per element', function() {
         module(function() {
@@ -3620,8 +3726,101 @@ describe('$compile', function() {
           ]);
         });
       });
-    });
 
+      it('should allow to access $transclude in the same directive', function() {
+        var _$transclude;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function($transclude) {
+              _$transclude = $transclude;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude></div>')($rootScope);
+          expect(_$transclude).toBeDefined()
+        });
+      });
+
+      it('should copy the directive controller to all clones', function() {
+        var transcludeCtrl, cloneCount = 2;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function() {
+              transcludeCtrl = this;
+            },
+            link: function(scope, el, attr, ctrl, $transclude) {
+              var i;
+              for (i=0; i<cloneCount; i++) {
+                $transclude(cloneAttach);
+              }
+
+              function cloneAttach(clone) {
+                el.after(clone);
+              }
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div><div transclude></div></div>')($rootScope);
+          var children = element.children(), i;
+          for (i=0; i<cloneCount; i++) {
+            expect(children.eq(i).data('$transcludeController')).toBe(transcludeCtrl);
+          }
+        });
+      });
+
+      it('should expose the directive controller to transcluded children', function() {
+        var capturedTranscludeCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function() {
+            },
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(scope, function(clone) {
+                element.after(clone);
+              });
+            }
+          }));
+          directive('child', valueFn({
+            require: '^transclude',
+            link: function(scope, element, attr, ctrl) {
+              capturedTranscludeCtrl = ctrl;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          expect(capturedTranscludeCtrl).toBeTruthy();
+        });
+      });
+
+      it('should allow access to $transclude in a templateUrl directive', function() {
+        var transclude;
+        module(function() {
+          directive('template', valueFn({
+            templateUrl: 'template.html',
+            replace: true
+          }));
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+        });
+        inject(function($compile, $httpBackend) {
+          $httpBackend.expectGET('template.html').respond('<div transclude></div>');
+          element = $compile('<div template></div>')($rootScope);
+          $httpBackend.flush();
+          expect(transclude).toBeDefined();
+        });
+      });
+
+    });
 
     it('should safely create transclude comment node and not break with "-->"',
         inject(function($rootScope) {
