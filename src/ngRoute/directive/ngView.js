@@ -173,8 +173,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
     terminal: true,
     priority: 400,
     transclude: 'element',
-    compile: function(element, attr, linker) {
-      return function(scope, $element, attr) {
+    link: function(scope, $element, attr, ctrl, $transclude) {
         var currentScope,
             currentElement,
             autoScrollExp = attr.autoscroll,
@@ -200,7 +199,7 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
 
           if (template) {
             var newScope = scope.$new();
-            linker(newScope, function(clone) {
+            $transclude(newScope, function(clone) {
               clone.html(template);
               $animate.enter(clone, null, currentElement || $element, function onNgViewEnter () {
                 if (angular.isDefined(autoScrollExp)
@@ -235,7 +234,6 @@ function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   
             cleanupLastView();
           }
         }
-      };
     }
   };
 }
