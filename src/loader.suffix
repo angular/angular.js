@@ -1,4 +1,4 @@
-)(window);
+})(window);
 
 /**
  * Closure compiler type information
