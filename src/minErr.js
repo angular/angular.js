@@ -35,11 +35,11 @@ function minErr(module) {
       template = arguments[1],
       templateArgs = arguments,
       stringify = function (obj) {
-        if (isFunction(obj)) {
+        if (typeof obj === 'function') {
           return obj.toString().replace(/ \{[\s\S]*$/, '');
-        } else if (isUndefined(obj)) {
+        } else if (typeof obj === 'undefined') {
           return 'undefined';
-        } else if (!isString(obj)) {
+        } else if (typeof obj !== 'string') {
           return JSON.stringify(obj);
         }
         return obj;
@@ -51,11 +51,11 @@ function minErr(module) {
 
       if (index + 2 < templateArgs.length) {
         arg = templateArgs[index + 2];
-        if (isFunction(arg)) {
+        if (typeof arg === 'function') {
           return arg.toString().replace(/ ?\{[\s\S]*$/, '');
-        } else if (isUndefined(arg)) {
+        } else if (typeof arg === 'undefined') {
           return 'undefined';
-        } else if (!isString(arg)) {
+        } else if (typeof arg !== 'string') {
           return toJson(arg);
         }
         return arg;
@@ -63,7 +63,7 @@ function minErr(module) {
       return match;
     });
 
-    message = message + '\nhttp://errors.angularjs.org/' + version.full + '/' +
+    message = message + '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
     for (i = 2; i < arguments.length; i++) {
       message = message + (i == 2 ? '?' : '&') + 'p' + (i-2) + '=' +
