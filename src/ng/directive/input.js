@@ -1103,9 +1103,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @methodOf ng.directive:ngModel.NgModelController
    *
    * @description
-   * Read a value from view.
+   * Update the view value.
    *
-   * This method should be called from within a DOM event handler.
+   * This method should be called when the view value changes, typically from within a DOM event handler.
    * For example {@link ng.directive:input input} or
    * {@link ng.directive:select select} directives call it.
    *
