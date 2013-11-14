@@ -119,6 +119,65 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('age:20|codename:20|dogname:Bingo|prodname:Bingo|wealth:20|');
   });
 
+
+  describe('model stability', function() {
+
+    it('should throw infinite digest error when model is unstable', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
+          '</ul>')(scope);
+
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1},
+          {name: 'Patrick', id: 2}
+        ];
+      };
+
+      expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+    });
+
+
+    it('should not run into infinite digest if $$hashKey was defined by the developer', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends()">{{friend.name}}|</li>' +
+          '</ul>')(scope);
+
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1, $$hashKey: function() { return 3; }},
+          {name: 'Patrick', id: 2, $$hashKey: function() { return 4; }}
+        ];
+      };
+
+      scope.$digest();
+
+      expect(element.text()).toBe('John|Patrick|');
+    });
+
+
+    it('should not run into infinite digest if `track by id` was defined by the developer', function() {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="friend in friends() track by friend.id">{{friend.name}}|</li>' +
+          '</ul>')(scope);
+
+      scope.friends = function() {
+        return [
+          {name: 'John', id: 1},
+          {name: 'Patrick', id: 2}
+        ];
+      };
+
+      scope.$digest();
+
+      expect(element.text()).toBe('John|Patrick|');
+    });
+  });
+
+
   describe('track by', function() {
     it('should track using expression function', function() {
       element = $compile(

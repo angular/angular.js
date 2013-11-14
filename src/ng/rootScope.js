@@ -266,7 +266,7 @@ function $RootScopeProvider(){
 
 
 
-           // Using a listener function 
+           // Using a listener function
            var food;
            scope.foodCounter = 0;
            expect(scope.foodCounter).toEqual(0);
@@ -291,7 +291,7 @@ function $RootScopeProvider(){
            // Update food and run digest.  Now the counter will increment
            food = 'cheeseburger';
            scope.$digest();
-           expect(scope.foodCounter).toEqual(1);  
+           expect(scope.foodCounter).toEqual(1);
 
        * </pre>
        *
@@ -406,7 +406,7 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a de-registration function for this listener. When the
        *    de-registration function is executed, the internal watch operation is terminated.
        */
-      $watchCollection: function(obj, listener) {
+      $watchCollection: function(obj, listener, arrayIdentityGetter, objectIdentityGetter) {
         var self = this;
         var oldValue;
         var newValue;
@@ -415,6 +415,9 @@ function $RootScopeProvider(){
         var internalArray = [];
         var internalObject = {};
         var oldLength = 0;
+
+        arrayIdentityGetter = arrayIdentityGetter || function(key, value) { return value; };
+        objectIdentityGetter = objectIdentityGetter || function(key, value) { return value; };
 
         function $watchCollectionWatch() {
           newValue = objGetter(self);
@@ -442,7 +445,7 @@ function $RootScopeProvider(){
             }
             // copy the items to oldValue and look for changes.
             for (var i = 0; i < newLength; i++) {
-              if (oldValue[i] !== newValue[i]) {
+              if (arrayIdentityGetter(i, oldValue[i], i) !== arrayIdentityGetter(i, newValue[i], i)) {
                 changeDetected++;
                 oldValue[i] = newValue[i];
               }
@@ -460,7 +463,7 @@ function $RootScopeProvider(){
               if (newValue.hasOwnProperty(key)) {
                 newLength++;
                 if (oldValue.hasOwnProperty(key)) {
-                  if (oldValue[key] !== newValue[key]) {
+                  if (objectIdentityGetter(key, oldValue[key]) !== objectIdentityGetter(key, newValue[key])) {
                     changeDetected++;
                     oldValue[key] = newValue[key];
                   }
@@ -710,7 +713,7 @@ function $RootScopeProvider(){
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
-       * 
+       *
        * @param {(object)=} locals Local variables object, useful for overriding values in scope.
        * @returns {*} The result of evaluating the expression.
        */
