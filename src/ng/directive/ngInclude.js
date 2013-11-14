@@ -154,12 +154,12 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     priority: 400,
     terminal: true,
     transclude: 'element',
-    compile: function(element, attr, transclusion) {
+    compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      return function(scope, $element) {
+      return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
             currentScope,
             currentElement;
@@ -188,7 +188,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
 
-              transclusion(newScope, function(clone) {
+              $transclude(newScope, function(clone) {
                 cleanupLastIncludeContent();
 
                 currentScope = newScope;
