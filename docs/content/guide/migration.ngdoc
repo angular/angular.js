@@ -45,7 +45,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#urls-are-now-sanitized-against-a-whitelist URLs are now sanitized against a whitelist}</li>
   <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
   <li>{@link guide/migration#change-to-interpolation-priority Change to interpolation priority}</li>
-  <li>{@link guide/migration#underscore-prefixed/suffixed-prorperties-are-non-bindable Underscore-prefixed/suffixed prorperties are non-bindable}</li>
+  <li>{@link guide/migration#underscore-prefixed/suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
   <li>{@link guide/migration#you-cannot-bind-to-select[multiple] You cannot bind to select[multiple]}</li>
   <li>{@link guide/migration#uncommon-region-specific-local-files-were-removed-from-i18n Uncommon region-specific local files were removed from i18n}</li>
 </ul>
@@ -588,7 +588,7 @@ See [79223eae](https://github.com/angular/angular.js/commit/79223eae502283889334
 [#4528](https://github.com/angular/angular.js/issues/4528), and
 [#4649](https://github.com/angular/angular.js/issues/4649)
 
-## Underscore-prefixed/suffixed prorperties are non-bindable
+## Underscore-prefixed/suffixed properties are non-bindable
 
 This change introduces the notion of "private" properties (properties
 whose names begin and/or end with an underscore) on the scope chain.
