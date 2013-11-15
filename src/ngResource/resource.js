@@ -253,58 +253,6 @@ function lookupDottedPath(obj, path) {
        });
      });
    </pre>
-
- * # Buzz client
-
-   Let's look at what a buzz client created with the `$resource` service looks like:
-    <doc:example>
-    <doc:source jsfiddle="false">
-    <script>
-     function BuzzController($resource) {
-       this.userId = 'googlebuzz';
-       this.Activity = $resource(
-         'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
-         {alt:'json', callback:'JSON_CALLBACK'},
-         {
-           get:{method:'JSONP', params:{visibility:'@self'}},
-           replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}
-         }
-       );
-     }
-
-     BuzzController.prototype = {
-       fetch: function() {
-         this.activities = this.Activity.get({userId:this.userId});
-       },
-       expandReplies: function(activity) {
-         activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
-       }
-     };
-     BuzzController.$inject = ['$resource'];
-    </script>
-
-    <div ng-controller="BuzzController">
-     <input ng-model="userId"/>
-     <button ng-click="fetch()">fetch</button>
-     <hr/>
-     <div ng-repeat="item in activities.data.items">
-       <h1 style="font-size: 15px;">
-         <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-         <a href ng-click="expandReplies(item)" style="float: right;">Expand replies:
-           {{item.links.replies[0].count}}</a>
-       </h1>
-       {{item.object.content | html}}
-       <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-         <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
-       </div>
-     </div>
-    </div>
-    </doc:source>
-    <doc:scenario>
-    </doc:scenario>
-    </doc:example>
  */
 angular.module('ngResource', ['ng']).
   factory('$resource', ['$http', '$q', function($http, $q) {
