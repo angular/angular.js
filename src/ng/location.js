@@ -629,16 +629,17 @@ function $LocationProvider(){
 
     // update browser
     var changeCounter = 0;
-    var oldTransition = [];
+    var oldTransition = [null, null];
     $rootScope.$watch(function $locationWatch() {
       var oldUrl = $browser.url();
       var currentReplace = $location.$$replace;
 
       // Stop the same transition from being made twice in a short period of time
-      var madeTransition = (oldTransition.length && oldUrl == oldTransition[0] && $location.absUrl() == oldTransition[1]);
+      var madeTransition = (oldUrl == oldTransition[0] && $location.absUrl() == oldTransition[1]);
 
       if (!madeTransition && (!changeCounter || oldUrl != $location.absUrl())) {
-        oldTransition.push(oldUrl, $location.absUrl());
+        oldTransition[0] = oldUrl;
+        oldTransition[1] = $location.absUrl();
         changeCounter++;
         $rootScope.$evalAsync(function() {
           if ($rootScope.$broadcast('$locationChangeStart', $location.absUrl(), oldUrl).
@@ -649,6 +650,10 @@ function $LocationProvider(){
             afterLocationChange(oldUrl);
           }
         });
+      } else if (madeTransition) {
+        // We didn't increment changeCounter so we are safe to clear the last made transition
+        oldTransition[0] = null;
+        oldTransition[1] = null;
       }
       $location.$$replace = false;
 
@@ -658,7 +663,6 @@ function $LocationProvider(){
     return $location;
 
     function afterLocationChange(oldUrl) {
-      setTimeout(function() { oldTransition.length = 0; }, 150);
       $rootScope.$broadcast('$locationChangeSuccess', $location.absUrl(), oldUrl);
     }
 }];
