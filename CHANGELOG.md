@@ -1,3 +1,45 @@
+<a name="1.2.1"></a>
+# 1.2.1 underscore-empathy (2013-11-14)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - accessing controllers of transcluded directives from children
+  ([90f87072](https://github.com/angular/angular.js/commit/90f87072e83234ae366cfeb3c281503c31dad738),
+   [#4935](https://github.com/angular/angular.js/issues/4935))
+  - correctly handle interpolated style in replace templates
+  ([e1254b26](https://github.com/angular/angular.js/commit/e1254b266dfa2d4e3756e4317152dbdbcabe44be),
+   [#4882](https://github.com/angular/angular.js/issues/4882))
+- **$resource:** don't use $parse for @dotted.member
+  ([9577702e](https://github.com/angular/angular.js/commit/9577702e8d2519c1a60f5ac4058e63bd7b919815))
+- **bootstrap:** make IE8 happy
+  ([a61b65d0](https://github.com/angular/angular.js/commit/a61b65d01b468502fe53d68818949d3fcc9f20f6))
+- **loader:** don't rely on internal APIs
+  ([8425e9fe](https://github.com/angular/angular.js/commit/8425e9fe383c17f6a5589c778658c5fc0570ae8f),
+   [#4437](https://github.com/angular/angular.js/issues/4437), [#4874](https://github.com/angular/angular.js/issues/4874))
+- **minErr:** remove references to internal APIs
+  ([94764ee0](https://github.com/angular/angular.js/commit/94764ee08910726db1db7a1101c3001500306dea))
+- **ngIf:** don't create multiple elements when changing from a truthy value to another thruthy value
+  ([4612705e](https://github.com/angular/angular.js/commit/4612705ec297bc6ba714cb7a98f1be6aff77c4b8),
+   [#4852](https://github.com/angular/angular.js/issues/4852))
+- **urlUtils:**
+  - make removal of windows drive from path safer
+  ([89f435de](https://github.com/angular/angular.js/commit/89f435de847635e3ec339726e6f83cf3f0ee9091),
+   [#4939](https://github.com/angular/angular.js/issues/4939))
+  - return right path for file:// on windows
+  ([f925e8ca](https://github.com/angular/angular.js/commit/f925e8caa6c51a7d45ca9ead30601ec2e9d4464c),
+   [#4680](https://github.com/angular/angular.js/issues/4680))
+
+
+## Features
+
+- **$parse:** revert hiding "private" properties
+  ([4ab16aaa](https://github.com/angular/angular.js/commit/4ab16aaaf762e9038803da1f967ac8cb6650727d),
+   [#4926](https://github.com/angular/angular.js/issues/4926), [#4842](https://github.com/angular/angular.js/issues/4842), [#4865](https://github.com/angular/angular.js/issues/4865), [#4859](https://github.com/angular/angular.js/issues/4859), [#4849](https://github.com/angular/angular.js/issues/4849))
+
+
+
 <a name="1.2.0"></a>
 # 1.2.0 timely-delivery (2013-11-08)
 
