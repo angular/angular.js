@@ -688,8 +688,8 @@ function $CompileProvider($provide) {
         if(key == 'class') {
           value = value || '';
           var current = this.$$element.attr('class') || '';
-          this.$removeClass(tokenDifference(current, value).join(' '));
-          this.$addClass(tokenDifference(value, current).join(' '));
+          this.$removeClass(tokenDifference(current, value));
+          this.$addClass(tokenDifference(value, current));
         } else {
           var booleanKey = getBooleanAttrName(this.$$element[0], key),
               normalizedVal,
@@ -747,22 +747,6 @@ function $CompileProvider($provide) {
             $exceptionHandler(e);
           }
         });
-
-        function tokenDifference(str1, str2) {
-          var values = [],
-              tokens1 = str1.split(/\s+/),
-              tokens2 = str2.split(/\s+/);
-
-          outer:
-          for(var i=0;i<tokens1.length;i++) {
-            var token = tokens1[i];
-            for(var j=0;j<tokens2.length;j++) {
-              if(token == tokens2[j]) continue outer;
-            }
-            values.push(token);
-          }
-          return values;
-        }
       },
 
 
