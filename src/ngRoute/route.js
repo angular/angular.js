@@ -9,6 +9,23 @@
  *
  * The `ngRoute` module provides routing and deeplinking services and directives for angular apps.
  *
+ * For example: 
+ * 
+ * 'use strict';
+ *  
+ *  angular.module('myApp', ['ngRoute']).
+ *     config(function ($routeProvider) {
+ *        $routeProvider
+ *           .when('/', { templateUrl: 'partials/main.html', controller: 'Main' })
+ *           .when('/locations', { templateUrl: 'partials/locations.html', controller: 'Locations' })
+ *           .otherwise({ redirectTo: '/' })
+ *        ;
+ *     });
+ *
+ * 
+ * Note: presently the URL key cannot be blank, as in when('',{}). This oversight is unfortunate since the '/' presently 
+ * results in a persistent # (hash) in the base URL.
+ * 
  * {@installModule route}
  *
  * <div doc-module-components="ngRoute"></div>
