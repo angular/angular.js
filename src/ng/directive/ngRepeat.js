@@ -201,8 +201,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     priority: 1000,
     terminal: true,
     $$tlb: true,
-    compile: function(element, attr, linker) {
-      return function($scope, $element, $attr){
+    link: function($scope, $element, $attr, ctrl, $transclude){
         var expression = $attr.ngRepeat;
         var match = expression.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
           trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
@@ -364,7 +363,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             // jshint bitwise: true
 
             if (!block.startNode) {
-              linker(childScope, function(clone) {
+              $transclude(childScope, function(clone) {
                 clone[clone.length++] = document.createComment(' end ngRepeat: ' + expression + ' ');
                 $animate.enter(clone, null, jqLite(previousNode));
                 previousNode = clone;
@@ -377,7 +376,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           }
           lastBlockMap = nextBlockMap;
         });
-      };
     }
   };
 }];
