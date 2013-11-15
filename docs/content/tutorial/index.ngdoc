@@ -85,7 +85,7 @@ to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></l
   <div class="tab-pane well" id="git-win" title="Git on Windows">
     <ol>
       <li><p>You will need Node.js and Karma to run unit tests, so please verify that you have
-        <a href="http://nodejs.org/">Node.js</a> v0.8 or better installed
+        <a href="http://nodejs.org/">Node.js</a> v0.10 or better installed
         and that the <code>node</code> executable is on your <code>PATH</code> by running the following
         command in a terminal window:</p>
         <pre>node --version</pre>
