@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
-  "version": "1.2.1",
-  "cdnVersion": "1.2.0",
+  "version": "1.2.2-snapshot",
+  "cdnVersion": "1.2.1",
   "codename": "underscore-empathy",
   "repository": {
     "type": "git",
