@@ -823,7 +823,7 @@ describe("ngAnimate", function() {
           $timeout.flush();
 
           //IE removes the -ms- prefix when placed on the style
-          var fallbackProperty = $sniffer.msie ? 'zoom' : 'clip';
+          var fallbackProperty = $sniffer.msie ? 'zoom' : 'border-spacing';
           var regExp = new RegExp("transition-property:\\s+color\\s*,\\s*" + fallbackProperty + "\\s*;");
           expect(child2.attr('style') || '').toMatch(regExp);
           expect(child2.hasClass('ng-animate')).toBe(true);
