@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.1-snapshot",
+  "version": "1.2.1",
   "cdnVersion": "1.2.0",
-  "codename": "timely-delivery",
+  "codename": "underscore-empathy",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
