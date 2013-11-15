@@ -547,10 +547,22 @@ Doc.prototype = {
       self = this,
       minerrMsg;
 
+    var gitTagFromFullVersion = function(version) {
+      var match = version.match(/-(\w{7})/);
+
+      if (match) {
+        // git sha
+        return match[1];
+      }
+
+      // git tag
+      return 'v' + version;
+    };
+
     if (this.section === 'api') {
       dom.tag('a', {
-          href: 'http://github.com/angular/angular.js/tree/v' +
-            gruntUtil.getVersion().cdn + '/' + self.file + '#L' + self.line,
+          href: 'http://github.com/angular/angular.js/tree/' +
+            gitTagFromFullVersion(gruntUtil.getVersion().full) + '/' + self.file + '#L' + self.line,
           class: 'view-source btn btn-action' }, function(dom) {
         dom.tag('i', {class:'icon-zoom-in'}, ' ');
         dom.text(' View source');
