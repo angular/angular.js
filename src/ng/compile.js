@@ -927,15 +927,7 @@ function $CompileProvider($provide) {
             childTranscludeFn = nodeLinkFn.transclude;
             if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
               nodeLinkFn(childLinkFn, childScope, node, $rootElement,
-                  (function(transcludeFn) {
-                    return function(cloneFn) {
-                      var transcludeScope = scope.$new();
-                      transcludeScope.$$transcluded = true;
-
-                      return transcludeFn(transcludeScope, cloneFn).
-                          on('$destroy', bind(transcludeScope, transcludeScope.$destroy));
-                    };
-                  })(childTranscludeFn || transcludeFn)
+                createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
               );
             } else {
               nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
@@ -947,6 +939,16 @@ function $CompileProvider($provide) {
       }
     }
 
+    function createBoundTranscludeFn(scope, transcludeFn) {
+      return function boundTranscludeFn(cloneFn) {
+        var transcludedScope = scope.$new(),
+          clone;
+        transcludedScope.$$transcluded = true;
+        clone = transcludeFn(transcludedScope, cloneFn);
+        clone.on('$destroy', bind(transcludedScope, transcludedScope.$destroy));
+        return clone;
+      };
+    }
 
     /**
      * Looks for directives on the given node and adds them to the directive collection which is
