@@ -118,21 +118,23 @@ inheritance, and child scopes prototypically inherit from their parents.
 This example illustrates scopes in application, and prototypical inheritance of properties. The example is followed by
 a diagram depicting the scope boundaries.
 
-<div class="show-scope">
 <example>
   <file name="index.html">
+  <div class="show-scope-demo">
     <div ng-controller="GreetCtrl">
       Hello {{name}}!
     </div>
     <div ng-controller="ListCtrl">
       <ol>
-        <li ng-repeat="name in names">{{name}}</li>
+        <li ng-repeat="name in names">{{name}} from {{department}}</li>
       </ol>
     </div>
+  </div>
   </file>
   <file name="script.js">
-    function GreetCtrl($scope) {
+    function GreetCtrl($scope, $rootScope) {
       $scope.name = 'World';
+      $rootScope.department = 'Angular';
     }
 
     function ListCtrl($scope) {
@@ -140,20 +142,19 @@ a diagram depicting the scope boundaries.
     }
   </file>
   <file name="style.css">
-    .show-scope .doc-example-live.ng-scope,
-    .show-scope .doc-example-live .ng-scope  {
+    .show-scope-demo.ng-scope,
+    .show-scope-demo .ng-scope  {
       border: 1px solid red;
       margin: 3px;
     }
   </file>
 </example>
-</div>
 
 <img class="center" src="img/guide/concepts-scope.png">
 
 Notice that Angular automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
-child scopes are necessary because the repeater evaluates `{{employee.name}}` expression, but
+child scopes are necessary because the repeater evaluates `{{name}}` expression, but
 depending on which scope the expression is evaluated it produces different result. Similarly the
 evaluation of `{{department}}` prototypically inherits from root scope, as it is the only place
 where the `department` property is defined.

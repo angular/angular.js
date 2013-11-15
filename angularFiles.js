@@ -66,6 +66,7 @@ angularFiles = {
   ],
 
   'angularLoader': [
+    'src/minErr.js',
     'src/loader.js'
   ],
 

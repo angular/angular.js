@@ -94,14 +94,16 @@ Here are some equivalent examples of elements that match `ngBind`:
 
 <div class="alert alert-success">
 **Best Practice:** Prefer using the dash-delimited format (e.g. `ng-bind` for `ngBind`).
-If you want to use an HTML validating tool, you can instead use the `data`-prefixed version (e.g. `data-ng-bind` for `ngBind`).
+If you want to use an HTML validating tool, you can instead use the `data`-prefixed version (e.g.
+`data-ng-bind` for `ngBind`).
 The other forms shown above are accepted for legacy reasons but we advise you to avoid them.
 </div>
 
 `$compile` can match directives based on element names, attributes, class names, as well as comments.
 
 All of the Angular-provided directives match attribute name, tag name, comments, or class name.
-The following demonstrates the various ways a directive (`myDir` in this case) can be referenced from within a template:
+The following demonstrates the various ways a directive (`myDir` in this case) can be referenced
+from within a template:
 
 ```html
 <my-dir></my-dir>
@@ -116,20 +118,22 @@ Doing so generally makes it easier to determine what directives a given element 
 </div>
 
 <div class="alert alert-success">
-**Best Practice:** Comment directives were commonly used in places where the DOM API limits (e.g. inside `<table>` elements)
-to create directives that spanned multiple elements. AngularJS 1.2 introduces
-{@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`} as a better solution to this problem.
-Developers are encouraged to use this over custom comment directives when possible.
+**Best Practice:** Comment directives were commonly used in places where the DOM API limits the
+ability to create directives that spanned multiple elements (e.g. inside `<table>` elements).
+AngularJS 1.2 introduces {@link api/ng.directive:ngRepeat `ng-repeat-start` and `ng-repeat-end`}
+as a better solution to this problem. Developers are encouraged to use this over custom comment
+directives when possible.
 </div>
 
 
 
 ### Text and attribute bindings
 
-During the compilation process the {@link api/ng.$compile compiler} matches text and attributes using the
-{@link api/ng.$interpolate $interpolate} service to see if they contain embedded expressions. These expressions
-are registered as {@link api/ng.$rootScope.Scope#methods_$watch watches} and will update as part of normal {@link
-api/ng.$rootScope.Scope#methods_$digest digest} cycle. An example of interpolation is shown below:
+During the compilation process the {@link api/ng.$compile compiler} matches text and attributes
+using the {@link api/ng.$interpolate $interpolate} service to see if they contain embedded
+expressions. These expressions are registered as {@link api/ng.$rootScope.Scope#methods_$watch watches}
+and will update as part of normal {@link api/ng.$rootScope.Scope#methods_$digest digest} cycle. An
+example of interpolation is shown below:
 
 ```html
 <a ng-href="img/{{username}}.jpg">Hello {{username}}!</a>
@@ -149,8 +153,8 @@ For example, considering this template:
 ```
 
 We would expect Angular to be able to bind to this, but when we check the console we see
-something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's restrictions,
-you cannot simply write `cx="{{cx}}"`.
+something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's
+restrictions, you cannot simply write `cx="{{cx}}"`.
 
 With `ng-attr-cx` you can work around this problem.
 
@@ -170,18 +174,19 @@ For example, we could fix the example above by instead writing:
 
 ## Creating Directives
 
-First let's talk about the API for registering directives. Much like controllers, directives are registered on
-modules. To register a directive, you use the `module.directive` API. `module.directive` takes the
-{@link guide/directive#creating-custom-directives_matching-directives normalized} directive name followed
-by a **factory function.** This factory function should return
-an object with the different options to tell `$compile` how the directive should behave when matched.
+First let's talk about the API for registering directives. Much like controllers, directives are
+registered on modules. To register a directive, you use the `module.directive` API.
+`module.directive` takes the
+{@link guide/directive#creating-custom-directives_matching-directives normalized} directive name
+followed by a **factory function.** This factory function should return an object with the different
+options to tell `$compile` how the directive should behave when matched.
 
 
 The factory function is invoked only once when the
-{@link api/ng.$compile compiler} matches the directive for the first time. You can
-perform any initialization work here. The function is invoked using {@link
-api/AUTO.$injector#methods_invoke $injector.invoke} which
-makes it injectable just like a controller.
+{@link api/ng.$compile compiler} matches the directive for the first time. You can perform any
+initialization work here. The function is invoked using
+{@link api/AUTO.$injector#methods_invoke $injector.invoke} which makes it injectable just like a
+controller.
 
 <div class="alert alert-success">
 **Best Practice:** Prefer using the definition object over returning a function.
@@ -204,9 +209,9 @@ For the following examples, we'll use the prefix `my` (e.g. `myCustomer`).
 
 ### Template-expanding directive
 
-Let's say you have a chunk of your template that represents a customer's information. This template is repeated
-many times in your code. When you change it in one place, you have to change it in several others. This is a
-good opportunity to use a directive to simplify your template.
+Let's say you have a chunk of your template that represents a customer's information. This template
+is repeated many times in your code. When you change it in one place, you have to change it in
+several others. This is a good opportunity to use a directive to simplify your template.
 
 Let's create a directive that simply replaces its contents with a static template:
 
@@ -232,21 +237,22 @@ Let's create a directive that simply replaces its contents with a static templat
   </file>
 </example>
 
-Notice that we have bindings in this directive. After `$compile` compiles and links `<div my-customer></div>`,
-it will try to match directives on the element's children. This means you can compose directives of other directives.
-We'll see how to do that in {@link
-guide/directive#creating-custom-directives_demo_creating-directives-that-communicate an example} below.
+Notice that we have bindings in this directive. After `$compile` compiles and links
+`<div my-customer></div>`, it will try to match directives on the element's children. This means you
+can compose directives of other directives. We'll see how to do that in
+{@link guide/directive#creating-custom-directives_demo_creating-directives-that-communicate an example}
+below.
 
-In the example above we in-lined the value of the `template` option, but this will become annoying as the size
-of your template grows.
+In the example above we in-lined the value of the `template` option, but this will become annoying
+as the size of your template grows.
 
 <div class="alert alert-success">
-**Best Practice:** Unless your template is very small, it's typically better to break it apart into its own
-HTML file and load it with the `templateUrl` option.
+**Best Practice:** Unless your template is very small, it's typically better to break it apart into
+its own HTML file and load it with the `templateUrl` option.
 </div>
 
-If you are familiar with `ngInclude`, `templateUrl` works just like it. Here's the same example using `templateUrl`
-instead:
+If you are familiar with `ngInclude`, `templateUrl` works just like it. Here's the same example
+using `templateUrl` instead:
 
 <example module="docsTemplateUrlDirective">
   <file name="script.js">
@@ -277,8 +283,8 @@ Great! But what if we wanted to have our directive match the tag name `<my-custo
 If we simply put a `<my-customer>` element into the HMTL, it doesn't work.
 
 <div class="alert alert-waring">
-**Note:** When you create a directive, it is restricted to attribute only by default. In order to create
-directives that are triggered by element name, you need to use the `restrict` option.
+**Note:** When you create a directive, it is restricted to attribute only by default. In order to
+create directives that are triggered by element name, you need to use the `restrict` option.
 </div>
 
 The `restrict` option is typically set to:
@@ -317,28 +323,33 @@ Let's change our directive to use `restrict: 'E'`:
   </file>
 </example>
 
-For more on the {@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object
-`restrict`, see the API docs}.
+For more on the
+{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object `restrict`}
+property, see the
+{@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object API docs}.
 
 <div class="alert alert-info">
 **When should I use an attribute versus an element?**
 
-Use an element when you are creating a component that is in control of the template. The common case for this
-is when you are creating a Domain-Specific Language for parts of your template.
+Use an element when you are creating a component that is in control of the template. The common case
+for this is when you are creating a Domain-Specific Language for parts of your template.
 
 Use an attribute when you are decorating an existing element with new functionality.
 </div>
 
-Using an element for the `myCustomer` directive is clearly the right choice because you're not decorating an element
-with some "customer" behavior; you're defining the core behavior of the element as a customer component.
+Using an element for the `myCustomer` directive is clearly the right choice because you're not
+decorating an element with some "customer" behavior; you're defining the core behavior of the
+element as a customer component.
 
 
 
 ### Isolating the Scope of a Directive
 
-Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a given scope.
+Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
+given scope.
 
-In its current implementation, we'd need to create a different controller each time In order to re-use such a directive:
+In its current implementation, we'd need to create a different controller each time In order to
+re-use such a directive:
 
 <example module="docsScopeProblemExample">
   <file name="script.js">
@@ -379,8 +390,8 @@ In its current implementation, we'd need to create a different controller each t
 This is clearly not a great solution.
 
 What we want to be able to do is separate the scope inside a directive from the scope
-outside, and then map the outer scope to a directive's inner scope. We can do this by creating what we call an
-**isolate scope**. To do this, we can use a directive's `scope` option:
+outside, and then map the outer scope to a directive's inner scope. We can do this by creating what
+we call an **isolate scope**. To do this, we can use a directive's `scope` option:
 
 <example module="docsIsolateScopeDirective">
   <file name="script.js">
@@ -411,8 +422,8 @@ outside, and then map the outer scope to a directive's inner scope. We can do th
   </file>
 </example>
 
-Looking at `index.html`, the first `<my-customer>` element binds the inner scope's `customer` to `naomi`,
-which we have exposed on our controller's scope. The second binds `customer` to `igor`.
+Looking at `index.html`, the first `<my-customer>` element binds the inner scope's `customer` to
+`naomi`, which we have exposed on our controller's scope. The second binds `customer` to `igor`.
 
 Let's take a closer look at the scope option:
 
@@ -424,16 +435,18 @@ scope: {
 //...
 ```
 
-The property name (`customer`) corresponds to the variable name of the `myCustomer` directive's isolated scope.
-The value of the property (`=customer`) tells `$compile` to bind to the `customer` attribute.
+The property name (`customer`) corresponds to the variable name of the `myCustomer` directive's
+isolated scope. The value of the property (`=customer`) tells `$compile` to bind to the `customer`
+attribute.
 
 <div class="alert alert-warning">
-**Note:** These `=attr` attributes in the `scope` option of directives are normalized just like directive names.
-To bind to the attribute in `<div bind-to-this="thing">`, you'd specify a binding of `=bindToThis`.
+**Note:** These `=attr` attributes in the `scope` option of directives are normalized just like
+directive names. To bind to the attribute in `<div bind-to-this="thing">`, you'd specify a binding
+of `=bindToThis`.
 </div>
 
-For cases where the attribute name is the same as the value you want to bind to inside
-the directive's scope, you can use this shorthand syntax:
+For cases where the attribute name is the same as the value you want to bind to inside the
+directive's scope, you can use this shorthand syntax:
 
 ```javascript
 //...
@@ -444,11 +457,11 @@ scope: {
 //...
 ```
 
-Besides making it possible to bind different data to the scope inside a directive, using an isolated scope has another
-effect.
+Besides making it possible to bind different data to the scope inside a directive, using an isolated
+scope has another effect.
 
-We can show this by adding another property, `vojta`, to our scope and trying to access it
-from within our directive's template:
+We can show this by adding another property, `vojta`, to our scope and trying to access it from
+within our directive's template:
 
 <example module="docsIsolationExample">
   <file name="script.js">
@@ -504,7 +517,8 @@ In this example we will build a directive that displays the current time.
 Once a second, it updates the DOM to reflect the current time.
 
 Directives that want to modify the DOM typically use the `link` option.
-`link` takes a function with the following signature, `function link(scope, element, attrs) { ... }` where:
+`link` takes a function with the following signature, `function link(scope, element, attrs) { ... }`
+where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
@@ -565,8 +579,9 @@ if the directive is deleted so we don't introduce a memory leak.
 </example>
 
 There are a couple of things to note here.
-Just like the `module.controller` API, the function argument in `module.directive` is dependency injected.
-Because of this, we can use `$timeout` and `dateFilter` inside our directive's `link` function.
+Just like the `module.controller` API, the function argument in `module.directive` is dependency
+injected. Because of this, we can use `$timeout` and `dateFilter` inside our directive's `link`
+function.
 
 We register an event `element.on('$destroy', ...)`. What fires this `$destroy` event?
 
@@ -580,8 +595,9 @@ but if you registered a listener on a service, or registered a listener on a DOM
 being deleted, you'll have to clean it up yourself or you risk introducing a memory leak.
 
 <div class="alert alert-success">
-**Best Practice:** Directives should clean up after themselves. You can use `element.on('$destroy', ...)`
-or `scope.$on('$destroy', ...)` to run a clean-up function when the directive is removed.
+**Best Practice:** Directives should clean up after themselves. You can use
+`element.on('$destroy', ...)` or `scope.$on('$destroy', ...)` to run a clean-up function when the
+directive is removed.
 </div>
 
 
@@ -619,11 +635,11 @@ To do this, we need to use the `transclude` option.
   </file>
 </example>
 
-What does this `transclude` option do, exactly? `transclude` makes the contents of a directive with this
-option have access to the scope **outside** of the directive rather than inside.
+What does this `transclude` option do, exactly? `transclude` makes the contents of a directive with
+this option have access to the scope **outside** of the directive rather than inside.
 
-To illustrate this, see the example below. Notice that we've added a `link` function in `script.js` that
-redefines `name` as `Jeff`. What do you think the `{{name}}` binding will resolve to now?
+To illustrate this, see the example below. Notice that we've added a `link` function in `script.js`
+that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will resolve to now?
 
 <example module="docsTransclusionExample">
   <file name="script.js">
@@ -669,11 +685,12 @@ pass in each model you wanted to use separately. If you have to pass in each mod
 use, then you can't really have arbitrary contents, can you?
 
 <div class="alert alert-success">
-**Best Practice:** only use `transclude: true` when you want to create a directive that wraps arbitrary content.
+**Best Practice:** only use `transclude: true` when you want to create a directive that wraps
+arbitrary content.
 </div>
 
-Next, we want to add buttons to this dialog box, and allow someone using the directive to bind their own
-behavior to it.
+Next, we want to add buttons to this dialog box, and allow someone using the directive to bind their
+own behavior to it.
 
 <example module="docsIsoFnBindExample">
   <file name="script.js">
@@ -893,5 +910,6 @@ point for creating your own directives.
 You might also be interested in an in-depth explanation of the compilation process that's
 available in the {@link guide/compiler compiler guide}.
 
-The {@link api/ng.$compile `$compile` API} page has a comprehensive list of directive options for reference.
+The {@link api/ng.$compile `$compile` API} page has a comprehensive list of directive options for
+reference.
 

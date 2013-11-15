@@ -98,18 +98,18 @@ function classDirective(name, selector) {
  * @example Example that demonstrates basic bindings via ngClass directive.
    <example>
      <file name="index.html">
-       <p ng-class="{strike: strike, bold: bold, red: red}">Map Syntax Example</p>
-       <input type="checkbox" ng-model="bold"> bold
-       <input type="checkbox" ng-model="strike"> strike
-       <input type="checkbox" ng-model="red"> red
+       <p ng-class="{strike: deleted, bold: important, red: error}">Map Syntax Example</p>
+       <input type="checkbox" ng-model="deleted"> deleted (apply "strike" class)<br>
+       <input type="checkbox" ng-model="important"> important (apply "bold" class)<br>
+       <input type="checkbox" ng-model="error"> error (apply "red" class)
        <hr>
        <p ng-class="style">Using String Syntax</p>
        <input type="text" ng-model="style" placeholder="Type: bold strike red">
        <hr>
        <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
-       <input ng-model="style1" placeholder="Type: bold"><br>
-       <input ng-model="style2" placeholder="Type: strike"><br>
-       <input ng-model="style3" placeholder="Type: red"><br>
+       <input ng-model="style1" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style2" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style3" placeholder="Type: bold, strike or red"><br>
      </file>
      <file name="style.css">
        .strike {
@@ -128,10 +128,10 @@ function classDirective(name, selector) {
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
 
-         input('bold').check();
+         input('important').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
 
-         input('red').check();
+         input('error').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
        });
 

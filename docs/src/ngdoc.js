@@ -53,6 +53,7 @@ exports.ngVersions = function() {
   return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
 
   function expandVersions(versions, latestVersion) {
+    var RC_VERSION = /rc\d/;
     //copy the array to avoid changing the versions param data
     //the latest version is not on the git tags list, but
     //docs.angularjs.org will always point to master as of 1.2
@@ -63,19 +64,9 @@ exports.ngVersions = function() {
       var version = versions[i],
           split = version.split('.'),
           isMaster = version == latestVersion,
-          isStable = split[1] % 2 == 0;
+          isStable = split[1] % 2 === 0 && !RC_VERSION.test(version);
 
       var title = 'AngularJS - v' + version;
-
-      //anything that is stable before being unstable is a rc1 version
-      //just like with AngularJS 1.2.0rc1 (even though it's apart of the
-      //1.1.5 API
-      if(isMaster || (isStable && !firstUnstable)) {
-        isStable = false;
-      }
-      else {
-        firstUnstable = firstUnstable || version;
-      }
 
       var docsPath = version < '1.0.2' ?  'docs-' + version : 'docs';
 
@@ -556,10 +547,22 @@ Doc.prototype = {
       self = this,
       minerrMsg;
 
+    var gitTagFromFullVersion = function(version) {
+      var match = version.match(/-(\w{7})/);
+
+      if (match) {
+        // git sha
+        return match[1];
+      }
+
+      // git tag
+      return 'v' + version;
+    };
+
     if (this.section === 'api') {
       dom.tag('a', {
-          href: 'http://github.com/angular/angular.js/tree/v' +
-            gruntUtil.getVersion().cdn + '/' + self.file + '#L' + self.line,
+          href: 'http://github.com/angular/angular.js/tree/' +
+            gitTagFromFullVersion(gruntUtil.getVersion().full) + '/' + self.file + '#L' + self.line,
           class: 'view-source btn btn-action' }, function(dom) {
         dom.tag('i', {class:'icon-zoom-in'}, ' ');
         dom.text(' View source');
@@ -1383,10 +1386,16 @@ function explainModuleInstallation(moduleName){
     '    &lt;script src=&quot;angular.js&quot;&gt;\n' +
     '    &lt;script src=&quot;' + modulePackageFile + '&quot;&gt;</pre></code>' +
 
-    '<p>You can also find this file on the [Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs), ' +
-    '<a href="http://bower.io/">Bower</a> (as <code>' + modulePackage + '</code>), ' +
-    'and on <a href="http://code.angularjs.org/">code.angularjs.org</a>.</p>' +
-
+    '<p>You can download this file from the following places:</p>' +
+    '<ul>' +
+      '<li>[Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs)<br>' +
+        'e.g. <code>"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+      '<li>[Bower](http://bower.io)<br>' +
+       'e.g. <code>bower install ' + modulePackage + '@X.Y.Z</code></li>' +
+      '<li><a href="http://code.angularjs.org/">code.angularjs.org</a><br>' +
+        'e.g. <code>"//code.angularjs.org/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+    '</ul>' +
+    '<p>where X.Y.Z is the AngularJS version you are running.</p>' +
     '<p>Then load the module in your application by adding it as a dependent module:</p><pre><code>' +
     '    angular.module(\'app\', [\'' + ngMod + '\']);</pre></code>' +
 

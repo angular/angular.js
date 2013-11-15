@@ -115,8 +115,9 @@
  * When there are multiple directives defined on a single DOM element, sometimes it
  * is necessary to specify the order in which the directives are applied. The `priority` is used
  * to sort the directives before their `compile` functions get called. Priority is defined as a
- * number. Directives with greater numerical `priority` are compiled first. The order of directives with
- * the same priority is undefined. The default priority is `0`.
+ * number. Directives with greater numerical `priority` are compiled first. Pre-link functions
+ * are also run in priority order, but post-link functions are run in reverse order. The order
+ * of directives with the same priority is undefined. The default priority is `0`.
  *
  * #### `terminal`
  * If set to true then the current `priority` will be the last set of directives
@@ -177,8 +178,9 @@
  * * `$scope` - Current scope associated with the element
  * * `$element` - Current element
  * * `$attrs` - Current attributes object for the element
- * * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
- *   `function(cloneLinkingFn)`.
+ * * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope.
+ *    The scope can be overridden by an optional first argument.
+ *   `function([scope], cloneLinkingFn)`.
  *
  *
  * #### `require`
@@ -271,7 +273,7 @@
  *   * `tAttrs` - template attributes - Normalized list of attributes declared on this element shared
  *     between all directive compile functions.
  *
- *   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
+ *   * `transclude` -  [*DEPRECATED*!] A transclude linking function: `function(scope, cloneLinkingFn)`
  *
  * <div class="alert alert-warning">
  * **Note:** The template instance and the link instance may be different objects if the template has
@@ -280,6 +282,12 @@
  * should be done in a linking function rather than in a compile function.
  * </div>
  *
+ * <div class="alert alert-error">
+ * **Note:** The `transclude` function that is passed to the compile function is deperecated, as it
+ *   e.g. does not know about the right outer scope. Please use the transclude function that is passed
+ *   to the link function instead.
+ * </div>
+
  * A compile function can have a return value which can be either a function or an object.
  *
  * * returning a (post-link) function - is equivalent to registering the linking function via the
@@ -294,7 +302,7 @@
  * This property is used only if the `compile` property is not defined.
  *
  * <pre>
- *   function link(scope, iElement, iAttrs, controller) { ... }
+ *   function link(scope, iElement, iAttrs, controller, transcludeFn) { ... }
  * </pre>
  *
  * The link function is responsible for registering DOM listeners as well as updating the DOM. It is
@@ -315,6 +323,10 @@
  *     element defines a controller. The controller is shared among all the directives, which allows
  *     the directives to use the controllers as a communication channel.
  *
+ *   * `transcludeFn` - A transclude linking function pre-bound to the correct transclusion scope.
+ *     The scope can be overridden by an optional first argument. This is the same as the `$transclude`
+ *     parameter of directive controllers.
+ *     `function([scope], cloneLinkingFn)`.
  *
  *
  * #### Pre-linking function
@@ -820,13 +832,17 @@ function $CompileProvider($provide) {
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
-      return function publicLinkFn(scope, cloneConnectFn){
+      return function publicLinkFn(scope, cloneConnectFn, transcludeControllers){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
         // and sometimes changes the structure of the DOM.
         var $linkNode = cloneConnectFn
           ? JQLitePrototype.clone.call($compileNodes) // IMPORTANT!!!
           : $compileNodes;
+
+        forEach(transcludeControllers, function(instance, name) {
+          $linkNode.data('$' + name + 'Controller', instance);
+        });
 
         // Attach scope only to non-text nodes.
         for(var i = 0, ii = $linkNode.length; i<ii; i++) {
@@ -926,15 +942,7 @@ function $CompileProvider($provide) {
             childTranscludeFn = nodeLinkFn.transclude;
             if (childTranscludeFn || (!boundTranscludeFn && transcludeFn)) {
               nodeLinkFn(childLinkFn, childScope, node, $rootElement,
-                  (function(transcludeFn) {
-                    return function(cloneFn) {
-                      var transcludeScope = scope.$new();
-                      transcludeScope.$$transcluded = true;
-
-                      return transcludeFn(transcludeScope, cloneFn).
-                          on('$destroy', bind(transcludeScope, transcludeScope.$destroy));
-                    };
-                  })(childTranscludeFn || transcludeFn)
+                createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
               );
             } else {
               nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
@@ -946,6 +954,23 @@ function $CompileProvider($provide) {
       }
     }
 
+    function createBoundTranscludeFn(scope, transcludeFn) {
+      return function boundTranscludeFn(transcludedScope, cloneFn, controllers) {
+        var scopeCreated = false;
+
+        if (!transcludedScope) {
+          transcludedScope = scope.$new();
+          transcludedScope.$$transcluded = true;
+          scopeCreated = true;
+        }
+
+        var clone = transcludeFn(transcludedScope, cloneFn, controllers);
+        if (scopeCreated) {
+          clone.on('$destroy', bind(transcludedScope, transcludedScope.$destroy));
+        }
+        return clone;
+      };
+    }
 
     /**
      * Looks for directives on the given node and adds them to the directive collection which is
@@ -1083,9 +1108,9 @@ function $CompileProvider($provide) {
      * @returns {Function}
      */
     function groupElementsLinkFnWrapper(linkFn, attrStart, attrEnd) {
-      return function(scope, element, attrs, controllers) {
+      return function(scope, element, attrs, controllers, transcludeFn) {
         element = groupScan(element[0], attrStart, attrEnd);
-        return linkFn(scope, element, attrs, controllers);
+        return linkFn(scope, element, attrs, controllers, transcludeFn);
       };
     }
 
@@ -1122,7 +1147,9 @@ function $CompileProvider($provide) {
           controllerDirectives = previousCompileContext.controllerDirectives,
           newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective,
           templateDirective = previousCompileContext.templateDirective,
-          transcludeDirective = previousCompileContext.transcludeDirective,
+          nonTlbTranscludeDirective = previousCompileContext.nonTlbTranscludeDirective,
+          hasTranscludeDirective = false,
+          hasElementTranscludeDirective = false,
           $compileNode = templateAttrs.$$element = jqLite(compileNode),
           directive,
           directiveName,
@@ -1173,15 +1200,18 @@ function $CompileProvider($provide) {
         }
 
         if (directiveValue = directive.transclude) {
+          hasTranscludeDirective = true;
+
           // Special case ngIf and ngRepeat so that we don't complain about duplicate transclusion.
           // This option should only be used by directives that know how to how to safely handle element transclusion,
           // where the transcluded nodes are added or replaced after linking.
           if (!directive.$$tlb) {
-            assertNoDuplicate('transclusion', transcludeDirective, directive, $compileNode);
-            transcludeDirective = directive;
+            assertNoDuplicate('transclusion', nonTlbTranscludeDirective, directive, $compileNode);
+            nonTlbTranscludeDirective = directive;
           }
 
           if (directiveValue == 'element') {
+            hasElementTranscludeDirective = true;
             terminalPriority = directive.priority;
             $template = groupScan(compileNode, attrStart, attrEnd);
             $compileNode = templateAttrs.$$element =
@@ -1197,9 +1227,9 @@ function $CompileProvider($provide) {
                                           // - newIsolateScopeDirective or templateDirective - combining templates with
                                           //   element transclusion doesn't make sense.
                                           //
-                                          // We need only transcludeDirective so that we prevent putting transclusion
+                                          // We need only nonTlbTranscludeDirective so that we prevent putting transclusion
                                           // on the same element more than once.
-                                          transcludeDirective: transcludeDirective
+                                          nonTlbTranscludeDirective: nonTlbTranscludeDirective
                                         });
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
@@ -1268,7 +1298,7 @@ function $CompileProvider($provide) {
                 controllerDirectives: controllerDirectives,
                 newIsolateScopeDirective: newIsolateScopeDirective,
                 templateDirective: templateDirective,
-                transcludeDirective: transcludeDirective
+                nonTlbTranscludeDirective: nonTlbTranscludeDirective
               });
           ii = directives.length;
         } else if (directive.compile) {
@@ -1292,7 +1322,7 @@ function $CompileProvider($provide) {
       }
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
-      nodeLinkFn.transclude = transcludeDirective && childTranscludeFn;
+      nodeLinkFn.transclude = hasTranscludeDirective && childTranscludeFn;
 
       // might be normal or delayed nodeLinkFn depending on if templateUrl is present
       return nodeLinkFn;
@@ -1319,7 +1349,7 @@ function $CompileProvider($provide) {
       }
 
 
-      function getControllers(require, $element) {
+      function getControllers(require, $element, elementControllers) {
         var value, retrievalMethod = 'data', optional = false;
         if (isString(require)) {
           while((value = require.charAt(0)) == '^' || value == '?') {
@@ -1329,13 +1359,12 @@ function $CompileProvider($provide) {
             }
             optional = optional || value == '?';
           }
+          value = null;
 
-          value = $element[retrievalMethod]('$' + require + 'Controller');
-
-          if ($element[0].nodeType == 8 && $element[0].$$controller) { // Transclusion comment node
-            value = value || $element[0].$$controller;
-            $element[0].$$controller = null;
+          if (elementControllers && retrievalMethod === 'data') {
+            value = elementControllers[require];
           }
+          value = value || $element[retrievalMethod]('$' + require + 'Controller');
 
           if (!value && !optional) {
             throw $compileMinErr('ctreq',
@@ -1346,7 +1375,7 @@ function $CompileProvider($provide) {
         } else if (isArray(require)) {
           value = [];
           forEach(require, function(require) {
-            value.push(getControllers(require, $element));
+            value.push(getControllers(require, $element, elementControllers));
           });
         }
         return value;
@@ -1354,7 +1383,7 @@ function $CompileProvider($provide) {
 
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var attrs, $element, i, ii, linkFn, controller, isolateScope;
+        var attrs, $element, i, ii, linkFn, controller, isolateScope, elementControllers = {}, transcludeFn;
 
         if (compileNode === linkNode) {
           attrs = templateAttrs;
@@ -1448,14 +1477,14 @@ function $CompileProvider($provide) {
             }
           });
         }
-
+        transcludeFn = boundTranscludeFn && controllersBoundTransclude;
         if (controllerDirectives) {
           forEach(controllerDirectives, function(directive) {
             var locals = {
               $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
               $element: $element,
               $attrs: attrs,
-              $transclude: boundTranscludeFn
+              $transclude: transcludeFn
             }, controllerInstance;
 
             controller = directive.controller;
@@ -1464,16 +1493,16 @@ function $CompileProvider($provide) {
             }
 
             controllerInstance = $controller(controller, locals);
-
-            // Directives with element transclusion and a controller need to attach controller
-            // to the comment node created by the compiler, but jQuery .data doesn't support
-            // attaching data to comment nodes so instead we set it directly on the element and
-            // remove it after we read it later.
-            if ($element[0].nodeType == 8) { // Transclusion comment node
-              $element[0].$$controller = controllerInstance;
-            } else {
+            // For directives with element transclusion the element is a comment,
+            // but jQuery .data doesn't support attaching data to comment nodes as it's hard to
+            // clean up (http://bugs.jquery.com/ticket/8335).
+            // Instead, we save the controllers for the element in a local hash and attach to .data
+            // later, once we have the actual element.
+            elementControllers[directive.name] = controllerInstance;
+            if (!hasElementTranscludeDirective) {
               $element.data('$' + directive.name + 'Controller', controllerInstance);
             }
+
             if (directive.controllerAs) {
               locals.$scope[directive.controllerAs] = controllerInstance;
             }
@@ -1485,7 +1514,7 @@ function $CompileProvider($provide) {
           try {
             linkFn = preLinkFns[i];
             linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.require, $element));
+                linkFn.require && getControllers(linkFn.require, $element, elementControllers), transcludeFn);
           } catch (e) {
             $exceptionHandler(e, startingTag($element));
           }
@@ -1505,10 +1534,27 @@ function $CompileProvider($provide) {
           try {
             linkFn = postLinkFns[i];
             linkFn(linkFn.isolateScope ? isolateScope : scope, $element, attrs,
-                linkFn.require && getControllers(linkFn.require, $element));
+                linkFn.require && getControllers(linkFn.require, $element, elementControllers), transcludeFn);
           } catch (e) {
             $exceptionHandler(e, startingTag($element));
           }
+        }
+
+        // This is the function that is injected as `$transclude`.
+        function controllersBoundTransclude(scope, cloneAttachFn) {
+          var transcludeControllers;
+
+          // no scope passed
+          if (arguments.length < 2) {
+            cloneAttachFn = scope;
+            scope = undefined;
+          }
+
+          if (hasElementTranscludeDirective) {
+            transcludeControllers = elementControllers;
+          }
+
+          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers);
         }
       }
     }
@@ -1588,6 +1634,7 @@ function $CompileProvider($provide) {
           dst['class'] = (dst['class'] ? dst['class'] + ' ' : '') + value;
         } else if (key == 'style') {
           $element.attr('style', $element.attr('style') + ';' + value);
+          dst['style'] = (dst['style'] ? dst['style'] + ';' : '') + value;
           // `dst` will never contain hasOwnProperty as DOM parser won't let it.
           // You will get an "InvalidCharacterError: DOM Exception 5" error if you
           // have an attribute like "has-own-property" or "data-has-own-property", etc.
@@ -1618,7 +1665,7 @@ function $CompileProvider($provide) {
 
       $http.get($sce.getTrustedResourceUrl(templateUrl), {cache: $templateCache}).
         success(function(content) {
-          var compileNode, tempTemplateAttrs, $template;
+          var compileNode, tempTemplateAttrs, $template, childBoundTranscludeFn;
 
           content = denormalizeTemplate(content);
 
@@ -1663,7 +1710,7 @@ function $CompileProvider($provide) {
             var scope = linkQueue.shift(),
                 beforeTemplateLinkNode = linkQueue.shift(),
                 linkRootElement = linkQueue.shift(),
-                controller = linkQueue.shift(),
+                boundTranscludeFn = linkQueue.shift(),
                 linkNode = $compileNode[0];
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
@@ -1671,9 +1718,13 @@ function $CompileProvider($provide) {
               linkNode = jqLiteClone(compileNode);
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
             }
-
+            if (afterTemplateNodeLinkFn.transclude) {
+              childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude);
+            } else {
+              childBoundTranscludeFn = boundTranscludeFn;
+            }
             afterTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, linkNode, $rootElement,
-                                    controller);
+              childBoundTranscludeFn);
           }
           linkQueue = null;
         }).
@@ -1681,14 +1732,14 @@ function $CompileProvider($provide) {
           throw $compileMinErr('tpload', 'Failed to load template: {0}', config.url);
         });
 
-      return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, controller) {
+      return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
         if (linkQueue) {
           linkQueue.push(scope);
           linkQueue.push(node);
           linkQueue.push(rootElement);
-          linkQueue.push(controller);
+          linkQueue.push(boundTranscludeFn);
         } else {
-          afterTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, controller);
+          afterTemplateNodeLinkFn(afterTemplateChildLinkFn, scope, node, rootElement, boundTranscludeFn);
         }
       };
     }
