@@ -100,6 +100,7 @@
     "assertNotHasOwnProperty": false,
     "getter": false,
     "getBlockElements": false,
+    "tokenDifference": false,
 
     /* AngularPublic.js */
     "version": false,

@@ -80,7 +80,8 @@
     -assertArgFn,
     -assertNotHasOwnProperty,
     -getter,
-    -getBlockElements
+    -getBlockElements,
+    -tokenDifference
 
 */
 
@@ -1349,4 +1350,25 @@ function getBlockElements(block) {
   } while (element !== block.endNode);
 
   return jqLite(elements);
+}
+
+/**
+ * Return the string difference between tokens of the original string compared to the old string
+ * @param {str1} string original string value
+ * @param {str2} string new string value
+ */
+function tokenDifference(str1, str2) {
+  var values = '',
+      tokens1 = str1.split(/\s+/),
+      tokens2 = str2.split(/\s+/);
+
+  outer:
+  for(var i=0;i<tokens1.length;i++) {
+    var token = tokens1[i];
+    for(var j=0;j<tokens2.length;j++) {
+      if(token == tokens2[j]) continue outer;
+    }
+    values += (values.length > 0 ? ' ' : '') + token;
+  }
+  return values;
 }
