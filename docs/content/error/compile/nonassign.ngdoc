@@ -3,7 +3,9 @@
 @fullName Non-Assignable Expression
 @description
 
-This error occurs when a directive defines an isolate scope property that support two-way data-binding (using the `=` mode in the {@link guide/directive#writing-directives_directive-definition-object  directive definition}) but the directive is used with an expression that is not-assignable.
+This error occurs when a directive defines an isolate scope property
+(using the `=` mode in the {@link api/ng.$compile#description_comprehensive-directive-api_directive-definition-object
+`scope` option} of a directive definition) but the directive is used with an expression that is not-assignable.
 
 In order for the two-way data-binding to work, it must be possible to write new values back into the path defined with the expression.
 

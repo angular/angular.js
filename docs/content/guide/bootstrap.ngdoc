@@ -51,6 +51,8 @@ initialization.
 
 ## Automatic Initialization
 
+<img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
+
 Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
 evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
 for the {@link api/ng.directive:ngApp `ng-app`} directive which designates your application root.
@@ -114,7 +116,7 @@ This is the sequence that your code should follow:
 
 ## Deferred Bootstrap
 
-This features enables tools like Batarang and test runners to
+This feature enables tools like Batarang and test runners to
 hook into angular's bootstrap process and sneak in more modules
 into the DI registry which can replace or augment DI services for
 the purpose of instrumentation or mocking out heavy dependencies.

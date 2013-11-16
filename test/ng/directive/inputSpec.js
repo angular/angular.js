@@ -305,6 +305,84 @@ describe('ngModel', function() {
     expect(element).toBeInvalid();
     expect(element).toHaveClass('ng-invalid-required');
   }));
+
+
+  it('should register/deregister a nested ngModel with parent form when entering or leaving DOM',
+      inject(function($compile, $rootScope) {
+
+    var element = $compile('<form name="myForm">' +
+                             '<input ng-if="inputPresent" name="myControl" ng-model="value" required >' +
+                           '</form>')($rootScope);
+    var isFormValid;
+
+    $rootScope.inputPresent = false;
+    $rootScope.$watch('myForm.$valid', function(value) { isFormValid = value; });
+
+    $rootScope.$apply();
+
+    expect($rootScope.myForm.$valid).toBe(true);
+    expect(isFormValid).toBe(true);
+    expect($rootScope.myForm.myControl).toBeUndefined();
+
+    $rootScope.inputPresent = true;
+    $rootScope.$apply();
+
+    expect($rootScope.myForm.$valid).toBe(false);
+    expect(isFormValid).toBe(false);
+    expect($rootScope.myForm.myControl).toBeDefined();
+
+    $rootScope.inputPresent = false;
+    $rootScope.$apply();
+
+    expect($rootScope.myForm.$valid).toBe(true);
+    expect(isFormValid).toBe(true);
+    expect($rootScope.myForm.myControl).toBeUndefined();
+
+    dealoc(element);
+  }));
+
+
+  it('should register/deregister a nested ngModel with parent form when entering or leaving DOM with animations',
+      function() {
+
+    // ngAnimate performs the dom manipulation after digest, and since the form validity can be affected by a form
+    // control going away we must ensure that the deregistration happens during the digest while we are still doing
+    // dirty checking.
+    module('ngAnimate');
+
+    inject(function($compile, $rootScope) {
+      var element = $compile('<form name="myForm">' +
+                               '<input ng-if="inputPresent" name="myControl" ng-model="value" required >' +
+                             '</form>')($rootScope);
+      var isFormValid;
+
+      $rootScope.inputPresent = false;
+      // this watch ensure that the form validity gets updated during digest (so that we can observe it)
+      $rootScope.$watch('myForm.$valid', function(value) { isFormValid = value; });
+
+      $rootScope.$apply();
+
+      expect($rootScope.myForm.$valid).toBe(true);
+      expect(isFormValid).toBe(true);
+      expect($rootScope.myForm.myControl).toBeUndefined();
+
+      $rootScope.inputPresent = true;
+      $rootScope.$apply();
+
+      expect($rootScope.myForm.$valid).toBe(false);
+      expect(isFormValid).toBe(false);
+      expect($rootScope.myForm.myControl).toBeDefined();
+
+      $rootScope.inputPresent = false;
+      $rootScope.$apply();
+
+      expect($rootScope.myForm.$valid).toBe(true);
+      expect(isFormValid).toBe(true);
+      expect($rootScope.myForm.myControl).toBeUndefined();
+
+      dealoc(element);
+    });
+  });
 });
 
 
@@ -366,17 +444,6 @@ describe('input', function() {
     expect(inputElm).toBeOff('readOnly');
     expect(inputElm).toBeOff('readonly');
     expect(inputElm).toBeOff('disabled');
-  });
-
-
-  it('should cleanup it self from the parent form', function() {
-    compileInput('<input ng-model="name" name="alias" required>');
-
-    scope.$apply();
-    expect(scope.form.$error.required.length).toBe(1);
-
-    inputElm.remove();
-    expect(scope.form.$error.required).toBe(false);
   });
 
 
@@ -667,6 +734,21 @@ describe('input', function() {
         expect(scope.value).toBe(100);
         expect(scope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should validate even if min value changes on-the-fly', function(done) {
+        scope.min = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+        scope.$digest();
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeInvalid();
+
+        scope.min = 0;
+        scope.$digest(function () {
+          expect(inputElm).toBeValid();
+          done();
+        });
+      });
     });
 
 
@@ -685,6 +767,21 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
         expect(scope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate even if max value changes on-the-fly', function(done) {
+        scope.max = 10;
+        compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+        scope.$digest();
+
+        changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        scope.max = 0;
+        scope.$digest(function () {
+          expect(inputElm).toBeInvalid();
+          done();
+        });
       });
     });
 

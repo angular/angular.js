@@ -149,7 +149,7 @@ __`app/js/controllers.js`:__
 var phonecatControllers = angular.module('phonecatControllers', []);
 
 phonecatControllers.controller('PhoneListCtrl', ['$scope', '$http',
-  function PhoneListCtrl($scope, $http) {
+  function ($scope, $http) {
     $http.get('phones/phones.json').success(function(data) {
       $scope.phones = data;
     });
@@ -165,7 +165,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams',
 
 Again, note that we created a new module called `phonecatControllers`. For small AngularJS applications,
 it's common to create just one module for all of your controllers if there are just a few. For larger apps,
-you will rpobbaly want to create separate modules for each major feature of your app.
+you will probably want to create separate modules for each major feature of your app.
 
 Because our example app is relatively small, we'll add all of our controllers to this module.
 
@@ -183,6 +183,7 @@ tag to your `index.html` file as shown below.
 
 __`app/index.html`:__
 <pre>
+<!doctype html>
 <html lang="en" ng-app="phonecatApp">
 <head>
 ...

@@ -132,9 +132,19 @@ docsApp.directive.focused = function($timeout) {
   };
 };
 
-docsApp.directive.docsSearchInput = function() {
+docsApp.directive.docsSearchInput = ['$document',function($document) {
   return function(scope, element, attrs) {
-    var ESCAPE_KEY_KEYCODE = 27;
+    var ESCAPE_KEY_KEYCODE = 27,
+        FORWARD_SLASH_KEYCODE = 191;
+    angular.element($document[0].body).bind('keydown', function(event) {
+      var input = element[0];
+      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
+        event.stopPropagation();
+        event.preventDefault();
+        input.focus();
+      }
+    });
+
     element.bind('keydown', function(event) {
       if(event.keyCode == ESCAPE_KEY_KEYCODE) {
         event.stopPropagation();
@@ -145,7 +155,7 @@ docsApp.directive.docsSearchInput = function() {
       }
     });
   };
-};
+}];
 
 
 docsApp.directive.code = function() {
@@ -197,6 +207,50 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   }
 };
 
+docsApp.directive.docModuleComponents = function() {
+  return {
+    template: '  <div class="component-breakdown">' +
+              '    <h2>Module Components</h2>' +
+              '    <div ng-repeat="(key, section) in components">' +
+              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' +
+              '      <table class="definition-table">' +
+              '        <tr>' +
+              '          <th>Name</th>' +
+              '          <th>Description</th>' +
+              '        </tr>' +
+              '        <tr ng-repeat="component in section.components">' +
+              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' +
+              '          <td>{{ component.shortDescription }}</td>' +
+              '        </tr>' +
+              '      </table>' +
+              '    </div>' +
+              '  </div>',
+    scope : {
+      module : '@docModuleComponents'
+    },
+    controller : ['$scope', '$anchorScroll', '$timeout', 'sections',
+      function($scope, $anchorScroll, $timeout, sections) {
+      var validTypes = ['property','function','directive','service','object','filter'];
+      var components = {};
+      angular.forEach(sections.api, function(item) {
+        if(item.moduleName == $scope.module) {
+          var type = item.type;
+          if(type == 'object') type = 'service';
+          if(validTypes.indexOf(type) >= 0) {
+            components[type] = components[type] || {
+              title : type,
+              type : type,
+              components : []
+            };
+            components[type].components.push(item);
+          }
+        }
+      });
+      $scope.components = components;
+      $timeout($anchorScroll, 0, false);
+    }]
+  };
+};
 
 docsApp.directive.docTutorialNav = function(templateMerge) {
   var pages = [
@@ -359,7 +413,7 @@ docsApp.serviceFactory.prepareDefaultAppModule = function() {
     var moduleName = 'App';
     return {
       module : moduleName,
-      script : "angular.module('" + moduleName + "', [" + 
+      script : "angular.module('" + moduleName + "', [" +
           (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
     };
   };
@@ -622,10 +676,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     };
   };
 
-  $scope.submitForm = function() {
-    $scope.bestMatch && $location.path($scope.bestMatch.page.url);
-  };
-
   $scope.afterPartialLoaded = function() {
     var currentPageId = $location.path();
     $scope.partialTitle = $scope.currentPage.shortName;
@@ -660,6 +710,9 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     cookbook: 'Examples',
     error: 'Error Reference'
   };
+
+  populateComponentsList();
+
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
@@ -675,8 +728,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         $scope.partialTitle = 'Error: Page Not Found!';
       }
 
-      updateSearch();
-
+      populateComponentsList();
 
       // Update breadcrumbs
       var breadcrumb = $scope.breadcrumb = [],
@@ -717,10 +769,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     }
   });
 
-  $scope.$watch('search', updateSearch);
-
-
-
   /**********************************
    Initialize
    ***********************************/
@@ -752,26 +800,21 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
    Private methods
    ***********************************/
 
-  function updateSearch() {
+  function populateComponentsList() {
+    var area = $location.path().split('/')[1];
+    area = /^index-\w/.test(area) ? 'api' : area;
     var moduleCache = {},
         namespaceCache = {},
-        pages = sections[$location.path().split('/')[1]],
+        pages = sections[area],
         modules = $scope.modules = [],
         namespaces = $scope.namespaces = [],
         globalErrors = $scope.globalErrors = [],
         otherPages = $scope.pages = [],
-        search = $scope.search,
-        bestMatch = {page: null, rank:0};
+        search = $scope.search;
 
     angular.forEach(pages, function(page) {
       var match,
         id = page.id;
-
-      if (!(match = rank(page, search))) return;
-
-      if (match.rank > bestMatch.rank) {
-        bestMatch = match;
-      }
 
       if (page.id == 'index') {
         //skip
@@ -807,10 +850,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       }
 
     });
-
-    $scope.bestMatch = bestMatch;
-
-    /*************/
 
     function module(name) {
       var module = moduleCache[name];
@@ -851,28 +890,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         namespaces.push(namespace);
       }
       return namespace;
-    }
-
-    function rank(page, terms) {
-      var ranking = {page: page, rank:0},
-        keywords = page.keywords,
-        title = page.shortName.toLowerCase();
-
-      terms && angular.forEach(terms.toLowerCase().split(' '), function(term) {
-        var index;
-
-        if (ranking) {
-          if (keywords.indexOf(term) == -1) {
-            ranking = null;
-          } else {
-            ranking.rank ++; // one point for each term found
-            if ((index = title.indexOf(term)) != -1) {
-              ranking.rank += 20 - index; // ten points if you match title
-            }
-          }
-        }
-      });
-      return ranking;
     }
   }
 

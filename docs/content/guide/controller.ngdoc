@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: About MVC in Angular: Understanding the Controller Component
+@name Controllers
 @description
 
 # Understanding Controllers
@@ -63,7 +63,7 @@ of the Controller on the `$scope` service provided by Angular. See the guide on
 # Adding Behavior to a Scope Object
 
 In order to react to events or execute computation in the view we must provide behavior to the
-scope. We add behavior the scope by attaching methods to the `$scope` object.  These methods are
+scope. We add behavior to the scope by attaching methods to the `$scope` object.  These methods are
 then available to be called from the template/view.
 
 The following example uses a Controller to add a method to the scope, which doubles a number:
@@ -85,7 +85,7 @@ expression in the template:
     </div>
 </pre>
 
-As discussed in the {@link dev_guide.mvc.understanding_model Model} section of this guide, any
+As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
 the scope are available in the template/view, and can be invoked via angular expressions
 and `ng` event handler directives (e.g. {@link api/ng.directive:ngClick ngClick}).
@@ -105,11 +105,11 @@ Do not use Controllers for:
 - Any kind of DOM manipulation — Controllers should contain only business logic. DOM
 manipulation (the presentation logic of an application) is well known for being hard to test.
 Putting any presentation logic into Controllers significantly affects testability of the business
-logic. Angular offers {@link dev_guide.templates.databinding databinding} for automatic DOM manipulation. If
+logic. Angular offers {@link databinding databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in
 {@link guide/directive directives}.
 - Input formatting — Use {@link forms angular form controls} instead.
-- Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
+- Output filtering — Use {@link filter angular filters} instead.
 - Sharing stateless or stateful code across Controllers — Use {@link dev_guide.services angular
 services} instead.
 - Managing the life-cycle of other components (for example, to create service instances).
@@ -126,7 +126,7 @@ directive} or {@link api/ngRoute.$route $route service}.
 To illustrate further how Controller components work in Angular, let's create a little app with the
 following components:
 
-- A {@link dev_guide.templates template} with two buttons and a simple message
+- A {@link templates template} with two buttons and a simple message
 - A model consisting of a string named `spice`
 - A Controller with two functions that set the value of `spice`
 
@@ -145,7 +145,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
       var myApp = angular.module('spicyApp1', []);
 
       myApp.controller('SpicyCtrl', ['$scope', function($scope){
-          $scope.spicy = 'very';
+          $scope.spice = 'very';
           
           $scope.chiliSpicy = function() {
               $scope.spice = 'chili';
@@ -200,7 +200,7 @@ previous example.
 
 Notice that the `SpicyCtrl` Controller now defines just one method called `spicy`, which takes one
 argument called `spice`. The template then refers to this Controller method and passes in a string
-constant `'chili'` in the binding for the first button and a model property `spice` (bound to an
+constant `'chili'` in the binding for the first button and a model property `customSpice` (bound to an
 input box) in the second button.
 
 ## Scope Inheritance Example
@@ -221,7 +221,7 @@ more information about scope inheritance.
         <div ng-controller="ChildCtrl">
           <p>Good {{timeOfDay}}, {{name}}!</p>
 
-          <div ng-controller="BabyCtrl">
+          <div ng-controller="GrandChildCtrl">
             <p>Good {{timeOfDay}}, {{name}}!</p>
           </div>
         </div>
@@ -242,7 +242,7 @@ more information about scope inheritance.
       myApp.controller('ChildCtrl', ['$scope', function($scope){
         $scope.name = 'Mattie';
       }]);
-      myApp.controller('BabyCtrl', ['$scope', function($scope){
+      myApp.controller('GrandChildCtrl', ['$scope', function($scope){
         $scope.timeOfDay = 'evening';
         $scope.name = 'Gingerbreak Baby';
       }]);
@@ -257,7 +257,7 @@ scopes being created for our view:
 - The `MainCtrl` scope, which contains `timeOfDay` and `name` properties
 - The `ChildCtrl` scope, which inherits the `timeOfDay` property but overrides (hides) the `name`
 property from the previous
-- The `BabyCtrl` scope, which overrides (hides) both the `timeOfDay` property defined in `MainCtrl`
+- The `GrandChildCtrl` scope, which overrides (hides) both the `timeOfDay` property defined in `MainCtrl`
 and the `name` property defined in `ChildCtrl`
 
 Inheritance works with methods in the same way as it does with properties. So in our previous
@@ -312,7 +312,7 @@ in your test that exists in the DOM:
 
 <pre>
 describe('state', function() {
-    var mainScope, childScope, babyScope;
+    var mainScope, childScope, grandChildScope;
 
     beforeEach(module('myApp'));
 
@@ -321,8 +321,8 @@ describe('state', function() {
         $controller('MainCtrl', {$scope: mainScope});
         childScope = mainScope.$new();
         $controller('ChildCtrl', {$scope: childScope});
-        babyScope = childScope.$new();
-        $controller('BabyCtrl', {$scope: babyScope});
+        grandChildScope = childScope.$new();
+        $controller('GrandChildCtrl', {$scope: grandChildScope});
     }));
 
     it('should have over and selected', function() {
@@ -330,17 +330,11 @@ describe('state', function() {
         expect(mainScope.name).toBe('Nikki');
         expect(childScope.timeOfDay).toBe('morning');
         expect(childScope.name).toBe('Mattie');
-        expect(babyScope.timeOfDay).toBe('evening');
-        expect(babyScope.name).toBe('Gingerbreak Baby');
+        expect(grandChildScope.timeOfDay).toBe('evening');
+        expect(grandChildScope.name).toBe('Gingerbreak Baby');
     });
 });
 </pre>
 
-
-## Related Topics
-
-* {@link dev_guide.mvc About MVC in Angular}
-* {@link dev_guide.mvc.understanding_model Understanding the Model Component}
-* {@link dev_guide.mvc.understanding_view Understanding the View Component}
 
 

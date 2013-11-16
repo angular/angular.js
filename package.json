@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.0-snapshot",
-  "cdnVersion": "1.2.0-rc.3",
-  "codename": "",
+  "version": "1.2.2-snapshot",
+  "cdnVersion": "1.2.1",
+  "codename": "underscore-empathy",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -28,7 +28,7 @@
     "karma-sauce-launcher": "~0.1.1",
     "karma-script-launcher": "~0.1.0",
     "yaml-js": "~0.0.8",
-    "marked": "~0.2.9",
+    "marked": "0.2.9",
     "rewire": "1.1.3",
     "grunt-jasmine-node": "~0.1.0",
     "grunt-parallel": "~0.3.1",
@@ -44,5 +44,8 @@
       "type": "MIT",
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {
+    "grunt-contrib-jshint": "~0.6.4"
+  }
 }

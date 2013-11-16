@@ -514,6 +514,44 @@ describe('ngView', function() {
   });
 });
 
+describe('ngView and transcludes', function() {
+  it('should allow access to directive controller from children when used in a replace template', function() {
+    var controller;
+    module('ngRoute');
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/view', {templateUrl: 'view.html'});
+      var directive = $compileProvider.directive;
+      directive('template', function() {
+        return {
+          template: '<div ng-view></div>',
+          replace: true,
+          controller: function() {
+            this.flag = true;
+          }
+        };
+      });
+
+      directive('test', function() {
+        return {
+          require: '^template',
+          link: function(scope, el, attr, ctrl) {
+            controller = ctrl;
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend, $location) {
+      $httpBackend.expectGET('view.html').respond('<div><div test></div></div>');
+      var element = $compile('<div><div template></div></div>')($rootScope);
+      $location.url('/view');
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(controller.flag).toBe(true);
+      dealoc(element);
+    });
+  });
+});
+
 describe('ngView animations', function() {
   var body, element, $rootElement;
 
@@ -599,9 +637,9 @@ describe('ngView animations', function() {
         $location.path('/bar');
         $rootScope.$digest();
 
-        var itemA = $animate.flushNext('leave').element;
+        var itemA = $animate.flushNext('enter').element;
         expect(itemA).not.toEqual(itemB);
-        var itemB = $animate.flushNext('enter').element;
+        var itemB = $animate.flushNext('leave').element;
     }));
 
     it('should render ngClass on ngView',
@@ -635,8 +673,8 @@ describe('ngView animations', function() {
         $location.path('/bar');
         $rootScope.$digest();
 
-        $animate.flushNext('leave').element;
-        item = $animate.flushNext('enter').element;
+        $animate.flushNext('enter').element;
+        item = $animate.flushNext('leave').element;
 
         $animate.flushNext('addClass').element;
         $animate.flushNext('addClass').element;
@@ -679,11 +717,10 @@ describe('ngView animations', function() {
       $location.path('/bar');
       $rootScope.$digest();
 
+      $animate.flushNext('enter'); //ngView new
       $animate.flushNext('leave'); //ngView old
 
       $rootScope.$digest();
-
-      $animate.flushNext('enter'); //ngView new
 
       expect(n(element.text())).toEqual(''); //this is midway during the animation
 
@@ -698,5 +735,107 @@ describe('ngView animations', function() {
         return text.replace(/\r\n/m, '').replace(/\r\n/m, '');
       }
     });
+  });
+
+
+  describe('autoscroll', function () {
+    var autoScrollSpy;
+
+    function spyOnAnchorScroll() {
+      return function($provide, $routeProvider) {
+        autoScrollSpy = jasmine.createSpy('$anchorScroll');
+        $provide.value('$anchorScroll', autoScrollSpy);
+        $routeProvider.when('/foo', {
+          controller: angular.noop,
+          template: '<div></div>'
+        });
+      };
+    }
+
+    function spyOnAnimateEnter() {
+      return function($animate) {
+        spyOn($animate, 'enter').andCallThrough();
+      };
+    }
+
+    function compileAndLink(tpl) {
+      return function($compile, $rootScope, $location) {
+        element = $compile(tpl)($rootScope);
+      };
+    }
+
+    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
+    beforeEach(inject(spyOnAnimateEnter()));
+
+    it('should call $anchorScroll if autoscroll attribute is present', inject(
+        compileAndLink('<div><ng:view autoscroll></ng:view></div>'),
+        function($rootScope, $animate, $timeout, $location) {
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+
+
+    it('should call $anchorScroll if autoscroll evaluates to true', inject(
+        compileAndLink('<div><ng:view src="tpl" autoscroll="value"></ng:view></div>'),
+        function($rootScope, $animate, $timeout, $location) {
+
+      $rootScope.value = true;
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+
+
+    it('should not call $anchorScroll if autoscroll attribute is not present', inject(
+        compileAndLink('<div><ng:view></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should not call $anchorScroll if autoscroll evaluates to false', inject(
+        compileAndLink('<div><ng:view autoscroll="value"></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+
+      $rootScope.value = false;
+      $location.path('/foo');
+      $rootScope.$digest();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should only call $anchorScroll after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:view autoscroll></ng:view></div>'),
+        function($rootScope, $location, $animate, $timeout) {
+          $location.path('/foo');
+
+          expect($animate.enter).not.toHaveBeenCalled();
+          $rootScope.$digest();
+
+          expect(autoScrollSpy).not.toHaveBeenCalled();
+
+          $animate.flushNext('enter');
+          $timeout.flush();
+
+          expect($animate.enter).toHaveBeenCalledOnce();
+          expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
   });
 });

@@ -13,6 +13,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-merge-conflict');
   grunt.loadNpmTasks('grunt-parallel');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadTasks('lib/grunt');
 
   var NG_VERSION = util.getVersion();
@@ -104,6 +105,48 @@ module.exports = function(grunt) {
       tmp: ['tmp']
     },
 
+    jshint: {
+      ng: {
+        files: { src: files['angularSrc'] },
+        options: { jshintrc: 'src/.jshintrc' }
+      },
+      ngAnimate: {
+        files: { src: 'src/ngAnimate/**/*.js' },
+        options: { jshintrc: 'src/ngAnimate/.jshintrc' }
+      },
+      ngCookies: {
+        files: { src: 'src/ngCookies/**/*.js' },
+        options: { jshintrc: 'src/ngCookies/.jshintrc' }
+      },
+      ngLocale: {
+        files: { src: 'src/ngLocale/**/*.js' },
+        options: { jshintrc: 'src/ngLocale/.jshintrc' }
+      },
+      ngMock: {
+        files: { src: 'src/ngMock/**/*.js' },
+        options: { jshintrc: 'src/ngMock/.jshintrc' }
+      },
+      ngResource: {
+        files: { src: 'src/ngResource/**/*.js' },
+        options: { jshintrc: 'src/ngResource/.jshintrc' }
+      },
+      ngRoute: {
+        files: { src: 'src/ngRoute/**/*.js' },
+        options: { jshintrc: 'src/ngRoute/.jshintrc' }
+      },
+      ngSanitize: {
+        files: { src: 'src/ngSanitize/**/*.js' },
+        options: { jshintrc: 'src/ngSanitize/.jshintrc' }
+      },
+      ngScenario: {
+        files: { src: 'src/ngScenario/**/*.js' },
+        options: { jshintrc: 'src/ngScenario/.jshintrc' }
+      },
+      ngTouch: {
+        files: { src: 'src/ngTouch/**/*.js' },
+        options: { jshintrc: 'src/ngTouch/.jshintrc' }
+      }
+    },
 
     build: {
       scenario: {
@@ -121,54 +164,42 @@ module.exports = function(grunt) {
         src: util.wrap([files['angularSrc']], 'angular'),
         styles: {
           css: ['css/angular.css'],
+          generateCspCssFile: true,
           minify: true
         }
       },
       loader: {
         dest: 'build/angular-loader.js',
-        src: util.wrap(['src/loader.js'], 'loader')
+        src: util.wrap(files['angularLoader'], 'loader')
       },
       touch: {
         dest: 'build/angular-touch.js',
-        src: util.wrap([
-          'src/ngTouch/touch.js',
-          'src/ngTouch/swipe.js',
-          'src/ngTouch/directive/ngClick.js',
-          'src/ngTouch/directive/ngSwipe.js'
-            ], 'module')
+        src: util.wrap(files['angularModules']['ngTouch'], 'module')
       },
       mocks: {
         dest: 'build/angular-mocks.js',
-        src: ['src/ngMock/angular-mocks.js'],
+        src: files['angularModules']['ngMock'],
         strict: false
       },
       sanitize: {
         dest: 'build/angular-sanitize.js',
-        src: util.wrap([
-          'src/ngSanitize/sanitize.js',
-          'src/ngSanitize/filter/linky.js'
-        ], 'module')
+        src: util.wrap(files['angularModules']['ngSanitize'], 'module')
       },
       resource: {
         dest: 'build/angular-resource.js',
-        src: util.wrap(['src/ngResource/resource.js'], 'module')
+        src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
       animate: {
         dest: 'build/angular-animate.js',
-        src: util.wrap(['src/ngAnimate/animate.js'], 'module')
+        src: util.wrap(files['angularModules']['ngAnimate'], 'module')
       },
       route: {
         dest: 'build/angular-route.js',
-        src: util.wrap([
-          'src/ngRoute/routeUtils.js',
-          'src/ngRoute/route.js',
-          'src/ngRoute/routeParams.js',
-          'src/ngRoute/directive/ngView.js'
-        ], 'module')
+        src: util.wrap(files['angularModules']['ngRoute'], 'module')
       },
       cookies: {
         dest: 'build/angular-cookies.js',
-        src: util.wrap(['src/ngCookies/cookies.js'], 'module')
+        src: util.wrap(files['angularModules']['ngCookies'], 'module')
       },
       "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
@@ -249,7 +280,7 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['package','test:unit','test:promises-aplus', 'tests:docs', 'test:e2e']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:e2e']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
@@ -263,6 +294,6 @@ module.exports = function(grunt) {
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('package-without-bower', ['clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'test:docgen']);
   grunt.registerTask('default', ['package']);
 };

@@ -81,7 +81,7 @@ __`app/js/controllers.js`:__
 
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
+phonecatApp.controller('PhoneListCtrl', function ($scope) {
   $scope.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
@@ -104,7 +104,7 @@ the model and the view. We connected the dots between the presentation, data, an
 as follows:
 
 * The {@link api/ng.directive:ngController ngController} directive, located on the `<body>` tag,
-references the the name of our controller, `PhoneListCtrl` (located in the JavaScript file
+references the name of our controller, `PhoneListCtrl` (located in the JavaScript file
 `controllers.js`).
 
 * The `PhoneListCtrl` controller attaches the phone data to the `$scope` that was injected into our
@@ -151,13 +151,15 @@ Angular. Since testing is such a critical part of software development, we make 
 tests in Angular so that developers are encouraged to write them.
 
 ### Testing non-Global Controllers
-In practice, you will not want to have your controller functions in the global namespace.  In this
-case Angular provides a service, `$controller`, which will retrieve your controller by name.  Here
-is the same test using `$controller`:
+In practice, you will not want to have your controller functions in the global namespace. Instead,
+we have registered our controllers in the `phonecatApp` module. In this case Angular provides a
+service, `$controller`, which will retrieve your controller by name.  Here is the same test using
+`$controller`:
 
 __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
+  beforeEach(module('phonecatApp'));
 
   describe('PhoneListCtrl', function(){
 
@@ -170,6 +172,9 @@ describe('PhoneCat controllers', function() {
   });
 });
 </pre>
+
+Don't forget that we need to load up the `phonecatApp` module into the test so that the controller
+is available to be injected.
 
 ### Writing and Running Tests
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when

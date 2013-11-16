@@ -144,13 +144,13 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     var whole = fraction[0];
     fraction = fraction[1] || '';
 
-    var pos = 0,
+    var i, pos = 0,
         lgroup = pattern.lgSize,
         group = pattern.gSize;
 
     if (whole.length >= (lgroup + group)) {
       pos = whole.length - lgroup;
-      for (var i = 0; i < pos; i++) {
+      for (i = 0; i < pos; i++) {
         if ((pos - i)%group === 0 && i !== 0) {
           formatedText += groupSep;
         }
@@ -364,7 +364,7 @@ function dateFilter($locale) {
       }
       dateSetter.call(date, int(match[1]), int(match[2]) - 1, int(match[3]));
       var h = int(match[4]||0) - tzHour;
-      var m = int(match[5]||0) - tzMin
+      var m = int(match[5]||0) - tzMin;
       var s = int(match[6]||0);
       var ms = Math.round(parseFloat('0.' + (match[7]||0)) * 1000);
       timeSetter.call(date, h, m, s, ms);

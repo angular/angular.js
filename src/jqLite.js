@@ -1,5 +1,13 @@
 'use strict';
 
+/* global
+
+  -JQLitePrototype,
+  -addEventListenerFn,
+  -removeEventListenerFn,
+  -BOOLEAN_ATTR
+*/
+
 //////////////////////////////////
 //JQLite
 //////////////////////////////////
@@ -77,6 +85,9 @@
  * - `injector()` - retrieves the injector of the current element or its parent.
  * - `scope()` - retrieves the {@link api/ng.$rootScope.Scope scope} of the current
  *   element or its parent.
+ * - `isolateScope()` - retrieves an isolate {@link api/ng.$rootScope.Scope scope} if one is attached directly to the
+ *   current element. This getter should be used only on elements that contain a directive which starts a new isolate
+ *   scope. Calling `scope()` on this element always returns the original non-isolate scope.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
@@ -122,13 +133,14 @@ function camelCase(name) {
 //
 /////////////////////////////////////////////
 
-function JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments) {
+function jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments) {
   var originalJqFn = jQuery.fn[name];
   originalJqFn = originalJqFn.$original || originalJqFn;
   removePatch.$original = originalJqFn;
   jQuery.fn[name] = removePatch;
 
   function removePatch(param) {
+    // jshint -W040
     var list = filterElems && param ? [this.filter(param)] : [this],
         fireEvent = dispatchThis,
         set, setIndex, setLength,
@@ -174,30 +186,30 @@ function JQLite(element) {
     // http://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
     div.innerHTML = '<div>&#160;</div>' + element; // IE insanity to make NoScope elements work!
     div.removeChild(div.firstChild); // remove the superfluous div
-    JQLiteAddNodes(this, div.childNodes);
+    jqLiteAddNodes(this, div.childNodes);
     var fragment = jqLite(document.createDocumentFragment());
     fragment.append(this); // detach the elements from the temporary DOM div.
   } else {
-    JQLiteAddNodes(this, element);
+    jqLiteAddNodes(this, element);
   }
 }
 
-function JQLiteClone(element) {
+function jqLiteClone(element) {
   return element.cloneNode(true);
 }
 
-function JQLiteDealoc(element){
-  JQLiteRemoveData(element);
+function jqLiteDealoc(element){
+  jqLiteRemoveData(element);
   for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
-    JQLiteDealoc(children[i]);
+    jqLiteDealoc(children[i]);
   }
 }
 
-function JQLiteOff(element, type, fn, unsupported) {
+function jqLiteOff(element, type, fn, unsupported) {
   if (isDefined(unsupported)) throw jqLiteMinErr('offargs', 'jqLite#off() does not support the `selector` argument');
 
-  var events = JQLiteExpandoStore(element, 'events'),
-      handle = JQLiteExpandoStore(element, 'handle');
+  var events = jqLiteExpandoStore(element, 'events'),
+      handle = jqLiteExpandoStore(element, 'handle');
 
   if (!handle) return; //no listeners registered
 
@@ -218,7 +230,7 @@ function JQLiteOff(element, type, fn, unsupported) {
   }
 }
 
-function JQLiteRemoveData(element, name) {
+function jqLiteRemoveData(element, name) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId];
 
@@ -230,14 +242,14 @@ function JQLiteRemoveData(element, name) {
 
     if (expandoStore.handle) {
       expandoStore.events.$destroy && expandoStore.handle({}, '$destroy');
-      JQLiteOff(element);
+      jqLiteOff(element);
     }
     delete jqCache[expandoId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
   }
 }
 
-function JQLiteExpandoStore(element, key, value) {
+function jqLiteExpandoStore(element, key, value) {
   var expandoId = element[jqName],
       expandoStore = jqCache[expandoId || -1];
 
@@ -252,14 +264,14 @@ function JQLiteExpandoStore(element, key, value) {
   }
 }
 
-function JQLiteData(element, key, value) {
-  var data = JQLiteExpandoStore(element, 'data'),
+function jqLiteData(element, key, value) {
+  var data = jqLiteExpandoStore(element, 'data'),
       isSetter = isDefined(value),
       keyDefined = !isSetter && isDefined(key),
       isSimpleGetter = keyDefined && !isObject(key);
 
   if (!data && !isSimpleGetter) {
-    JQLiteExpandoStore(element, 'data', data = {});
+    jqLiteExpandoStore(element, 'data', data = {});
   }
 
   if (isSetter) {
@@ -278,13 +290,13 @@ function JQLiteData(element, key, value) {
   }
 }
 
-function JQLiteHasClass(element, selector) {
+function jqLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
   return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
 
-function JQLiteRemoveClass(element, cssClasses) {
+function jqLiteRemoveClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.setAttribute('class', trim(
@@ -296,7 +308,7 @@ function JQLiteRemoveClass(element, cssClasses) {
   }
 }
 
-function JQLiteAddClass(element, cssClasses) {
+function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
                             .replace(/[\n\t]/g, " ");
@@ -312,7 +324,7 @@ function JQLiteAddClass(element, cssClasses) {
   }
 }
 
-function JQLiteAddNodes(root, elements) {
+function jqLiteAddNodes(root, elements) {
   if (elements) {
     elements = (!elements.nodeName && isDefined(elements.length) && !isWindow(elements))
       ? elements
@@ -323,11 +335,11 @@ function JQLiteAddNodes(root, elements) {
   }
 }
 
-function JQLiteController(element, name) {
-  return JQLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
+function jqLiteController(element, name) {
+  return jqLiteInheritedData(element, '$' + (name || 'ngController' ) + 'Controller');
 }
 
-function JQLiteInheritedData(element, name, value) {
+function jqLiteInheritedData(element, name, value) {
   element = jqLite(element);
 
   // if element is the document object work with the html element instead
@@ -335,9 +347,13 @@ function JQLiteInheritedData(element, name, value) {
   if(element[0].nodeType == 9) {
     element = element.find('html');
   }
+  var names = isArray(name) ? name : [name];
 
   while (element.length) {
-    if ((value = element.data(name)) !== undefined) return value;
+
+    for (var i = 0, ii = names.length; i < ii; i++) {
+      if ((value = element.data(names[i])) !== undefined) return value;
+    }
     element = element.parent();
   }
 }
@@ -361,7 +377,9 @@ var JQLitePrototype = JQLite.prototype = {
     } else {
       this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
       // we can not use jqLite since we are not done loading and jQuery could be loaded later.
+      // jshint -W064
       JQLite(window).on('load', trigger); // fallback to window.onload for others
+      // jshint +W064
     }
   },
   toString: function() {
@@ -403,24 +421,30 @@ function getBooleanAttrName(element, name) {
 }
 
 forEach({
-  data: JQLiteData,
-  inheritedData: JQLiteInheritedData,
+  data: jqLiteData,
+  inheritedData: jqLiteInheritedData,
 
   scope: function(element) {
-    return JQLiteInheritedData(element, '$scope');
+    // Can't use jqLiteData here directly so we stay compatible with jQuery!
+    return jqLite(element).data('$scope') || jqLiteInheritedData(element.parentNode || element, ['$isolateScope', '$scope']);
   },
 
-  controller: JQLiteController ,
+  isolateScope: function(element) {
+    // Can't use jqLiteData here directly so we stay compatible with jQuery!
+    return jqLite(element).data('$isolateScope') || jqLite(element).data('$isolateScopeNoTemplate');
+  },
+
+  controller: jqLiteController ,
 
   injector: function(element) {
-    return JQLiteInheritedData(element, '$injector');
+    return jqLiteInheritedData(element, '$injector');
   },
 
   removeAttr: function(element,name) {
     element.removeAttribute(name);
   },
 
-  hasClass: JQLiteHasClass,
+  hasClass: jqLiteHasClass,
 
   css: function(element, name, value) {
     name = camelCase(name);
@@ -496,7 +520,7 @@ forEach({
     return getText;
 
     function getText(element, value) {
-      var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType]
+      var textProp = NODE_TYPE_TEXT_PROPERTY[element.nodeType];
       if (isUndefined(value)) {
         return textProp ? element[textProp] : '';
       }
@@ -525,7 +549,7 @@ forEach({
       return element.innerHTML;
     }
     for (var i = 0, childNodes = element.childNodes; i < childNodes.length; i++) {
-      JQLiteDealoc(childNodes[i]);
+      jqLiteDealoc(childNodes[i]);
     }
     element.innerHTML = value;
   }
@@ -536,14 +560,14 @@ forEach({
   JQLite.prototype[name] = function(arg1, arg2) {
     var i, key;
 
-    // JQLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
+    // jqLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
     // in a way that survives minification.
-    if (((fn.length == 2 && (fn !== JQLiteHasClass && fn !== JQLiteController)) ? arg1 : arg2) === undefined) {
+    if (((fn.length == 2 && (fn !== jqLiteHasClass && fn !== jqLiteController)) ? arg1 : arg2) === undefined) {
       if (isObject(arg1)) {
 
         // we are a write, but the object properties are the key/values
         for(i=0; i < this.length; i++) {
-          if (fn === JQLiteData) {
+          if (fn === jqLiteData) {
             // data() takes the whole object in jQuery
             fn(this[i], arg1);
           } else {
@@ -558,7 +582,7 @@ forEach({
         // we are a read, so read the first child.
         var value = fn.$dv;
         // Only if we have $dv do we iterate over all, otherwise it is just the first element.
-        var jj = value == undefined ? Math.min(this.length, 1) : this.length;
+        var jj = (value === undefined) ? Math.min(this.length, 1) : this.length;
         for (var j = 0; j < jj; j++) {
           var nodeValue = fn(this[j], arg1, arg2);
           value = value ? value + nodeValue : nodeValue;
@@ -604,7 +628,7 @@ function createEventHandler(element, events) {
     }
 
     event.isDefaultPrevented = function() {
-      return event.defaultPrevented || event.returnValue == false;
+      return event.defaultPrevented || event.returnValue === false;
     };
 
     forEach(events[type || event.type], function(fn) {
@@ -635,18 +659,18 @@ function createEventHandler(element, events) {
 // selector.
 //////////////////////////////////////////
 forEach({
-  removeData: JQLiteRemoveData,
+  removeData: jqLiteRemoveData,
 
-  dealoc: JQLiteDealoc,
+  dealoc: jqLiteDealoc,
 
   on: function onFn(element, type, fn, unsupported){
     if (isDefined(unsupported)) throw jqLiteMinErr('onargs', 'jqLite#on() does not support the `selector` or `eventData` parameters');
 
-    var events = JQLiteExpandoStore(element, 'events'),
-        handle = JQLiteExpandoStore(element, 'handle');
+    var events = jqLiteExpandoStore(element, 'events'),
+        handle = jqLiteExpandoStore(element, 'handle');
 
-    if (!events) JQLiteExpandoStore(element, 'events', events = {});
-    if (!handle) JQLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
+    if (!events) jqLiteExpandoStore(element, 'events', events = {});
+    if (!handle) jqLiteExpandoStore(element, 'handle', handle = createEventHandler(element, events));
 
     forEach(type.split(' '), function(type){
       var eventFns = events[type];
@@ -655,6 +679,7 @@ forEach({
         if (type == 'mouseenter' || type == 'mouseleave') {
           var contains = document.body.contains || document.body.compareDocumentPosition ?
           function( a, b ) {
+            // jshint bitwise: false
             var adown = a.nodeType === 9 ? a.documentElement : a,
             bup = b && b.parentNode;
             return a === bup || !!( bup && bup.nodeType === 1 && (
@@ -694,17 +719,17 @@ forEach({
           addEventListenerFn(element, type, handle);
           events[type] = [];
         }
-        eventFns = events[type]
+        eventFns = events[type];
       }
       eventFns.push(fn);
     });
   },
 
-  off: JQLiteOff,
+  off: jqLiteOff,
 
   replaceWith: function(element, replaceNode) {
     var index, parent = element.parentNode;
-    JQLiteDealoc(element);
+    jqLiteDealoc(element);
     forEach(new JQLite(replaceNode), function(node){
       if (index) {
         parent.insertBefore(node, index.nextSibling);
@@ -755,7 +780,7 @@ forEach({
   },
 
   remove: function(element) {
-    JQLiteDealoc(element);
+    jqLiteDealoc(element);
     var parent = element.parentNode;
     if (parent) parent.removeChild(element);
   },
@@ -768,14 +793,14 @@ forEach({
     });
   },
 
-  addClass: JQLiteAddClass,
-  removeClass: JQLiteRemoveClass,
+  addClass: jqLiteAddClass,
+  removeClass: jqLiteRemoveClass,
 
   toggleClass: function(element, selector, condition) {
     if (isUndefined(condition)) {
-      condition = !JQLiteHasClass(element, selector);
+      condition = !jqLiteHasClass(element, selector);
     }
-    (condition ? JQLiteAddClass : JQLiteRemoveClass)(element, selector);
+    (condition ? jqLiteAddClass : jqLiteRemoveClass)(element, selector);
   },
 
   parent: function(element) {
@@ -800,10 +825,10 @@ forEach({
     return element.getElementsByTagName(selector);
   },
 
-  clone: JQLiteClone,
+  clone: jqLiteClone,
 
   triggerHandler: function(element, eventName, eventData) {
-    var eventFns = (JQLiteExpandoStore(element, 'events') || {})[eventName];
+    var eventFns = (jqLiteExpandoStore(element, 'events') || {})[eventName];
 
     eventData = eventData || [];
 
@@ -823,17 +848,17 @@ forEach({
   JQLite.prototype[name] = function(arg1, arg2, arg3) {
     var value;
     for(var i=0; i < this.length; i++) {
-      if (value == undefined) {
+      if (isUndefined(value)) {
         value = fn(this[i], arg1, arg2, arg3);
-        if (value !== undefined) {
+        if (isDefined(value)) {
           // any function which returns a value needs to be wrapped
           value = jqLite(value);
         }
       } else {
-        JQLiteAddNodes(value, fn(this[i], arg1, arg2, arg3));
+        jqLiteAddNodes(value, fn(this[i], arg1, arg2, arg3));
       }
     }
-    return value == undefined ? this : value;
+    return isDefined(value) ? value : this;
   };
 
   // bind legacy bind/unbind to on/off
