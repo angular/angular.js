@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
 /**
  * @ngdoc directive
  * @name ngTouch.directive:ngSwipeLeft
@@ -7,7 +9,10 @@
  * @description
  * Specify custom behavior when an element is swiped to the left on a touchscreen device.
  * A leftward swipe is a quick, right-to-left slide of the finger.
- * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag too.
+ * Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
+ * too.
+ *
+ * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
  * @element ANY
  * @param {expression} ngSwipeLeft {@link guide/expression Expression} to evaluate
@@ -34,7 +39,10 @@
  * @description
  * Specify custom behavior when an element is swiped to the right on a touchscreen device.
  * A rightward swipe is a quick, left-to-right slide of the finger.
- * Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag too.
+ * Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag
+ * too.
+ *
+ * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
  * @element ANY
  * @param {expression} ngSwipeRight {@link guide/expression Expression} to evaluate
@@ -88,18 +96,18 @@ function makeSwipeDirective(directiveName, direction, eventName) {
       }
 
       $swipe.bind(element, {
-        'start': function(coords) {
+        'start': function(coords, event) {
           startCoords = coords;
           valid = true;
         },
-        'cancel': function() {
+        'cancel': function(event) {
           valid = false;
         },
-        'end': function(coords) {
+        'end': function(coords, event) {
           if (validSwipe(coords)) {
             scope.$apply(function() {
               element.triggerHandler(eventName);
-              swipeHandler(scope);
+              swipeHandler(scope, {$event: event});
             });
           }
         }

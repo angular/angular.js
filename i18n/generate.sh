@@ -4,4 +4,4 @@ BASE_DIR=`dirname $0`
 cd $BASE_DIR
 
 
-/usr/bin/env jasmine-node spec/ --noColor && node src/closureSlurper.js
+../node_modules/.bin/jasmine-node spec/ --noColor && node src/closureSlurper.js

@@ -39,6 +39,7 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
+    /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
       if (angular.isFunction(result) || result instanceof angular.scenario.Future)
@@ -74,18 +75,17 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
  */
 angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
-    var prefix = 'expect ' + this.future.name + ' ';
-    if (this.inverse) {
-      prefix += 'not ';
-    }
+    var description = this.future.name +
+                      (this.inverse ? ' not ' : ' ') + name +
+                      ' ' + angular.toJson(expected);
     var self = this;
-    this.addFuture(prefix + name + ' ' + angular.toJson(expected),
+    this.addFuture('expect ' + description,
       function(done) {
         var error;
         self.actual = self.future.value;
         if ((self.inverse && fn.call(self, expected)) ||
             (!self.inverse && !fn.call(self, expected))) {
-          error = 'expected ' + angular.toJson(expected) +
+          error = 'expected ' + description +
             ' but was ' + angular.toJson(self.actual);
         }
         done(error);
@@ -271,15 +271,15 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
         if (actualExp == bindExp) return true;
-        if (actualExp.indexOf(bindExp) == 0) {
+        if (actualExp.indexOf(bindExp) === 0) {
           return actualExp.charAt(bindExp.length) == '|';
         }
       }
-    }
+    };
   } else if (bindExp) {
     match = function(actualExp) {
       return actualExp && bindExp.exec(actualExp);
-    }
+    };
   } else {
     match = function(actualExp) {
       return !!actualExp;
@@ -291,7 +291,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   }
 
   function push(value) {
-    if (value == undefined) {
+    if (value === undefined) {
       value = '';
     } else if (typeof value != 'string') {
       value = angular.toJson(value);

@@ -14,10 +14,10 @@ changes to $location are reflected into the browser address bar.
 - Exposes the current URL in the browser address bar, so you can
   - Watch and observe the URL.
   - Change the URL.
-- Synchronizes the URL with the browser when the user
-  - Changes the address bar.
-  - Clicks the back or forward button (or clicks a History link).
-  - Clicks on a link.
+- Maintains synchronization between itself and the browser's URL when the user
+  - Changes the address in the browser's address bar.
+  - Clicks the back or forward button in the browser (or clicks a History link).
+  - Clicks on a link in the page.
 - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
 
 
@@ -121,6 +121,8 @@ All of the setter methods return the same `$location` object to allow chaining. 
 change multiple segments in one go, chain setters like this:
 <pre>$location.path('/newValue').search({key: value});</pre>
 
+## Replace method
+
 There is a special `replace` method which can be used to tell the $location service that the next
 time the $location service is synced with the browser, the last history record should be replaced
 instead of creating a new one. This is useful when you want to implement redirection, which would
@@ -215,19 +217,19 @@ it('should show example', inject(
     $locationProvider.hashPrefix('!');
   },
   function($location) {
-    // open http://host.com/base/index.html#!/a
-    $location.absUrl() == 'http://host.com/base/index.html#!/a'
+    // open http://example.com/base/index.html#!/a
+    $location.absUrl() == 'http://example.com/base/index.html#!/a'
     $location.path() == '/a'
 
     $location.path('/foo')
-    $location.absUrl() == 'http://host.com/base/index.html#!/foo'
+    $location.absUrl() == 'http://example.com/base/index.html#!/foo'
 
     $location.search() == {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://host.com/base/index.html#!/foo?a=b&c'
+    $location.absUrl() == 'http://example.com/base/index.html#!/foo?a=b&c'
 
     $location.path('/new').search('x=y');
-    $location.absUrl() == 'http://host.com/base/index.html#!/new?x=y'
+    $location.absUrl() == 'http://example.com/base/index.html#!/new?x=y'
   }
 ));
 </pre>
@@ -265,31 +267,31 @@ it('should show example', inject(
   },
   function($location) {
     // in browser with HTML5 history support:
-    // open http://host.com/#!/a -> rewrite to http://host.com/a
-    // (replacing the http://host.com/#!/a history record)
+    // open http://example.com/#!/a -> rewrite to http://example.com/a
+    // (replacing the http://example.com/#!/a history record)
     $location.path() == '/a'
 
     $location.path('/foo');
-    $location.absUrl() == 'http://host.com/foo'
+    $location.absUrl() == 'http://example.com/foo'
 
     $location.search() == {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://host.com/foo?a=b&c'
+    $location.absUrl() == 'http://example.com/foo?a=b&c'
 
     $location.path('/new').search('x=y');
     $location.url() == 'new?x=y'
-    $location.absUrl() == 'http://host.com/new?x=y'
+    $location.absUrl() == 'http://example.com/new?x=y'
 
     // in browser without html5 history support:
-    // open http://host.com/new?x=y -> redirect to http://host.com/#!/new?x=y
-    // (again replacing the http://host.com/new?x=y history item)
+    // open http://example.com/new?x=y -> redirect to http://example.com/#!/new?x=y
+    // (again replacing the http://example.com/new?x=y history item)
     $location.path() == '/new'
     $location.search() == {x: 'y'}
 
     $location.path('/foo/bar');
     $location.path() == '/foo/bar'
     $location.url() == '/foo/bar?x=y'
-    $location.absUrl() == 'http://host.com/#!/foo/bar?x=y'
+    $location.absUrl() == 'http://example.com/#!/foo/bar?x=y'
   }
 ));
 </pre>
@@ -321,6 +323,14 @@ reload to the original link.
   Example: `<a href="http://angularjs.org/">link</a>`
 - Links starting with '/' that lead to a different base path when base is defined<br>
   Example: `<a href="/not-my-base/link">link</a>`
+  
+When running Angular in the root of a domain, along side perhaps a normal application in the same
+directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
+to static files.
+
+To prevent this, you can set your base href for the app to `<base href=".">` and then prefix links
+to URLs that should be handled with `.`. Now, links to locations, which are not to be routed by Angular,
+are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
 
 
 ### Server side
@@ -381,8 +391,8 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
-    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/other-base/another?search">external</a>
   </div>
 
@@ -395,8 +405,8 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br>
     $location.search() = {{$location.search()}}<br>
     $location.hash() = {{$location.hash()}}<br>
-    <a href="http://www.host.com/base/first?a=b">/base/first?a=b</a> |
-    <a href="http://www.host.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="http://www.example.com/base/first?a=b">/base/first?a=b</a> |
+    <a href="http://www.example.com/base/sec/ond?flag#hash">sec/ond?flag#hash</a> |
     <a href="/other-base/another?search">external</a>
   </div>
 </div>
@@ -423,8 +433,8 @@ In this examples we use `<base href="/base/index.html" />`
   }
 
   var browsers = {
-    html5: new FakeBrowser('http://www.host.com/base/path?a=b#h', '/base/index.html'),
-    hashbang: new FakeBrowser('http://www.host.com/base/index.html#!/path?a=b#h', '/base/index.html')
+    html5: new FakeBrowser('http://www.example.com/base/path?a=b#h', '/base/index.html'),
+    hashbang: new FakeBrowser('http://www.example.com/base/index.html#!/path?a=b#h', '/base/index.html')
   };
 
   function Html5Cntl($scope, $location) {
@@ -437,17 +447,19 @@ In this examples we use `<base href="/base/index.html" />`
 
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
+    // We must kill a link to the injector for this element otherwise angular will
+    // complain that it has been bootstrapped already.
+    root.data('$injector', null);
     angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
       $locationProvider.html5Mode(true).hashPrefix('!');
 
       $provide.value('$browser', browsers[name]);
-      $provide.value('$document', root);
       $provide.value('$sniffer', {history: name == 'html5'});
 
       $compileProvider.directive('ngAddressBar', function() {
         return function(scope, elm, attrs) {
           var browser = browsers[attrs.browser],
-              input = angular.element('<input type="text">').val(browser.url()),
+              input = angular.element('<input type="text" style="width: 400px">').val(browser.url()),
               delay;
 
           input.on('keypress keyup keydown', function() {

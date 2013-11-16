@@ -45,7 +45,7 @@ We made the following changes to the `index.html` template:
 * First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
 two provided sorting options.
 
-      <img  class="diagram" src="img/tutorial/tutorial_04.png">
+<img class="diagram" src="img/tutorial/tutorial_04.png">
 
 * We then chained the `filter` filter with {@link api/ng.filter:orderBy `orderBy`}
 filter to further process the input into the repeater. `orderBy` is a filter that takes an input
@@ -65,21 +65,23 @@ necessary!
 
 __`app/js/controllers.js`:__
 <pre>
-function PhoneListCtrl($scope) {
+var phonecatApp = angular.module('phonecatApp', []);
+
+phonecatApp.controller('PhoneListCtrl', function ($scope) {
   $scope.phones = [
-    {"name": "Nexus S",
-     "snippet": "Fast just got faster with Nexus S.",
-     "age": 0},
-    {"name": "Motorola XOOM™ with Wi-Fi",
-     "snippet": "The Next, Next Generation tablet.",
-     "age": 1},
-    {"name": "MOTOROLA XOOM™",
-     "snippet": "The Next, Next Generation tablet.",
-     "age": 2}
+    {'name': 'Nexus S',
+     'snippet': 'Fast just got faster with Nexus S.',
+     'age': 1},
+    {'name': 'Motorola XOOM™ with Wi-Fi',
+     'snippet': 'The Next, Next Generation tablet.',
+     'age': 2},
+    {'name': 'MOTOROLA XOOM™',
+     'snippet': 'The Next, Next Generation tablet.',
+     'age': 3}
   ];
 
   $scope.orderProp = 'age';
-}
+});
 </pre>
 
 * We modified the `phones` model - the array of phones - and added an `age` property to each phone

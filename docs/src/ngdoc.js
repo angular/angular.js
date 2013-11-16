@@ -36,6 +36,7 @@ exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
 exports.merge = merge;
+exports.checkBrokenLinks = checkBrokenLinks;
 exports.Doc = Doc;
 
 exports.ngVersions = function() {
@@ -47,8 +48,90 @@ exports.ngVersions = function() {
         versions.push(matches[1]);
       }
     });
-  versions.push(exports.ngCurrentVersion().full);
-  return versions;
+
+  //match the future version of AngularJS that is set in the package.json file
+  return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
+
+  function expandVersions(versions, latestVersion) {
+    var RC_VERSION = /rc\d/;
+    //copy the array to avoid changing the versions param data
+    //the latest version is not on the git tags list, but
+    //docs.angularjs.org will always point to master as of 1.2
+    versions = versions.concat([latestVersion]);
+
+    var firstUnstable, expanded = [];
+    for(var i=versions.length-1;i>=0;i--) {
+      var version = versions[i],
+          split = version.split('.'),
+          isMaster = version == latestVersion,
+          isStable = split[1] % 2 === 0 && !RC_VERSION.test(version);
+
+      var title = 'AngularJS - v' + version;
+
+      var docsPath = version < '1.0.2' ?  'docs-' + version : 'docs';
+
+      var url = isMaster ?
+        'http://docs.angularjs.org' :
+        'http://code.angularjs.org/' + version + '/' + docsPath;
+
+      expanded.push({
+        version : version,
+        stable : isStable,
+        title : title,
+        group : (isStable ? 'Stable' : 'Unstable'),
+        url : url
+      });
+    };
+
+    return expanded;
+  };
+
+  function sortVersionsNatrually(versions) {
+    var versionMap = {},
+        NON_RC_RELEASE_NUMBER = 999;
+    for(var i = versions.length - 1; i >= 0; i--) {
+      var version = versions[i];
+      var split = version.split(/\.|rc/);
+       var baseVersion = split[0] + '.' + split[1] + '.' + split[2];
+
+      //create a map of RC versions for each version
+      //this way each RC version can be sorted in "natural" order
+      versionMap[baseVersion] = versionMap[baseVersion] || [];
+
+      //NON_RC_RELEASE_NUMBER is used to signal the non-RC version for the release and
+      //it will always appear at the top of the list since the number is so high!
+      versionMap[baseVersion].push(
+        version == baseVersion ? NON_RC_RELEASE_NUMBER : parseInt(version.match(/rc\.?(\d+)/)[1]));
+    };
+
+    //flatten the map so that the RC versions occur in a natural sorted order
+    //and the official non-RC version shows up at the top of the list of sorted
+    //RC versions!
+    var angularVersions = [];
+    sortedKeys(versionMap).forEach(function(key) {
+      var versions = versionMap[key];
+
+      //basic numerical sort
+      versions.sort(function(a,b) {
+        return a - b;
+      });
+
+      versions.forEach(function(v) {
+        angularVersions.push(v == NON_RC_RELEASE_NUMBER ? key : key + 'rc' + v);
+      });
+    });
+
+    return angularVersions;
+  };
+
+  function sortedKeys(obj) {
+    var keys = [];
+    for(var key in obj) {
+      keys.push(key);
+    };
+    keys.sort(true);
+    return keys;
+  };
 };
 
 exports.ngCurrentVersion = function() {
@@ -78,6 +161,7 @@ function Doc(text, file, line) {
   this.methods = this.methods || [];
   this.events = this.events || [];
   this.links = this.links || [];
+  this.anchors = this.anchors || [];
 }
 Doc.METADATA_IGNORE = (function() {
   var words = fs.readFileSync(__dirname + '/ignore.words', 'utf8');
@@ -120,6 +204,15 @@ Doc.prototype = {
     return words.join(' ');
   },
 
+  shortDescription : function() {
+    if (!this.description) return this.description;
+    var text = this.description.split("\n")[0];
+    text = text.replace(/<.+?\/?>/g, '');
+    text = text.replace(/{/g,'&#123;');
+    text = text.replace(/}/g,'&#125;');
+    return text;
+  },
+
   getMinerrNamespace: function () {
     if (this.ngdoc !== 'error') {
       throw new Error('Tried to get the minErr namespace, but @ngdoc ' +
@@ -151,6 +244,14 @@ Doc.prototype = {
    * @returns {string} Absolute url
    */
   convertUrlToAbsolute: function(url) {
+    var hashIdx = url.indexOf('#');
+
+    // Lowercase hash parts of the links,
+    // so that we can keep correct API names even when the urls are lowercased.
+    if (hashIdx !== -1) {
+      url = url.substr(0, hashIdx) + url.substr(hashIdx).toLowerCase();
+    }
+
     if (url.substr(-1) == '/') return url + 'index';
     if (url.match(/\//)) return url;
     return this.section + '/' + url;
@@ -276,6 +377,9 @@ Doc.prototype = {
         replace(/{@type\s+(\S+)(?:\s+(\S+))?}/g, function(_, type, url) {
           url = url || '#';
           return '<a href="' + url + '" class="' + self.prepare_type_hint_class_name(type) + '">' + type + '</a>';
+        }).
+        replace(/{@installModule\s+(\S+)?}/g, function(_, module) {
+          return explainModuleInstallation(module);
         });
     });
     text = parts.join('');
@@ -367,10 +471,19 @@ Doc.prototype = {
       (this.ngdoc === 'error' ? this.name : '') ||
       (((this.file||'').match(/.*(\/|\\)([^(\/|\\)]*)\.ngdoc/)||{})[2]) || // try to extract it from file name
       this.name; // default to name
+    this.moduleName = parseModuleName(this.id);
     this.description = this.markdown(this.description);
     this.example = this.markdown(this.example);
     this['this'] = this.markdown(this['this']);
     return this;
+
+    function parseModuleName(id) {
+      var module = id.split('.')[0];
+      if(module == 'angular') {
+        module = 'ng';
+      }
+      return module;
+    }
 
     function flush() {
       if (atName) {
@@ -388,7 +501,7 @@ Doc.prototype = {
             description:self.markdown(text.replace(match[0], match[6])),
             type: optional ? match[1].substring(0, match[1].length-1) : match[1],
             optional: optional,
-            'default':match[5]
+            default: match[5]
           };
           self.param.push(param);
         } else if (atName == 'returns' || atName == 'return') {
@@ -434,10 +547,22 @@ Doc.prototype = {
       self = this,
       minerrMsg;
 
+    var gitTagFromFullVersion = function(version) {
+      var match = version.match(/-(\w{7})/);
+
+      if (match) {
+        // git sha
+        return match[1];
+      }
+
+      // git tag
+      return 'v' + version;
+    };
+
     if (this.section === 'api') {
       dom.tag('a', {
-          href: 'http://github.com/angular/angular.js/tree/v' +
-            gruntUtil.getVersion().number + '/' + self.file + '#L' + self.line,
+          href: 'http://github.com/angular/angular.js/tree/' +
+            gitTagFromFullVersion(gruntUtil.getVersion().full) + '/' + self.file + '#L' + self.line,
           class: 'view-source btn btn-action' }, function(dom) {
         dom.tag('i', {class:'icon-zoom-in'}, ' ');
         dom.text(' View source');
@@ -450,7 +575,6 @@ Doc.prototype = {
       dom.text(' Improve this doc');
     });
     dom.h(title(this), function() {
-
       notice('deprecated', 'Deprecated API', self.deprecated);
       if (self.ngdoc === 'error') {
         minerrMsg = lookupMinerrMsg(self);
@@ -475,6 +599,8 @@ Doc.prototype = {
 
       dom.h('Example', self.example, dom.html);
     });
+
+    self.anchors = dom.anchors;
 
     return dom.toString();
 
@@ -513,7 +639,7 @@ Doc.prototype = {
       dom.html('<a href="api/ngAnimate.$animate">Click here</a> to learn more about the steps involved in the animation.');
     }
     if(params.length > 0) {
-      dom.html('<h2 id="parameters">Parameters</h2>');
+      dom.html('<h2>Parameters</h2>');
       dom.html('<table class="variables-matrix table table-bordered table-striped">');
       dom.html('<thead>');
       dom.html('<tr>');
@@ -536,7 +662,6 @@ Doc.prototype = {
           types = types.substr(0,limit);
         }
         types = types.split(/\|(?![\(\)\w\|\s]+>)/);
-        var description = param.description;
         if (param.optional) {
           name += ' <div><em>(optional)</em></div>';
         }
@@ -549,8 +674,15 @@ Doc.prototype = {
           dom.text(type);
           dom.html('</a>');
         }
+
         dom.html('</td>');
-        dom.html('<td>' + description + '</td>');
+        var description = '<td>';
+        description += param.description;
+        if (param.default) {
+          description += ' <p><em>(default: ' + param.default + ')</em></p>';
+        }
+        description += '</td>';
+        dom.html(description);
         dom.html('</tr>');
       };
       dom.html('</tbody>');
@@ -561,7 +693,7 @@ Doc.prototype = {
   html_usage_returns: function(dom) {
     var self = this;
     if (self.returns) {
-      dom.html('<h2 id="returns">Returns</h2>');
+      dom.html('<h2>Returns</h2>');
       dom.html('<table class="variables-matrix">');
       dom.html('<tr>');
       dom.html('<td>');
@@ -621,7 +753,7 @@ Doc.prototype = {
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function() {
-      var restrict = self.restrict || 'AC';
+      var restrict = self.restrict || 'A';
 
       if (restrict.match(/E/)) {
         dom.html('<p>');
@@ -685,7 +817,7 @@ Doc.prototype = {
           dom.text(prefix);
           dom.text(param.optional ? '[' : '');
           var parts = param.name.split('|');
-          dom.text(parts[skipSelf ? 0 : 1] || parts[0]);
+          dom.text(dashCase(parts[skipSelf ? 0 : 1] || parts[0]));
         }
         if (BOOLEAN_ATTR[param.name]) {
           dom.text(param.optional ? ']' : '');
@@ -979,7 +1111,7 @@ function scenarios(docs){
 function metadata(docs){
   var pages = [];
   docs.forEach(function(doc){
-    var path = (doc.name || '').split(/(\.|\:\s*)/);
+    var path = (doc.name || '').split(/(\:\s*)/);
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
@@ -995,10 +1127,12 @@ function metadata(docs){
       name: title(doc),
       shortName: shortName,
       type: doc.ngdoc,
-      keywords:doc.keywords()
+      moduleName: doc.moduleName,
+      shortDescription: doc.shortDescription(),
+      keywords: doc.keywords()
     });
   });
-  pages.sort(keywordSort);
+  pages.sort(sidebarSort);
   return pages;
 }
 
@@ -1031,7 +1165,60 @@ var KEYWORD_PRIORITY = {
   '.dev_guide.di': 8,
   '.dev_guide.unit-testing': 9
 };
-function keywordSort(a, b){
+
+var GUIDE_PRIORITY = [
+  'introduction',
+  'overview',
+  'concepts',
+  'dev_guide.mvc',
+
+  'dev_guide.mvc.understanding_controller',
+  'dev_guide.mvc.understanding_model',
+  'dev_guide.mvc.understanding_view',
+
+  'dev_guide.services.understanding_services',
+  'dev_guide.services.managing_dependencies',
+  'dev_guide.services.creating_services',
+  'dev_guide.services.injecting_controllers',
+  'dev_guide.services.testing_services',
+  'dev_guide.services.$location',
+  'dev_guide.services',
+
+  'databinding',
+  'dev_guide.templates.css-styling',
+  'dev_guide.templates.filters.creating_filters',
+  'dev_guide.templates.filters',
+  'dev_guide.templates.filters.using_filters',
+  'dev_guide.templates',
+
+  'di',
+  'providers',
+  'module',
+  'scope',
+  'expression',
+  'bootstrap',
+  'directive',
+  'compiler',
+
+  'forms',
+  'animations',
+
+  'dev_guide.e2e-testing',
+  'dev_guide.unit-testing',
+
+  'i18n',
+  'ie',
+  'migration',
+];
+
+function sidebarSort(a, b){
+  priorityA = GUIDE_PRIORITY.indexOf(a.id);
+  priorityB = GUIDE_PRIORITY.indexOf(b.id);
+
+  if (priorityA > -1 || priorityB > -1) {
+    return priorityA < priorityB ? -1 : (priorityA > priorityB ? 1 : 0);
+  }
+
   function mangleName(doc) {
     var path = doc.id.split(/\./);
     var mangled = [];
@@ -1112,22 +1299,7 @@ function merge(docs){
   });
 
   for(var i = 0; i < docs.length;) {
-    var doc = docs[i];
-
-    // check links - do they exist ?
-    doc.links.forEach(function(link) {
-      // convert #id to path#id
-      if (link[0] == '#') {
-        link = doc.section + '/' + doc.id.split('#').shift() + link;
-      }
-      link = link.split('#').shift();
-      if (!byFullId[link]) {
-        console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
-      }
-    });
-
-    // merge into parents
-    if (findParent(doc, 'method') || findParent(doc, 'property') || findParent(doc, 'event')) {
+    if (findParent(docs[i], 'method') || findParent(docs[i], 'property') || findParent(docs[i], 'event')) {
       docs.splice(i, 1);
     } else {
       i++;
@@ -1156,6 +1328,39 @@ function merge(docs){
 }
 //////////////////////////////////////////////////////////
 
+
+function checkBrokenLinks(docs) {
+  var byFullId = Object.create(null);
+
+  docs.forEach(function(doc) {
+    byFullId[doc.section + '/' + doc.id] = doc;
+    if (doc.section === 'api') {
+      doc.anchors.push('directive', 'service', 'filter', 'function');
+    }
+  });
+
+  docs.forEach(function(doc) {
+    doc.links.forEach(function(link) {
+      // convert #id to path#id
+      if (link[0] == '#') {
+        link = doc.section + '/' + doc.id.split('#').shift() + link;
+      }
+
+      var parts = link.split('#');
+      var pageLink = parts[0];
+      var anchorLink = parts[1];
+      var linkedPage = byFullId[pageLink];
+
+      if (!linkedPage) {
+        console.log('WARNING: ' + doc.section + '/' + doc.id + ' (defined in ' + doc.file + ') points to a non existing page "' + link + '"!');
+      } else if (anchorLink && linkedPage.anchors.indexOf(anchorLink) === -1) {
+        console.log('WARNING: ' + doc.section + '/' + doc.id + ' (defined in ' + doc.file + ') points to a non existing anchor "' + link + '"!');
+      }
+    });
+  });
+}
+
+
 function property(name) {
   return function(value){
     return value[name];
@@ -1168,4 +1373,35 @@ function dashCase(name){
   return name.replace(DASH_CASE_REGEXP, function(letter, pos) {
     return (pos ? '-' : '') + letter.toLowerCase();
   });
+}
+//////////////////////////////////////////////////////////
+
+function explainModuleInstallation(moduleName){
+  var ngMod = ngModule(moduleName),
+    modulePackage = 'angular-' + moduleName,
+    modulePackageFile = modulePackage + '.js';
+
+  return '<h1>Installation</h1>' +
+    '<p>First include <code>' + modulePackageFile +'</code> in your HTML:</p><pre><code>' +
+    '    &lt;script src=&quot;angular.js&quot;&gt;\n' +
+    '    &lt;script src=&quot;' + modulePackageFile + '&quot;&gt;</pre></code>' +
+
+    '<p>You can download this file from the following places:</p>' +
+    '<ul>' +
+      '<li>[Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs)<br>' +
+        'e.g. <code>"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+      '<li>[Bower](http://bower.io)<br>' +
+       'e.g. <code>bower install ' + modulePackage + '@X.Y.Z</code></li>' +
+      '<li><a href="http://code.angularjs.org/">code.angularjs.org</a><br>' +
+        'e.g. <code>"//code.angularjs.org/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+    '</ul>' +
+    '<p>where X.Y.Z is the AngularJS version you are running.</p>' +
+    '<p>Then load the module in your application by adding it as a dependent module:</p><pre><code>' +
+    '    angular.module(\'app\', [\'' + ngMod + '\']);</pre></code>' +
+
+    '<p>With that you\'re ready to get started!</p>';
+}
+
+function ngModule(moduleName) {
+  return 'ng' + moduleName[0].toUpperCase() + moduleName.substr(1);
 }

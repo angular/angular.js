@@ -47,6 +47,8 @@ is simply handed the `greeter` at runtime.
 This is desirable, but it puts the responsibility of getting hold of the dependency on the
 code that constructs `SomeClass`.
 
+<img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png">
+
 To manage the responsibility of dependency creation, each Angular application has an {@link
 api/angular.injector injector}. The injector is a service locator that is responsible for
 construction and lookup of dependencies.
@@ -147,6 +149,8 @@ of service names to inject.
   MyController.$inject = ['$scope', 'greeter'];
 </pre>
 
+In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
+Using above code snippet as an example, '$scope' will be injected into 'renamed$scope' and 'greeter' into 'renamedGreeter'.
 Care must be taken that the `$inject` annotation is kept in sync with the actual arguments in the
 function declaration.
 

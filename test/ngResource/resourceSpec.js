@@ -31,6 +31,58 @@ describe("resource", function() {
     $httpBackend.verifyNoOutstandingExpectation();
   });
 
+  describe('isValidDottedPath', function() {
+    it('should support arbitrary dotted names', function() {
+      expect(isValidDottedPath('')).toBe(false);
+      expect(isValidDottedPath('1')).toBe(false);
+      expect(isValidDottedPath('1abc')).toBe(false);
+      expect(isValidDottedPath('.')).toBe(false);
+      expect(isValidDottedPath('$')).toBe(true);
+      expect(isValidDottedPath('a')).toBe(true);
+      expect(isValidDottedPath('A')).toBe(true);
+      expect(isValidDottedPath('a1')).toBe(true);
+      expect(isValidDottedPath('$a')).toBe(true);
+      expect(isValidDottedPath('$1')).toBe(true);
+      expect(isValidDottedPath('$$')).toBe(true);
+      expect(isValidDottedPath('$.$')).toBe(true);
+      expect(isValidDottedPath('.$')).toBe(false);
+      expect(isValidDottedPath('$.')).toBe(false);
+    });
+  });
+
+  describe('lookupDottedPath', function() {
+    var data = {a: {b: 'foo', c: null}};
+
+    it('should throw for invalid path', function() {
+      expect(function() {
+        lookupDottedPath(data, '.ckck')
+      }).toThrowMinErr('$resource', 'badmember',
+                       'Dotted member path "@.ckck" is invalid.');
+    });
+
+    it('should get dotted paths', function() {
+      expect(lookupDottedPath(data, 'a')).toEqual({b: 'foo', c: null});
+      expect(lookupDottedPath(data, 'a.b')).toBe('foo');
+      expect(lookupDottedPath(data, 'a.c')).toBeNull();
+    });
+
+    it('should skip over null/undefined members', function() {
+      expect(lookupDottedPath(data, 'a.b.c')).toBe(undefined);
+      expect(lookupDottedPath(data, 'a.c.c')).toBe(undefined);
+      expect(lookupDottedPath(data, 'a.b.c.d')).toBe(undefined);
+      expect(lookupDottedPath(data, 'NOT_EXIST')).toBe(undefined);
+    });
+  });
+
+  it('should not include a request body when calling $delete', function() {
+    $httpBackend.expect('DELETE', '/fooresource', null).respond({});
+    var Resource = $resource('/fooresource');
+    var resource = new Resource({ foo: 'bar' });
+
+    resource.$delete();
+    $httpBackend.flush();
+  });
+
 
   it("should build resource", function() {
     expect(typeof CreditCard).toBe('function');
@@ -179,6 +231,19 @@ describe("resource", function() {
   });
 
 
+  it('should support @_property lookups with underscores', function() {
+    $httpBackend.expect('GET', '/Order/123').respond({_id: {_key:'123'}, count: 0});
+    var LineItem = $resource('/Order/:_id', {_id: '@_id._key'});
+    var item = LineItem.get({_id: 123});
+    $httpBackend.flush();
+    expect(item).toEqualData({_id: {_key: '123'}, count: 0});
+    $httpBackend.expect('POST', '/Order/123').respond({_id: {_key:'123'}, count: 1});
+    item.$save();
+    $httpBackend.flush();
+    expect(item).toEqualData({_id: {_key: '123'}, count: 1});
+  });
+
+
   it('should not pass default params between actions', function() {
     var R = $resource('/Path', {}, {get: {method: 'GET', params: {objId: '1'}}, perform: {method: 'GET'}});
 
@@ -229,6 +294,13 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/1/1');
 
     R.get({id:1});
+  });
+
+
+  it('should throw an exception if a param is called "hasOwnProperty"', function() {
+     expect(function() {
+      $resource('/:hasOwnProperty').get();
+     }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
   });
 
 
@@ -630,6 +702,38 @@ describe("resource", function() {
 
         expect(cc.url).toBe('/new-id');
       });
+
+      it('should pass the same transformed value to success callbacks and to promises', function() {
+        $httpBackend.expect('GET', '/CreditCard').respond(200, { value: 'original' });
+
+        var transformResponse = function (response) {
+          return { value: 'transformed' };
+        };
+
+        var CreditCard = $resource('/CreditCard', {}, {
+          call: {
+            method: 'get',
+            interceptor: { response: transformResponse }
+          }
+        });
+
+        var successValue,
+            promiseValue;
+
+        var cc = new CreditCard({ name: 'Me' });
+
+        var req = cc.$call({}, function (result) {
+          successValue = result;
+        });
+        req.then(function (result) {
+          promiseValue = result;
+        });
+
+        $httpBackend.flush();
+        expect(successValue).toEqual({ value: 'transformed' });
+        expect(promiseValue).toEqual({ value: 'transformed' });
+        expect(successValue).toBe(promiseValue);
+      });
     });
 
 
@@ -797,7 +901,7 @@ describe("resource", function() {
     });
 
 
-    it('should call the error callback if provided on non 2xx response', function() {
+    it('should call the error callback if provided on non 2xx response (without data)', function() {
       $httpBackend.expect('GET', '/CreditCard').respond(ERROR_CODE, ERROR_RESPONSE);
 
       CreditCard.get(callback, errorCB);

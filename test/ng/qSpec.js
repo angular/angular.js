@@ -730,6 +730,38 @@ describe('q', function() {
           mockNextTick.flush();
           expect(log).toEqual(['error(oops!)->reject(oops!)']);
         });
+
+        it('should forward success resolution when success callbacks are not functions', function() {
+          deferred.resolve('yay!');
+
+          promise.then(1).
+                  then(null).
+                  then({}).
+                  then('gah!').
+                  then([]).
+                  then(success());
+
+          expect(logStr()).toBe('');
+
+          mockNextTick.flush();
+          expect(log).toEqual(['success(yay!)->yay!']);
+        });
+
+        it('should forward error resolution when error callbacks are not functions', function() {
+          deferred.reject('oops!');
+
+          promise.then(null, 1).
+                  then(null, null).
+                  then(null, {}).
+                  then(null, 'gah!').
+                  then(null, []).
+                  then(null, error());
+
+          expect(logStr()).toBe('');
+
+          mockNextTick.flush();
+          expect(log).toEqual(['error(oops!)->reject(oops!)']);
+        });
       });
 
 
@@ -917,6 +949,15 @@ describe('q', function() {
       promise.then(success(), error());
       syncResolve(deferred, rejectedPromise.then());
       expect(log).toEqual(['error(rejected)->reject(rejected)']);
+    });
+
+
+    it('should catch exceptions thrown in errback and forward them to derived promises', function() {
+      var rejectedPromise = q.reject('rejected');
+      rejectedPromise.then(null, error('Broken', 'catch me!', true)).
+                      then(null, error('Affected'))
+      mockNextTick.flush();
+      expect(log).toEqual(['errorBroken(rejected)->throw(catch me!)', 'errorAffected(catch me!)->reject(catch me!)']);
     });
   });
 
@@ -1219,7 +1260,7 @@ describe('q', function() {
           evilPromise.success = success;
           evilPromise.error = error;
         }
-      }
+      };
 
       q.all([promise, evilPromise]).then(success(), error());
       expect(logStr()).toBe('');
@@ -1278,7 +1319,7 @@ describe('q', function() {
           evilPromise.success = success;
           evilPromise.error = error;
         }
-      }
+      };
 
       q.all({good: promise, evil: evilPromise}).then(success(), error());
       expect(logStr()).toBe('');
@@ -1428,7 +1469,7 @@ describe('q', function() {
       deferred = q.defer();
     });
 
-    
+
     afterEach(function() {
       // Restore the original exception logging mode
       mockNextTick.logExceptions = originalLogExceptions;
@@ -1442,9 +1483,9 @@ describe('q', function() {
       expect(exceptionExceptionSpy).toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalled();
     });
-    
 
-    it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
+
+    it('should still reject the promise, when exception is thrown in error handler, even if exceptionHandler rethrows', function() {
       deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
       deferred.reject('reject');
       mockNextTick.flush();

@@ -8,20 +8,19 @@
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
- * Keep in mind that:
+ * By default, the template URL is restricted to the same domain and protocol as the
+ * application document. This is done by calling {@link ng.$sce#methods_getTrustedResourceUrl
+ * $sce.getTrustedResourceUrl} on it. To load templates from other domains or protocols
+ * you may either {@link ng.$sceDelegateProvider#methods_resourceUrlWhitelist whitelist them} or
+ * {@link ng.$sce#methods_trustAsResourceUrl wrap them} as trusted values. Refer to Angular's {@link
+ * ng.$sce Strict Contextual Escaping}.
  *
- * -    by default, the template URL is restricted to the same domain and protocol as the
- *      application document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
- *      $sce.getTrustedResourceUrl} on it.  To load templates from other domains and/or protocols,
- *      you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist them} or
- *      {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.  Refer Angular's {@link
- *      ng.$sce Strict Contextual Escaping}.
- * -    in addition, the browser's
- *      {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
- *      Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
- *      (CORS)} policy apply that may further restrict whether the template is successfully loaded.
- *      (e.g.  ngInclude won't work for cross-domain requests on all browsers and for `file://`
- *      access on some browsers)
+ * In addition, the browser's
+ * {@link https://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_XMLHttpRequest
+ * Same Origin Policy} and {@link http://www.w3.org/TR/cors/ Cross-Origin Resource Sharing
+ * (CORS)} policy may further restrict whether the template is successfully loaded.
+ * For example, `ngInclude` won't work for cross-domain requests on all browsers and for `file://`
+ * access on some browsers.
  *
  * @animations
  * enter - animation is used to bring new content into the browser.
@@ -30,6 +29,7 @@
  * The enter and leave animation occur concurrently.
  *
  * @scope
+ * @priority 400
  *
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
@@ -51,8 +51,8 @@
        </select>
        url of the template: <tt>{{template.url}}</tt>
        <hr/>
-       <div class="example-animate-container">
-         <div class="include-example" ng-include="template.url"></div>
+       <div class="slide-animate-container">
+         <div class="slide-animate" ng-include="template.url"></div>
        </div>
      </div>
     </file>
@@ -71,7 +71,7 @@
       Content of template2.html
     </file>
     <file name="animations.css">
-      .example-animate-container {
+      .slide-animate-container {
         position:relative;
         background:white;
         border:1px solid black;
@@ -79,14 +79,12 @@
         overflow:hidden;
       }
 
-      .example-animate-container > div {
+      .slide-animate {
         padding:10px;
       }
 
-      .include-example.ng-enter, .include-example.ng-leave {
+      .slide-animate.ng-enter, .slide-animate.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-        -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 
         position:absolute;
@@ -98,17 +96,17 @@
         padding:10px;
       }
 
-      .include-example.ng-enter {
+      .slide-animate.ng-enter {
         top:-50px;
       }
-      .include-example.ng-enter.ng-enter-active {
+      .slide-animate.ng-enter.ng-enter-active {
         top:0;
       }
 
-      .include-example.ng-leave {
+      .slide-animate.ng-leave {
         top:0;
       }
-      .include-example.ng-leave.ng-leave-active {
+      .slide-animate.ng-leave.ng-leave-active {
         top:50px;
       }
     </file>
@@ -149,23 +147,19 @@
  * @description
  * Emitted every time the ngInclude content is reloaded.
  */
-var NG_INCLUDE_PRIORITY = 500;
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile', '$animate', '$sce',
                   function($http,   $templateCache,   $anchorScroll,   $compile,   $animate,   $sce) {
   return {
     restrict: 'ECA',
+    priority: 400,
     terminal: true,
-    priority: NG_INCLUDE_PRIORITY,
+    transclude: 'element',
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
-      element.html('');
-      var anchor = jqLite(document.createComment(' ngInclude: ' + srcExp + ' '));
-      element.replaceWith(anchor);
-
-      return function(scope) {
+      return function(scope, $element, $attr, ctrl, $transclude) {
         var changeCounter = 0,
             currentScope,
             currentElement;
@@ -182,6 +176,11 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
         };
 
         scope.$watch($sce.parseAsResourceUrl(srcExp), function ngIncludeWatchAction(src) {
+          var afterAnimation = function() {
+            if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+              $anchorScroll();
+            }
+          };
           var thisChangeId = ++changeCounter;
 
           if (src) {
@@ -189,21 +188,18 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
 
-              cleanupLastIncludeContent();
+              $transclude(newScope, function(clone) {
+                cleanupLastIncludeContent();
 
-              currentScope = newScope;
-              currentElement = element.clone();
-              currentElement.html(response);
-              $animate.enter(currentElement, null, anchor);
+                currentScope = newScope;
+                currentElement = clone;
 
-              $compile(currentElement, false, NG_INCLUDE_PRIORITY - 1)(currentScope);
-
-              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $anchorScroll();
-              }
-
-              currentScope.$emit('$includeContentLoaded');
-              scope.$eval(onloadExp);
+                currentElement.html(response);
+                $animate.enter(currentElement, null, $element, afterAnimation);
+                $compile(currentElement.contents())(currentScope);
+                currentScope.$emit('$includeContentLoaded');
+                scope.$eval(onloadExp);
+              });
             }).error(function() {
               if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });

@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
 /**
  * @ngdoc directive
  * @name ngTouch.directive:ngClick
@@ -9,6 +11,8 @@
  * devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
  * the click event. This version handles them immediately, and then prevents the
  * following click event from propagating.
+ *
+ * Requires the {@link ngTouch `ngTouch`} module to be installed.
  *
  * This directive can fall back to using an ordinary click event, and so works on desktop
  * browsers as well as mobile.
@@ -236,7 +240,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         }
 
         if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
-          element.triggerHandler('click', event);
+          element.triggerHandler('click', [event]);
         }
       }
 
@@ -253,9 +257,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // - On mobile browsers, the simulated "fast" click will call this.
     // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
     // Therefore it's safe to use this directive on both mobile and desktop.
-    element.on('click', function(event) {
+    element.on('click', function(event, touchend) {
       scope.$apply(function() {
-        clickHandler(scope, {$event: event});
+        clickHandler(scope, {$event: (touchend || event)});
       });
     });
 

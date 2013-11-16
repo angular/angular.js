@@ -2,6 +2,12 @@
 
 describe('SCE', function() {
 
+  // Work around an IE8 bug.  Though window.inject === angular.mock.inject, if it's invoked the
+  // window scope, IE8 loses the exception object that bubbles up and replaces it with a TypeError.
+  // By using a local alias, it gets invoked on the global scope instead of window.
+  // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
+  var inject = angular.mock.inject;
+
   describe('when disabled', function() {
     beforeEach(function() {
       module(function($sceProvider) {
@@ -137,10 +143,6 @@ describe('SCE', function() {
 
     it('should wrap "" into ""', inject(function($sce) {
       expect($sce.trustAsHtml("")).toBe("");
-    }));
-
-    it('should unwrap null into null', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, null)).toBe(null);
     }));
 
     it('should unwrap "" into ""', inject(function($sce) {
@@ -292,32 +294,142 @@ describe('SCE', function() {
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
     }));
 
-    it('should support custom regex', runTest(
-      {
-        whiteList: [/^http:\/\/example\.com.*/],
-        blackList: []
-      }, function($sce) {
-        expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
-        expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrowMinErr(
-          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
-    }));
+    it('should not accept unknown matcher type', function() {
+      expect(function() {
+        runTest({whiteList: [{}]}, null)();
+      }).toThrowMinErr('$injector', 'modulerr', new RegExp(
+          /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
+          /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
+    });
 
-    it('should support the special string "self" in whitelist', runTest(
-      {
-        whiteList: ['self'],
-        blackList: []
-      }, function($sce) {
-        expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
-    }));
+    describe('adjustMatcher', function() {
+      it('should rewrite regex into regex and add ^ & $ on either end', function() {
+        expect(adjustMatcher(/a.*b/).exec('a.b')).not.toBeNull();
+        expect(adjustMatcher(/a.*b/).exec('-a.b-')).toBeNull();
+        // Adding ^ & $ onto a regex that already had them should also work.
+        expect(adjustMatcher(/^a.*b$/).exec('a.b')).not.toBeNull();
+        expect(adjustMatcher(/^a.*b$/).exec('-a.b-')).toBeNull();
+      });
+    });
 
-    it('should support the special string "self" in blacklist', runTest(
-      {
-        whiteList: [/.*/],
-        blackList: ['self']
-      }, function($sce) {
-        expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
-          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
-    }));
+    describe('regex matcher', function() {
+      it('should support custom regex', runTest(
+        {
+          whiteList: [/^http:\/\/example\.com\/.*/],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
+          // must match entire regex
+          expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
+          // https doesn't match (mismatched protocol.)
+          expect(function() { $sce.getTrustedResourceUrl('https://example.com/foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: https://example.com/foo');
+      }));
+
+      it('should match entire regex', runTest(
+        {
+          whiteList: [/https?:\/\/example\.com\/foo/],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
+          expect($sce.getTrustedResourceUrl('https://example.com/foo')).toEqual('https://example.com/foo');
+          expect(function() { $sce.getTrustedResourceUrl('http://example.com/fo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/fo');
+          // Suffix not allowed even though original regex does not contain an ending $.
+          expect(function() { $sce.getTrustedResourceUrl('http://example.com/foo2'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/foo2');
+          // Prefix not allowed even though original regex does not contain a leading ^.
+          expect(function() { $sce.getTrustedResourceUrl('xhttp://example.com/foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: xhttp://example.com/foo');
+      }));
+    });
+
+    describe('string matchers', function() {
+      it('should support strings as matchers', runTest(
+        {
+          whiteList: ['http://example.com/foo'],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
+          // "." is not a special character like in a regex.
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo');
+          // You can match a prefix.
+          expect(function() { $sce.getTrustedResourceUrl('http://example.com/foo2'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/foo2');
+          // You can match a suffix.
+          expect(function() { $sce.getTrustedResourceUrl('xhttp://example.com/foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: xhttp://example.com/foo');
+      }));
+
+      it('should support the * wildcard', runTest(
+        {
+          whiteList: ['http://example.com/foo*'],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
+          // The * wildcard should match extra characters.
+          expect($sce.getTrustedResourceUrl('http://example.com/foo-bar')).toEqual('http://example.com/foo-bar');
+          // The * wildcard does not match ':'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo:bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo:bar');
+          // The * wildcard does not match '/'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo/bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo/bar');
+          // The * wildcard does not match '.'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo.bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo.bar');
+          // The * wildcard does not match '?'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo?bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo?bar');
+          // The * wildcard does not match '&'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo&bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo&bar');
+          // The * wildcard does not match ';'
+          expect(function() { $sce.getTrustedResourceUrl('http://example-com/foo;bar'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example-com/foo;bar');
+      }));
+
+      it('should support the ** wildcard', runTest(
+        {
+          whiteList: ['http://example.com/foo**'],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
+          // The ** wildcard should match extra characters.
+          expect($sce.getTrustedResourceUrl('http://example.com/foo-bar')).toEqual('http://example.com/foo-bar');
+          // The ** wildcard accepts the ':/.?&' characters.
+          expect($sce.getTrustedResourceUrl('http://example.com/foo:1/2.3?4&5-6')).toEqual('http://example.com/foo:1/2.3?4&5-6');
+      }));
+
+      it('should not accept *** in the string', function() {
+        expect(function() {
+          runTest({whiteList: ['http://***']}, null)();
+        }).toThrowMinErr('$injector', 'modulerr', new RegExp(
+             /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
+             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\.  String: http:\/\/\*\*\*/.source));
+      });
+    });
+
+    describe('"self" matcher', function() {
+      it('should support the special string "self" in whitelist', runTest(
+        {
+          whiteList: ['self'],
+          blackList: []
+        }, function($sce) {
+          expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
+      }));
+
+      it('should support the special string "self" in blacklist', runTest(
+        {
+          whiteList: [/.*/],
+          blackList: ['self']
+        }, function($sce) {
+          expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
+      }));
+    });
 
     it('should have blacklist override the whitelist', runTest(
       {
@@ -331,7 +443,7 @@ describe('SCE', function() {
     it('should support multiple items in both lists', runTest(
       {
         whiteList: [/^http:\/\/example.com\/1$/, /^http:\/\/example.com\/2$/, /^http:\/\/example.com\/3$/, 'self'],
-        blackList: [/^http:\/\/example.com\/3$/, /open_redirect/],
+        blackList: [/^http:\/\/example.com\/3$/, /.*\/open_redirect/],
       }, function($sce) {
         expect($sce.getTrustedResourceUrl('same_domain')).toEqual('same_domain');
         expect($sce.getTrustedResourceUrl('http://example.com/1')).toEqual('http://example.com/1');

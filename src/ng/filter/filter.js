@@ -8,9 +8,6 @@
  * @description
  * Selects a subset of items from `array` and returns it as a new array.
  *
- * Note: This function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
- *
  * @param {Array} array The source array.
  * @param {string|Object|function()} expression The predicate to be used for selecting items from
  *   `array`.
@@ -105,9 +102,12 @@
    </doc:example>
  */
 function filterFilter() {
-  return function(array, expression, comperator) {
+  return function(array, expression, comparator) {
     if (!isArray(array)) return array;
-    var predicates = [];
+
+    var comparatorType = typeof(comparator),
+        predicates = [];
+
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
         if(!predicates[j](value)) {
@@ -116,22 +116,20 @@ function filterFilter() {
       }
       return true;
     };
-    switch(typeof comperator) {
-      case "function":
-        break;
-      case "boolean":
-        if(comperator == true) {
-          comperator = function(obj, text) {
-            return angular.equals(obj, text);
-          }
-          break;
-        }
-      default:
-        comperator = function(obj, text) {
-          text = (''+text).toLowerCase();
-          return (''+obj).toLowerCase().indexOf(text) > -1
+
+    if (comparatorType !== 'function') {
+      if (comparatorType === 'boolean' && comparator) {
+        comparator = function(obj, text) {
+          return angular.equals(obj, text);
         };
+      } else {
+        comparator = function(obj, text) {
+          text = (''+text).toLowerCase();
+          return (''+obj).toLowerCase().indexOf(text) > -1;
+        };
+      }
     }
+
     var search = function(obj, text){
       if (typeof text == 'string' && text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
@@ -140,12 +138,11 @@ function filterFilter() {
         case "boolean":
         case "number":
         case "string":
-          return comperator(obj, text);
+          return comparator(obj, text);
         case "object":
           switch (typeof text) {
             case "object":
-              return comperator(obj, text);
-              break;
+              return comparator(obj, text);
             default:
               for ( var objKey in obj) {
                 if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
@@ -170,13 +167,16 @@ function filterFilter() {
       case "boolean":
       case "number":
       case "string":
+        // Set up expression object and fall through
         expression = {$:expression};
+        // jshint -W086
       case "object":
+        // jshint +W086
         for (var key in expression) {
           if (key == '$') {
             (function() {
               if (!expression[key]) return;
-              var path = key
+              var path = key;
               predicates.push(function(value) {
                 return search(value, expression[path]);
               });
@@ -206,5 +206,5 @@ function filterFilter() {
       }
     }
     return filtered;
-  }
+  };
 }

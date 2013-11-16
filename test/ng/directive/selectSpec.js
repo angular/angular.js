@@ -692,6 +692,21 @@ describe('select', function() {
       expect(jqLite(element.find('option')[0]).text()).toEqual('blank');
     });
 
+    it('should ignore $ and $$ properties', function() {
+      createSelect({
+        'ng-options': 'key as value for (key, value) in object',
+        'ng-model': 'selected'
+      });
+
+      scope.$apply(function() {
+        scope.object = {'regularProperty': 'visible', '$$private': 'invisible', '$property': 'invisible'};
+        scope.selected = 'regularProperty';
+      });
+
+      var options = element.find('option');
+      expect(options.length).toEqual(1);
+      expect(sortedHtml(options[0])).toEqual('<option value="regularProperty">visible</option>');
+    });
 
     describe('binding', function() {
 
@@ -1198,6 +1213,31 @@ describe('select', function() {
         });
         expect(element).toBeValid();
       });
+
+
+      it('should allow falsy values as values', function() {
+        createSelect({
+          'ng-model': 'value',
+          'ng-options': 'item.value as item.name for item in values',
+          'ng-required': 'required'
+        }, true);
+
+        scope.$apply(function() {
+          scope.values = [{name: 'True', value: true}, {name: 'False', value: false}];
+          scope.required = false;
+        });
+
+        element.val('1');
+        browserTrigger(element, 'change');
+        expect(element).toBeValid();
+        expect(scope.value).toBe(false);
+
+        scope.$apply(function() {
+          scope.required = true;
+        });
+        expect(element).toBeValid();
+        expect(scope.value).toBe(false);
+      });
     });
   });
 
@@ -1232,5 +1272,15 @@ describe('select', function() {
       expect(element.find('span').text()).toBe('success');
       dealoc(element);
     }));
+
+    it('should throw an exception if an option value interpolates to "hasOwnProperty"', function() {
+      scope.hasOwnPropertyOption = "hasOwnProperty";
+      expect(function() {
+        compile('<select ng-model="x">'+
+                  '<option>{{hasOwnPropertyOption}}</option>'+
+                '</select>');
+      }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
+    });
+
   });
 });

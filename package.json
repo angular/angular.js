@@ -1,40 +1,51 @@
 {
   "name": "angularjs",
-  "version": "1.2.0-snapshot",
-  "cdnVersion": "1.2.0rc1",
-  "codename": "barehand-atomspliting",
+  "version": "1.2.2-snapshot",
+  "cdnVersion": "1.2.1",
+  "codename": "underscore-empathy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.js.git"
+  },
   "devDependencies": {
-    "grunt": "0.4.0",
-    "bower": "1.1.2",
-    "grunt-contrib-clean": "0.4.0",
-    "grunt-contrib-compress": "0.4.1",
-    "grunt-contrib-connect": "0.1.2",
-    "grunt-contrib-copy": "0.4.1",
-    "jasmine-node": "1.2.3",
+    "grunt": "~0.4.1",
+    "bower": "~1.2.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "jasmine-node": "~1.11.0",
     "q": "~0.9.2",
-    "q-fs": "0.1.36",
-    "qq": "0.3.5",
-    "shelljs": "0.1.2",
-    "karma": "~0.10",
-    "karma-jasmine": "~0.1",
-    "karma-chrome-launcher": "~0.1",
-    "karma-firefox-launcher": "~0.1",
-    "karma-ng-scenario": "~0.1",
-    "karma-junit-reporter": "~0.1",
-    "karma-sauce-launcher": "~0.1",
-    "karma-script-launcher": "~0.1",
-    "yaml-js": "0.0.5",
-    "marked": "~0.2.9",
+    "q-fs": "~0.1.36",
+    "qq": "~0.3.5",
+    "shelljs": "~0.2.6",
+    "karma": "~0.11",
+    "karma-jasmine": "~0.1.0",
+    "karma-chrome-launcher": "~0.1.0",
+    "karma-firefox-launcher": "~0.1.0",
+    "karma-ng-scenario": "~0.1.0",
+    "karma-junit-reporter": "git://github.com/karma-runner/karma-junit-reporter#karma-0.11",
+    "karma-sauce-launcher": "~0.1.1",
+    "karma-script-launcher": "~0.1.0",
+    "yaml-js": "~0.0.8",
+    "marked": "0.2.9",
     "rewire": "1.1.3",
-    "grunt-contrib-jasmine-node": "~0.1.1",
-    "grunt-parallel": "~0.2.0",
+    "grunt-jasmine-node": "~0.1.0",
+    "grunt-parallel": "~0.3.1",
     "grunt-ddescribe-iit": "~0.0.1",
-    "grunt-merge-conflict": "~0.0.1"
+    "grunt-merge-conflict": "~0.0.1",
+    "promises-aplus-tests": "~1.3.2",
+    "grunt-shell": "~0.4.0",
+    "semver": "~2.1.0",
+    "lodash": "~2.1.0"
   },
   "licenses": [
     {
       "type": "MIT",
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {
+    "grunt-contrib-jshint": "~0.6.4"
+  }
 }

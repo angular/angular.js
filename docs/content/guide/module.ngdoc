@@ -191,6 +191,24 @@ scripts into a VM. There are existing projects which deal with script loading, w
 with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
 and thus script loaders can take advantage of this property and parallelize the loading process.
 
+## Creation versus Retrieval
+
+Beware that using `angular.module('myModule', [])` will create the module `myModule` and overwrite any
+existing module named `myModule`. Use `angular.module('myModule')` to retrieve an existing module.
+
+<pre>
+  var myModule = angular.module('myModule', []);
+  
+  // add some directives and services
+  myModule.service('myService', ...);
+  myModule.directive('myDirective', ...);
+
+  // overwrites both myService and myDirective by creating a new module
+  var myModule = angular.module('myModule', []);
+
+  // throws an error because myOtherModule has yet to be defined
+  var myModule = angular.module('myOtherModule');
+</pre>
 
 # Unit Testing
 

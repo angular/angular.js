@@ -3,17 +3,20 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngNonBindable
+ * @restrict AC
  * @priority 1000
  *
  * @description
- * Sometimes it is necessary to write code which looks like bindings but which should be left alone
- * by angular. Use `ngNonBindable` to make angular ignore a chunk of HTML.
+ * The `ngNonBindable` directive tells Angular not to compile or bind the contents of the current
+ * DOM element. This is useful if the element contains what appears to be Angular directives and
+ * bindings but which should be ignored by Angular. This could be the case if you have a site that
+ * displays snippets of code, for instance.
  *
  * @element ANY
  *
  * @example
- * In this example there are two location where a simple binding (`{{}}`) is present, but the one
- * wrapped in `ngNonBindable` is left alone.
+ * In this example there are two locations where a simple interpolation binding (`{{}}`) is present,
+ * but the one wrapped in `ngNonBindable` is left alone.
  *
  * @example
     <doc:example>

@@ -36,18 +36,23 @@ describe('form', function() {
   });
 
 
-  it('should remove the widget when element removed', function() {
+  it('should remove form control references from the form when nested control is removed from the DOM', function() {
     doc = $compile(
       '<form name="myForm">' +
-        '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
+        '<input ng-if="inputPresent" name="alias" ng-model="value" store-model-ctrl/>' +
       '</form>')(scope);
+    scope.inputPresent = true;
+    scope.$digest();
 
     var form = scope.myForm;
     control.$setValidity('required', false);
     expect(form.alias).toBe(control);
     expect(form.$error.required).toEqual([control]);
 
-    doc.find('input').remove();
+    // remove nested control
+    scope.inputPresent = false;
+    scope.$apply();
+
     expect(form.$error.required).toBe(false);
     expect(form.alias).toBeUndefined();
   });
@@ -134,6 +139,18 @@ describe('form', function() {
     expect(widget.$dirty).toBe(false);
     expect(widget.$valid).toBe(true);
     expect(widget.$invalid).toBe(false);
+  });
+
+
+  it('should throw an exception if an input has name="hasOwnProperty"', function() {
+    doc = jqLite(
+      '<form name="form">'+
+        '<input name="hasOwnProperty" ng-model="some" />'+
+        '<input name="other" ng-model="someOther" />'+
+      '</form>');
+      expect(function() {
+	    $compile(doc)(scope);
+      }).toThrowMinErr('ng', 'badname');
   });
 
 
@@ -350,14 +367,15 @@ describe('form', function() {
     });
 
 
-    it('should deregister a input when its removed from DOM', function() {
+    it('should deregister a input when it is removed from DOM', function() {
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
-            '<input ng:model="modelA" name="inputA" required>' +
+            '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required>' +
           '</div>' +
         '</form>');
       $compile(doc)(scope);
+      scope.inputPresent = true;
       scope.$apply();
 
       var parent = scope.parent,
@@ -372,7 +390,10 @@ describe('form', function() {
       expect(doc.hasClass('ng-invalid-required')).toBe(true);
       expect(doc.find('div').hasClass('ng-invalid')).toBe(true);
       expect(doc.find('div').hasClass('ng-invalid-required')).toBe(true);
-      doc.find('input').remove(); //remove child
+
+      //remove child input
+      scope.inputPresent = false;
+      scope.$apply();
 
       expect(parent.$error.required).toBe(false);
       expect(child.$error.required).toBe(false);

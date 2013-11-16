@@ -132,7 +132,7 @@ function MyClass() {
 </pre>
 
 However, where does the serviceRegistry come from? if it is:
-* `new`-ed up, the the test has no chance to reset the services for testing
+* `new`-ed up, the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
 
@@ -259,7 +259,7 @@ Notice that the test is not only much shorter but it is easier to follow what is
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
 
 ## Filters
-{@link api/ng.$filter Filters} are functions which transform the data into user readable
+{@link api/ng.$filterProvider Filters} are functions which transform the data into user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 

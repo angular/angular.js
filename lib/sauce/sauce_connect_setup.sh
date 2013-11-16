@@ -15,15 +15,19 @@ set -e
 CONNECT_URL="http://saucelabs.com/downloads/Sauce-Connect-latest.zip"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="Sauce_Connect.zip"
-CONNECT_LOG="$CONNECT_DIR/log"
+
+CONNECT_LOG="$LOGS_DIR/sauce-connect"
+CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
+CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
 cd $CONNECT_DIR
-curl $CONNECT_URL > $CONNECT_DOWNLOAD 2> /dev/null
-unzip $CONNECT_DOWNLOAD
+curl $CONNECT_URL -o $CONNECT_DOWNLOAD 2> /dev/null 1> /dev/null
+unzip $CONNECT_DOWNLOAD > /dev/null
 rm $CONNECT_DOWNLOAD
 
+SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
 
 ARGS=""
@@ -36,6 +40,10 @@ if [ ! -z "$SAUCE_CONNECT_READY_FILE" ]; then
   ARGS="$ARGS --readyfile $SAUCE_CONNECT_READY_FILE"
 fi
 
-echo "Starting Sauce Connect in the background"
-echo "Logging into $CONNECT_LOG"
-java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY > $CONNECT_LOG &
+
+echo "Starting Sauce Connect in the background, logging into:"
+echo "  $CONNECT_LOG"
+echo "  $CONNECT_STDOUT"
+echo "  $CONNECT_STDERR"
+java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
+  --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &

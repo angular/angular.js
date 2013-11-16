@@ -55,6 +55,8 @@ writer.makeDir('build/docs/', true).then(function() {
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 
+  ngdoc.checkBrokenLinks(docs);
+
   writeTheRest(fileFutures);
 
   return Q.deep(fileFutures);

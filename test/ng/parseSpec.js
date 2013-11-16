@@ -1,7 +1,24 @@
 'use strict';
 
 describe('parser', function() {
+
+  beforeEach(function() {
+    // clear caches
+    getterFnCache = {};
+    promiseWarningCache = {};
+  });
+
+
   describe('lexer', function() {
+    var lex;
+
+    beforeEach(function () {
+      lex = function () {
+        var lexer = new Lexer({csp: false, unwrapPromises: false});
+        return lexer.lex.apply(lexer, arguments);
+      };
+    });
+
     it('should tokenize a string', function() {
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
       var i = 0;
@@ -189,7 +206,6 @@ describe('parser', function() {
       beforeEach(inject(function ($rootScope, $sniffer) {
         scope = $rootScope;
         $sniffer.csp = cspEnabled;
-        getterFnCache = {}; // clear cache
       }));
 
 
@@ -340,6 +356,26 @@ describe('parser', function() {
 
         expect(scope.$eval('watch', scope)).toBe(1);
         expect(scope.$eval('toString()', scope)).toBe('custom toString');
+      });
+
+      it('should not break if hasOwnProperty is referenced in an expression', function() {
+        scope.obj = { value: 1};
+        // By evaluating an expression that calls hasOwnProperty, the getterFnCache
+        // will store a property called hasOwnProperty.  This is effectively:
+        // getterFnCache['hasOwnProperty'] = null
+        scope.$eval('obj.hasOwnProperty("value")');
+        // If we rely on this property then evaluating any expression will fail
+        // because it is not able to find out if obj.value is there in the cache
+        expect(scope.$eval('obj.value')).toBe(1);
+      });
+
+      it('should not break if the expression is "hasOwnProperty"', function() {
+        scope.fooExp = 'barVal';
+        // By evaluating hasOwnProperty, the $parse cache will store a getter for
+        // the scope's own hasOwnProperty function, which will mess up future cache look ups.
+        // i.e. cache['hasOwnProperty'] = function(scope) { return scope.hasOwnProperty; }
+        scope.$eval('hasOwnProperty');
+        expect(scope.$eval('fooExp')).toBe('barVal');
       });
 
       it('should evaluate grouped expressions', function() {
@@ -555,100 +591,159 @@ describe('parser', function() {
       });
 
       describe('sandboxing', function() {
-        it('should NOT allow access to Function constructor in getter', function() {
-          expect(function() {
-            scope.$eval('{}.toString.constructor');
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor');
+        describe('Function constructor', function() {
+          it('should NOT allow access to Function constructor in getter', function() {
+            expect(function() {
+              scope.$eval('{}.toString.constructor');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor');
 
-          expect(function() {
-            scope.$eval('{}.toString.constructor("alert(1)")');
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor("alert(1)")');
+            expect(function() {
+              scope.$eval('{}.toString.constructor("alert(1)")');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor("alert(1)")');
 
-          expect(function() {
-            scope.$eval('[].toString.constructor.foo');
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: [].toString.constructor.foo');
+            expect(function() {
+              scope.$eval('[].toString.constructor.foo');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: [].toString.constructor.foo');
 
-          expect(function() {
-            scope.$eval('{}.toString["constructor"]');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]');
-          expect(function() {
-            scope.$eval('{}["toString"]["constructor"]');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}["toString"]["constructor"]');
+            expect(function() {
+              scope.$eval('{}.toString["constructor"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString["constructor"]');
+            expect(function() {
+              scope.$eval('{}["toString"]["constructor"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}["toString"]["constructor"]');
 
-          scope.a = [];
-          expect(function() {
-            scope.$eval('a.toString.constructor', scope);
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: a.toString.constructor');
-          expect(function() {
-            scope.$eval('a.toString["constructor"]', scope);
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: a.toString["constructor"]');
+            scope.a = [];
+            expect(function() {
+              scope.$eval('a.toString.constructor', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: a.toString.constructor');
+            expect(function() {
+              scope.$eval('a.toString["constructor"]', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: a.toString["constructor"]');
+          });
+
+          it('should NOT allow access to Function constructor in setter', function() {
+            expect(function() {
+              scope.$eval('{}.toString.constructor = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor = 1');
+
+            expect(function() {
+              scope.$eval('{}.toString.constructor.a = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor.a = 1');
+
+            expect(function() {
+              scope.$eval('{}.toString["constructor"]["constructor"] = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString["constructor"]["constructor"] = 1');
+
+
+            scope.key1 = "const";
+            scope.key2 = "ructor";
+            expect(function() {
+              scope.$eval('{}.toString[key1 + key2].foo = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                        'Expression: {}.toString[key1 + key2].foo = 1');
+
+            expect(function() {
+              scope.$eval('{}.toString["constructor"]["a"] = 1');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString["constructor"]["a"] = 1');
+
+            scope.a = [];
+            expect(function() {
+              scope.$eval('a.toString.constructor = 1', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: a.toString.constructor = 1');
+          });
+
+
+          it('should NOT allow access to Function constructor that has been aliased', function() {
+            scope.foo = { "bar": Function };
+            expect(function() {
+              scope.$eval('foo["bar"]');
+            }).toThrowMinErr(
+                    '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
+                    'Expression: foo["bar"]');
+
+          });
+
+
+          it('should NOT allow access to Function constructor in getter', function() {
+            expect(function() {
+              scope.$eval('{}.toString.constructor');
+            }).toThrowMinErr(
+                    '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
+                    'Expression: {}.toString.constructor');
+          });
         });
 
-        it('should NOT allow access to Function constructor in setter', function() {
-          expect(function() {
-            scope.$eval('{}.toString.constructor = 1');
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor = 1');
 
-          expect(function() {
-            scope.$eval('{}.toString.constructor.a = 1');
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString.constructor.a = 1');
+        describe('Window and $element/node', function() {
+          it('should NOT allow access to the Window or DOM when indexing', inject(function($window, $document) {
+            scope.wrap = {w: $window, d: $document};
 
-          expect(function() {
-            scope.$eval('{}.toString["constructor"]["constructor"] = 1');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]["constructor"] = 1');
+            expect(function() {
+              scope.$eval('wrap["w"]', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is ' +
+                    'disallowed! Expression: wrap["w"]');
+            expect(function() {
+              scope.$eval('wrap["d"]', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: wrap["d"]');
+          }));
 
+          it('should NOT allow access to the Window or DOM returned from a function', inject(function($window, $document) {
+            scope.getWin = valueFn($window);
+            scope.getDoc = valueFn($document);
 
-          scope.key1 = "const";
-          scope.key2 = "ructor";
-          expect(function() {
-            scope.$eval('{}.toString[key1 + key2].foo = 1');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                      'Expression: {}.toString[key1 + key2].foo = 1');
+            expect(function() {
+              scope.$eval('getWin()', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is ' +
+                    'disallowed! Expression: getWin()');
+            expect(function() {
+              scope.$eval('getDoc()', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: getDoc()');
+          }));
 
-          expect(function() {
-            scope.$eval('{}.toString["constructor"]["a"] = 1');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: {}.toString["constructor"]["a"] = 1');
-
-          scope.a = [];
-          expect(function() {
-            scope.$eval('a.toString.constructor = 1', scope);
-          }).toThrowMinErr(
-                  '$parse', 'isecfld', 'Referencing "constructor" field in Angular expressions is disallowed! ' +
-                  'Expression: a.toString.constructor = 1');
-        });
-
-
-        it('should NOT allow access to Function constructor that has been aliased', function() {
-          scope.foo = { "bar": Function };
-          expect(function() {
-            scope.$eval('foo["bar"]');
-          }).toThrowMinErr(
-                  '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
-                  'Expression: foo["bar"]');
-
+          it('should NOT allow calling functions on Window or DOM', inject(function($window, $document) {
+            scope.a = {b: { win: $window, doc: $document }};
+            expect(function() {
+              scope.$eval('a.b.win.alert(1)', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is ' +
+                    'disallowed! Expression: a.b.win.alert(1)');
+            expect(function() {
+              scope.$eval('a.b.doc.on("click")', scope);
+            }).toThrowMinErr(
+                    '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is ' +
+                    'disallowed! Expression: a.b.doc.on("click")');
+          }));
         });
       });
 
@@ -717,17 +812,6 @@ describe('parser', function() {
       });
 
 
-      it('should call the function once when it is not part of the context', function() {
-        var count = 0;
-        scope.fn = function() {
-          count++;
-          return function() { return 'lucas'; };
-        };
-        expect(scope.$eval('fn()()')).toBe('lucas');
-        expect(count).toBe(1);
-      });
-
-
       it('should call the function once when it is part of the context on assignments', function() {
         var count = 0;
         var element = {};
@@ -766,7 +850,7 @@ describe('parser', function() {
       });
 
 
-      it('should call the function once when it is part of the context on array lookup function', function() {
+      it('should call the function once when it is part of the context on property lookup function', function() {
         var count = 0;
         var element = {name: {anotherFn: function() { return 'lucas';} } };
         scope.fn = function() {
@@ -788,263 +872,6 @@ describe('parser', function() {
         expect(scope.$eval('element[fn()].name = "lucas"')).toBe('lucas');
         expect(scope.element[0].name).toBe('lucas');
         expect(count).toBe(1);
-      });
-
-
-      describe('promises', function() {
-        var deferred, promise, q;
-
-        beforeEach(inject(function($q) {
-          q = $q;
-          deferred = q.defer();
-          promise = deferred.promise;
-        }));
-
-        describe('{{promise}}', function() {
-          it('should evaluated resolved promise and get its value', function() {
-            deferred.resolve('hello!');
-            scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe('hello!');
-          });
-
-
-          it('should evaluated rejected promise and ignore the rejection reason', function() {
-            deferred.reject('sorry');
-            scope.greeting = promise;
-            expect(scope.$eval('gretting')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
-          });
-
-
-          it('should evaluate a promise and eventualy get its value', function() {
-            scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
-
-            deferred.resolve('hello!');
-            expect(scope.$eval('greeting')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe('hello!');
-          });
-
-
-          it('should evaluate a promise and eventualy ignore its rejection', function() {
-            scope.greeting = promise;
-            expect(scope.$eval('greeting')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
-
-            deferred.reject('sorry');
-            expect(scope.$eval('greeting')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greeting')).toBe(undefined);
-          });
-
-          it('should evaluate a function call returning a promise and eventually get its return value', function() {
-            scope.greetingFn = function() { return promise; };
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-
-            deferred.resolve('hello!');
-            expect(scope.$eval('greetingFn()')).toBe(undefined);
-            scope.$digest();
-            expect(scope.$eval('greetingFn()')).toBe('hello!');
-          });
-
-          describe('assignment into promises', function() {
-            // This behavior is analogous to assignments to non-promise values
-            // that are lazily set on the scope.
-            it('should evaluate a resolved object promise and set its value', inject(function($parse) {
-              scope.person = promise;
-              deferred.resolve({'name': 'Bill Gates'});
-
-              var getter = $parse('person.name');
-              expect(getter(scope)).toBe(undefined);
-
-              scope.$digest();
-              expect(getter(scope)).toBe('Bill Gates');
-              getter.assign(scope, 'Warren Buffet');
-              expect(getter(scope)).toBe('Warren Buffet');
-            }));
-
-
-            it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {
-              scope.greeting = promise;
-              deferred.resolve('Salut!');
-
-              var getter = $parse('greeting');
-              expect(getter(scope)).toBe(undefined);
-
-              scope.$digest();
-              expect(getter(scope)).toBe('Salut!');
-
-              getter.assign(scope, 'Bonjour');
-              expect(getter(scope)).toBe('Bonjour');
-            }));
-
-
-            it('should evaluate an unresolved promise and set and remember its value', inject(function($parse) {
-              scope.person = promise;
-
-              var getter = $parse('person.name');
-              expect(getter(scope)).toBe(undefined);
-
-              scope.$digest();
-              expect(getter(scope)).toBe(undefined);
-
-              getter.assign(scope, 'Bonjour');
-              scope.$digest();
-
-              expect(getter(scope)).toBe('Bonjour');
-
-              var c1Getter = $parse('person.A.B.C1');
-              scope.$digest();
-              expect(c1Getter(scope)).toBe(undefined);
-              c1Getter.assign(scope, 'c1_value');
-              scope.$digest();
-              expect(c1Getter(scope)).toBe('c1_value');
-
-              // Set another property on the person.A.B
-              var c2Getter = $parse('person.A.B.C2');
-              scope.$digest();
-              expect(c2Getter(scope)).toBe(undefined);
-              c2Getter.assign(scope, 'c2_value');
-              scope.$digest();
-              expect(c2Getter(scope)).toBe('c2_value');
-
-              // c1 should be unchanged.
-              expect($parse('person.A')(scope)).toEqual(
-                  {B: {C1: 'c1_value', C2: 'c2_value'}});
-            }));
-
-
-            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
-               inject(function($parse) {
-              scope.person = promise;
-              var c1Getter = $parse('person.A.B.C1');
-              c1Getter.assign(scope, 'c1_value');
-              // resolving the promise should update the tree.
-              deferred.resolve({A: {B: {C1: 'resolved_c1'}}});
-              scope.$digest();
-              expect(c1Getter(scope)).toEqual('resolved_c1');
-            }));
-          });
-        });
-
-        describe('dereferencing', function() {
-          it('should evaluate and dereference properties leading to and from a promise', function() {
-            scope.obj = {greeting: promise};
-            expect(scope.$eval('obj.greeting')).toBe(undefined);
-            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('obj.greeting')).toBe(undefined);
-            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
-
-            deferred.resolve({polite: 'Good morning!'});
-            scope.$digest();
-            expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
-            expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
-          });
-
-          it('should evaluate and dereference properties leading to and from a promise via bracket ' +
-              'notation', function() {
-            scope.obj = {greeting: promise};
-            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
-
-            deferred.resolve({polite: 'Good morning!'});
-            scope.$digest();
-            expect(scope.$eval('obj["greeting"]')).toEqual({polite: 'Good morning!'});
-            expect(scope.$eval('obj["greeting"]["polite"]')).toBe('Good morning!');
-          });
-
-
-          it('should evaluate and dereference array references leading to and from a promise',
-              function() {
-            scope.greetings = [promise];
-            expect(scope.$eval('greetings[0]')).toBe(undefined);
-            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('greetings[0]')).toBe(undefined);
-            expect(scope.$eval('greetings[0][0]')).toBe(undefined);
-
-            deferred.resolve(['Hi!', 'Cau!']);
-            scope.$digest();
-            expect(scope.$eval('greetings[0]')).toEqual(['Hi!', 'Cau!']);
-            expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
-          });
-
-
-          it('should evaluate and dereference promises used as function arguments', function() {
-            scope.greet = function(name) { return 'Hi ' + name + '!'; };
-            scope.name = promise;
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-            scope.$digest();
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-            deferred.resolve('Veronica');
-            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-            scope.$digest();
-            expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
-          });
-
-
-          it('should evaluate and dereference promises used as array indexes', function() {
-            scope.childIndex = promise;
-            scope.kids = ['Adam', 'Veronica', 'Elisa'];
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-            deferred.resolve(1);
-            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
-          });
-
-
-          it('should evaluate and dereference promises used as keys in bracket notation', function() {
-            scope.childKey = promise;
-            scope.kids = {'a': 'Adam', 'v': 'Veronica', 'e': 'Elisa'};
-
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-            deferred.resolve('v');
-            expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-            scope.$digest();
-            expect(scope.$eval('kids[childKey]')).toBe('Veronica');
-          });
-
-
-          it('should not mess with the promise if it was not directly evaluated', function() {
-            scope.obj = {greeting: promise, username: 'hi'};
-            var obj = scope.$eval('obj');
-            expect(obj.username).toEqual('hi');
-            expect(typeof obj.greeting.then).toBe('function');
-          });
-        });
       });
 
 
@@ -1138,6 +965,371 @@ describe('parser', function() {
           expect($parse('foo(1, 2, 3)').constant).toBe(false);
           expect($parse('"name" + id').constant).toBe(false);
         }));
+      });
+    });
+  });
+
+
+  describe('promises', function() {
+
+    var deferred, promise, q;
+
+    describe('unwrapPromises setting', function () {
+
+      beforeEach(inject(function($rootScope, $q) {
+        scope = $rootScope;
+
+        $rootScope.$apply(function() {
+          deferred = $q.defer();
+          deferred.resolve('Bobo');
+          promise = deferred.promise;
+        });
+      }));
+
+      it('should not unwrap promises by default', inject(function ($parse) {
+        scope.person = promise;
+        scope.things = {person: promise};
+        scope.getPerson = function () { return promise; };
+
+        var getter = $parse('person');
+        var propGetter = $parse('things.person');
+        var fnGetter = $parse('getPerson()');
+
+        expect(getter(scope)).toBe(promise);
+        expect(propGetter(scope)).toBe(promise);
+        expect(fnGetter(scope)).toBe(promise);
+      }));
+    });
+
+
+    forEach([true, false], function(cspEnabled) {
+
+      describe('promise logging (csp:' + cspEnabled + ')', function() {
+
+        var $log;
+        var PROMISE_WARNING_REGEXP = /\[\$parse\] Promise found in the expression `[^`]+`. Automatic unwrapping of promises in Angular expressions is deprecated\./;
+
+        beforeEach(module(function($parseProvider) {
+          $parseProvider.unwrapPromises(true);
+        }));
+
+        beforeEach(inject(function($rootScope, $q, _$log_) {
+          scope = $rootScope;
+
+          $rootScope.$apply(function() {
+            deferred = $q.defer();
+            deferred.resolve('Bobo');
+            promise = deferred.promise;
+          });
+
+          $log = _$log_;
+        }));
+
+        it('should log warnings by default', function() {
+          scope.person = promise;
+          scope.$eval('person');
+          expect($log.warn.logs.pop()).toEqual(['[$parse] Promise found in the expression `person`. ' +
+              'Automatic unwrapping of promises in Angular expressions is deprecated.']);
+        });
+
+
+        it('should log warnings for deep promises', function() {
+          scope.car = {wheel: {disc: promise}};
+          scope.$eval('car.wheel.disc.pad');
+          expect($log.warn.logs.pop()).toMatch(PROMISE_WARNING_REGEXP);
+        });
+
+
+        it('should log warnings for setters', function() {
+          scope.person = promise;
+          scope.$eval('person.name = "Bubu"');
+          expect($log.warn.logs.pop()).toMatch(PROMISE_WARNING_REGEXP);
+        });
+
+
+        it('should log only a single warning for each expression', function() {
+          scope.person1 = promise;
+          scope.person2 = promise;
+
+          scope.$eval('person1');
+          scope.$eval('person1');
+          expect($log.warn.logs.pop()).toMatch(/`person1`/);
+          expect($log.warn.logs).toEqual([]);
+
+          scope.$eval('person1');
+          scope.$eval('person2');
+          scope.$eval('person1');
+          scope.$eval('person2');
+          expect($log.warn.logs.pop()).toMatch(/`person2`/);
+          expect($log.warn.logs).toEqual([]);
+        });
+
+
+        it('should log warning for complex expressions', function() {
+          scope.person1 = promise;
+          scope.person2 = promise;
+
+          scope.$eval('person1 + person2');
+          expect($log.warn.logs.pop()).toMatch(/`person1 \+ person2`/);
+          expect($log.warn.logs).toEqual([]);
+        });
+      });
+    });
+
+
+    forEach([true, false], function(cspEnabled) {
+
+      describe('csp ' + cspEnabled, function() {
+
+        beforeEach(module(function($parseProvider) {
+          $parseProvider.unwrapPromises(true);
+          $parseProvider.logPromiseWarnings(false);
+        }));
+
+
+        beforeEach(inject(function($rootScope, $sniffer, $q) {
+          scope = $rootScope;
+          $sniffer.csp = cspEnabled;
+
+          q = $q;
+          deferred = q.defer();
+          promise = deferred.promise;
+        }));
+
+
+        describe('{{promise}}', function() {
+          it('should evaluated resolved promise and get its value', function() {
+            deferred.resolve('hello!');
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe('hello!');
+          });
+
+
+          it('should evaluated rejected promise and ignore the rejection reason', function() {
+            deferred.reject('sorry');
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+          });
+
+
+          it('should evaluate a promise and eventualy get its value', function() {
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            deferred.resolve('hello!');
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe('hello!');
+          });
+
+
+          it('should evaluate a promise and eventualy ignore its rejection', function() {
+            scope.greeting = promise;
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+
+            deferred.reject('sorry');
+            expect(scope.$eval('greeting')).toBe(undefined);
+            scope.$digest();
+            expect(scope.$eval('greeting')).toBe(undefined);
+          });
+
+
+          describe('assignment into promises', function() {
+            // This behavior is analogous to assignments to non-promise values
+            // that are lazily set on the scope.
+            it('should evaluate a resolved object promise and set its value', inject(function($parse) {
+              scope.person = promise;
+              deferred.resolve({'name': 'Bill Gates'});
+
+              var getter = $parse('person.name', { unwrapPromises: true });
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe('Bill Gates');
+              getter.assign(scope, 'Warren Buffet');
+              expect(getter(scope)).toBe('Warren Buffet');
+            }));
+
+
+            it('should evaluate a resolved primitive type promise and set its value', inject(function($parse) {
+              scope.greeting = promise;
+              deferred.resolve('Salut!');
+
+              var getter = $parse('greeting', { unwrapPromises: true });
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe('Salut!');
+
+              getter.assign(scope, 'Bonjour');
+              expect(getter(scope)).toBe('Bonjour');
+            }));
+
+
+            it('should evaluate an unresolved promise and set and remember its value', inject(function($parse) {
+              scope.person = promise;
+
+              var getter = $parse('person.name', { unwrapPromises: true });
+              expect(getter(scope)).toBe(undefined);
+
+              scope.$digest();
+              expect(getter(scope)).toBe(undefined);
+
+              getter.assign(scope, 'Bonjour');
+              scope.$digest();
+
+              expect(getter(scope)).toBe('Bonjour');
+
+              var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });
+              scope.$digest();
+              expect(c1Getter(scope)).toBe(undefined);
+              c1Getter.assign(scope, 'c1_value');
+              scope.$digest();
+              expect(c1Getter(scope)).toBe('c1_value');
+
+              // Set another property on the person.A.B
+              var c2Getter = $parse('person.A.B.C2', { unwrapPromises: true });
+              scope.$digest();
+              expect(c2Getter(scope)).toBe(undefined);
+              c2Getter.assign(scope, 'c2_value');
+              scope.$digest();
+              expect(c2Getter(scope)).toBe('c2_value');
+
+              // c1 should be unchanged.
+              expect($parse('person.A', { unwrapPromises: true })(scope)).toEqual(
+                  {B: {C1: 'c1_value', C2: 'c2_value'}});
+            }));
+
+
+            it('should evaluate a resolved promise and overwrite the previous set value in the absense of the getter',
+                inject(function($parse) {
+              scope.person = promise;
+              var c1Getter = $parse('person.A.B.C1', { unwrapPromises: true });
+              c1Getter.assign(scope, 'c1_value');
+              // resolving the promise should update the tree.
+              deferred.resolve({A: {B: {C1: 'resolved_c1'}}});
+              scope.$digest();
+              expect(c1Getter(scope)).toEqual('resolved_c1');
+            }));
+          });
+        });
+
+        describe('dereferencing', function() {
+          it('should evaluate and dereference properties leading to and from a promise', function() {
+            scope.obj = {greeting: promise};
+            expect(scope.$eval('obj.greeting')).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('obj.greeting')).toBe(undefined);
+            expect(scope.$eval('obj.greeting.polite')).toBe(undefined);
+
+            deferred.resolve({polite: 'Good morning!'});
+            scope.$digest();
+            expect(scope.$eval('obj.greeting')).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj.greeting.polite')).toBe('Good morning!');
+          });
+
+          it('should evaluate and dereference properties leading to and from a promise via bracket ' +
+              'notation', function() {
+            scope.obj = {greeting: promise};
+            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('obj["greeting"]')).toBe(undefined);
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe(undefined);
+
+            deferred.resolve({polite: 'Good morning!'});
+            scope.$digest();
+            expect(scope.$eval('obj["greeting"]')).toEqual({polite: 'Good morning!'});
+            expect(scope.$eval('obj["greeting"]["polite"]')).toBe('Good morning!');
+          });
+
+
+          it('should evaluate and dereference array references leading to and from a promise',
+              function() {
+                scope.greetings = [promise];
+                expect(scope.$eval('greetings[0]')).toBe(undefined);
+                expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+
+                scope.$digest();
+                expect(scope.$eval('greetings[0]')).toBe(undefined);
+                expect(scope.$eval('greetings[0][0]')).toBe(undefined);
+
+                deferred.resolve(['Hi!', 'Cau!']);
+                scope.$digest();
+                expect(scope.$eval('greetings[0]')).toEqual(['Hi!', 'Cau!']);
+                expect(scope.$eval('greetings[0][0]')).toBe('Hi!');
+              });
+
+
+          it('should evaluate and dereference promises used as function arguments', function() {
+            scope.greet = function(name) { return 'Hi ' + name + '!'; };
+            scope.name = promise;
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            scope.$digest();
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            deferred.resolve('Veronica');
+            expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+
+            scope.$digest();
+            expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
+          });
+
+
+          it('should evaluate and dereference promises used as array indexes', function() {
+            scope.childIndex = promise;
+            scope.kids = ['Adam', 'Veronica', 'Elisa'];
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            deferred.resolve(1);
+            expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
+          });
+
+
+          it('should evaluate and dereference promises used as keys in bracket notation', function() {
+            scope.childKey = promise;
+            scope.kids = {'a': 'Adam', 'v': 'Veronica', 'e': 'Elisa'};
+
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            deferred.resolve('v');
+            expect(scope.$eval('kids[childKey]')).toBe(undefined);
+
+            scope.$digest();
+            expect(scope.$eval('kids[childKey]')).toBe('Veronica');
+          });
+
+
+          it('should not mess with the promise if it was not directly evaluated', function() {
+            scope.obj = {greeting: promise, username: 'hi'};
+            var obj = scope.$eval('obj');
+            expect(obj.username).toEqual('hi');
+            expect(typeof obj.greeting.then).toBe('function');
+          });
+        });
       });
     });
   });

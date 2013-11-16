@@ -45,7 +45,7 @@ our main `phonecat` module.
 __`app/js/app.js`:__
 <pre>
 ...
-angular.module('phonecat', ['phonecatFilters']).
+angular.module('phonecatApp', ['phonecatFilters']).
 ...
 </pre>
 
@@ -94,7 +94,6 @@ describe('filter', function() {
 
   beforeEach(module('phonecatFilters'));
 
-
   describe('checkmark', function() {
 
     it('should convert boolean values to unicode checkmark or cross',
@@ -106,8 +105,12 @@ describe('filter', function() {
 });
 </pre>
 
-Note that you need to configure our test injector with the `phonecatFilters` module before any of
-our filter tests execute.
+We must call `beforeEach(module('phonecatFilters'))` before any of
+our filter tests execute. This call loads our `phonecatFilters` module into the injector
+for this test run.
+
+Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
+access to the filter that we want to test.  See {@link api/angular.mock.inject angular.mock.inject()}.
 
 You should now see the following output in the Karma tab:
 
@@ -116,7 +119,7 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* Let's experiment with some of the {@link api/ng.$filter built-in Angular filters} and add the
+* Let's experiment with some of the {@link api/ng.$filterProvider built-in Angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`

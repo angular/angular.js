@@ -88,9 +88,9 @@ describe('angular', function() {
       expect(dst.a).not.toBe(src.a);
     });
 
-    it("should deeply copy an object into an existing object", function() {
+    it("should deeply copy an object into a non-existing object", function() {
       var src = {a:{name:"value"}};
-      var dst = copy(src, dst);
+      var dst = copy(src, undefined);
       expect(src).toEqual({a:{name:"value"}});
       expect(dst).toEqual(src);
       expect(dst).not.toBe(src);
@@ -348,6 +348,46 @@ describe('angular', function() {
   });
 
 
+  describe('csp', function() {
+    var originalSecurityPolicy;
+
+    beforeEach(function() {
+      originalSecurityPolicy = document.securityPolicy;
+    });
+
+    afterEach(function() {
+      document.securityPolicy = originalSecurityPolicy;
+    });
+
+
+    it('should return the false when CSP is not enabled (the default)', function() {
+      expect(csp()).toBe(false);
+    });
+
+
+    it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
+      document.securityPolicy = {isActive: true};
+      expect(csp()).toBe(true);
+    });
+
+    it('should return the true when CSP is enabled manually via [ng-csp]', function() {
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[ng-csp]') return {};
+      });
+      expect(csp()).toBe(true);
+    });
+
+
+    it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
+      spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[data-ng-csp]') return {};
+      });
+      expect(csp()).toBe(true);
+      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');
+    });
+  });
+
+
   describe('parseKeyValue', function() {
     it('should parse a string into key-value pairs', function() {
       expect(parseKeyValue('')).toEqual({});
@@ -417,11 +457,25 @@ describe('angular', function() {
     });
 
 
+    it('should not break if obj is an array we override hasOwnProperty', function() {
+      var obj = [];
+      obj[0] = 1;
+      obj[1] = 2;
+      obj.hasOwnProperty = null;
+      var log = [];
+      forEach(obj, function(value, key) {
+        log.push(key + ':' + value);
+      });
+      expect(log).toEqual(['0:1', '1:2']);
+    });
+
+
+
     it('should handle JQLite and jQuery objects like arrays', function() {
       var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
           log = [];
 
-      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML)});
+      forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
     });
 
@@ -459,6 +513,13 @@ describe('angular', function() {
 
       forEach(args, function(value, key) { log.push(key + ':' + value)});
       expect(log).toEqual(['0:a', '1:b', '2:c']);
+    });
+
+    it('should handle string values like arrays', function() {
+      var log = [];
+
+      forEach('bar', function(value, key) { log.push(key + ':' + value)});
+      expect(log).toEqual(['0:b', '1:a', '2:r']);
     });
 
 
@@ -1001,6 +1062,21 @@ describe('angular', function() {
     it('should serialize undefined as undefined', function() {
       expect(toJson(undefined)).toEqual(undefined);
     });
+  });
+
+  describe('msie UA parsing', function() {
+    if (/ Trident\/.*; rv:/.test(window.navigator.userAgent)) {
+      it('should fail when the Trident and the rv versions disagree for IE11+', function() {
+        // When this test fails, we can think about whether we want to use the version from the
+        // Trident token in the UA string or stick with the version from rv: as we currently do.
+        // Refer https://github.com/angular/angular.js/pull/3758#issuecomment-23529245 for the
+        // discussion.
+        var UA = window.navigator.userAgent;
+        var tridentVersion = parseInt((/Trident\/(\d+)/.exec(UA) || [])[1], 10) + 4;
+        var rvVersion = parseInt((/Trident\/.*; rv:(\d+)/.exec(UA) || [])[1], 10);
+        expect(tridentVersion).toBe(rvVersion);
+      });
+    }
   });
 
 });

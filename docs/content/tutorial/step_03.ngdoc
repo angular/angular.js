@@ -55,7 +55,7 @@ __`app/index.html`:__
 </pre>
 
 We added a standard HTML `<input>` tag and used Angular's
-{@link api/ng.filter:filter $filter} function to process the input for the
+{@link api/ng.filter:filter filter} function to process the input for the
 {@link api/ng.directive:ngRepeat ngRepeat} directive.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
@@ -69,7 +69,7 @@ available as a filter input in the list repeater (`phone in phones | filter:`__`
 changes to the data model cause the repeater's input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.
 
-      <img  class="diagram" src="img/tutorial/tutorial_03.png">
+<img  class="diagram" src="img/tutorial/tutorial_03.png">
 
 * Use of the `filter` filter: The {@link api/ng.filter:filter filter} function uses the
 `query` value to create a new array that contains only those records that match the `query`.
@@ -126,6 +126,9 @@ Previously we've seen how Karma can be used to execute unit tests. Well, it can 
 end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests are slow, so unlike
 with unit tests, Karma will exit after the test run and will not automatically rerun the test
 suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
+
+Note: You must ensure you've installed karma-ng-scenario prior to running the `e2e-test.sh` script.
+You can do this by issuing `npm install karma-ng-scenario` into your terminal.
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it

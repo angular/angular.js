@@ -64,14 +64,16 @@ describe('ngInclude', function() {
   }));
 
 
-  it('should NOT use untrusted expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
+  it('should NOT use untrusted URL expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
     element = jqLite('<ng:include src="url"></ng:include>');
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
-    $rootScope.url = 'myUrl';
-    expect($rootScope.$digest).toThrow();
+    $rootScope.url = 'http://example.com/myUrl';
+    expect(function() { $rootScope.$digest(); }).toThrowMinErr(
+        '$sce', 'insecurl',
+        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
     jqLite(document.body).html('');
   }));
 
@@ -82,10 +84,13 @@ describe('ngInclude', function() {
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
-    $rootScope.url = $sce.trustAsUrl('myUrl');
-    expect($rootScope.$digest).toThrow();
+    $rootScope.url = $sce.trustAsUrl('http://example.com/myUrl');
+    expect(function() { $rootScope.$digest(); }).toThrowMinErr(
+        '$sce', 'insecurl',
+        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
     jqLite(document.body).html('');
   }));
+
 
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
@@ -280,33 +285,34 @@ describe('ngInclude', function() {
     dealoc(element);
   }));
 
-  it('should compile only the inner content once', function() {
-    var log = [];
 
-    module(function($compileProvider) {
-      $compileProvider.directive('compileLog', function() {
-        return {
-          compile: function() {
-            log.push('compile');
-          }
-        };
-      });
-    });
+  it('should not break attribute bindings on the same element', inject(function($compile, $rootScope, $httpBackend) {
+    // regression #3793
 
-    inject(function($compile, $rootScope, $templateCache) {
-      $templateCache.put('tpl.html', [200, '<div compile-log>123</div>', {}]);
-      element = $compile('<div><div ng-include="exp"></div></div>')($rootScope);
+    element = $compile('<div><span foo="#/{{hrefUrl}}" ng:include="includeUrl"></span></div>')($rootScope);
+    $httpBackend.expect('GET', 'url1').respond('template text 1');
+    $rootScope.hrefUrl = 'fooUrl1';
+    $rootScope.includeUrl = 'url1';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 1');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl1');
 
-      $rootScope.exp = 'tpl.html';
-      $rootScope.$digest();
+    $httpBackend.expect('GET', 'url2').respond('template text 2');
+    $rootScope.includeUrl = 'url2';
+    $rootScope.$digest();
+    $httpBackend.flush();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl1');
 
-      expect(element.text()).toBe('123');
-      expect(log).toEqual(['compile']);
-    });
-  });
+    $rootScope.hrefUrl = 'fooUrl2';
+    $rootScope.$digest();
+    expect(element.text()).toBe('template text 2');
+    expect(element.find('span').attr('foo')).toBe('#/fooUrl2');
+  }));
 
 
-  describe('autoscoll', function() {
+  describe('autoscroll', function() {
     var autoScrollSpy;
 
     function spyOnAnchorScroll() {
@@ -322,33 +328,58 @@ describe('ngInclude', function() {
       };
     }
 
-    function changeTplAndValueTo(template, value) {
-      return function($rootScope, $browser) {
-        $rootScope.$apply(function() {
-          $rootScope.tpl = template;
-          $rootScope.value = value;
-        });
-      };
-    }
-
-    beforeEach(module(spyOnAnchorScroll()));
+    beforeEach(module(spyOnAnchorScroll(), 'mock.animate'));
     beforeEach(inject(
         putIntoCache('template.html', 'CONTENT'),
         putIntoCache('another.html', 'CONTENT')));
 
-
     it('should call $anchorScroll if autoscroll attribute is present', inject(
         compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
-        changeTplAndValueTo('template.html'), function() {
+        function($rootScope, $animate, $timeout) {
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+      });
+
+      expect(autoScrollSpy).not.toHaveBeenCalled();
+      $animate.flushNext('enter');
+      $timeout.flush();
+
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
 
-    it('should call $anchorScroll if autoscroll evaluates to true', inject(
-        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
-        changeTplAndValueTo('template.html', true),
-        changeTplAndValueTo('another.html', 'some-string'),
-        changeTplAndValueTo('template.html', 100), function() {
+    it('should call $anchorScroll if autoscroll evaluates to true',
+      inject(function($rootScope, $compile, $animate, $timeout) {
+
+      element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = true;
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'another.html';
+        $rootScope.value = 'some-string';
+      });
+
+      $animate.flushNext('leave');
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function() {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = 100;
+      });
+
+      $animate.flushNext('leave');
+      $animate.flushNext('enter');
+      $timeout.flush();
+
       expect(autoScrollSpy).toHaveBeenCalled();
       expect(autoScrollSpy.callCount).toBe(3);
     }));
@@ -356,18 +387,85 @@ describe('ngInclude', function() {
 
     it('should not call $anchorScroll if autoscroll attribute is not present', inject(
         compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
-        changeTplAndValueTo('template.html'), function() {
+        function($rootScope, $animate, $timeout) {
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
 
-    it('should not call $anchorScroll if autoscroll evaluates to false', inject(
-        compileAndLink('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>'),
-        changeTplAndValueTo('template.html', false),
-        changeTplAndValueTo('template.html', undefined),
-        changeTplAndValueTo('template.html', null), function() {
+    it('should not call $anchorScroll if autoscroll evaluates to false',
+      inject(function($rootScope, $compile, $animate, $timeout) {
+
+      element = $compile('<div><ng:include src="tpl" autoscroll="value"></ng:include></div>')($rootScope);
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = false;
+      });
+
+      $animate.flushNext('enter');
+      $timeout.flush();
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = undefined;
+      });
+
+      $rootScope.$apply(function () {
+        $rootScope.tpl = 'template.html';
+        $rootScope.value = null;
+      });
+
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
+
+    it('should only call $anchorScroll after the "enter" animation completes', inject(
+        compileAndLink('<div><ng:include src="tpl" autoscroll></ng:include></div>'),
+        function($rootScope, $animate, $timeout) {
+          expect(autoScrollSpy).not.toHaveBeenCalled();
+
+          $rootScope.$apply("tpl = 'template.html'");
+          $animate.flushNext('enter');
+          $timeout.flush();
+
+          expect(autoScrollSpy).toHaveBeenCalledOnce();
+    }));
+  });
+});
+
+describe('ngInclude and transcludes', function() {
+  it('should allow access to directive controller from children when used in a replace template', function() {
+    var controller;
+    module(function($compileProvider) {
+      var directive = $compileProvider.directive;
+      directive('template', valueFn({
+        template: '<div ng-include="\'include.html\'"></div>',
+        replace: true,
+        controller: function() {
+          this.flag = true;
+        }
+      }));
+      directive('test', valueFn({
+        require: '^template',
+        link: function(scope, el, attr, ctrl) {
+          controller = ctrl;
+        }
+      }));
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('<div><div test></div></div>');
+      var element = $compile('<div><div template></div></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(controller.flag).toBe(true);
+      dealoc(element);
+    });
   });
 });
 

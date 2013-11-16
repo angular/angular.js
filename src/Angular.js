@@ -1,16 +1,90 @@
 'use strict';
 
-////////////////////////////////////
+/* We need to tell jshint what variables are being exported */
+/* global
+    -angular,
+    -msie,
+    -jqLite,
+    -jQuery,
+    -slice,
+    -push,
+    -toString,
+    -ngMinErr,
+    -_angular,
+    -angularModule,
+    -nodeName_,
+    -uid,
 
-/**
- * hasOwnProperty may be overwritten by a property of the same name, or entirely
- * absent from an object that does not inherit Object.prototype; this copy is
- * used instead
- */
-var hasOwnPropertyFn = Object.prototype.hasOwnProperty;
-var hasOwnPropertyLocal = function(obj, key) {
-  return hasOwnPropertyFn.call(obj, key);
-};
+    -lowercase,
+    -uppercase,
+    -manualLowercase,
+    -manualUppercase,
+    -nodeName_,
+    -isArrayLike,
+    -forEach,
+    -sortedKeys,
+    -forEachSorted,
+    -reverseParams,
+    -nextUid,
+    -setHashKey,
+    -extend,
+    -int,
+    -inherit,
+    -noop,
+    -identity,
+    -valueFn,
+    -isUndefined,
+    -isDefined,
+    -isObject,
+    -isString,
+    -isNumber,
+    -isDate,
+    -isArray,
+    -isFunction,
+    -isRegExp,
+    -isWindow,
+    -isScope,
+    -isFile,
+    -isBoolean,
+    -trim,
+    -isElement,
+    -makeMap,
+    -map,
+    -size,
+    -includes,
+    -indexOf,
+    -arrayRemove,
+    -isLeafNode,
+    -copy,
+    -shallowCopy,
+    -equals,
+    -csp,
+    -concat,
+    -sliceArgs,
+    -bind,
+    -toJsonReplacer,
+    -toJson,
+    -fromJson,
+    -toBoolean,
+    -startingTag,
+    -tryDecodeURIComponent,
+    -parseKeyValue,
+    -toKeyValue,
+    -encodeUriSegment,
+    -encodeUriQuery,
+    -angularInit,
+    -bootstrap,
+    -snake_case,
+    -bindJQuery,
+    -assertArg,
+    -assertArgFn,
+    -assertNotHasOwnProperty,
+    -getter,
+    -getBlockElements
+
+*/
+
+////////////////////////////////////
 
 /**
  * @ngdoc function
@@ -37,11 +111,13 @@ var uppercase = function(string){return isString(string) ? string.toUpperCase() 
 
 
 var manualLowercase = function(s) {
+  /* jshint bitwise: false */
   return isString(s)
       ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
 };
 var manualUppercase = function(s) {
+  /* jshint bitwise: false */
   return isString(s)
       ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
@@ -58,7 +134,7 @@ if ('i' !== 'I'.toLowerCase()) {
 
 
 var /** holds major version number for IE or NaN for real browsers */
-    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
+    msie,
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -75,24 +151,34 @@ var /** holds major version number for IE or NaN for real browsers */
     uid               = ['0', '0', '0'];
 
 /**
+ * IE 11 changed the format of the UserAgent string.
+ * See http://msdn.microsoft.com/en-us/library/ms537503.aspx
+ */
+msie = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
+if (isNaN(msie)) {
+  msie = int((/trident\/.*; rv:(\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]);
+}
+
+
+/**
  * @private
  * @param {*} obj
- * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments, ...)
+ * @return {boolean} Returns true if `obj` is an array or array-like object (NodeList, Arguments,
+ *                   String ...)
  */
 function isArrayLike(obj) {
   if (obj == null || isWindow(obj)) {
     return false;
   }
-  
+
   var length = obj.length;
 
   if (obj.nodeType === 1 && length) {
     return true;
   }
 
-  return isArray(obj) || !isFunction(obj) && (
-    length === 0 || typeof length === "number" && length > 0 && (length - 1) in obj
-  );
+  return isString(obj) || isArray(obj) || length === 0 ||
+         typeof length === 'number' && length > 0 && (length - 1) in obj;
 }
 
 /**
@@ -172,7 +258,7 @@ function forEachSorted(obj, iterator, context) {
  * @returns {function(*, string)}
  */
 function reverseParams(iteratorFn) {
-  return function(value, key) { iteratorFn(key, value) };
+  return function(value, key) { iteratorFn(key, value); };
 }
 
 /**
@@ -531,17 +617,17 @@ function map(obj, iterator, context) {
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
  */
 function size(obj, ownPropsOnly) {
-  var size = 0, key;
+  var count = 0, key;
 
   if (isArray(obj) || isString(obj)) {
     return obj.length;
   } else if (isObject(obj)){
     for (key in obj)
       if (!ownPropsOnly || obj.hasOwnProperty(key))
-        size++;
+        count++;
   }
 
-  return size;
+  return count;
 }
 
 
@@ -588,20 +674,55 @@ function isLeafNode (node) {
  * * If no destination is supplied, a copy of the object or array is created.
  * * If a destination is provided, all of its elements (for array) or properties (for objects)
  *   are deleted and then all elements/properties from the source are copied to it.
- * * If  `source` is not an object or array, `source` is returned.
- *
- * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
+ * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
+ * * If `source` is identical to 'destination' an exception will be thrown.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
  * @param {(Object|Array)=} destination Destination into which the source is copied. If
  *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
+ *
+ * @example
+ <doc:example>
+ <doc:source>
+ <div ng-controller="Controller">
+ <form novalidate class="simple-form">
+ Name: <input type="text" ng-model="user.name" /><br />
+ E-mail: <input type="email" ng-model="user.email" /><br />
+ Gender: <input type="radio" ng-model="user.gender" value="male" />male
+ <input type="radio" ng-model="user.gender" value="female" />female<br />
+ <button ng-click="reset()">RESET</button>
+ <button ng-click="update(user)">SAVE</button>
+ </form>
+ <pre>form = {{user | json}}</pre>
+ <pre>master = {{master | json}}</pre>
+ </div>
+
+ <script>
+ function Controller($scope) {
+    $scope.master= {};
+
+    $scope.update = function(user) {
+      // Example with 1 argument
+      $scope.master= angular.copy(user);
+    };
+
+    $scope.reset = function() {
+      // Example with 2 arguments
+      angular.copy($scope.master, $scope.user);
+    };
+
+    $scope.reset();
+  }
+ </script>
+ </doc:source>
+ </doc:example>
  */
 function copy(source, destination){
   if (isWindow(source) || isScope(source)) {
-    throw ngMinErr('cpws', "Can't copy! Making copies of Window or Scope instances is not supported.");
+    throw ngMinErr('cpws',
+      "Can't copy! Making copies of Window or Scope instances is not supported.");
   }
 
   if (!destination) {
@@ -618,7 +739,8 @@ function copy(source, destination){
       }
     }
   } else {
-    if (source === destination) throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
+    if (source === destination) throw ngMinErr('cpi',
+      "Can't copy! Source and destination are identical.");
     if (isArray(source)) {
       destination.length = 0;
       for ( var i = 0; i < source.length; i++) {
@@ -645,6 +767,8 @@ function shallowCopy(src, dst) {
   dst = dst || {};
 
   for(var key in src) {
+    // shallowCopy is only ever called by $compile nodeLinkFn, which has control over src
+    // so we don't need to worry hasOwnProperty here
     if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
       dst[key] = src[key];
     }
@@ -660,14 +784,15 @@ function shallowCopy(src, dst) {
  * @function
  *
  * @description
- * Determines if two objects or two values are equivalent. Supports value types, regular expressions, arrays and
- * objects.
+ * Determines if two objects or two values are equivalent. Supports value types, regular
+ * expressions, arrays and objects.
  *
  * Two objects or values are considered equivalent if at least one of the following is true:
  *
  * * Both objects or values pass `===` comparison.
- * * Both objects or values are of the same type and all of their properties pass `===` comparison.
- * * Both values are NaN. (In JavasScript, NaN == NaN => false. But we consider two NaN as equal)
+ * * Both objects or values are of the same type and all of their properties are equal by
+ *   comparing them with `angular.equals`.
+ * * Both values are NaN. (In JavaScript, NaN == NaN => false. But we consider two NaN as equal)
  * * Both values represent the same regular expression (In JavasScript,
  *   /abc/ == /abc/ => false. But we consider two regular expressions as equal when their textual
  *   representation matches).
@@ -722,6 +847,13 @@ function equals(o1, o2) {
 }
 
 
+function csp() {
+  return (document.securityPolicy && document.securityPolicy.isActive) ||
+      (document.querySelector &&
+      !!(document.querySelector('[ng-csp]') || document.querySelector('[data-ng-csp]')));
+}
+
+
 function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index));
 }
@@ -731,6 +863,7 @@ function sliceArgs(args, startIndex) {
 }
 
 
+/* jshint -W101 */
 /**
  * @ngdoc function
  * @name angular.bind
@@ -739,13 +872,15 @@ function sliceArgs(args, startIndex) {
  * @description
  * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
  * `fn`). You can supply optional `args` that are prebound to the function. This feature is also
- * known as [function currying](http://en.wikipedia.org/wiki/Currying).
+ * known as [partial application](http://en.wikipedia.org/wiki/Partial_application), as
+ * distinguished from [function currying](http://en.wikipedia.org/wiki/Currying#Contrast_with_partial_function_application).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
  * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
+/* jshint +W101 */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
@@ -770,7 +905,7 @@ function bind(self, fn) {
 function toJsonReplacer(key, value) {
   var val = value;
 
-  if (/^\$+/.test(key)) {
+  if (typeof key === 'string' && key.charAt(0) === '$') {
     val = undefined;
   } else if (isWindow(value)) {
     val = '$WINDOW';
@@ -905,10 +1040,12 @@ function toKeyValue(obj) {
   forEach(obj, function(value, key) {
     if (isArray(value)) {
       forEach(value, function(arrayValue) {
-        parts.push(encodeUriQuery(key, true) + (arrayValue === true ? '' : '=' + encodeUriQuery(arrayValue, true)));
+        parts.push(encodeUriQuery(key, true) +
+                   (arrayValue === true ? '' : '=' + encodeUriQuery(arrayValue, true)));
       });
     } else {
-    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
+    parts.push(encodeUriQuery(key, true) +
+               (value === true ? '' : '=' + encodeUriQuery(value, true)));
     }
   });
   return parts.length ? parts.join('&') : '';
@@ -970,11 +1107,11 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * designates the root of the application and is typically placed
  * at the root of the page.
  *
- * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in an
- * HTML document you must manually bootstrap them using {@link angular.bootstrap}.
+ * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in
+ * an HTML document you must manually bootstrap them using {@link angular.bootstrap}.
  * Applications cannot be nested.
  *
- * In the example below if the `ngApp` directive would not be placed
+ * In the example below if the `ngApp` directive were not placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
@@ -1043,7 +1180,10 @@ function angularInit(element, bootstrap) {
  * They must use {@link api/ng.directive:ngApp ngApp}.
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String|Function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
+ *     Each item in the array should be the name of a predefined module or a (DI annotated)
+ *     function that will be invoked by the injector as a run block.
+ *     See: {@link angular.module modules}
  * @returns {AUTO.$injector} Returns the newly created injector for this app.
  */
 function bootstrap(element, modules) {
@@ -1067,7 +1207,6 @@ function bootstrap(element, modules) {
           element.data('$injector', injector);
           compile(element)(scope);
         });
-        animate.enabled(true);
       }]
     );
     return injector;
@@ -1104,14 +1243,16 @@ function bindJQuery() {
     jqLite = jQuery;
     extend(jQuery.fn, {
       scope: JQLitePrototype.scope,
+      isolateScope: JQLitePrototype.isolateScope,
       controller: JQLitePrototype.controller,
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
-    // Method signature: JQLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
-    JQLitePatchJQueryRemove('remove', true, true, false);
-    JQLitePatchJQueryRemove('empty', false, false, false);
-    JQLitePatchJQueryRemove('html', false, false, true);
+    // Method signature:
+    //     jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
+    jqLitePatchJQueryRemove('remove', true, true, false);
+    jqLitePatchJQueryRemove('empty', false, false, false);
+    jqLitePatchJQueryRemove('html', false, false, true);
   } else {
     jqLite = JQLite;
   }
@@ -1139,6 +1280,17 @@ function assertArgFn(arg, name, acceptArrayAnnotation) {
 }
 
 /**
+ * throw error if the name given is hasOwnProperty
+ * @param  {String} name    the name to test
+ * @param  {String} context the context in which the name is used, such as module or directive
+ */
+function assertNotHasOwnProperty(name, context) {
+  if (name === 'hasOwnProperty') {
+    throw ngMinErr('badname', "hasOwnProperty is not a valid {0} name", context);
+  }
+}
+
+/**
  * Return the value accessible from the object by path. Any undefined traversals are ignored
  * @param {Object} obj starting object
  * @param {string} path path to traverse
@@ -1163,4 +1315,26 @@ function getter(obj, path, bindFnToScope) {
     return bind(lastInstance, obj);
   }
   return obj;
+}
+
+/**
+ * Return the siblings between `startNode` and `endNode`, inclusive
+ * @param {Object} object with `startNode` and `endNode` properties
+ * @returns jQlite object containing the elements
+ */
+function getBlockElements(block) {
+  if (block.startNode === block.endNode) {
+    return jqLite(block.startNode);
+  }
+
+  var element = block.startNode;
+  var elements = [element];
+
+  do {
+    element = element.nextSibling;
+    if (!element) break;
+    elements.push(element);
+  } while (element !== block.endNode);
+
+  return jqLite(elements);
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+ngRouteModule.directive('ngView', ngViewFactory);
+
 /**
  * @ngdoc directive
  * @name ngRoute.directive:ngView
@@ -12,6 +14,8 @@
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
+ * Requires the {@link ngRoute `ngRoute`} module to be installed.
+ *
  * @animations
  * enter - animation is used to bring new content into the browser.
  * leave - animation is used to animate existing content away.
@@ -19,6 +23,7 @@
  * The enter and leave animation occur concurrently.
  *
  * @scope
+ * @priority 400
  * @example
     <example module="ngViewExample" deps="angular-route.js" animations="true">
       <file name="index.html">
@@ -30,8 +35,8 @@
           <a href="Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
           <a href="Book/Scarlet">Scarlet Letter</a><br/>
 
-          <div class="example-animate-container">
-            <div ng-view class="view-example"></div>
+          <div class="view-animate-container">
+            <div ng-view class="view-animate"></div>
           </div>
           <hr />
 
@@ -59,7 +64,9 @@
       </file>
 
       <file name="animations.css">
-        .example-animate-container {
+        .view-animate-container {
+          position:relative;
+          height:100px!important;
           position:relative;
           background:white;
           border:1px solid black;
@@ -67,14 +74,12 @@
           overflow:hidden;
         }
 
-        .example-animate-container > div {
+        .view-animate {
           padding:10px;
         }
 
-        .view-example.ng-enter, .view-example.ng-leave {
+        .view-animate.ng-enter, .view-animate.ng-leave {
           -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
-          -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
           transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;
 
           display:block;
@@ -89,39 +94,33 @@
           padding:10px;
         }
 
-        .example-animate-container {
-          position:relative;
-          height:100px;
-        }
-
-        .view-example.ng-enter {
+        .view-animate.ng-enter {
           left:100%;
         }
-        .view-example.ng-enter.ng-enter-active {
+        .view-animate.ng-enter.ng-enter-active {
           left:0;
         }
-
-        .view-example.ng-leave { }
-        .view-example.ng-leave.ng-leave-active {
+        .view-animate.ng-leave.ng-leave-active {
           left:-100%;
         }
       </file>
 
       <file name="script.js">
-        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'], function($routeProvider, $locationProvider) {
-          $routeProvider.when('/Book/:bookId', {
-            templateUrl: 'book.html',
-            controller: BookCntl,
-            controllerAs: 'book'
-          });
-          $routeProvider.when('/Book/:bookId/ch/:chapterId', {
-            templateUrl: 'chapter.html',
-            controller: ChapterCntl,
-            controllerAs: 'chapter'
-          });
+        angular.module('ngViewExample', ['ngRoute', 'ngAnimate'],
+          function($routeProvider, $locationProvider) {
+            $routeProvider.when('/Book/:bookId', {
+              templateUrl: 'book.html',
+              controller: BookCntl,
+              controllerAs: 'book'
+            });
+            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+              templateUrl: 'chapter.html',
+              controller: ChapterCntl,
+              controllerAs: 'chapter'
+            });
 
-          // configure html5 to get links working on jsfiddle
-          $locationProvider.html5Mode(true);
+            // configure html5 to get links working on jsfiddle
+            $locationProvider.html5Mode(true);
         });
 
         function MainCntl($route, $routeParams, $location) {
@@ -167,22 +166,18 @@
  * @description
  * Emitted every time the ngView content is reloaded.
  */
-var NG_VIEW_PRIORITY = 500;
-var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$animate', 
-               function($route,   $anchorScroll,   $compile,   $controller,   $animate) {
+ngViewFactory.$inject = ['$route', '$anchorScroll', '$compile', '$controller', '$animate'];
+function ngViewFactory(   $route,   $anchorScroll,   $compile,   $controller,   $animate) {
   return {
     restrict: 'ECA',
     terminal: true,
-    priority: NG_VIEW_PRIORITY,
-    compile: function(element, attr) {
-      var onloadExp = attr.onload || '';
-
-      element.html('');
-      var anchor = jqLite(document.createComment(' ngView '));
-      element.replaceWith(anchor);
-
-      return function(scope) {
-        var currentScope, currentElement;
+    priority: 400,
+    transclude: 'element',
+    link: function(scope, $element, attr, ctrl, $transclude) {
+        var currentScope,
+            currentElement,
+            autoScrollExp = attr.autoscroll,
+            onloadExp = attr.onload || '';
 
         scope.$on('$routeChangeSuccess', update);
         update();
@@ -203,42 +198,42 @@ var ngViewDirective = ['$route', '$anchorScroll', '$compile', '$controller', '$a
               template = locals && locals.$template;
 
           if (template) {
-            cleanupLastView();
+            var newScope = scope.$new();
+            $transclude(newScope, function(clone) {
+              clone.html(template);
+              $animate.enter(clone, null, currentElement || $element, function onNgViewEnter () {
+                if (angular.isDefined(autoScrollExp)
+                  && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                  $anchorScroll();
+                }
+              });
 
-            currentScope = scope.$new();
-            currentElement = element.clone();
-            currentElement.html(template);
-            $animate.enter(currentElement, null, anchor);
+              cleanupLastView();
 
-            var link = $compile(currentElement, false, NG_VIEW_PRIORITY - 1),
-                current = $route.current;
+              var link = $compile(clone.contents()),
+                  current = $route.current;
 
-            if (current.controller) {
-              locals.$scope = currentScope;
-              var controller = $controller(current.controller, locals);
-              if (current.controllerAs) {
-                currentScope[current.controllerAs] = controller;
+              currentScope = current.scope = newScope;
+              currentElement = clone;
+
+              if (current.controller) {
+                locals.$scope = currentScope;
+                var controller = $controller(current.controller, locals);
+                if (current.controllerAs) {
+                  currentScope[current.controllerAs] = controller;
+                }
+                clone.data('$ngControllerController', controller);
+                clone.children().data('$ngControllerController', controller);
               }
-              currentElement.data('$ngControllerController', controller);
-              currentElement.children().data('$ngControllerController', controller);
-            }
 
-            current.scope = currentScope;
-
-            link(currentScope);
-
-            currentScope.$emit('$viewContentLoaded');
-            currentScope.$eval(onloadExp);
-
-            // $anchorScroll might listen on event...
-            $anchorScroll();
+              link(currentScope);
+              currentScope.$emit('$viewContentLoaded');
+              currentScope.$eval(onloadExp);
+            });
           } else {
             cleanupLastView();
           }
         }
-      }
     }
   };
-}];
-
-ngRouteModule.directive('ngView', ngViewDirective);
+}

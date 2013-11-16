@@ -1,5 +1,7 @@
 'use strict';
 
+/* global ngTouch: false */
+
     /**
      * @ngdoc object
      * @name ngTouch.$swipe
@@ -8,7 +10,9 @@
      * The `$swipe` service is a service that abstracts the messier details of hold-and-drag swipe
      * behavior, to make implementing swipe-related directives more convenient.
      *
-     * It is used by the `ngSwipeLeft` and `ngSwipeRight` directives in `ngTouch`, and by
+     * Requires the {@link ngTouch `ngTouch`} module to be installed.
+     *
+     * `$swipe` is used by the `ngSwipeLeft` and `ngSwipeRight` directives in `ngTouch`, and by
      * `ngCarousel` in a separate component.
      *
      * # Usage
@@ -81,12 +85,12 @@ ngTouch.factory('$swipe', [function() {
         totalX = 0;
         totalY = 0;
         lastPos = startCoords;
-        eventHandlers['start'] && eventHandlers['start'](startCoords);
+        eventHandlers['start'] && eventHandlers['start'](startCoords, event);
       });
 
       element.on('touchcancel', function(event) {
         active = false;
-        eventHandlers['cancel'] && eventHandlers['cancel']();
+        eventHandlers['cancel'] && eventHandlers['cancel'](event);
       });
 
       element.on('touchmove mousemove', function(event) {
@@ -114,20 +118,19 @@ ngTouch.factory('$swipe', [function() {
         if (totalY > totalX) {
           // Allow native scrolling to take over.
           active = false;
-          eventHandlers['cancel'] && eventHandlers['cancel']();
+          eventHandlers['cancel'] && eventHandlers['cancel'](event);
           return;
         } else {
           // Prevent the browser from scrolling.
           event.preventDefault();
-
-          eventHandlers['move'] && eventHandlers['move'](coords);
+          eventHandlers['move'] && eventHandlers['move'](coords, event);
         }
       });
 
       element.on('touchend mouseup', function(event) {
         if (!active) return;
         active = false;
-        eventHandlers['end'] && eventHandlers['end'](getCoordinates(event));
+        eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
       });
     }
   };

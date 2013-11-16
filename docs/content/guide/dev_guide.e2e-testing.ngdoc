@@ -3,6 +3,10 @@
 @name Developer Guide: E2E Testing
 @description
 
+**If you're starting a new Angular project, you may want to look into
+using {@link https://github.com/angular/protractor Protractor}, as it is going to
+replace the current method of E2E Testing in the near future.**
+
 As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
 verify the correctness of new features, catch bugs and notice regressions.
 
@@ -37,10 +41,15 @@ it('should filter results', function() {
 });
 });
 </pre>
+
+Note that
+[`input('user')`](https://github.com/angular/angular.js/blob/master/docs/content/guide/dev_guide.e2e-testing.ngdoc#L119)
+finds the `<input>` element with `ng-model="user"` not `name="user"`.
+
 This scenario describes the requirements of a Buzz Client, specifically, that it should be able to
-filter the stream of the user. It starts by entering a value in the 'user' input field, clicking
+filter the stream of the user. It starts by entering a value in the input field with ng-model="user", clicking
 the only button on the page, and then it verifies that there are 10 items listed. It then enters
-'Bees' in the 'filterText' input field and verifies that the list is reduced to a single item.
+'Bees' in the input field with ng-model='filterText'  and verifies that the list is reduced to a single item.
 
 The API section below lists the available commands and expectations for the Runner.
 
@@ -134,10 +143,10 @@ Returns an array with the values in the column with the given `binding` in the r
 the given jQuery `selector`. The `label` is used for test output.
 
 ## select(name).option(value)
-Picks the option with the given `value` on the select with the given `name`.
+Picks the option with the given `value` on the select with the given ng-model `name`.
 
 ## select(name).options(value1, value2...)
-Picks the options with the given `values` on the multi select with the given `name`.
+Picks the options with the given `values` on the multi select with the given ng-model `name`.
 
 ## element(selector, label).count()
 Returns the number of elements that match the given jQuery `selector`. The `label` is used for test
@@ -172,11 +181,6 @@ Returns the result of calling `method` passing in `key` on the element matching 
 Executes the `method` passing in `key` and `value` on the element matching the given jQuery
 `selector`, where `method` can be any of the following jQuery methods: `attr`,  `prop`, `css`.  The
 `label` is used for test output.
-
-JavaScript is a dynamically typed language which comes with great power of expression, but it also
-come with almost no-help from the compiler. For this reason we feel very strongly that any code
-written in JavaScript needs to come with a strong set of tests. We have built many features into
-angular which makes testing your angular applications easy. So there is no excuse for not testing.
 
 # Matchers
 
@@ -275,7 +279,7 @@ beforeEach(function () {
 
 In order to understand what is happening, we should emphasize that ngScenario calls are not
 immediately executed, but queued (in ngScenario terms, we would be talking about adding
-future actions). If we had only one entry in our table, than the following future actions
+future actions). If we had only one entry in our table, then the following future actions
 would be queued:
 
 <pre>

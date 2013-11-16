@@ -114,17 +114,8 @@ describe('ngdoc', function() {
         function property(name) {
           return function(obj) {return obj[name];};
         }
-        function noop() {}
-        function doc(type, name){
-          return {
-              id: name,
-              ngdoc: type,
-              keywords: noop
-          };
-        }
-
-        var dev_guide_overview = doc('overview', 'dev_guide.overview');
-        var dev_guide_bootstrap = doc('function', 'dev_guide.bootstrap');
+        var dev_guide_overview = new Doc({ngdoc:'overview', id:'dev_guide.overview', text: ''});
+        var dev_guide_bootstrap = new Doc({ngdoc:'function', id:'dev_guide.bootstrap', text: ''});
 
         it('should put angular.fn() in front of dev_guide.overview, etc', function() {
           expect(ngdoc.metadata([dev_guide_overview, dev_guide_bootstrap]).map(property('id')))
@@ -262,33 +253,37 @@ describe('ngdoc', function() {
       expect(docs[0].events).toEqual([eventA, eventB]);
       expect(docs[0].properties).toEqual([propA, propB]);
     });
+  });
 
 
+  describe('checkBrokenLinks', function() {
+    var docs;
 
-    describe('links checking', function() {
-      var docs;
-      beforeEach(function() {
-        spyOn(console, 'log');
-        docs = [new Doc({section: 'api', id: 'fake.id1', links: ['non-existing-link']}),
-                new Doc({section: 'api', id: 'fake.id2'}),
-                new Doc({section: 'api', id: 'fake.id3'})];
-      });
+    beforeEach(function() {
+      spyOn(console, 'log');
+      docs = [new Doc({section: 'api', id: 'fake.id1', anchors: ['one']}),
+              new Doc({section: 'api', id: 'fake.id2'}),
+              new Doc({section: 'api', id: 'fake.id3'})];
+    });
 
-      it('should log warning when any link doesn\'t exist', function() {
-        ngdoc.merge(docs);
-        expect(console.log).toHaveBeenCalled();
-        expect(console.log.argsForCall[0][0]).toContain('WARNING:');
-      });
+    it('should log warning when a linked page does not exist', function() {
+      docs.push(new Doc({section: 'api', id: 'with-broken.link', links: ['non-existing-link']}))
+      ngdoc.checkBrokenLinks(docs);
+      expect(console.log).toHaveBeenCalled();
+      var warningMsg = console.log.argsForCall[0][0]
+      expect(warningMsg).toContain('WARNING:');
+      expect(warningMsg).toContain('non-existing-link');
+      expect(warningMsg).toContain('api/with-broken.link');
+    });
 
-      it('should say which link doesn\'t exist', function() {
-        ngdoc.merge(docs);
-        expect(console.log.argsForCall[0][0]).toContain('non-existing-link');
-      });
-
-      it('should say where is the non-existing link', function() {
-        ngdoc.merge(docs);
-        expect(console.log.argsForCall[0][0]).toContain('api/fake.id1');
-      });
+    it('should log warning when a linked anchor does not exist', function() {
+      docs.push(new Doc({section: 'api', id: 'with-broken.link', links: ['api/fake.id1#non-existing']}))
+      ngdoc.checkBrokenLinks(docs);
+      expect(console.log).toHaveBeenCalled();
+      var warningMsg = console.log.argsForCall[0][0]
+      expect(warningMsg).toContain('WARNING:');
+      expect(warningMsg).toContain('non-existing');
+      expect(warningMsg).toContain('api/with-broken.link');
     });
   });
 
@@ -524,7 +519,7 @@ describe('ngdoc', function() {
         doc.ngdoc = 'filter';
         doc.parse();
         expect(doc.html()).toContain(
-            '<h3 id="Animations">Animations</h3>\n' +
+            '<h3 id="usage_animations">Animations</h3>\n' +
             '<div class="animations">' +
               '<ul>' +
                 '<li>enter - Add text</li>' +
@@ -541,7 +536,7 @@ describe('ngdoc', function() {
         var doc = new Doc('@ngdoc overview\n@name angular\n@description\n#heading\ntext');
         doc.parse();
         expect(doc.html()).toContain('text');
-        expect(doc.html()).toContain('<h2>heading</h2>');
+        expect(doc.html()).toContain('<h2 id="heading">heading</h2>');
         expect(doc.html()).not.toContain('Description');
       });
     });

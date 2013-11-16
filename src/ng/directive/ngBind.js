@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ng.directive:ngBind
+ * @restrict AC
  *
  * @description
  * The `ngBind` attribute tells Angular to replace the text content of the specified HTML element
@@ -12,8 +13,8 @@
  * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
  * `{{ expression }}` which is similar but less verbose.
  *
- * It is preferrable to use `ngBind` instead of `{{ expression }}` when a template is momentarily 
- * displayed by the browser in its raw state before Angular compiles it. Since `ngBind` is an 
+ * It is preferrable to use `ngBind` instead of `{{ expression }}` when a template is momentarily
+ * displayed by the browser in its raw state before Angular compiles it. Since `ngBind` is an
  * element attribute, it makes the bindings invisible to the user while the page is loading.
  *
  * An alternative solution to this problem would be using the
@@ -49,6 +50,9 @@
 var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
   scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+    // We are purposefully using == here rather than === because we want to
+    // catch when value is "null or undefined"
+    // jshint -W041
     element.text(value == undefined ? '' : value);
   });
 });
@@ -110,7 +114,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
     attr.$observe('ngBindTemplate', function(value) {
       element.text(value);
     });
-  }
+  };
 }];
 
 
@@ -124,7 +128,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * ngSanitize.$sanitize $sanitize} service.  To utilize this functionality, ensure that `$sanitize`
  * is available, for example, by including {@link ngSanitize} in your module's dependencies (not in
  * core Angular.)  You may also bypass sanitization for values you know are safe. To do so, bind to
- * an explicitly trusted value via {@link ng.$sce#trustAsHtml $sce.trustAsHtml}.  See the example
+ * an explicitly trusted value via {@link ng.$sce#methods_trustAsHtml $sce.trustAsHtml}.  See the example
  * under {@link ng.$sce#Example Strict Contextual Escaping (SCE)}.
  *
  * Note: If a `$sanitize` service is unavailable and the bound value isn't explicitly trusted, you
@@ -132,12 +136,45 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  *
  * @element ANY
  * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
+ *
+ * @example
+   Try it here: enter text in text box and watch the greeting change.
+ 
+   <example module="ngBindHtmlExample" deps="angular-sanitize.js">
+     <file name="index.html">
+       <div ng-controller="ngBindHtmlCtrl">
+        <p ng-bind-html="myHTML"></p>
+       </div>
+     </file>
+     
+     <file name="script.js">
+       angular.module('ngBindHtmlExample', ['ngSanitize'])
+
+       .controller('ngBindHtmlCtrl', ['$scope', function ngBindHtmlCtrl($scope) {
+         $scope.myHTML =
+            'I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>';
+       }]);
+     </file>
+
+     <file name="scenario.js">
+       it('should check ng-bind-html', function() {
+         expect(using('.doc-example-live').binding('myHTML')).
+           toBe(
+           'I am an <code>HTML</code>string with <a href="#">links!</a> and other <em>stuff</em>'
+           );
+       });
+     </file>
+   </example>
  */
-var ngBindHtmlDirective = ['$sce', function($sce) {
+var ngBindHtmlDirective = ['$sce', '$parse', function($sce, $parse) {
   return function(scope, element, attr) {
     element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
-    scope.$watch($sce.parseAsHtml(attr.ngBindHtml), function ngBindHtmlWatchAction(value) {
-      element.html(value || '');
+
+    var parsed = $parse(attr.ngBindHtml);
+    function getStringValue() { return (parsed(scope) || '').toString(); }
+
+    scope.$watch(getStringValue, function ngBindHtmlWatchAction(value) {
+      element.html($sce.getTrustedHtml(parsed(scope)) || '');
     });
   };
 }];

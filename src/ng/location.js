@@ -1,7 +1,6 @@
 'use strict';
 
-var SERVER_MATCH = /^([^:]+):\/\/(\w+:{0,1}\w*@)?(\{?[\w\.-]*\}?)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
+var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
 
@@ -23,39 +22,44 @@ function encodePath(path) {
   return segments.join('/');
 }
 
-function matchUrl(url, obj) {
-  var match = SERVER_MATCH.exec(url);
+function parseAbsoluteUrl(absoluteUrl, locationObj, appBase) {
+  var parsedUrl = urlResolve(absoluteUrl, appBase);
 
-  obj.$$protocol = match[1];
-  obj.$$host = match[3];
-  obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
+  locationObj.$$protocol = parsedUrl.protocol;
+  locationObj.$$host = parsedUrl.hostname;
+  locationObj.$$port = int(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
-function matchAppUrl(url, obj) {
-  var match = PATH_MATCH.exec(url);
 
-  obj.$$path = decodeURIComponent(match[1]);
-  obj.$$search = parseKeyValue(match[3]);
-  obj.$$hash = decodeURIComponent(match[5] || '');
+function parseAppUrl(relativeUrl, locationObj, appBase) {
+  var prefixed = (relativeUrl.charAt(0) !== '/');
+  if (prefixed) {
+    relativeUrl = '/' + relativeUrl;
+  }
+  var match = urlResolve(relativeUrl, appBase);
+  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
+      match.pathname.substring(1) : match.pathname);
+  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$hash = decodeURIComponent(match.hash);
 
   // make sure path starts with '/';
-  if (obj.$$path && obj.$$path.charAt(0) != '/') obj.$$path = '/' + obj.$$path;
+  if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
+    locationObj.$$path = '/' + locationObj.$$path;
+  }
 }
 
-
-function composeProtocolHostPort(protocol, host, port) {
-  return protocol + '://' + host + (port == DEFAULT_PORTS[protocol] ? '' : ':' + port);
-}
 
 /**
  *
  * @param {string} begin
  * @param {string} whole
- * @param {string} otherwise
- * @returns {string} returns text from whole after begin or otherwise if it does not begin with expected string.
+ * @returns {string} returns text from whole after begin or undefined if it does not begin with
+ *                   expected string.
  */
-function beginsWith(begin, whole, otherwise) {
-  return whole.indexOf(begin) == 0 ? whole.substr(begin.length) : otherwise;
+function beginsWith(begin, whole) {
+  if (whole.indexOf(begin) === 0) {
+    return whole.substr(begin.length);
+  }
 }
 
 
@@ -87,20 +91,23 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
+  parseAbsoluteUrl(appBase, this, appBase);
+
+
   /**
    * Parse given html5 (regular) url string into properties
    * @param {string} newAbsoluteUrl HTML5 url
    * @private
    */
   this.$$parse = function(url) {
-    var parsed = {}
-    matchUrl(url, parsed);
     var pathUrl = beginsWith(appBaseNoFile, url);
     if (!isString(pathUrl)) {
-      throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url, appBaseNoFile);
+      throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url,
+          appBaseNoFile);
     }
-    matchAppUrl(pathUrl, parsed);
-    extend(this, parsed);
+
+    parseAppUrl(pathUrl, this, appBase);
+
     if (!this.$$path) {
       this.$$path = '/';
     }
@@ -135,7 +142,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     } else if (appBaseNoFile == url + '/') {
       return appBaseNoFile;
     }
-  }
+  };
 }
 
 
@@ -151,7 +158,7 @@ function LocationHtml5Url(appBase, basePrefix) {
 function LocationHashbangUrl(appBase, hashPrefix) {
   var appBaseNoFile = stripFile(appBase);
 
-  matchUrl(appBase, this);
+  parseAbsoluteUrl(appBase, this, appBase);
 
 
   /**
@@ -168,9 +175,10 @@ function LocationHashbangUrl(appBase, hashPrefix) {
           : '';
 
     if (!isString(withoutHashUrl)) {
-      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url, hashPrefix);
+      throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
+          hashPrefix);
     }
-    matchAppUrl(withoutHashUrl, this);
+    parseAppUrl(withoutHashUrl, this, appBase);
     this.$$compose();
   };
 
@@ -190,7 +198,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     if(stripHash(appBase) == stripHash(url)) {
       return url;
     }
-  }
+  };
 }
 
 
@@ -219,7 +227,7 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
     } else if ( appBaseNoFile === url + '/') {
       return appBaseNoFile;
     }
-  }
+  };
 }
 
 
@@ -358,10 +366,13 @@ LocationHashbangInHtml5Url.prototype =
    *
    * Change search part when called with parameter and return `$location`.
    *
-   * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or hash object. Hash object
-   *    may contain an array of values, which will be decoded as duplicates in the url.
-   * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
-   *    single search parameter. If the value is `null`, the parameter will be deleted.
+   * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or
+   * hash object. Hash object may contain an array of values, which will be decoded as duplicates in
+   * the url.
+   *
+   * @param {(string|Array<string>)=} paramValue If `search` is a string, then `paramValue` will override only a
+   * single search parameter. If `paramValue` is an array, it will set the parameter as a
+   * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
    * @return {string} search
    */
@@ -375,11 +386,12 @@ LocationHashbangInHtml5Url.prototype =
         } else if (isObject(search)) {
           this.$$search = search;
         } else {
-          throw $locationMinErr('isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
+          throw $locationMinErr('isrcharg',
+              'The first argument of the `$location#search()` call must be a string or an object.');
         }
         break;
       default:
-        if (paramValue == undefined || paramValue == null) {
+        if (isUndefined(paramValue) || paramValue === null) {
           delete this.$$search[search];
         } else {
           this.$$search[search] = paramValue;
@@ -503,7 +515,7 @@ function $LocationProvider(){
    * @name ng.$locationProvider#html5Mode
    * @methodOf ng.$locationProvider
    * @description
-   * @param {string=} mode Use HTML5 strategy if available.
+   * @param {boolean=} mode Use HTML5 strategy if available.
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.html5Mode = function(mode) {
@@ -514,6 +526,35 @@ function $LocationProvider(){
       return html5Mode;
     }
   };
+
+  /**
+   * @ngdoc event
+   * @name ng.$location#$locationChangeStart
+   * @eventOf ng.$location
+   * @eventType broadcast on root scope
+   * @description
+   * Broadcasted before a URL will change. This change can be prevented by calling
+   * `preventDefault` method of the event. See {@link ng.$rootScope.Scope#$on} for more
+   * details about event object. Upon successful change
+   * {@link ng.$location#$locationChangeSuccess $locationChangeSuccess} is fired.
+   *
+   * @param {Object} angularEvent Synthetic event object.
+   * @param {string} newUrl New URL
+   * @param {string=} oldUrl URL that was before it was changed.
+   */
+
+  /**
+   * @ngdoc event
+   * @name ng.$location#$locationChangeSuccess
+   * @eventOf ng.$location
+   * @eventType broadcast on root scope
+   * @description
+   * Broadcasted after a URL was changed.
+   *
+   * @param {Object} angularEvent Synthetic event object.
+   * @param {string} newUrl New URL
+   * @param {string=} oldUrl URL that was before it was changed.
+   */
 
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement',
       function( $rootScope,   $browser,   $sniffer,   $rootElement) {
@@ -571,7 +612,8 @@ function $LocationProvider(){
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
-        if ($rootScope.$broadcast('$locationChangeStart', newUrl, $location.absUrl()).defaultPrevented) {
+        if ($rootScope.$broadcast('$locationChangeStart', newUrl,
+                                  $location.absUrl()).defaultPrevented) {
           $browser.url($location.absUrl());
           return;
         }

@@ -1,5 +1,6 @@
 'use strict';
 
+var ngOptionsMinErr = minErr('ngOptions');
 /**
  * @ngdoc directive
  * @name ng.directive:select
@@ -10,22 +11,22 @@
  *
  * # `ngOptions`
  *
- * Optionally `ngOptions` attribute can be used to dynamically generate a list of `<option>`
- * elements for a `<select>` element using an array or an object obtained by evaluating the
- * `ngOptions` expression.
+ * The `ngOptions` attribute can be used to dynamically generate a list of `<option>`
+ * elements for the `<select>` element using the array or object obtained by evaluating the
+ * `ngOptions` comprehension_expression.
  *
- * When an item in the `<select>` menu is selected, the value of array element or object property
+ * When an item in the `<select>` menu is selected, the array element or object property
  * represented by the selected option will be bound to the model identified by the `ngModel`
- * directive of the parent select element.
+ * directive.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
- * be nested into the `<select>` element. This element will then represent `null` or "not selected"
+ * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
  *
  * Note: `ngOptions` provides iterator facility for `<option>` element which should be used instead
  * of {@link ng.directive:ngRepeat ngRepeat} when you want the
- * `select` model to be bound to a non-string value. This is because an option element can currently
- * be bound to string values only.
+ * `select` model to be bound to a non-string value. This is because an option element can only
+ * be bound to string values at present.
  *
  * @param {string} ngModel Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
@@ -95,7 +96,7 @@
           Color (null allowed):
           <span  class="nullable">
             <select ng-model="color" ng-options="c.name for c in colors">
-              <option value="">-- chose color --</option>
+              <option value="">-- choose color --</option>
             </select>
           </span><br/>
 
@@ -125,10 +126,12 @@
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
+// jshint maxlen: false
 var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
-                         //0000111110000000000022220000000000000000000000333300000000000000444444444444444440000000005555555555555555500000006666666666666666600000000000000007777000000000000000000088888
-  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/,
+                         //0000111110000000000022220000000000000000000000333300000000000000444444444444444000000000555555555555555000000066666666666666600000000000000007777000000000000000000088888
+  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/,
       nullModelCtrl = {$setViewValue: noop};
+// jshint maxlen: 100
 
   return {
     restrict: 'E',
@@ -148,10 +151,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         ngModelCtrl = ngModelCtrl_;
         nullOption = nullOption_;
         unknownOption = unknownOption_;
-      }
+      };
 
 
       self.addOption = function(value) {
+        assertNotHasOwnProperty(value, '"option value"');
         optionsMap[value] = true;
 
         if (ngModelCtrl.$viewValue == value) {
@@ -177,12 +181,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         $element.prepend(unknownOption);
         $element.val(unknownVal);
         unknownOption.prop('selected', true); // needed for IE
-      }
+      };
 
 
       self.hasOption = function(value) {
         return optionsMap.hasOwnProperty(value);
-      }
+      };
 
       $scope.$on('$destroy', function() {
         // disable unknown option so that we don't do work when the whole select is being destroyed
@@ -208,7 +212,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
       // find "null" option
       for(var i = 0, children = element.children(), ii = children.length; i < ii; i++) {
-        if (children[i].value == '') {
+        if (children[i].value === '') {
           emptyOption = nullOption = children.eq(i);
           break;
         }
@@ -231,16 +235,16 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      if (optionsExp) Options(scope, element, ngModelCtrl);
-      else if (multiple) Multiple(scope, element, ngModelCtrl);
-      else Single(scope, element, ngModelCtrl, selectCtrl);
+      if (optionsExp) setupAsOptions(scope, element, ngModelCtrl);
+      else if (multiple) setupAsMultiple(scope, element, ngModelCtrl);
+      else setupAsSingle(scope, element, ngModelCtrl, selectCtrl);
 
 
       ////////////////////////////
 
 
 
-      function Single(scope, selectElement, ngModelCtrl, selectCtrl) {
+      function setupAsSingle(scope, selectElement, ngModelCtrl, selectCtrl) {
         ngModelCtrl.$render = function() {
           var viewValue = ngModelCtrl.$viewValue;
 
@@ -265,7 +269,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      function Multiple(scope, selectElement, ctrl) {
+      function setupAsMultiple(scope, selectElement, ctrl) {
         var lastView;
         ctrl.$render = function() {
           var items = new HashMap(ctrl.$viewValue);
@@ -296,12 +300,14 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         });
       }
 
-      function Options(scope, selectElement, ctrl) {
+      function setupAsOptions(scope, selectElement, ctrl) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-          throw minErr('ngOptions')('iexp',
-            "Expected expression in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '{0}'. Element: {1}",
+          throw ngOptionsMinErr('iexp',
+            "Expected expression in form of " +
+            "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            " but got '{0}'. Element: {1}",
             optionsExp, startingTag(selectElement));
         }
 
@@ -313,9 +319,10 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             valuesFn = $parse(match[7]),
             track = match[8],
             trackFn = track ? $parse(match[8]) : null,
-            // This is an array of array of existing option groups in DOM. We try to reuse these if possible
-            // optionGroupsCache[0] is the options with no option group
-            // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
+            // This is an array of array of existing option groups in DOM.
+            // We try to reuse these if possible
+            // - optionGroupsCache[0] is the options with no option group
+            // - optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
             optionGroupsCache = [[{element: selectElement, label:''}]];
 
         if (nullOption) {
@@ -339,7 +346,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             var optionGroup,
                 collection = valuesFn(scope) || [],
                 locals = {},
-                key, value, optionElement, index, groupIndex, length, groupLength;
+                key, value, optionElement, index, groupIndex, length, groupLength, trackIndex;
 
             if (multiple) {
               value = [];
@@ -354,7 +361,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                     key = optionElement.val();
                     if (keyName) locals[keyName] = key;
                     if (trackFn) {
-                      for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                      for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
                         locals[valueName] = collection[trackIndex];
                         if (trackFn(scope, locals) == key) break;
                       }
@@ -369,11 +376,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               key = selectElement.val();
               if (key == '?') {
                 value = undefined;
-              } else if (key == ''){
+              } else if (key === ''){
                 value = null;
               } else {
                 if (trackFn) {
-                  for (var trackIndex = 0; trackIndex < collection.length; trackIndex++) {
+                  for (trackIndex = 0; trackIndex < collection.length; trackIndex++) {
                     locals[valueName] = collection[trackIndex];
                     if (trackFn(scope, locals) == key) {
                       value = valueFn(scope, locals);
@@ -397,7 +404,8 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         scope.$watch(render);
 
         function render() {
-          var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
+              // Temporary location for the option groups before we render them
+          var optionGroups = {'':[]},
               optionGroupNames = [''],
               optionGroupName,
               optionGroup,
@@ -406,6 +414,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               modelValue = ctrl.$modelValue,
               values = valuesFn(scope) || [],
               keys = keyName ? sortedKeys(values) : values,
+              key,
               groupLength, length,
               groupIndex, index,
               locals = {},
@@ -429,14 +438,25 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
-               locals[valueName] = values[keyName ? locals[keyName]=keys[index]:index];
-               optionGroupName = groupByFn(scope, locals) || '';
+            
+            key = index;
+            if (keyName) {
+              key = keys[index];
+              if ( key.charAt(0) === '$' ) continue;
+              locals[keyName] = key;
+            }
+
+            locals[valueName] = values[key];
+
+            optionGroupName = groupByFn(scope, locals) || '';
             if (!(optionGroup = optionGroups[optionGroupName])) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals)) != undefined;
+              selected = isDefined(
+                selectedSet.remove(trackFn ? trackFn(scope, locals) : valueFn(scope, locals))
+              );
             } else {
               if (trackFn) {
                 var modelCast = {};
@@ -448,9 +468,12 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             label = displayFn(scope, locals); // what will be seen by the user
-            label = label === undefined ? '' : label; // doing displayFn(scope, locals) || '' overwrites zero values
+
+            // doing displayFn(scope, locals) || '' overwrites zero values
+            label = isDefined(label) ? label : '';
             optionGroup.push({
-              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),   // either the index into array or key from object
+              // either the index into array or key from object
+              id: trackFn ? trackFn(scope, locals) : (keyName ? keys[index] : index),
               label: label,
               selected: selected                   // determine if we should be selected
             });
@@ -554,7 +577,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
         }
       }
     }
-  }
+  };
 }];
 
 var optionDirective = ['$interpolate', function($interpolate) {
@@ -603,5 +626,5 @@ var optionDirective = ['$interpolate', function($interpolate) {
         });
       };
     }
-  }
+  };
 }];

@@ -42,7 +42,7 @@ describe('$httpBackend', function() {
         return {};
       }),
       body: {
-        appendChild: jasmine.createSpy('body.appendChid').andCallFake(function(script) {
+        appendChild: jasmine.createSpy('body.appendChild').andCallFake(function(script) {
           fakeDocument.$$scripts.push(script);
         }),
         removeChild: jasmine.createSpy('body.removeChild').andCallFake(function(script) {
@@ -68,6 +68,12 @@ describe('$httpBackend', function() {
     expect(xhr.$$async).toBe(true);
   });
 
+  it('should pass null to send if no body is set', function() {
+    $backend('GET', '/some-url', null, noop);
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$data).toBe(null);
+  });
 
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
@@ -95,6 +101,22 @@ describe('$httpBackend', function() {
     });
   });
 
+  it('should set requested headers even if they have falsy values', function() {
+    $backend('POST', 'URL', null, noop, {
+      'X-header1': 0,
+      'X-header2': '',
+      'X-header3': false,
+      'X-header4': undefined
+    });
+
+    xhr = MockXhr.$$lastInstance;
+
+    expect(xhr.$$reqHeaders).toEqual({
+      'X-header1': 0,
+      'X-header2': '',
+      'X-header3': false
+    });
+  });
 
   it('should abort request on timeout', function() {
     callback.andCallFake(function(status, response) {
@@ -190,9 +212,6 @@ describe('$httpBackend', function() {
       };
 
       this.getAllResponseHeaders = valueFn('');
-      // for temporary Firefox CORS workaround
-      // see https://github.com/angular/angular.js/issues/1468
-      this.getResponseHeader = valueFn('');
     }
 
     callback.andCallFake(function(status, response) {
@@ -344,7 +363,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -354,19 +373,8 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should convert 0 to 200 if content - relative url', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
-
-      $backend('GET', '/whatever/index.html', null, callback);
-      respond(0, 'SOME CONTENT');
-
-      expect(callback).toHaveBeenCalled();
-      expect(callback.mostRecentCall.args[0]).toBe(200);
-    });
-
-
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr, null, null, null, 'http');
+      $backend = createHttpBackend($browser, MockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -376,7 +384,7 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should convert 0 to 200 if content - relative url', function() {
+    it('should convert 0 to 404 if no content - relative url', function() {
       $backend = createHttpBackend($browser, MockXhr, null, null, null, 'file');
 
       $backend('GET', '/whatever/index.html', null, callback);

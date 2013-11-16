@@ -1,11 +1,17 @@
+'use strict';
+
+/* global htmlSanitizeWriter: false */
+
 /**
  * @ngdoc filter
  * @name ngSanitize.filter:linky
  * @function
  *
  * @description
- *   Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
- *   plain email address links.
+ * Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
+ * plain email address links.
+ *
+ * Requires the {@link ngSanitize `ngSanitize`} module to be installed.
  *
  * @param {string} text Input text.
  * @param {string} target Window (_blank|_self|_parent|_top) or named frame to open links in.
@@ -95,7 +101,8 @@
    </doc:example>
  */
 angular.module('ngSanitize').filter('linky', function() {
-  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/,
+  var LINKY_URL_REGEXP =
+        /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>]/,
       MAILTO_REGEXP = /^mailto:/;
 
   return function(text, target) {

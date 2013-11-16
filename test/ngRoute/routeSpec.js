@@ -25,7 +25,7 @@ describe('$route', function() {
 
     module(function($routeProvider) {
       $routeProvider.when('/Book/:book/Chapter/:chapter',
-          {controller: noop, templateUrl: 'Chapter.html'});
+          {controller: angular.noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
@@ -69,9 +69,9 @@ describe('$route', function() {
 
     module(function($routeProvider) {
       $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
-          {controller: noop, templateUrl: 'Chapter.html'});
+          {controller: angular.noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
-          {controller: noop, templateUrl: 'Chapter.html'});
+          {controller: angular.noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
@@ -128,9 +128,9 @@ describe('$route', function() {
 
     module(function($routeProvider) {
       $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
-          {controller: noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
+          {controller: angular.noop, templateUrl: 'Chapter.html', caseInsensitiveMatch: true});
       $routeProvider.when('/Book2/:book/:highlight*/Chapter/:chapter',
-          {controller: noop, templateUrl: 'Chapter.html'});
+          {controller: angular.noop, templateUrl: 'Chapter.html'});
       $routeProvider.when('/Blank', {});
     });
     inject(function($route, $location, $rootScope) {
@@ -327,6 +327,50 @@ describe('$route', function() {
       $location.url('/baz');
       $rootScope.$digest();
       expect($route.current.templateUrl).toBe('baz.html');
+    });
+  });
+
+
+  it('should skip routes with incomplete params', function() {
+    module(function($routeProvider) {
+      $routeProvider
+        .otherwise({template: 'other'})
+        .when('/pages/:page/:comment*', {template: 'comment'})
+        .when('/pages/:page', {template: 'page'})
+        .when('/pages', {template: 'index'})
+        .when('/foo/', {template: 'foo'})
+        .when('/foo/:bar', {template: 'bar'})
+        .when('/foo/:bar*/:baz', {template: 'baz'});
+    });
+
+    inject(function($route, $location, $rootScope) {
+      $location.url('/pages/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('index');
+
+      $location.url('/pages/page/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('page');
+
+      $location.url('/pages/page/1/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('comment');
+
+      $location.url('/foo/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('foo');
+
+      $location.url('/foo/bar/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('bar');
+
+      $location.url('/foo/bar/baz/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('baz');
+
+      $location.url('/something/');
+      $rootScope.$digest();
+      expect($route.current.template).toBe('other');
     });
   });
 
@@ -574,8 +618,8 @@ describe('$route', function() {
 
       inject(function($route, $httpBackend, $location, $rootScope, $routeParams) {
         var log = '';
-        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before' + toJson($routeParams) + ';'});
-        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after' + toJson($routeParams) + ';'});
+        $rootScope.$on('$routeChangeStart', function(e, next) { log += '$before' + angular.toJson($routeParams) + ';'});
+        $rootScope.$on('$routeChangeSuccess', function(e, next) { log += '$after' + angular.toJson($routeParams) + ';'});
 
         $httpBackend.whenGET('r1.html').respond('R1');
         $httpBackend.whenGET('r2.html').respond('R2');
@@ -832,7 +876,7 @@ describe('$route', function() {
       var reloaded = jasmine.createSpy('route reload');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: noop});
+        $routeProvider.when('/foo', {controller: angular.noop});
       });
 
       inject(function($route, $location, $rootScope, $routeParams) {
@@ -857,7 +901,7 @@ describe('$route', function() {
           routeUpdate = jasmine.createSpy('route update');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: noop, reloadOnSearch: false});
+        $routeProvider.when('/foo', {controller: angular.noop, reloadOnSearch: false});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -887,7 +931,7 @@ describe('$route', function() {
       var routeChange = jasmine.createSpy('route change');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo/:fooId', {controller: noop, reloadOnSearch: false});
+        $routeProvider.when('/foo/:fooId', {controller: angular.noop, reloadOnSearch: false});
       });
 
       inject(function($route, $location, $rootScope) {
@@ -919,8 +963,8 @@ describe('$route', function() {
       var routeParamsWatcher = jasmine.createSpy('routeParamsWatcher');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: noop});
-        $routeProvider.when('/bar/:barId', {controller: noop, reloadOnSearch: false});
+        $routeProvider.when('/foo', {controller: angular.noop});
+        $routeProvider.when('/bar/:barId', {controller: angular.noop, reloadOnSearch: false});
       });
 
       inject(function($route, $location, $rootScope, $routeParams) {

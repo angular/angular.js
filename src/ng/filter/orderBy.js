@@ -8,9 +8,6 @@
  * @description
  * Orders a specified `array` by the `expression` predicate.
  *
- * Note: this function is used to augment the `Array` type in Angular expressions. See
- * {@link ng.$filter} for more information about Angular arrays.
- *
  * @param {Array} array The array to sort.
  * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be
  *    used by the comparator to determine the order of elements.
@@ -49,7 +46,7 @@
          <table class="friend">
            <tr>
              <th><a href="" ng-click="predicate = 'name'; reverse=false">Name</a>
-                 (<a href ng-click="predicate = '-name'; reverse=false">^</a>)</th>
+                 (<a href="" ng-click="predicate = '-name'; reverse=false">^</a>)</th>
              <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
              <th><a href="" ng-click="predicate = 'age'; reverse=!reverse">Age</a></th>
            </tr>
@@ -135,5 +132,5 @@ function orderByFilter($parse){
         return t1 < t2 ? -1 : 1;
       }
     }
-  }
+  };
 }

@@ -6,7 +6,7 @@ function classDirective(name, selector) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-        var oldVal = undefined;
+        var oldVal;
 
         scope.$watch(attr[name], ngClassWatchAction, true);
 
@@ -17,6 +17,7 @@ function classDirective(name, selector) {
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
+            // jshint bitwise: false
             var mod = $index & 1;
             if (mod !== old$index & 1) {
               if (mod === selector) {
@@ -63,7 +64,7 @@ function classDirective(name, selector) {
           }
 
           return classVal;
-        };
+        }
       }
     };
   };
@@ -72,9 +73,10 @@ function classDirective(name, selector) {
 /**
  * @ngdoc directive
  * @name ng.directive:ngClass
+ * @restrict AC
  *
  * @description
- * The `ngClass` allows you to set CSS classes on HTML an element, dynamically, by databinding
+ * The `ngClass` directive allows you to dynamically set CSS classes on an HTML element by databinding
  * an expression that represents all classes to be added.
  *
  * The directive won't add duplicate classes if a particular class was already set.
@@ -93,21 +95,21 @@ function classDirective(name, selector) {
  *   names of the properties whose values are truthy will be added as css classes to the
  *   element.
  *
- * @example Example that demostrates basic bindings via ngClass directive.
+ * @example Example that demonstrates basic bindings via ngClass directive.
    <example>
      <file name="index.html">
-       <p ng-class="{strike: strike, bold: bold, red: red}">Map Syntax Example</p>
-       <input type="checkbox" ng-model="bold"> bold
-       <input type="checkbox" ng-model="strike"> strike
-       <input type="checkbox" ng-model="red"> red
+       <p ng-class="{strike: deleted, bold: important, red: error}">Map Syntax Example</p>
+       <input type="checkbox" ng-model="deleted"> deleted (apply "strike" class)<br>
+       <input type="checkbox" ng-model="important"> important (apply "bold" class)<br>
+       <input type="checkbox" ng-model="error"> error (apply "red" class)
        <hr>
        <p ng-class="style">Using String Syntax</p>
        <input type="text" ng-model="style" placeholder="Type: bold strike red">
        <hr>
        <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
-       <input ng-model="style1" placeholder="Type: bold"><br>
-       <input ng-model="style2" placeholder="Type: strike"><br>
-       <input ng-model="style3" placeholder="Type: red"><br>
+       <input ng-model="style1" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style2" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style3" placeholder="Type: bold, strike or red"><br>
      </file>
      <file name="style.css">
        .strike {
@@ -126,10 +128,10 @@ function classDirective(name, selector) {
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
 
-         input('bold').check();
+         input('important').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
 
-         input('red').check();
+         input('error').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
        });
 
@@ -151,32 +153,24 @@ function classDirective(name, selector) {
 
    ## Animations
 
-   Example that demostrates how addition and removal of classes can be animated.
+   The example below demonstrates how to perform animations using ngClass.
 
    <example animations="true">
      <file name="index.html">
       <input type="button" value="set" ng-click="myVar='my-class'">
       <input type="button" value="clear" ng-click="myVar=''">
       <br>
-      <span ng-class="myVar">Sample Text</span>
+      <span class="base-class" ng-class="myVar">Sample Text</span>
      </file>
      <file name="style.css">
-       .my-class-add, .my-class-remove {
+       .base-class {
          -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
        }
 
-       .my-class,
-       .my-class-add.my-class-add-active {
+       .base-class.my-class {
          color: red;
          font-size:3em;
-       }
-
-       .my-class-remove.my-class-remove-active {
-         font-size:1.0em;
-         color:black;
        }
      </file>
      <file name="scenario.js">
@@ -196,19 +190,28 @@ function classDirective(name, selector) {
        });
      </file>
    </example>
+
+
+   ## ngClass and pre-existing CSS3 Transitions/Animations
+   The ngClass directive still supports CSS3 Transitions/Animations even if they do not follow the ngAnimate CSS naming structure.
+   Upon animation ngAnimate will apply supplementary CSS classes to track the start and end of an animation, but this will not hinder
+   any pre-existing CSS transitions already on the element. To get an idea of what happens during a class-based animation, be sure
+   to view the step by step details of {@link ngAnimate.$animate#methods_addclass $animate.addClass} and
+   {@link ngAnimate.$animate#methods_removeclass $animate.removeClass}.
  */
 var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
  * @name ng.directive:ngClassOdd
+ * @restrict AC
  *
  * @description
  * The `ngClassOdd` and `ngClassEven` directives work exactly as
- * {@link ng.directive:ngClass ngClass}, except it works in
- * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
+ * {@link ng.directive:ngClass ngClass}, except they work in
+ * conjunction with `ngRepeat` and take effect only on odd (even) rows.
  *
- * This directive can be applied only within a scope of an
+ * This directive can be applied only within the scope of an
  * {@link ng.directive:ngRepeat ngRepeat}.
  *
  * @element ANY
@@ -249,13 +252,14 @@ var ngClassOddDirective = classDirective('Odd', 0);
 /**
  * @ngdoc directive
  * @name ng.directive:ngClassEven
+ * @restrict AC
  *
  * @description
  * The `ngClassOdd` and `ngClassEven` directives work exactly as
- * {@link ng.directive:ngClass ngClass}, except it works in
- * conjunction with `ngRepeat` and takes affect only on odd (even) rows.
+ * {@link ng.directive:ngClass ngClass}, except they work in
+ * conjunction with `ngRepeat` and take effect only on odd (even) rows.
  *
- * This directive can be applied only within a scope of an
+ * This directive can be applied only within the scope of an
  * {@link ng.directive:ngRepeat ngRepeat}.
  *
  * @element ANY

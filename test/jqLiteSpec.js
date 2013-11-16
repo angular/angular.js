@@ -151,6 +151,13 @@ describe('jqLite', function() {
       dealoc(element);
     });
 
+    it('should retrieve isolate scope attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('$isolateScope', scope);
+      expect(element.isolateScope()).toBe(scope);
+      dealoc(element);
+    });
+
     it('should retrieve scope attached to the html element if its requested on the document',
         function() {
       var doc = jqLite(document),
@@ -177,6 +184,33 @@ describe('jqLite', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
       var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
       expect(deepChild.scope()).toBeFalsy();
+      dealoc(element);
+    });
+  });
+
+
+  describe('isolateScope', function() {
+
+    it('should retrieve isolate scope attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('$isolateScope', scope);
+      expect(element.isolateScope()).toBe(scope);
+      dealoc(element);
+    });
+
+
+    it('should not walk up the dom to find scope', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      element.data('$isolateScope', scope);
+      expect(deepChild.isolateScope()).toBeUndefined();
+      dealoc(element);
+    });
+
+
+    it('should return undefined when no scope was found', function() {
+      var element = jqLite('<div></div>');
+      expect(element.isolateScope()).toBeFalsy();
       dealoc(element);
     });
   });
@@ -478,6 +512,30 @@ describe('jqLite', function() {
 
 
   describe('class', function() {
+
+    it('should properly do  with SVG elements', function() {
+      // this is a jqLite & SVG only test (jquery doesn't behave this way right now, which is a bug)
+      if (!window.SVGElement || !_jqLiteMode) return;
+      var svg = jqLite('<svg><rect></rect></svg>');
+      var rect = svg.children();
+
+      expect(rect.hasClass('foo-class')).toBe(false);
+      rect.addClass('foo-class');
+      expect(rect.hasClass('foo-class')).toBe(true);
+      rect.removeClass('foo-class');
+      expect(rect.hasClass('foo-class')).toBe(false);
+    });
+
+
+    it('should ignore comment elements', function() {
+      var comment = jqLite(document.createComment('something'));
+
+      comment.addClass('whatever');
+      comment.hasClass('whatever');
+      comment.toggleClass('whatever');
+      comment.removeClass('whatever');
+    });
+
 
     describe('hasClass', function() {
       it('should check class', function() {
@@ -1329,6 +1387,18 @@ describe('jqLite', function() {
       event = pokeSpy.mostRecentCall.args[0];
       expect(event.preventDefault).toBeDefined();
     });
+
+    it('should pass data as an additional argument', function() {
+      var element = jqLite('<a>poke</a>'),
+          pokeSpy = jasmine.createSpy('poke'),
+          data;
+
+      element.on('click', pokeSpy);
+
+      element.triggerHandler('click', [{hello: "world"}]);
+      data = pokeSpy.mostRecentCall.args[1];
+      expect(data.hello).toBe("world");
+    });
   });
 
 
@@ -1352,6 +1422,7 @@ describe('jqLite', function() {
      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-   })
+   });
   });
+
 });

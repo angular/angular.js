@@ -5,10 +5,11 @@
  * @name ng.directive:ngShow
  *
  * @description
- * The `ngShow` directive shows and hides the given HTML element conditionally based on the expression
- * provided to the ngShow attribute. The show and hide mechanism is a achieved by removing and adding
- * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
- * in AngularJS which sets the display style to none (using an !important flag).
+ * The `ngShow` directive shows or hides the given HTML element based on the expression
+ * provided to the ngShow attribute. The element is shown or hidden by removing or adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
+ * in AngularJS and sets the display style to none (using an !important flag).
+ * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is visible) -->
@@ -54,9 +55,9 @@
  * ## A note about animations with ngShow
  *
  * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
- * is true and false. This system works similar to the animation system present with ngClass, however, the
- * only difference is that you must also include the !important flag to override the display property so
- * that you can perform an animation when the element is hidden during the time of the animation.
+ * is true and false. This system works like the animation system present with ngClass except that
+ * you must also include the !important flag to override the display property
+ * so that you can perform an animation when the element is hidden during the time of the animation.
  *
  * <pre>
  * //
@@ -99,29 +100,25 @@
       </div>
     </file>
     <file name="animations.css">
-      .animate-show.ng-hide-add, 
-      .animate-show.ng-hide-remove {
+      .animate-show {
         -webkit-transition:all linear 0.5s;
-        -moz-transition:all linear 0.5s;
-        -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
-        display:block!important;
-      }
-
-      .animate-show.ng-hide-add.ng-hide-add-active,
-      .animate-show.ng-hide-remove {
-        line-height:0;
-        opacity:0;
-        padding:0 10px;
-      }
-
-      .animate-show.ng-hide-add,
-      .animate-show.ng-hide-remove.ng-hide-remove-active {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
+      }
+
+      .animate-show.ng-hide-add,
+      .animate-show.ng-hide-remove {
+        display:block!important;
+      }
+
+      .animate-show.ng-hide {
+        line-height:0;
+        opacity:0;
+        padding:0 10px;
       }
 
       .check-element {
@@ -157,10 +154,11 @@ var ngShowDirective = ['$animate', function($animate) {
  * @name ng.directive:ngHide
  *
  * @description
- * The `ngHide` directive shows and hides the given HTML element conditionally based on the expression
- * provided to the ngHide attribute. The show and hide mechanism is a achieved by removing and adding
- * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is a predefined CSS class present
- * in AngularJS which sets the display style to none (using an !important flag).
+ * The `ngHide` directive shows or hides the given HTML element based on the expression
+ * provided to the ngHide attribute. The element is shown or hidden by removing or adding
+ * the `ng-hide` CSS class onto the element. The `.ng-hide` CSS class is predefined
+ * in AngularJS and sets the display style to none (using an !important flag).
+ * For CSP mode please add `angular-csp.css` to your html file (see {@link ng.directive:ngCsp ngCsp}).
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is hidden) -->
@@ -206,8 +204,8 @@ var ngShowDirective = ['$animate', function($animate) {
  * ## A note about animations with ngHide
  *
  * Animations in ngShow/ngHide work with the show and hide events that are triggered when the directive expression
- * is true and false. This system works similar to the animation system present with ngClass, however, the
- * only difference is that you must also include the !important flag to override the display property so
+ * is true and false. This system works like the animation system present with ngClass, except that
+ * you must also include the !important flag to override the display property so
  * that you can perform an animation when the element is hidden during the time of the animation.
  *
  * <pre>
@@ -251,29 +249,25 @@ var ngShowDirective = ['$animate', function($animate) {
       </div>
     </file>
     <file name="animations.css">
-      .animate-hide.ng-hide-add, 
-      .animate-hide.ng-hide-remove {
+      .animate-hide {
         -webkit-transition:all linear 0.5s;
-        -moz-transition:all linear 0.5s;
-        -o-transition:all linear 0.5s;
         transition:all linear 0.5s;
-        display:block!important;
-      }
-
-      .animate-hide.ng-hide-add.ng-hide-add-active,
-      .animate-hide.ng-hide-remove {
-        line-height:0;
-        opacity:0;
-        padding:0 10px;
-      }
-
-      .animate-hide.ng-hide-add,
-      .animate-hide.ng-hide-remove.ng-hide-remove-active {
         line-height:20px;
         opacity:1;
         padding:10px;
         border:1px solid black;
         background:white;
+      }
+
+      .animate-hide.ng-hide-add,
+      .animate-hide.ng-hide-remove {
+        display:block!important;
+      }
+
+      .animate-hide.ng-hide {
+        line-height:0;
+        opacity:0;
+        padding:0 10px;
       }
 
       .check-element {

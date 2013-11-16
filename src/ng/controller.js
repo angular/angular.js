@@ -8,7 +8,7 @@
  * controllers.
  *
  * This provider allows controller registration via the
- * {@link ng.$controllerProvider#register register} method.
+ * {@link ng.$controllerProvider#methods_register register} method.
  */
 function $ControllerProvider() {
   var controllers = {},
@@ -19,13 +19,15 @@ function $ControllerProvider() {
    * @ngdoc function
    * @name ng.$controllerProvider#register
    * @methodOf ng.$controllerProvider
-   * @param {string} name Controller name
+   * @param {string|Object} name Controller name, or an object map of controllers where the keys are
+   *    the names and the values are the constructors.
    * @param {Function|Array} constructor Controller constructor fn (optionally decorated with DI
    *    annotations in the array notation).
    */
   this.register = function(name, constructor) {
+    assertNotHasOwnProperty(name, 'controller');
     if (isObject(name)) {
-      extend(controllers, name)
+      extend(controllers, name);
     } else {
       controllers[name] = constructor;
     }
@@ -75,7 +77,9 @@ function $ControllerProvider() {
 
       if (identifier) {
         if (!(locals && typeof locals.$scope == 'object')) {
-          throw minErr('$controller')('noscp', "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.", constructor || expression.name, identifier);
+          throw minErr('$controller')('noscp',
+              "Cannot export controller '{0}' as '{1}'! No $scope object provided via `locals`.",
+              constructor || expression.name, identifier);
         }
 
         locals.$scope[identifier] = instance;

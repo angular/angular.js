@@ -1,64 +1,15 @@
 var docsApp = {
   controller: {},
   directive: {},
-  serviceFactory: {}
+  serviceFactory: {},
+  filter: {}
 };
 
 docsApp.controller.DocsVersionsCtrl = ['$scope', '$window', 'NG_VERSIONS', 'NG_VERSION', function($scope, $window, NG_VERSIONS, NG_VERSION) {
-  $scope.versions = expandVersions(NG_VERSIONS);
-  $scope.version  = ($scope.version || NG_VERSION).match(/^([\d\.]+\d+\S+)/)[1]; //match only the number
-
-  $scope.jumpToDocsVersion = function(value) {
-    var isLastStable,
-        version,
-        versions = $scope.versions;
-    for(var i=versions.length-1;i>=0;i--) {
-      var v = versions[i];
-      if(v.version == value) {
-        var next = versions[i - 1];
-        isLastStable = v.stable && (!next || next && !next.stable);
-        version = v;
-        break;
-      }
-    };
-
-    if(version && version.version >= '1.0.0') {
-      //the older versions have a different path to the docs within their repo directory
-      var docsPath = version.version < '1.0.2' ? 'docs-' + version.version : 'docs';
-
-      //the last stable version should redirect to docs.angularjs.org instead of code.angularjs.org
-      var url = 'http://' +
-                  (isLastStable ?
-                    'docs.angularjs.org' :
-                    'code.angularjs.org/' + version.version + '/' + docsPath);
-
-      $window.location = url;
-    }
-  };
-
-  function expandVersions(angularVersions) {
-    var unstableVersionStart = 0;
-    angularVersions.forEach(function(version) {
-      var split = version.split('.');
-      unstableVersionStart = split[1] % 2 == 1 ?
-                        Math.max(unstableVersionStart, parseInt(split[0] + '' + split[1])) :
-                        unstableVersionStart;
-    });
-
-    var versions = [];
-    for(var i=angularVersions.length-1;i>=0;i--) {
-      var version = angularVersions[i];
-      var split = version.split('.');
-      var stable = parseInt(split[0] + '' + split[1]) < unstableVersionStart;
-      versions.push({
-        version : version,
-        stable : stable,
-        title : 'AngularJS - v' + version,
-        group : (stable ? 'Stable' : 'Unstable')
-      });
-    };
-
-    return versions;
+  $scope.docs_versions = NG_VERSIONS;
+  $scope.docs_version  = NG_VERSIONS[0];
+  $scope.jumpToDocsVersion = function(version) {
+    $window.location = version.url;
   };
 }];
 
@@ -181,9 +132,19 @@ docsApp.directive.focused = function($timeout) {
   };
 };
 
-docsApp.directive.docsSearchInput = function() {
+docsApp.directive.docsSearchInput = ['$document',function($document) {
   return function(scope, element, attrs) {
-    var ESCAPE_KEY_KEYCODE = 27;
+    var ESCAPE_KEY_KEYCODE = 27,
+        FORWARD_SLASH_KEYCODE = 191;
+    angular.element($document[0].body).bind('keydown', function(event) {
+      var input = element[0];
+      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
+        event.stopPropagation();
+        event.preventDefault();
+        input.focus();
+      }
+    });
+
     element.bind('keydown', function(event) {
       if(event.keyCode == ESCAPE_KEY_KEYCODE) {
         event.stopPropagation();
@@ -194,7 +155,7 @@ docsApp.directive.docsSearchInput = function() {
       }
     });
   };
-};
+}];
 
 
 docsApp.directive.code = function() {
@@ -246,13 +207,57 @@ docsApp.directive.sourceEdit = function(getEmbeddedTemplate) {
   }
 };
 
+docsApp.directive.docModuleComponents = function() {
+  return {
+    template: '  <div class="component-breakdown">' +
+              '    <h2>Module Components</h2>' +
+              '    <div ng-repeat="(key, section) in components">' +
+              '      <h3 class="component-heading" id="{{ section.type }}">{{ section.title }}</h3>' +
+              '      <table class="definition-table">' +
+              '        <tr>' +
+              '          <th>Name</th>' +
+              '          <th>Description</th>' +
+              '        </tr>' +
+              '        <tr ng-repeat="component in section.components">' +
+              '          <td><a ng-href="{{ component.url }}">{{ component.shortName }}</a></td>' +
+              '          <td>{{ component.shortDescription }}</td>' +
+              '        </tr>' +
+              '      </table>' +
+              '    </div>' +
+              '  </div>',
+    scope : {
+      module : '@docModuleComponents'
+    },
+    controller : ['$scope', '$anchorScroll', '$timeout', 'sections',
+      function($scope, $anchorScroll, $timeout, sections) {
+      var validTypes = ['property','function','directive','service','object','filter'];
+      var components = {};
+      angular.forEach(sections.api, function(item) {
+        if(item.moduleName == $scope.module) {
+          var type = item.type;
+          if(type == 'object') type = 'service';
+          if(validTypes.indexOf(type) >= 0) {
+            components[type] = components[type] || {
+              title : type,
+              type : type,
+              components : []
+            };
+            components[type].components.push(item);
+          }
+        }
+      });
+      $scope.components = components;
+      $timeout($anchorScroll, 0, false);
+    }]
+  };
+};
 
 docsApp.directive.docTutorialNav = function(templateMerge) {
   var pages = [
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
     'step_05', 'step_06', 'step_07', 'step_08', 'step_09',
-    'step_10', 'step_11', 'the_end'
+    'step_10', 'step_11', 'step_12', 'the_end'
   ];
   return {
     compile: function(element, attrs) {
@@ -305,7 +310,40 @@ docsApp.directive.docTutorialReset = function() {
 };
 
 
-docsApp.directive.errorDisplay = ['$location', function ($location) {
+docsApp.filter.errorLink = ['$sanitize', function ($sanitize) {
+  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/g,
+      MAILTO_REGEXP = /^mailto:/,
+      STACK_TRACE_REGEXP = /:\d+:\d+$/;
+
+  var truncate = function (text, nchars) {
+    if (text.length > nchars) {
+      return text.substr(0, nchars - 3) + '...';
+    }
+    return text;
+  };
+
+  return function (text, target) {
+    var targetHtml = target ? ' target="' + target + '"' : '';
+
+    if (!text) return text;
+
+    return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
+      if (STACK_TRACE_REGEXP.test(url)) {
+        return url;
+      }
+
+      // if we did not match ftp/http/mailto then assume mailto
+      if (!/^((ftp|https?):\/\/|mailto:)/.test(url)) url = 'mailto:' + url;
+
+      return '<a' + targetHtml + ' href="' + url +'">' +
+                truncate(url.replace(MAILTO_REGEXP, ''), 60) +
+              '</a>';
+    }));
+  };
+}];
+
+
+docsApp.directive.errorDisplay = ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
   var interpolate = function (formatString) {
     var formatArgs = arguments;
     return formatString.replace(/\{\d+\}/g, function (match) {
@@ -328,7 +366,7 @@ docsApp.directive.errorDisplay = ['$location', function ($location) {
       for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
-      element.text(interpolate.apply(null, formatArgs));
+      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
     }
   };
 }];
@@ -375,7 +413,8 @@ docsApp.serviceFactory.prepareDefaultAppModule = function() {
     var moduleName = 'App';
     return {
       module : moduleName,
-      script : "angular.module('" + moduleName + "', ['" + deps.join("','") + "']);\n\n"
+      script : "angular.module('" + moduleName + "', [" +
+          (deps.length ? "'" + deps.join("','") + "'" : "") + "]);\n\n"
     };
   };
 };
@@ -637,10 +676,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     };
   };
 
-  $scope.submitForm = function() {
-    $scope.bestMatch && $location.path($scope.bestMatch.page.url);
-  };
-
   $scope.afterPartialLoaded = function() {
     var currentPageId = $location.path();
     $scope.partialTitle = $scope.currentPage.shortName;
@@ -675,6 +710,9 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     cookbook: 'Examples',
     error: 'Error Reference'
   };
+
+  populateComponentsList();
+
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
@@ -690,8 +728,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
         $scope.partialTitle = 'Error: Page Not Found!';
       }
 
-      updateSearch();
-
+      populateComponentsList();
 
       // Update breadcrumbs
       var breadcrumb = $scope.breadcrumb = [],
@@ -732,10 +769,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     }
   });
 
-  $scope.$watch('search', updateSearch);
-
-
-
   /**********************************
    Initialize
    ***********************************/
@@ -767,26 +800,21 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
    Private methods
    ***********************************/
 
-  function updateSearch() {
+  function populateComponentsList() {
+    var area = $location.path().split('/')[1];
+    area = /^index-\w/.test(area) ? 'api' : area;
     var moduleCache = {},
         namespaceCache = {},
-        pages = sections[$location.path().split('/')[1]],
+        pages = sections[area],
         modules = $scope.modules = [],
         namespaces = $scope.namespaces = [],
         globalErrors = $scope.globalErrors = [],
         otherPages = $scope.pages = [],
-        search = $scope.search,
-        bestMatch = {page: null, rank:0};
+        search = $scope.search;
 
     angular.forEach(pages, function(page) {
       var match,
         id = page.id;
-
-      if (!(match = rank(page, search))) return;
-
-      if (match.rank > bestMatch.rank) {
-        bestMatch = match;
-      }
 
       if (page.id == 'index') {
         //skip
@@ -822,10 +850,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       }
 
     });
-
-    $scope.bestMatch = bestMatch;
-
-    /*************/
 
     function module(name) {
       var module = moduleCache[name];
@@ -867,28 +891,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       }
       return namespace;
     }
-
-    function rank(page, terms) {
-      var ranking = {page: page, rank:0},
-        keywords = page.keywords,
-        title = page.shortName.toLowerCase();
-
-      terms && angular.forEach(terms.toLowerCase().split(' '), function(term) {
-        var index;
-
-        if (ranking) {
-          if (keywords.indexOf(term) == -1) {
-            ranking = null;
-          } else {
-            ranking.rank ++; // one point for each term found
-            if ((index = title.indexOf(term)) != -1) {
-              ranking.rank += 20 - index; // ten points if you match title
-            }
-          }
-        }
-      });
-      return ranking;
-    }
   }
 
 
@@ -923,3 +925,7 @@ angular.module('docsApp', ['ngResource', 'ngRoute', 'ngCookies', 'ngSanitize', '
   factory(docsApp.serviceFactory).
   directive(docsApp.directive).
   controller(docsApp.controller);
+
+angular.forEach(docsApp.filter, function (docsAppFilter, filterName) {
+  angular.module('docsApp').filter(filterName, docsAppFilter);
+});

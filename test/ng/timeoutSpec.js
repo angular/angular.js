@@ -77,7 +77,7 @@ describe('$timeout', function() {
     var promise2 = $timeout(function() {}, 100, false);
     expect(cancelSpy).not.toHaveBeenCalled();
 
-    $timeout.flushNext(0);
+    $timeout.flush(0);
 
     // Promise1 deferred object should already be removed from the list and not cancellable
     $timeout.cancel(promise1);
@@ -162,6 +162,20 @@ describe('$timeout', function() {
       expect(task1).not.toHaveBeenCalled();
       expect(task2).toHaveBeenCalledOnce();
       expect(task3).not.toHaveBeenCalled();
+    }));
+
+
+    it('should cancel the promise', inject(function($timeout, log) {
+      var promise = $timeout(noop);
+      promise.then(function(value) { log('promise success: ' + value); },
+                 function(err) { log('promise error: ' + err); },
+                 function(note) { log('promise update: ' + note); });
+      expect(log).toEqual([]);
+
+      $timeout.cancel(promise);
+      $timeout.flush();
+
+      expect(log).toEqual(['promise error: canceled']);
     }));
 
 

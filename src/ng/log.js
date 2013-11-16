@@ -6,10 +6,13 @@
  * @requires $window
  *
  * @description
- * Simple service for logging. Default implementation writes the message
+ * Simple service for logging. Default implementation safely writes the message
  * into the browser's console (if present).
- *
+ * 
  * The main purpose of this service is to simplify debugging and troubleshooting.
+ *
+ * The default is not to log `debug` messages. You can use
+ * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
  *
  * @example
    <example>
@@ -52,12 +55,12 @@ function $LogProvider(){
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.debugEnabled = function(flag) {
-	  if (isDefined(flag)) {
-		  debug = flag;
-		  return this;
-	  } else {
-		  return debug;
-	  }
+    if (isDefined(flag)) {
+      debug = flag;
+    return this;
+    } else {
+      return debug;
+    }
   };
   
   this.$get = ['$window', function($window){
@@ -111,13 +114,13 @@ function $LogProvider(){
        * Write a debug message
        */
       debug: (function () {
-    	var fn = consoleLog('debug');
-    	
-    	return function() {
-    		if (debug) {
-    			fn.apply(self, arguments);
-    		}
-    	}
+        var fn = consoleLog('debug');
+
+        return function() {
+          if (debug) {
+            fn.apply(self, arguments);
+          }
+        };
       }())
     };
 
@@ -151,8 +154,8 @@ function $LogProvider(){
       // we are IE which either doesn't have window.console => this is noop and we do nothing,
       // or we are IE where console.log doesn't have apply so we log at least first 2 args
       return function(arg1, arg2) {
-        logFn(arg1, arg2);
-      }
+        logFn(arg1, arg2 == null ? '' : arg2);
+      };
     }
   }];
 }
