@@ -228,7 +228,7 @@ myApp.provider('unicornLauncher', function UnicornLauncherProvider() {
     // let's assume that the UnicornLauncher constructor was also changed to
     // accept and use the useTinfoilShielding argument
     return new UnicornLauncher(apiToken, useTinfoilShielding);
-  }]);
+  }];
 });
 ```
 
