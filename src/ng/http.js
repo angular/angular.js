@@ -947,6 +947,21 @@ function $HttpProvider() {
           if (cachedResp.then) {
             // cached request has already been sent, but there is no response yet
             cachedResp.then(removePendingReq, removePendingReq);
+            // Wait for cache promise to resolve
+            cachedResp.then(function(value){
+              if(isDefined(value)){
+                if (isArray(value)) {
+                  resolvePromise(value[1], value[0], copy(value[2]));
+                } else {
+                  resolvePromise(value, 200, {});
+                }
+              // Value not in cache
+              } else {
+                $httpBackend(config.method, url, reqData, done, reqHeaders,
+                    config.timeout, config.withCredentials, config.responseType);
+              }
+            });
+
             return cachedResp;
           } else {
             // serving from cache
