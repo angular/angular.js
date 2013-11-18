@@ -1001,7 +1001,7 @@ angular.module('ngAnimate', ['ng'])
         if(timings.transitionDuration > 0) {
           element.addClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
           activeClassName += NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME + ' ';
-          node.style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
+          blockTransitions(element);
         }
 
         forEach(className.split(' '), function(klass, i) {
@@ -1019,6 +1019,17 @@ angular.module('ngAnimate', ['ng'])
         });
 
         return true;
+      }
+
+      function blockTransitions(element) {
+        element[0].style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
+      }
+
+      function unblockTransitions(element) {
+        var node = element[0], prop = TRANSITION_PROP + PROPERTY_KEY;
+        if(node.style[prop] && node.style[prop].length > 0) {
+          node.style[prop] = '';
+        }
       }
 
       function animateRun(element, className, activeAnimationComplete) {
@@ -1041,8 +1052,6 @@ angular.module('ngAnimate', ['ng'])
 
         var applyFallbackStyle, style = '';
         if(timings.transitionDuration > 0) {
-          node.style[TRANSITION_PROP + PROPERTY_KEY] = '';
-
           var propertyStyle = timings.transitionPropertyStyle;
           if(propertyStyle.indexOf('all') == -1) {
             applyFallbackStyle = true;
@@ -1150,6 +1159,7 @@ angular.module('ngAnimate', ['ng'])
         //happen in the first place
         var cancel = preReflowCancellation;
         afterReflow(function() {
+          unblockTransitions(element);
           //once the reflow is complete then we point cancel to
           //the new cancellation function which will remove all of the
           //animation properties from the active animation
@@ -1213,7 +1223,10 @@ angular.module('ngAnimate', ['ng'])
         beforeAddClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-add'));
           if(cancellationMethod) {
-            afterReflow(animationCompleted);
+            afterReflow(function() {
+              unblockTransitions(element);
+              animationCompleted();
+            });
             return cancellationMethod;
           }
           animationCompleted();
@@ -1226,7 +1239,10 @@ angular.module('ngAnimate', ['ng'])
         beforeRemoveClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-remove'));
           if(cancellationMethod) {
-            afterReflow(animationCompleted);
+            afterReflow(function() {
+              unblockTransitions(element);
+              animationCompleted();
+            });
             return cancellationMethod;
           }
           animationCompleted();
