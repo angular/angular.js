@@ -2663,4 +2663,37 @@ describe("ngAnimate", function() {
     expect(element.hasClass('base-class')).toBe(true);
   }));
 
+  it('should block and unblock transitions before the dom operation occurs',
+    inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout) {
+
+    if (!$sniffer.transitions) return;
+
+    $animate.enabled(true);
+
+    ss.addRule('.cross-animation', '-webkit-transition:1s linear all;' +
+                                           'transition:1s linear all;');
+
+    var capturedProperty = 'none';
+
+    var element = $compile('<div class="cross-animation"></div>')($rootScope);
+    $rootElement.append(element);
+    jqLite($document[0].body).append($rootElement);
+
+    var node = element[0];
+    node._setAttribute = node.setAttribute;
+    node.setAttribute = function(prop, val) {
+      if(prop == 'class' && val.indexOf('trigger-class') >= 0) {
+        var propertyKey = ($sniffer.vendorPrefix == 'Webkit' ? '-webkit-' : '') + 'transition-property';
+        capturedProperty = element.css(propertyKey);
+      }
+      node._setAttribute(prop, val);
+    };
+
+    $animate.addClass(element, 'trigger-class');
+
+    $timeout.flush();
+
+    expect(capturedProperty).not.toBe('none');
+  }));
+
 });
