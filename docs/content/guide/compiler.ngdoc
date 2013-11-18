@@ -350,7 +350,7 @@ Creating local properties on widget scope creates two problems:
 
 
 To solve the issue of lack of isolation, the directive declares a new `isolated` scope. An
-isolated scope does not prototypically inherit from the child scope, and therefore we don't have
+isolated scope does not prototypically inherit from the parent scope, and therefore we don't have
 to worry about accidentally clobbering any properties.
 
 However `isolated` scope creates a new problem: if a transcluded DOM is a child of the widget
