@@ -80,7 +80,7 @@ The **important** parts are:
 IE has issues with element tag names which are not standard HTML tag names. These fall into two
 categories, and each category has its own fix.
 
-  * If the tag name starts with `my:` prefix than it is considered an XML namespace and must
+  * If the tag name starts with `my:` prefix then it is considered an XML namespace and must
     have corresponding namespace declaration on `<html xmlns:my="ignored">`
 
   * If the tag has no `:` but it is not a standard HTML tag, then it must be pre-created using
