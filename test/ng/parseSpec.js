@@ -14,7 +14,7 @@ describe('parser', function() {
 
     beforeEach(function () {
       lex = function () {
-        var lexer = new Lexer({csp: false, unwrapPromises: false});
+        var lexer = new Lexer({csp: false, unwrapPromises: false, additionalIsIdent: noop});
         return lexer.lex.apply(lexer, arguments);
       };
     });
@@ -190,12 +190,45 @@ describe('parser', function() {
         lex("'\\u1''bla'");
       }).toThrowMinErr("$parse", "lexerr", "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla'].");
     });
+
+    describe('with additionalIsIdent', function() {
+      beforeEach(function () {
+        lex = function () {
+          var mathCharacters = 'πΣε';
+
+          var lexer = new Lexer({csp: false, unwrapPromises: false, additionalIsIdent: function(ch) {
+            return mathCharacters.indexOf(ch) > -1;
+          }});
+
+          return lexer.lex.apply(lexer, arguments);
+        };
+      });
+
+      it('correctly tokenizes identifiers containing the specified special characters', function() {
+        var tokens = lex(" Σ == π + ε ");
+
+        expect(tokens.length).toEqual(5);
+        expect(tokens[0].text).toEqual('Σ');
+        expect(tokens[1].text).toEqual('==');
+        expect(tokens[2].text).toEqual('π');
+        expect(tokens[3].text).toEqual('+');
+        expect(tokens[4].text).toEqual('ε');
+      });
+
+    });
   });
 
   var $filterProvider, scope;
 
-  beforeEach(module(['$filterProvider', function (filterProvider) {
+  beforeEach(module(['$filterProvider', '$parseProvider', function (filterProvider, parseProvider) {
     $filterProvider = filterProvider;
+
+    var mathCharacters = 'Σπε';
+
+    parseProvider.additionalIsIdent(function(ch) {
+      return mathCharacters.indexOf(ch) > -1;
+    });
+
   }]));
 
 
@@ -333,6 +366,13 @@ describe('parser', function() {
         expect(scope.$eval("a", scope)).toEqual(123);
         expect(scope.$eval("b.c", scope)).toEqual(456);
         expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
+      });
+
+      it('correctly evaluates identifiers with non-English characters', function() {
+        scope.π = 3.14;
+        expect(scope.$eval("π", scope)).toEqual(scope.π);
+        expect(scope.$eval("Σ = π + π", scope)).toEqual(scope.π + scope.π);
+        expect(scope.Σ).toEqual(scope.π + scope.π);
       });
 
       it('should resolve deeply nested paths (important for CSP mode)', function() {
