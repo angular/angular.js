@@ -100,7 +100,10 @@ var OPERATORS = {
     '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
 //    '|':function(self, locals, a,b){return a|b;},
     '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
-    '!':function(self, locals, a){return !a(self, locals);}
+    '!':function(self, locals, a){return !a(self, locals);},
+    '<<':function(self, locals, a,b){return a(self, locals)<<b(self, locals);},
+    '>>':function(self, locals, a,b){return a(self, locals)>>b(self, locals);},
+    '>>>':function(self, locals, a,b){return a(self, locals)>>>b(self, locals);}
 };
 /* jshint bitwise: true */
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
@@ -661,10 +664,19 @@ Parser.prototype = {
   },
 
   relational: function() {
-    var left = this.additive();
+    var left = this.bitwiseShift();
     var token;
     if ((token = this.expect('<', '>', '<=', '>='))) {
       left = this.binaryFn(left, token.fn, this.relational());
+    }
+    return left;
+  },
+
+  bitwiseShift: function() {
+    var left = this.additive();
+    var token;
+    while ((token = this.expect('<<','>>','>>>'))) {
+      left = this.binaryFn(left, token.fn, this.additive());
     }
     return left;
   },

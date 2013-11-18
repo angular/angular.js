@@ -217,6 +217,7 @@ describe('parser', function() {
         expect(scope.$eval("0--1+1.5")).toEqual(0- -1 + 1.5);
         expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0- -1+ +2*-3/-4);
         expect(scope.$eval("1/2*3")).toEqual(1/2*3);
+        expect(scope.$eval("-2+10<<2*7>>6")).toEqual(-2 + 10 << 2 * 7 >> 6);
       });
 
       it('should parse comparison', function() {
@@ -417,6 +418,12 @@ describe('parser', function() {
         scope.subTotal =  100;
         expect(scope.$eval("taxRate / 100 * subTotal")).toEqual(8);
         expect(scope.$eval("subTotal * taxRate / 100")).toEqual(8);
+      });
+
+      it('should evaluate bitwise shifts', function() {
+        expect(scope.$eval('2<<8')).toEqual(512);
+        expect(scope.$eval('480>>5')).toEqual(15);
+        expect(scope.$eval('-1>>>127')).toEqual(-1>>>127);
       });
 
       it('should evaluate array', function() {
