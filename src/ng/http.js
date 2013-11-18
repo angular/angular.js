@@ -291,8 +291,8 @@ function $HttpProvider() {
      * `$httpProvider.defaults.headers.get = { 'My-Header' : 'value' }.
      *
      * The defaults can also be set at runtime via the `$http.defaults` object in the same
-     * fashion. In addition, you can supply a `headers` property in the config object passed when
-     * calling `$http(config)`, which overrides the defaults without changing them globally.
+     * fashion. Alternatively, supplying a `headers` object with a map of header names to their values 
+     * will override the defaults without changing them globally.
      *
      *
      * # Transforming Requests and Responses
