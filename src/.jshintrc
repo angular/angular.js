@@ -64,6 +64,7 @@
     "isWindow": false,
     "isScope": false,
     "isFile": false,
+    "isBlob": false,
     "isBoolean": false,
     "trim": false,
     "isElement": false,
