@@ -177,6 +177,22 @@ describe('ngRepeat', function() {
     });
 
 
+    it('should allow expressions over multiple lines', function() {
+      scope.isTrue = function() {
+        return true;
+      };
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="item in items\n' +
+            '| filter:isTrue">{{item.name}}</li>' +
+          '</ul>')(scope);
+      scope.items = [{name: 'igor'}];
+      scope.$digest();
+
+      expect(element.find('li').text()).toBe('igor');
+    });
+
+
     it('should track using provided function when a filter is present', function() {
       scope.newArray = function (items) {
         var newArray = [];
