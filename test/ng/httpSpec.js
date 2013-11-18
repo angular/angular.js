@@ -1261,6 +1261,28 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalled();
       });
 
+      it('should allow cache to return a promise', inject(function($q, $timeout) {
+        // Use a mock async cache factory
+        cache = {
+          get: function(key){
+            var deferred = $q.defer();    
+            $timeout(function(){
+              deferred.resolve('123');
+            }, 1);
+            return deferred.promise;
+          },
+          put: function(key){}
+        };
+        cache.put('/abc', '');
+
+        $http({method: 'GET', url: '/abc', cache: cache}).success(function (response, status, headers) {
+          expect(response).toBe('');
+          expect(status).toBe(200);
+          callback();
+          expect(callback).toHaveBeenCalled();
+        });
+        $rootScope.$digest();
+      }));
 
       it('should default to status code 200 and empty headers if cache contains a non-array element',
           inject(function($rootScope) {

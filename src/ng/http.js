@@ -291,8 +291,8 @@ function $HttpProvider() {
      * `$httpProvider.defaults.headers.get = { 'My-Header' : 'value' }.
      *
      * The defaults can also be set at runtime via the `$http.defaults` object in the same
-     * fashion. In addition, you can supply a `headers` property in the config object passed when
-     * calling `$http(config)`, which overrides the defaults without changing them globally.
+     * fashion. Alternatively, supplying a `headers` object with a map of header names to their values 
+     * will override the defaults without changing them globally.
      *
      *
      * # Transforming Requests and Responses
@@ -947,6 +947,21 @@ function $HttpProvider() {
           if (cachedResp.then) {
             // cached request has already been sent, but there is no response yet
             cachedResp.then(removePendingReq, removePendingReq);
+            // Wait for cache promise to resolve
+            cachedResp.then(function(value){
+              if(isDefined(value)){
+                if (isArray(value)) {
+                  resolvePromise(value[1], value[0], copy(value[2]));
+                } else {
+                  resolvePromise(value, 200, {});
+                }
+              // Value not in cache
+              } else {
+                $httpBackend(config.method, url, reqData, done, reqHeaders,
+                    config.timeout, config.withCredentials, config.responseType);
+              }
+            });
+
             return cachedResp;
           } else {
             // serving from cache
