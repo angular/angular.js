@@ -1072,7 +1072,7 @@ function $CompileProvider($provide) {
             scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
               node[0].nodeValue = value;
             });
-            node[0].nodeValue = '';
+            node[0].nodeValue = interpolateFn();
           })
         });
       }
