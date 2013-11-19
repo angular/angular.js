@@ -4479,7 +4479,6 @@ describe('$compile', function() {
         $compile(element)($rootScope);
 
         $rootScope.$digest();
-        data = $animate.flushNext('removeClass');
 
         expect(element.hasClass('fire')).toBe(true);
 
