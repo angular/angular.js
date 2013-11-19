@@ -180,8 +180,8 @@ is available to be injected.
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
 this tutorial in Jasmine. You can learn about Jasmine on the {@link
-http://pivotal.github.com/jasmine/ Jasmine home page} and on the {@link
-https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
+http://pivotal.github.com/jasmine/ Jasmine home page} and at the {@link
+http://pivotal.github.io/jasmine/ Jasmine docs}.
 
 The angular-seed project is pre-configured to run all unit tests using {@link
 http://karma-runner.github.io/ Karma}. To run the test, do the following:
