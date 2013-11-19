@@ -41,6 +41,11 @@ function FormController(element, attrs) {
       errors = form.$error = {},
       controls = [];
 
+  // do not link to parent form if not-required attr is defined
+  if (attrs.notRequired) {
+    parentForm = nullFormCtrl;
+  }
+  
   // init state
   form.$name = attrs.name || attrs.ngForm;
   form.$dirty = false;
