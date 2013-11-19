@@ -2086,12 +2086,18 @@ angular.mock.clearDataCache = function() {
    */
 
   var ErrorWithDeclarationLocationStack = function(e, errorForStack) {
+    console.log('a');
     this.message = e.message;
+    console.log('b');
     this.name = e.name;
+    console.log('c');
     if (e.line) this.line = e.line;
+    console.log('d');
     if (e.sourceId) this.sourceId = e.sourceId;
+    console.log('e');
     if (e.stack && errorForStack)
       this.stack = e.stack + '\n' + errorForStack.stack;
+    console.log('f');
     if (e.stackArray) this.stackArray = e.stackArray;
   };
   ErrorWithDeclarationLocationStack.prototype.toString = Error.prototype.toString;
@@ -2116,6 +2122,7 @@ angular.mock.clearDataCache = function() {
           injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
+          console.log(new ErrorWithDeclarationLocationStack(e, errorForStack));
           throw new ErrorWithDeclarationLocationStack(e, errorForStack);
         } finally {
           errorForStack = null;
