@@ -2084,6 +2084,18 @@ angular.mock.clearDataCache = function() {
    *
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
+
+  var ErrorWithDeclarationLocationStack = function(e, errorForStack) {
+    this.message = e.message;
+    this.name = e.name;
+    if (e.line) this.line = e.line;
+    if (e.sourceId) this.sourceId = e.sourceId;
+    if (e.stack && errorForStack)
+      this.stack = e.stack + '\n' + errorForStack.stack;
+    if (e.stackArray) this.stackArray = e.stackArray;
+  };
+  ErrorWithDeclarationLocationStack.prototype.toStrinr = Error.prototype.toString;
+
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
     var errorForStack = new Error('Declaration Location');
@@ -2104,8 +2116,7 @@ angular.mock.clearDataCache = function() {
           injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
-          if(e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
-          throw e;
+          throw new ErrorWithDeclarationLocationStack(e, errorForStack);
         } finally {
           errorForStack = null;
         }

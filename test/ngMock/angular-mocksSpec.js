@@ -828,7 +828,7 @@ describe('ngMock', function() {
       });
     });
 
-    ddescribe('inject', function() {
+    describe('inject', function() {
       describe('in DSL', function() {
         it('should load module', inject(function() {
           log += 'inject';
