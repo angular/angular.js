@@ -510,6 +510,7 @@ angular.module('ngAnimate', ['ng'])
          * @function
          *
          * @param {boolean=} value If provided then set the animation on or off.
+         * @param {jQuery/jqLite element=} element If provided then the element will be used to represent the enable/disable operation
          * @return {boolean} Current animation state.
          *
          * @description
