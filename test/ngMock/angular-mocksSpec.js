@@ -828,7 +828,7 @@ describe('ngMock', function() {
       });
     });
 
-    describe('inject', function() {
+    ddescribe('inject', function() {
       describe('in DSL', function() {
         it('should load module', inject(function() {
           log += 'inject';
@@ -864,6 +864,14 @@ describe('ngMock', function() {
         afterEach(function() {
           expect(log).toEqual('module;inject;')
         });
+      });
+
+      it('should not change thrown messages', function(){
+        try {
+          inject(function(){ throw new Error('test message'); });
+        } catch(e) {
+          expect(e.message).toMatch(/test message/);
+        }
       });
     });
   });
