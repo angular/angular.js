@@ -4,7 +4,7 @@ module.exports = function(config, specificOptions) {
     autoWatch: true,
     logLevel: config.LOG_INFO,
     logColors: true,
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'PhantomJS', 'Firefox'],
     browserDisconnectTimeout: 10000,
 
 
