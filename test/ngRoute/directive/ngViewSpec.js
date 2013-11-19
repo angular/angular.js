@@ -657,7 +657,6 @@ describe('ngView animations', function() {
         item = $animate.flushNext('enter').element;
 
         $animate.flushNext('addClass').element;
-        $animate.flushNext('addClass').element;
 
         expect(item.hasClass('classy')).toBe(true);
 
@@ -676,7 +675,6 @@ describe('ngView animations', function() {
         $animate.flushNext('enter').element;
         item = $animate.flushNext('leave').element;
 
-        $animate.flushNext('addClass').element;
         $animate.flushNext('addClass').element;
 
         expect(item.hasClass('boring')).toBe(true);
