@@ -1002,6 +1002,8 @@ angular.module('ngAnimate', ['ng'])
           element.addClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
           activeClassName += NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME + ' ';
           blockTransitions(element);
+        } else {
+          blockKeyframeAnimations(element);
         }
 
         forEach(className.split(' '), function(klass, i) {
@@ -1025,11 +1027,19 @@ angular.module('ngAnimate', ['ng'])
         element[0].style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
       }
 
+      function blockKeyframeAnimations(element) {
+        element[0].style[ANIMATION_PROP] = 'none 0s';
+      }
+
       function unblockTransitions(element) {
         var node = element[0], prop = TRANSITION_PROP + PROPERTY_KEY;
         if(node.style[prop] && node.style[prop].length > 0) {
           node.style[prop] = '';
         }
+      }
+
+      function unblockKeyframeAnimations(element) {
+        element[0].style[ANIMATION_PROP] = '';
       }
 
       function animateRun(element, className, activeAnimationComplete) {
@@ -1059,6 +1069,8 @@ angular.module('ngAnimate', ['ng'])
             style += CSS_PREFIX + 'transition-property: ' + propertyStyle + ', ' + fallbackProperty + '; ';
             style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + ', ' + timings.transitionDuration + 's; ';
           }
+        } else {
+          unblockKeyframeAnimations(element);
         }
 
         if(ii > 0) {
