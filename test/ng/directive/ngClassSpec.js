@@ -321,7 +321,6 @@ describe('ngClass animations', function() {
       $rootScope.val = 'one';
       $rootScope.$digest();
       $animate.flushNext('addClass');
-      $animate.flushNext('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = '';
@@ -427,7 +426,6 @@ describe('ngClass animations', function() {
       $rootScope.$digest();
 
       //this fires twice due to the class observer firing
-      className = $animate.flushNext('addClass').params[1];
       className = $animate.flushNext('addClass').params[1];
       expect(className).toBe('one two three');
 
