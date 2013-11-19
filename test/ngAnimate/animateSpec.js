@@ -2696,4 +2696,29 @@ describe("ngAnimate", function() {
     expect(capturedProperty).not.toBe('none');
   }));
 
+  it('should block and unblock keyframe animations around the reflow operation',
+    inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout) {
+
+    if (!$sniffer.animations) return;
+
+    $animate.enabled(true);
+
+    ss.addRule('.cross-animation', '-webkit-animation:1s my_animation;' +
+                                           'animation:1s my_animation;');
+
+    var element = $compile('<div class="cross-animation"></div>')($rootScope);
+    $rootElement.append(element);
+    jqLite($document[0].body).append($rootElement);
+
+    var node = element[0];
+    var animationKey = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
+
+    $animate.addClass(element, 'trigger-class');
+
+    expect(node.style[animationKey]).toContain('none');
+
+    $timeout.flush();
+
+    expect(node.style[animationKey]).not.toContain('none');
+  }));
 });
