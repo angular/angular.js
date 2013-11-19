@@ -2119,7 +2119,10 @@ angular.mock.clearDataCache = function() {
           injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
-          if(e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
+          // PhantomJS and Safari 6+ will throw readonly assigment when in strict mode
+          try {
+            if(e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
+          } catch (e) {}
           throw e;
         } finally {
           errorForStack = null;
