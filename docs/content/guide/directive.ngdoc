@@ -720,7 +720,7 @@ own behavior to it.
   </file>
   <file name="index.html">
     <div ng-controller="Ctrl">
-      <my-dialog ng-hide="dialogIsHidden" on-close="dialogIsHidden = true">
+      <my-dialog ng-hide="dialogIsHidden" on-close="hideDialog()">
         Check out the contents, {{name}}!
       </my-dialog>
     </div>
