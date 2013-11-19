@@ -5,7 +5,7 @@ module.exports = function(config, specificOptions) {
     logLevel: config.LOG_INFO,
     logColors: true,
     browsers: ['Chrome'],
-    browserDisconnectTimeout: 5000,
+    browserDisconnectTimeout: 10000,
 
 
     // config for Travis CI
