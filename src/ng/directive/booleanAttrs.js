@@ -149,8 +149,11 @@
  *
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as disabled. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
  * The `ngDisabled` directive solves this problem for the `disabled` attribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
  *
  * @example
     <doc:example>
@@ -181,8 +184,11 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as checked. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
  * The `ngChecked` directive solves this problem for the `checked` attribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
  * @example
     <doc:example>
       <doc:source>
@@ -212,8 +218,12 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as readonly. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
  * The `ngReadonly` directive solves this problem for the `readonly` attribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
+
  * @example
     <doc:example>
       <doc:source>
@@ -243,8 +253,11 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as selected. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
  * The `ngSelected` directive solves this problem for the `selected` atttribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
  * @example
     <doc:example>
       <doc:source>
@@ -276,8 +289,12 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as open. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * If we put an Angular interpolation expression into such an attribute then the
+ * binding information would be lost when the browser removes the attribute.
  * The `ngOpen` directive solves this problem for the `open` attribute.
+ * This complementary directive is not removed by the browser and so provides
+ * a permanent reliable place to store the binding information.
+
  *
  * @example
      <doc:example>
