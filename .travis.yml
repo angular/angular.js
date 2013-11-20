@@ -7,11 +7,13 @@ env:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
     - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
+    - BROWSER_STACK_USERNAME=VojtaJina
+    - BROWSER_STACK_ACCESS_KEY=HAfHZaypxAc3PEUrUU9a
     - LOGS_DIR=/tmp/angular-build/logs
 
 before_script:
   - mkdir -p $LOGS_DIR
-  - ./lib/sauce/sauce_connect_setup.sh
+  - ./lib/browser-stack/start-tunnel.sh
   - npm install -g grunt-cli
   - grunt bower
   - grunt bower
