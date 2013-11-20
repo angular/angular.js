@@ -870,6 +870,7 @@ describe('ngMock', function() {
         try {
           inject(function(){ throw new Error('test message'); });
         } catch(e) {
+          expect(typeof e).toBe(1);
           expect(e.instanceof(Error)).toBeTruthy();
           expect(e.toString()).toMatch(/test message/);
         }
