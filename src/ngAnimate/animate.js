@@ -159,7 +159,7 @@
  * }
  * </pre>
  *
- * Staggering animations work by default in ngRepeat (so long as the CSS class is defiend). Outside of ngRepeat, to use staggering animations
+ * Staggering animations work by default in ngRepeat (so long as the CSS class is defined). Outside of ngRepeat, to use staggering animations
  * on your own, they can be triggered by firing multiple calls to the same event on $animate. However, the restrictions surrounding this
  * are that each of the elements must have the same CSS className value as well as the same parent element. A stagger operation
  * will also be reset if more than 10ms has passed after the last animation has been fired.
@@ -222,7 +222,7 @@
  * JavaScript-defined animations are created with a CSS-like class selector and a collection of events which are set to run
  * a javascript callback function. When an animation is triggered, $animate will look for a matching animation which fits
  * the element's CSS class attribute value and then run the matching animation event function (if found).
- * In other words, if the CSS classes present on the animated element match any of the JavaScript animations then the callback function
+ * In other words, if the CSS classes present on the animated element match any of the JavaScript animations then the callback function will
  * be executed. It should be also noted that only simple, single class selectors are allowed (compound class selectors are not supported).
  *
  * Within a JavaScript animation, an object containing various event callback animation functions is expected to be returned.
