@@ -2106,7 +2106,7 @@ angular.mock.clearDataCache = function() {
           /* jshint +W040 */
         } catch (e) {
           /* try { #<{(| e.stack is not writable in Safari and PhantomJS |)}># */
-            if (e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
+            /* if (e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack; */
           /* } finally { */
             throw e;
           /* } */
