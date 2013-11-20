@@ -312,6 +312,31 @@ describe('ngInclude', function() {
   }));
 
 
+  it('should exec scripts when jQuery is included', inject(function($compile, $rootScope, $httpBackend) {
+    if (!jQuery) {
+      return;
+    }
+
+    element = $compile('<div><span ng-include="includeUrl"></span></div>')($rootScope);
+
+    // the element needs to be appended for the script to run
+    element.appendTo(document.body);
+    window._ngIncludeCausesScriptToRun = false;
+    $httpBackend.expect('GET', 'url1').respond('<script>window._ngIncludeCausesScriptToRun = true;</script>');
+    $rootScope.includeUrl = 'url1';
+    $rootScope.$digest();
+    $httpBackend.flush();
+
+    expect(window._ngIncludeCausesScriptToRun).toBe(true);
+
+    // IE8 doesn't like deleting properties of window
+    window._ngIncludeCausesScriptToRun = undefined;
+    try {
+      delete window._ngIncludeCausesScriptToRun;
+    } catch (e) {}
+  }));
+
+
   describe('autoscroll', function() {
     var autoScrollSpy;
 
