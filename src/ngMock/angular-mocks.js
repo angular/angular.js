@@ -2085,29 +2085,6 @@ angular.mock.clearDataCache = function() {
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
 
-  function throwWrappedErrorAsPossible(e, errorForStack) {
-    var ErrorWithDeclarationLocationStack = function(e, errorForStack) {
-      if (typeof e === typeof "")
-        this.message = e;
-      else {
-        this.message = e.message;
-        if (e.name) this.name = e.name;
-        if (e.line) this.line = e.line;
-        if (e.sourceId) this.sourceId = e.sourceId;
-        if (e.stack && errorForStack)
-          this.stack = e.stack + '\n' + errorForStack.stack;
-        if (e.stackArray) this.stackArray = e.stackArray;
-      }
-    };
-    ErrorWithDeclarationLocationStack.prototype.toString = Error.prototype.toString;
-
-    try {
-      e = new ErrorWithDeclarationLocationStack(e, errorForStack);
-    } finally {
-      throw e;
-    }
-  }
-
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
     var errorForStack = new Error('Declaration Location');
@@ -2128,7 +2105,11 @@ angular.mock.clearDataCache = function() {
           injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
-          throwWrappedErrorAsPossible(e, errorForStack);
+          try { /* e.stack is not writable in Safari and PhantomJS */
+            if (e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
+          } finally {
+            throw e;
+          }
         } finally {
           errorForStack = null;
         }
