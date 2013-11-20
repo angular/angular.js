@@ -294,14 +294,13 @@ function Browser(window, document, $log, $sniffer) {
                                 ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          var rawCookie
-          if (expires == undefined) { 
-            rawCookie = escape(name) + '=' + escape(value) +
+          var  rawCookie = escape(name) + '=' + escape(value) +
                             ';path=' + cookiePath;
-          }else{
-            rawCookie = escape(name) + '=' + escape(value) +
-                            ';path=' + cookiePath + ";expires=" + expires;
+
+          if (expires != undefined) { 
+            rawCookie = rawCookie + ";expires=" + expires;
           }
+
           cookieLength = (rawDocument.cookie = rawCookie).length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
