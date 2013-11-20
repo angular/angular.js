@@ -297,7 +297,7 @@ function Browser(window, document, $log, $sniffer) {
           var  rawCookie = escape(name) + '=' + escape(value) +
                             ';path=' + cookiePath;
 
-          if (expires !== undefined) { 
+          if (expires !== undefined) {
             rawCookie = rawCookie + ";expires=" + expires;
           }
 
