@@ -67,7 +67,7 @@ illustration we typically build snappy apps with hundreds or thousands of active
 
 ### How big is the angular.js file that I need to include?
 
-The size of the file is < 29KB compressed and minified.
+The size of the file is < 36KB compressed and minified.
 
 
 ### Can I use the open-source Closure Library with Angular?
