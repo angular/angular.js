@@ -2094,7 +2094,7 @@ angular.mock.clearDataCache = function() {
       this.stack = e.stack + '\n' + errorForStack.stack;
     if (e.stackArray) this.stackArray = e.stackArray;
   };
-  ErrorWithDeclarationLocationStack.prototype.toString = (new Error).toString;
+  ErrorWithDeclarationLocationStack.prototype.toString = (new Error()).toString;
 
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
