@@ -2105,11 +2105,11 @@ angular.mock.clearDataCache = function() {
           injector.invoke(blockFns[i] || angular.noop, this);
           /* jshint +W040 */
         } catch (e) {
-          /* try { #<{(| e.stack is not writable in Safari and PhantomJS |)}># */
-            /* if (e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack; */
-          /* } finally { */
+          try { /* e.stack is not writable in Safari and PhantomJS */
+            if (e.stack && errorForStack) e.stack +=  '\n' + errorForStack.stack;
+          } finally {
             throw e;
-          /* } */
+          }
         } finally {
           errorForStack = null;
         }

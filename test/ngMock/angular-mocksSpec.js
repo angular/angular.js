@@ -870,6 +870,7 @@ describe('ngMock', function() {
         try {
           inject(function(){ throw new Error('test message'); });
         } catch(e) {
+          if (msie<=8) return;
           expect(e.toString()).toMatch(/test message/);
         }
       });
