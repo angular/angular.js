@@ -279,6 +279,25 @@ describe('browser', function() {
       });
     });
 
+    describe('put via cookies(cookieName, string, expires)', function() {
+
+      it('when expire is set to tomorrow the cookie is valid', function() {
+        var expireDate = Date.now() + 1; 
+        browser.cookies('foo', 'bar', expireDate);
+        expect(document.cookie).toMatch(/foo=bar;? ?/);
+        expect(browser.cookies()).toEqual({'foo':'bar'});
+      });
+
+      it('when expire is set to 1st jan 1970 the cookie is deleted ', function() {
+        var expireDate = "Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = 'foo=bar;path=/';
+        browser.cookies('foo', 'bar', expireDate);
+        expect(document.cookie).toEqual('');
+        expect(browser.cookies()).toEqual({});
+      });
+
+    });
+
     describe('put via cookies(cookieName, string), if no <base href> ', function () {
       beforeEach(function () {
         fakeDocument.basePath = undefined;
