@@ -149,7 +149,9 @@
  *
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as disabled. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * This transient behavior precludes them hosting binding expressions;
+ * when they become false they disappear. Consequently, angular provides
+ * complementary attributes.
  * The `ngDisabled` directive solves this problem for the `disabled` attribute.
  *
  * @example
@@ -181,7 +183,9 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as checked. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * This transient behavior precludes them hosting binding expressions;
+ * when they become false they disappear. Consequently, angular provides
+ * complementary attributes.
  * The `ngChecked` directive solves this problem for the `checked` attribute.
  * @example
     <doc:example>
@@ -212,7 +216,9 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as readonly. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * This transient behavior precludes them hosting binding expressions;
+ * when they become false they disappear. Consequently, angular provides
+ * complementary attributes.
  * The `ngReadonly` directive solves this problem for the `readonly` attribute.
  * @example
     <doc:example>
@@ -243,7 +249,9 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as selected. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * This transient behavior precludes them hosting binding expressions;
+ * when they become false they disappear. Consequently, angular provides
+ * complementary attributes.
  * The `ngSelected` directive solves this problem for the `selected` atttribute.
  * @example
     <doc:example>
@@ -276,7 +284,9 @@
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
  * such as open. (Their presence means true and their absence means false.)
- * This prevents the Angular compiler from retrieving the binding expression.
+ * This transient behavior precludes them hosting binding expressions;
+ * when they become false they disappear. Consequently, angular provides
+ * complementary attributes.
  * The `ngOpen` directive solves this problem for the `open` attribute.
  *
  * @example
