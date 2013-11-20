@@ -96,7 +96,7 @@ angular.module('ngCookies', ['ng']).
         //update all cookies updated in $cookies
         for(name in cookies) {
           value = cookies[name];
-          if(value != undefined){
+          if(value !== null && value !== undefined){
             expires = value.expires;
           }
           if (!angular.isString(value)) {
