@@ -3,7 +3,7 @@
 @description
 
 
-AngularJS version 1.2 introduces several breaking changes that will may require changes to your
+AngularJS version 1.2 introduces several breaking changes that may require changes to your
 application's source code.
 
 Although we try to avoid breaking changes, there are some cases where it is unavoidable.
