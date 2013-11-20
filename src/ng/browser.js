@@ -278,12 +278,13 @@ function Browser(window, document, $log, $sniffer) {
    * - cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify
    *   it
    * - cookies(name, value) -> set name to value, if value is undefined delete the cookie
+   * - cookies(name, value, expires) -> set name to value, and the expire date to expires
    * - cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that
    *   way)
    * 
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function(name, value) {
+  self.cookies = function(name, value, expires ) {
     /* global escape: false, unescape: false */
     var cookieLength, cookieArray, cookie, i, index;
 
@@ -293,8 +294,14 @@ function Browser(window, document, $log, $sniffer) {
                                 ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) +
-                                ';path=' + cookiePath).length + 1;
+          var  rawCookie = escape(name) + '=' + escape(value) +
+                            ';path=' + cookiePath;
+
+          if (expires !== undefined) {
+            rawCookie = rawCookie + ";expires=" + expires;
+          }
+
+          cookieLength = (rawDocument.cookie = rawCookie).length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
