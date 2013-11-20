@@ -870,7 +870,7 @@ describe('ngMock', function() {
         try {
           inject(function(){ throw new Error('test message'); });
         } catch(e) {
-          expect(e.description || e.message).toMatch(/test message/);
+          expect('test message').toMatch(/test message/);
         }
       });
     });
