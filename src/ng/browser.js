@@ -278,8 +278,7 @@ function Browser(window, document, $log, $sniffer) {
    * - cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify
    *   it
    * - cookies(name, value) -> set name to value, if value is undefined delete the cookie
-   * - cookies(name, value, expires) -> set name to value, if value is undefined delete the cookie, 
-   *   the cookie will expire in the days specified in expires 
+   * - cookies(name, value, expires) -> set name to value, and the expire date to expires
    * - cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that
    *   way)
    * 

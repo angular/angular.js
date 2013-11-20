@@ -289,9 +289,8 @@ describe('browser', function() {
       });
 
       it('when expire is set to 1st jan 1970 the cookie is deleted ', function() {
-        var expireDate = "Thu, 01 Jan 1970 00:00:00 GMT";
         document.cookie = 'foo=bar;path=/';
-        browser.cookies('foo', 'bar', expireDate);
+        browser.cookies('foo', 'bar', "Thu, 01 Jan 1970 00:00:00 GMT");
         expect(document.cookie).toEqual('');
         expect(browser.cookies()).toEqual({});
       });
