@@ -99,13 +99,14 @@ var $AnimateProvider = ['$provide', function($provide) {
        *   inserted into the DOM
        */
       enter : function(element, parent, after, done) {
-        var afterNode = after && after[after.length - 1];
-        var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
-        // IE does not like undefined so we have to pass null.
-        var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
-        forEach(element, function(node) {
-          parentNode.insertBefore(node, afterNextSibling);
-        });
+        if (after) {
+          after.after(element);
+        } else {
+          if (!parent || !parent[0]) {
+            parent = after.parent();
+          }
+          parent.append(element);
+        }
         done && $timeout(done, 0, false);
       },
 
