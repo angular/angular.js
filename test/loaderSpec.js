@@ -78,4 +78,8 @@ describe('module loader', function() {
       window.angular.module('hasOwnProperty', []);
     }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid module name");
   });
+
+  it('should expose `$$minErr` on the `angular` object', function() {
+    expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
+  })
 });
