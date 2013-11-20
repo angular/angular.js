@@ -2119,10 +2119,11 @@ angular.mock.clearDataCache = function() {
           /* jshint +W040 */
         } catch (e) {
           /* e.stack +=  '\n' + errorForStack.stack; */
-          if (e.stack && errorForStack) {
-            e = new ErrorAddingDeclarationLocationStack(e, errorForStack);
+          var err = e;
+          if (err.stack && errorForStack) {
+            err = new ErrorAddingDeclarationLocationStack(err, errorForStack);
           }
-          throw e;
+          throw err;
         } finally {
           errorForStack = null;
         }
