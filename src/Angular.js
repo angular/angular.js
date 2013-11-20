@@ -315,21 +315,52 @@ function setHashKey(obj, h) {
  * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects.
  *
- * @param {Object} dst Destination object.
- * @param {...Object} src Source object(s).
- * @returns {Object} Reference to `dst`.
+ * @param   {Boolean} deep If true, the merge becomes recursive (optional)
+ * @param   {Object}  dst  Destination object.
+ * @param   {Object}  src  Source object(s).
+ * @returns {Object}       Reference to `dst`.
  */
-function extend(dst) {
-  var h = dst.$$hashKey;
-  forEach(arguments, function(obj){
-    if (obj !== dst) {
-      forEach(obj, function(value, key){
-        dst[key] = value;
-      });
+function extend(dst){
+  var deep = false,
+      h = dst.$$hashKey,
+      i = 1;
+
+  if(isBoolean(dst)){
+    deep = dst;
+    dst = arguments[1] || {};
+    i++;
+  }
+
+  forEach(slice.call(arguments, i), function(obj){
+    var array, clone, copy, key, src;
+
+    for(key in obj){
+      src = dst[key];
+      copy = obj[key];
+
+      if(dst === copy){
+        continue;
+      }
+
+      if(deep && copy && (isObject(copy) ||
+        (array = isArray(copy)))){
+
+        if(array){
+          clone = (src && isArray(src)) ? src : [];
+        }else{
+          clone = (src && isObject(src)) ? src : {};
+        }
+
+        dst[key] = extend(deep, clone, copy);
+      }
+      else if(copy !== undefined){
+        dst[key] = copy;
+      }
     }
   });
 
-  setHashKey(dst,h);
+  setHashKey(dst, h);
+
   return dst;
 }
 

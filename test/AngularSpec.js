@@ -180,6 +180,26 @@ describe('angular', function() {
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
     });
+
+    it('should merge both objects recursively, modifying only the first', function() {
+      var dst, src;
+
+      dst = {
+        glasses: { color: 'black', price: 100 },
+        shirt: 25,
+        shoes: 100
+      };
+
+      src = {
+        glasses: { price: 200 },
+        pants: 100
+      };
+
+      dst = extend(true, dst, src);
+
+      expect(dst.glasses.price).toBe(200);
+      expect(dst.pants).not.toBeUndefined();
+    });
   });
 
   describe('shallow copy', function() {
