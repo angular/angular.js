@@ -870,8 +870,11 @@ describe('ngMock', function() {
         try {
           inject(function(){ throw new Error('test message'); });
         } catch(e) {
-          if (msie<=8) return;
-          expect(e.toString()).toMatch(/test message/);
+          if (msie<=8) { /* IE8 doesn't support the throw */
+            expect(e.toString()).toMatch(/Object doesn't support/);
+          } else {
+            expect(e.toString()).toMatch(/test message/);
+          }
         }
       });
     });
