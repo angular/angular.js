@@ -865,6 +865,29 @@ describe('ngMock', function() {
           expect(log).toEqual('module;inject;')
         });
       });
+
+      it('should not change thrown Errors', function(){
+        try {
+          inject(function(){ throw new Error('test message'); });
+        } catch(e) {
+          if (msie<=8) { /* IE8 doesn't support the throw */
+            expect(e.toString()).toMatch(/Object doesn't support/);
+          } else {
+            expect(e.toString()).toMatch(/test message/);
+          }
+        }
+      });
+      it('should not change thrown strings', function(){
+        try {
+          inject(function(){ throw 'test message'; });
+        } catch(e) {
+          if (msie<=8) { /* IE8 doesn't support the throw */
+            expect(e.toString()).toMatch(/Object doesn't support/);
+          } else {
+            expect(e.toString()).toMatch(/test message/);
+          }
+        }
+      });
     });
   });
 
