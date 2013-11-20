@@ -337,4 +337,9 @@ describe('$sniffer', function() {
   it('should return true for msie when internet explorer is being used', inject(function($sniffer) {
     expect($sniffer.msie > 0).toBe(window.navigator.appName == 'Microsoft Internet Explorer');
   }));
+
+  it('should return document.documentMode as msieDocumentMode', function() {
+    var someDocumentMode = 123;
+    expect(sniffer({}, {documentMode: someDocumentMode}).msieDocumentMode).toBe(someDocumentMode);
+  });
 });

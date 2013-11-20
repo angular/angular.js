@@ -29,10 +29,10 @@ describe('SCE', function() {
   describe('IE8 quirks mode', function() {
     function runTest(enabled, documentMode, expectException) {
       module(function($provide) {
-        $provide.value('$document', [{
-          documentMode: documentMode,
-          createElement: function() {}
-        }]);
+        $provide.value('$sniffer', {
+          msie: documentMode,
+          msieDocumentMode: documentMode
+        });
         $provide.value('$sceDelegate', {trustAs: null, valueOf: null, getTrusted: null});
       });
 
@@ -43,22 +43,15 @@ describe('SCE', function() {
           return $injector.invoke(sceProvider.$get, sceProvider);
         }
 
-        var origMsie = $window.msie;
-        try {
-          $window.msie = true;
-          if (expectException) {
-            expect(constructSce).toThrowMinErr(
-                '$sce', 'iequirks', 'Strict Contextual Escaping does not support Internet Explorer ' +
-                'version < 9 in quirks mode.  You can fix this by adding the text <!doctype html> to ' +
-                'the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more ' +
-                'information.');
-          } else {
-            // no exception.
-            constructSce();
-          }
-        }
-        finally {
-          $window.msie = origMsie;
+        if (expectException) {
+          expect(constructSce).toThrowMinErr(
+            '$sce', 'iequirks', 'Strict Contextual Escaping does not support Internet Explorer ' +
+              'version < 9 in quirks mode.  You can fix this by adding the text <!doctype html> to ' +
+              'the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more ' +
+              'information.');
+        } else {
+          // no exception.
+          constructSce();
         }
       });
     }

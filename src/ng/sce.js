@@ -199,8 +199,7 @@ function $SceDelegateProvider() {
     return resourceUrlBlacklist;
   };
 
-  this.$get = ['$log', '$document', '$injector', function(
-                $log,   $document,   $injector) {
+  this.$get = ['$injector', function($injector) {
 
     var htmlSanitizer = function htmlSanitizer(html) {
       throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
@@ -731,18 +730,15 @@ function $SceProvider() {
    * sce.js and sceSpecs.js would need to be aware of this detail.
    */
 
-  this.$get = ['$parse', '$document', '$sceDelegate', function(
-                $parse,   $document,   $sceDelegate) {
+  this.$get = ['$parse', '$sniffer', '$sceDelegate', function(
+                $parse,   $sniffer,   $sceDelegate) {
     // Prereq: Ensure that we're not running in IE8 quirks mode.  In that mode, IE allows
     // the "expression(javascript expression)" syntax which is insecure.
-    if (enabled && msie) {
-      var documentMode = $document[0].documentMode;
-      if (documentMode !== undefined && documentMode < 8) {
-        throw $sceMinErr('iequirks',
-          'Strict Contextual Escaping does not support Internet Explorer version < 9 in quirks ' +
-          'mode.  You can fix this by adding the text <!doctype html> to the top of your HTML ' +
-          'document.  See http://docs.angularjs.org/api/ng.$sce for more information.');
-      }
+    if (enabled && $sniffer.msie && $sniffer.msieDocumentMode < 8) {
+      throw $sceMinErr('iequirks',
+        'Strict Contextual Escaping does not support Internet Explorer version < 9 in quirks ' +
+        'mode.  You can fix this by adding the text <!doctype html> to the top of your HTML ' +
+        'document.  See http://docs.angularjs.org/api/ng.$sce for more information.');
     }
 
     var sce = copy(SCE_CONTEXTS);
