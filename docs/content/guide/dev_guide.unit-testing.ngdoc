@@ -13,45 +13,44 @@ Unit testing as the name implies is about testing individual units of code. Unit
 answer questions such as "Did I think about the logic correctly?" or "Does the sort function order the list
 in the right order?"
 
-In order to answer such question it is very important that we can isolate the unit of code under test.
+In order to answer such a question it is very important that we can isolate the unit of code under test.
 That is because when we are testing the sort function we don't want to be forced into creating
 related pieces such as the DOM elements, or making any XHR calls in getting the data to sort.
 
-While
-this may seem obvious it usually is very difficult to be able to call an individual function on a
-typical project. The reason is that the developers often mix concerns, and they end up with a
-piece of code which does everything. It reads the data from XHR, it sorts it and then it
+While this may seem obvious it can be very difficult to call an individual function on a
+typical project. The reason is that the developers often mix concerns resulting in a
+piece of code which does everything. It makes an XHR request, it sorts the response data and then it
 manipulates the DOM.
 
 With Angular we try to make it easy for you to do the right thing, and so we
-provide dependency injection for your XHR (which you can mock out) and we created abstraction which
+provide dependency injection for your XHR (which you can mock out) and we created abstractions which
 allow you to sort your model without having to resort to manipulating the DOM. So that in the end,
 it is easy to write a sort function which sorts some data, so that your test can create a data set,
 apply the function, and assert that the resulting model is in the correct order. The test does not
-have to wait for XHR, or create the right kind of DOM, or assert that your function has mutated the
-DOM in the right way.
+have to wait for the XHR response to arrive, create the right kind of test DOM, nor assert that your
+function has mutated the DOM in the right way.
 
 ## With great power comes great responsibility
 
-Angular is written with testability in mind, but it still requires that you
-do the right thing. We tried to make the right thing easy, but Angular is not magic, which means if
-you don't follow these guidelines you may very well end up with an untestable application.
+Angular is written with testability in mind, but it still requires that you do the right thing.
+We tried to make the right thing easy, but Angular is not magic. If you don't follow these guidelines
+you may very well end up with an untestable application.
 
 ## Dependency Injection
-There are several ways in which you can get a hold of a dependency:
-1. You could create it using the `new` operator.
-2. You could look for it in a well known place, also known as global singleton.
-3. You could ask a registry (also known as service registry) for it. (But how do you get a hold of
-the registry? Most likely by looking it up in a well known place. See #2)
-4. You could expect that it be handed to you.
+There are several ways in which you can get a hold of a dependency. You can:
+1. Create it using the `new` operator.
+2. Look for it in a well-known place, also known as a global singleton.
+3. Ask a registry (also known as service registry) for it. (But how do you get a hold of
+the registry? Most likely by looking it up in a well known place. See #2.)
+4. Expect it to be handed to you.
 
 Out of the four options in the list above, only the last one is testable. Let's look at why:
 
 ### Using the `new` operator
 
-While there is nothing wrong with the `new` operator fundamentally the issue is that calling a new
-on a constructor permanently binds the call site to the type. For example lets say that we are
-trying to instantiate an `XHR` so that we can get some data from the server.
+While there is nothing wrong with the `new` operator fundamentally, a problem arises when calling `new`
+on a constructor. This permanently binds the call site to the type. For example, lets say that we try to
+instantiate an `XHR` that will retrieve data from the server.
 
 <pre>
 function MyClass() {
@@ -64,12 +63,12 @@ function MyClass() {
 }
 </pre>
 
-The issue becomes that in tests, we would very much like to instantiate a `MockXHR` which would
+A problem surfaces in tests when we would like to instantiate a `MockXHR` that would
 allow us to return fake data and simulate network failures. By calling `new XHR()` we are
-permanently bound to the actual XHR, and there is no good way to replace it. Yes there is monkey
-patching. That is a bad idea for many reasons which are outside the scope of this document.
+permanently bound to the actual XHR and there is no  way to replace it. Yes, we could monkey
+patch, but that is a bad idea for many reasons which are outside the scope of this document.
 
-The class above is hard to test since we have to resort to monkey patching:
+Here's an example of how the class above becomes hard to test when resorting to monkey patching:
 <pre>
 var oldXHR = XHR;
 XHR = function MockXHR() {};
@@ -81,7 +80,7 @@ XHR = oldXHR; // if you forget this bad things will happen
 
 
 ### Global look-up:
-Another way to approach the problem is to look for the service in a well known location.
+Another way to approach the problem is to look for the service in a well-known location.
 
 <pre>
 function MyClass() {
@@ -95,14 +94,14 @@ function MyClass() {
 }
 </pre>
 
-While no new instance of the dependency is being created, it is fundamentally the same as `new`, in
-that there is no good way to intercept the call to `global.xhr` for testing purposes, other then
+While no new dependency instance is created, it is fundamentally the same as `new` in
+that no  way exists to intercept the call to `global.xhr` for testing purposes, other then
 through monkey patching. The basic issue for testing is that a global variable needs to be mutated in
-order to replace it with call to a mock method. For further explanation why this is bad see: {@link
+order to replace it with call to a mock method. For further explanation of why this is bad see: {@link
 http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/ Brittle Global
 State & Singletons}
 
-The class above is hard to test since we have to change global state:
+The class above is hard to test since we have to change the global state:
 <pre>
 var oldXHR = global.xhr;
 global.xhr = function mockXHR() {};
@@ -115,7 +114,7 @@ global.xhr = oldXHR; // if you forget this bad things will happen
 
 ### Service Registry:
 
-It may seem as that this can be solved by having a registry for all of the services, and then
+It may seem that this can be solved by having a registry of all the services and then
 having the tests replace the services as needed.
 
 <pre>
@@ -131,12 +130,12 @@ function MyClass() {
 }
 </pre>
 
-However, where does the serviceRegistry come from? if it is:
-* `new`-ed up, the test has no chance to reset the services for testing
-*  global look-up, then the service returned is global as well (but resetting is easier, since
-there is only one global variable to be reset).
+However, where does the serviceRegistry come from? If it is:
+* `new`-ed up, the test has no chance to reset the services for testing.
+*  a global look-up then the service returned is global as well (but resetting is easier, since
+only one global variable exists to be reset).
 
-The class above is hard to test since we have to change global state:
+The class above is hard to test since we have to change the global state:
 <pre>
 var oldServiceLocator = global.serviceLocator;
 global.serviceLocator.set('xhr', function mockXHR() {});
@@ -148,7 +147,7 @@ global.serviceLocator = oldServiceLocator; // if you forget this bad things will
 
 
 ### Passing in Dependencies:
-Lastly the dependency can be passed in.
+Last, the dependency can be passed in.
 
 <pre>
 function MyClass(xhr) {
@@ -161,12 +160,12 @@ function MyClass(xhr) {
 }
 </pre>
 
-This is the preferred way since the code makes no assumptions as to where the `xhr` comes from,
-rather that whoever created the class was responsible for passing it in. Since the creator of the
+This is the preferred method since the code makes no assumptions about the origin of `xhr` and cares
+instead about whoever created the class  responsible for passing it in. Since the creator of the
 class should be different code than the user of the class, it separates the responsibility of
-creation from the logic, and that is what dependency-injection is in a nutshell.
+creation from the logic. This is dependency-injection is in a nutshell.
 
-The class above is very testable, since in the test we can write:
+The class above is testable, since in the test we can write:
 <pre>
 function xhrMock(args) {...}
 var myClass = new MyClass(xhrMock);
@@ -176,12 +175,12 @@ myClass.doWork();
 
 Notice that no global variables were harmed in the writing of this test.
 
-Angular comes with {@link di dependency injection} built in which makes the right thing
+Angular comes with {@link di dependency injection} built-in, making the right thing
 easy to do, but you still need to do it if you wish to take advantage of the testability story.
 
 ## Controllers
-What makes each application unique is its logic, which is what we would like to test. If the logic
-for your application is mixed in with DOM manipulation, it will be hard to test as in the example
+What makes each application unique is its logic, and the logic is what we would like to test. If the logic
+for your application contains DOM manipulation, it will be hard to test. See the example
 below:
 
 <pre>
@@ -209,7 +208,7 @@ function PasswordCtrl() {
 }
 </pre>
 
-The code above is problematic from a testability point of view, since it requires your test to have the right kind
+The code above is problematic from a testability point of view since it requires your test to have the right kind
 of DOM present when the code executes. The test would look like this:
 
 <pre>
@@ -226,8 +225,8 @@ expect(span.text()).toEqual('weak');
 $('body').html('');
 </pre>
 
-In angular the controllers are strictly separated from the DOM manipulation logic which results in
-a much easier testability story as can be seen in this example:
+In angular the controllers are strictly separated from the DOM manipulation logic and this results in
+a much easier testability story as the following example shows:
 
 <pre>
 function PasswordCtrl($scope) {
@@ -245,7 +244,7 @@ function PasswordCtrl($scope) {
 }
 </pre>
 
-and the test is straight forward
+and the test is straight forward:
 
 <pre>
 var $scope = {};
@@ -255,11 +254,11 @@ $scope.grade();
 expect($scope.strength).toEqual('weak');
 </pre>
 
-Notice that the test is not only much shorter but it is easier to follow what is going on. We say
+Notice that the test is not only much shorter, it is also easier to follow what is happening. We say
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
 
 ## Filters
-{@link api/ng.$filterProvider Filters} are functions which transform the data into user readable
+{@link api/ng.$filterProvider Filters} are functions which transform the data into a user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 
@@ -282,7 +281,7 @@ you create with directives may be used throughout your application and in many d
 
 ### Simple HTML Element Directive
 
-Lets start with an angular app with no dependencies.
+Let's start with an angular app with no dependencies.
 
 <pre>
 var app = angular.module('myApp', []);
