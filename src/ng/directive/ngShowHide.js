@@ -16,7 +16,7 @@
  * <div ng-show="myValue"></div>
  *
  * <!-- when $scope.myValue is falsy (element is hidden) -->
- * <div ng-show="myValue" class="ng-hide"></div>
+ * <div ng-hide="myValue"></div>
  * </pre>
  *
  * When the ngShow expression evaluates to false then the ng-hide CSS class is added to the class attribute
