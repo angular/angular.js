@@ -596,8 +596,8 @@ describe('$compile', function() {
           expect(element).toHaveClass('class_2');
         }));
 
-        if (!msie || msie > 10) {
-          // style interpolation not working on IE<11.
+        if (!msie || msie > 11) {
+          // style interpolation not working on IE (including IE11).
           it('should handle interpolated css style from replacing directive', inject(
             function($compile, $rootScope) {
               element = $compile('<div replace-with-interpolated-style></div>')($rootScope);
