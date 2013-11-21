@@ -1,10 +1,7 @@
 'use strict';
 
-var msie = +((/msie (\d+)/.exec(navigator.userAgent.toLowerCase()) || [])[1]);
-
 describe('ngMock', function() {
   var noop = angular.noop;
-
 
   describe('TzDate', function() {
 
@@ -686,10 +683,10 @@ describe('ngMock', function() {
       expect(d($rootScope)).toMatch(/{"abc":"123"}/);
     }));
 
-    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope){
+    it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer){
       // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
       // things like hasOwnProperty even if it is explicitly defined on the actual object!
-      if (msie<=8) return;
+      if ($sniffer.msie<=8) return;
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
