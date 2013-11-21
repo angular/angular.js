@@ -439,7 +439,7 @@ angular.module('ngResource', ['ng']).
           }
           /* jshint +W086 */ /* (purposefully fall through case statements) */
 
-          var isInstanceCall = data instanceof Resource;
+          var isInstanceCall = this instanceof Resource;
           var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response ||
@@ -522,7 +522,7 @@ angular.module('ngResource', ['ng']).
           if (isFunction(params)) {
             error = success; success = params; params = {};
           }
-          var result = Resource[name](params, this, success, error);
+          var result = Resource[name].call(this, params, this, success, error);
           return result.$promise || result;
         };
       });
