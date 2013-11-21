@@ -53,6 +53,7 @@ exports.ngVersions = function() {
   return expandVersions(sortVersionsNatrually(versions), exports.ngCurrentVersion().full);
 
   function expandVersions(versions, latestVersion) {
+    var RC_VERSION = /rc\d/;
     //copy the array to avoid changing the versions param data
     //the latest version is not on the git tags list, but
     //docs.angularjs.org will always point to master as of 1.2
@@ -63,19 +64,9 @@ exports.ngVersions = function() {
       var version = versions[i],
           split = version.split('.'),
           isMaster = version == latestVersion,
-          isStable = split[1] % 2 == 0;
+          isStable = split[1] % 2 === 0 && !RC_VERSION.test(version);
 
       var title = 'AngularJS - v' + version;
-
-      //anything that is stable before being unstable is a rc1 version
-      //just like with AngularJS 1.2.0rc1 (even though it's apart of the
-      //1.1.5 API
-      if(isMaster || (isStable && !firstUnstable)) {
-        isStable = false;
-      }
-      else {
-        firstUnstable = firstUnstable || version;
-      }
 
       var docsPath = version < '1.0.2' ?  'docs-' + version : 'docs';
 
@@ -214,6 +205,7 @@ Doc.prototype = {
   },
 
   shortDescription : function() {
+    if (!this.description) return this.description;
     var text = this.description.split("\n")[0];
     text = text.replace(/<.+?\/?>/g, '');
     text = text.replace(/{/g,'&#123;');
@@ -555,10 +547,22 @@ Doc.prototype = {
       self = this,
       minerrMsg;
 
+    var gitTagFromFullVersion = function(version) {
+      var match = version.match(/-(\w{7})/);
+
+      if (match) {
+        // git sha
+        return match[1];
+      }
+
+      // git tag
+      return 'v' + version;
+    };
+
     if (this.section === 'api') {
       dom.tag('a', {
-          href: 'http://github.com/angular/angular.js/tree/v' +
-            gruntUtil.getVersion().cdn + '/' + self.file + '#L' + self.line,
+          href: 'http://github.com/angular/angular.js/tree/' +
+            gitTagFromFullVersion(gruntUtil.getVersion().full) + '/' + self.file + '#L' + self.line,
           class: 'view-source btn btn-action' }, function(dom) {
         dom.tag('i', {class:'icon-zoom-in'}, ' ');
         dom.text(' View source');
@@ -1107,7 +1111,7 @@ function scenarios(docs){
 function metadata(docs){
   var pages = [];
   docs.forEach(function(doc){
-    var path = (doc.name || '').split(/(\.|\:\s*)/);
+    var path = (doc.name || '').split(/(\:\s*)/);
     for ( var i = 1; i < path.length; i++) {
       path.splice(i, 1);
     }
@@ -1125,10 +1129,10 @@ function metadata(docs){
       type: doc.ngdoc,
       moduleName: doc.moduleName,
       shortDescription: doc.shortDescription(),
-      keywords:doc.keywords()
+      keywords: doc.keywords()
     });
   });
-  pages.sort(keywordSort);
+  pages.sort(sidebarSort);
   return pages;
 }
 
@@ -1161,7 +1165,60 @@ var KEYWORD_PRIORITY = {
   '.dev_guide.di': 8,
   '.dev_guide.unit-testing': 9
 };
-function keywordSort(a, b){
+
+var GUIDE_PRIORITY = [
+  'introduction',
+  'overview',
+  'concepts',
+  'dev_guide.mvc',
+
+  'dev_guide.mvc.understanding_controller',
+  'dev_guide.mvc.understanding_model',
+  'dev_guide.mvc.understanding_view',
+
+  'dev_guide.services.understanding_services',
+  'dev_guide.services.managing_dependencies',
+  'dev_guide.services.creating_services',
+  'dev_guide.services.injecting_controllers',
+  'dev_guide.services.testing_services',
+  'dev_guide.services.$location',
+  'dev_guide.services',
+
+  'databinding',
+  'dev_guide.templates.css-styling',
+  'dev_guide.templates.filters.creating_filters',
+  'dev_guide.templates.filters',
+  'dev_guide.templates.filters.using_filters',
+  'dev_guide.templates',
+
+  'di',
+  'providers',
+  'module',
+  'scope',
+  'expression',
+  'bootstrap',
+  'directive',
+  'compiler',
+
+  'forms',
+  'animations',
+
+  'dev_guide.e2e-testing',
+  'dev_guide.unit-testing',
+
+  'i18n',
+  'ie',
+  'migration',
+];
+
+function sidebarSort(a, b){
+  priorityA = GUIDE_PRIORITY.indexOf(a.id);
+  priorityB = GUIDE_PRIORITY.indexOf(b.id);
+
+  if (priorityA > -1 || priorityB > -1) {
+    return priorityA < priorityB ? -1 : (priorityA > priorityB ? 1 : 0);
+  }
+
   function mangleName(doc) {
     var path = doc.id.split(/\./);
     var mangled = [];
@@ -1277,6 +1334,9 @@ function checkBrokenLinks(docs) {
 
   docs.forEach(function(doc) {
     byFullId[doc.section + '/' + doc.id] = doc;
+    if (doc.section === 'api') {
+      doc.anchors.push('directive', 'service', 'filter', 'function');
+    }
   });
 
   docs.forEach(function(doc) {
@@ -1326,10 +1386,16 @@ function explainModuleInstallation(moduleName){
     '    &lt;script src=&quot;angular.js&quot;&gt;\n' +
     '    &lt;script src=&quot;' + modulePackageFile + '&quot;&gt;</pre></code>' +
 
-    '<p>You can also find this file on the [Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs), ' +
-    '<a href="http://bower.io/">Bower</a> (as <code>' + modulePackage + '</code>), ' +
-    'and on <a href="http://code.angularjs.org/">code.angularjs.org</a>.</p>' +
-
+    '<p>You can download this file from the following places:</p>' +
+    '<ul>' +
+      '<li>[Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs)<br>' +
+        'e.g. <code>"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+      '<li>[Bower](http://bower.io)<br>' +
+       'e.g. <code>bower install ' + modulePackage + '@X.Y.Z</code></li>' +
+      '<li><a href="http://code.angularjs.org/">code.angularjs.org</a><br>' +
+        'e.g. <code>"//code.angularjs.org/X.Y.Z/' + modulePackageFile + '"</code></li>' +
+    '</ul>' +
+    '<p>where X.Y.Z is the AngularJS version you are running.</p>' +
     '<p>Then load the module in your application by adding it as a dependent module:</p><pre><code>' +
     '    angular.module(\'app\', [\'' + ngMod + '\']);</pre></code>' +
 

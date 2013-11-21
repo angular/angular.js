@@ -9,20 +9,20 @@ This way, you don't have to download anything or maintain a local copy.
 There are two types of angular script URLs you can point to, one for development and one for
 production:
 
-* __angular-<version>.js__ — This is the human-readable, non-minified version, suitable for web
+* __angular.js__ — This is the human-readable, non-minified version, suitable for web
 development.
-* __angular-<version>.min.js__ — This is the minified version, which we strongly suggest you use in
+* __angular.min.js__ — This is the minified version, which we strongly suggest you use in
 production.
 
 To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.0.2:
+example points to the minified version 1.2.0:
 
 <pre>
   <!doctype html>
   <html ng-app>
     <head>
       <title>My Angular App</title>
-      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
     </head>
     <body>
     </body>
@@ -58,7 +58,7 @@ for this angular version. Use this file to get everything in a single download.
 
 * __`angular-mocks.js`__ — This file contains an implementation of mocks that makes
 testing angular apps even easier. Your unit/integration test harness should load this file after
-`angular-<version>.js` is loaded.
+`angular.js` is loaded.
 
 * __`angular-scenario.js`__ — This file is a very nifty JavaScript file that allows you
 to write and execute end-to-end tests for angular applications.
@@ -68,8 +68,19 @@ to write and execute end-to-end tests for angular applications.
  contents of this file are copy&pasted into the `index.html` to avoid even the initial request to `angular-loader.min.js`.
  See [angular-seed](https://github.com/angular/angular-seed/blob/master/app/index-async.html) for an example of usage.
 
-* __`angular-resource.js`__, __`angular-cookies.js`__, etc - extra Angular modules with additional functionality.
+* __Additional Angular modules:__  optional modules with additional functionality. These files should be loaded
+after the core `angular.js` file:
+  * __`angular-animate.js`__ - Enable animation support
+  * __`angular-cookies.js`__ - A convenient wrapper for reading and writing browser cookies
+  * __`angular-resource.js`__ - Interaction support with RESTful services via the $resource service
+  * __`angular-route.js`__ - Routing and deeplinking services and directives for angular apps
+  * __`angular-sanitize.js`__ - Functionality to sanitize HTML
+  * __`angular-touch.js`__ - Touch events and other helpers for touch-enabled devices
+
 
 * __`docs`__ — this directory contains all the files that compose the
 <http://docs.angularjs.org/> documentation app. These files are handy to see the older version of
 our docs, or even more importantly, view the docs offline.
+
+* __`i18n`__ - this directory contains locale specific `ngLocale` angular modules to override the defaults
+defined in the `ng` module.

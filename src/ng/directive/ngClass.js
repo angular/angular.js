@@ -21,9 +21,9 @@ function classDirective(name, selector) {
             var mod = $index & 1;
             if (mod !== old$index & 1) {
               if (mod === selector) {
-                addClass(scope.$eval(attr[name]));
+                addClass(flattenClasses(scope.$eval(attr[name])));
               } else {
-                removeClass(scope.$eval(attr[name]));
+                removeClass(flattenClasses(scope.$eval(attr[name])));
               }
             }
           });
@@ -32,22 +32,33 @@ function classDirective(name, selector) {
 
         function ngClassWatchAction(newVal) {
           if (selector === true || scope.$index % 2 === selector) {
+            var newClasses = flattenClasses(newVal || '');
             if (oldVal && !equals(newVal,oldVal)) {
-              removeClass(oldVal);
+              var oldClasses = flattenClasses(oldVal);
+              var toRemove = tokenDifference(oldClasses, newClasses);
+              if(toRemove.length > 0) {
+                removeClass(toRemove);
+              }
+
+              var toAdd = tokenDifference(newClasses, oldClasses);
+              if(toAdd.length > 0) {
+                addClass(toAdd);
+              }
+            } else {
+              addClass(newClasses);
             }
-            addClass(newVal);
           }
           oldVal = copy(newVal);
         }
 
 
         function removeClass(classVal) {
-          attr.$removeClass(flattenClasses(classVal));
+          attr.$removeClass(classVal);
         }
 
 
         function addClass(classVal) {
-          attr.$addClass(flattenClasses(classVal));
+          attr.$addClass(classVal);
         }
 
         function flattenClasses(classVal) {
@@ -98,18 +109,18 @@ function classDirective(name, selector) {
  * @example Example that demonstrates basic bindings via ngClass directive.
    <example>
      <file name="index.html">
-       <p ng-class="{strike: strike, bold: bold, red: red}">Map Syntax Example</p>
-       <input type="checkbox" ng-model="bold"> bold
-       <input type="checkbox" ng-model="strike"> strike
-       <input type="checkbox" ng-model="red"> red
+       <p ng-class="{strike: deleted, bold: important, red: error}">Map Syntax Example</p>
+       <input type="checkbox" ng-model="deleted"> deleted (apply "strike" class)<br>
+       <input type="checkbox" ng-model="important"> important (apply "bold" class)<br>
+       <input type="checkbox" ng-model="error"> error (apply "red" class)
        <hr>
        <p ng-class="style">Using String Syntax</p>
        <input type="text" ng-model="style" placeholder="Type: bold strike red">
        <hr>
        <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
-       <input ng-model="style1" placeholder="Type: bold"><br>
-       <input ng-model="style2" placeholder="Type: strike"><br>
-       <input ng-model="style3" placeholder="Type: red"><br>
+       <input ng-model="style1" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style2" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style3" placeholder="Type: bold, strike or red"><br>
      </file>
      <file name="style.css">
        .strike {
@@ -128,10 +139,10 @@ function classDirective(name, selector) {
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/bold/);
          expect(element('.doc-example-live p:first').prop('className')).not().toMatch(/red/);
 
-         input('bold').check();
+         input('important').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/bold/);
 
-         input('red').check();
+         input('error').check();
          expect(element('.doc-example-live p:first').prop('className')).toMatch(/red/);
        });
 
@@ -160,25 +171,17 @@ function classDirective(name, selector) {
       <input type="button" value="set" ng-click="myVar='my-class'">
       <input type="button" value="clear" ng-click="myVar=''">
       <br>
-      <span ng-class="myVar">Sample Text</span>
+      <span class="base-class" ng-class="myVar">Sample Text</span>
      </file>
      <file name="style.css">
-       .my-class-add, .my-class-remove {
+       .base-class {
          -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-         -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
        }
 
-       .my-class,
-       .my-class-add.my-class-add-active {
+       .base-class.my-class {
          color: red;
          font-size:3em;
-       }
-
-       .my-class-remove.my-class-remove-active {
-         font-size:1.0em;
-         color:black;
        }
      </file>
      <file name="scenario.js">
@@ -202,10 +205,10 @@ function classDirective(name, selector) {
 
    ## ngClass and pre-existing CSS3 Transitions/Animations
    The ngClass directive still supports CSS3 Transitions/Animations even if they do not follow the ngAnimate CSS naming structure.
-   Therefore, if any CSS3 Transition/Animation styles (outside of ngAnimate) are set on the element, then, if a ngClass animation
-   is triggered, the ngClass animation will be skipped so that ngAnimate can allow for the pre-existing transition or animation to
-   take over. This restriction allows for ngClass to still work with standard CSS3 Transitions/Animations that are defined
-   outside of ngAnimate.
+   Upon animation ngAnimate will apply supplementary CSS classes to track the start and end of an animation, but this will not hinder
+   any pre-existing CSS transitions already on the element. To get an idea of what happens during a class-based animation, be sure
+   to view the step by step details of {@link ngAnimate.$animate#methods_addclass $animate.addClass} and
+   {@link ngAnimate.$animate#methods_removeclass $animate.removeClass}.
  */
 var ngClassDirective = classDirective('', true);
 

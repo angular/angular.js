@@ -43,7 +43,7 @@ http://userguide.icu-project.org/locale ICU } website for more information about
 **Supported locales in Angular**
 Angular separates number and datetime format rule sets into different files, each file for a
 particular locale. You can find a list of currently supported locales {@link
-https://github.com/angular/angular.js/tree/master/i18n/locale here}
+https://github.com/angular/angular.js/tree/master/src/ngLocale here}
 # Providing locale rules to Angular
 
 There are two approaches to providing locale rules to Angular:

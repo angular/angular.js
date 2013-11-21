@@ -81,7 +81,7 @@ __`app/js/controllers.js`:__
 
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function PhoneListCtrl($scope) {
+phonecatApp.controller('PhoneListCtrl', function ($scope) {
   $scope.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
@@ -104,7 +104,7 @@ the model and the view. We connected the dots between the presentation, data, an
 as follows:
 
 * The {@link api/ng.directive:ngController ngController} directive, located on the `<body>` tag,
-references the the name of our controller, `PhoneListCtrl` (located in the JavaScript file
+references the name of our controller, `PhoneListCtrl` (located in the JavaScript file
 `controllers.js`).
 
 * The `PhoneListCtrl` controller attaches the phone data to the `$scope` that was injected into our
@@ -180,8 +180,8 @@ is available to be injected.
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
 this tutorial in Jasmine. You can learn about Jasmine on the {@link
-http://pivotal.github.com/jasmine/ Jasmine home page} and on the {@link
-https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
+http://pivotal.github.com/jasmine/ Jasmine home page} and at the {@link
+http://pivotal.github.io/jasmine/ Jasmine docs}.
 
 The angular-seed project is pre-configured to run all unit tests using {@link
 http://karma-runner.github.io/ Karma}. To run the test, do the following:

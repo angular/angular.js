@@ -24,7 +24,7 @@ You can request a new feature by submitting an issue to our [GitHub Repository][
 would like to implement a new feature then consider what kind of change it is:
 
 * **Major Changes** that you wish to contribute to the project should be discussed first on our
-[mailing list][groups] or [IRC][irc] so that we can better coordinate our efforts, prevent
+[dev mailing list][angular-dev] or [IRC][irc] so that we can better coordinate our efforts, prevent
 duplication of work, and help you to craft the change so that it is successfully accepted into the
 project.
 * **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
@@ -145,12 +145,65 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 You can find out more detailed information about contributing in the
 [AngularJS documentation][contributing].
 
+
+## Submitting Your Changes
+
+To create and submit a change:
+
+1. Please sign our [Contributor License Agreement (CLA)](#signing-the-cla) before sending pull
+   requests.
+
+2. Create and checkout a new branch off the master branch for your changes:
+
+   ```shell
+   git checkout -b my-fix-branch master
+   ```
+
+3. Create your patch, including appropriate test cases.
+
+4. Commit your changes and create a descriptive commit message (the commit message is used to
+   generate release notes, please check out our [commit message conventions](#commit-message-format)
+   and our commit message presubmit hook `validate-commit-msg.js`):
+
+   ```shell
+   git commit -a
+   ```
+
+5. Push your branch to Github:
+
+   ```shell
+   git push origin my-fix-branch
+   ```
+
+6. In Github, send a pull request to `angular:master`.
+
+That's it! Thank you for your contribution!
+
+When the patch is reviewed and merged, you can safely delete your branch and pull the changes
+from the main (upstream) repository:
+
+```shell
+# Delete the remote branch on Github:
+git push origin :my-fix-branch
+
+# Check out the master branch:
+git checkout master
+
+# Delete the local branch:
+git branch -D my-fix-branch
+
+# Update your master with the latest upstream version:
+git pull --ff upstream master
+```
+
+
 [github]: https://github.com/angular/angular.js
 [Google Closure I18N library]: https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/
 [list]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [contribute]: http://docs.angularjs.org/misc/contribute
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
+[angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
 [plunker]: http://plnkr.co/edit
 [jsfiddle]: http://jsfiddle.net/

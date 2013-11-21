@@ -22,8 +22,8 @@ function encodePath(path) {
   return segments.join('/');
 }
 
-function parseAbsoluteUrl(absoluteUrl, locationObj) {
-  var parsedUrl = urlResolve(absoluteUrl);
+function parseAbsoluteUrl(absoluteUrl, locationObj, appBase) {
+  var parsedUrl = urlResolve(absoluteUrl, appBase);
 
   locationObj.$$protocol = parsedUrl.protocol;
   locationObj.$$host = parsedUrl.hostname;
@@ -31,12 +31,12 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
 }
 
 
-function parseAppUrl(relativeUrl, locationObj) {
+function parseAppUrl(relativeUrl, locationObj, appBase) {
   var prefixed = (relativeUrl.charAt(0) !== '/');
   if (prefixed) {
     relativeUrl = '/' + relativeUrl;
   }
-  var match = urlResolve(relativeUrl);
+  var match = urlResolve(relativeUrl, appBase);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
   locationObj.$$search = parseKeyValue(match.search);
@@ -91,7 +91,7 @@ function LocationHtml5Url(appBase, basePrefix) {
   this.$$html5 = true;
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
-  parseAbsoluteUrl(appBase, this);
+  parseAbsoluteUrl(appBase, this, appBase);
 
 
   /**
@@ -106,7 +106,7 @@ function LocationHtml5Url(appBase, basePrefix) {
           appBaseNoFile);
     }
 
-    parseAppUrl(pathUrl, this);
+    parseAppUrl(pathUrl, this, appBase);
 
     if (!this.$$path) {
       this.$$path = '/';
@@ -158,7 +158,7 @@ function LocationHtml5Url(appBase, basePrefix) {
 function LocationHashbangUrl(appBase, hashPrefix) {
   var appBaseNoFile = stripFile(appBase);
 
-  parseAbsoluteUrl(appBase, this);
+  parseAbsoluteUrl(appBase, this, appBase);
 
 
   /**
@@ -178,7 +178,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
       throw $locationMinErr('ihshprfx', 'Invalid url "{0}", missing hash prefix "{1}".', url,
           hashPrefix);
     }
-    parseAppUrl(withoutHashUrl, this);
+    parseAppUrl(withoutHashUrl, this, appBase);
     this.$$compose();
   };
 
@@ -369,9 +369,10 @@ LocationHashbangInHtml5Url.prototype =
    * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or
    * hash object. Hash object may contain an array of values, which will be decoded as duplicates in
    * the url.
-   * 
-   * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
-   * single search parameter. If the value is `null`, the parameter will be deleted.
+   *
+   * @param {(string|Array<string>)=} paramValue If `search` is a string, then `paramValue` will override only a
+   * single search parameter. If `paramValue` is an array, it will set the parameter as a
+   * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
    * @return {string} search
    */
@@ -525,7 +526,7 @@ function $LocationProvider(){
       return html5Mode;
     }
   };
-    
+
   /**
    * @ngdoc event
    * @name ng.$location#$locationChangeStart
@@ -541,14 +542,14 @@ function $LocationProvider(){
    * @param {string} newUrl New URL
    * @param {string=} oldUrl URL that was before it was changed.
    */
-    
+
   /**
    * @ngdoc event
    * @name ng.$location#$locationChangeSuccess
    * @eventOf ng.$location
    * @eventType broadcast on root scope
    * @description
-   * Broadcasted after a URL was changed. 
+   * Broadcasted after a URL was changed.
    *
    * @param {Object} angularEvent Synthetic event object.
    * @param {string} newUrl New URL

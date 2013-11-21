@@ -2,6 +2,28 @@
 
 var $resourceMinErr = angular.$$minErr('$resource');
 
+// Helper functions and regex to lookup a dotted path on an object
+// stopping at undefined/null.  The path must be composed of ASCII
+// identifiers (just like $parse)
+var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
+
+function isValidDottedPath(path) {
+  return (path != null && path !== '' && path !== 'hasOwnProperty' &&
+      MEMBER_NAME_REGEX.test('.' + path));
+}
+
+function lookupDottedPath(obj, path) {
+  if (!isValidDottedPath(path)) {
+    throw $resourceMinErr('badmember', 'Dotted member path "@{0}" is invalid.', path);
+  }
+  var keys = path.split('.');
+  for (var i = 0, ii = keys.length; i < ii && obj !== undefined; i++) {
+    var key = keys[i];
+    obj = (obj !== null) ? obj[key] : undefined;
+  }
+  return obj;
+}
+
 /**
  * @ngdoc overview
  * @name ngResource
@@ -129,7 +151,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
  *   usually the resource is assigned to a model which is then rendered by the view. Having an empty
  *   object results in no rendering, once the data arrives from the server then the object is
  *   populated with the data and the view automatically re-renders itself showing the new data. This
- *   means that in most case one never has to write a callback function for the action methods.
+ *   means that in most cases one never has to write a callback function for the action methods.
  *
  *   The action methods on the class object or instance object can be invoked with the following
  *   parameters:
@@ -231,61 +253,10 @@ var $resourceMinErr = angular.$$minErr('$resource');
        });
      });
    </pre>
-
- * # Buzz client
-
-   Let's look at what a buzz client created with the `$resource` service looks like:
-    <doc:example>
-    <doc:source jsfiddle="false">
-    <script>
-     function BuzzController($resource) {
-       this.userId = 'googlebuzz';
-       this.Activity = $resource(
-         'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
-         {alt:'json', callback:'JSON_CALLBACK'},
-         {
-           get:{method:'JSONP', params:{visibility:'@self'}},
-           replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}
-         }
-       );
-     }
-
-     BuzzController.prototype = {
-       fetch: function() {
-         this.activities = this.Activity.get({userId:this.userId});
-       },
-       expandReplies: function(activity) {
-         activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
-       }
-     };
-     BuzzController.$inject = ['$resource'];
-    </script>
-
-    <div ng-controller="BuzzController">
-     <input ng-model="userId"/>
-     <button ng-click="fetch()">fetch</button>
-     <hr/>
-     <div ng-repeat="item in activities.data.items">
-       <h1 style="font-size: 15px;">
-         <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-         <a href ng-click="expandReplies(item)" style="float: right;">Expand replies:
-           {{item.links.replies[0].count}}</a>
-       </h1>
-       {{item.object.content | html}}
-       <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-         <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
-       </div>
-     </div>
-    </div>
-    </doc:source>
-    <doc:scenario>
-    </doc:scenario>
-    </doc:example>
  */
 angular.module('ngResource', ['ng']).
-  factory('$resource', ['$http', '$parse', '$q', function($http, $parse, $q) {
+  factory('$resource', ['$http', '$q', function($http, $q) {
+
     var DEFAULT_ACTIONS = {
       'get':    {method:'GET'},
       'save':   {method:'POST'},
@@ -297,10 +268,7 @@ angular.module('ngResource', ['ng']).
         forEach = angular.forEach,
         extend = angular.extend,
         copy = angular.copy,
-        isFunction = angular.isFunction,
-        getter = function(obj, path) {
-          return $parse(path)(obj);
-        };
+        isFunction = angular.isFunction;
 
     /**
      * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
@@ -415,7 +383,7 @@ angular.module('ngResource', ['ng']).
         forEach(actionParams, function(value, key){
           if (isFunction(value)) { value = value(); }
           ids[key] = value && value.charAt && value.charAt(0) == '@' ?
-            getter(data, value.substr(1)) : value;
+            lookupDottedPath(data, value.substr(1)) : value;
         });
         return ids;
       }

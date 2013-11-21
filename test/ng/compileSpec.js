@@ -504,6 +504,14 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithInterpolatedStyle', valueFn({
+            replace: true,
+            template: '<div style="width:{{1+1}}px">Replace with interpolated style!</div>',
+            compile: function(element, attr) {
+              attr.$set('compiled', 'COMPILED');
+              expect(element).toBe(attr.$$element);
+            }
+          }));
         }));
 
 
@@ -581,13 +589,22 @@ describe('$compile', function() {
         }));
 
 
-        it('should handle interpolated css from replacing directive', inject(
+        it('should handle interpolated css class from replacing directive', inject(
             function($compile, $rootScope) {
           element = $compile('<div replace-with-interpolated-class></div>')($rootScope);
           $rootScope.$digest();
           expect(element).toHaveClass('class_2');
         }));
 
+        if (!msie || msie > 10) {
+          // style interpolation not working on IE<11.
+          it('should handle interpolated css style from replacing directive', inject(
+            function($compile, $rootScope) {
+              element = $compile('<div replace-with-interpolated-style></div>')($rootScope);
+              $rootScope.$digest();
+              expect(element.css('width')).toBe('2px');
+          }));
+        }
 
         it('should merge interpolated css class', inject(function($compile, $rootScope) {
           element = $compile('<div class="one {{cls}} three" replace></div>')($rootScope);
@@ -1375,7 +1392,7 @@ describe('$compile', function() {
                   return function (scope, element) {
                     iscope = scope;
                     log(scope.$id);
-                    expect(element.data('$scope')).toBe(scope);
+                    expect(element.data('$isolateScopeNoTemplate')).toBe(scope);
                   };
                 }
               };
@@ -1416,7 +1433,7 @@ describe('$compile', function() {
                   return function (scope, element) {
                     iscope = scope;
                     log(scope.$id);
-                    expect(element.data('$scope')).toBe(scope);
+                    expect(element.data('$isolateScope')).toBe(scope);
                   };
                 }
               };
@@ -1426,7 +1443,7 @@ describe('$compile', function() {
             return {
               restrict: 'CA',
               link: {pre: function(scope) {
-                log('log-' + scope.$id + '-' + scope.$parent.$id);
+                log('log-' + scope.$id + '-' + (scope.$parent && scope.$parent.$id || 'no-parent'));
               }}
             };
           });
@@ -1443,7 +1460,7 @@ describe('$compile', function() {
         it('should allow creation of new isolated scopes for directives', inject(
             function($rootScope, $compile, log) {
           element = $compile('<div><span iscope><a log></a></span></div>')($rootScope);
-          expect(log).toEqual('log-002-001; LOG; 002');
+          expect(log).toEqual('log-001-no-parent; LOG; 002');
           $rootScope.name = 'abc';
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
@@ -1522,7 +1539,7 @@ describe('$compile', function() {
         );
 
 
-        it('should allow more one new scope directives per element, but directives should share' +
+        it('should allow more than one new scope directives per element, but directives should share' +
             'the scope', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div class="scope-a; scope-b"></div>')($rootScope);
@@ -1535,7 +1552,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
-                '<div class="iscope-a; scope-b ng-isolate-scope ng-scope">');
+                '<div class="iscope-a; scope-b">');
           })
         );
 
@@ -1554,6 +1571,120 @@ describe('$compile', function() {
             expect(log).toEqual('002');
           })
         );
+
+
+        describe('scope()/isolate() scope getters', function() {
+
+          describe('with no directives', function() {
+
+            it('should return the scope of the parent node', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div></div>')($rootScope);
+                expect(element.scope()).toBe($rootScope);
+              })
+            );
+          });
+
+
+          describe('with new scope directives', function() {
+
+            it('should return the new scope at the directive element', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div scope></div>')($rootScope);
+                expect(element.scope().$parent).toBe($rootScope);
+              })
+            );
+
+
+            it('should return the new scope for children in the original template', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div scope><a></a></div>')($rootScope);
+                expect(element.find('a').scope().$parent).toBe($rootScope);
+              })
+            );
+
+
+            it('should return the new scope for children in the directive template', inject(
+              function($rootScope, $compile, $httpBackend) {
+                $httpBackend.expect('GET', 'tscope.html').respond('<a></a>');
+                element = $compile('<div tscope></div>')($rootScope);
+                $httpBackend.flush();
+                expect(element.find('a').scope().$parent).toBe($rootScope);
+              })
+            );
+          });
+
+
+          describe('with isolate scope directives', function() {
+
+            it('should return the root scope for directives at the root element', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div iscope></div>')($rootScope);
+                expect(element.scope()).toBe($rootScope);
+              })
+            );
+
+
+            it('should return the non-isolate scope at the directive element', inject(
+              function($rootScope, $compile) {
+                var directiveElement;
+                element = $compile('<div><div iscope></div></div>')($rootScope);
+                directiveElement = element.children();
+                expect(directiveElement.scope()).toBe($rootScope);
+                expect(directiveElement.isolateScope().$parent).toBe($rootScope);
+              })
+            );
+
+
+            it('should return the isolate scope for children in the original template', inject(
+              function($rootScope, $compile) {
+                element = $compile('<div iscope><a></a></div>')($rootScope);
+                expect(element.find('a').scope()).toBe($rootScope); //xx
+              })
+            );
+
+
+            it('should return the isolate scope for children in directive template', inject(
+              function($rootScope, $compile, $httpBackend) {
+                $httpBackend.expect('GET', 'tiscope.html').respond('<a></a>');
+                element = $compile('<div tiscope></div>')($rootScope);
+                expect(element.isolateScope()).toBeUndefined(); // this is the current behavior, not desired feature
+                $httpBackend.flush();
+                expect(element.find('a').scope()).toBe(element.isolateScope());
+                expect(element.isolateScope()).not.toBe($rootScope);
+              })
+            );
+          });
+
+
+          describe('with isolate scope directives and directives that manually create a new scope', function() {
+
+            it('should return the new scope at the directive element', inject(
+              function($rootScope, $compile) {
+                var directiveElement;
+                element = $compile('<div><a ng-if="true" iscope></a></div>')($rootScope);
+                $rootScope.$apply();
+                directiveElement = element.find('a');
+                expect(directiveElement.scope().$parent).toBe($rootScope);
+                expect(directiveElement.scope()).not.toBe(directiveElement.isolateScope());
+              })
+            );
+
+
+            it('should return the isolate scope for child elements', inject(
+              function($rootScope, $compile, $httpBackend) {
+                var directiveElement, child;
+                $httpBackend.expect('GET', 'tiscope.html').respond('<span></span>');
+                element = $compile('<div><a ng-if="true" tiscope></a></div>')($rootScope);
+                $rootScope.$apply();
+                $httpBackend.flush();
+                directiveElement = element.find('a');
+                child = directiveElement.find('span');
+                expect(child.scope()).toBe(directiveElement.isolateScope());
+              })
+            );
+          });
+        });
       });
     });
   });
@@ -2085,7 +2216,7 @@ describe('$compile', function() {
 
 
   describe('isolated locals', function() {
-    var componentScope;
+    var componentScope, regularScope;
 
     beforeEach(module(function() {
       directive('myComponent', function() {
@@ -2112,7 +2243,82 @@ describe('$compile', function() {
           scope: { attr: 'xxx' }
         };
       });
+      directive('storeScope', function() {
+        return {
+          link: function(scope) {
+            regularScope = scope;
+          }
+        }
+      });
     }));
+
+
+    it('should give other directives the parent scope', inject(function($rootScope) {
+      compile('<div><input type="text" my-component store-scope ng-model="value"></div>');
+      $rootScope.$apply(function() {
+        $rootScope.value = 'from-parent';
+      });
+      expect(element.find('input').val()).toBe('from-parent');
+      expect(componentScope).not.toBe(regularScope);
+      expect(componentScope.$parent).toBe(regularScope)
+    }));
+
+
+    it('should not give the isolate scope to other directive template', function() {
+      module(function() {
+        directive('otherTplDir', function() {
+          return {
+            template: 'value: {{value}}'
+          };
+        });
+      });
+
+      inject(function($rootScope) {
+        compile('<div my-component other-tpl-dir>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
+
+    it('should not give the isolate scope to other directive template (with templateUrl)', function() {
+      module(function() {
+        directive('otherTplDir', function() {
+          return {
+            templateUrl: 'other.html'
+          };
+        });
+      });
+
+      inject(function($rootScope, $templateCache) {
+        $templateCache.put('other.html', 'value: {{value}}')
+        compile('<div my-component other-tpl-dir>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
+
+    it('should not give the isolate scope to regular child elements', function() {
+      inject(function($rootScope) {
+        compile('<div my-component>value: {{value}}</div>');
+
+        $rootScope.$apply(function() {
+          $rootScope.value = 'from-parent';
+        });
+
+        expect(element.html()).toBe('value: from-parent');
+      });
+    });
+
 
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
@@ -2372,6 +2578,200 @@ describe('$compile', function() {
         element = $compile('<div dir-a dir-b></div>')($rootScope);
         $rootScope.$digest();
         expect(log).toEqual('dirAController.name: dirA');
+      });
+    });
+
+
+    it('should require controller of an isolate directive from a non-isolate directive on the ' +
+        'same element', function() {
+      var IsolateController = function() {};
+      var isolateDirControllerInNonIsolateDirective;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            scope: {},
+            controller: IsolateController
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            require: 'isolate',
+            link: function(_, __, ___, isolateDirController) {
+              isolateDirControllerInNonIsolateDirective = isolateDirController;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(isolateDirControllerInNonIsolateDirective).toBeDefined();
+        expect(isolateDirControllerInNonIsolateDirective instanceof IsolateController).toBe(true);
+      });
+    });
+
+
+    it('should give the isolate scope to the controller of another replaced directives in the template', function() {
+      module(function() {
+        directive('testDirective', function() {
+          return {
+            replace: true,
+            restrict: 'E',
+            scope: {},
+            template: '<input type="checkbox" ng-model="model">'
+          };
+        });
+      });
+
+      inject(function($rootScope) {
+        compile('<div><test-directive></test-directive></div>');
+
+        element = element.children().eq(0);
+        expect(element[0].checked).toBe(false);
+        element.isolateScope().model = true;
+        $rootScope.$digest();
+        expect(element[0].checked).toBe(true);
+      });
+    });
+
+
+    it('should share isolate scope with replaced directives (template)', function() {
+      var normalScope;
+      var isolateScope;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            template: '<span ng-init="name=\'WORKS\'">{{name}}</span>',
+            link: function(s) {
+              isolateScope = s;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            link: function(s) {
+              normalScope = s;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(normalScope).toBe($rootScope);
+        expect(normalScope.name).toEqual(undefined);
+        expect(isolateScope.name).toEqual('WORKS');
+        $rootScope.$digest();
+        expect(element.text()).toEqual('WORKS');
+      });
+    });
+
+
+    it('should share isolate scope with replaced directives (templateUrl)', function() {
+      var normalScope;
+      var isolateScope;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            templateUrl: 'main.html',
+            link: function(s) {
+              isolateScope = s;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            link: function(s) {
+              normalScope = s;
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $templateCache) {
+        $templateCache.put('main.html', '<span ng-init="name=\'WORKS\'">{{name}}</span>');
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+        $rootScope.$apply();
+
+        expect(normalScope).toBe($rootScope);
+        expect(normalScope.name).toEqual(undefined);
+        expect(isolateScope.name).toEqual('WORKS');
+        expect(element.text()).toEqual('WORKS');
+      });
+    });
+
+
+    it('should not get confused about where to use isolate scope when a replaced directive is used multiple times',
+        function() {
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            replace: true,
+            scope: {},
+            template: '<span scope-tester="replaced"><span scope-tester="inside"></span></span>'
+          };
+        });
+        directive('scopeTester', function(log) {
+          return {
+            link: function($scope, $element) {
+              log($element.attr('scope-tester') + '=' + ($scope.$root === $scope ? 'non-isolate' : 'isolate'));
+            }
+          }
+        });
+      });
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<div>' +
+                             '<div isolate scope-tester="outside"></div>' +
+                             '<span scope-tester="sibling"></span>' +
+                           '</div>')($rootScope);
+
+        $rootScope.$digest();
+        expect(log).toEqual('inside=isolate; ' +
+                            'outside replaced=non-isolate; ' + // outside
+                            'outside replaced=isolate; ' + // replaced
+                            'sibling=non-isolate')
+      });
+    });
+
+
+    it('should require controller of a non-isolate directive from an isolate directive on the ' +
+       'same element', function() {
+      var NonIsolateController = function() {};
+      var nonIsolateDirControllerInIsolateDirective;
+
+      module(function() {
+        directive('isolate', function() {
+          return {
+            scope: {},
+            require: 'nonIsolate',
+            link: function(_, __, ___, nonIsolateDirController) {
+              nonIsolateDirControllerInIsolateDirective = nonIsolateDirController;
+            }
+          };
+        });
+        directive('nonIsolate', function() {
+          return {
+            controller: NonIsolateController
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        element = $compile('<div isolate non-isolate></div>')($rootScope);
+
+        expect(nonIsolateDirControllerInIsolateDirective).toBeDefined();
+        expect(nonIsolateDirControllerInIsolateDirective instanceof NonIsolateController).toBe(true);
       });
     });
 
@@ -3038,6 +3438,113 @@ describe('$compile', function() {
           expect(log).toEqual('pre(); post(unicorn!)');
         });
       });
+
+      it('should copy the directive controller to all clones', function() {
+        var transcludeCtrl, cloneCount = 2;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              transcludeCtrl = this;
+            },
+            link: function(scope, el, attr, ctrl, $transclude) {
+              var i;
+              for (i=0; i<cloneCount; i++) {
+                $transclude(cloneAttach);
+              }
+
+              function cloneAttach(clone) {
+                el.append(clone);
+              }
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><span></span></div>')($rootScope);
+          var children = element.children(), i;
+          expect(transcludeCtrl).toBeDefined();
+
+          expect(element.data('$transcludeController')).toBe(transcludeCtrl);
+          for (i=0; i<cloneCount; i++) {
+            expect(children.eq(i).data('$transcludeController')).toBeUndefined();
+          }
+        });
+      });
+
+      it('should provide the $transclude controller local as 5th argument to the pre and post-link function', function() {
+        var ctrlTransclude, preLinkTransclude, postLinkTransclude;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              ctrlTransclude = $transclude;
+            },
+            compile: function() {
+              return {
+                pre: function(scope, el, attr, ctrl, $transclude) {
+                  preLinkTransclude = $transclude;
+                },
+                post: function(scope, el, attr, ctrl, $transclude) {
+                  postLinkTransclude = $transclude;
+                }
+              };
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude></div>')($rootScope);
+          expect(ctrlTransclude).toBeDefined();
+          expect(ctrlTransclude).toBe(preLinkTransclude);
+          expect(ctrlTransclude).toBe(postLinkTransclude);
+        });
+      });
+
+      it('should allow an optional scope argument in $transclude', function() {
+        var capturedChildCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(scope, function(clone) {
+                element.append(clone);
+              });
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude>{{$id}}</div>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toBe($rootScope.$id);
+        });
+
+      });
+
+      it('should expose the directive controller to transcluded children', function() {
+        var capturedChildCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function() {
+            },
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(function(clone) {
+                element.append(clone);
+              });
+            }
+          }));
+          directive('child', valueFn({
+            require: '^transclude',
+            link: function(scope, element, attr, ctrl) {
+              capturedChildCtrl = ctrl;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          expect(capturedChildCtrl).toBeTruthy();
+        });
+
+      });
     });
 
 
@@ -3070,7 +3577,6 @@ describe('$compile', function() {
           expect(element.text()).toEqual('001-002;001-003;');
         });
       });
-
 
       it('should only allow one element transclusion per element', function() {
         module(function() {
@@ -3220,8 +3726,101 @@ describe('$compile', function() {
           ]);
         });
       });
-    });
 
+      it('should allow to access $transclude in the same directive', function() {
+        var _$transclude;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function($transclude) {
+              _$transclude = $transclude;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude></div>')($rootScope);
+          expect(_$transclude).toBeDefined()
+        });
+      });
+
+      it('should copy the directive controller to all clones', function() {
+        var transcludeCtrl, cloneCount = 2;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function() {
+              transcludeCtrl = this;
+            },
+            link: function(scope, el, attr, ctrl, $transclude) {
+              var i;
+              for (i=0; i<cloneCount; i++) {
+                $transclude(cloneAttach);
+              }
+
+              function cloneAttach(clone) {
+                el.after(clone);
+              }
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div><div transclude></div></div>')($rootScope);
+          var children = element.children(), i;
+          for (i=0; i<cloneCount; i++) {
+            expect(children.eq(i).data('$transcludeController')).toBe(transcludeCtrl);
+          }
+        });
+      });
+
+      it('should expose the directive controller to transcluded children', function() {
+        var capturedTranscludeCtrl;
+        module(function() {
+          directive('transclude', valueFn({
+            transclude: 'element',
+            controller: function() {
+            },
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(scope, function(clone) {
+                element.after(clone);
+              });
+            }
+          }));
+          directive('child', valueFn({
+            require: '^transclude',
+            link: function(scope, element, attr, ctrl) {
+              capturedTranscludeCtrl = ctrl;
+            }
+          }));
+        });
+        inject(function($compile) {
+          element = $compile('<div transclude><div child></div></div>')($rootScope);
+          expect(capturedTranscludeCtrl).toBeTruthy();
+        });
+      });
+
+      it('should allow access to $transclude in a templateUrl directive', function() {
+        var transclude;
+        module(function() {
+          directive('template', valueFn({
+            templateUrl: 'template.html',
+            replace: true
+          }));
+          directive('transclude', valueFn({
+            transclude: 'content',
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+        });
+        inject(function($compile, $httpBackend) {
+          $httpBackend.expectGET('template.html').respond('<div transclude></div>');
+          element = $compile('<div template></div>')($rootScope);
+          $httpBackend.flush();
+          expect(transclude).toBeDefined();
+        });
+      });
+
+    });
 
     it('should safely create transclude comment node and not break with "-->"',
         inject(function($rootScope) {
