@@ -34,8 +34,8 @@ describe('ngdoc', function() {
         var d1 = new Doc('@name a.b.c').parse();
         var d2 = new Doc('@name a.b.ng-c').parse();
         var d3 = new Doc('@name some text: more text').parse();
-        expect(ngdoc.metadata([d1])[0].shortName).toEqual('c');
-        expect(ngdoc.metadata([d2])[0].shortName).toEqual('ng-c');
+        expect(ngdoc.metadata([d1])[0].shortName).toEqual('a.b.c');
+        expect(ngdoc.metadata([d2])[0].shortName).toEqual('a.b.ng-c');
         expect(ngdoc.metadata([d3])[0].shortName).toEqual('more text');
       });
 
