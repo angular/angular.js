@@ -294,7 +294,7 @@ function Browser(window, document, $log, $sniffer) {
       } else {
         if (isString(value)) {
           cookieLength = (rawDocument.cookie = escape(name) + '=' + escape(value) +
-                                ';path=' + cookiePath).length + 1;
+                                ';path=' + cookiePath + ";expires=Tue, 01 Jan 2030 00:00:00 GMT").length + 1;
 
           // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
           // - 300 cookies
