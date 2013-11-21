@@ -8,6 +8,17 @@ This document describes the Internet Explorer (IE) idiosyncrasies when dealing w
 attributes and tags. Read this document if you are planning on deploying your Angular application
 on IE v8.0 or earlier.
 
+The project currently supports and will attempt to fix bugs for IE8 and above. The continuous
+integration server runs all the tests against IE8. See http://ci.angularjs.org.
+
+IE7 and below are not tested and the project makes no guarantee that Angular will work on it.
+A subset of the AngularJS functionality may work. It is up to you to test and decide whether
+it works for your particular app.
+
+It is very unlikely that issues specific to IE7 or earlier will be given any time by the core team.
+[GitHub](https://github.com/angular/angular.js/issues/4974)
+
+
 # Short Version
 
 To make your Angular application work on IE please make sure that:
