@@ -1441,11 +1441,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
         var attrs, $element, i, ii, linkFn, controller, isolateScope, elementControllers = {}, transcludeFn;
 
-        if (compileNode === linkNode) {
-          attrs = templateAttrs;
-        } else {
-          attrs = shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
-        }
+        attrs = (compileNode === linkNode)
+          ? templateAttrs
+          : shallowCopy(templateAttrs, new Attributes(jqLite(linkNode), templateAttrs.$attr));
         $element = attrs.$$element;
 
         if (newIsolateScopeDirective) {
