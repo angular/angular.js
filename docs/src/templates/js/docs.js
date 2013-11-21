@@ -680,7 +680,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
     var currentPageId = $location.path();
     $scope.partialTitle = $scope.currentPage.shortName;
     $window._gaq.push(['_trackPageview', currentPageId]);
-    loadDisqus(currentPageId);
   };
 
   /** stores a cookie that is used by apache to decide which manifest ot send */
@@ -891,29 +890,6 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
       }
       return namespace;
     }
-  }
-
-
-  function loadDisqus(currentPageId) {
-    // http://docs.disqus.com/help/2/
-    window.disqus_shortname = 'angularjs-next';
-    window.disqus_identifier = currentPageId;
-    window.disqus_url = 'http://docs.angularjs.org' + currentPageId;
-
-    if ($location.host() == 'localhost') {
-      return; // don't display disqus on localhost, comment this out if needed
-      //window.disqus_developer = 1;
-    }
-
-    // http://docs.disqus.com/developers/universal/
-    (function() {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://angularjs.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] ||
-        document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-
-    angular.element(document.getElementById('disqus_thread')).html('');
   }
 };
 
