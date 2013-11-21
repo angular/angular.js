@@ -35,7 +35,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#resource-methods-return-the-promise Resource methods return the promise}</li>
   <li>{@link guide/migration#resource-promises-are-resolved-with-the-resource-instance Resource promises are resolved with the resource instance}</li>
   <li>{@link guide/migration#$locationsearch-supports-multiple-keys $location.search supports multiple keys}</li>
-  <li>{@link guide/migration#nghtmlbindunsafe-has-been-removed-and-replaced-by-nghtmlbind ngHtmlBindUnsafe has been removed and replaced by ngHtmlBind}</li>
+  <li>{@link guide/migration#ngbindhtmlunsafe-has-been-removed-and-replaced-by-ngbindhtml ngBindHtmlUnsafe has been removed and replaced by ngBindHtml}</li>
   <li>{@link guide/migration#form-names-that-are-expressions-are-evaluated Form names that are expressions are evaluated}</li>
   <li>{@link guide/migration#hasownproperty-disallowed-as-an-input-name hasOwnProperty disallowed as an input name}</li>
   <li>{@link guide/migration#directives-order-of-postlink-functions-reversed Directives: Order of postLink functions reversed}</li>
@@ -376,11 +376,11 @@ passing it to `$location`.
 See [80739409](https://github.com/angular/angular.js/commit/807394095b991357225a03d5fed81fea5c9a1abe).
 
 
-## ngHtmlBindUnsafe has been removed and replaced by ngHtmlBind
+## ngBindHtmlUnsafe has been removed and replaced by ngBindHtml
 
-`ngHtmlBind` which has been moved from `ngSanitize` module to the core `ng` module.
+`ngBindHtml` which has been moved from `ngSanitize` module to the core `ng` module.
 
-`ngBindHtml` provides `ngHtmlBindUnsafe` like
+`ngBindHtml` provides `ngBindHtmlUnsafe` like
 behavior (evaluate an expression and innerHTML the result into the DOM) when bound to the result
 of `$sce.trustAsHtml(string)`. When bound to a plain string, the string is sanitized via
 `$sanitize` before being innerHTML'd. If the `$sanitize` service isn't available (`ngSanitize`
