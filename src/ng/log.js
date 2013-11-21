@@ -44,6 +44,7 @@
  */
 function $LogProvider(){
   var debug = true,
+	  messages = true,
       self = this;
   
   /**
@@ -62,6 +63,14 @@ function $LogProvider(){
       return debug;
     }
   };
+	this.enableMessages = function(flag){
+		if(isDefined(flag)){
+			messages = flag;
+			return this;
+		}else {
+			return messages;
+		}
+	};
   
   this.$get = ['$window', function($window){
     return {
@@ -73,7 +82,15 @@ function $LogProvider(){
        * @description
        * Write a log message
        */
-      log: consoleLog('log'),
+      log : (function(){
+	      var fn = consoleLog('log');
+
+	      return function() {
+		      if (messages) {
+			      fn.apply(self, arguments);
+		      }
+	      };
+      }()),
 
       /**
        * @ngdoc method
@@ -83,7 +100,15 @@ function $LogProvider(){
        * @description
        * Write an information message
        */
-      info: consoleLog('info'),
+      info : (function(){
+	      var fn = consoleLog('info');
+
+	      return function() {
+		      if (messages) {
+			      fn.apply(self, arguments);
+		      }
+	      };
+      }()),
 
       /**
        * @ngdoc method
