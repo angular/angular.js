@@ -772,7 +772,8 @@ function copy(source, destination, stackSource, stackDest) {
       } else if (isRegExp(source)) {
         destination = new RegExp(source.source);
       } else if (isObject(source)) {
-        destination = copy(source, {}, stackSource, stackDest);
+        var emptyObject = Object.create(Object.getPrototypeOf(source));
+        destination = copy(source, emptyObject, stackSource, stackDest);
       }
     }
   } else {
@@ -807,12 +808,14 @@ function copy(source, destination, stackSource, stackDest) {
         delete destination[key];
       });
       for ( var key in source) {
-        result = copy(source[key], null, stackSource, stackDest);
-        if (isObject(source[key])) {
-          stackSource.push(source[key]);
-          stackDest.push(result);
+        if(source.hasOwnProperty(key)) {
+          result = copy(source[key], null, stackSource, stackDest);
+          if (isObject(source[key])) {
+            stackSource.push(source[key]);
+            stackDest.push(result);
+          }
+          destination[key] = result;
         }
-        destination[key] = result;
       }
       setHashKey(destination,h);
     }
