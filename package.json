@@ -30,7 +30,7 @@
     "yaml-js": "~0.0.8",
     "marked": "0.2.9",
     "rewire": "1.1.3",
-    "grunt-jasmine-node": "~0.1.0",
+    "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
     "grunt-parallel": "~0.3.1",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-merge-conflict": "~0.0.1",
