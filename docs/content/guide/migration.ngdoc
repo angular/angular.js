@@ -590,6 +590,10 @@ See [79223eae](https://github.com/angular/angular.js/commit/79223eae502283889334
 
 ## Underscore-prefixed/suffixed properties are non-bindable
 
+<div class="alert alert-info">
+<p>**Reverted**: This breaking change has been reverted in 1.2.1, and so can be ignored if you're using **version 1.2.1 or higher**</p>
+</div>
+
 This change introduces the notion of "private" properties (properties
 whose names begin and/or end with an underscore) on the scope chain.
 These properties will not be available to Angular expressions (i.e. {{
