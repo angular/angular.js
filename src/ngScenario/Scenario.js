@@ -313,11 +313,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
         }
         for(var fns, j=0, jj=binding.length;  j<jj; j++) {
           fns = binding[j];
-          if (fns.parts) {
-            fns = fns.parts;
-          } else {
-            fns = [fns];
-          }
+          fns = fns.parts || [fns];
           for (var scope, fn, i = 0, ii = fns.length; i < ii; i++) {
             if(match((fn = fns[i]).exp)) {
               push(fn(scope = scope || element.scope()));
