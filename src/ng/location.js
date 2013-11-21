@@ -37,15 +37,17 @@ function parseAppUrl(relativeUrl, locationObj, appBase) {
     relativeUrl = '/' + relativeUrl;
   }
   var match = urlResolve(relativeUrl, appBase);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
-      match.pathname.substring(1) : match.pathname);
-  locationObj.$$search = parseKeyValue(match.search);
-  locationObj.$$hash = decodeURIComponent(match.hash);
+  locationObj.pathEncoded = prefixed && match.pathname.charAt(0) === '/' ?
+      match.pathname.substring(1) : match.pathname;
 
   // make sure path starts with '/';
-  if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
-    locationObj.$$path = '/' + locationObj.$$path;
+  if (locationObj.pathEncoded && locationObj.pathEncoded.charAt(0) != '/') {
+    locationObj.pathEncoded = '/' + locationObj.pathEncoded;
   }
+
+  locationObj.$$path = decodeURIComponent(locationObj.pathEncoded);
+  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$hash = decodeURIComponent(match.hash);
 }
 
 
@@ -123,7 +125,7 @@ function LocationHtml5Url(appBase, basePrefix) {
     var search = toKeyValue(this.$$search),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
-    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$url = this.pathEncoded + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBaseNoFile + this.$$url.substr(1); // first char is always '/'
   };
 
@@ -190,7 +192,7 @@ function LocationHashbangUrl(appBase, hashPrefix) {
     var search = toKeyValue(this.$$search),
         hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
 
-    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$url = this.pathEncoded + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : '');
   };
 
@@ -350,8 +352,10 @@ LocationHashbangInHtml5Url.prototype =
    * @param {string=} path New path
    * @return {string} path
    */
-  path: locationGetterSetter('$$path', function(path) {
-    return path.charAt(0) == '/' ? path : '/' + path;
+  path: locationGetterSetter('$$path', function(path, locationObj) {
+    path = path.charAt(0) == '/' ? path : '/' + path;
+    locationObj.pathEncoded = encodePath(path);
+    return path;
   }),
 
   /**
@@ -446,7 +450,7 @@ function locationGetterSetter(property, preprocess) {
     if (isUndefined(value))
       return this[property];
 
-    this[property] = preprocess(value);
+    this[property] = preprocess(value, this);
     this.$$compose();
 
     return this;

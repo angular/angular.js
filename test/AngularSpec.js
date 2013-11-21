@@ -569,12 +569,12 @@ describe('angular', function() {
         toEqual("-_.!~*'()%20-_.!~*'()");
 
       //don't encode the rest of pchar'
-      expect(encodeUriSegment(':;@&=+$, :;@&=+$,')).
-        toEqual(':;@&=+$,%20:;@&=+$,');
+      expect(encodeUriSegment(':@&=+$, :@&=+$,')).
+        toEqual(':@&=+$,%20:@&=+$,');
 
-      //encode '/', and ' ''
-      expect(encodeUriSegment('/ /')).
-        toEqual('%2F%20%2F');
+      //encode '/', ';' and ' ''
+      expect(encodeUriSegment('/; /;')).
+        toEqual('%2F%3B%20%2F%3B');
     });
   });
 
