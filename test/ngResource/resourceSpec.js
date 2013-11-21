@@ -533,6 +533,18 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   });
 
+  it('should return a resource instance when calling a class method with a resource instance', function() {
+    $httpBackend.expect('GET', '/Person/123').respond('{"name":"misko"}');
+    var Person = $resource('/Person/:id');
+    var person = Person.get({id:123});
+    $httpBackend.flush();
+    $httpBackend.expect('POST', '/Person').respond('{"name":"misko2"}');
+
+    var person2 = Person.save(person);
+    $httpBackend.flush();
+
+    expect(person2).toEqual(jasmine.any(Person));
+  });
 
   describe('promise api', function() {
 
