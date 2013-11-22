@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.2-snapshot",
+  "version": "1.2.2",
   "cdnVersion": "1.2.1",
-  "codename": "underscore-empathy",
+  "codename": "consciousness-inertia",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
