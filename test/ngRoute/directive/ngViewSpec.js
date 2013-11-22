@@ -515,12 +515,23 @@ describe('ngView', function() {
 });
 
 describe('ngView and transcludes', function() {
+  var element, directive;
+
+  beforeEach(module('ngRoute', function($compileProvider) {
+    element = null;
+    directive = $compileProvider.directive;
+  }));
+
+  afterEach(function() {
+    if (element) {
+      dealoc(element);
+    }
+  });
+
   it('should allow access to directive controller from children when used in a replace template', function() {
     var controller;
-    module('ngRoute');
-    module(function($compileProvider, $routeProvider) {
+    module(function($routeProvider) {
       $routeProvider.when('/view', {templateUrl: 'view.html'});
-      var directive = $compileProvider.directive;
       directive('template', function() {
         return {
           template: '<div ng-view></div>',
@@ -542,13 +553,34 @@ describe('ngView and transcludes', function() {
     });
     inject(function($compile, $rootScope, $httpBackend, $location) {
       $httpBackend.expectGET('view.html').respond('<div><div test></div></div>');
-      var element = $compile('<div><div template></div></div>')($rootScope);
+      element = $compile('<div><div template></div></div>')($rootScope);
       $location.url('/view');
       $rootScope.$apply();
       $httpBackend.flush();
       expect(controller.flag).toBe(true);
-      dealoc(element);
     });
+  });
+
+  it("should compile it's content correctly (although we remove it later)", function() {
+    var testElement;
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/view', {template: ' '});
+      var directive = $compileProvider.directive;
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            testElement = element;
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $location) {
+      element = $compile('<div><div ng-view><div test someAttr></div></div></div>')($rootScope);
+      $location.url('/view');
+      $rootScope.$apply();
+      expect(testElement[0].nodeName).toBe('DIV');
+    });
+
   });
 });
 
