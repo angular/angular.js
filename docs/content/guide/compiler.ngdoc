@@ -190,6 +190,7 @@ This should help give you an idea of what Angular does internally.
 <pre>
   var $compile = ...; // injected into your code
   var scope = ...;
+  var parent = ...; // DOM element where the compiled template can be appended
 
   var html = '<div ng-bind="exp"></div>';
 
@@ -200,7 +201,10 @@ This should help give you an idea of what Angular does internally.
   var linkFn = $compile(template);
 
   // Step 3: link the compiled template with the scope.
-  linkFn(scope);
+  var element = linkFn(scope);
+  
+  // Step 4: Append to DOM (optional)
+  parent.appendChild(element);
 </pre>
 
 ### The difference between Compile and Link
