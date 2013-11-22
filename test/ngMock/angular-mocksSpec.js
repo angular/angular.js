@@ -941,6 +941,29 @@ describe('ngMock', function() {
     });
 
 
+    it('should match data object if specified', function() {
+      hb.when('GET', '/a/b', {a: 1, b: 2}).respond(201, 'content1');
+      hb.when('GET', '/a/b').respond(202, 'content2');
+
+      hb('GET', '/a/b', '{"a":1,"b":2}', function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      });
+
+      hb('GET', '/a/b', '{"b":2,"a":1}', function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      });
+
+      hb('GET', '/a/b', null, function(status, response) {
+        expect(status).toBe(202);
+        expect(response).toBe('content2');
+      });
+
+      hb.flush();
+    });
+
+
     it('should match only method', function() {
       hb.when('GET').respond(202, 'c');
       callback.andCallFake(function(status, response) {
@@ -1069,6 +1092,32 @@ describe('ngMock', function() {
           hb('GET', '/match', 'different', noop, {});
         }).toThrow('Expected GET /match with different data\n' +
                    'EXPECTED: some-data\nGOT:      different');
+      });
+
+
+      it ('should not throw an exception when parsed body is equal to expected body object', function() {
+        hb.when('GET').respond(200, '', {});
+
+        hb.expect('GET', '/match', {a: 1, b: 2});
+        expect(function() {
+          hb('GET', '/match', '{"a":1,"b":2}', noop, {});
+        }).not.toThrow();
+
+        hb.expect('GET', '/match', {a: 1, b: 2});
+        expect(function() {
+          hb('GET', '/match', '{"b":2,"a":1}', noop, {});
+        }).not.toThrow();
+      });
+
+
+      it ('should throw exception when only parsed body differs from expected body object', function() {
+        hb.when('GET').respond(200, '', {});
+        hb.expect('GET', '/match', {a: 1, b: 2});
+
+        expect(function() {
+          hb('GET', '/match', '{"a":1,"b":3}', noop, {});
+        }).toThrow('Expected GET /match with different data\n' +
+                   'EXPECTED: {"a":1,"b":2}\nGOT:      {"a":1,"b":3}');
       });
 
 
