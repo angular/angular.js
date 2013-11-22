@@ -18,6 +18,13 @@ function setupModuleLoader(window) {
   }
 
   return ensure(ensure(window, 'angular', Object), 'module', function() {
+    // We need to expose `angular.$$minErr` to modules such as `ngResource` that reference it during
+    // bootstrap
+    var angular = ensure(window, 'angular', Object);
+    angular.$$minErr = angular.$$minErr || minErr;
+   
+  return ensure(angular, 'module', function() {
+
     /** @type {Object.<string, angular.Module>} */
     var modules = {};
 
@@ -299,5 +306,5 @@ function setupModuleLoader(window) {
       });
     };
   });
-
+});
 }
