@@ -465,10 +465,22 @@ describe('ngInclude', function() {
 });
 
 describe('ngInclude and transcludes', function() {
+  var element, directive;
+
+  beforeEach(module(function($compileProvider) {
+    element = null;
+    directive = $compileProvider.directive;
+  }));
+
+  afterEach(function() {
+    if (element) {
+      dealoc(element);
+    }
+  });
+
   it('should allow access to directive controller from children when used in a replace template', function() {
     var controller;
-    module(function($compileProvider) {
-      var directive = $compileProvider.directive;
+    module(function() {
       directive('template', valueFn({
         template: '<div ng-include="\'include.html\'"></div>',
         replace: true,
@@ -485,12 +497,32 @@ describe('ngInclude and transcludes', function() {
     });
     inject(function($compile, $rootScope, $httpBackend) {
       $httpBackend.expectGET('include.html').respond('<div><div test></div></div>');
-      var element = $compile('<div><div template></div></div>')($rootScope);
+      element = $compile('<div><div template></div></div>')($rootScope);
       $rootScope.$apply();
       $httpBackend.flush();
       expect(controller.flag).toBe(true);
-      dealoc(element);
     });
+  });
+
+  it("should compile it's content correctly (although we remove it later)", function() {
+    var testElement;
+    module(function() {
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            testElement = element;
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond(' ');
+      element = $compile('<div><div ng-include="\'include.html\'"><div test></div></div></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(testElement[0].nodeName).toBe('DIV');
+    });
+
   });
 });
 
