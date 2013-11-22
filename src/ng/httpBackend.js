@@ -136,7 +136,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     // - adds and immediately removes script elements from the document
     var script = rawDocument.createElement('script'),
         doneWrapper = function() {
-        script.onreadystatechange = script.onload = script.onerror = null;
+          script.onreadystatechange = script.onload = script.onerror = null;
           rawDocument.body.removeChild(script);
           if (done) done();
         };
