@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.2",
-  "cdnVersion": "1.2.1",
-  "codename": "consciousness-inertia",
+  "version": "1.2.3-snapshot",
+  "cdnVersion": "1.2.222",
+  "codename": "unicorn-zapper",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
