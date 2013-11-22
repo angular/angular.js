@@ -178,7 +178,7 @@ module.exports = function(grunt) {
       },
       mocks: {
         dest: 'build/angular-mocks.js',
-        src: files['angularModules']['ngMock'],
+        src: util.wrap(files['angularModules']['ngMock'], 'module'),
         strict: false
       },
       sanitize: {
