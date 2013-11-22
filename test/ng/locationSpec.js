@@ -1377,6 +1377,31 @@ describe('$location', function() {
         dealoc($rootElement);
       });
     });
+
+    it('should return the same $location.path() when $locationChangeStart event occurs no matter the cause of url change', function() {
+      inject(function($location, $rootScope, $browser, $window) {
+        var log = '',
+            base = $browser.url();
+
+        $rootScope.$on('$locationChangeStart', function() {
+          log += $location.path();
+        });
+
+        // change through $location service
+        $location.path('/b');
+        $rootScope.$apply();
+
+        // reset location
+        $location.path('');
+        $rootScope.$apply();
+
+        // change through $browser 
+        $browser.url(base + '#/b');
+        $browser.poll();
+
+        expect(log).toEqual('/b//b');
+      });
+    });
   });
 
   describe('LocationHtml5Url', function() {
