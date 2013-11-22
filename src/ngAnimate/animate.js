@@ -771,10 +771,10 @@ angular.module('ngAnimate', ['ng'])
       function cancelAnimations(animations) {
         var isCancelledFlag = true;
         forEach(animations, function(animation) {
-          if(!animations['beforeComplete']) {
+          if(!animations.beforeComplete) {
             (animation.beforeEnd || noop)(isCancelledFlag);
           }
-          if(!animations['afterComplete']) {
+          if(!animations.afterComplete) {
             (animation.afterEnd || noop)(isCancelledFlag);
           }
         });
