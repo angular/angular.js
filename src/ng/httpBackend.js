@@ -136,6 +136,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     // - adds and immediately removes script elements from the document
     var script = rawDocument.createElement('script'),
         doneWrapper = function() {
+        script.onreadystatechange = script.onload = script.onerror = null;
           rawDocument.body.removeChild(script);
           if (done) done();
         };
@@ -143,12 +144,16 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument,
     script.type = 'text/javascript';
     script.src = url;
 
-    if (msie) {
+    if (msie && msie <= 8) {
       script.onreadystatechange = function() {
-        if (/loaded|complete/.test(script.readyState)) doneWrapper();
+        if (/loaded|complete/.test(script.readyState)) {
+          doneWrapper();
+        }
       };
     } else {
-      script.onload = script.onerror = doneWrapper;
+      script.onload = script.onerror = function() {
+        doneWrapper();
+      };
     }
 
     rawDocument.body.appendChild(script);
