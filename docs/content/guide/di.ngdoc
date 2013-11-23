@@ -146,7 +146,7 @@ of service names to inject.
   var MyController = function(renamed$scope, renamedGreeter) {
     ...
   }
-  MyController.$inject = ['$scope', 'greeter'];
+  MyController['$inject'] = ['$scope', 'greeter'];
 </pre>
 
 In this scenario the ordering of the values in the '$inject' array must match the ordering of the arguments to inject.
