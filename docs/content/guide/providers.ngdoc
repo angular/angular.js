@@ -110,7 +110,7 @@ myApp.factory('clientId', function clientIdFactory() {
 But given that the token is just a string literal, sticking with the Value recipe is still more
 appropriate as it makes the code easier to follow.
 
-Let's say, however, that we would also like create a service that computes a token used for
+Let's say, however, that we would also like to create a service that computes a token used for
 authentication against a remote API. This token will be called 'apiToken' and will be computed
 based on the `clientId` value and a secret stored in browser's local storage:
 
