@@ -468,6 +468,32 @@ describe('input', function() {
     expect(scope.name).toEqual('adam');
   });
 
+  describe('"change" event', function() {
+    function assertBrowserSupportsChangeEvent(inputEventSupported) {
+      // Force browser to report a lack of an 'input' event
+      $sniffer.hasEvent = function(eventName) {
+        if (eventName === 'input' && !inputEventSupported) {
+          return false;
+        }
+        return true;
+      };
+      compileInput('<input type="text" ng-model="name" name="alias" />');
+
+      inputElm.val('mark');
+      browserTrigger(inputElm, 'change');
+      expect(scope.name).toEqual('mark');
+    }
+
+    it('should update the model event if the browser does not support the "input" event',function() {
+      assertBrowserSupportsChangeEvent(false);
+    });
+
+    it('should update the model event if the browser supports the "input" ' +
+      'event so that form auto complete works',function() {
+      assertBrowserSupportsChangeEvent(true);
+    });
+  });
+
   describe('"paste" and "cut" events', function() {
     beforeEach(function() {
       // Force browser to report a lack of an 'input' event
