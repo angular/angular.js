@@ -1099,6 +1099,28 @@ describe('jqLite', function() {
     });
 
 
+    it('should deregister specific listener within the listener and call subsequent listeners', function() {
+      var aElem = jqLite(a),
+          clickOnceSpy = jasmine.createSpy('clickOnce'),
+          clickSpy = jasmine.createSpy('click'),
+          clickOnceListener = function () {
+            aElem.off('click', clickOnceListener);
+            return clickOnceSpy();
+          };
+
+      aElem.on('click', clickOnceListener);
+      aElem.on('click', clickSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy).toHaveBeenCalledOnce();
+
+      browserTrigger(a, 'click');
+      expect(clickOnceSpy).toHaveBeenCalledOnce();
+      expect(clickSpy.callCount).toBe(2);
+    });
+
+
     it('should deregister specific listener for multiple types separated by spaces', function() {
       var aElem = jqLite(a),
           masterSpy = jasmine.createSpy('master'),
