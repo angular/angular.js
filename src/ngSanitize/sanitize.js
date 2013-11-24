@@ -354,7 +354,8 @@ function htmlParser( html, handler ) {
 var hiddenPre=document.createElement("pre");
 function decodeEntities(value) {
   hiddenPre.innerHTML=value.replace(/</g,"&lt;");
-  return hiddenPre.innerText || hiddenPre.textContent || '';
+  //use textContent if available to avoid layout trashing (See https://github.com/angular/angular.js/issues/4720)
+  return (hiddenPre.textContent !== undefined ? hiddenPre.textContent : hiddenPre.innerText) || '';
 }
 
 /**
