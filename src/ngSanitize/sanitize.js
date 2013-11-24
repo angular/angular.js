@@ -378,7 +378,12 @@ function decodeEntities(value) {
   var content = parts[2];
   if (content) {
     hiddenPre.innerHTML=content.replace(/</g,"&lt;");
-    content = hiddenPre.innerText || hiddenPre.textContent;
+    // innerText depends on styling as it doesn't display hidden elements.
+    // Therefore, it's better to use textContent not to cause unnecessary
+    // reflows. However, IE<9 don't support textContent so the innerText
+    // fallback is necessary.
+    content = 'textContent' in hiddenPre ?
+      hiddenPre.textContent : hiddenPre.innerText;
   }
   return spaceBefore + content + spaceAfter;
 }
