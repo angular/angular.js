@@ -411,3 +411,49 @@ describe('HTML', function() {
     });
   });
 });
+
+describe('decodeEntities', function() {
+  var handler, text,
+      origCreatedElement = document.createElement;
+
+  beforeEach(function() {
+    text = '';
+    handler = {
+      start: function() {},
+      chars: function(text_){
+        text = text_;
+      },
+      end: function() {},
+      comment: function() {}
+    };
+    module('ngSanitize');
+  });
+
+  afterEach(function() {
+    document.createElement = origCreatedElement;
+  });
+
+  it('should use innerText if textContent is not available (IE<9)', function() {
+    document.createElement = function createElement() {
+      return {
+        innerText: 'INNER_TEXT'
+      };
+    };
+    inject(function($sanitize) {
+      htmlParser('<tag>text</tag>', handler);
+      expect(text).toEqual('INNER_TEXT');
+    });
+  });
+  it('should use textContent if available', function() {
+    document.createElement = function createElement() {
+      return {
+        textContent: 'TEXT_CONTENT',
+        innerText: 'INNER_TEXT'
+      };
+    };
+    inject(function($sanitize) {
+      htmlParser('<tag>text</tag>', handler);
+      expect(text).toEqual('TEXT_CONTENT');
+    });
+  });
+});
