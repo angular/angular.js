@@ -2771,4 +2771,47 @@ describe("ngAnimate", function() {
 
     expect(node.style[animationKey]).not.toContain('none');
   }));
+
+  it('should block and unblock keyframe animations before the followup JS animation occurs', function() {
+    module(function($animateProvider) {
+      $animateProvider.register('.special', function($sniffer, $window) {
+        var prop = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
+        return {
+          beforeAddClass : function(element, className, done) {
+            expect(element[0].style[prop]).not.toContain('none');
+            expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('1s');
+            done();
+          },
+          addClass : function(element, className, done) {
+            expect(element[0].style[prop]).not.toContain('none');
+            expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('1s');
+            done();
+          }
+        }
+      });
+    });
+    inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout, $window) {
+      if (!$sniffer.animations) return;
+
+      $animate.enabled(true);
+
+      ss.addRule('.special', '-webkit-animation:1s special_animation;' +
+                                     'animation:1s special_animation;');
+
+      var capturedProperty = 'none';
+
+      var element = $compile('<div class="special"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $animate.addClass(element, 'some-klass');
+
+      var prop = $sniffer.vendorPrefix == 'Webkit' ? 'WebkitAnimation' : 'animation';
+
+      expect(element[0].style[prop]).toContain('none');
+      expect($window.getComputedStyle(element[0])[prop + 'Duration']).toBe('0s');
+
+      $timeout.flush();
+    });
+  });
 });

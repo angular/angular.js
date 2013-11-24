@@ -1032,7 +1032,10 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function unblockKeyframeAnimations(element) {
-        element[0].style[ANIMATION_PROP] = '';
+        var node = element[0], prop = ANIMATION_PROP;
+        if(node.style[prop] && node.style[prop].length > 0) {
+          element[0].style[prop] = '';
+        }
       }
 
       function animateRun(element, className, activeAnimationComplete) {
@@ -1063,8 +1066,6 @@ angular.module('ngAnimate', ['ng'])
             appliedStyles.push(CSS_PREFIX + 'transition-property');
             appliedStyles.push(CSS_PREFIX + 'transition-duration');
           }
-        } else {
-          unblockKeyframeAnimations(element);
         }
 
         if(ii > 0) {
@@ -1167,6 +1168,7 @@ angular.module('ngAnimate', ['ng'])
         var cancel = preReflowCancellation;
         afterReflow(function() {
           unblockTransitions(element);
+          unblockKeyframeAnimations(element);
           //once the reflow is complete then we point cancel to
           //the new cancellation function which will remove all of the
           //animation properties from the active animation
@@ -1232,6 +1234,7 @@ angular.module('ngAnimate', ['ng'])
           if(cancellationMethod) {
             afterReflow(function() {
               unblockTransitions(element);
+              unblockKeyframeAnimations(element);
               animationCompleted();
             });
             return cancellationMethod;
@@ -1248,6 +1251,7 @@ angular.module('ngAnimate', ['ng'])
           if(cancellationMethod) {
             afterReflow(function() {
               unblockTransitions(element);
+              unblockKeyframeAnimations(element);
               animationCompleted();
             });
             return cancellationMethod;
