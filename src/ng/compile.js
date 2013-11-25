@@ -493,14 +493,12 @@ var $compileMinErr = minErr('$compile');
  *
  * @description
  */
-$CompileProvider.$inject = ['$provide'];
-function $CompileProvider($provide) {
+$CompileProvider.$inject = ['$provide', '$$sanitizeUriProvider'];
+function $CompileProvider($provide, $$sanitizeUriProvider) {
   var hasDirectives = {},
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
-      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
-      imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file):|data:image\//;
+      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -584,10 +582,11 @@ function $CompileProvider($provide) {
    */
   this.aHrefSanitizationWhitelist = function(regexp) {
     if (isDefined(regexp)) {
-      aHrefSanitizationWhitelist = regexp;
+      $$sanitizeUriProvider.aHrefSanitizationWhitelist(regexp);
       return this;
+    } else {
+      return $$sanitizeUriProvider.aHrefSanitizationWhitelist();
     }
-    return aHrefSanitizationWhitelist;
   };
 
 
@@ -614,18 +613,18 @@ function $CompileProvider($provide) {
    */
   this.imgSrcSanitizationWhitelist = function(regexp) {
     if (isDefined(regexp)) {
-      imgSrcSanitizationWhitelist = regexp;
+      $$sanitizeUriProvider.imgSrcSanitizationWhitelist(regexp);
       return this;
+    } else {
+      return $$sanitizeUriProvider.imgSrcSanitizationWhitelist();
     }
-    return imgSrcSanitizationWhitelist;
   };
-
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document', '$sce', '$animate',
+            '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document,   $sce,   $animate) {
+             $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -730,16 +729,7 @@ function $CompileProvider($provide) {
         // sanitize a[href] and img[src] values
         if ((nodeName === 'A' && key === 'href') ||
             (nodeName === 'IMG' && key === 'src')) {
-          // NOTE: urlResolve() doesn't support IE < 8 so we don't sanitize for that case.
-          if (!msie || msie >= 8 ) {
-            normalizedVal = urlResolve(value).href;
-            if (normalizedVal !== '') {
-              if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
-                  (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
-                this[key] = value = 'unsafe:' + normalizedVal;
-              }
-            }
-          }
+          this[key] = value = $$sanitizeUri(value, key === 'src');
         }
 
         if (writeAttr !== false) {

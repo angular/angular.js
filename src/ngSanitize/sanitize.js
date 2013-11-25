@@ -46,6 +46,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *   it into the returned string, however, since our parser is more strict than a typical browser
  *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
  *   browser, won't make it through the sanitizer.
+ *   The whitelist is configured using the functions `aHrefSanitizationWhitelist` and
+ *   `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider `$compileProvider`}.
  *
  * @param {string} html Html input.
  * @returns {string} Sanitized html.
@@ -128,11 +130,24 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
    </doc:scenario>
    </doc:example>
  */
-var $sanitize = function(html) {
+function $SanitizeProvider() {
+  this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
+    return function(html) {
+      var buf = [];
+      htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
+        return !/^unsafe/.test($$sanitizeUri(uri, isImage));
+      }));
+      return buf.join('');
+    };
+  }];
+}
+
+function sanitizeText(chars) {
   var buf = [];
-    htmlParser(html, htmlSanitizeWriter(buf));
-    return buf.join('');
-};
+  var writer = htmlSanitizeWriter(buf, angular.noop);
+  writer.chars(chars);
+  return buf.join('');
+}
 
 
 // Regular Expressions for parsing tags and attributes
@@ -145,7 +160,6 @@ var START_TAG_REGEXP =
   COMMENT_REGEXP = /<!--(.*?)-->/g,
   DOCTYPE_REGEXP = /<!DOCTYPE([^>]*?)>/i,
   CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
-  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|tel:|#)/i,
   // Match everything outside of normal chars and " (quote character)
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
 
@@ -353,8 +367,18 @@ function htmlParser( html, handler ) {
  */
 var hiddenPre=document.createElement("pre");
 function decodeEntities(value) {
-  hiddenPre.innerHTML=value.replace(/</g,"&lt;");
-  return hiddenPre.innerText || hiddenPre.textContent || '';
+  if (!value) {
+    return '';
+  }
+  // Note: IE8 does not preserve spaces at the start/end of innerHTML
+  var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
+  var parts = spaceRe.exec(value);
+  parts[0] = '';
+  if (parts[2]) {
+    hiddenPre.innerHTML=parts[2].replace(/</g,"&lt;");
+    parts[2] = hiddenPre.innerText || hiddenPre.textContent;
+  }
+  return parts.join('');
 }
 
 /**
@@ -384,7 +408,7 @@ function encodeEntities(value) {
  *     comment: function(text) {}
  * }
  */
-function htmlSanitizeWriter(buf){
+function htmlSanitizeWriter(buf, uriValidator){
   var ignore = false;
   var out = angular.bind(buf, buf.push);
   return {
@@ -398,7 +422,9 @@ function htmlSanitizeWriter(buf){
         out(tag);
         angular.forEach(attrs, function(value, key){
           var lkey=angular.lowercase(key);
-          if (validAttrs[lkey]===true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
+          var isImage = (tag === 'img' && lkey === 'src') || (lkey === 'background');
+          if (validAttrs[lkey] === true &&
+            (uriAttrs[lkey] !== true || uriValidator(value, isImage))) {
             out(' ');
             out(key);
             out('="');
@@ -430,4 +456,4 @@ function htmlSanitizeWriter(buf){
 
 
 // define ngSanitize module and register $sanitize service
-angular.module('ngSanitize', []).value('$sanitize', $sanitize);
+angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);
