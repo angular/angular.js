@@ -123,8 +123,11 @@ function orderByFilter($parse){
       var t2 = typeof v2;
       if (t1 == t2) {
         if (t1 == "string") {
-           v1 = v1.toLowerCase();
-           v2 = v2.toLowerCase();
+          v1 = v1.toLowerCase();
+          v2 = v2.toLowerCase();
+          if (typeof v1.localeCompare == 'function') {
+            return v1.localeCompare(v2);
+          }
         }
         if (v1 === v2) return 0;
         return v1 < v2 ? -1 : 1;
