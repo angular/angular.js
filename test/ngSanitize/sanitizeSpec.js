@@ -5,12 +5,15 @@ describe('HTML', function() {
   var expectHTML;
 
   beforeEach(module('ngSanitize'));
-
-  beforeEach(inject(function($sanitize) {
+  beforeEach(function() {
     expectHTML = function(html){
-      return expect($sanitize(html));
+      var sanitize;
+      inject(function($sanitize) {
+        sanitize = $sanitize;
+      });
+      return expect(sanitize(html));
     };
-  }));
+  });
 
   describe('htmlParser', function() {
     if (angular.isUndefined(window.htmlParser)) return;
@@ -183,13 +186,22 @@ describe('HTML', function() {
       toEqual('');
   });
 
+  it('should keep spaces as prefix/postfix', function() {
+    expectHTML(' a ').toEqual(' a ');
+  });
+
+  it('should allow multiline strings', function() {
+    expectHTML('\na\n').toEqual('&#10;a\&#10;');
+  });
+
   describe('htmlSanitizerWriter', function() {
     if (angular.isUndefined(window.htmlSanitizeWriter)) return;
 
-    var writer, html;
+    var writer, html, uriValidator;
     beforeEach(function() {
       html = '';
-      writer = htmlSanitizeWriter({push:function(text){html+=text;}});
+      uriValidator = jasmine.createSpy('uriValidator');
+      writer = htmlSanitizeWriter({push:function(text){html+=text;}}, uriValidator);
     });
 
     it('should write basic HTML', function() {
@@ -258,41 +270,106 @@ describe('HTML', function() {
       });
     });
 
-    describe('isUri', function() {
-
-      function isUri(value) {
-        return value.match(URI_REGEXP);
-      }
-
-      it('should be URI', function() {
-        expect(isUri('http://abc')).toBeTruthy();
-        expect(isUri('HTTP://abc')).toBeTruthy();
-        expect(isUri('https://abc')).toBeTruthy();
-        expect(isUri('HTTPS://abc')).toBeTruthy();
-        expect(isUri('ftp://abc')).toBeTruthy();
-        expect(isUri('FTP://abc')).toBeTruthy();
-        expect(isUri('mailto:me@example.com')).toBeTruthy();
-        expect(isUri('MAILTO:me@example.com')).toBeTruthy();
-        expect(isUri('tel:123-123-1234')).toBeTruthy();
-        expect(isUri('TEL:123-123-1234')).toBeTruthy();
-        expect(isUri('#anchor')).toBeTruthy();
+    describe('uri validation', function() {
+      it('should call the uri validator', function() {
+        writer.start('a', {href:'someUrl'}, false);
+        expect(uriValidator).toHaveBeenCalledWith('someUrl', false);
+        uriValidator.reset();
+        writer.start('img', {src:'someImgUrl'}, false);
+        expect(uriValidator).toHaveBeenCalledWith('someImgUrl', true);
+        uriValidator.reset();
+        writer.start('someTag', {src:'someNonUrl'}, false);
+        expect(uriValidator).not.toHaveBeenCalled();
       });
 
-      it('should not be URI', function() {
-        expect(isUri('')).toBeFalsy();
-        expect(isUri('javascript:alert')).toBeFalsy();
+      it('should drop non valid uri attributes', function() {
+        uriValidator.andReturn(false);
+        writer.start('a', {href:'someUrl'}, false);
+        expect(html).toEqual('<a>');
+
+        html = '';
+        uriValidator.andReturn(true);
+        writer.start('a', {href:'someUrl'}, false);
+        expect(html).toEqual('<a href="someUrl">');
+      });
+    });
+  });
+
+  describe('uri checking', function() {
+    beforeEach(function() {
+      this.addMatchers({
+        toBeValidUrl: function() {
+          var sanitize;
+          inject(function($sanitize) {
+            sanitize = $sanitize;
+          });
+          var input = '<a href="'+this.actual+'"></a>';
+          return sanitize(input) === input;
+        },
+        toBeValidImageSrc: function() {
+          var sanitize;
+          inject(function($sanitize) {
+            sanitize = $sanitize;
+          });
+          var input = '<img src="'+this.actual+'"/>';
+          return sanitize(input) === input;
+        }
       });
     });
 
-    describe('javascript URL attribute', function() {
-      beforeEach(function() {
-        this.addMatchers({
-          toBeValidUrl: function() {
-            return URI_REGEXP.exec(this.actual);
-          }
-        });
+    it('should use $$sanitizeUri for links', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
+      inject(function() {
+        $$sanitizeUri.andReturn('someUri');
 
+        expectHTML('<a href="someUri"></a>').toEqual('<a href="someUri"></a>');
+        expect($$sanitizeUri).toHaveBeenCalledWith('someUri', false);
+
+        $$sanitizeUri.andReturn('unsafe:someUri');
+        expectHTML('<a href="someUri"></a>').toEqual('<a></a>');
+      });
+    });
+
+    it('should use $$sanitizeUri for links', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function() {
+        $$sanitizeUri.andReturn('someUri');
+
+        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri"/>');
+        expect($$sanitizeUri).toHaveBeenCalledWith('someUri', true);
+
+        $$sanitizeUri.andReturn('unsafe:someUri');
+        expectHTML('<img src="someUri"/>').toEqual('<img/>');
+      });
+    });
+
+    it('should be URI', function() {
+      expect('').toBeValidUrl();
+      expect('http://abc').toBeValidUrl();
+      expect('HTTP://abc').toBeValidUrl();
+      expect('https://abc').toBeValidUrl();
+      expect('HTTPS://abc').toBeValidUrl();
+      expect('ftp://abc').toBeValidUrl();
+      expect('FTP://abc').toBeValidUrl();
+      expect('mailto:me@example.com').toBeValidUrl();
+      expect('MAILTO:me@example.com').toBeValidUrl();
+      expect('tel:123-123-1234').toBeValidUrl();
+      expect('TEL:123-123-1234').toBeValidUrl();
+      expect('#anchor').toBeValidUrl();
+      expect('/page1.md').toBeValidUrl();
+    });
+
+    it('should not be URI', function() {
+      expect('javascript:alert').not.toBeValidUrl();
+    });
+
+    describe('javascript URLs', function() {
       it('should ignore javascript:', function() {
         expect('JavaScript:abc').not.toBeValidUrl();
         expect(' \n Java\n Script:abc').not.toBeValidUrl();
@@ -318,15 +395,19 @@ describe('HTML', function() {
       });
 
       it('should ignore hex encoded whitespace javascript:', function() {
-        expect('jav&#x09;ascript:alert("A");').not.toBeValidUrl();
-        expect('jav&#x0A;ascript:alert("B");').not.toBeValidUrl();
-        expect('jav&#x0A ascript:alert("C");').not.toBeValidUrl();
-        expect('jav\u0000ascript:alert("D");').not.toBeValidUrl();
-        expect('java\u0000\u0000script:alert("D");').not.toBeValidUrl();
-        expect(' &#14; java\u0000\u0000script:alert("D");').not.toBeValidUrl();
+        expect('jav&#x09;ascript:alert();').not.toBeValidUrl();
+        expect('jav&#x0A;ascript:alert();').not.toBeValidUrl();
+        expect('jav&#x0A ascript:alert();').not.toBeValidUrl();
+        expect('jav\u0000ascript:alert();').not.toBeValidUrl();
+        expect('java\u0000\u0000script:alert();').not.toBeValidUrl();
+        expect(' &#14; java\u0000\u0000script:alert();').not.toBeValidUrl();
       });
     });
+  });
 
-
+  describe('sanitizeText', function() {
+    it('should escape text', function() {
+      expect(sanitizeText('a<div>&</div>c')).toEqual('a&lt;div&gt;&amp;&lt;/div&gt;c');
+    });
   });
 });
