@@ -1053,6 +1053,12 @@ describe('$http', function() {
           });
 
 
+          it('should transform object with date into json', function() {
+            $httpBackend.expect('POST', '/url', {"date": new Date(Date.UTC(2013, 11, 25))}).respond('');
+            $http({method: 'POST', url: '/url', data: {date: new Date(Date.UTC(2013, 11, 25))}});
+          });
+
+
           it('should ignore strings', function() {
             $httpBackend.expect('POST', '/url', 'string-data').respond('');
             $http({method: 'POST', url: '/url', data: 'string-data'});
