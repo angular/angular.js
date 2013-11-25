@@ -65,6 +65,7 @@
     $ParseProvider,
     $RootScopeProvider,
     $QProvider,
+    $$SanitizeUriProvider,
     $SceProvider,
     $SceDelegateProvider,
     $SnifferProvider,
@@ -136,6 +137,10 @@ function publishExternalAPI(angular){
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {
+      // $$sanitizeUriProvider needs to be before $compileProvider as it is used by it.
+      $provide.provider({
+        $$sanitizeUri: $$SanitizeUriProvider
+      });
       $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
