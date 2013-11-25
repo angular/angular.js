@@ -103,19 +103,38 @@ That's it! Thank you for your contribution!
 When the patch is reviewed and merged, you can safely delete your branch and pull the changes
 from the main (upstream) repository:
 
-```shell
-# Delete the remote branch on Github:
-git push origin --delete my-fix-branch
+* Delete the remote branch on Github:
 
-# Check out the master branch:
-git checkout master -f
+    ```shell
+    git push origin --delete my-fix-branch
+    ```
 
-# Delete the local branch:
-git branch -D my-fix-branch
+* Check out the master branch:
 
-# Update your master with the latest upstream version:
-git pull --ff upstream master
-```
+    ```shell
+    git checkout master -f
+    ```
+
+* Delete the local branch:
+
+    ```shell
+    git branch -D my-fix-branch
+    ```
+
+* Update your master with the latest upstream version:
+
+    ```shell
+    git pull --ff upstream master
+    ```
+
+### GitHub Pull Request Helper
+
+We track Pull Requests by attaching labels and assigning to milestones.  For some reason GitHub
+does not provide a good UI for managing labels on Pull Requests (unlike Issues).  We have developed
+a simple Chrome Extension that enables you to view (and manage if you have permission) the labels
+on Pull Requests.  You can get the extension from the Chrome WebStore -
+[GitHub PR Helper](github-pr-helper)
+
 ## Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
@@ -224,3 +243,4 @@ You can find out more detailed information about contributing in the
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
+[github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen
