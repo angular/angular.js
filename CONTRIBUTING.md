@@ -133,7 +133,7 @@ We track Pull Requests by attaching labels and assigning to milestones.  For som
 does not provide a good UI for managing labels on Pull Requests (unlike Issues).  We have developed
 a simple Chrome Extension that enables you to view (and manage if you have permission) the labels
 on Pull Requests.  You can get the extension from the Chrome WebStore -
-[GitHub PR Helper](github-pr-helper)
+[GitHub PR Helper][github-pr-helper]
 
 ## Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
