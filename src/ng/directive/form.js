@@ -21,9 +21,22 @@ var nullFormCtrl = {
  * @property {Object} $error Is an object hash, containing references to all invalid controls or
  *  forms, where:
  *
- *  - keys are validation tokens (error names) — such as `required`, `url` or `email`,
- *  - values are arrays of controls or forms that are invalid with given error.
+ *  - keys are validation tokens (error names),
+ *  - values are arrays of controls or forms that are invalid for given error name.
  *
+ *
+ *  Built-in validation tokens:
+ *
+ *  - `email`
+ *  - `max`
+ *  - `maxlength`
+ *  - `min`
+ *  - `minlength`
+ *  - `number`
+ *  - `pattern`
+ *  - `required`
+ *  - `url`
+ * 
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as state of them,
  * such as being valid/invalid or dirty/pristine.
