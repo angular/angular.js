@@ -32,7 +32,7 @@ project.
 ## Submission Guidelines
 
 ### Submitting an Issue
-Before you submit your issue, search the archive, it's maybe your question was already answered.
+Before you submit your issue search the archive, maybe your question was already answered.
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
 Help us to maximize the effort we can spend fixing issues and adding new
