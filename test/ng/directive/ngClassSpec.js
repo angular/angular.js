@@ -373,6 +373,10 @@ describe('ngClass animations', function() {
       // Enable animations by triggering the first item in the postDigest queue
       digestQueue.shift()();
 
+      // wait for the 2nd animation bootstrap digest to pass
+      $rootScope.$digest();
+      digestQueue.shift()();
+
       $rootScope.val = 'crazy';
       var element = angular.element('<div ng-class="val"></div>');
       jqLite($document[0].body).append($rootElement);
