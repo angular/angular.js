@@ -3834,6 +3834,7 @@ describe('$compile', function() {
 
 
   describe('img[src] sanitization', function() {
+
     it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = 'http://example.com/image.png';
@@ -3845,127 +3846,6 @@ describe('$compile', function() {
       expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
-    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
-      element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "javascript:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('unsafe:javascript:doEvilStuff()');
-    }));
-
-    it('should sanitize non-image data: urls', inject(function($compile, $rootScope) {
-      element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "data:application/javascript;charset=US-ASCII,alert('evil!');";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe("unsafe:data:application/javascript;charset=US-ASCII,alert('evil!');");
-      $rootScope.testUrl = "data:,foo";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe("unsafe:data:,foo");
-    }));
-
-
-    it('should not sanitize data: URIs for images', inject(function($compile, $rootScope) {
-      element = $compile('<img src="{{dataUri}}"></img>')($rootScope);
-
-      // image data uri
-      // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
-      $rootScope.dataUri = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
-    }));
-
-
-    // Fails on IE <= 10 with "TypeError: Access is denied" when trying to set img[src]
-    if (!msie || msie > 10) {
-      it('should sanitize mailto: urls', inject(function($compile, $rootScope) {
-        element = $compile('<img src="{{testUrl}}"></a>')($rootScope);
-          $rootScope.testUrl = "mailto:foo@bar.com";
-          $rootScope.$apply();
-          expect(element.attr('src')).toBe('unsafe:mailto:foo@bar.com');
-      }));
-    }
-
-    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
-      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-
-      // case-sensitive
-      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
-
-      // tab in protocol
-      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].src).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
-
-      // space before
-      $rootScope.testUrl = " javascript:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
-
-      // ws chars before
-      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].src).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
-
-      // post-fixed with proper url
-      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
-      $rootScope.$apply();
-      expect(element[0].src).toBeOneOf(
-          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
-          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
-      );
-    }));
-
-    it('should sanitize ng-src bindings as well', inject(function($compile, $rootScope) {
-      element = $compile('<img ng-src="{{testUrl}}"></img>')($rootScope);
-      $rootScope.testUrl = "javascript:doEvilStuff()";
-      $rootScope.$apply();
-
-      expect(element[0].src).toBe('unsafe:javascript:doEvilStuff()');
-    }));
-
-
-    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
-      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-
-      $rootScope.testUrl = "foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('foo/bar');
-
-      $rootScope.testUrl = "/foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('/foo/bar');
-
-      $rootScope.testUrl = "../foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('../foo/bar');
-
-      $rootScope.testUrl = "#foo";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('#foo');
-
-      $rootScope.testUrl = "http://foo.com/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('http://foo.com/bar');
-
-      $rootScope.testUrl = " http://foo.com/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe(' http://foo.com/bar');
-
-      $rootScope.testUrl = "https://foo.com/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('https://foo.com/bar');
-
-      $rootScope.testUrl = "ftp://foo.com/bar";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('ftp://foo.com/bar');
-
-      $rootScope.testUrl = "file:///foo/bar.html";
-      $rootScope.$apply();
-      expect(element.attr('src')).toBe('file:///foo/bar.html');
-    }));
-
-
     it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
       element = $compile('<img title="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = "javascript:doEvilStuff()";
@@ -3974,140 +3854,41 @@ describe('$compile', function() {
       expect(element.attr('title')).toBe('javascript:doEvilStuff()');
     }));
 
+    it('should use $$sanitizeUriProvider for reconfiguration of the src whitelist', function() {
+      module(function($compileProvider, $$sanitizeUriProvider) {
+        var newRe = /javascript:/,
+          returnVal;
+        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe($$sanitizeUriProvider.imgSrcSanitizationWhitelist());
 
-    it('should allow reconfiguration of the src whitelist', function() {
-      module(function($compileProvider) {
-        expect($compileProvider.imgSrcSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.imgSrcSanitizationWhitelist(/javascript:/);
+        returnVal = $compileProvider.imgSrcSanitizationWhitelist(newRe);
         expect(returnVal).toBe($compileProvider);
+        expect($$sanitizeUriProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
+        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
       });
-
-      inject(function($compile, $rootScope) {
-        element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-
-        // Fails on IE <= 11 with "TypeError: Object doesn't support this property or method" when
-        // trying to set img[src]
-        if (!msie || msie > 11) {
-          $rootScope.testUrl = "javascript:doEvilStuff()";
-          $rootScope.$apply();
-          expect(element.attr('src')).toBe('javascript:doEvilStuff()');
-        }
-
-        $rootScope.testUrl = "http://recon/figured";
-        $rootScope.$apply();
-        expect(element.attr('src')).toBe('unsafe:http://recon/figured');
+      inject(function() {
+        // needed to the module definition above is run...
       });
     });
 
+    it('should use $$sanitizeUri', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = "someUrl";
+
+        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $rootScope.$apply();
+        expect(element.attr('src')).toBe('someSanitizedUrl');
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, true);
+      });
+    });
   });
 
 
   describe('a[href] sanitization', function() {
-
-    it('should sanitize javascript: urls', inject(function($compile, $rootScope) {
-      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "javascript:doEvilStuff()";
-      $rootScope.$apply();
-
-      expect(element.attr('href')).toBe('unsafe:javascript:doEvilStuff()');
-    }));
-
-
-    it('should sanitize data: urls', inject(function($compile, $rootScope) {
-      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "data:evilPayload";
-      $rootScope.$apply();
-
-      expect(element.attr('href')).toBe('unsafe:data:evilPayload');
-    }));
-
-
-    it('should sanitize obfuscated javascript: urls', inject(function($compile, $rootScope) {
-      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
-
-      // case-sensitive
-      $rootScope.testUrl = "JaVaScRiPt:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
-
-      // tab in protocol
-      $rootScope.testUrl = "java\u0009script:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
-
-      // space before
-      $rootScope.testUrl = " javascript:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
-
-      // ws chars before
-      $rootScope.testUrl = " \u000e javascript:doEvilStuff()";
-      $rootScope.$apply();
-      expect(element[0].href).toMatch(/(http:\/\/|unsafe:javascript:doEvilStuff\(\))/);
-
-      // post-fixed with proper url
-      $rootScope.testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
-      $rootScope.$apply();
-      expect(element[0].href).toBeOneOf(
-          'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
-          'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
-      );
-    }));
-
-
-    it('should sanitize ngHref bindings as well', inject(function($compile, $rootScope) {
-      element = $compile('<a ng-href="{{testUrl}}"></a>')($rootScope);
-      $rootScope.testUrl = "javascript:doEvilStuff()";
-      $rootScope.$apply();
-
-      expect(element[0].href).toBe('unsafe:javascript:doEvilStuff()');
-    }));
-
-
-    it('should not sanitize valid urls', inject(function($compile, $rootScope) {
-      element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
-
-      $rootScope.testUrl = "foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('foo/bar');
-
-      $rootScope.testUrl = "/foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('/foo/bar');
-
-      $rootScope.testUrl = "../foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('../foo/bar');
-
-      $rootScope.testUrl = "#foo";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('#foo');
-
-      $rootScope.testUrl = "http://foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('http://foo/bar');
-
-      $rootScope.testUrl = " http://foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe(' http://foo/bar');
-
-      $rootScope.testUrl = "https://foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('https://foo/bar');
-
-      $rootScope.testUrl = "ftp://foo/bar";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('ftp://foo/bar');
-
-      $rootScope.testUrl = "mailto:foo@bar.com";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('mailto:foo@bar.com');
-
-      $rootScope.testUrl = "file:///foo/bar.html";
-      $rootScope.$apply();
-      expect(element.attr('href')).toBe('file:///foo/bar.html');
-    }));
-
 
     it('should not sanitize href on elements other than anchor', inject(function($compile, $rootScope) {
       element = $compile('<div href="{{testUrl}}"></div>')($rootScope);
@@ -4117,7 +3898,6 @@ describe('$compile', function() {
       expect(element.attr('href')).toBe('javascript:doEvilStuff()');
     }));
 
-
     it('should not sanitize attributes other than href', inject(function($compile, $rootScope) {
       element = $compile('<a title="{{testUrl}}"></a>')($rootScope);
       $rootScope.testUrl = "javascript:doEvilStuff()";
@@ -4126,26 +3906,38 @@ describe('$compile', function() {
       expect(element.attr('title')).toBe('javascript:doEvilStuff()');
     }));
 
+    it('should use $$sanitizeUriProvider for reconfiguration of the href whitelist', function() {
+      module(function($compileProvider, $$sanitizeUriProvider) {
+        var newRe = /javascript:/,
+          returnVal;
+        expect($compileProvider.aHrefSanitizationWhitelist()).toBe($$sanitizeUriProvider.aHrefSanitizationWhitelist());
 
-    it('should allow reconfiguration of the href whitelist', function() {
-      module(function($compileProvider) {
-        expect($compileProvider.aHrefSanitizationWhitelist() instanceof RegExp).toBe(true);
-        var returnVal = $compileProvider.aHrefSanitizationWhitelist(/javascript:/);
+        returnVal = $compileProvider.aHrefSanitizationWhitelist(newRe);
         expect(returnVal).toBe($compileProvider);
+        expect($$sanitizeUriProvider.aHrefSanitizationWhitelist()).toBe(newRe);
+        expect($compileProvider.aHrefSanitizationWhitelist()).toBe(newRe);
       });
-
-      inject(function($compile, $rootScope) {
-        element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
-
-        $rootScope.testUrl = "javascript:doEvilStuff()";
-        $rootScope.$apply();
-        expect(element.attr('href')).toBe('javascript:doEvilStuff()');
-
-        $rootScope.testUrl = "http://recon/figured";
-        $rootScope.$apply();
-        expect(element.attr('href')).toBe('unsafe:http://recon/figured');
+      inject(function() {
+        // needed to the module definition above is run...
       });
     });
+
+    it('should use $$sanitizeUri', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
+        $rootScope.testUrl = "someUrl";
+
+        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $rootScope.$apply();
+        expect(element.attr('href')).toBe('someSanitizedUrl');
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+      });
+    });
+
   });
 
   describe('interpolation on HTML DOM event handler attributes onclick, onXYZ, formaction', function() {
