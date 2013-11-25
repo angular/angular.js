@@ -32,19 +32,29 @@ project.
 ## Submission Guidelines
 
 ### Submitting an Issue
-Before you submit your issue follow the following guidelines:
-
-* Search the archive first, it's likely that your question was already answered.
-* A live example demonstrating the issue, will get an answer faster.
-* Create one using [Plunker][plunker] or [JSFiddle][jsfiddle].
-* If you get help, help others. Good karma rulez!
+Before you submit your issue, search the archive, it's maybe your question was already answered.
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
 Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.
+features, by not reporting duplicate issues.  Providing the following information will increase the
+chances of your issue being dealt with quickly:
+
+* **Overview of the issue** - if an error is being thrown a non-minified stack trace helps
+* **Motivation for or Use Case** - explain why this is a bug for you
+* **Angular Version(s)** - is it a regression?
+* **Browsers and Operating System** - is this a problem with all browsers or only IE8?
+* **Reproduce the error** - provide a live example (using [Plunker][plunker] or
+  [JSFiddle][jsfiddle]) or a unambiguous set of steps.
+* **Related issues** - has a similar issue been reported before?
+* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
+  causing the problem (line of code or commit)
+
+Here is a great example of a well defined issue: https://github.com/angular/angular.js/issues/5069
+
+**If you get help, help others. Good karma rulez!**
 
 ### Submitting a Pull Request
-Before you submit your pull request follow the following guidelines:
+Before you submit your pull request consider the following guidelines:
 
 * Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
   that relates to your submission. You don't want to duplicate effort.
