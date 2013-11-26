@@ -43,7 +43,7 @@ __`app/index.html`.__
 <pre>
 ...
   <!-- jQuery is used for JavaScript animations (include this before angular.js) -->
-  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 
   <!-- required module to enable animation support in AngularJS -->
   <script src="lib/angular/angular-animate.js"></script>
@@ -55,6 +55,10 @@ __`app/index.html`.__
   <link rel="stylesheet" href="css/animations.css">
 ...
 </pre>
+
+<div class="alert alert-error">
+  **Important:** Be sure to use jQuery version `1.10.x`. AngularJS does not yet support jQuery `2.x`.
+</div>
 
 Animations can now be created within the CSS code (`animations.css`) as well as the JavaScript code (`animations.js`).
 But before we start, let's create a new module which uses the ngAnimate module as a dependency just like we did before
@@ -382,10 +386,6 @@ Note that we're using {@link http://jquery.com/ jQuery} to implement the animati
 isn't required to do JavaScript animations with AngularJS, but we're going to use it because writing
 your own JavaScript animation library is beyond the scope of this tutorial. For more on
 `jQuery.animate`, see the {@link http://api.jquery.com/animate/ jQuery documentation}.
-
-<div class="alert alert-error">
-  **Important:** Be sure to use jQuery version `1.10.x`. AngularJS does not yet support jQuery `2.x`.
-</div>
 
 The `addClass` and `removeClass` callback functions are called whenever an a class is added or removed
 on the element that contains the class we registered, which is in this case `.phone`. When the `.active`
