@@ -153,7 +153,7 @@ __`app/css/animations.css`__
 </pre>
 
 As you can see our `phone-listing` CSS class is combined together with the animation hooks that occur when items are
-inserted info and removed from the list:
+inserted into and removed from the list:
 
   * The `ng-enter` class is applied to the element when a new phone is added to the list and rendered on the page.
   * The `ng-move` class is applied when items are moved around in the list.
