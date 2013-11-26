@@ -194,8 +194,22 @@ function JQLite(element) {
   }
 }
 
-function jqLiteClone(element) {
-  return element.cloneNode(true);
+function jqLiteClone(element, withDataAndEvents) {
+  var clone = element.cloneNode(true);
+  if (withDataAndEvents) {
+    forEach(jqLiteData(element), function (value, key) {
+      jqLiteData(clone, key, value);
+    });
+
+    var jqClone = new JQLite(clone);
+    forEach(jqLiteExpandoStore(element, 'events'), function (value, key) {
+      var fns = isArray(value) ? value : [value];
+      forEach(fns, function (fn) {
+        jqClone.on(key, fn);
+      });
+    });
+  }
+  return clone;
 }
 
 function jqLiteDealoc(element){

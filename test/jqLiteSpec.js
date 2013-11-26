@@ -1136,6 +1136,59 @@ describe('jqLite', function() {
     }
   });
 
+  describe('clone', function() {
+    var clone;
+
+    beforeEach(function() {
+      clone = undefined;
+    });
+
+    afterEach(function() {
+      dealoc(clone);
+    });
+
+    it('should clone an element', function() {
+      var original = jqLite(a).text('original');
+      clone = original.clone().text('clone');
+      expect(original.text()).toEqual('original');
+      expect(clone.text()).toEqual('clone');
+    });
+
+    it('should clone an element with data', function() {
+      var original = jqLite(a).data('myKey', 'myValue');
+      clone = original.clone(true);
+      expect(clone.data('myKey')).toBe('myValue');
+    });
+
+    it('should clone an element with events', function() {
+      var original = jqLite(a);
+      callback = jasmine.createSpy('callback');
+
+      original.on('click', callback);
+
+      browserTrigger(original, 'click');
+      expect(callback).toHaveBeenCalled();
+
+      clone = original.clone(true);
+      browserTrigger(clone, 'click');
+      expect(callback).toHaveBeenCalled();
+      expect(callback.callCount).toBe(2);
+    });
+
+    it('should clone an element with multiple events', function() {
+      var original = jqLite(a);
+      callback = jasmine.createSpy('callback');
+      callback2 = jasmine.createSpy('callback2');
+
+      original.on('click', callback);
+      original.on('click', callback2);
+
+      clone = original.clone(true);
+      browserTrigger(clone, 'click');
+      expect(callback).toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+    });
+  });
 
   describe('replaceWith', function() {
     it('should replaceWith', function() {
