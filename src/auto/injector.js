@@ -112,6 +112,9 @@ function annotate(fn) {
  *
  *   // inline
  *   $injector.invoke(['serviceA', function(serviceA){}]);
+ *
+ *   // inline with injecting code resolution, if serviceA and serviceB are defined
+ *   $injector.invoke(['serviceA', 'serviceB'])
  * </pre>
  *
  * ## Inference
@@ -125,6 +128,11 @@ function annotate(fn) {
  *
  * ## Inline
  * As an array of injection names, where the last item in the array is the function to call.
+ *
+ * ## Inline with Injecting Code Resolution
+ * As an array of injection names, where the last item in the array is a string referring to the 
+ * provider where the function to call is defined.  This can follow a recursive chain to find the
+ * correct injecting code.
  */
 
 /**
@@ -597,8 +605,28 @@ function createInjector(modulesToLoad) {
           createInternalInjector(instanceCache, function(servicename) {
             var provider = providerInjector.get(servicename + providerSuffix);
             return instanceInjector.invoke(provider.$get, provider);
-          }));
+          })),
+      checkedCode = [];
 
+  var seekInjectingCode = function seekInjectingCode(name) {
+    var pGet = providerInjector.get(name + providerSuffix).$get,
+        last = pGet.length - 1;
+    if(isFunction(pGet)) {
+      checkedCode = [];
+      return pGet;
+    } else if (isArray(pGet)) {
+      if(isFunction(pGet[last])) {
+        checkedCode = [];
+        return pGet[last];
+      } else {
+        if (indexOf(checkedCode, pGet[last]) > -1) {
+          throw $injectorMinErr("cdep", "Circular dependency found: {0} <- {1}", checkedCode.join(' <- '), pGet[last]);
+        }
+        checkedCode.push(pGet[last]);
+        return seekInjectingCode(pGet[last]);
+      }
+    }
+  };
 
   forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
 
@@ -726,9 +754,15 @@ function createInjector(modulesToLoad) {
 
     function invoke(fn, self, locals){
       var args = [],
-          $inject = annotate(fn),
+          $inject,
           length, i,
           key;
+
+      if(isArray(fn) && isString(fn[fn.length - 1])) {
+        fn[fn.length - 1] = seekInjectingCode(fn[fn.length - 1]);
+      }
+
+      $inject = annotate(fn);
 
       for(i = 0, length = $inject.length; i < length; i++) {
         key = $inject[i];
