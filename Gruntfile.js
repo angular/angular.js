@@ -106,45 +106,38 @@ module.exports = function(grunt) {
     },
 
     jshint: {
+      options: {
+        jshintrc: true,
+      },
       ng: {
         files: { src: files['angularSrc'] },
-        options: { jshintrc: 'src/.jshintrc' }
       },
       ngAnimate: {
         files: { src: 'src/ngAnimate/**/*.js' },
-        options: { jshintrc: 'src/ngAnimate/.jshintrc' }
       },
       ngCookies: {
         files: { src: 'src/ngCookies/**/*.js' },
-        options: { jshintrc: 'src/ngCookies/.jshintrc' }
       },
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
-        options: { jshintrc: 'src/ngLocale/.jshintrc' }
       },
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
-        options: { jshintrc: 'src/ngMock/.jshintrc' }
       },
       ngResource: {
         files: { src: 'src/ngResource/**/*.js' },
-        options: { jshintrc: 'src/ngResource/.jshintrc' }
       },
       ngRoute: {
         files: { src: 'src/ngRoute/**/*.js' },
-        options: { jshintrc: 'src/ngRoute/.jshintrc' }
       },
       ngSanitize: {
         files: { src: 'src/ngSanitize/**/*.js' },
-        options: { jshintrc: 'src/ngSanitize/.jshintrc' }
       },
       ngScenario: {
         files: { src: 'src/ngScenario/**/*.js' },
-        options: { jshintrc: 'src/ngScenario/.jshintrc' }
       },
       ngTouch: {
         files: { src: 'src/ngTouch/**/*.js' },
-        options: { jshintrc: 'src/ngTouch/.jshintrc' }
       }
     },
 

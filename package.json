@@ -48,6 +48,6 @@
     }
   ],
   "dependencies": {
-    "grunt-contrib-jshint": "~0.6.4"
+    "grunt-contrib-jshint": "~0.7.2"
   }
 }
