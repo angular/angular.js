@@ -17,7 +17,10 @@ module.exports = function(config, specificOptions) {
 
     // BrowserStack config for Travis CI
     browserStack: {
-      startTunnel: false
+      startTunnel: false,
+      project: 'AngularJS',
+      name: specificOptions.testName,
+      build: process.env.TRAVIS_BUILD_NUMBER
     },
 
     // For more browsers on Sauce Labs see:
