@@ -120,8 +120,8 @@ function annotate(fn) {
  * can then be parsed and the function arguments can be extracted. *NOTE:* This does not work with
  * minification, and obfuscation tools since these tools change the argument names.
  *
- * ## `$inject` Annotation
- * By adding a `$inject` property onto a function the injection parameters can be specified.
+ * ## `$injector` Annotation
+ * By adding a `$injector` property onto a function the injection parameters can be specified.
  *
  * ## Inline
  * As an array of injection names, where the last item in the array is the function to call.
