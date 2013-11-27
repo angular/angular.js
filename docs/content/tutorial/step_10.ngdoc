@@ -120,7 +120,7 @@ Angular's server}.
 
           <button ng-click="hello('Elmo')">Hello</button>
 
-  to the `phone-details.html` template.
+  to the `phone-detail.html` template.
 
 <div style="display: none">
 TODO!
