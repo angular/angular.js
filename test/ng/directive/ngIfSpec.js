@@ -1,8 +1,11 @@
 'use strict';
 
 describe('ngIf', function () {
-  var $scope, $compile, element;
+  var $scope, $compile, element, $compileProvider;
 
+  beforeEach(module(function(_$compileProvider_) {
+    $compileProvider = _$compileProvider_;
+  }));
   beforeEach(inject(function ($rootScope, _$compile_) {
     $scope = $rootScope.$new();
     $compile = _$compile_;
@@ -146,6 +149,28 @@ describe('ngIf', function () {
     expect(element.children()[0].className).toContain('my-class');
   });
 
+  it('should work when combined with an ASYNC template that loads after the first digest', inject(function($httpBackend, $compile, $rootScope) {
+    $compileProvider.directive('test', function() {
+      return {
+        templateUrl: 'test.html'
+      };
+    });
+    $httpBackend.whenGET('test.html').respond('hello');
+    element.append('<div ng-if="show" test></div>');
+    $compile(element)($rootScope);
+    $rootScope.show = true;
+    $rootScope.$apply();
+    expect(element.text()).toBe('');
+
+    $httpBackend.flush();
+    expect(element.text()).toBe('hello');
+
+    $rootScope.show = false;
+    $rootScope.$apply();
+    // Note: there are still comments in element!
+    expect(element.children().length).toBe(0);
+    expect(element.text()).toBe('');
+  }));
 });
 
 describe('ngIf and transcludes', function() {
