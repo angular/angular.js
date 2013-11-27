@@ -192,7 +192,7 @@
  * * (no prefix) - Locate the required controller on the current element. Throw an error if not found.
  * * `?` - Attempt to locate the required controller or pass `null` to the `link` fn if not found.
  * * `^` - Locate the required controller by searching the element's parents. Throw an error if not found.
- * * `?^` - Attempt to locate the required controller by searching the element's parentsor pass `null` to the
+ * * `?^` - Attempt to locate the required controller by searching the element's parents or pass `null` to the
  *   `link` fn if not found.
  *
  *
