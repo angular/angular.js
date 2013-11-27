@@ -1709,7 +1709,8 @@ angular.$routeProvider.when = function(path, route) {};
  *   resolve: (Object.<string, (
  *       string|Function|Array.<string|Function>|angular.$q.Promise
  *       )>|undefined),
- *   redirectTo: (string|function()|undefined),
+ *   redirectTo: (
+ *       string|function(Object.<string>, string, Object): string|undefined),
  *   reloadOnSearch: (boolean|undefined)
  *   }}
  */
@@ -1732,7 +1733,7 @@ angular.$routeProvider.Params.templateUrl;
  */
 angular.$routeProvider.Params.resolve;
 
-/** @type {string|function()} */
+/** @type {string|function(Object.<string>, string, Object): string} */
 angular.$routeProvider.Params.redirectTo;
 
 /** @type {boolean} */
