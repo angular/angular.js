@@ -20,13 +20,15 @@
      <doc:source>
        <script>
          function Ctrl($scope, $window) {
-           $scope.$window = $window;
+           $scope.greet = function() {
+             $window.alert($scope.greeting);
+           };
            $scope.greeting = 'Hello, World!';
          }
        </script>
        <div ng-controller="Ctrl">
          <input type="text" ng-model="greeting" />
-         <button ng-click="$window.alert(greeting)">ALERT</button>
+         <button ng-click="greet(greeting)">ALERT</button>
        </div>
      </doc:source>
      <doc:scenario>
