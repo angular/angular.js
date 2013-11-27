@@ -746,6 +746,17 @@ describe("resource", function() {
         expect(promiseValue).toEqual({ value: 'transformed' });
         expect(successValue).toBe(promiseValue);
       });
+
+      it('should get instantiated with the correct constructor function', function(){
+        $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+
+        CreditCard.prototype.someCustomMethod = function(){ return 'hello'; };
+
+        var cc = CreditCard.get({id: 123});
+
+        expect(cc.someCustomMethod).toBe(CreditCard.prototype.someCustomMethod);
+        expect(cc.someCustomMethod()).toBe('hello');
+      });
     });
 
 
