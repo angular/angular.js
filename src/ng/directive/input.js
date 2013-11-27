@@ -951,39 +951,6 @@ var VALID_CLASS = 'ng-valid',
     </file>
  * </example>
  *
- * ## Isolated Scope Pitfall
- *
- * Note that if you have a directive with an isolated scope, you cannot require `ngModel`
- * since the model value will be looked up on the isolated scope rather than the outer scope.
- * When the directive updates the model value, calling `ngModel.$setViewValue()` the property
- * on the outer scope will not be updated. However you can get around this by using $parent.
- *
- * Here is an example of this situation.  You'll notice that the first div is not updating the input.
- * However the second div can update the input properly.
- *
- * <example module="badIsolatedDirective">
-    <file name="script.js">
-		angular.module('badIsolatedDirective', []).directive('isolate', function() {
-      return {
-        require: 'ngModel',
-        scope: { },
-        template: '<input ng-model="innerModel">',
-        link: function(scope, element, attrs, ngModel) {
-          scope.$watch('innerModel', function(value) {
-            console.log(value);
-            ngModel.$setViewValue(value);
-          });
-        }
-      };
-		});
-    </file>
-    <file name="index.html">
-        <input ng-model="someModel"/>
-        <div isolate ng-model="someModel"></div>
-        <div isolate ng-model="$parent.someModel"></div>
-    </file>
- * </example>
- *
  *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse',
