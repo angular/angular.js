@@ -200,7 +200,10 @@ This should help give you an idea of what Angular does internally.
   var linkFn = $compile(template);
 
   // Step 3: link the compiled template with the scope.
-  linkFn(scope);
+  compiled_html = linkFn(scope);
+  
+  // Step 4: Append to DOM (optional)
+  document.getElementById('id-selector').appendChild(compiled_html);
 </pre>
 
 ### The difference between Compile and Link
