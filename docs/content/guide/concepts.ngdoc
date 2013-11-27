@@ -270,7 +270,7 @@ When Angular starts, it will use the configuration of the module with the name d
 including the configuration of all modules that this module depends on.
 
 In the example above:
-The template contains the directive `ng-app="invoice"`. This tells Angular
+The template contains the directive `ng-app="invoice2"`. This tells Angular
 to use the `invoice` module as the main module for the application.
 The code snippet `angular.module('invoice', ['finance'])`  specifies that the `invoice` module depends on the
 `finance` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
