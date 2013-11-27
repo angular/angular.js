@@ -1,3 +1,36 @@
+<a name="1.2.3"></a>
+# 1.2.3 unicorn-zapper (2013-11-27)
+
+
+## Bug Fixes
+
+- **$animate:**
+- ensure blocked keyframe animations are unblocked before the DOM operation
+  ([2efe8230](https://github.com/angular/angular.js/commit/2efe82309ac8ff4f67df8b6e40a539ea31e15804),
+   [#5106](https://github.com/angular/angular.js/issues/5106))
+- ensure animations are disabled during bootstrap to prevent unwanted structural animations
+  ([eed23332](https://github.com/angular/angular.js/commit/eed2333298412fbad04eda97ded3487c845b9eb9),
+   [#5130](https://github.com/angular/angular.js/issues/5130))
+- **$sanitize:** use the same whitelist mechanism as `$compile` does
+  ([33352348](https://github.com/angular/angular.js/commit/333523483f3ce6dd3177b697a5e5a7177ca364c8),
+   [#3748](https://github.com/angular/angular.js/issues/3748))
+- **input:** react to form auto completion, through the `change` event, on modern browsers
+  ([a090400f](https://github.com/angular/angular.js/commit/a090400f09d7993d102f527609879cdc74abae60),
+   [#1460](https://github.com/angular/angular.js/issues/1460))
+- **$attrs:** add `$attrs.$attr` to externs so that it isn't renamed on js minification
+  ([bcca8054](https://github.com/angular/angular.js/commit/bcca80548dde85ffe3838c943ba8e5c2deb1c721))
+
+
+## Features
+
+No new features in this release
+
+## Breaking Changes
+
+There are no breaking changes in this release (promise!)
+
+
+
 <a name="1.2.2"></a>
 # 1.2.2 consciousness-inertia (2013-11-22)
 
