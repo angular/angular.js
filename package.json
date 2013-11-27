@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.3",
-  "cdnVersion": "1.2.2",
-  "codename": "unicorn-zapper",
+  "version": "1.2.4-snapshot",
+  "cdnVersion": "1.2.3",
+  "codename": "wormhole-baster",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
