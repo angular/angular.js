@@ -440,7 +440,8 @@ angular.module('ngResource', ['ng']).
           /* jshint +W086 */ /* (purposefully fall through case statements) */
 
           var isInstanceCall = this instanceof Resource;
-          var value = isInstanceCall ? data : (action.isArray ? [] : new this(data));
+          var ResourceConstructor = this;
+          var value = isInstanceCall ? data : (action.isArray ? [] : new ResourceConstructor(data));
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response ||
                                     defaultResponseInterceptor;
