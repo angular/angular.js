@@ -2852,5 +2852,26 @@ describe("ngAnimate", function() {
         $timeout.flush();
       });
     });
+
+    it('should round up long elapsedTime values to close off a CSS3 animation',
+      inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout, $window) {
+        if (!$sniffer.animations) return;
+
+        ss.addRule('.millisecond-transition.ng-leave', '-webkit-transition:510ms linear all;' +
+                                                       'transition:510ms linear all;');
+
+        var element = $compile('<div class="millisecond-transition"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $animate.leave(element);
+        $rootScope.$digest();
+
+        $timeout.flush();
+
+        browserTrigger(element, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 0.50999999991 });
+
+        expect($rootElement.children().length).toBe(0);
+    }));
   });
 });
