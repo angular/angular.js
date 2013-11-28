@@ -865,6 +865,7 @@ angular.module('ngAnimate', ['ng'])
       var NG_ANIMATE_CSS_DATA_KEY = '$$ngAnimateCSS3Data';
       var NG_ANIMATE_FALLBACK_CLASS_NAME = 'ng-animate-start';
       var NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME = 'ng-animate-active';
+      var ELAPSED_TIME_MAX_DECIMAL_PLACES = 3;
 
       var lookupCache = {};
       var parentCounter = 0;
@@ -1118,6 +1119,11 @@ angular.module('ngAnimate', ['ng'])
           event.stopPropagation();
           var ev = event.originalEvent || event;
           var timeStamp = ev.$manualTimeStamp || ev.timeStamp || Date.now();
+          
+          /* Firefox (or possibly just Gecko) likes to not round values up
+           * when a ms measurement is used for the animation */
+          var elapsedTime = parseFloat(ev.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES));
+
           /* $manualTimeStamp is a mocked timeStamp value which is set
            * within browserTrigger(). This is only here so that tests can
            * mock animations properly. Real events fallback to event.timeStamp,
@@ -1125,7 +1131,7 @@ angular.module('ngAnimate', ['ng'])
            * We're checking to see if the timeStamp surpasses the expected delay,
            * but we're using elapsedTime instead of the timeStamp on the 2nd
            * pre-condition since animations sometimes close off early */
-          if(Math.max(timeStamp - startTime, 0) >= maxDelayTime && ev.elapsedTime >= maxDuration) {
+          if(Math.max(timeStamp - startTime, 0) >= maxDelayTime && elapsedTime >= maxDuration) {
             activeAnimationComplete();
           }
         }
