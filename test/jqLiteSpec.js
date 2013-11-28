@@ -1177,6 +1177,63 @@ describe('jqLite', function() {
     }
   });
 
+  describe('one', function() {
+
+    it('should only fire the callback once', function() {
+      var element = jqLite(a);
+      var spy = jasmine.createSpy('click');
+
+      element.one('click', spy);
+
+      browserTrigger(element, 'click');
+      expect(spy).toHaveBeenCalledOnce();
+
+      browserTrigger(element, 'click');
+      expect(spy).toHaveBeenCalledOnce();
+    });
+
+    it('should deregister when off is called', function() {
+      var element = jqLite(a);
+      var spy = jasmine.createSpy('click');
+
+      element.one('click', spy);
+      element.off('click', spy);
+
+      browserTrigger(element, 'click');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should return the same event object just as on() does', function() {
+      var element = jqLite(a);
+      var eventA, eventB;
+      element.on('click', function(event) {
+        eventA = event;
+      });
+      element.one('click', function(event) {
+        eventB = event;
+      });
+
+      browserTrigger(element, 'click');
+      expect(eventA).toEqual(eventB);
+    });
+
+    it('should not remove other event handlers of the same type after execution', function() {
+      var element = jqLite(a);
+      var calls = [];
+      element.one('click', function(event) {
+        calls.push('one');
+      });
+      element.on('click', function(event) {
+        calls.push('on');
+      });
+
+      browserTrigger(element, 'click');
+      browserTrigger(element, 'click');
+
+      expect(calls).toEqual(['one','on','on']);
+    });
+  });
+
 
   describe('replaceWith', function() {
     it('should replaceWith', function() {
