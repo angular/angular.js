@@ -372,6 +372,21 @@ docsApp.directive.errorDisplay = ['$location', 'errorLinkFilter', function ($loc
 }];
 
 
+/**
+ * backToTop Directive
+ * @param  {Function} $anchorScroll
+ *
+ * @description Ensure that the browser scrolls when the anchor is clicked
+ */
+docsApp.directive.backToTop = ['$anchorScroll', function($anchorScroll) {
+  return function link(scope, element) {
+    element.on('click', function(event) {
+      scope.$apply($anchorScroll);
+    });
+  };
+}];
+
+
 docsApp.serviceFactory.angularUrls = function($document) {
   var urls = {};
 
