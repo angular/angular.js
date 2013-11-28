@@ -154,7 +154,7 @@ really is that easy to set up any functional, readable, end-to-end test.
 `ngController` declaration to the HTML element because it is the common parent of both the body
 and title elements:
 
-          <html ng-app ng-controller="PhoneListCtrl">
+          <html ng-app="phonecatApp" ng-controller="PhoneListCtrl">
 
   Be sure to __remove__ the `ng-controller` declaration from the body element.
 
