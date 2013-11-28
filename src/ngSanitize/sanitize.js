@@ -373,11 +373,11 @@ function decodeEntities(value) {
   // Note: IE8 does not preserve spaces at the start/end of innerHTML
   var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
   var parts = spaceRe.exec(value);
-  parts[0] = '';
   if (parts[2]) {
     hiddenPre.innerHTML=parts[2].replace(/</g,"&lt;");
     parts[2] = hiddenPre.innerText || hiddenPre.textContent;
   }
+  parts[0] = '';
   return parts.join('');
 }
 
