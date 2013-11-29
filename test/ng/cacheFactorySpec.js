@@ -173,6 +173,47 @@ describe('$cacheFactory', function() {
   });
 
 
+  describe('expiring cache', function() {
+    var cache;
+
+    beforeEach(inject(function($cacheFactory) {
+      cache = $cacheFactory('expiringTest', { maxAge: 2 });
+      timerCallback = jasmine.createSpy('timerCallback');
+    }));
+
+    describe('expiration', function() {
+
+      it('should return a key from the cache which has not expired yet', inject(function($timeout) {
+        var keyValue = 'foo', returnedKeyValue;
+        cache.put('key', keyValue);
+
+        returnedKeyValue = cache.get('key');
+
+        expect(returnedKeyValue).toEqual(keyValue);
+      }));
+
+
+      it('should remove an expired key from the cache', inject(function($timeout) {
+        var timedOut = false;
+        runs(function() {
+          setTimeout(function() {
+            timedOut = true;
+          }, 3);
+        });
+
+        waitsFor(function() {
+          return timedOut;
+        }, 'returning from a 4 msec lapse', 4);
+
+        runs(function() {
+          returnedKeyValue = cache.get('key');
+          expect(returnedKeyValue).toBeUndefined();
+        });
+      }));
+    });
+  });
+
+
   describe('LRU cache', function() {
 
     it('should create cache with defined capacity', inject(function($cacheFactory) {
