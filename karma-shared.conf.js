@@ -110,6 +110,9 @@ module.exports = function(config, specificOptions) {
 
 
   if (process.env.TRAVIS) {
+    config.transports = ['websocket', 'xhr-polling'];
+    config.browserStack.build = 'TRAVIS ' + process.env.TRAVIS_BUILD;
+
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
       type: 'file',
