@@ -273,10 +273,10 @@ docsApp.directive.docTutorialNav = function(templateMerge) {
       element.addClass('btn-group');
       element.addClass('tutorial-nav');
       element.append(templateMerge(
-        '<li class="btn btn-primary"><a href="tutorial/{{prev}}"><i class="icon-step-backward"></i> Previous</a></li>\n' +
-        '<li class="btn btn-primary"><a href="http://angular.github.com/angular-phonecat/step-{{seq}}/app"><i class="icon-play"></i> Live Demo</a></li>\n' +
-        '<li class="btn btn-primary"><a href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><i class="icon-search"></i> Code Diff</a></li>\n' +
-        '<li class="btn btn-primary"><a href="tutorial/{{next}}">Next <i class="icon-step-forward"></i></a></li>', props));
+        '<a href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="icon-step-backward"></i> Previous</li></a>\n' +
+        '<a href="http://angular.github.com/angular-phonecat/step-{{seq}}/app"><li class="btn btn-primary"><i class="icon-play"></i> Live Demo</li></a>\n' +
+        '<a href="https://github.com/angular/angular-phonecat/compare/step-{{diffLo}}...step-{{diffHi}}"><li class="btn btn-primary"><i class="icon-search"></i> Code Diff</li></a>\n' +
+        '<a href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="icon-step-forward"></i></li></a>', props));
     }
   };
 };
