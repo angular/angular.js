@@ -16,6 +16,8 @@
  * to initialize values on a scope.
  * </div>
  *
+ * @priority 450
+ *
  * @element ANY
  * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
@@ -47,6 +49,7 @@
    </doc:example>
  */
 var ngInitDirective = ngDirective({
+  priority: 450,
   compile: function() {
     return {
       pre: function(scope, element, attrs) {
