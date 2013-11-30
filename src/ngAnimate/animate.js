@@ -200,7 +200,7 @@
  *         //completes or when the animation is cancelled (the cancelled
  *         //flag will be set to true if cancelled).
  *       }
- *     }
+ *     },
  *     leave: function(element, done) { },
  *     move: function(element, done) { },
  *
