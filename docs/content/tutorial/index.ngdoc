@@ -74,7 +74,6 @@ directory.</p></li>
       don't have it already:</p>
       <pre>
       npm install -g karma
-      npm install
       </pre></li>
       <li><p>You will need an http server running on your system. Mac and Linux machines typically
 have Apache pre-installed, but If you don't already have one installed, you can use <code>node</code>
@@ -88,7 +87,7 @@ to run <code>scripts/web-server.js</code>,  a simple bundled http server.</p></l
         <a href="http://nodejs.org/">Node.js</a> v0.10 or better installed
         and that the <code>node</code> executable is on your <code>PATH</code> by running the following
         command in a terminal window:</p>
-        <pre>node --version</pre>
+        <pre>node -v</pre>
         <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> if you
            don't have it already:</p>
         <pre>npm install -g karma</pre>
