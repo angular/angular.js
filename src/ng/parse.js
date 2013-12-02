@@ -44,23 +44,24 @@ function ensureSafeMemberName(name, fullExpression) {
 
 function ensureSafeObject(obj, fullExpression) {
   // nifty check if obj is Function that is fast and works across iframes and other contexts
-  if (obj && obj.constructor === obj) {
-    throw $parseMinErr('isecfn',
-        'Referencing Function in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-  } else if (// isWindow(obj)
-      obj && obj.document && obj.location && obj.alert && obj.setInterval) {
-    throw $parseMinErr('isecwindow',
-        'Referencing the Window in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-  } else if (// isElement(obj)
-      obj && (obj.nodeName || (obj.on && obj.find))) {
-    throw $parseMinErr('isecdom',
-        'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-  } else {
-    return obj;
+  if (obj) {
+    if (obj.constructor === obj) {
+      throw $parseMinErr('isecfn',
+          'Referencing Function in Angular expressions is disallowed! Expression: {0}',
+          fullExpression);
+    } else if (// isWindow(obj)
+        obj.document && obj.location && obj.alert && obj.setInterval) {
+      throw $parseMinErr('isecwindow',
+          'Referencing the Window in Angular expressions is disallowed! Expression: {0}',
+          fullExpression);
+    } else if (// isElement(obj)
+        obj.children && (obj.nodeName || (obj.on && obj.find))) {
+      throw $parseMinErr('isecdom',
+          'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}',
+          fullExpression);
+    }
   }
+  return obj;
 }
 
 var OPERATORS = {
