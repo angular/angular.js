@@ -132,6 +132,54 @@ describe('injector', function() {
         injector.invoke(['a', 123], {});
       }).toThrowMinErr("ng", "areq", "Argument 'fn' is not a function, got number");
     });
+
+    it('should resolve injected code if the last array element is a string', function() {
+      providers('c', function() {return 3;});
+      providers('d', function() {return 4;});
+      providers('foo', ['a', 'b', function(a, b) {
+        return a + b;
+      }]);
+
+      expect(injector.invoke(['c', 'd', 'foo'])).toBe(7);
+    });
+
+    it('should resolve injected code along a chain of injected code references', function() {
+      function Foo(a,b) {
+        return a + b;
+      }
+      providers('c', function() {return 3;});
+      providers('d', function() {return 4;});
+      providers('foo', ['a', 'b', Foo]);
+      providers('bar', ['c', 'b', 'foo']);
+
+      expect(injector.invoke(['c', 'd', 'bar'])).toBe(7);
+      expect(injector.invoke(['a', 'd', 'bar'])).toBe(5);
+    });
+
+    it('should throw an error if the injected code references don\'t resolve to a function' , function() {
+      providers('c', function() {return 3;});
+      providers('d', function() {return 4;});
+      providers('foo', ['a', 'b', function(a, b) {
+        return a + b;
+      }]);
+      providers('bar', ['c', 'b', 'baz']);
+
+      expect(function() {
+        injector.invoke(['c', 'd', 'bar']);
+      }).toThrowMinErr("$injector", "unpr", "Unknown provider: bazProvider");
+    });
+
+    it('should throw an error if the injected code references are circular' , function() {
+      providers('c', function() {return 3;});
+      providers('d', function() {return 4;});
+      providers('foo', ['a', 'b', 'baz']);
+      providers('bar', ['c', 'b', 'foo']);
+      providers('baz', ['c', 'b', 'bar']);
+
+      expect(function() {
+        injector.invoke(['c', 'd', 'baz']);
+      }).toThrowMinErr("$injector", "cdep", "Circular dependency found: bar <- foo <- baz ");
+    });
   });
 
 
