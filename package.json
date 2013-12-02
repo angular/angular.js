@@ -38,7 +38,7 @@
     "grunt-shell": "~0.4.0",
     "semver": "~2.1.0",
     "lodash": "~2.1.0",
-    "karma-browserstack-launcher": "~0.0.4",
+    "karma-browserstack-launcher": "git://github.com/karma-runner/karma-browserstack-launcher.git#master",
     "browserstacktunnel-wrapper": "~1.1.1"
   },
   "licenses": [
