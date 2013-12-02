@@ -512,6 +512,22 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithTr', valueFn({
+            replace: true,
+            template: '<tr><td>TR</td></tr>'
+          }));
+          directive('replaceWithTd', valueFn({
+            replace: true,
+            template: '<td>TD</td>'
+          }));
+          directive('replaceWithTh', valueFn({
+            replace: true,
+            template: '<th>TH</th>'
+          }));
+          directive('replaceWithTbody', valueFn({
+            replace: true,
+            template: '<tbody><tr><td>TD</td></tr></tbody>'
+          }));
         }));
 
 
@@ -675,6 +691,34 @@ describe('$compile', function() {
             }).not.toThrow();
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope) {
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
       });
 
 
@@ -770,6 +814,23 @@ describe('$compile', function() {
             directive('replace', valueFn({
               replace: true,
               template: '<span>Hello, {{name}}!</span>'
+            }));
+
+            directive('replaceWithTr', valueFn({
+              replace: true,
+              templateUrl: 'tr.html'
+            }));
+            directive('replaceWithTd', valueFn({
+              replace: true,
+              templateUrl: 'td.html'
+            }));
+            directive('replaceWithTh', valueFn({
+              replace: true,
+              templateUrl: 'th.html'
+            }));
+            directive('replaceWithTbody', valueFn({
+              replace: true,
+              templateUrl: 'tbody.html'
             }));
           }
         ));
@@ -1386,6 +1447,42 @@ describe('$compile', function() {
             expect(element.html()).toContain('i = 1');
           });
         });
+
+        it('should support templates with root <tr> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tr.html', '<tr><td>TR</td></tr>');
+          expect(function() {
+            element = $compile('<div replace-with-tr></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tr/i);
+        }));
+
+        it('should support templates with root <td> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('td.html', '<td>TD</td>');
+          expect(function() {
+            element = $compile('<div replace-with-td></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/td/i);
+        }));
+
+        it('should support templates with root <th> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('th.html', '<th>TH</th>');
+          expect(function() {
+            element = $compile('<div replace-with-th></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/th/i);
+        }));
+
+        it('should support templates with root <tbody> tags', inject(function($compile, $rootScope, $templateCache) {
+          $templateCache.put('tbody.html', '<tbody><tr><td>TD</td></tr></tbody>');
+          expect(function() {
+            element = $compile('<div replace-with-tbody></div>')($rootScope);
+          }).not.toThrow();
+          $rootScope.$digest();
+          expect(nodeName_(element)).toMatch(/tbody/i);
+        }));
       });
 
 
