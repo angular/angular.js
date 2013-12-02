@@ -29,8 +29,8 @@
 
     eventData = eventData || {};
     var keys = eventData.keys;
-    var x = eventData.x;
-    var y = eventData.y;
+    var x = eventData.x || 0;
+    var y = eventData.y || 0;
 
     var inputType = (element.type) ? element.type.toLowerCase() : null,
         nodeName = element.nodeName.toLowerCase();
@@ -120,10 +120,16 @@
           }
         }
       }
+      else if(/touch/.test(eventType) && document.createTouch) {
+        var touch, touchlist;
+        evnt = document.createEvent('TouchEvent');
+        touch = document.createTouch(window, element, 0, x, y, x, y);
+        touchlist = document.createTouchList(touch);
+        evnt.initTouchEvent(touchlist, touchlist, touchlist, eventType, window, x, y, x, y,
+            pressed('ctrl'), pressed('alt'), pressed('shift'), pressed('meta'));
+      }
       else {
         evnt = document.createEvent('MouseEvents');
-        x = x || 0;
-        y = y || 0;
         evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
             pressed('alt'), pressed('shift'), pressed('meta'), 0, element);
       }
