@@ -24,7 +24,7 @@
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
     "karma-ng-scenario": "~0.1.0",
-    "karma-junit-reporter": "git://github.com/karma-runner/karma-junit-reporter#karma-0.11",
+    "karma-junit-reporter": "~0.2.1",
     "karma-sauce-launcher": "~0.1.1",
     "karma-script-launcher": "~0.1.0",
     "yaml-js": "~0.0.8",
