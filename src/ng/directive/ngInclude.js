@@ -188,18 +188,23 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
 
-              $transclude(newScope, function(clone) {
-                cleanupLastIncludeContent();
+              // Note: This will also link all children of ng-include that were contained in the original
+              // html. If that content contains controllers, ... they could pollute/change the scope.
+              // However, using ng-include on an element with additional content does not make sense...
+              // Note: We can't remove them in the cloneAttchFn of $transclude as that
+              // function is called before linking the content, which would apply child
+              // directives to non existing elements.
+              var clone = $transclude(newScope, noop);
+              cleanupLastIncludeContent();
 
-                currentScope = newScope;
-                currentElement = clone;
+              currentScope = newScope;
+              currentElement = clone;
 
-                currentElement.html(response);
-                $animate.enter(currentElement, null, $element, afterAnimation);
-                $compile(currentElement.contents())(currentScope);
-                currentScope.$emit('$includeContentLoaded');
-                scope.$eval(onloadExp);
-              });
+              currentElement.html(response);
+              $animate.enter(currentElement, null, $element, afterAnimation);
+              $compile(currentElement.contents())(currentScope);
+              currentScope.$emit('$includeContentLoaded');
+              scope.$eval(onloadExp);
             }).error(function() {
               if (thisChangeId === changeCounter) cleanupLastIncludeContent();
             });

@@ -32,29 +32,108 @@ project.
 ## Submission Guidelines
 
 ### Submitting an Issue
-Before you submit your issue follow the following guidelines:
-
-* Search the archive first, it's likely that your question was already answered.
-* A live example demonstrating the issue, will get an answer faster.
-* Create one using [Plunker][plunker] or [JSFiddle][jsfiddle].
-* If you get help, help others. Good karma rulez!
+Before you submit your issue search the archive, maybe your question was already answered.
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
 Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.
+features, by not reporting duplicate issues.  Providing the following information will increase the
+chances of your issue being dealt with quickly:
+
+* **Overview of the issue** - if an error is being thrown a non-minified stack trace helps
+* **Motivation for or Use Case** - explain why this is a bug for you
+* **Angular Version(s)** - is it a regression?
+* **Browsers and Operating System** - is this a problem with all browsers or only IE8?
+* **Reproduce the error** - provide a live example (using [Plunker][plunker] or
+  [JSFiddle][jsfiddle]) or a unambiguous set of steps.
+* **Related issues** - has a similar issue been reported before?
+* **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
+  causing the problem (line of code or commit)
+
+Here is a great example of a well defined issue: https://github.com/angular/angular.js/issues/5069
+
+**If you get help, help others. Good karma rulez!**
 
 ### Submitting a Pull Request
-Before you submit your pull request follow the following guidelines:
+Before you submit your pull request consider the following guidelines:
 
-* Search GitHub for an open or closed Pull Request that relates to your submission. You don't want
-  to duplicate effort.
+* Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
+  that relates to your submission. You don't want to duplicate effort.
+* Please sign our [Contributor License Agreement (CLA)](#signing-the-cla) before sending pull
+  requests. We cannot accept code without this.
 * Make your changes in a new git branch
+
+     ```shell
+     git checkout -b my-fix-branch master
+     ```
+
+* Create your patch, including appropriate test cases.
 * Follow our Coding Rules
-* Follow our Git Commit Guidelines
-* Build your changes locally and on Travis (by pushing to GitHub) to ensure all the tests pass.
-* Sign the Contributor License Agreement (CLA). We cannot accept code without this.
+* Commit your changes and create a descriptive commit message (the
+  commit message is used to generate release notes, please check out our
+  [commit message conventions](#commit-message-format) and our commit message presubmit hook
+  `validate-commit-msg.js`):
+
+     ```shell
+     git commit -a
+     ```
+
+* Build your changes locally to ensure all the tests pass
+
+    ```shell
+    grunt test
+    ```
+
+* Push your branch to Github:
+
+    ```shell
+    git push origin my-fix-branch
+    ```
+
+* In Github, send a pull request to `angular:master`.
 * If we suggest changes then you can modify your branch, rebase and force a new push to your GitHub
-  repository to update the Pull Request.
+  repository to update the Pull Request:
+
+    ```shell
+    git rebase master -i
+    git push -f
+    ```
+
+That's it! Thank you for your contribution!
+
+When the patch is reviewed and merged, you can safely delete your branch and pull the changes
+from the main (upstream) repository:
+
+* Delete the remote branch on Github:
+
+    ```shell
+    git push origin --delete my-fix-branch
+    ```
+
+* Check out the master branch:
+
+    ```shell
+    git checkout master -f
+    ```
+
+* Delete the local branch:
+
+    ```shell
+    git branch -D my-fix-branch
+    ```
+
+* Update your master with the latest upstream version:
+
+    ```shell
+    git pull --ff upstream master
+    ```
+
+### GitHub Pull Request Helper
+
+We track Pull Requests by attaching labels and assigning to milestones.  For some reason GitHub
+does not provide a good UI for managing labels on Pull Requests (unlike Issues).  We have developed
+a simple Chrome Extension that enables you to view (and manage if you have permission) the labels
+on Pull Requests.  You can get the extension from the Chrome WebStore -
+[GitHub PR Helper][github-pr-helper]
 
 ## Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
@@ -146,56 +225,6 @@ You can find out more detailed information about contributing in the
 [AngularJS documentation][contributing].
 
 
-## Submitting Your Changes
-
-To create and submit a change:
-
-1. Please sign our [Contributor License Agreement (CLA)](#signing-the-cla) before sending pull
-   requests.
-
-2. Create and checkout a new branch off the master branch for your changes:
-
-   ```shell
-   git checkout -b my-fix-branch master
-   ```
-
-3. Create your patch, including appropriate test cases.
-
-4. Commit your changes and create a descriptive commit message (the commit message is used to
-   generate release notes, please check out our [commit message conventions](#commit-message-format)
-   and our commit message presubmit hook `validate-commit-msg.js`):
-
-   ```shell
-   git commit -a
-   ```
-
-5. Push your branch to Github:
-
-   ```shell
-   git push origin my-fix-branch
-   ```
-
-6. In Github, send a pull request to `angular:master`.
-
-That's it! Thank you for your contribution!
-
-When the patch is reviewed and merged, you can safely delete your branch and pull the changes
-from the main (upstream) repository:
-
-```shell
-# Delete the remote branch on Github:
-git push origin :my-fix-branch
-
-# Check out the master branch:
-git checkout master
-
-# Delete the local branch:
-git branch -D my-fix-branch
-
-# Update your master with the latest upstream version:
-git pull --ff upstream master
-```
-
 
 [github]: https://github.com/angular/angular.js
 [Google Closure I18N library]: https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/
@@ -214,3 +243,4 @@ git pull --ff upstream master
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
+[github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen

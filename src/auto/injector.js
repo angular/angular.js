@@ -221,7 +221,7 @@ function annotate(fn) {
  *     // ...
  *   }
  *   // Define function dependencies
- *   MyController.$inject = ['$scope', '$route'];
+ *   MyController['$inject'] = ['$scope', '$route'];
  *
  *   // Then
  *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
@@ -501,11 +501,11 @@ function annotate(fn) {
  * @example
  * Here are some examples of creating value services.
  * <pre>
- *   $provide.constant('ADMIN_USER', 'admin');
+ *   $provide.value('ADMIN_USER', 'admin');
  *
- *   $provide.constant('RoleLookup', { admin: 0, writer: 1, reader: 2 });
+ *   $provide.value('RoleLookup', { admin: 0, writer: 1, reader: 2 });
  *
- *   $provide.constant('halfOf', function(value) {
+ *   $provide.value('halfOf', function(value) {
  *     return value / 2;
  *   });
  * </pre>

@@ -226,6 +226,11 @@ angular.uppercase = function(s) {};
 angular.Attributes;
 
 /**
+ * @type {Object.<string, string>}
+ */
+angular.Attributes.$attr;
+
+/**
  * @param {string} name
  * @return {string}
  */
@@ -1578,6 +1583,7 @@ angular.$q.when = function(value) {};
  * @typedef {{
  *   resolve: function(*=),
  *   reject: function(*=),
+ *   notify: function(*=),
  *   promise: angular.$q.Promise
  *   }}
  */
@@ -1588,6 +1594,9 @@ angular.$q.Deferred.resolve = function(opt_value) {};
 
 /** @param {*=} opt_reason */
 angular.$q.Deferred.reject = function(opt_reason) {};
+
+/** @param {*=} opt_value */
+angular.$q.Deferred.notify = function(opt_value) {};
 
 /** @type {angular.$q.Promise} */
 angular.$q.Deferred.promise;

@@ -38,7 +38,6 @@ describe('$location', function() {
       if ($sniffer.msie) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
-      expect(urlParsingNode.pathname).not.toBe('/C:/foo');
     }));
 
 
@@ -324,7 +323,7 @@ describe('$location', function() {
     });
 
 
-    it('should parse hashband url into path and search', function() {
+    it('should parse hashbang url into path and search', function() {
       expect(url.protocol()).toBe('http');
       expect(url.host()).toBe('www.server.org');
       expect(url.port()).toBe(1234);

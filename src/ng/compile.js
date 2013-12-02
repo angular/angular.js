@@ -192,7 +192,7 @@
  * * (no prefix) - Locate the required controller on the current element. Throw an error if not found.
  * * `?` - Attempt to locate the required controller or pass `null` to the `link` fn if not found.
  * * `^` - Locate the required controller by searching the element's parents. Throw an error if not found.
- * * `?^` - Attempt to locate the required controller by searching the element's parentsor pass `null` to the
+ * * `?^` - Attempt to locate the required controller by searching the element's parents or pass `null` to the
  *   `link` fn if not found.
  *
  *
@@ -283,7 +283,7 @@
  * </div>
  *
  * <div class="alert alert-error">
- * **Note:** The `transclude` function that is passed to the compile function is deperecated, as it
+ * **Note:** The `transclude` function that is passed to the compile function is deprecated, as it
  *   e.g. does not know about the right outer scope. Please use the transclude function that is passed
  *   to the link function instead.
  * </div>
@@ -493,14 +493,12 @@ var $compileMinErr = minErr('$compile');
  *
  * @description
  */
-$CompileProvider.$inject = ['$provide'];
-function $CompileProvider($provide) {
+$CompileProvider.$inject = ['$provide', '$$sanitizeUriProvider'];
+function $CompileProvider($provide, $$sanitizeUriProvider) {
   var hasDirectives = {},
       Suffix = 'Directive',
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\d\w\-_]+)\s+(.*)$/,
-      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/,
-      aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
-      imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file):|data:image\//;
+      CLASS_DIRECTIVE_REGEXP = /(([\d\w\-_]+)(?:\:([^;]+))?;?)/;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -584,10 +582,11 @@ function $CompileProvider($provide) {
    */
   this.aHrefSanitizationWhitelist = function(regexp) {
     if (isDefined(regexp)) {
-      aHrefSanitizationWhitelist = regexp;
+      $$sanitizeUriProvider.aHrefSanitizationWhitelist(regexp);
       return this;
+    } else {
+      return $$sanitizeUriProvider.aHrefSanitizationWhitelist();
     }
-    return aHrefSanitizationWhitelist;
   };
 
 
@@ -614,18 +613,18 @@ function $CompileProvider($provide) {
    */
   this.imgSrcSanitizationWhitelist = function(regexp) {
     if (isDefined(regexp)) {
-      imgSrcSanitizationWhitelist = regexp;
+      $$sanitizeUriProvider.imgSrcSanitizationWhitelist(regexp);
       return this;
+    } else {
+      return $$sanitizeUriProvider.imgSrcSanitizationWhitelist();
     }
-    return imgSrcSanitizationWhitelist;
   };
-
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$http', '$templateCache', '$parse',
-            '$controller', '$rootScope', '$document', '$sce', '$animate',
+            '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
     function($injector,   $interpolate,   $exceptionHandler,   $http,   $templateCache,   $parse,
-             $controller,   $rootScope,   $document,   $sce,   $animate) {
+             $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri) {
 
     var Attributes = function(element, attr) {
       this.$$element = element;
@@ -673,6 +672,24 @@ function $CompileProvider($provide) {
       },
 
       /**
+       * @ngdoc function
+       * @name ng.$compile.directive.Attributes#$updateClass
+       * @methodOf ng.$compile.directive.Attributes
+       * @function
+       *
+       * @description
+       * Adds and removes the appropriate CSS class values to the element based on the difference
+       * between the new and old CSS class values (specified as newClasses and oldClasses).
+       *
+       * @param {string} newClasses The current CSS className value
+       * @param {string} oldClasses The former CSS className value
+       */
+      $updateClass : function(newClasses, oldClasses) {
+        this.$removeClass(tokenDifference(oldClasses, newClasses));
+        this.$addClass(tokenDifference(newClasses, oldClasses));
+      },
+
+      /**
        * Set a normalized attribute on the element in a way such that all directives
        * can share the attribute. This function properly handles boolean attributes.
        * @param {string} key Normalized key. (ie ngAttribute)
@@ -682,59 +699,44 @@ function $CompileProvider($provide) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        //special case for class attribute addition + removal
-        //so that class changes can tap into the animation
-        //hooks provided by the $animate service
-        if(key == 'class') {
-          value = value || '';
-          var current = this.$$element.attr('class') || '';
-          this.$removeClass(tokenDifference(current, value).join(' '));
-          this.$addClass(tokenDifference(value, current).join(' '));
+        // TODO: decide whether or not to throw an error if "class"
+        //is set through this function since it may cause $updateClass to
+        //become unstable.
+
+        var booleanKey = getBooleanAttrName(this.$$element[0], key),
+            normalizedVal,
+            nodeName;
+
+        if (booleanKey) {
+          this.$$element.prop(key, value);
+          attrName = booleanKey;
+        }
+
+        this[key] = value;
+
+        // translate normalized key to actual key
+        if (attrName) {
+          this.$attr[key] = attrName;
         } else {
-          var booleanKey = getBooleanAttrName(this.$$element[0], key),
-              normalizedVal,
-              nodeName;
-
-          if (booleanKey) {
-            this.$$element.prop(key, value);
-            attrName = booleanKey;
+          attrName = this.$attr[key];
+          if (!attrName) {
+            this.$attr[key] = attrName = snake_case(key, '-');
           }
+        }
 
-          this[key] = value;
+        nodeName = nodeName_(this.$$element);
 
-          // translate normalized key to actual key
-          if (attrName) {
-            this.$attr[key] = attrName;
+        // sanitize a[href] and img[src] values
+        if ((nodeName === 'A' && key === 'href') ||
+            (nodeName === 'IMG' && key === 'src')) {
+          this[key] = value = $$sanitizeUri(value, key === 'src');
+        }
+
+        if (writeAttr !== false) {
+          if (value === null || value === undefined) {
+            this.$$element.removeAttr(attrName);
           } else {
-            attrName = this.$attr[key];
-            if (!attrName) {
-              this.$attr[key] = attrName = snake_case(key, '-');
-            }
-          }
-
-          nodeName = nodeName_(this.$$element);
-
-          // sanitize a[href] and img[src] values
-          if ((nodeName === 'A' && key === 'href') ||
-              (nodeName === 'IMG' && key === 'src')) {
-            // NOTE: urlResolve() doesn't support IE < 8 so we don't sanitize for that case.
-            if (!msie || msie >= 8 ) {
-              normalizedVal = urlResolve(value).href;
-              if (normalizedVal !== '') {
-                if ((key === 'href' && !normalizedVal.match(aHrefSanitizationWhitelist)) ||
-                    (key === 'src' && !normalizedVal.match(imgSrcSanitizationWhitelist))) {
-                  this[key] = value = 'unsafe:' + normalizedVal;
-                }
-              }
-            }
-          }
-
-          if (writeAttr !== false) {
-            if (value === null || value === undefined) {
-              this.$$element.removeAttr(attrName);
-            } else {
-              this.$$element.attr(attrName, value);
-            }
+            this.$$element.attr(attrName, value);
           }
         }
 
@@ -747,22 +749,6 @@ function $CompileProvider($provide) {
             $exceptionHandler(e);
           }
         });
-
-        function tokenDifference(str1, str2) {
-          var values = [],
-              tokens1 = str1.split(/\s+/),
-              tokens2 = str2.split(/\s+/);
-
-          outer:
-          for(var i=0;i<tokens1.length;i++) {
-            var token = tokens1[i];
-            for(var j=0;j<tokens2.length;j++) {
-              if(token == tokens2[j]) continue outer;
-            }
-            values.push(token);
-          }
-          return values;
-        }
       },
 
 
@@ -1784,10 +1770,15 @@ function $CompileProvider($provide) {
 
 
     function getTrustedContext(node, attrNormalizedName) {
+      if (attrNormalizedName == "srcdoc") {
+        return $sce.HTML;
+      }
+      var tag = nodeName_(node);
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
       if (attrNormalizedName == "xlinkHref" ||
-          (nodeName_(node) != "IMG" && (attrNormalizedName == "src" ||
-                                        attrNormalizedName == "ngSrc"))) {
+          (tag == "FORM" && attrNormalizedName == "action") ||
+          (tag != "IMG" && (attrNormalizedName == "src" ||
+                            attrNormalizedName == "ngSrc"))) {
         return $sce.RESOURCE_URL;
       }
     }
@@ -1832,9 +1823,19 @@ function $CompileProvider($provide) {
                 attr[name] = interpolateFn(scope);
                 ($$observers[name] || ($$observers[name] = [])).$$inter = true;
                 (attr.$$observers && attr.$$observers[name].$$scope || scope).
-                    $watch(interpolateFn, function interpolateFnWatchAction(value) {
-                      attr.$set(name, value);
-                    });
+                  $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
+                    //special case for class attribute addition + removal
+                    //so that class changes can tap into the animation
+                    //hooks provided by the $animate service. Be sure to
+                    //skip animations when the first digest occurs (when
+                    //both the new and the old values are the same) since
+                    //the CSS classes are the non-interpolated values
+                    if(name === 'class' && newValue != oldValue) {
+                      attr.$updateClass(newValue, oldValue);
+                    } else {
+                      attr.$set(name, newValue);
+                    }
+                  });
               }
             };
           }
@@ -1974,3 +1975,19 @@ function directiveLinkingFn(
   /* Element */ rootElement,
   /* function(Function) */ boundTranscludeFn
 ){}
+
+function tokenDifference(str1, str2) {
+  var values = '',
+      tokens1 = str1.split(/\s+/),
+      tokens2 = str2.split(/\s+/);
+
+  outer:
+  for(var i = 0; i < tokens1.length; i++) {
+    var token = tokens1[i];
+    for(var j = 0; j < tokens2.length; j++) {
+      if(token == tokens2[j]) continue outer;
+    }
+    values += (values.length > 0 ? ' ' : '') + token;
+  }
+  return values;
+}

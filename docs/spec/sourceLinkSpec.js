@@ -20,7 +20,7 @@ describe('Docs Links', function() {
     });
 
     it('should have an "view source" button', function() {
-      spyOn(gruntUtil, 'getVersion').andReturn({cdn: '1.2.299'});
+      spyOn(gruntUtil, 'getVersion').andReturn({full: '1.2.299'});
 
       expect(doc.html()).
         toContain('<a href="http://github.com/angular/angular.js/tree/v1.2.299/test.js#L42" class="view-source btn btn-action"><i class="icon-zoom-in"> </i> View source</a>');

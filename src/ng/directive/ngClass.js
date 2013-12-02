@@ -20,11 +20,10 @@ function classDirective(name, selector) {
             // jshint bitwise: false
             var mod = $index & 1;
             if (mod !== old$index & 1) {
-              if (mod === selector) {
-                addClass(scope.$eval(attr[name]));
-              } else {
-                removeClass(scope.$eval(attr[name]));
-              }
+              var classes = flattenClasses(scope.$eval(attr[name]));
+              mod === selector ?
+                attr.$addClass(classes) :
+                attr.$removeClass(classes);
             }
           });
         }
@@ -32,23 +31,16 @@ function classDirective(name, selector) {
 
         function ngClassWatchAction(newVal) {
           if (selector === true || scope.$index % 2 === selector) {
-            if (oldVal && !equals(newVal,oldVal)) {
-              removeClass(oldVal);
+            var newClasses = flattenClasses(newVal || '');
+            if(!oldVal) {
+              attr.$addClass(newClasses);
+            } else if(!equals(newVal,oldVal)) {
+              attr.$updateClass(newClasses, flattenClasses(oldVal));
             }
-            addClass(newVal);
           }
           oldVal = copy(newVal);
         }
 
-
-        function removeClass(classVal) {
-          attr.$removeClass(flattenClasses(classVal));
-        }
-
-
-        function addClass(classVal) {
-          attr.$addClass(flattenClasses(classVal));
-        }
 
         function flattenClasses(classVal) {
           if(isArray(classVal)) {

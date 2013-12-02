@@ -5,7 +5,7 @@ module.exports = function(config, specificOptions) {
     logLevel: config.LOG_INFO,
     logColors: true,
     browsers: ['Chrome'],
-    browserDisconnectTimeout: 5000,
+    browserDisconnectTimeout: 10000,
 
 
     // config for Travis CI
@@ -13,6 +13,14 @@ module.exports = function(config, specificOptions) {
       testName: specificOptions.testName || 'AngularJS',
       startConnect: false,
       tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+    },
+
+    // BrowserStack config for Travis CI
+    browserStack: {
+      startTunnel: false,
+      project: 'AngularJS',
+      name: specificOptions.testName,
+      build: process.env.TRAVIS_BUILD_NUMBER
     },
 
     // For more browsers on Sauce Labs see:
@@ -49,16 +57,59 @@ module.exports = function(config, specificOptions) {
         browserName: 'internet explorer',
         platform: 'Windows 2012',
         version: '10'
+      },
+
+      'BS_Chrome': {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        os: 'OS X',
+        os_version: 'Mountain Lion'
+      },
+      'BS_Safari': {
+        base: 'BrowserStack',
+        browser: 'safari',
+        os: 'OS X',
+        os_version: 'Mountain Lion'
+      },
+      'BS_Firefox': {
+        base: 'BrowserStack',
+        browser: 'firefox',
+        os: 'Windows',
+        os_version: '8'
+      },
+      'BS_IE_8': {
+        base: 'BrowserStack',
+        browser: 'ie',
+        browser_version: '8.0',
+        os: 'Windows',
+        os_version: '7'
+      },
+      'BS_IE_9': {
+        base: 'BrowserStack',
+        browser: 'ie',
+        browser_version: '9.0',
+        os: 'Windows',
+        os_version: '7'
+      },
+      'BS_IE_10': {
+        base: 'BrowserStack',
+        browser: 'ie',
+        browser_version: '10.0',
+        os: 'Windows',
+        os_version: '8'
+      },
+      'BS_IE_11': {
+        base: 'BrowserStack',
+        browser: 'ie',
+        browser_version: '11.0',
+        os: 'Windows',
+        os_version: '8.1'
       }
     }
   });
 
 
   if (process.env.TRAVIS) {
-    // TODO(vojta): remove once SauceLabs supports websockets.
-    // This speeds up the capturing a bit, as browsers don't even try to use websocket.
-    config.transports = ['xhr-polling'];
-
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
       type: 'file',

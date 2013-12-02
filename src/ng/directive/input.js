@@ -392,8 +392,21 @@ var inputType = {
 
 
 function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  // In composition mode, users are still inputing intermediate text buffer,
+  // hold the listener until composition is done.
+  // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
+  var composing = false;
+
+  element.on('compositionstart', function() {
+    composing = true;
+  });
+
+  element.on('compositionend', function() {
+    composing = false;
+  });
 
   var listener = function() {
+    if (composing) return;
     var value = element.val();
 
     // By default we will trim the value
@@ -436,15 +449,15 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       deferListener();
     });
 
-    // if user paste into input using mouse, we need "change" event to catch it
-    element.on('change', listener);
-
     // if user modifies input value using context menu in IE, we need "paste" and "cut" events to catch it
     if ($sniffer.hasEvent('paste')) {
       element.on('paste cut', deferListener);
     }
   }
 
+  // if user paste into input using mouse on older browser
+  // or form autocomplete on newer browser, we need "change" event to catch it
+  element.on('change', listener);
 
   ctrl.$render = function() {
     element.val(ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);

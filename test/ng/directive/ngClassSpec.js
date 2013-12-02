@@ -321,7 +321,6 @@ describe('ngClass animations', function() {
       $rootScope.val = 'one';
       $rootScope.$digest();
       $animate.flushNext('addClass');
-      $animate.flushNext('addClass');
       expect($animate.queue.length).toBe(0);
 
       $rootScope.val = '';
@@ -374,6 +373,10 @@ describe('ngClass animations', function() {
       // Enable animations by triggering the first item in the postDigest queue
       digestQueue.shift()();
 
+      // wait for the 2nd animation bootstrap digest to pass
+      $rootScope.$digest();
+      digestQueue.shift()();
+
       $rootScope.val = 'crazy';
       var element = angular.element('<div ng-class="val"></div>');
       jqLite($document[0].body).append($rootElement);
@@ -409,6 +412,48 @@ describe('ngClass animations', function() {
 
       expect(element.data('state')).toBe('crazy-enter');
       expect(enterComplete).toBe(true);
+    });
+  });
+
+  it("should not remove classes if they're going to be added back right after", function() {
+    module('mock.animate');
+
+    inject(function($rootScope, $compile, $animate) {
+      var className;
+
+      $rootScope.one = true;
+      $rootScope.two = true;
+      $rootScope.three = true;
+
+      var element = angular.element('<div ng-class="{one:one, two:two, three:three}"></div>');
+      $compile(element)($rootScope);
+      $rootScope.$digest();
+
+      //this fires twice due to the class observer firing
+      className = $animate.flushNext('addClass').params[1];
+      expect(className).toBe('one two three');
+
+      expect($animate.queue.length).toBe(0);
+
+      $rootScope.three = false;
+      $rootScope.$digest();
+
+      className = $animate.flushNext('removeClass').params[1];
+      expect(className).toBe('three');
+
+      expect($animate.queue.length).toBe(0);
+
+      $rootScope.two = false;
+      $rootScope.three = true;
+      $rootScope.$digest();
+
+      className = $animate.flushNext('removeClass').params[1];
+      expect(className).toBe('two');
+
+      className = $animate.flushNext('addClass').params[1];
+      expect(className).toBe('three');
+
+      expect($animate.queue.length).toBe(0);
     });
   });
 });
