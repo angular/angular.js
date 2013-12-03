@@ -410,4 +410,10 @@ describe('HTML', function() {
       expect(sanitizeText('a<div>&</div>c')).toEqual('a&lt;div&gt;&amp;&lt;/div&gt;c');
     });
   });
+
+  describe('decodeEntities', function() {
+    it('should not prepend the original string to the output', function() {
+      expect(decodeEntities('John Due &#9786;')).toEqual('John Due ☺');
+    });
+  });
 });
