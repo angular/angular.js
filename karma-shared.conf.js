@@ -144,9 +144,11 @@ module.exports = function(config, specificOptions) {
 
 
     log4js.addAppender(function(log) {
+      var msg = log.data[0];
+
       // ignore web-server's 404s
       if (log.categoryName === 'web-server' && log.level.levelStr === config.LOG_WARN &&
-          IGNORED_404.indexOf(log.data[0]) !== -1) {
+          IGNORED_404.some(function(ignoredLog) {return msg.indexOf(ignoredLog) !== -1})) {
         return;
       }
 
