@@ -60,6 +60,12 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 2012',
         version: '10'
       },
+      'SL_IE_11': {
+        base: 'SauceLabs',
+        browserName: 'internet explorer',
+        platform: 'Windows 8.1',
+        version: '11'
+      },
 
       'BS_Chrome': {
         base: 'BrowserStack',
