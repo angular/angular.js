@@ -130,8 +130,23 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
    </doc:scenario>
    </doc:example>
  */
+// These element & function are set during $sanitize initialization so that
+// they can be swapped in tests.
+var hiddenPre, getHiddenPreTextContent;
 function $SanitizeProvider() {
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
+    hiddenPre = document.createElement('pre');
+    
+    // innerText depends on styling as it doesn't display hidden elements.
+    // Therefore, it's better to use textContent not to cause unnecessary
+    // reflows. However, IE<9 don't support textContent so the innerText
+    // fallback is necessary. Note that we need to check for undefine
+    // and not just reverse the order of these two since for an empty string
+    // innerText would still be checked and a reflow would occur.
+    getHiddenPreTextContent = angular.isDefined(hiddenPre.textContent) ?
+      function() { return hiddenPre.textContent; } :
+      function() { return hiddenPre.innerText; };
+    
     return function(html) {
       var buf = [];
       htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
@@ -360,7 +375,6 @@ function htmlParser( html, handler ) {
   }
 }
 
-var hiddenPre=document.createElement("pre");
 var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
 /**
  * decodes all entities into regular string
@@ -378,7 +392,7 @@ function decodeEntities(value) {
   var content = parts[2];
   if (content) {
     hiddenPre.innerHTML=content.replace(/</g,"&lt;");
-    content = hiddenPre.innerText || hiddenPre.textContent;
+    content = getHiddenPreTextContent();
   }
   return spaceBefore + content + spaceAfter;
 }
