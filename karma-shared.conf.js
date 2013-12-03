@@ -118,9 +118,12 @@ module.exports = function(config, specificOptions) {
 
 
   if (process.env.TRAVIS) {
+    var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+
     config.logLevel = config.LOG_DEBUG;
     config.transports = ['websocket', 'xhr-polling'];
-    config.browserStack.build = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+    config.browserStack.build = buildLabel;
+    config.sauceLabs.build = buildLabel;
 
     // TODO(vojta): remove once SauceLabs supports websockets.
     // This speeds up the capturing a bit, as browsers don't even try to use websocket.
