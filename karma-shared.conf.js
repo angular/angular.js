@@ -21,7 +21,8 @@ module.exports = function(config, specificOptions) {
       startTunnel: false,
       project: 'AngularJS',
       name: specificOptions.testName,
-      build: process.env.TRAVIS_BUILD_NUMBER
+      build: process.env.TRAVIS_BUILD_NUMBER,
+      timeout: 600 // 10min
     },
 
     // For more browsers on Sauce Labs see:
