@@ -743,8 +743,8 @@ function copy(source, destination){
       "Can't copy! Source and destination are identical.");
     if (isArray(source)) {
       destination.length = 0;
-      for ( var i = 0; i < source.length; i++) {
-        destination.push(copy(source[i]));
+      for ( var property in source) {
+        destination[property] = copy(source[property]);
       }
     } else {
       var h = destination.$$hashKey;

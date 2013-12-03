@@ -72,6 +72,16 @@ describe('angular', function() {
       expect(dst[1]).not.toBe(src[1]);
     });
 
+    it("should deeply copy an array containing non-index properties into a new array", function() {
+      var src = [1, {name: "value"}];
+      src["foo"] = "bar";
+      var dst = copy(src);
+      expect(src["foo"]).toEqual("bar");
+      expect(dst).toEqual(src);
+      expect(dst).not.toBe(src);
+      expect(dst["foo"]).toEqual("bar");
+    });
+
     it('should copy empty array', function() {
       var src = [];
       var dst = [{key: "v"}];
