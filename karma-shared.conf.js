@@ -21,7 +21,8 @@ module.exports = function(config, specificOptions) {
       startTunnel: false,
       project: 'AngularJS',
       name: specificOptions.testName,
-      build: process.env.TRAVIS_BUILD_NUMBER
+      build: process.env.TRAVIS_BUILD_NUMBER,
+      timeout: 600 // 10min
     },
 
     // For more browsers on Sauce Labs see:
@@ -111,14 +112,52 @@ module.exports = function(config, specificOptions) {
 
 
   if (process.env.TRAVIS) {
+    config.logLevel = config.LOG_DEBUG;
     config.transports = ['websocket', 'xhr-polling'];
     config.browserStack.build = 'TRAVIS ' + process.env.TRAVIS_BUILD_ID;
 
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
       type: 'file',
-      filename: process.env.LOGS_DIR + '/' + (specificOptions.logFile || 'karma.log'),
-      level: config.LOG_DEBUG
+      filename: process.env.LOGS_DIR + '/' + (specificOptions.logFile || 'karma.log')
     });
   }
+
+
+  // Terrible hack to workaround inflexibility of log4js:
+  // - ignore web-server's 404 warnings,
+  // - ignore DEBUG logs (on Travis), we log them into a file instead.
+  var IGNORED_404 = [
+    '/favicon.ico',
+    '/%7B%7BtestUrl%7D%7D',
+    '/someSanitizedUrl',
+    '/{{testUrl}}'
+  ];
+  var log4js = require('./node_modules/karma/node_modules/log4js');
+  var layouts = require('./node_modules/karma/node_modules/log4js/lib/layouts');
+  var originalConfigure = log4js.configure;
+  log4js.configure = function(log4jsConfig) {
+    var consoleAppender = log4jsConfig.appenders.shift();
+    var originalResult = originalConfigure.call(log4js, log4jsConfig);
+    var layout = layouts.layout(consoleAppender.layout.type, consoleAppender.layout);
+
+
+
+    log4js.addAppender(function(log) {
+      // ignore web-server's 404s
+      if (log.categoryName === 'web-server' && log.level.levelStr === config.LOG_WARN &&
+          IGNORED_404.indexOf(log.data[0]) !== -1) {
+        return;
+      }
+
+      // on Travis, ignore DEBUG statements
+      if (process.env.TRAVIS && log.level.levelStr === config.LOG_DEBUG) {
+        return;
+      }
+
+      console.log(layout(log));
+    });
+
+    return originalResult;
+  };
 };
