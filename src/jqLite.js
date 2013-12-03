@@ -822,7 +822,7 @@ forEach({
   },
 
   find: function(element, selector) {
-    return element.getElementsByTagName(selector);
+    return (element.querySelectorAll || element.getElementsByTagName).call(element, selector);
   },
 
   clone: jqLiteClone,

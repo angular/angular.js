@@ -1335,6 +1335,13 @@ describe('jqLite', function() {
       expect(innerDiv.length).toEqual(1);
       expect(innerDiv.html()).toEqual('text');
     });
+
+    it('should find child by an advanced selector', function() {
+      var root = jqLite('<div><div><span>a</span><span>b</span><span>c</span></div></div>');
+      var innerDiv = root.find('div > span:nth-child(2)');
+      expect(innerDiv.length).toEqual(1);
+      expect(innerDiv.html()).toEqual('b');
+    });
   });
 
 
