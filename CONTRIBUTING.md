@@ -32,12 +32,13 @@ project.
 
 ## Want a Doc Fix?
 If you want to help improve the docs, it's a good idea to let others know what you're working on to 
-minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only with label type:docs](https://github.com/angular/angular.js/issues?labels=type%3A+docs&milestone=24&state=open). 
+minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
 Comment on an issue to let others know what you're working on, or create a new issue if your work
-doesn't fit within the scope of any of the exisitng doc fix projects.
+doesn't fit within the scope of any of the existing doc fix projects.
 
 For large fixes, please build and test the documentation before submitting the PR to be sure you haven't
-accidentally introduced any layout or formatting issues. 
+accidentally introduced any layout or formatting issues.You should also make sure that your commit message 
+is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
 
 If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly.
 
