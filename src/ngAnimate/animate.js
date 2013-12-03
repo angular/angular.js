@@ -370,7 +370,7 @@ angular.module('ngAnimate', ['ng'])
          * Runs the leave animation operation and, upon completion, removes the element from the DOM. Once
          * the animation is started, the following CSS classes will be added for the duration of the animation:
          *
-         * Below is a breakdown of each step that occurs during enter animation:
+         * Below is a breakdown of each step that occurs during leave animation:
          *
          * | Animation Step                                                                               | What the element class attribute looks like |
          * |----------------------------------------------------------------------------------------------|---------------------------------------------|
