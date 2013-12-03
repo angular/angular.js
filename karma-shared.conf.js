@@ -122,6 +122,10 @@ module.exports = function(config, specificOptions) {
     config.transports = ['websocket', 'xhr-polling'];
     config.browserStack.build = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
 
+    // TODO(vojta): remove once SauceLabs supports websockets.
+    // This speeds up the capturing a bit, as browsers don't even try to use websocket.
+    config.transports = ['xhr-polling'];
+
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
       type: 'file',
