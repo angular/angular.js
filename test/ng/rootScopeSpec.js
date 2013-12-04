@@ -577,6 +577,82 @@ describe('Scope', function() {
         });
       });
     });
+
+
+    describe('optimizations', function() {
+
+      function setupWatches(scope, log) {
+        scope.$watch(function() { log('w1'); return scope.w1; }, log.fn('w1action'));
+        scope.$watch(function() { log('w2'); return scope.w2; }, log.fn('w2action'));
+        scope.$watch(function() { log('w3'); return scope.w3; }, log.fn('w3action'));
+        scope.$digest();
+        log.reset();
+      }
+
+
+      it('should check watches only once during an empty digest', inject(function(log, $rootScope) {
+        setupWatches($rootScope, log);
+        $rootScope.$digest();
+        expect(log).toEqual(['w1', 'w2', 'w3']);
+      }));
+
+
+      it('should quit digest early after we check the last watch that was previously dirty',
+          inject(function(log, $rootScope) {
+        setupWatches($rootScope, log);
+        $rootScope.w1 = 'x';
+        $rootScope.$digest();
+        expect(log).toEqual(['w1', 'w1action', 'w2', 'w3', 'w1']);
+      }));
+
+
+      it('should not quit digest early if a new watch was added from an existing watch action',
+          inject(function(log, $rootScope) {
+        setupWatches($rootScope, log);
+        $rootScope.$watch(log.fn('w4'), function() {
+          log('w4action');
+          $rootScope.$watch(log.fn('w5'), log.fn('w5action'));
+        });
+        $rootScope.$digest();
+        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action',
+                             'w1', 'w2', 'w3', 'w4', 'w5', 'w5action',
+                             'w1', 'w2', 'w3', 'w4', 'w5']);
+      }));
+
+
+      it('should not quit digest early if an evalAsync task was scheduled from a watch action',
+          inject(function(log, $rootScope) {
+        setupWatches($rootScope, log);
+        $rootScope.$watch(log.fn('w4'), function() {
+          log('w4action');
+          $rootScope.$evalAsync(function() {
+            log('evalAsync')
+          });
+        });
+        $rootScope.$digest();
+        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action', 'evalAsync',
+                             'w1', 'w2', 'w3', 'w4']);
+      }));
+
+
+      it('should quit digest early but not too early when various watches fire', inject(function(log, $rootScope) {
+        setupWatches($rootScope, log);
+        $rootScope.$watch(function() { log('w4'); return $rootScope.w4; }, function(newVal) {
+          log('w4action');
+          $rootScope.w2 = newVal;
+        });
+
+        $rootScope.$digest();
+        log.reset();
+
+        $rootScope.w1 = 'x';
+        $rootScope.w4 = 'x';
+        $rootScope.$digest();
+        expect(log).toEqual(['w1', 'w1action', 'w2', 'w3', 'w4', 'w4action',
+                             'w1', 'w2', 'w2action', 'w3', 'w4',
+                             'w1', 'w2']);
+      }));
+    });
   });
 
 
