@@ -215,16 +215,20 @@ function jqLiteOff(element, type, fn, unsupported) {
 
   if (isUndefined(type)) {
     forEach(events, function(eventHandler, type) {
-      removeEventListenerFn(element, type, eventHandler);
+      removeEventListenerFn(element, type, handle);
       delete events[type];
     });
   } else {
     forEach(type.split(' '), function(type) {
       if (isUndefined(fn)) {
-        removeEventListenerFn(element, type, events[type]);
+        removeEventListenerFn(element, type, handle);
         delete events[type];
       } else {
         arrayRemove(events[type] || [], fn);
+        if (events[type] && !events[type].length) {
+          removeEventListenerFn(element, type, handle);
+          delete events[type];
+        }
       }
     });
   }
@@ -649,7 +653,7 @@ function createEventHandler(element, events) {
       delete event.isDefaultPrevented;
     }
   };
-  eventHandler.elem = element;
+  // eventHandler.elem = element;
   return eventHandler;
 }
 
