@@ -101,6 +101,9 @@
     "getter": false,
     "getBlockElements": false,
 
+    /* filters.js */
+    "getFirstThursdayOfYear": false,
+
     /* AngularPublic.js */
     "version": false,
     "publishExternalAPI": false,
