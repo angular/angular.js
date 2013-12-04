@@ -1053,6 +1053,10 @@ angular.$http;
  */
 angular.$http.Config;
 
+angular.$http.Config.transformRequest;
+
+angular.$http.Config.transformResponse;
+
 // /**
 //  * This extern is currently incomplete as delete is a reserved word.
 //  * To use delete, index $http.
@@ -1158,6 +1162,13 @@ angular.$http.HttpPromise.error = function(callback) {};
  *   }}
  */
 angular.$http.Response;
+
+angular.$HttpProvider;
+
+/**
+ * @type {angular.$http.Config}
+ */
+angular.$HttpProvider.defaults;
 
 /******************************************************************************
  * $injector Service
