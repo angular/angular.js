@@ -9,19 +9,17 @@ module.exports = function(config, specificOptions) {
     browserDisconnectTolerance: 2,
 
 
-    // config for Travis CI
+    // SauceLabs config for local development.
     sauceLabs: {
       testName: specificOptions.testName || 'AngularJS',
-      startConnect: false,
-      tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+      startConnect: true
     },
 
-    // BrowserStack config for Travis CI
+    // BrowserStack config for local development.
     browserStack: {
-      startTunnel: false,
       project: 'AngularJS',
       name: specificOptions.testName,
-      build: process.env.TRAVIS_BUILD_NUMBER,
+      startTunnel: true,
       timeout: 600 // 10min
     },
 
@@ -122,8 +120,13 @@ module.exports = function(config, specificOptions) {
 
     config.logLevel = config.LOG_DEBUG;
     config.transports = ['websocket', 'xhr-polling'];
+
     config.browserStack.build = buildLabel;
+    config.browserStack.startTunnel = false;
+
     config.sauceLabs.build = buildLabel;
+    config.sauceLabs.startConnect = false;
+    config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
     // TODO(vojta): remove once SauceLabs supports websockets.
     // This speeds up the capturing a bit, as browsers don't even try to use websocket.
