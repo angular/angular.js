@@ -266,7 +266,7 @@ to various URLs and verify that the correct view was rendered.
  describe('Phone detail view', function() {
 
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+      browser().navigateTo('app/index.html#/phones/nexus-s');
     });
 
 
