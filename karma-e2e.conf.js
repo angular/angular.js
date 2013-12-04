@@ -20,6 +20,8 @@ module.exports = function(config) {
     junitReporter: {
       outputFile: 'test_out/e2e.xml',
       suite: 'E2E'
-    }
+    },
+
+    browserNoActivityTimeout: 90000
   });
 };
