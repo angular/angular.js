@@ -3,9 +3,9 @@
 @fullName Orphan ngTransclude Directive
 @description
 
-Occurs when an `ngTransclude` occurs without a transcluded ancesstor element.
+Occurs when an `ngTransclude` occurs without a transcluded ancestor element.
 
-This error often occurs when you have forgotten to set `transclude: true` in some directive definition, and then used `ngTranslude` in the driective's template.
+This error often occurs when you have forgotten to set `transclude: true` in some directive definition, and then used `ngTransclude` in the directive's template.
 
 To resolve, either remove the offending `ngTransclude` or check that `transclude: true` is included in the intended directive definition.
 
