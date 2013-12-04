@@ -11,6 +11,7 @@
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 var inputType = {
 
@@ -89,6 +90,71 @@ var inputType = {
    */
   'text': textInputType,
 
+    /**
+     * @ngdoc inputType
+     * @name ng.directive:input.date
+     *
+     * @description
+     * HTML5 or text input with date validation and transformation. In browsers that do not yet support
+     * the HTML5 date input, a text element will be used. The text must be entered in a valid ISO-8601
+     * date format (yyyy-MM-dd), for example: `2009-01-06`. Will also accept a valid ISO date or Date object
+     * as model input, but will always output a Date object to the model.
+     *
+     * @param {string} ngModel Assignable angular expression to data-bind to.
+     * @param {string=} name Property name of the form under which the control is published.
+     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+     * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+     * @param {string=} required Sets `required` validation error key if the value is not entered.
+     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+     *    `required` when you want to data-bind to the `required` attribute.
+     * @param {string=} ngChange Angular expression to be executed when input changes due to user
+     *    interaction with the input element.
+     *
+     * @example
+     <doc:example>
+     <doc:source>
+     <script>
+        function Ctrl($scope) {
+          $scope.value = '2013-10-22';
+        }
+     </script>
+     <form name="myForm" ng-controller="Ctrl as dateCtrl">
+        Pick a date between in 2013:
+        <input type="date" name="input" ng-model="value"
+            placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31" required />
+        <span class="error" ng-show="myForm.input.$error.required">
+            Required!</span>
+        <span class="error" ng-show="myForm.input.$error.date">
+            Not a valid date!</span>
+         <tt>value = {{value}}</tt><br/>
+         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+     </form>
+     </doc:source>
+     <doc:scenario>
+        it('should initialize to model', function() {
+          expect(binding('value')).toEqual('2013-10-22');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if empty', function() {
+          input('value').enter('');
+          expect(binding('value')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+        it('should be invalid if over max', function() {
+          input('value').enter('2015-01-01');
+          expect(binding('value')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+     </doc:scenario>
+     </doc:example>
+     */
+  'date': dateInputType,
 
   /**
    * @ngdoc inputType
@@ -528,6 +594,80 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$parsers.push(maxLengthValidator);
     ctrl.$formatters.push(maxLengthValidator);
   }
+}
+
+function dateInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+   ctrl.$parsers.push(function(value) {
+      if(ctrl.$isEmpty(value)) {
+         ctrl.$setValidity('date', true);
+         return value;
+      }
+
+      if(DATE_REGEXP.test(value)) {
+         ctrl.$setValidity('date', true);
+         return new Date(getTime(value));
+      }
+
+      ctrl.$setValidity('date', false);
+      return undefined;
+   });
+
+   ctrl.$formatters.push(function(value) {
+       if(isDate(value)) {
+           var year = value.getFullYear(),
+               month = value.getMonth() + 1,
+               day = value.getDate();
+
+           month = (month < 10 ? '0' : '') + month;
+           day = (day < 10 ? '0' : '') + day;
+           return  year + '-' + month + '-' + day;
+       }
+       return ctrl.$isEmpty(value) ? '' : '' + value;
+   });
+
+   if(attr.min) {
+      var minValidator = function(value) {
+         var valid = ctrl.$isEmpty(value) ||
+            (getTime(value) >= getTime(attr.min));
+         ctrl.$setValidity('min', valid);
+         return valid ? value : undefined;
+      };
+
+      ctrl.$parsers.push(minValidator);
+      ctrl.$formatters.push(minValidator);
+   }
+
+   if(attr.max) {
+      var maxValidator = function(value) {
+         var valid = ctrl.$isEmpty(value) ||
+            (getTime(value) <= getTime(attr.max));
+         ctrl.$setValidity('max', valid);
+         return valid ? value : undefined;
+      };
+
+      ctrl.$parsers.push(maxValidator);
+      ctrl.$formatters.push(maxValidator);
+   }
+
+   function getTime(iso) {
+      if(isDate(iso)) {
+         return +iso;
+      }
+
+      if(isString(iso)) {
+         DATE_REGEXP.lastIndex = 0;
+         var parts = DATE_REGEXP.exec(iso),
+            yyyy = +parts[1],
+            mm = +parts[2] - 1,
+            dd = +parts[3],
+            time = new Date(yyyy, mm, dd);
+         return +time;
+      }
+
+      return NaN;
+   }
 }
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
