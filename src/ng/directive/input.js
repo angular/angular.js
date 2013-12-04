@@ -1463,7 +1463,6 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
                      id="{{name}}"
                      name="favorite">
             </label>
-          </span>
           <div>You chose {{my.favorite}}</div>
         </form>
       </doc:source>
