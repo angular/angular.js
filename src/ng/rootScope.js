@@ -129,6 +129,7 @@ function $RootScopeProvider(){
                      this.$$childHead = this.$$childTail = null;
       this['this'] = this.$root =  this;
       this.$$destroyed = false;
+      this.$$disabled = false;
       this.$$asyncQueue = [];
       this.$$postDigestQueue = [];
       this.$$listeners = {};
@@ -494,6 +495,35 @@ function $RootScopeProvider(){
 
       /**
        * @ngdoc function
+       * @name ng.$rootScope.Scope#$nextEnabledSibling
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Gets next sibling which has the `$$disabled` flag equals to false. In another words, it
+       * return the next sibling which is not disabled.
+       *
+       */
+      $nextEnabledSibling: function() {
+          return this.$$nextSibling && (!this.$$nextSibling.$$disabled && this.$$nextSibling || this.$$nextSibling.$nextEnabledSibling());
+      },
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$nextEnabledChild
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Gets next child which has the `$$disabled` flag equals to false. In another words, it
+       * return the next child from the scope which is not disabled.
+       *
+       */
+      $nextEnabledChild: function() {
+          return this.$$childHead && (!this.$$childHead.$$disabled && this.$$childHead || this.$$childHead.$nextEnabledSibling());
+      },
+
+      /**
+       * @ngdoc function
        * @name ng.$rootScope.Scope#$digest
        * @methodOf ng.$rootScope.Scope
        * @function
@@ -604,8 +634,8 @@ function $RootScopeProvider(){
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
-              while(current !== target && !(next = current.$$nextSibling)) {
+            if (!(next = (current.$nextEnabledChild() || (current !== target && current.$nextEnabledSibling())))) {
+              while(current !== target && !(next = current.$nextEnabledSibling())) {
                 current = current.$parent;
               }
             }
@@ -1000,9 +1030,9 @@ function $RootScopeProvider(){
 
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
-          // this piece should be kept in sync with the traversal in $digest
-          if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
-            while(current !== target && !(next = current.$$nextSibling)) {
+          // this piece should be kept in sync with the traversal in $broadcast
+          if (!(next = (current.$nextEnabledChild() || (current !== target && current.$nextEnabledSibling())))) {
+            while(current !== target && !(next = current.$nextEnabledSibling())) {
               current = current.$parent;
             }
           }

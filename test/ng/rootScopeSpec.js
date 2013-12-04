@@ -89,6 +89,35 @@ describe('Scope', function() {
       expect(spy).wasCalledWith('misko', undefined, $rootScope);
     }));
 
+    it('should have all scopes initialized as enabled', inject(function($rootScope) {
+        var scope01 = $rootScope.$new(),
+            scope02 = $rootScope.$new(),
+            scope002 = scope02.$new(),
+            scope001 = scope02.$new(),
+            log = '';
+
+        expect($rootScope.$$disabled || scope01.$$disabled || scope02.$$disabled || scope002.$$disabled || scope001.$$disabled)
+            .toBe(false)
+    }));
+
+    it('should ignore scope marked as disabled', inject(function($rootScope) {
+        var scope01 = $rootScope.$new(),
+            scope02 = $rootScope.$new(),
+            scope002 = scope02.$new(),
+            log = '';
+
+        scope01.$watch('', function() { log += '1'; });
+        scope02.$watch('', function() { log += '2'; });
+        scope002.$watch('', function() { log += '02'; });
+
+        expect(scope02.$$disabled).toBe(false);
+        scope02.$$disabled = true;
+
+        $rootScope.$digest();
+
+        expect(log).toBe('1');
+    }));
+
 
     it('should watch and fire on expression change', inject(function($rootScope) {
       var spy = jasmine.createSpy();
