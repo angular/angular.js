@@ -106,6 +106,13 @@ function $InterpolateProvider() {
          var exp = $interpolate('Hello {{name}}!');
          expect(exp({name:'Angular'}).toEqual('Hello Angular!');
        </pre>
+       
+       <pre>
+         // you can also use services like filters:
+         var template = $interpolate( 'Hello from {{ name | uppercase }}!' );
+         var str = template( { name: 'Duck Dodgers' } );
+         // Hello from DUCK DODGERS
+       </pre>
      *
      *
      * @param {string} text The text with markup to interpolate.
