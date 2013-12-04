@@ -2386,6 +2386,24 @@ describe('$compile', function() {
         expect(componentScope.refAlias).toBe($rootScope.name);
       }));
 
+      it('should not break if local and origin both change to the same value', inject(function() {
+        $rootScope.name = 'aaa';
+
+        compile('<div><span my-component ref="name">');
+
+        //change both sides to the same item withing the same digest cycle
+        componentScope.ref = 'same';
+        $rootScope.name = 'same';
+        $rootScope.$apply();
+
+        //change origin back to it's previous value
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        expect($rootScope.name).toBe('aaa');
+        expect(componentScope.ref).toBe('aaa');
+      }));
+
       it('should complain on non assignable changes', inject(function() {
         compile('<div><span my-component ref="\'hello \' + name">');
         $rootScope.name = 'world';

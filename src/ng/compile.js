@@ -1444,7 +1444,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       parentSet(scope, parentValue = lastValue = isolateScope[scopeName]);
                     }
                   }
-                  return parentValue;
+                  return lastValue = parentValue;
                 });
                 break;
 
