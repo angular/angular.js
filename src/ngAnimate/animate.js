@@ -258,6 +258,19 @@ angular.module('ngAnimate', ['ng'])
     var NG_ANIMATE_CLASS_NAME = 'ng-animate';
     var rootAnimateState = {running: true};
 
+    function extractElementNode(element) {
+      for(var i = 0; i < element.length; i++) {
+        var elm = element[i];
+        if(elm.nodeType == ELEMENT_NODE) {
+          return elm;
+        }
+      }
+    }
+
+    function isMatchingElement(elm1, elm2) {
+      return extractElementNode(elm1) == extractElementNode(elm2);
+    }
+
     $provide.decorator('$animate', ['$delegate', '$injector', '$sniffer', '$rootElement', '$timeout', '$rootScope', '$document',
                             function($delegate,   $injector,   $sniffer,   $rootElement,   $timeout,   $rootScope,   $document) {
 
@@ -556,7 +569,16 @@ angular.module('ngAnimate', ['ng'])
         and the onComplete callback will be fired once the animation is fully complete.
       */
       function performAnimation(animationEvent, className, element, parentElement, afterElement, domOperation, doneCallback) {
-        var currentClassName = element.attr('class') || '';
+        var node = extractElementNode(element);
+        //transcluded directives may sometimes fire an animation using only comment nodes
+        //best to catch this early on to prevent any animation operations from occurring
+        if(!node) {
+          fireDOMOperation();
+          closeAnimation();
+          return;
+        }
+
+        var currentClassName = node.className;
         var classes = currentClassName + ' ' + className;
         var animationLookup = (' ' + classes).replace(/\s+/g,'.');
         if (!parentElement) {
@@ -760,11 +782,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function cancelChildAnimations(element) {
-        var node = element[0];
-        if(node.nodeType != ELEMENT_NODE) {
-          return;
-        }
-
+        var node = extractElementNode(element);
         forEach(node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
           element = angular.element(element);
           var data = element.data(NG_ANIMATE_STATE);
@@ -788,7 +806,7 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function cleanup(element) {
-        if(element[0] == $rootElement[0]) {
+        if(isMatchingElement(element, $rootElement)) {
           if(!rootAnimateState.disabled) {
             rootAnimateState.running = false;
             rootAnimateState.structural = false;
@@ -802,7 +820,7 @@ angular.module('ngAnimate', ['ng'])
       function animationsDisabled(element, parentElement) {
         if (rootAnimateState.disabled) return true;
 
-        if(element[0] == $rootElement[0]) {
+        if(isMatchingElement(element, $rootElement)) {
           return rootAnimateState.disabled || rootAnimateState.running;
         }
 
@@ -812,7 +830,7 @@ angular.module('ngAnimate', ['ng'])
           //any animations on it
           if(parentElement.length === 0) break;
 
-          var isRoot = parentElement[0] == $rootElement[0];
+          var isRoot = isMatchingElement(parentElement, $rootElement);
           var state = isRoot ? rootAnimateState : parentElement.data(NG_ANIMATE_STATE);
           var result = state && (!!state.disabled || !!state.running);
           if(isRoot || result) {
@@ -960,7 +978,7 @@ angular.module('ngAnimate', ['ng'])
           parentElement.data(NG_ANIMATE_PARENT_KEY, ++parentCounter);
           parentID = parentCounter;
         }
-        return parentID + '-' + element[0].className;
+        return parentID + '-' + extractElementNode(element).className;
       }
 
       function animateSetup(element, className) {
@@ -995,7 +1013,6 @@ angular.module('ngAnimate', ['ng'])
           return false;
         }
 
-        var node = element[0];
         //temporarily disable the transition so that the enter styles
         //don't animate twice (this is here to avoid a bug in Chrome/FF).
         var activeClassName = '';
@@ -1025,35 +1042,37 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function blockTransitions(element) {
-        element[0].style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
+        extractElementNode(element).style[TRANSITION_PROP + PROPERTY_KEY] = 'none';
       }
 
       function blockKeyframeAnimations(element) {
-        element[0].style[ANIMATION_PROP] = 'none 0s';
+        extractElementNode(element).style[ANIMATION_PROP] = 'none 0s';
       }
 
       function unblockTransitions(element) {
-        var node = element[0], prop = TRANSITION_PROP + PROPERTY_KEY;
+        var prop = TRANSITION_PROP + PROPERTY_KEY;
+        var node = extractElementNode(element);
         if(node.style[prop] && node.style[prop].length > 0) {
           node.style[prop] = '';
         }
       }
 
       function unblockKeyframeAnimations(element) {
-        var node = element[0], prop = ANIMATION_PROP;
+        var prop = ANIMATION_PROP;
+        var node = extractElementNode(element);
         if(node.style[prop] && node.style[prop].length > 0) {
-          element[0].style[prop] = '';
+          node.style[prop] = '';
         }
       }
 
       function animateRun(element, className, activeAnimationComplete) {
         var data = element.data(NG_ANIMATE_CSS_DATA_KEY);
-        if(!element.hasClass(className) || !data) {
+        var node = extractElementNode(element);
+        if(node.className.indexOf(className) == -1 || !data) {
           activeAnimationComplete();
           return;
         }
 
-        var node = element[0];
         var timings = data.timings;
         var stagger = data.stagger;
         var maxDuration = data.maxDuration;
@@ -1096,6 +1115,9 @@ angular.module('ngAnimate', ['ng'])
         }
 
         if(appliedStyles.length > 0) {
+          //the element being animated may sometimes contain comment nodes in
+          //the jqLite object, so we're safe to use a single variable to house
+          //the styles since there is always only one element being animated
           var oldStyle = node.getAttribute('style') || '';
           node.setAttribute('style', oldStyle + ' ' + style);
         }
@@ -1110,6 +1132,7 @@ angular.module('ngAnimate', ['ng'])
           element.off(css3AnimationEvents, onAnimationProgress);
           element.removeClass(activeClassName);
           animateClose(element, className);
+          var node = extractElementNode(element);
           for (var i in appliedStyles) {
             node.style.removeProperty(appliedStyles[i]);
           }
@@ -1209,7 +1232,7 @@ angular.module('ngAnimate', ['ng'])
           }
 
           var parentElement = element.parent();
-          var clone = angular.element(element[0].cloneNode());
+          var clone = angular.element(extractElementNode(element).cloneNode());
 
           //make the element super hidden and override any CSS style values
           clone.attr('style','position:absolute; top:-9999px; left:-9999px');
