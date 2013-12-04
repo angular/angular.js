@@ -18,7 +18,7 @@ It might be tempting to think of Angular view expressions as JavaScript expressi
 not entirely correct, since Angular does not use a JavaScript `eval()` to evaluate expressions.
 You can think of Angular expressions as JavaScript expressions with following differences:
 
-  * **Attribute Evaluation:** evaluation of all properties are against the scope, doing the
+  * **Attribute Evaluation:** evaluation of all properties are against the scope doing the
     evaluation, unlike in JavaScript where the expressions are evaluated against the global
     `window`.
 
