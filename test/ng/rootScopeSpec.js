@@ -599,10 +599,14 @@ describe('Scope', function() {
     }));
 
 
-    it('should ignore remove on root', inject(function($rootScope) {
+    it('should broadcast $destroy on rootScope', inject(function($rootScope) {
+      var spy = spyOn(angular, 'noop');
+      $rootScope.$on('$destroy', angular.noop);
       $rootScope.$destroy();
       $rootScope.$digest();
       expect(log).toEqual('123');
+      expect(spy).toHaveBeenCalled();
+      expect($rootScope.$$destroyed).toBe(true);
     }));
 
 
