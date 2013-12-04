@@ -106,7 +106,7 @@ directory.</p>
       <p>You should run all <code>git</code> commands from Git bash.</p>
       <p>Other commands like <code>test.bat</code> or <code>e2e-test.bat</code> should be
 executed from the Windows command line.</li>
-      <li><p>You need an http server running on your system, but if you don't already have one
+      <li><p>You need a http server running on your system, but if you don't already have one
 already installed, you can use <code>node</code> to run <code>scripts\web-server.js</code>, a simple
 bundled http server.</p></li>
     </ol>
