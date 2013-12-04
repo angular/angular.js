@@ -71,6 +71,7 @@
 function $RootScopeProvider(){
   var TTL = 10;
   var $rootScopeMinErr = minErr('$rootScope');
+  var dirtyWatch = null;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -325,6 +326,8 @@ function $RootScopeProvider(){
               eq: !!objectEquality
             };
 
+        dirtyWatch = null;
+
         // in the case user pass string, we need to compile it, do we really need this ?
         if (!isFunction(listener)) {
           var listenFn = compileToFn(listener || noop, 'listener');
@@ -415,6 +418,8 @@ function $RootScopeProvider(){
         var internalArray = [];
         var internalObject = {};
         var oldLength = 0;
+
+        dirtyWatch = null;
 
         function $watchCollectionWatch() {
           newValue = objGetter(self);
@@ -549,9 +554,12 @@ function $RootScopeProvider(){
             dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
+            shortCircuit = false,
             logIdx, logMsg, asyncTask;
 
         beginPhase('$digest');
+
+        dirtyWatch = null;
 
         do { // "while dirty" loop
           dirty = false;
@@ -564,6 +572,7 @@ function $RootScopeProvider(){
             } catch (e) {
               $exceptionHandler(e);
             }
+            dirtyWatch = null;
           }
 
           do { // "traverse the scopes" loop
@@ -575,22 +584,32 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if (watch && (value = watch.get(current)) !== (last = watch.last) &&
-                      !(watch.eq
-                          ? equals(value, last)
-                          : (typeof value == 'number' && typeof last == 'number'
-                             && isNaN(value) && isNaN(last)))) {
-                    dirty = true;
-                    watch.last = watch.eq ? copy(value) : value;
-                    watch.fn(value, ((last === initWatchVal) ? value : last), current);
-                    if (ttl < 5) {
-                      logIdx = 4 - ttl;
-                      if (!watchLog[logIdx]) watchLog[logIdx] = [];
-                      logMsg = (isFunction(watch.exp))
-                          ? 'fn: ' + (watch.exp.name || watch.exp.toString())
-                          : watch.exp;
-                      logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
-                      watchLog[logIdx].push(logMsg);
+                  if (watch) {
+                    if ((value = watch.get(current)) !== (last = watch.last) &&
+                        !(watch.eq
+                            ? equals(value, last)
+                            : (typeof value == 'number' && typeof last == 'number'
+                               && isNaN(value) && isNaN(last)))) {
+                      dirty = true;
+                      dirtyWatch = watch;
+                      watch.last = watch.eq ? copy(value) : value;
+                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                      if (ttl < 5) {
+                        logIdx = 4 - ttl;
+                        if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                        logMsg = (isFunction(watch.exp))
+                            ? 'fn: ' + (watch.exp.name || watch.exp.toString())
+                            : watch.exp;
+                        logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                        watchLog[logIdx].push(logMsg);
+                      }
+                    } else if (watch === dirtyWatch) {
+                      // If the most recently dirty watcher is now clean, short
+                      // circuit since the remaining watchers have already been
+                      // tested.
+                      dirty = false;
+                      shortCircuit = true;
+                      break;
                     }
                   }
                 } catch (e) {
@@ -602,12 +621,13 @@ function $RootScopeProvider(){
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+            if (!shortCircuit && !(next = (current.$$childHead ||
+                (current !== target && current.$$nextSibling)))) {
               while(current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
               }
             }
-          } while ((current = next));
+          } while (!shortCircuit && (current = next));
 
           if(dirty && !(ttl--)) {
             clearPhase();
@@ -616,6 +636,8 @@ function $RootScopeProvider(){
                 'Watchers fired in the last 5 iterations: {1}',
                 TTL, toJson(watchLog));
           }
+
+          shortCircuit = false;
         } while (dirty || asyncQueue.length);
 
         clearPhase();
