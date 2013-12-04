@@ -13,6 +13,7 @@ angular.js.tmproj
 bower_components/
 angular.xcodeproj
 .idea
+*.iml
 .agignore
 .lvimrc
 libpeerconnection.log
