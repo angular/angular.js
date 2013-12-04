@@ -311,9 +311,11 @@ function $RootScopeProvider(){
        *      parameters.
        *
        * @param {boolean=} objectEquality Compare object for equality rather than for reference.
+       * @param {number=} depthLimit Maximum depth of nested properties to compare when
+       *   objectEquality is true.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener, objectEquality) {
+      $watch: function(watchExp, listener, objectEquality, depthLimit) {
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
@@ -322,7 +324,8 @@ function $RootScopeProvider(){
               last: initWatchVal,
               get: get,
               exp: watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              limit: depthLimit
             };
 
         // in the case user pass string, we need to compile it, do we really need this ?
@@ -578,7 +581,7 @@ function $RootScopeProvider(){
                   // circuit it with === operator, only when === fails do we use .equals
                   if (watch && (value = watch.get(current)) !== (last = watch.last) &&
                       !(watch.eq
-                          ? equals(value, last)
+                          ? equals(value, last, watch.limit)
                           : (typeof value == 'number' && typeof last == 'number'
                              && isNaN(value) && isNaN(last)))) {
                     dirty = true;

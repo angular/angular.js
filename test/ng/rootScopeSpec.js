@@ -293,6 +293,25 @@ describe('Scope', function() {
     }));
 
 
+    it('should limit equality test recursion for nested objects', inject(function($rootScope) {
+      var log = '';
+      $rootScope.a = { b: { c: 64 } };
+      $rootScope.b = { b: { c: 128 } };
+      $rootScope.$watch('a', function(value) {
+        log += 'a!';
+      }, true, 1);
+      $rootScope.$watch('b', function(value) {
+        log += 'b!';
+      }, true, 2);
+      $rootScope.$digest();
+      log = '';
+      $rootScope.a.b.d = 256;
+      $rootScope.b.b.d = 256;
+      $rootScope.$digest();
+      expect(log).toEqual("b!");
+    }));
+
+
     it('should watch functions', function() {
       module(provideLog);
       inject(function($rootScope, log) {
