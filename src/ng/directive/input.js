@@ -1097,7 +1097,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * It will update the $viewValue, then pass this value through each of the functions in `$parsers`,
    * which includes any validators. The value that comes out of this `$parsers` pipeline, be applied to
    * `$modelValue` and the **expression** specified in the `ng-model` attribute.
-   * 
+   *
    * Lastly, all the registered change listeners, in the `$viewChangeListeners` list, are called.
    *
    * Note that calling this function does not trigger a `$digest`.
@@ -1154,6 +1154,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$render();
       }
     }
+
+    return value;
   });
 }];
 

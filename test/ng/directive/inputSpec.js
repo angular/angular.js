@@ -383,6 +383,29 @@ describe('ngModel', function() {
       dealoc(element);
     });
   });
+
+  it('should keep previously defined watches consistent when changes in validity are made',
+   inject(function($compile, $rootScope) {
+
+     var isFormValid;
+     $rootScope.$watch('myForm.$valid', function(value) { isFormValid = value; });
+
+     var element = $compile('<form name="myForm">' +
+      '<input  name="myControl" ng-model="value" required >' +
+      '</form>')($rootScope);
+
+     $rootScope.$apply();
+     expect(isFormValid).toBe(false);
+     expect($rootScope.myForm.$valid).toBe(false);
+
+     $rootScope.value='value';
+     $rootScope.$apply();
+     expect(isFormValid).toBe(true);
+     expect($rootScope.myForm.$valid).toBe(true);
+
+     dealoc(element);
+   }));
+
 });
 
 
