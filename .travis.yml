@@ -18,10 +18,10 @@ before_script:
   - grunt bower
   - grunt bower
   - grunt package-without-bower
-  - grunt ci-checks
   - ./lib/sauce/sauce_connect_block.sh
 
 script:
+  - grunt ci-checks
   - ./travis_build.sh
 
 after_script:
