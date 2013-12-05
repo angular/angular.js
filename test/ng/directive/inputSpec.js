@@ -294,6 +294,13 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
+    element.val('test@test.construction');
+    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+    expect(element).toBeValid();
+    expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
+
     dealoc(element);
   }));
 
