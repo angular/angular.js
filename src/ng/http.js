@@ -951,9 +951,9 @@ function $HttpProvider() {
           } else {
             // serving from cache
             if (isArray(cachedResp)) {
-              resolvePromise(cachedResp[1], cachedResp[0], copy(cachedResp[2]));
+              resolvePromise(copy(cachedResp[1]), cachedResp[0], copy(cachedResp[2]));
             } else {
-              resolvePromise(cachedResp, 200, {});
+              resolvePromise(copy(cachedResp), 200, {});
             }
           }
         } else {
@@ -980,7 +980,7 @@ function $HttpProvider() {
       function done(status, response, headersString) {
         if (cache) {
           if (isSuccess(status)) {
-            cache.put(url, [status, response, parseHeaders(headersString)]);
+            cache.put(url, [status, copy(response), parseHeaders(headersString)]);
           } else {
             // remove promise from the cache
             cache.remove(url);
