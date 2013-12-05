@@ -1154,6 +1154,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$render();
       }
     }
+
+    return value;
   });
 }];
 
