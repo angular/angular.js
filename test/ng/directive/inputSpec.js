@@ -294,13 +294,6 @@ describe('ngModel', function() {
     expect(element.hasClass('ng-valid-email')).toBe(true);
     expect(element.hasClass('ng-invalid-email')).toBe(false);
 
-    element.val('test@test.construction');
-    browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
-    expect(element).toBeValid();
-    expect(element).toBeDirty();
-    expect(element.hasClass('ng-valid-email')).toBe(true);
-    expect(element.hasClass('ng-invalid-email')).toBe(false);
-
     dealoc(element);
   }));
 
@@ -866,7 +859,8 @@ describe('input', function() {
 
       it('should validate email', function() {
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
-        expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@b.construction')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@b.longtopleveldomain')).toBe(false);
         expect(EMAIL_REGEXP.test('a@B.c')).toBe(false);
       });
     });
