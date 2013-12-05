@@ -533,6 +533,23 @@ describe('input', function() {
       'event so that form auto complete works',function() {
       assertBrowserSupportsChangeEvent(true);
     });
+
+    if (!_jqLiteMode) {
+      it('should not cause the double $digest when triggering an event using jQuery', function() {
+        $sniffer.hasEvent = function(eventName) {
+          return eventName !== 'input';
+        };
+
+        compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+        scope.field = 'fake field';
+        scope.$watch('field', function() {
+          // We need to use _originalTrigger since trigger is modified by Angular Scenario.
+          inputElm._originalTrigger('change');
+        });
+        scope.$apply();
+      });
+    }
   });
 
   describe('"paste" and "cut" events', function() {

@@ -407,7 +407,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
-  var listener = function() {
+  var listener = function(ev) {
     if (composing) return;
     var value = element.val();
 
@@ -419,9 +419,17 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
 
     if (ctrl.$viewValue !== value) {
-      scope.$apply(function() {
+      // If an event was performed natively, jQuery sets the isTrigger property.
+      // When triggering event manually, the field is not present. Manually
+      // triggered events are performed synchronously which causes the "$digest
+      // already in progress" error.
+      if (ev && ev.isTrigger) {
         ctrl.$setViewValue(value);
-      });
+      } else {
+        scope.$apply(function() {
+          ctrl.$setViewValue(value);
+        });
+      }
     }
   };
 
