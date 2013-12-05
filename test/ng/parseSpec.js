@@ -906,6 +906,7 @@ describe('parser', function() {
             expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+            expect($parse('a.b.c')({a: null}, {a: {b: {c: 1}}})).toEqual(1);
           }));
         });
 
