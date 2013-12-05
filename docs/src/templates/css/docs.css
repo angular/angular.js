@@ -543,6 +543,10 @@ pre ol li {
   margin-bottom:30px;
 }
 
+.definition-table td {
+  vertical-align: top;
+}
+
 .component-heading {
   text-transform:capitalize;
 }
