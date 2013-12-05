@@ -179,7 +179,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 * Removed the example app
 * Added phone images to `app/img/phones/`
 * Added phone data files (JSON) to `app/phones/`
-* Added [Bootstrap](http://twitter.github.com/bootstrap/) files to `app/css/` and `app/img/`
+* Added [Bootstrap](http://getbootstrap.com) files to `app/css/` and `app/img/`
 
 
 
