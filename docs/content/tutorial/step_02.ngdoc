@@ -184,7 +184,11 @@ http://pivotal.github.com/jasmine/ Jasmine home page} and at the {@link
 http://pivotal.github.io/jasmine/ Jasmine docs}.
 
 The angular-seed project is pre-configured to run all unit tests using {@link
-http://karma-runner.github.io/ Karma}. To run the test, do the following:
+http://karma-runner.github.io/ Karma}. Ensure that the necessary karma plugins are installed.
+You can do this by issuing `npm install` into your terminal.
+
+
+To run the test, do the following:
 
 1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
 `./scripts/test.sh` to start the Karma server (the config file necessary to start the server
