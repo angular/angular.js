@@ -25,25 +25,6 @@ function lookupDottedPath(obj, path) {
 }
 
 /**
- * Create a shallow copy of an object and clear other fields from the destination
- */
-function shallowClearAndCopy(src, dst) {
-  dst = dst || {};
-
-  angular.forEach(dst, function(value, key){
-    delete dst[key];
-  });
-
-  for (var key in src) {
-    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
-      dst[key] = src[key];
-    }
-  }
-
-  return dst;
-}
-
-/**
  * @ngdoc overview
  * @name ngResource
  * @description
@@ -412,7 +393,7 @@ angular.module('ngResource', ['ng']).
       }
 
       function Resource(value){
-        shallowClearAndCopy(value || {}, this);
+        copy(value || {}, this);
       }
 
       forEach(actions, function(action, name) {
@@ -484,7 +465,7 @@ angular.module('ngResource', ['ng']).
             if (data) {
               // Need to convert action.isArray to boolean in case it is undefined
               // jshint -W018
-              if (angular.isArray(data) !== (!!action.isArray)) {
+              if ( angular.isArray(data) !== (!!action.isArray) ) {
                 throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected ' +
                   'response to contain an {0} but got an {1}',
                   action.isArray?'array':'object', angular.isArray(data)?'array':'object');
@@ -496,7 +477,7 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                shallowClearAndCopy(data, value);
+                copy(data, value);
                 value.$promise = promise;
               }
             }
