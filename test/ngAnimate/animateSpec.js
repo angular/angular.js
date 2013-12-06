@@ -2852,5 +2852,79 @@ describe("ngAnimate", function() {
         $timeout.flush();
       });
     });
+
+    it('should round up long elapsedTime values to close off a CSS3 animation',
+      inject(function($rootScope, $compile, $rootElement, $document, $animate, $sniffer, $timeout, $window) {
+        if (!$sniffer.animations) return;
+
+        ss.addRule('.millisecond-transition.ng-leave', '-webkit-transition:510ms linear all;' +
+                                                       'transition:510ms linear all;');
+
+        var element = $compile('<div class="millisecond-transition"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $animate.leave(element);
+        $rootScope.$digest();
+
+        $timeout.flush();
+
+        browserTrigger(element, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 0.50999999991 });
+
+        expect($rootElement.children().length).toBe(0);
+    }));
+
+    it('should properly animate elements with compound directives', function() {
+      var capturedAnimation;
+      module(function($animateProvider) {
+        $animateProvider.register('.special', function() {
+          return {
+            enter : function(element, done) {
+              capturedAnimation = 'enter';
+              done();
+            },
+            leave : function(element, done) {
+              capturedAnimation = 'leave';
+              done();
+            }
+          }
+        });
+      });
+      inject(function($rootScope, $compile, $rootElement, $document, $timeout, $templateCache, $sniffer) {
+        if(!$sniffer.transitions) return;
+
+        $templateCache.put('item-template', 'item: #{{ item }} ');
+        var element = $compile('<div>' +
+                               ' <div ng-repeat="item in items"' +
+                               '      ng-include="tpl"' +
+                               '      class="special"></div>' + 
+                               '</div>')($rootScope);
+
+        ss.addRule('.special', '-webkit-transition:1s linear all;' +
+                                       'transition:1s linear all;');
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $rootScope.tpl = 'item-template';
+        $rootScope.items = [1,2,3];
+        $rootScope.$digest();
+        $timeout.flush();
+
+        expect(capturedAnimation).toBe('enter');
+        expect(element.text()).toContain('item: #1');
+
+        forEach(element.children(), function(kid) {
+          browserTrigger(kid, 'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+        });
+        $timeout.flush();
+
+        $rootScope.items = [];
+        $rootScope.$digest();
+        $timeout.flush();
+
+        expect(capturedAnimation).toBe('leave');
+      });
+    });
   });
 });

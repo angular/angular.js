@@ -13,15 +13,15 @@ env:
 
 before_script:
   - mkdir -p $LOGS_DIR
-  - ./lib/browser-stack/start-tunnel.sh
+  - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
   - grunt bower
   - grunt bower
   - grunt package-without-bower
-  - grunt ci-checks
   - ./lib/sauce/sauce_connect_block.sh
 
 script:
+  - grunt ci-checks
   - ./travis_build.sh
 
 after_script:

@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.4-snapshot",
-  "cdnVersion": "1.2.3",
-  "codename": "wormhole-baster",
+  "version": "1.2.5-snapshot",
+  "cdnVersion": "1.2.4",
+  "codename": "singularity-expansion",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
@@ -24,7 +24,7 @@
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
     "karma-ng-scenario": "~0.1.0",
-    "karma-junit-reporter": "git://github.com/karma-runner/karma-junit-reporter#karma-0.11",
+    "karma-junit-reporter": "~0.2.1",
     "karma-sauce-launcher": "~0.1.1",
     "karma-script-launcher": "~0.1.0",
     "yaml-js": "~0.0.8",
@@ -38,7 +38,7 @@
     "grunt-shell": "~0.4.0",
     "semver": "~2.1.0",
     "lodash": "~2.1.0",
-    "karma-browserstack-launcher": "~0.0.4",
+    "karma-browserstack-launcher": "git://github.com/karma-runner/karma-browserstack-launcher.git#master",
     "browserstacktunnel-wrapper": "~1.1.1"
   },
   "licenses": [

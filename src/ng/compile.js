@@ -931,7 +931,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
               );
             } else {
-              nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
+              nodeLinkFn(childLinkFn, childScope, node, $rootElement, boundTranscludeFn);
             }
           } else if (childLinkFn) {
             childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
@@ -1438,13 +1438,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                     // we are out of sync and need to copy
                     if (parentValue !== lastValue) {
                       // parent changed and it has precedence
-                      lastValue = isolateScope[scopeName] = parentValue;
+                      isolateScope[scopeName] = parentValue;
                     } else {
                       // if the parent can be assigned then do so
-                      parentSet(scope, parentValue = lastValue = isolateScope[scopeName]);
+                      parentSet(scope, parentValue = isolateScope[scopeName]);
                     }
                   }
-                  return parentValue;
+                  return lastValue = parentValue;
                 });
                 break;
 

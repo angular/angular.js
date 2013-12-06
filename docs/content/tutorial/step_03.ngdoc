@@ -127,8 +127,8 @@ end-to-end tests! Use `./scripts/e2e-test.sh` script for that. End-to-end tests 
 with unit tests, Karma will exit after the test run and will not automatically rerun the test
 suite on every file change. To rerun the test suite, execute the `e2e-test.sh` script again.
 
-Note: You must ensure you've installed karma-ng-scenario prior to running the `e2e-test.sh` script.
-You can do this by issuing `npm install karma-ng-scenario` into your terminal.
+Note: You must ensure you've installed the karma-ng-scenario framework plugin prior to running the
+`e2e-test.sh` script. You can do this by issuing `npm install` into your terminal.
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
@@ -154,7 +154,7 @@ really is that easy to set up any functional, readable, end-to-end test.
 `ngController` declaration to the HTML element because it is the common parent of both the body
 and title elements:
 
-          <html ng-app ng-controller="PhoneListCtrl">
+          <html ng-app="phonecatApp" ng-controller="PhoneListCtrl">
 
   Be sure to __remove__ the `ng-controller` declaration from the body element.
 

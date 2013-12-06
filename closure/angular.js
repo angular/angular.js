@@ -1053,6 +1053,10 @@ angular.$http;
  */
 angular.$http.Config;
 
+angular.$http.Config.transformRequest;
+
+angular.$http.Config.transformResponse;
+
 // /**
 //  * This extern is currently incomplete as delete is a reserved word.
 //  * To use delete, index $http.
@@ -1158,6 +1162,13 @@ angular.$http.HttpPromise.error = function(callback) {};
  *   }}
  */
 angular.$http.Response;
+
+angular.$HttpProvider;
+
+/**
+ * @type {angular.$http.Config}
+ */
+angular.$HttpProvider.defaults;
 
 /******************************************************************************
  * $injector Service
@@ -1698,7 +1709,8 @@ angular.$routeProvider.when = function(path, route) {};
  *   resolve: (Object.<string, (
  *       string|Function|Array.<string|Function>|angular.$q.Promise
  *       )>|undefined),
- *   redirectTo: (string|function()|undefined),
+ *   redirectTo: (
+ *       string|function(Object.<string>, string, Object): string|undefined),
  *   reloadOnSearch: (boolean|undefined)
  *   }}
  */
@@ -1721,7 +1733,7 @@ angular.$routeProvider.Params.templateUrl;
  */
 angular.$routeProvider.Params.resolve;
 
-/** @type {string|function()} */
+/** @type {string|function(Object.<string>, string, Object): string} */
 angular.$routeProvider.Params.redirectTo;
 
 /** @type {boolean} */

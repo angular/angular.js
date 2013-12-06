@@ -71,6 +71,7 @@
 function $RootScopeProvider(){
   var TTL = 10;
   var $rootScopeMinErr = minErr('$rootScope');
+  var lastDirtyWatch = null;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -172,7 +173,7 @@ function $RootScopeProvider(){
        *
        */
       $new: function(isolate) {
-        var Child,
+        var ChildScope,
             child;
 
         if (isolate) {
@@ -182,11 +183,11 @@ function $RootScopeProvider(){
           child.$$asyncQueue = this.$$asyncQueue;
           child.$$postDigestQueue = this.$$postDigestQueue;
         } else {
-          Child = function() {}; // should be anonymous; This is so that when the minifier munges
+          ChildScope = function() {}; // should be anonymous; This is so that when the minifier munges
             // the name it does not become random set of chars. This will then show up as class
             // name in the debugger.
-          Child.prototype = this;
-          child = new Child();
+          ChildScope.prototype = this;
+          child = new ChildScope();
           child.$id = nextUid();
         }
         child['this'] = child;
@@ -266,7 +267,7 @@ function $RootScopeProvider(){
 
 
 
-           // Using a listener function 
+           // Using a listener function
            var food;
            scope.foodCounter = 0;
            expect(scope.foodCounter).toEqual(0);
@@ -291,7 +292,7 @@ function $RootScopeProvider(){
            // Update food and run digest.  Now the counter will increment
            food = 'cheeseburger';
            scope.$digest();
-           expect(scope.foodCounter).toEqual(1);  
+           expect(scope.foodCounter).toEqual(1);
 
        * </pre>
        *
@@ -324,6 +325,8 @@ function $RootScopeProvider(){
               exp: watchExp,
               eq: !!objectEquality
             };
+
+        lastDirtyWatch = null;
 
         // in the case user pass string, we need to compile it, do we really need this ?
         if (!isFunction(listener)) {
@@ -553,6 +556,8 @@ function $RootScopeProvider(){
 
         beginPhase('$digest');
 
+        lastDirtyWatch = null;
+
         do { // "while dirty" loop
           dirty = false;
           current = target;
@@ -562,10 +567,13 @@ function $RootScopeProvider(){
               asyncTask = asyncQueue.shift();
               asyncTask.scope.$eval(asyncTask.expression);
             } catch (e) {
+              clearPhase();
               $exceptionHandler(e);
             }
+            lastDirtyWatch = null;
           }
 
+          traverseScopesLoop:
           do { // "traverse the scopes" loop
             if ((watchers = current.$$watchers)) {
               // process our watches
@@ -575,25 +583,34 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if (watch && (value = watch.get(current)) !== (last = watch.last) &&
-                      !(watch.eq
-                          ? equals(value, last)
-                          : (typeof value == 'number' && typeof last == 'number'
-                             && isNaN(value) && isNaN(last)))) {
-                    dirty = true;
-                    watch.last = watch.eq ? copy(value) : value;
-                    watch.fn(value, ((last === initWatchVal) ? value : last), current);
-                    if (ttl < 5) {
-                      logIdx = 4 - ttl;
-                      if (!watchLog[logIdx]) watchLog[logIdx] = [];
-                      logMsg = (isFunction(watch.exp))
-                          ? 'fn: ' + (watch.exp.name || watch.exp.toString())
-                          : watch.exp;
-                      logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
-                      watchLog[logIdx].push(logMsg);
+                  if (watch) {
+                    if ((value = watch.get(current)) !== (last = watch.last) &&
+                        !(watch.eq
+                            ? equals(value, last)
+                            : (typeof value == 'number' && typeof last == 'number'
+                               && isNaN(value) && isNaN(last)))) {
+                      dirty = true;
+                      lastDirtyWatch = watch;
+                      watch.last = watch.eq ? copy(value) : value;
+                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                      if (ttl < 5) {
+                        logIdx = 4 - ttl;
+                        if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                        logMsg = (isFunction(watch.exp))
+                            ? 'fn: ' + (watch.exp.name || watch.exp.toString())
+                            : watch.exp;
+                        logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                        watchLog[logIdx].push(logMsg);
+                      }
+                    } else if (watch === lastDirtyWatch) {
+                      // If the most recently dirty watcher is now clean, short circuit since the remaining watchers
+                      // have already been tested.
+                      dirty = false;
+                      break traverseScopesLoop;
                     }
                   }
                 } catch (e) {
+                  clearPhase();
                   $exceptionHandler(e);
                 }
               }
@@ -602,12 +619,15 @@ function $RootScopeProvider(){
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+            if (!(next = (current.$$childHead ||
+                (current !== target && current.$$nextSibling)))) {
               while(current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
               }
             }
           } while ((current = next));
+
+          // `break traverseScopesLoop;` takes us to here
 
           if(dirty && !(ttl--)) {
             clearPhase();
@@ -616,6 +636,7 @@ function $RootScopeProvider(){
                 'Watchers fired in the last 5 iterations: {1}',
                 TTL, toJson(watchLog));
           }
+
         } while (dirty || asyncQueue.length);
 
         clearPhase();
@@ -668,11 +689,12 @@ function $RootScopeProvider(){
        */
       $destroy: function() {
         // we can't destroy the root scope or a scope that has been already destroyed
-        if ($rootScope == this || this.$$destroyed) return;
+        if (this.$$destroyed) return;
         var parent = this.$parent;
 
         this.$broadcast('$destroy');
         this.$$destroyed = true;
+        if (this === $rootScope) return;
 
         if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
         if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
@@ -710,7 +732,7 @@ function $RootScopeProvider(){
        *
        *    - `string`: execute using the rules as defined in  {@link guide/expression expression}.
        *    - `function(scope)`: execute the function with the current `scope` parameter.
-       * 
+       *
        * @param {(object)=} locals Local variables object, useful for overriding values in scope.
        * @returns {*} The result of evaluating the expression.
        */

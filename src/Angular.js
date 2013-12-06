@@ -565,9 +565,9 @@ var trim = (function() {
  * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
  */
 function isElement(node) {
-  return node &&
+  return !!(node &&
     (node.nodeName  // we are a direct element
-    || (node.on && node.find));  // we have an on and find method part of jQuery API
+    || (node.on && node.find)));  // we have an on and find method part of jQuery API
 }
 
 /**
@@ -768,7 +768,7 @@ function shallowCopy(src, dst) {
 
   for(var key in src) {
     // shallowCopy is only ever called by $compile nodeLinkFn, which has control over src
-    // so we don't need to worry hasOwnProperty here
+    // so we don't need to worry about using our custom hasOwnProperty here
     if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
       dst[key] = src[key];
     }
@@ -1330,23 +1330,25 @@ function getter(obj, path, bindFnToScope) {
 }
 
 /**
- * Return the siblings between `startNode` and `endNode`, inclusive
- * @param {Object} object with `startNode` and `endNode` properties
+ * Return the DOM siblings between the first and last node in the given array.
+ * @param {Array} array like object
  * @returns jQlite object containing the elements
  */
-function getBlockElements(block) {
-  if (block.startNode === block.endNode) {
-    return jqLite(block.startNode);
+function getBlockElements(nodes) {
+  var startNode = nodes[0],
+      endNode = nodes[nodes.length - 1];
+  if (startNode === endNode) {
+    return jqLite(startNode);
   }
 
-  var element = block.startNode;
+  var element = startNode;
   var elements = [element];
 
   do {
     element = element.nextSibling;
     if (!element) break;
     elements.push(element);
-  } while (element !== block.endNode);
+  } while (element !== endNode);
 
   return jqLite(elements);
 }

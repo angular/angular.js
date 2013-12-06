@@ -969,6 +969,32 @@ describe('$compile', function() {
           });
         });
 
+        it('should resolve widgets after cloning in append mode without $templateCache', function() {
+          module(function($exceptionHandlerProvider) {
+            $exceptionHandlerProvider.mode('log');
+          });
+          inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
+                          $exceptionHandler) {
+            $httpBackend.expect('GET', 'cau.html').respond('<span>{{name}}</span>');
+            $rootScope.name = 'Elvis';
+            var template = $compile('<div class="cau"></div>');
+            var e1;
+            var e2;
+
+            e1 = template($rootScope.$new(), noop); // clone
+            expect(e1.text()).toEqual('');
+
+            $httpBackend.flush();
+
+            e2 = template($rootScope.$new(), noop); // clone
+            $rootScope.$digest();
+            expect(e1.text()).toEqual('Elvis');
+            expect(e2.text()).toEqual('Elvis');
+
+            dealoc(e1);
+            dealoc(e2);
+          });
+        });
 
         it('should resolve widgets after cloning in inline mode', function() {
           module(function($exceptionHandlerProvider) {
@@ -1004,6 +1030,33 @@ describe('$compile', function() {
             expect($exceptionHandler.errors.length).toEqual(2);
             expect($exceptionHandler.errors[0][0].message).toEqual('cError');
             expect($exceptionHandler.errors[1][0].message).toEqual('lError');
+
+            dealoc(e1);
+            dealoc(e2);
+          });
+        });
+
+        it('should resolve widgets after cloning in inline mode without $templateCache', function() {
+          module(function($exceptionHandlerProvider) {
+            $exceptionHandlerProvider.mode('log');
+          });
+          inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
+                          $exceptionHandler) {
+            $httpBackend.expect('GET', 'cau.html').respond('<span>{{name}}</span>');
+            $rootScope.name = 'Elvis';
+            var template = $compile('<div class="i-cau"></div>');
+            var e1;
+            var e2;
+
+            e1 = template($rootScope.$new(), noop); // clone
+            expect(e1.text()).toEqual('');
+
+            $httpBackend.flush();
+
+            e2 = template($rootScope.$new(), noop); // clone
+            $rootScope.$digest();
+            expect(e1.text()).toEqual('Elvis');
+            expect(e2.text()).toEqual('Elvis');
 
             dealoc(e1);
             dealoc(e2);
@@ -2384,6 +2437,24 @@ describe('$compile', function() {
         expect($rootScope.name).toEqual('igor')
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
+      }));
+
+      it('should not break if local and origin both change to the same value', inject(function() {
+        $rootScope.name = 'aaa';
+
+        compile('<div><span my-component ref="name">');
+
+        //change both sides to the same item withing the same digest cycle
+        componentScope.ref = 'same';
+        $rootScope.name = 'same';
+        $rootScope.$apply();
+
+        //change origin back to it's previous value
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        expect($rootScope.name).toBe('aaa');
+        expect(componentScope.ref).toBe('aaa');
       }));
 
       it('should complain on non assignable changes', inject(function() {
