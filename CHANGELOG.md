@@ -49,12 +49,6 @@
 - **$parse:** micro-optimization for ensureSafeObject function
   ([689dfb16](https://github.com/angular/angular.js/commit/689dfb167924a61aef444ce7587fb987d8080990),
    [#5246](https://github.com/angular/angular.js/issues/5246))
-- **$resource:** Use shallow copy instead of angular.copy
-  ([a55c1e79](https://github.com/angular/angular.js/commit/a55c1e79cf8894c2d348d4cf911b28dcc8a6995e),
-   [#5300](https://github.com/angular/angular.js/issues/5300))
-- **Angular.js:** Use call and === instead of apply and == in type check functions
-  ([785a5fd7](https://github.com/angular/angular.js/commit/785a5fd7c182f39f4ae80d603c0098bc63ce41a4),
-   [#5295](https://github.com/angular/angular.js/issues/5295))
 - **Scope:** short-circuit after dirty-checking last dirty watcher
   ([d070450c](https://github.com/angular/angular.js/commit/d070450cd2b3b3a3aa34b69d3fa1f4cc3be025dd),
    [#5272](https://github.com/angular/angular.js/issues/5272), [#5287](https://github.com/angular/angular.js/issues/5287))
