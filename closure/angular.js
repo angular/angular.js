@@ -1442,6 +1442,11 @@ angular.NgModelController.prototype.$viewValue;
 angular.FormController = function() {};
 
 /**
+ * @param {*} control
+ */
+angular.FormController.prototype.$addControl = function(control) {};
+
+/**
  * @type {boolean}
  */
 angular.FormController.prototype.$dirty;
@@ -1457,9 +1462,37 @@ angular.FormController.prototype.$error;
 angular.FormController.prototype.$invalid;
 
 /**
+ * @type {string}
+ */
+angular.FormController.prototype.$name;
+
+/**
  * @type {boolean}
  */
 angular.FormController.prototype.$pristine;
+
+/**
+ * @param {*} control
+ */
+angular.FormController.prototype.$removeControl = function(control) {};
+
+/**
+ * @type {function()}
+ */
+angular.FormController.prototype.$setDirty = function() {};
+
+/**
+ * @type {function()}
+ */
+angular.FormController.prototype.$setPristine = function() {};
+
+/**
+ * @param {string} validationToken
+ * @param {boolean} isValid
+ * @param {*} control
+ */
+angular.FormController.prototype.$setValidity = function(
+    validationToken, isValid, control) {};
 
 /**
  * @type {boolean}
