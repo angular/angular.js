@@ -142,6 +142,7 @@ var writeChangelog = function(stream, commits, version) {
   var sections = {
     fix: {},
     feat: {},
+    perf: {},
     breaks: {}
   };
 
@@ -169,6 +170,7 @@ var writeChangelog = function(stream, commits, version) {
   stream.write(util.format(HEADER_TPL, version, version, currentDate()));
   printSection(stream, 'Bug Fixes', sections.fix);
   printSection(stream, 'Features', sections.feat);
+  printSection(stream, 'Performance Improvements', sections.perf);
   printSection(stream, 'Breaking Changes', sections.breaks, false);
 }
 
@@ -186,7 +188,7 @@ var getPreviousTag = function() {
 var generate = function(version, file) {
   getPreviousTag().then(function(tag) {
     console.log('Reading git log since', tag);
-    readGitLog('^fix|^feat|BREAKING', tag).then(function(commits) {
+    readGitLog('^fix|^feat|^perf|BREAKING', tag).then(function(commits) {
       console.log('Parsed', commits.length, 'commits');
       console.log('Generating changelog to', file || 'stdout', '(', version, ')');
       writeChangelog(file ? fs.createWriteStream(file) : process.stdout, commits, version);
