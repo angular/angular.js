@@ -1,6 +1,6 @@
 {
   "name": "angularjs",
-  "version": "1.2.4-snapshot",
+  "version": "1.2.4",
   "cdnVersion": "1.2.3",
   "codename": "wormhole-baster",
   "repository": {
