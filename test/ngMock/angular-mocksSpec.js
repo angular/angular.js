@@ -766,7 +766,7 @@ describe('ngMock', function() {
 
       describe('object literal format', function() {
         var mock = { log: 'module' };
-        
+
         beforeEach(function() {
           module({
               'service': mock,
@@ -782,7 +782,7 @@ describe('ngMock', function() {
             expect(service).toEqual(mock);
           });
         });
-        
+
         it('should support multiple key value pairs', function() {
           inject(function(service, other) {
             expect(other.some).toEqual('replacement');
@@ -888,6 +888,32 @@ describe('ngMock', function() {
       expect(callback).not.toHaveBeenCalled();
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should respond with a copy of the mock data', function() {
+      var mockObject = {a: 'b'};
+
+      hb.when('GET', '/url1').respond(200, mockObject, {});
+
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toEqual({a: 'b'});
+        expect(response).not.toBe(mockObject);
+        response.a = 'c';
+      });
+
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      // Fire it again and verify that the returned mock data has not been
+      // modified.
+      callback.reset();
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+      expect(mockObject).toEqual({a: 'b'});
     });
 
 
