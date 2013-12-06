@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.4",
-  "cdnVersion": "1.2.3",
-  "codename": "wormhole-baster",
+  "version": "1.2.5-snapshot",
+  "cdnVersion": "1.2.4",
+  "codename": "singularity-expansion",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
