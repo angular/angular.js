@@ -11,7 +11,7 @@ In this step, you will improve the way our app fetches data.
 <div doc-tutorial-reset="11"></div>
 
 
-The last improvement we will make to our app is to define a custom service that represents a {@link
+The next improvement we will make to our app is to define a custom service that represents a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this client we
 can make XHR requests for data in an easier way, without having to deal with the lower-level {@link
 api/ng.$http $http} API, HTTP methods and URLs.
