@@ -95,6 +95,24 @@ describe('form', function() {
     expect(scope.obj.myForm).toBeTruthy();
   });
 
+  it('should support a template as form name', function() {
+    scope.data = [ 'first', 'second' ];
+    doc = $compile(
+      '<form name="myForm">' +
+        '<div ng-repeat="(key, value) in data" ng-form name="children_{{ key }}"></div>' +
+//        '<div ng-repeat="(key, value) in data" ng-form name="children[{{ key }}]"></div>' +
+      '</form>')(scope);
+
+    scope.$apply();
+
+    expect(scope.myForm).toBeDefined();
+    expect(scope.myForm.children_0).toBeDefined();
+    expect(scope.myForm.children_1).toBeDefined();
+//    expect(scope.myForm.children).toBeDefined();
+//    expect(scope.myForm.children[0]).toBeDefined();
+//    expect(scope.myForm.children[1]).toBeDefined();
+  })
+
 
   it('should support two forms on a single scope', function() {
     doc = $compile(
