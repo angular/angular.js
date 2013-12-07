@@ -1202,6 +1202,8 @@ function bootstrap(element, modules) {
   var doBootstrap = function() {
     element = jqLite(element);
 
+	var module = angular.module(modules);
+
     if (element.injector()) {
       var tag = (element[0] === document) ? 'document' : startingTag(element);
       throw ngMinErr('btstrpd', "App Already Bootstrapped with this Element '{0}'", tag);
@@ -1213,7 +1215,7 @@ function bootstrap(element, modules) {
     }]);
     modules.unshift('ng');
     var injector = createInjector(modules);
-    injector.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animate',
+    injector.$instance.invoke(['$rootScope', '$rootElement', '$compile', '$injector', '$animate',
        function(scope, element, compile, injector, animate) {
         scope.$apply(function() {
           element.data('$injector', injector);
@@ -1221,6 +1223,9 @@ function bootstrap(element, modules) {
         });
       }]
     );
+
+	module.$setProviderInjector(injector.$provider);
+
     return injector;
   };
 

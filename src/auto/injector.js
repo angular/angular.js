@@ -602,7 +602,10 @@ function createInjector(modulesToLoad) {
 
   forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
 
-  return instanceInjector;
+  return {
+	  $instance: instanceInjector,
+	  $provider: providerInjector
+  };
 
   ////////////////////////////////////
   // $provider
@@ -660,6 +663,7 @@ function createInjector(modulesToLoad) {
   ////////////////////////////////////
   function loadModules(modulesToLoad){
     var runBlocks = [], moduleFn, invokeQueue, i, ii;
+
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);

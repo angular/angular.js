@@ -99,6 +99,11 @@ function setupModuleLoader(window) {
 
         /** @type {!Array.<Function>} */
         var runBlocks = [];
+		/**
+		* Provider injector will be assigned after instance
+		* @type {null}
+		*/
+		var providerInjector = null;
 
         var config = invokeLater('$injector', 'invoke');
 
@@ -107,7 +112,22 @@ function setupModuleLoader(window) {
           // Private state
           _invokeQueue: invokeQueue,
           _runBlocks: runBlocks,
-
+          /**
+          * @ngdoc method
+          * @name angular.Module#$setProviderInjector
+          * @propertyOf angular.Module
+          * @returns {Object}
+          * @description
+          * This method is used internaly by angular to set provider injector on application bootstrap process.
+          * Exposing  $provider to module after application bootstrap is required to register components after aplication bootstrap.
+          *
+          */
+	      $setProviderInjector: function (injector) {
+		      if (!providerInjector) {
+			      providerInjector = injector;
+		      }
+              return providerInjector;
+	      },
           /**
            * @ngdoc property
            * @name angular.Module#requires
@@ -297,7 +317,14 @@ function setupModuleLoader(window) {
          */
         function invokeLater(provider, method, insertMethod) {
           return function() {
-            invokeQueue[insertMethod || 'push']([provider, method, arguments]);
+	        var args = arguments;
+	        if (providerInjector) {
+		        providerInjector.invoke([provider, function(prov){
+			        prov[method].apply(prov, args);
+		        }]);
+	        } else {
+		        invokeQueue[insertMethod || 'push']([provider, method, args]);
+	        }
             return moduleInstance;
           };
         }
