@@ -46,6 +46,8 @@ and included in your {@link http://docs.oracle.com/javase/tutorial/essential/env
   npm install -g bower
   ```
 
+**Note:** You may need to use sudo (for OSX, *nix, BSD etc) or run your command shell as Administrator (for Windows) to install Grunt &amp;
+Bower globally.
 
 ## Forking Angular on Github
 
