@@ -132,6 +132,47 @@
  * promise (which will defer its resolution further), it is possible to pause/defer resolution of
  * the promises at any point in the chain. This makes it possible to implement powerful APIs like
  * $http's response interceptors.
+ * 
+ * ## Deferring the derived promise
+ *  
+ * If a promise is returned from the <em>successCallback</em> of <em>then</em>, this will defer
+ * the resolution of the derived promise.
+ *   
+ * <pre>
+ * var deferredA = $q.defer();
+ * var deferredB = $q.defer();
+ * var promiseA = deferredA.promise;
+ * var promiseB = deferredB.promise;
+ *
+ * var promiseC = promiseA.then(function(result) {
+ *   return promiseB;
+ * });
+ *
+ * deferredA.resolve('X');
+ * // promiseC not yet resolved
+ *
+ * deferredB.resolve('Y');
+ * // promiseC now resolved, with the value 'Y';
+ * </pre>
+ *  
+ * ## Deferring resolution of a promise
+ *  
+ * A promise's resolution can be deferred by resolving it with another promise. Using this
+ * technique, additional asynchronous functionality can be injected into chains.
+ *   
+ * <pre>
+ * var deferredA = $q.defer();
+ * var deferredB = $q.defer();
+ * var promiseA = deferredA.promise;
+ * var promiseB = deferredB.promise;
+ *
+ * deferredA.resolve(promiseB);
+ * // promiseA not yet resolved
+ *
+ * deferredB.resolve('X');
+ * // Both promiseB and promiseA are now resolved, in that order.
+ * // promiseA is resolved with the value 'X';
+ * </pre>
  *
  *
  * # Differences between Kris Kowal's Q and $q
