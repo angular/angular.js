@@ -485,6 +485,21 @@ describe("resource", function() {
     expect(idBefore).toEqual(cc.id);
   });
 
+  it('should not throw if response.data is the resource object', function() {
+    var data = {id:{key:123}, number:'9876'};
+    $httpBackend.expect('GET', '/CreditCard/123').respond(data);
+
+    var cc = CreditCard.get({id:123});
+    $httpBackend.flush();
+    expect(cc instanceof CreditCard).toBe(true);
+
+    $httpBackend.expect('POST', '/CreditCard/123', angular.toJson(data)).respond(cc);
+
+    expect(function() {
+        cc.$save();
+        $httpBackend.flush();
+    }).not.toThrow();
+  });
 
   it('should bind default parameters', function() {
     $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
