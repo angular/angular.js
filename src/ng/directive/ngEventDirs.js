@@ -37,7 +37,7 @@
  */
 var ngEventDirectives = {};
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste scroll'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
     ngEventDirectives[directiveName] = ['$parse', function($parse) {
