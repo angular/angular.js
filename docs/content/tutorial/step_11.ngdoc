@@ -185,7 +185,7 @@ describe('PhoneCat controllers', function() {
         xyzPhoneData = function() {
           return {
             name: 'phone xyz',
-                images: ['image/url1.png', 'image/url2.png']
+            images: ['image/url1.png', 'image/url2.png']
           }
         };
 
