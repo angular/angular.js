@@ -638,7 +638,7 @@ function $LocationProvider(){
           $location.$$parse(rewrittenUrl);
           $rootScope.$apply();
           // hack to work around FF6 bug 684208 when scenario runner clicks on links
-          window.angular['ff-684208-preventDefault'] = true;
+          angular['ff-684208-preventDefault'] = true;
         }
       }
     });
