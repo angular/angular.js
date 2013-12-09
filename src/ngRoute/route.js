@@ -55,8 +55,8 @@ function $RouteProvider(){
    *      * `path` can contain named groups starting with a colon: e.g. `:name`. All characters up
    *        to the next slash are matched and stored in `$routeParams` under the given `name`
    *        when the route matches.
-   *      * `path` can contain named groups starting with a colon and ending with a star: e.g.`:name*`.
-   *        All characters are eagerly stored in `$routeParams` under the given `name`
+   *      * `path` can contain named groups starting with a colon and ending with a star: e.g.
+   *        `:name*`. All characters are eagerly stored in `$routeParams` under the given `name`
    *        when the route matches.
    *      * `path` can contain optional named groups with a question mark: e.g.`:name?`.
    *
