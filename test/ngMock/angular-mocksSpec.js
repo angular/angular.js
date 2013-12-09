@@ -1110,6 +1110,22 @@ describe('ngMock', function() {
       });
 
 
+      it ('should not throw an exception when parsed body is equal to expected body object that contain Date', function() {
+        hb.when('GET').respond(200, '', {});
+        var date = new Date();
+        hb.expect('GET', '/match', {a: 1, b: 2, date: date});
+        var dateStr = angular.toJson(date);
+        expect(function() {
+          hb('GET', '/match', '{"a":1,"b":2,"date":'+dateStr+'}', noop, {});
+        }).not.toThrow();
+
+        hb.expect('GET', '/match', {a: 1, b: 2, date:date});
+        expect(function() {
+          hb('GET', '/match', '{"b":2,"a":1,"date":'+dateStr+'}', noop, {});
+        }).not.toThrow();
+      });
+
+
       it ('should throw exception when only parsed body differs from expected body object', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', {a: 1, b: 2});
