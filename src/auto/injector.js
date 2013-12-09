@@ -27,6 +27,18 @@
  *     $rootScope.$digest();
  *   });
  * </pre>
+ * 
+ * If you have a running Angular application and you want to dynamically inject a Controller from outside Angular,
+ * you can do it like this:
+ * <pre>
+ * var $div = $('<div ng-controller="MyCtrl">{{content.label}}</div>');
+ * $(document.body).append($div);
+ * 
+ * angular.element(document).injector().invoke(function($compile) {
+ *   var scope = angular.element($div).scope();
+ *   $compile($div)(scope);
+ * });
+ * 
  */
 
 
