@@ -1482,3 +1482,101 @@ describe('input', function() {
     });
   });
 });
+
+describe('NgModel animations', function() {
+  beforeEach(module('ngAnimateMock'));
+
+  function findElementAnimations(element, queue) {
+    var node = element[0];
+    var animations = [];
+    for(var i = 0; i < queue.length; i++) {
+      var animation = queue[i];
+      if(animation.element[0] == node) {
+        animations.push(animation);
+      }
+    }
+    return animations;
+  };
+
+  function assertValidAnimation(animation, event, className) {
+    expect(animation.event).toBe(event);
+    expect(animation.args[1]).toBe(className);
+  }
+
+  var doc, input, scope, model;
+  beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
+    scope = $rootScope.$new();
+    doc = jqLite('<form name="myForm">' +
+                 '  <input type="text" ng-model="input" name="myInput" />' +
+                 '</form>');
+    $rootElement.append(doc);
+    $compile(doc)(scope);
+    $animate.queue = [];
+
+    input = doc.find('input');
+    model = scope.myForm.myInput;
+  }));
+
+  afterEach(function() {
+    dealoc(input);
+  });
+
+  it('should trigger an animation when invalid', inject(function($animate) {
+    model.$setValidity('required', false);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-required');
+    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-required');
+  }));
+
+  it('should trigger an animation when valid', inject(function($animate) {
+    model.$setValidity('required', false);
+
+    $animate.queue = [];
+
+    model.$setValidity('required', true);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-required');
+    assertValidAnimation(animations[3], 'addClass', 'ng-valid-required');
+  }));
+
+  it('should trigger an animation when dirty', inject(function($animate) {
+    model.$setViewValue('some dirty value');
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
+    assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
+  }));
+
+  it('should trigger an animation when pristine', inject(function($animate) {
+    model.$setPristine();
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-dirty');
+    assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
+  }));
+
+  it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
+    model.$setValidity('custom-error', false);
+
+    var animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-valid-custom-error');
+    assertValidAnimation(animations[3], 'addClass', 'ng-invalid-custom-error');
+
+    $animate.queue = [];
+    model.$setValidity('custom-error', true);
+
+    animations = findElementAnimations(input, $animate.queue);
+    assertValidAnimation(animations[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation(animations[1], 'addClass', 'ng-valid');
+    assertValidAnimation(animations[2], 'removeClass', 'ng-invalid-custom-error');
+    assertValidAnimation(animations[3], 'addClass', 'ng-valid-custom-error');
+  }));
+});
