@@ -237,7 +237,7 @@ function shallowClearAndCopy(src, dst) {
      newCard.name = "Mike Smith";
      newCard.$save();
      // POST: /user/123/card {number:'0123', name:'Mike Smith'}
-     // server returns: {id:789, number:'01234', name: 'Mike Smith'};
+     // server returns: {id:789, number:'0123', name: 'Mike Smith'};
      expect(newCard.id).toEqual(789);
  * </pre>
  *
@@ -273,7 +273,6 @@ function shallowClearAndCopy(src, dst) {
      });
    </pre>
 
- * @example
  * # Creating a custom 'PUT' request
  * In this example we create a custom method on our resource to make a PUT request
  * <pre>
