@@ -199,7 +199,7 @@ isolated from the work done in other tests.
 
 * We created a new scope for our controller by calling `$rootScope.$new()`
 
-* We called the injected `$controller` function passing the name of the`PhoneListCtrl` controller
+* We called the injected `$controller` function passing the name of the `PhoneListCtrl` controller
 and the created scope as parameters.
 
 Because our code now uses the `$http` service to fetch the phone list data in our controller, before
