@@ -88,7 +88,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
 record. This property is used to order phones by age.
 
 * We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
-not set the default value here, the model would stay uninitialized until our user would pick an
+not set the default value here, the model would stay uninitialized until our user picks an
 option from the drop down menu.
 
   This is a good time to talk about two-way data-binding. Notice that when the app is loaded in the
