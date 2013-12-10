@@ -485,15 +485,15 @@ function annotate(fn) {
  * {@link AUTO.$provide#methods_service $provide.service(class)} that is defined as a CoffeeScript class.
  * <pre>
  *   class Ping
- *     constructor: (@$http)->
- *     send: ()=>
+ *     constructor: (@$http) ->
+ *     send: () =>
  *       @$http.get('/ping')
  *
  *   $provide.service('ping', ['$http', Ping])
  * </pre>
  * You would then inject and use this service like this:
  * <pre>
- *   someModule.controller 'Ctrl', ['ping', (ping)->
+ *   someModule.controller 'Ctrl', ['ping', (ping) ->
  *     ping.send()
  *   ]
  * </pre>
