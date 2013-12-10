@@ -266,6 +266,8 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
       return appBase + hashPrefix + appUrl;
     } else if ( appBaseNoFile === url + '/') {
       return appBaseNoFile;
+    } else {
+      return appBaseNoFile;
     }
   };
 }
