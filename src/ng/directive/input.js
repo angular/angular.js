@@ -1200,6 +1200,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *  - {@link ng.directive:select select}
  *  - {@link ng.directive:textarea textarea}
  *
+ * @priority = 0
  */
 var ngModelDirective = function() {
   return {
