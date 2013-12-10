@@ -594,3 +594,109 @@ describe('form', function() {
     });
   });
 });
+
+describe('form animations', function() {
+  var body, element, $rootElement, changeInputValue;
+
+  function html(html) {
+    body.append($rootElement);
+    $rootElement.html(html);
+    element = $rootElement.children().eq(0);
+    return element;
+  }
+
+  beforeEach(function() {
+    // we need to run animation on attached elements;
+    body = jqLite(document.body);
+  });
+
+  afterEach(function(){
+    dealoc(body);
+    dealoc(element);
+    body.removeAttr('ng-animation-running');
+  });
+
+  beforeEach(module('mock.animate'));
+
+  beforeEach(module(function($animateProvider, $provide) {
+    return function(_$rootElement_) {
+      $rootElement = _$rootElement_;
+    };
+  }));
+
+  describe('dirty/pristine/valid/invalid states', function() {
+    it('should fire animations', inject(function($compile, $rootScope, $animate) {
+      var flushAnimates = function() {
+        $animate.flushNext('removeClass');
+        $animate.flushNext('addClass');
+      };
+
+      var $scope = $rootScope.$new();
+      $scope.name = "bad value";
+      element = $compile(html(
+        '<form name="testForm">' +
+          '<input ng-model="name" ng-pattern="/^x$/" name="name"/>' +
+        '</form>'
+      ))($scope);
+
+      $scope.$digest();
+
+      var form = element,
+          formCtrl = $scope.testForm,
+          input = form.find('input').eq(0),
+          inputCtrl = input.controller('ngModel');
+
+      expect($scope.name).toBe('bad value');
+      expect(input).toBePristine();
+      expect(form).toBePristine();
+
+      flushAnimates();
+      expect(form).toBeValid();
+
+      flushAnimates();
+      expect(input).toBeValid();
+
+      flushAnimates();
+      expect(input).toBeInvalid();
+
+      flushAnimates();
+      expect(input).toHaveClass('ng-invalid-pattern');
+
+      flushAnimates();
+      expect(form).toBeInvalid();
+
+      flushAnimates();
+      expect(form).toHaveClass('ng-invalid-pattern');
+
+      inputCtrl.$setViewValue('x');
+      $scope.$digest();
+      expect($scope.name).toBe('x');
+
+      flushAnimates();
+      expect(input).toBeDirty();
+
+      flushAnimates();
+      expect(form).toBeDirty();
+
+      flushAnimates();
+      expect(input).toBeValid();
+
+      flushAnimates();
+      expect(input).not.toHaveClass('ng-invalid-pattern');
+
+      flushAnimates();
+      expect(form).toBeValid();
+
+      flushAnimates();
+      expect(form).not.toHaveClass('ng-invalid-pattern');
+
+      formCtrl.$setPristine();
+
+      flushAnimates();
+      expect(form).toBePristine();
+
+      flushAnimates();
+      expect(input).toBePristine();
+    }));
+  });
+});

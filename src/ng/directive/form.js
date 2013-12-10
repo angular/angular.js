@@ -46,8 +46,8 @@ var nullFormCtrl = {
  *
  */
 //asks for $scope to fool the BC controller module
-FormController.$inject = ['$element', '$attrs', '$scope'];
-function FormController(element, attrs) {
+FormController.$inject = ['$element', '$attrs', '$scope', '$animate'];
+function FormController(element, attrs, $scope, $animate) {
   var form = this,
       parentForm = element.parent().controller('form') || nullFormCtrl,
       invalidCount = 0, // used to easily determine if we are valid
@@ -70,9 +70,8 @@ function FormController(element, attrs) {
   // convenience method for easy toggling of classes
   function toggleValidCss(isValid, validationErrorKey) {
     validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
-    element.
-      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
-      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+    $animate.removeClass(element, (isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey);
+    $animate.addClass(element, (isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
   }
 
   /**
@@ -177,7 +176,8 @@ function FormController(element, attrs) {
    * state (ng-dirty class). This method will also propagate to parent forms.
    */
   form.$setDirty = function() {
-    element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
+    $animate.removeClass(element, PRISTINE_CLASS);
+    $animate.addClass(element, DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
     parentForm.$setDirty();
@@ -199,7 +199,8 @@ function FormController(element, attrs) {
    * saving or resetting it.
    */
   form.$setPristine = function () {
-    element.removeClass(DIRTY_CLASS).addClass(PRISTINE_CLASS);
+    $animate.removeClass(element, DIRTY_CLASS);
+    $animate.addClass(element, PRISTINE_CLASS);
     form.$dirty = false;
     form.$pristine = true;
     forEach(controls, function(control) {
@@ -284,8 +285,28 @@ function FormController(element, attrs) {
  * hitting enter in any of the input fields will trigger the click handler on the *first* button or
  * input[type=submit] (`ngClick`) *and* a submit handler on the enclosing form (`ngSubmit`)
  *
- * @param {string=} name Name of the form. If specified, the form controller will be published into
- *                       related scope, under this name.
+ * ## A note about animations with `ngForm`
+ *
+ * Animations in ngForm work with the pristine, dirty, invalid and valid events that are triggered when
+ * the values of form change. This system works like the animation system present with ngClass.
+ *
+ * <pre>
+ * //
+ * //a working example can be found at the bottom of this page
+ * //
+ * .my-element.ng-dirty-add {
+ *   transition:0.5s linear all;
+ *   background: red;
+ * }
+ * .my-element.ng-dirty {
+ *   background: white;
+ * }
+ *
+ * .my-element.ng-dirty-add { ... }
+ * .my-element.ng-dirty-add.ng-dirty-add-active { ... }
+ * .my-element.ng-dirty-remove { ... }
+ * .my-element.ng-dirty-remove.ng-dirty-remove-active { ... }
+ * </pre>
  *
  * @example
     <doc:example>
@@ -295,6 +316,16 @@ function FormController(element, attrs) {
            $scope.userType = 'guest';
          }
        </script>
+       <style>
+        form.ng-dirty-add {
+          -webkit-transition:all linear 0.5s;
+          transition:all linear 0.5s;
+          background: orange;
+        }
+        form.ng-dirty {
+          background: transparent;
+        }
+       </style>
        <form name="myForm" ng-controller="Ctrl">
          userType: <input name="input" ng-model="userType" required>
          <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
@@ -318,6 +349,15 @@ function FormController(element, attrs) {
         });
       </doc:scenario>
     </doc:example>
+ *
+ * @param {string=} name Name of the form. If specified, the form controller will be published into
+ *                       related scope, under this name.
+ *
+ * @animations
+ * removeClass .ng-dirty and addClass .ng-pristine: happens just after form became pristine
+ * removeClass .ng-pristine and addClass .ng-dirty: happens just after form became dirty
+ * removeClass .ng-invalid and addClass .ng-valid: happens just after form became valid
+ * removeClass .ng-valid and addClass .ng-invalid: happens just after form became invalid
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', function($timeout) {
