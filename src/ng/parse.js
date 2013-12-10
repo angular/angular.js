@@ -1006,11 +1006,10 @@ function getterFn(path, options, fullExp) {
       };
     }
   } else {
-    var code = 'var l, fn, p;\n';
+    var code = options.unwrapPromises ? 'var p;\n' : '';
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
-      code += 'if(s === null || s === undefined) return s;\n' +
-              'l=s;\n' +
+      code += 'if(s == null) return s;\n' +
               's='+ (index
                       // we simply dereference 's' on any .dot notation
                       ? 's'
@@ -1034,9 +1033,9 @@ function getterFn(path, options, fullExp) {
     var evaledFnGetter = new Function('s', 'k', 'pw', code); // s=scope, k=locals, pw=promiseWarning
     /* jshint +W054 */
     evaledFnGetter.toString = function() { return code; };
-    fn = function(scope, locals) {
+    fn = options.unwrapPromises ? function(scope, locals) {
       return evaledFnGetter(scope, locals, promiseWarning);
-    };
+    } : evaledFnGetter;
   }
 
   // Only cache the value if it's not going to mess up the cache object
