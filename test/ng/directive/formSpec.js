@@ -594,3 +594,83 @@ describe('form', function() {
     });
   });
 });
+
+describe('form animations', function() {
+  beforeEach(module('ngAnimateMock'));
+
+  function assertValidAnimation(animation, event, className) {
+    expect(animation.event).toBe(event);
+    expect(animation.args[1]).toBe(className);
+  }
+
+  var doc, scope, form;
+  beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
+    scope = $rootScope.$new();
+    doc = jqLite('<form name="myForm"></form>');
+    $rootElement.append(doc);
+    $compile(doc)(scope);
+    $animate.queue = [];
+    form = scope.myForm;
+  }));
+
+  afterEach(function() {
+    dealoc(doc);
+  });
+
+  it('should trigger an animation when invalid', inject(function($animate) {
+    form.$setValidity('required', false);
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-valid');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-invalid');
+    assertValidAnimation($animate.queue[2], 'removeClass', 'ng-valid-required');
+    assertValidAnimation($animate.queue[3], 'addClass', 'ng-invalid-required');
+  }));
+
+  it('should trigger an animation when valid', inject(function($animate) {
+    form.$setValidity('required', false);
+
+    $animate.queue = [];
+
+    form.$setValidity('required', true);
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-valid');
+    assertValidAnimation($animate.queue[2], 'removeClass', 'ng-invalid-required');
+    assertValidAnimation($animate.queue[3], 'addClass', 'ng-valid-required');
+  }));
+
+  it('should trigger an animation when dirty', inject(function($animate) {
+    form.$setDirty();
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-pristine');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-dirty');
+  }));
+
+  it('should trigger an animation when pristine', inject(function($animate) {
+    form.$setDirty();
+
+    $animate.queue = [];
+
+    form.$setPristine();
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-dirty');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-pristine');
+  }));
+
+  it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
+    form.$setValidity('custom-error', false);
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-valid');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-invalid');
+    assertValidAnimation($animate.queue[2], 'removeClass', 'ng-valid-custom-error');
+    assertValidAnimation($animate.queue[3], 'addClass', 'ng-invalid-custom-error');
+
+    $animate.queue = [];
+    form.$setValidity('custom-error', true);
+
+    assertValidAnimation($animate.queue[0], 'removeClass', 'ng-invalid');
+    assertValidAnimation($animate.queue[1], 'addClass', 'ng-valid');
+    assertValidAnimation($animate.queue[2], 'removeClass', 'ng-invalid-custom-error');
+    assertValidAnimation($animate.queue[3], 'addClass', 'ng-valid-custom-error');
+  }));
+});
