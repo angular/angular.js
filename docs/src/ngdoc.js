@@ -572,7 +572,7 @@ Doc.prototype = {
         href: 'http://github.com/angular/angular.js/edit/master/' + self.file,
         class: 'improve-docs btn btn-primary' }, function(dom) {
       dom.tag('i', {class:'icon-edit'}, ' ');
-      dom.text(' Improve this doc');
+      dom.text(' Edit');
     });
     dom.h(title(this), function() {
       notice('deprecated', 'Deprecated API', self.deprecated);
