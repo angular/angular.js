@@ -36,7 +36,7 @@ The following is done automatically and should not be done manually:
     * Reproducible on master? - http://code.angularjs.org/snapshot/
 
 1. Non bugs:
-    * Label "Type: Feature" or "Type: Chore"
+    * Label "Type: Feature" or "Type: Chore" or "Type: Perf"
     * Label "needs: breaking change" - if needed
     * Understandable? - verify if the description of the request is clear. if not ask for clarification
     * Goals of angular core? - Often new features should be implemented as a third-party module rather than an addition to the core.
