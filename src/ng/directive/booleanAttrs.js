@@ -4,6 +4,7 @@
  * @ngdoc directive
  * @name ng.directive:ngHref
  * @restrict A
+ * @priority 99
  *
  * @description
  * Using Angular markup like `{{hash}}` in an href attribute will
@@ -87,6 +88,7 @@
  * @ngdoc directive
  * @name ng.directive:ngSrc
  * @restrict A
+ * @priority 99
  *
  * @description
  * Using Angular markup like `{{hash}}` in a `src` attribute doesn't
@@ -112,6 +114,7 @@
  * @ngdoc directive
  * @name ng.directive:ngSrcset
  * @restrict A
+ * @priority 99
  *
  * @description
  * Using Angular markup like `{{hash}}` in a `srcset` attribute doesn't
@@ -137,6 +140,7 @@
  * @ngdoc directive
  * @name ng.directive:ngDisabled
  * @restrict A
+ * @priority 100
  *
  * @description
  *
@@ -180,6 +184,7 @@
  * @ngdoc directive
  * @name ng.directive:ngChecked
  * @restrict A
+ * @priority 100
  *
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
@@ -214,6 +219,7 @@
  * @ngdoc directive
  * @name ng.directive:ngReadonly
  * @restrict A
+ * @priority 100
  *
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
@@ -223,7 +229,6 @@
  * The `ngReadonly` directive solves this problem for the `readonly` attribute.
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
-
  * @example
     <doc:example>
       <doc:source>
@@ -249,6 +254,7 @@
  * @ngdoc directive
  * @name ng.directive:ngSelected
  * @restrict A
+ * @priority 100
  *
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
@@ -258,6 +264,7 @@
  * The `ngSelected` directive solves this problem for the `selected` atttribute.
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
+ * 
  * @example
     <doc:example>
       <doc:source>
@@ -285,6 +292,7 @@
  * @ngdoc directive
  * @name ng.directive:ngOpen
  * @restrict A
+ * @priority 100
  *
  * @description
  * The HTML specification does not require browsers to preserve the values of boolean attributes
@@ -294,8 +302,6 @@
  * The `ngOpen` directive solves this problem for the `open` attribute.
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
-
- *
  * @example
      <doc:example>
        <doc:source>
