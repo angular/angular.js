@@ -1082,6 +1082,48 @@ describe('input', function() {
     });
 
 
+    it('should parse numeric ng-true-value/ng-false-value', function() {
+      compileInput('<input type="checkbox" ng-model="value" ' +
+                   'ng-true-value="12345" ng-false-value="0">');
+      scope.$apply(function() {
+        scope.value = 12345;
+      });
+      expect(inputElm[0].checked).toBe(true);
+
+      scope.$apply(function() {
+        scope.value = 0;
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.value).toBe(12345);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.value).toBe(0);
+    });
+
+
+    it('should parse object ng-true-value/ng-false-value', function() {
+      compileInput('<input type="checkbox" ng-model="value" ' +
+                   'ng-true-value="{num: 12345}" ng-false-value="null">');
+      scope.$apply(function() {
+        scope.value = {num: 12345};
+      });
+      expect(inputElm[0].checked).toBe(true);
+
+      scope.$apply(function() {
+        scope.value = null;
+      });
+      expect(inputElm[0].checked).toBe(false);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.value.num).toBe(12345);
+
+      browserTrigger(inputElm, 'click');
+      expect(scope.value).toBe(null);
+    });
+
+
     it('should be required if false', function() {
       compileInput('<input type="checkbox" ng:model="value" required />');
 

@@ -657,12 +657,9 @@ function radioInputType(scope, element, attr, ctrl) {
   attr.$observe('value', ctrl.$render);
 }
 
-function checkboxInputType(scope, element, attr, ctrl) {
-  var trueValue = attr.ngTrueValue,
-      falseValue = attr.ngFalseValue;
-
-  if (!isString(trueValue)) trueValue = true;
-  if (!isString(falseValue)) falseValue = false;
+function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $parse) {
+  var trueValue = getCheckedValue(attr.ngTrueValue, true),
+      falseValue = getCheckedValue(attr.ngFalseValue, false);
 
   element.on('click', function() {
     scope.$apply(function() {
@@ -676,16 +673,31 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
   // Override the standard `$isEmpty` because a value of `false` means empty in a checkbox.
   ctrl.$isEmpty = function(value) {
-    return value !== trueValue;
+    return !equals(value, trueValue);
   };
 
   ctrl.$formatters.push(function(value) {
-    return value === trueValue;
+    return equals(value, trueValue);
   });
 
   ctrl.$parsers.push(function(value) {
     return value ? trueValue : falseValue;
   });
+
+  function getCheckedValue(expr, defaultValue) {
+    if (isString(expr)) {
+      var getter = $parse(expr),
+          value = getter(scope);
+      // If the resulting value is undefined, and not the constant `undefined`, then
+      // return the original string expression, it was probably intended as a string
+      // literal.
+      if (isUndefined(value) && !getter.constant) {
+        return expr;
+      }
+      return value;
+    }
+    return defaultValue;
+  }
 }
 
 
@@ -812,14 +824,14 @@ function checkboxInputType(scope, element, attr, ctrl) {
       </doc:scenario>
     </doc:example>
  */
-var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
+var inputDirective = ['$browser', '$sniffer', '$parse', function($browser, $sniffer, $parse) {
   return {
     restrict: 'E',
     require: '?ngModel',
     link: function(scope, element, attr, ctrl) {
       if (ctrl) {
         (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
-                                                            $browser);
+                                                            $browser, $parse);
       }
     }
   };
