@@ -891,6 +891,31 @@ describe('ngMock', function() {
     });
 
 
+    it('should respond with a copy of the mock data', function() {
+      var mockObject = {a: 'b'};
+
+      hb.when('GET', '/url1').respond(200, mockObject, {});
+
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toEqual({a: 'b'});
+        response.a = 'c';
+      });
+
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      // Fire it again and verify that the returned mock data has not been
+      // modified.
+      callback.reset();
+      hb('GET', '/url1', null, callback);
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+      expect(mockObject).toEqual({a: 'b'});
+    });
+
+
     it('should throw error when unexpected request', function() {
       hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
