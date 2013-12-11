@@ -582,6 +582,46 @@ describe('ngView and transcludes', function() {
     });
 
   });
+
+  it('should link directives on the same element after the content has been loaded', function() {
+    var contentOnLink;
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/view', {template: 'someContent'});
+      $compileProvider.directive('test', function() {
+        return {
+          link: function(scope, element) {
+            contentOnLink = element.text();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $location) {
+      element = $compile('<div><div ng-view test></div>')($rootScope);
+      $location.url('/view');
+      $rootScope.$apply();
+      expect(contentOnLink).toBe('someContent');
+    });
+  });
+
+  it('should add the content to the element before compiling it', function() {
+    var root;
+    module(function($compileProvider, $routeProvider) {
+      $routeProvider.when('/view', {template: '<span test></span>'});
+      $compileProvider.directive('test', function() {
+        return {
+          link: function(scope, element) {
+            root = element.parent().parent();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $location) {
+      element = $compile('<div><div ng-view></div>')($rootScope);
+      $location.url('/view');
+      $rootScope.$apply();
+      expect(root[0]).toBe(element[0]);
+    });
+  });
 });
 
 describe('ngView animations', function() {
