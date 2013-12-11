@@ -33,8 +33,10 @@ REPOS=(
 # download and unzip the file
 #
 
-#wget $ZIP_FILE_URL
-unzip $ZIP_FILE
+if [ ! -f $ZIP_FILE ]; then
+  wget $ZIP_FILE_URL
+  unzip $ZIP_FILE
+fi
 
 
 #
@@ -46,8 +48,10 @@ do
   if [ -f $ZIP_DIR/$repo.js ] # ignore i18l
     then
       cd bower-$repo
-      git checkout master
       git reset --hard HEAD
+      git checkout master
+      git fetch --all
+      git reset --hard origin/master
       cd ..
       mv $ZIP_DIR/$repo.* bower-$repo/
   fi
@@ -76,7 +80,6 @@ echo $NEW_VERSION
 for repo in "${REPOS[@]}"
 do
   cd bower-$repo
-  pwd
   sed -i '' -e "s/$OLD_VERSION/$NEW_VERSION/g" bower.json
   git add -A
   git commit -m "v$NEW_VERSION"
