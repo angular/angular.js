@@ -524,6 +524,46 @@ describe('ngInclude and transcludes', function() {
     });
 
   });
+
+  it('should link directives on the same element after the content has been loaded', function() {
+    var contentOnLink;
+    module(function() {
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            contentOnLink = element.text();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('someContent');
+      element = $compile('<div><div ng-include="\'include.html\'" test></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(contentOnLink).toBe('someContent');
+    });
+  });
+
+  it('should add the content to the element before compiling it', function() {
+    var root;
+    module(function() {
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            root = element.parent().parent();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('<span test></span>');
+      element = $compile('<div><div ng-include="\'include.html\'"></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(root[0]).toBe(element[0]);
+    });
+  });
 });
 
 describe('ngInclude animations', function() {
