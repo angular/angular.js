@@ -36,8 +36,8 @@ ARGS=""
 if [ ! -z "$TRAVIS_JOB_NUMBER" ]; then
   ARGS="$ARGS --tunnel-identifier $TRAVIS_JOB_NUMBER"
 fi
-if [ ! -z "$SAUCE_CONNECT_READY_FILE" ]; then
-  ARGS="$ARGS --readyfile $SAUCE_CONNECT_READY_FILE"
+if [ ! -z "$BROWSER_PROVIDER_READY_FILE" ]; then
+  ARGS="$ARGS --readyfile $BROWSER_PROVIDER_READY_FILE"
 fi
 
 
