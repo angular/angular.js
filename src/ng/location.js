@@ -414,7 +414,22 @@ LocationHashbangInHtml5Url.prototype =
    * single search parameter. If `paramValue` is an array, it will set the parameter as a
    * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
-   * @return {string} search
+   * @return {object} Search values or self when called with a parameter.
+   * 
+   * @example
+   * <pre>
+   *  // Given:
+   *  // URL: http://server.com/index.html#/Book/?title=Moby%20Dick&author=Melville
+   *  //
+   *  // Then
+   *  $location.search() ==> {author: 'Melville', title: 'Moby Dick'}
+   * 
+   *  $location.search('author');
+   *  // URL: http://server.com/index.html#/Book/?title=Moby%20Dick
+   * 
+   *  $location.search('title', 'Great Expectations');
+   *  // URL: http://server.com/index.html#/Book/?title=Great%20Expectations
+   * </pre>
    */
   search: function(search, paramValue) {
     switch (arguments.length) {
