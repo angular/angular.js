@@ -66,6 +66,32 @@ describe('ngSwitch', function() {
   }));
 
 
+  it('should show all elements between start and end markers that match the current value',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when-start="1">A</li>' +
+        '<li>B</li>' +
+        '<li ng-switch-when-end>C</li>' +
+        '<li ng-switch-when-start="2">D</li>' +
+        '<li>E</li>' +
+        '<li ng-switch-when-end>F</li>' +
+      '</ul>')($rootScope);
+
+    $rootScope.$apply('select = "1"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('A');
+    expect(element.find('li').eq(1).text()).toBe('B');
+    expect(element.find('li').eq(2).text()).toBe('C');
+
+    $rootScope.$apply('select = "2"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('D');
+    expect(element.find('li').eq(1).text()).toBe('E');
+    expect(element.find('li').eq(2).text()).toBe('F');
+  }));
+
+
   it('should switch on switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="select">' +
@@ -77,6 +103,32 @@ describe('ngSwitch', function() {
     $rootScope.select = 1;
     $rootScope.$apply();
     expect(element.text()).toEqual('one');
+  }));
+
+
+  it('should show all default elements between start and end markers when no match',
+      inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ul ng-switch="select">' +
+        '<li ng-switch-when-start="1">A</li>' +
+        '<li>B</li>' +
+        '<li ng-switch-when-end>C</li>' +
+        '<li ng-switch-default-start>D</li>' +
+        '<li>E</li>' +
+        '<li ng-switch-default-end>F</li>' +
+      '</ul>')($rootScope);
+
+    $rootScope.$apply('select = "1"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('A');
+    expect(element.find('li').eq(1).text()).toBe('B');
+    expect(element.find('li').eq(2).text()).toBe('C');
+
+    $rootScope.$apply('select = "2"');
+    expect(element.find('li').length).toBe(3);
+    expect(element.find('li').eq(0).text()).toBe('D');
+    expect(element.find('li').eq(1).text()).toBe('E');
+    expect(element.find('li').eq(2).text()).toBe('F');
   }));
 
 
