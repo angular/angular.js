@@ -202,6 +202,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
   return {
+    multiElement: true,
     transclude: 'element',
     priority: 1000,
     terminal: true,
