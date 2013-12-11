@@ -512,6 +512,12 @@ describe('$compile', function() {
               expect(element).toBe(attr.$$element);
             }
           }));
+          directive('replaceWithNamespace',valueFn({
+            restrict: 'E',
+            replace: true,
+            template: '<path></path>',
+            templateNS: 'http://www.w3.org/2000/svg'
+          }));
         }));
 
 
@@ -519,6 +525,12 @@ describe('$compile', function() {
           element = $compile('<div><div replace>ignore</div><div>')($rootScope);
           expect(element.text()).toEqual('Replace!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
+        }));
+
+
+        it('should replace element with template with given namespace', inject(function($compile,$rootScope) {
+            element = $compile('<replace-with-namespace></replace-with-namespace>')($rootScope);
+            expect(element[0].namespaceURI).toBe('http://www.w3.org/2000/svg');
         }));
 
 

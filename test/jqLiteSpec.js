@@ -1452,4 +1452,44 @@ describe('jqLite', function() {
    });
   });
 
+
+  describe('namespaces',function(){
+    it('should create element with specifed default namespace',function(){
+      var nodes = jqLite.createElementWithNS("<someRandomElement></someRandomElement>","http://randomNamespace","application/xml");
+      expect(nodes[0].namespaceURI).toBe("http://randomNamespace");
+    });
+
+
+    it('should construct element with the default namespace when none specified',function(){
+      var namespacesUnderTest = ["",null, undefined];
+      for(index=0; index < namespacesUnderTest.length; index++)
+      {
+        var nodes = jqLite.createElementWithNS("<someRandomElement/>",namespacesUnderTest[index],"application/xml");
+        expect(nodes[0].namespaceURI).toBe("http://www.w3.org/1999/xhtml");
+      }
+    });
+
+
+    it('should be able to construct elements with prefix',function(){
+      var namespaceHash = { xmlns: "http://defaultNamespace",
+                            test:   "http://testNamespace" };
+      var nodes = jqLite.createElementWithNS("<someRandomElement/><test:anotherElement/>",namespaceHash,"application/xml");
+      expect(nodes[0].namespaceURI).toBe("http://defaultNamespace");
+      expect(nodes[1].namespaceURI).toBe("http://testNamespace");
+    });
+  });
+
+
+  describe('convertNamespaceHashToString',function(){
+      it('should convert a hash containing the default namespace to a string',function(){
+         var expectedString = ' xmlns="http://test"';
+         expect(convertNamespaceHashToString({'xmlns':"http://test"})).toBe(expectedString);
+      });
+
+
+      it('should convert a hash containing the default namespace and another prefix to a string',function(){
+          var expectedString = ' xmlns="http://test" xmlns:test="http://test"';
+          expect(convertNamespaceHashToString({'xmlns':'http://test', 'test':'http://test'})).toBe(expectedString);
+      });
+  })
 });

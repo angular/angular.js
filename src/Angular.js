@@ -1260,6 +1260,7 @@ function bindJQuery() {
       injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
+    jqLite.createElementWithNS = JQLite.createElementWithNS;
     // Method signature:
     //     jqLitePatchJQueryRemove(name, dispatchThis, filterElems, getterIfNoArguments)
     jqLitePatchJQueryRemove('remove', true, true, false);

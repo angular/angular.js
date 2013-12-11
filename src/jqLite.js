@@ -5,7 +5,8 @@
   -JQLitePrototype,
   -addEventListenerFn,
   -removeEventListenerFn,
-  -BOOLEAN_ATTR
+  -BOOLEAN_ATTR,
+  ActiveXObject
 */
 
 //////////////////////////////////
@@ -91,6 +92,7 @@
  *   scope. Calling `scope()` on this element always returns the original non-isolate scope.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
+ * -  `createElementWithNS` - An element can be created in a given namesapce, with a given mime type
  *
  * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
  * @returns {Object} jQuery object.
@@ -193,6 +195,63 @@ function JQLite(element) {
   } else {
     jqLiteAddNodes(this, element);
   }
+}
+/**
+ * An element can be created with a given namespace
+ * @param element containing markup
+ * @param string|object namespace that the element should be created in, A string specifies the default namespace.  An object consisting of key value pairs,
+ * where key is the xml prefix and value is the namespace.
+ * @returns {Dom elements with the selected markup}
+ */
+JQLite.createElementWithNS = function(element,namespace)
+{
+  var isNamespaceEmpty = !namespace || ((namespace instanceof String) && namespace.length ===0);
+  if(isNamespaceEmpty)
+  {
+    return new JQLite(element);
+  }
+
+  var serializedNamespace ='';
+  if(angular.isObject(namespace))
+  {
+    serializedNamespace = convertNamespaceHashToString(namespace);
+  } else {
+    serializedNamespace = convertNamespaceHashToString({'xmlns':namespace});
+  }
+
+
+  var xmlContent = '<root '+serializedNamespace+'>'+element+'</root>';
+  var doc = '';
+  if(window.DOMParser)
+  {
+    doc = new DOMParser().parseFromString(xmlContent,"application/xml");
+  }
+  else if(window.ActiveXObject)
+  {
+    var domParser = new ActiveXObject("Microsoft.XMLDOM");
+    domParser.async = false;
+    doc = domParser.loadXML(xmlContent);
+  }
+  else //If all all else fails just create the content as normal
+  {
+    return jqLite(element);
+  }
+  return doc.childNodes[0].childNodes;
+};
+
+
+function convertNamespaceHashToString(namespaceHash)
+{
+  var xmlNamespaces = "";
+  angular.forEach(namespaceHash, function(value,key){
+    if(angular.lowercase(key)==='xmlns')
+    {
+      xmlNamespaces= xmlNamespaces+' xmlns="'+value+'"';
+      return;
+    }
+    xmlNamespaces = xmlNamespaces + ' xmlns:'+key+'="'+value+'"';
+  });
+  return xmlNamespaces;
 }
 
 function jqLiteClone(element) {

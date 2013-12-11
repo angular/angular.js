@@ -234,6 +234,14 @@
  * api/ng.$sce#methods_getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
+ * #### `templateNS`
+ * You can specify the xml namespace the elements defined in the template should be in.  This would be useful
+ * if you were creating a fragment of xml content such as svg.
+ *
+ * You can specify `templateNS` as a string representing the default namespace.  Or as an object hash where
+ * key is namespace prefix and value is the namespace
+ *
+ *
  * #### `replace`
  * specify where the template should be inserted. Defaults to `false`.
  *
@@ -1239,6 +1247,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             $template = jqLite('<div>' +
                                  trim(directiveValue) +
                                '</div>').contents();
+            if(directive.templateNS)
+            {
+              $template = jqLite.createElementWithNS(trim(directiveValue),directive.templateNS,"application/xml");
+            }
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
