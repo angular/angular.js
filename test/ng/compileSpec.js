@@ -5487,6 +5487,40 @@ describe('$compile', function() {
         expect(element.attr('dash-test4')).toBe('JamieMason');
       }));
 
+      it('should keep attributes ending with -start single-element directives', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('dashStarter', function(log) {
+            return {
+              link: function(scope, element, attrs) {
+                log(attrs.onDashStart);
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          $compile('<span data-dash-starter data-on-dash-start="starter"></span>')($rootScope);
+          $rootScope.$digest();
+          expect(log).toEqual('starter');
+        });
+      });
+
+
+      it('should keep attributes ending with -end single-element directives', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('dashEnder', function(log) {
+            return {
+              link: function(scope, element, attrs) {
+                log(attrs.onDashEnd);
+              }
+            };
+          });
+        });
+        inject(function($compile, $rootScope, log) {
+          $compile('<span data-dash-ender data-on-dash-end="ender"></span>')($rootScope);
+          $rootScope.$digest();
+          expect(log).toEqual('ender');
+        });
+      });
     });
 
   });
@@ -5545,19 +5579,29 @@ describe('$compile', function() {
     }));
 
 
-    it('should group on nested groups', inject(function($compile, $rootScope) {
-      $rootScope.show = false;
-      element = $compile(
-          '<div></div>' +
-              '<div ng-repeat-start="i in [1,2]">{{i}}A</div>' +
-              '<span ng-bind-start="\'.\'"></span>' +
-              '<span ng-bind-end></span>' +
-              '<div ng-repeat-end>{{i}}B;</div>' +
-          '<div></div>')($rootScope);
-      $rootScope.$digest();
-      element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
-      expect(element.text()).toEqual('1A..1B;2A..2B;');
-    }));
+    it('should group on nested groups', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive("ngMultiBind", valueFn({
+          multiElement: true,
+          link: function(scope, element, attr) {
+            element.text(scope.$eval(attr.ngMultiBind));
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.show = false;
+        element = $compile(
+            '<div></div>' +
+                '<div ng-repeat-start="i in [1,2]">{{i}}A</div>' +
+                '<span ng-multi-bind-start="\'.\'"></span>' +
+                '<span ng-multi-bind-end></span>' +
+                '<div ng-repeat-end>{{i}}B;</div>' +
+            '<div></div>')($rootScope);
+        $rootScope.$digest();
+        element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
+        expect(element.text()).toEqual('1A..1B;2A..2B;');
+      });
+    });
 
 
     it('should group on nested groups of same directive', inject(function($compile, $rootScope) {
@@ -5749,6 +5793,7 @@ describe('$compile', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
+            multiElement: true
           };
         });
       });
@@ -5766,12 +5811,16 @@ describe('$compile', function() {
     it('should correctly collect ranges on multiple directives on a single element', function () {
       module(function($compileProvider) {
         $compileProvider.directive('emptyDirective', function() {
-          return function (scope, element) {
-            element.data('x', 'abc');
+          return {
+            multiElement: true,
+            link: function (scope, element) {
+              element.data('x', 'abc');
+            }
           };
         });
         $compileProvider.directive('rangeDirective', function() {
           return {
+            multiElement: true,
             link: function (scope) {
               scope.x = 'X';
               scope.y = 'Y';
@@ -5799,6 +5848,7 @@ describe('$compile', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
           return {
+            multiElement: true
           };
         });
       });
