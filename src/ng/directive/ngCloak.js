@@ -35,7 +35,7 @@
  *
  * Legacy browsers, like IE7, do not provide attribute selector support (added in CSS 2.1) so they
  * cannot match the `[ng\:cloak]` selector. To work around this limitation, you must add the css
- * class `ngCloak` in addition to the `ngCloak` directive as shown in the example below.
+ * class `ng-cloak` in addition to the `ngCloak` directive as shown in the example below.
  *
  * @element ANY
  *
