@@ -2492,6 +2492,62 @@ describe('$compile', function() {
 
         expect(lastRefValueInParent).toBe('new');
       }));
+
+      describe('literal objects', function() {
+        it('should copy parent changes', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({name: 'a'});
+
+          $rootScope.name = 'b';
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({name: 'b'});
+        }));
+
+        it('should not change the component when parent does not change', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          var lastComponentValue = componentScope.reference;
+          $rootScope.$apply();
+          expect(componentScope.reference).toBe(lastComponentValue);
+        }));
+
+        it('should complain when the component changes', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          componentScope.reference = {name: 'b'};
+          expect(function() {
+            $rootScope.$apply();
+          }).toThrowMinErr("$compile", "nonassign", "Expression '{name: name}' used with directive 'myComponent' is non-assignable!");
+
+        }));
+
+        it('should work for primitive literals', inject(function() {
+          test('1', 1);
+          test('null', null);
+          test('undefined', undefined);
+          test("'someString'", 'someString');
+
+
+          function test(literalString, literalValue) {
+            compile('<div><span my-component reference="'+literalString+'">');
+
+            $rootScope.$apply();
+            expect(componentScope.reference).toBe(literalValue);
+            dealoc(element);
+
+          }
+
+        }));
+
+      });
+
     });
 
 
