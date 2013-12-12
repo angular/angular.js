@@ -347,7 +347,6 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
-      priority: 99, // it needs to run after the attributes are interpolated
       link: function(scope, element, attr) {
         attr.$observe(normalized, function(value) {
           if (!value)
