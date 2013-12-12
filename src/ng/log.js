@@ -101,6 +101,16 @@ function $LogProvider(){
        * Write an error message
        */
       error: consoleLog('error'),
+
+      /**
+       * @ngdoc method
+       * @name ng.$log#table
+       * @methodOf ng.$log
+       *
+       * @description
+       * Write a message as table representation
+       */
+      table: consoleLog('table'),
       
       /**
        * @ngdoc method

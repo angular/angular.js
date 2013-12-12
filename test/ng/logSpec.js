@@ -7,9 +7,7 @@ function initService(debugEnabled) {
   }
 
 describe('$log', function() {
-  var $window, logger, log, warn, info, error, debug;
-
-
+  var $window, logger, log, warn, info, error, debug, table;
 
   beforeEach(module(function($provide){
     $window = {navigator: {}, document: {}};
@@ -19,6 +17,7 @@ describe('$log', function() {
     info = function() { logger+= 'info;'; };
     error = function() { logger+= 'error;'; };
     debug = function() { logger+= 'debug;'; };
+    table = function() { logger+= 'table;'; };
 
     $provide.provider('$log', $LogProvider);
     $provide.value('$exceptionHandler', angular.mock.rethrow);
@@ -27,11 +26,14 @@ describe('$log', function() {
 
   it('should use console if present', inject(
     function(){
-      $window.console = {log: log,
-                         warn: warn,
-                         info: info,
-                         error: error,
-                         debug: debug};
+      $window.console = {
+        log: log,
+        warn: warn,
+        info: info,
+        error: error,
+        debug: debug,
+        table: table
+      };
     },
     function($log) {
       $log.log();
@@ -39,7 +41,8 @@ describe('$log', function() {
       $log.info();
       $log.error();
       $log.debug();
-      expect(logger).toEqual('log;warn;info;error;debug;');
+      $log.table();
+      expect(logger).toEqual('log;warn;info;error;debug;table;');
     }
   ));
 
@@ -54,7 +57,8 @@ describe('$log', function() {
       $log.info();
       $log.error();
       $log.debug();
-      expect(logger).toEqual('log;log;log;log;log;');
+      $log.table();
+      expect(logger).toEqual('log;log;log;log;log;log;');
     }
   ));
 
@@ -66,6 +70,7 @@ describe('$log', function() {
       $log.info();
       $log.error();
       $log.debug();
+      $log.table();
     }
   ));
 
@@ -76,13 +81,17 @@ describe('$log', function() {
             warn.apply = warn.call =
             info.apply = info.call =
             error.apply = error.call =
+            table.apply = table.call =
             debug.apply = debug.call = null;
 
-        $window.console = {log: log,
-                           warn: warn,
-                           info: info,
-                           error: error,
-                           debug: debug};
+        $window.console = {
+          log: log,
+          warn: warn,
+          info: info,
+          error: error,
+          debug: debug,
+          table: table
+        };
       },
       function($log) {
         $log.log.apply($log);
@@ -90,7 +99,8 @@ describe('$log', function() {
         $log.info.apply($log);
         $log.error.apply($log);
         $log.debug.apply($log);
-        expect(logger).toEqual('log;warn;info;error;debug;');
+        $log.table.apply($log);
+        expect(logger).toEqual('log;warn;info;error;debug;table;');
       })
   );
 
@@ -100,19 +110,23 @@ describe('$log', function() {
 	  
 	  it("should skip debugging output if disabled", inject(
 	    function(){
-	      $window.console = {log: log,
-	                         warn: warn,
-	                         info: info,
-	                         error: error,
-	                         debug: debug};
-	    }, 
+	      $window.console = {
+          log: log,
+	        warn: warn,
+	        info: info,
+	        error: error,
+	        debug: debug,
+          table: table
+        };
+	    },
 	    function($log) {
 	      $log.log();
 	      $log.warn();
 	      $log.info();
 	      $log.error();
 	      $log.debug();
-	      expect(logger).toEqual('log;warn;info;error;');
+        $log.table();
+	      expect(logger).toEqual('log;warn;info;error;table;');
 	    }
   ));
 	  
