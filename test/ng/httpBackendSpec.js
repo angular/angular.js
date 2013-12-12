@@ -75,6 +75,15 @@ describe('$httpBackend', function() {
     expect(xhr.$$data).toBe(null);
   });
 
+  it('should use ActiveXObject for PATCH on IE8', function () {
+    xhr = new XHR('PATCH');
+    if (msie <= 8) {
+      expect(function() {xhr.toString();}).toThrow();
+    } else {
+      expect(xhr.toString()).toMatch(/\[object .+\]/);
+    }
+  });
+
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
       expect(status).toBe(204);
