@@ -24,6 +24,12 @@ function $IntervalProvider() {
       * In tests you can use {@link ngMock.$interval#methods_flush `$interval.flush(millis)`} to
       * move forward by `millis` milliseconds and trigger any functions scheduled to run in that
       * time.
+      * 
+      * <div class="alert alert-warning">
+      * **Note**: The interval craeted by this service is not cleared during the $scope.$destroy() event.
+      * The developer should take this into consideration and make sure to always cancel the interval 
+      * inside a broadcasted 'destroy' event.
+      * </div>
       *
       * @param {function()} fn A function that should be called repeatedly.
       * @param {number} delay Number of milliseconds between each function call.
