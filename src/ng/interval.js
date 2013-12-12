@@ -24,6 +24,14 @@ function $IntervalProvider() {
       * In tests you can use {@link ngMock.$interval#methods_flush `$interval.flush(millis)`} to
       * move forward by `millis` milliseconds and trigger any functions scheduled to run in that
       * time.
+      * 
+      * <div class="alert alert-warning">
+      * **Note**: Intervals created by this service must be explicitly destroyed when you are finished
+      * with them.  In particular they are not automatically destroyed when a controller's scope or a
+      * directive's element are destroyed.
+      * You should take this into consideration and make sure to always cancel the interval at the
+      * appropriate moment.  See the example below for more details on how and when to do this.
+      * </div>
       *
       * @param {function()} fn A function that should be called repeatedly.
       * @param {number} delay Number of milliseconds between each function call.
@@ -52,20 +60,27 @@ function $IntervalProvider() {
                       $scope.blood_1 = $scope.blood_1 - 3;
                       $scope.blood_2 = $scope.blood_2 - 4;
                   } else {
-                      $interval.cancel(stop);
+                      $scope.stopFight();
                   }
                 }, 100);
               };
 
               $scope.stopFight = function() {
-                $interval.cancel(stop);
-                stop = undefined;
+                if (angular.isDefined(stop)) {
+                  $interval.cancel(stop);
+                  stop = undefined;
+                }
               };
 
               $scope.resetFight = function() {
                 $scope.blood_1 = 100;
                 $scope.blood_2 = 120;
               }
+
+              $scope.$on('$destroy', function() {
+                // Make sure that the interval is destroyed too
+                $scope.stopFight();
+              });
             }
 
             angular.module('time', [])
