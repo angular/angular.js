@@ -486,6 +486,22 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalledOnce();
       });
 
+      it('should reject the response promise when the error code is gte 300 but not 304', function() {
+        var cb;
+
+        cb = jasmine.createSpy();
+        $httpBackend.expect('GET', '/url').respond(301, 'Moved', {'request-id': '123'});
+        $http({url: '/url', method: 'GET'}).error(cb);
+        $httpBackend.flush();
+        expect(cb).toHaveBeenCalled();
+
+        cb = jasmine.createSpy();
+        $httpBackend.expect('GET', '/url').respond(304, 'Not Modified', {'request-id': '123'});
+        $http({url: '/url', method: 'GET'}).success(cb);
+        $httpBackend.flush();
+        expect(cb).toHaveBeenCalled();
+      });
+
 
       describe('success', function() {
         it('should allow http specific callbacks to be registered via "success"', function() {

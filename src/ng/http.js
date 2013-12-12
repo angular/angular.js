@@ -79,7 +79,7 @@ function transformData(data, headers, fns) {
 
 
 function isSuccess(status) {
-  return 200 <= status && status < 300;
+  return 200 <= status && (status < 300 || status === 304); //304 isn't an error code
 }
 
 
@@ -218,7 +218,7 @@ function $HttpProvider() {
      * an object representing the response. See the API signature and type info below for more
      * details.
      *
-     * A response status code between 200 and 299 is considered a success status and
+     * A response status code between 200 and 299, as well as 304, is considered a success status and
      * will result in the success callback being called. Note that if the response is a redirect,
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
