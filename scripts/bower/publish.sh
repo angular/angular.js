@@ -7,12 +7,13 @@
 set -e # fail if any command fails
 
 cd `dirname $0`
+SCRIPT_DIR=`pwd`
 
-NEW_VERSION=$1
+export TMP_DIR=../../tmp
 
-ZIP_FILE=angular-$NEW_VERSION.zip
-ZIP_FILE_URL=http://code.angularjs.org/$NEW_VERSION/angular-$NEW_VERSION.zip
-ZIP_DIR=angular-$NEW_VERSION
+export BUILD_DIR=../../build
+
+NEW_VERSION=$(node -e "console.log(require(process.env.BUILD_DIR+'/version.json').full)" | sed -e 's/\r//g')
 
 REPOS=(
   angular           \
@@ -28,47 +29,45 @@ REPOS=(
   angular-touch     \
 )
 
-
 #
-# download and unzip the file
+# clone repos
 #
-
-if [ ! -f $ZIP_FILE ]; then
-  wget $ZIP_FILE_URL
-  unzip $ZIP_FILE
-fi
+for repo in "${REPOS[@]}"
+do
+  git clone git@github.com:angular/bower-$repo.git $TMP_DIR/bower-$repo
+done
 
 
 #
-# move the files from the zip
+# move the files from the build
 #
 
 for repo in "${REPOS[@]}"
 do
-  if [ -f $ZIP_DIR/$repo.js ] # ignore i18l
+  if [ -f $BUILD_DIR/$repo.js ] # ignore i18l
     then
-      cd bower-$repo
+      cd $TMP_DIR/bower-$repo
       git reset --hard HEAD
       git checkout master
       git fetch --all
       git reset --hard origin/master
-      cd ..
-      mv $ZIP_DIR/$repo.* bower-$repo/
+      cd $SCRIPT_DIR
+      cp $BUILD_DIR/$repo.* $TMP_DIR/bower-$repo/
   fi
 done
 
 # move i18n files
-mv $ZIP_DIR/i18n/*.js bower-angular-i18n/
+cp $BUILD_DIR/i18n/*.js $TMP_DIR/bower-angular-i18n/
 
 # move csp.css
-mv $ZIP_DIR/angular-csp.css bower-angular
+cp $BUILD_DIR/angular-csp.css $TMP_DIR/bower-angular
 
 
 #
 # get the old version number
 #
 
-OLD_VERSION=$(node -e "console.log(require('./bower-angular/bower').version)" | sed -e 's/\r//g')
+OLD_VERSION=$(node -e "console.log(require(process.env.TMP_DIR+'/bower-angular/bower').version)" | sed -e 's/\r//g')
 echo $OLD_VERSION
 echo $NEW_VERSION
 
@@ -79,12 +78,12 @@ echo $NEW_VERSION
 
 for repo in "${REPOS[@]}"
 do
-  cd bower-$repo
+  cd $TMP_DIR/bower-$repo
   sed -i '' -e "s/$OLD_VERSION/$NEW_VERSION/g" bower.json
   git add -A
   git commit -m "v$NEW_VERSION"
   git tag v$NEW_VERSION
-  git push origin master
-  git push origin v$NEW_VERSION
-  cd ..
+  # TODO git push origin master
+  # TODO git push origin v$NEW_VERSION
+  cd $SCRIPT_DIR
 done
