@@ -27,23 +27,23 @@
  *     $rootScope.$digest();
  *   });
  * </pre>
- * 
+ *
  * Sometimes you want to get access to the injector of a currently running Angular app
  * from outside Angular. Perhaps, you want to inject and compile some markup after the
  * application has been bootstrapped. You can do this using extra `injector()` added
  * to JQuery/jqLite elements. See {@link angular.element}.
- * 
+ *
  * *This is fairly rare but could be the case if a third party library is injecting the
  * markup.*
- * 
+ *
  * In the following example a new block of HTML containing a `ng-controller`
  * directive is added to the end of the document body by JQuery. We then compile and link
  * it into the current AngularJS scope.
- * 
+ *
  * <pre>
  * var $div = $('<div ng-controller="MyCtrl">{{content.label}}</div>');
  * $(document.body).append($div);
- * 
+ *
  * angular.element(document).injector().invoke(function($compile) {
  *   var scope = angular.element($div).scope();
  *   $compile($div)(scope);
