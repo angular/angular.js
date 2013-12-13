@@ -1,5 +1,15 @@
 'use strict';
 
+// We need to be able to detect IE8 so we can use the right AJAX method below
+var ie = (function(v, p, needle, undef) {
+  needle = p.getElementsByTagName('br');
+  while(
+    p.innerHTML = '<!--[if gt IE ' + (++v) + ']><br><![endif]-->',
+    needle[0]
+  );
+  return v > 4 ? v : undef;
+})(3, document.createElement('p'));
+
 var XHR = window.XMLHttpRequest || function() {
   /* global ActiveXObject */
   try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
@@ -7,6 +17,15 @@ var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
   throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest.");
 };
+// Fix for IE8's native XMLHttpRequest not supporting PATCH
+if (ie === 8) {
+  XHR = function (method) {
+    if (method === 'PATCH') {
+      return new ActiveXObject('Microsoft.XMLHTTP');
+    }
+    return new window.XMLHttpRequest();
+  };
+}
 
 
 /**
