@@ -13,7 +13,10 @@ module.exports = function(config, specificOptions) {
     // SauceLabs config for local development.
     sauceLabs: {
       testName: specificOptions.testName || 'AngularJS',
-      startConnect: true
+      startConnect: true,
+      options: {
+        'selenium-version': '2.37.0'
+      }
     },
 
     // BrowserStack config for local development.
