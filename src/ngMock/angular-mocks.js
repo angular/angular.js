@@ -1572,6 +1572,10 @@ function MockHttpExpectation(method, url, data, headers) {
   };
 }
 
+function createMockXhr() {
+  return new MockXhr();
+}
+
 function MockXhr() {
 
   // hack for testing $http, $httpBackend
