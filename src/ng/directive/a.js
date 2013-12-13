@@ -32,13 +32,15 @@ var htmlAnchorDirective = valueFn({
       element.append(document.createComment('IE fix'));
     }
 
-    return function(scope, element) {
-      element.on('click', function(event){
-        // if we have no href url, then don't navigate anywhere.
-        if (!element.attr('href')) {
-          event.preventDefault();
-        }
-      });
-    };
+    if (!attr.href && !attr.name) {
+      return function(scope, element) {
+        element.on('click', function(event){
+          // if we have no href url, then don't navigate anywhere.
+          if (!element.attr('href')) {
+            event.preventDefault();
+          }
+        });
+      };
+    }
   }
 });
