@@ -170,26 +170,26 @@ describe('$compile', function() {
       // First with only elements at the top level
       element = jqLite('<div><div></div></div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Next with non-empty text nodes at the top level
       // (in this case the compiler will wrap them in a <span>)
       element = jqLite('<div>xxx</div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Next with comment nodes at the top level
       element = jqLite('<div><!-- comment --></div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Finally with empty text nodes at the top level
       element = jqLite('<div>   \n<div></div>   </div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
     });
 
