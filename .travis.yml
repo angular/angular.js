@@ -13,6 +13,7 @@ env:
     - BROWSER_STACK_ACCESS_KEY=HAfHZaypxAc3PEUrUU9a
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
+    - secure: "tTgR/XpRfNOo4deXVibZ1T9SZG8w3441ZsWvMmMRDq0TEBH1UgjSmQUa0fT/Wf5WeLbiMIfvhGPZhcAly9DUdFlt/fKS8uTeiBR23qQOwG0hxTdE2i36vEKC5SseilXNdoLfVTRVLggzeUy2eNFk/kyuKYsin1/RrsjIgJ9cykY="
 
 before_script:
   - mkdir -p $LOGS_DIR
@@ -28,3 +29,4 @@ script:
 
 after_script:
   - ./scripts/travis/print_logs.sh
+  - ./scripts/travis/upload.sh

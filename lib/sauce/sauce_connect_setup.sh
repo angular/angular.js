@@ -16,9 +16,9 @@ CONNECT_URL="http://saucelabs.com/downloads/Sauce-Connect-latest.zip"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="Sauce_Connect.zip"
 
-CONNECT_LOG="$LOGS_DIR/sauce-connect"
-CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
-CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
+CONNECT_LOG="$LOGS_DIR/sauce-connect-$JOB.log"
+CONNECT_STDOUT="$LOGS_DIR/sauce-connect-$JOB-stdout.log"
+CONNECT_STDERR="$LOGS_DIR/sauce-connect-$JOB-stderr.log"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
