@@ -1,12 +1,12 @@
 'use strict';
 
-var XHR = window.XMLHttpRequest || function() {
+function createXhr(method) {
+  // IE8 doesn't support PATCH method, but the ActiveX object does
   /* global ActiveXObject */
-  try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
-  throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest.");
-};
+  return (msie <= 8 && lowercase(method) === 'patch')
+      ? new ActiveXObject('Microsoft.XMLHTTP')
+      : new window.XMLHttpRequest();
+}
 
 
 /**
@@ -28,11 +28,11 @@ var XHR = window.XMLHttpRequest || function() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, XHR, $browser.defer, $window.angular.callbacks, $document[0]);
+    return createHttpBackend($browser, createXhr, $browser.defer, $window.angular.callbacks, $document[0]);
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument) {
+function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   var ABORTED = -1;
 
   // TODO(vojta): fix the signature
@@ -57,7 +57,9 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument)
         delete callbacks[callbackId];
       });
     } else {
-      var xhr = new XHR();
+
+      var xhr = createXhr(method);
+
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
         if (isDefined(value)) {
