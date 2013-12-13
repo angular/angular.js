@@ -13,8 +13,7 @@ BUMP_TYPE=$1
 sed -i .tmp -e 's/"version": "\(.*\)-snapshot"/"version": "\1"/' package.json
 
 # Build
-# ./jenkins_build.sh
-grunt package
+./jenkins_build.sh
 VERSION=`cat build/version.txt`
 
 # Commit and tag
