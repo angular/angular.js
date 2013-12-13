@@ -1,8 +1,8 @@
 {
   "name": "angularjs",
-  "version": "1.2.5",
-  "cdnVersion": "1.2.4",
-  "codename": "singularity-expansion",
+  "version": "1.2.6-snapshot",
+  "cdnVersion": "1.2.5",
+  "codename": "taco-salsafication",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
