@@ -4,6 +4,7 @@ var path = require('path');
 
 module.exports = function(grunt) {
   //grunt plugins
+  grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
@@ -268,6 +269,15 @@ module.exports = function(grunt) {
     write: {
       versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
       versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
+    },
+
+    bump: {
+      options: {
+        files: ['package.json'],
+        commit: false,
+        createTag: false,
+        push: false
+      }
     }
   });
 

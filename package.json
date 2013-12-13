@@ -10,6 +10,7 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "bower": "~1.2.2",
+    "grunt-bump": "~0.0.13",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-connect": "~0.5.0",
