@@ -46,9 +46,13 @@ forEach(
           var fn = $parse(attr[directiveName]);
           return function(scope, element, attr) {
             element.on(lowercase(name), function(event) {
-              scope.$apply(function() {
+              if(!scope.$$phase) {
+                scope.$apply(function() {
+                  fn(scope, {$event:event});
+                });
+              } else {
                 fn(scope, {$event:event});
-              });
+              }
             });
           };
         }
