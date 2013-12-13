@@ -1,3 +1,46 @@
+<a name="1.2.5"></a>
+# 1.2.5 singularity-expansion (2013-12-13)
+
+
+## Bug Fixes
+
+- **$compile:** allow literals in isolate scope references
+  ([43072e38](https://github.com/angular/angular.js/commit/43072e3812e32b89b97ad03144577cba50d4b776),
+   [#5296](https://github.com/angular/angular.js/issues/5296))
+- **angular-mocks:** use copy of mock data in $httpBackend
+  ([f69dc162](https://github.com/angular/angular.js/commit/f69dc16241c8b631123ad0b09674f0a5e0ff32fe))
+- **closure:** add missing FormController extern definitions
+  ([1d5e18b0](https://github.com/angular/angular.js/commit/1d5e18b062c3e33b2a8d96aa58d905ed2cd48649),
+   [#5303](https://github.com/angular/angular.js/issues/5303))
+- **ngInclude:** add template to DOM before linking other directives
+  ([30a8b7d0](https://github.com/angular/angular.js/commit/30a8b7d0b5d4882c2bf3b20eb696a02f5b667726),
+   [#5247](https://github.com/angular/angular.js/issues/5247))
+- **ngView:** add template to DOM before linking other directives
+  ([f8944efe](https://github.com/angular/angular.js/commit/f8944efe70b81e02704df9b53ea2546c80c73d3b))
+
+
+## Performance Improvements
+
+- **$injector:** remove invoke optimization that doesn't work
+  ([05e4fd34](https://github.com/angular/angular.js/commit/05e4fd3488b89e670c36869f18defe26deac2efa),
+   [#5388](https://github.com/angular/angular.js/issues/5388))
+- **$resource:** use shallow copy instead of angular.copy
+  ([fcd2a813](https://github.com/angular/angular.js/commit/fcd2a8131a3cb3e59a616bf31e61510b5c3a97d3),
+   [#5300](https://github.com/angular/angular.js/issues/5300))
+- **a:** do not link when href or name exists in template
+  ([f3de5b6e](https://github.com/angular/angular.js/commit/f3de5b6eac90baf649506072162f36dbc6d2f028),
+   [#5362](https://github.com/angular/angular.js/issues/5362))
+- **jqLite:** implement and use the `empty` method in place of `html(‘’)`
+  ([3410f65e](https://github.com/angular/angular.js/commit/3410f65e790a81d457b4f4601a1e760a6f8ede5e),
+   [#4457](https://github.com/angular/angular.js/issues/4457))
+
+## Breaking Changes
+
+- **angular-mocks:** due to [f69dc162](https://github.com/angular/angular.js/commit/f69dc16241c8b631123ad0b09674f0a5e0ff32fe),
+  some tests that rely on identity comparison rather than equality comparison in checking mock http responses will be broken,
+  since now each mock response is a copy of the original response. This is usually fixable by changing a `.toBe()` comparison
+  to `toEqual()` inside of tests.
+
 <a name="1.2.4"></a>
 # 1.2.4 wormhole-blaster (2013-12-06)
 
