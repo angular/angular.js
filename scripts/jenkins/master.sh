@@ -8,7 +8,7 @@ cd `dirname $0`/../..
 
 # Update code.angularjs.org
 VERSION=`cat build/version.txt`
-curl http://code.angularjs.org/fetchLatestSnapshot.php?ver=$VERSION
+curl -G --data-urlencode 'ver=$VERSION' http://code.angularjs.org/fetchLatestSnapshot.php
 
 # Push to bower
 ./scripts/bower/publish.sh
