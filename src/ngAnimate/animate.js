@@ -881,25 +881,71 @@ angular.module('ngAnimate', ['ng'])
       var ANIMATION_ITERATION_COUNT_KEY = 'IterationCount';
       var NG_ANIMATE_PARENT_KEY = '$$ngAnimateKey';
       var NG_ANIMATE_CSS_DATA_KEY = '$$ngAnimateCSS3Data';
-      var NG_ANIMATE_FALLBACK_CLASS_NAME = 'ng-animate-start';
-      var NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME = 'ng-animate-active';
       var ELAPSED_TIME_MAX_DECIMAL_PLACES = 3;
+      var CLOSING_TIME_BUFFER = 1.5;
+      var ONE_SECOND = 1000;
 
+      var animationCounter = 0;
       var lookupCache = {};
       var parentCounter = 0;
-
-      var animationReflowQueue = [], animationTimer, timeOut = false;
-      function afterReflow(callback) {
-        animationReflowQueue.push(callback);
+      var animationReflowQueue = [];
+      var animationElementQueue = [];
+      var animationTimer;
+      var closingAnimationTime = 0;
+      var timeOut = false;
+      function afterReflow(element, callback) {
         $timeout.cancel(animationTimer);
+
+        animationReflowQueue.push(callback);
+
+        var node = extractElementNode(element);
+        element = angular.element(node);
+        animationElementQueue.push(element);
+
+        var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
+        closingAnimationTime = Math.max(closingAnimationTime,
+          (elementData.maxDelay + elementData.maxDuration) * CLOSING_TIME_BUFFER * ONE_SECOND);
+
+        //by placing a counter we can avoid an accidental
+        //race condition which may close an animation when
+        //a follow-up animation is midway in its animation
+        elementData.animationCount = animationCounter;
+
         animationTimer = $timeout(function() {
           forEach(animationReflowQueue, function(fn) {
             fn();
           });
+
+          //copy the list of elements so that successive
+          //animations won't conflict if they're added before
+          //the closing animation timeout has run
+          var elementQueueSnapshot = [];
+          var animationCounterSnapshot = animationCounter;
+          forEach(animationElementQueue, function(elm) {
+            elementQueueSnapshot.push(elm);
+          });
+
+          $timeout(function() {
+            closeAllAnimations(elementQueueSnapshot, animationCounterSnapshot);
+            elementQueueSnapshot = null;
+          }, closingAnimationTime, false);
+
           animationReflowQueue = [];
+          animationElementQueue = [];
           animationTimer = null;
           lookupCache = {};
+          closingAnimationTime = 0;
+          animationCounter++;
         }, 10, false);
+      }
+
+      function closeAllAnimations(elements, count) {
+        forEach(elements, function(element) {
+          var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
+          if(elementData && elementData.animationCount == count) {
+            (elementData.closeAnimationFn || noop)();
+          }
+        });
       }
 
       function getElementAnimationDetails(element, cacheKey) {
@@ -1007,6 +1053,7 @@ angular.module('ngAnimate', ['ng'])
            timeout is empty (this would cause a flicker bug normally
            in the page. There is also no point in performing an animation
            that only has a delay and no duration */
+        var maxDelay = Math.max(timings.transitionDelay, timings.animationDelay);
         var maxDuration = Math.max(timings.transitionDuration, timings.animationDuration);
         if(maxDuration === 0) {
           element.removeClass(className);
@@ -1016,13 +1063,9 @@ angular.module('ngAnimate', ['ng'])
         //temporarily disable the transition so that the enter styles
         //don't animate twice (this is here to avoid a bug in Chrome/FF).
         var activeClassName = '';
-        if(timings.transitionDuration > 0) {
-          element.addClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
-          activeClassName += NG_ANIMATE_FALLBACK_ACTIVE_CLASS_NAME + ' ';
-          blockTransitions(element);
-        } else {
+        timings.transitionDuration > 0 ?
+          blockTransitions(element) :
           blockKeyframeAnimations(element);
-        }
 
         forEach(className.split(' '), function(klass, i) {
           activeClassName += (i > 0 ? ' ' : '') + klass + '-active';
@@ -1032,6 +1075,7 @@ angular.module('ngAnimate', ['ng'])
           className : className,
           activeClassName : activeClassName,
           maxDuration : maxDuration,
+          maxDelay : maxDelay,
           classes : className + ' ' + activeClassName,
           timings : timings,
           stagger : stagger,
@@ -1066,30 +1110,28 @@ angular.module('ngAnimate', ['ng'])
       }
 
       function animateRun(element, className, activeAnimationComplete) {
-        var data = element.data(NG_ANIMATE_CSS_DATA_KEY);
+        var elementData = element.data(NG_ANIMATE_CSS_DATA_KEY);
         var node = extractElementNode(element);
-        if(node.className.indexOf(className) == -1 || !data) {
+        if(node.className.indexOf(className) == -1 || !elementData) {
           activeAnimationComplete();
           return;
         }
 
-        var timings = data.timings;
-        var stagger = data.stagger;
-        var maxDuration = data.maxDuration;
-        var activeClassName = data.activeClassName;
-        var maxDelayTime = Math.max(timings.transitionDelay, timings.animationDelay) * 1000;
+        var timings = elementData.timings;
+        var stagger = elementData.stagger;
+        var maxDuration = elementData.maxDuration;
+        var activeClassName = elementData.activeClassName;
+        var maxDelayTime = Math.max(timings.transitionDelay, timings.animationDelay) * ONE_SECOND;
         var startTime = Date.now();
         var css3AnimationEvents = ANIMATIONEND_EVENT + ' ' + TRANSITIONEND_EVENT;
-        var ii = data.ii;
+        var ii = elementData.ii;
 
-        var applyFallbackStyle, style = '', appliedStyles = [];
+        var style = '', appliedStyles = [];
         if(timings.transitionDuration > 0) {
           var propertyStyle = timings.transitionPropertyStyle;
           if(propertyStyle.indexOf('all') == -1) {
-            applyFallbackStyle = true;
-            var fallbackProperty = $sniffer.msie ? '-ms-zoom' : 'border-spacing';
-            style += CSS_PREFIX + 'transition-property: ' + propertyStyle + ', ' + fallbackProperty + '; ';
-            style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + ', ' + timings.transitionDuration + 's; ';
+            style += CSS_PREFIX + 'transition-property: ' + propertyStyle + ';';
+            style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + 's;';
             appliedStyles.push(CSS_PREFIX + 'transition-property');
             appliedStyles.push(CSS_PREFIX + 'transition-duration');
           }
@@ -1098,10 +1140,6 @@ angular.module('ngAnimate', ['ng'])
         if(ii > 0) {
           if(stagger.transitionDelay > 0 && stagger.transitionDuration === 0) {
             var delayStyle = timings.transitionDelayStyle;
-            if(applyFallbackStyle) {
-              delayStyle += ', ' + timings.transitionDelay + 's';
-            }
-
             style += CSS_PREFIX + 'transition-delay: ' +
                      prepareStaggerDelay(delayStyle, stagger.transitionDelay, ii) + '; ';
             appliedStyles.push(CSS_PREFIX + 'transition-delay');
@@ -1124,11 +1162,16 @@ angular.module('ngAnimate', ['ng'])
 
         element.on(css3AnimationEvents, onAnimationProgress);
         element.addClass(activeClassName);
+        elementData.closeAnimationFn = function() {
+          onEnd();
+          activeAnimationComplete();
+        };
+        return onEnd;
 
         // This will automatically be called by $animate so
         // there is no need to attach this internally to the
         // timeout done method.
-        return function onEnd(cancelled) {
+        function onEnd(cancelled) {
           element.off(css3AnimationEvents, onAnimationProgress);
           element.removeClass(activeClassName);
           animateClose(element, className);
@@ -1136,7 +1179,7 @@ angular.module('ngAnimate', ['ng'])
           for (var i in appliedStyles) {
             node.style.removeProperty(appliedStyles[i]);
           }
-        };
+        }
 
         function onAnimationProgress(event) {
           event.stopPropagation();
@@ -1202,7 +1245,7 @@ angular.module('ngAnimate', ['ng'])
         //data from the element which will not make the 2nd animation
         //happen in the first place
         var cancel = preReflowCancellation;
-        afterReflow(function() {
+        afterReflow(element, function() {
           unblockTransitions(element);
           unblockKeyframeAnimations(element);
           //once the reflow is complete then we point cancel to
@@ -1218,7 +1261,6 @@ angular.module('ngAnimate', ['ng'])
 
       function animateClose(element, className) {
         element.removeClass(className);
-        element.removeClass(NG_ANIMATE_FALLBACK_CLASS_NAME);
         element.removeData(NG_ANIMATE_CSS_DATA_KEY);
       }
 
@@ -1268,7 +1310,7 @@ angular.module('ngAnimate', ['ng'])
         beforeAddClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-add'));
           if(cancellationMethod) {
-            afterReflow(function() {
+            afterReflow(element, function() {
               unblockTransitions(element);
               unblockKeyframeAnimations(element);
               animationCompleted();
@@ -1285,7 +1327,7 @@ angular.module('ngAnimate', ['ng'])
         beforeRemoveClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-remove'));
           if(cancellationMethod) {
-            afterReflow(function() {
+            afterReflow(element, function() {
               unblockTransitions(element);
               unblockKeyframeAnimations(element);
               animationCompleted();

@@ -645,30 +645,6 @@ describe("ngAnimate", function() {
             expect(element).toBeShown();
           }));
 
-          it("should fallback to the animation duration if an infinite iteration is provided",
-            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
-
-            var style = '-webkit-animation-duration: 2s;' +
-                        '-webkit-animation-iteration-count: infinite;' +
-                                'animation-duration: 2s;' +
-                                'animation-iteration-count: infinite;';
-
-            ss.addRule('.ng-hide-add', style);
-            ss.addRule('.ng-hide-remove', style);
-
-            element = $compile(html('<div>1</div>'))($rootScope);
-
-            element.addClass('ng-hide');
-            expect(element).toBeHidden();
-
-            $animate.removeClass(element, 'ng-hide');
-            if ($sniffer.animations) {
-              $timeout.flush();
-              browserTrigger(element,'animationend', { timeStamp: Date.now() + 2000, elapsedTime: 2 });
-            }
-            expect(element).toBeShown();
-          }));
-
           it("should not consider the animation delay is provided",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
@@ -838,109 +814,10 @@ describe("ngAnimate", function() {
             expect(elements[2].attr('style')).toMatch(/animation-delay: 1\.2\d*s,\s*2\.2\d*s/);
             expect(elements[3].attr('style')).toMatch(/animation-delay: 1\.3\d*s,\s*2\.3\d*s/);
           }));
+
         });
 
         describe("Transitions", function() {
-          it("should only apply the fallback transition property unless all properties are being animated",
-            inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
-
-            if (!$sniffer.animations) return;
-
-            ss.addRule('.all.ng-enter',  '-webkit-transition:1s linear all;' +
-                                                 'transition:1s linear all');
-
-            ss.addRule('.one.ng-enter',  '-webkit-transition:1s linear color;' +
-                                                 'transition:1s linear color');
-
-            var element = $compile('<div></div>')($rootScope);
-            var child = $compile('<div class="all">...</div>')($rootScope);
-            $rootElement.append(element);
-            var body = jqLite($document[0].body);
-            body.append($rootElement);
-
-            $animate.enter(child, element);
-            $rootScope.$digest();
-            $timeout.flush();
-
-            expect(child.attr('style') || '').not.toContain('transition-property');
-            expect(child.hasClass('ng-animate-start')).toBe(true);
-            expect(child.hasClass('ng-animate-active')).toBe(true);
-
-            browserTrigger(child,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
-            $timeout.flush();
-
-            expect(child.hasClass('ng-animate')).toBe(false);
-            expect(child.hasClass('ng-animate-active')).toBe(false);
-
-            child.remove();
-
-            var child2 = $compile('<div class="one">...</div>')($rootScope);
-
-            $animate.enter(child2, element);
-            $rootScope.$digest();
-            $timeout.flush();
-
-            //IE removes the -ms- prefix when placed on the style
-            var fallbackProperty = $sniffer.msie ? 'zoom' : 'border-spacing';
-            var regExp = new RegExp("transition-property:\\s+color\\s*,\\s*" + fallbackProperty + "\\s*;");
-            expect(child2.attr('style') || '').toMatch(regExp);
-            expect(child2.hasClass('ng-animate')).toBe(true);
-            expect(child2.hasClass('ng-animate-active')).toBe(true);
-
-            browserTrigger(child2,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1000 });
-            $timeout.flush();
-
-            expect(child2.hasClass('ng-animate')).toBe(false);
-            expect(child2.hasClass('ng-animate-active')).toBe(false);
-          }));
-
-          it("should not apply the fallback classes if no animations are going on or if CSS animations are going on",
-            inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
-
-            if (!$sniffer.animations) return;
-
-            ss.addRule('.transitions',  '-webkit-transition:1s linear all;' +
-                                                'transition:1s linear all');
-
-            ss.addRule('.keyframes',  '-webkit-animation:my_animation 1s;' +
-                                              'animation:my_animation 1s');
-
-            var element = $compile('<div class="transitions">...</div>')($rootScope);
-            $rootElement.append(element);
-            jqLite($document[0].body).append($rootElement);
-
-            $animate.enabled(false);
-
-            $animate.addClass(element, 'klass');
-
-            expect(element.hasClass('ng-animate-start')).toBe(false);
-
-            element.removeClass('klass');
-
-            $animate.enabled(true);
-
-            $animate.addClass(element, 'klass');
-
-            $timeout.flush();
-
-            expect(element.hasClass('ng-animate-start')).toBe(true);
-            expect(element.hasClass('ng-animate-active')).toBe(true);
-
-            browserTrigger(element,'transitionend', { timeStamp: Date.now() + 1000, elapsedTime: 1 });
-
-            expect(element.hasClass('ng-animate-start')).toBe(false);
-            expect(element.hasClass('ng-animate-active')).toBe(false);
-
-            element.attr('class', 'keyframes');
-
-            $animate.addClass(element, 'klass2');
-
-            $timeout.flush();
-
-            expect(element.hasClass('ng-animate-start')).toBe(false);
-            expect(element.hasClass('ng-animate-active')).toBe(false);
-          }));
-
           it("should skip transitions if disabled and run when enabled",
             inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
 
@@ -1083,9 +960,9 @@ describe("ngAnimate", function() {
               }
               expect(element).toBeShown();
               if ($sniffer.transitions) {
-                expect(element.hasClass('ng-animate-active')).toBe(true);
+                expect(element.hasClass('ng-hide-remove-active')).toBe(true);
                 browserTrigger(element,'animationend', { timeStamp: Date.now() + 11000, elapsedTime: 11 });
-                expect(element.hasClass('ng-animate-active')).toBe(false);
+                expect(element.hasClass('ng-hide-remove-active')).toBe(false);
               }
           }));
 
@@ -1213,6 +1090,55 @@ describe("ngAnimate", function() {
             expect(elements[1].attr('style')).toMatch(/transition-delay: 2\.1\d*s,\s*4\.1\d*s/);
             expect(elements[2].attr('style')).toMatch(/transition-delay: 2\.2\d*s,\s*4\.2\d*s/);
             expect(elements[3].attr('style')).toMatch(/transition-delay: 2\.3\d*s,\s*4\.3\d*s/);
+          }));
+
+          it("apply a closing timeout to close all pending transitions",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.animated-element', '-webkit-transition:5s linear all;' +
+                                                    'transition:5s linear all;');
+
+            element = $compile(html('<div class="animated-element">foo</div>'))($rootScope);
+
+            $animate.addClass(element, 'some-class');
+
+            $timeout.flush(10); //reflow
+            expect(element.hasClass('some-class-add-active')).toBe(true);
+
+            $timeout.flush(7500); //closing timeout
+            expect(element.hasClass('some-class-add-active')).toBe(false);
+          }));
+
+          it("should not allow the closing animation to close off a successive animation midway",
+            inject(function($animate, $rootScope, $compile, $sniffer, $timeout) {
+          
+            if (!$sniffer.transitions) return;
+
+            ss.addRule('.some-class-add', '-webkit-transition:5s linear all;' +
+                                                  'transition:5s linear all;');
+            ss.addRule('.some-class-remove', '-webkit-transition:10s linear all;' +
+                                                     'transition:10s linear all;');
+
+            element = $compile(html('<div>foo</div>'))($rootScope);
+
+            $animate.addClass(element, 'some-class');
+
+            $timeout.flush(10); //reflow
+            expect(element.hasClass('some-class-add-active')).toBe(true);
+
+            $animate.removeClass(element, 'some-class');
+
+            $timeout.flush(10); //second reflow
+
+            $timeout.flush(7500); //closing timeout for the first animation
+            expect(element.hasClass('some-class-remove-active')).toBe(true);
+
+            $timeout.flush(15000); //closing timeout for the second animation
+            expect(element.hasClass('some-class-remove-active')).toBe(false);
+
+            $timeout.verifyNoPendingTasks();
           }));
         });
 
