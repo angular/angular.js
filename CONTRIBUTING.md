@@ -29,6 +29,19 @@ duplication of work, and help you to craft the change so that it is successfully
 project.
 * **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
 
+
+## Want a Doc Fix?
+If you want to help improve the docs, it's a good idea to let others know what you're working on to 
+minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
+Comment on an issue to let others know what you're working on, or create a new issue if your work
+doesn't fit within the scope of any of the existing doc fix projects.
+
+For large fixes, please build and test the documentation before submitting the PR to be sure you haven't
+accidentally introduced any layout or formatting issues.You should also make sure that your commit message 
+is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
+
+If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly.
+
 ## Submission Guidelines
 
 ### Submitting an Issue
@@ -185,6 +198,7 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
   semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug or adds a feature
+* **perf**: A code change that improves performance
 * **test**: Adding missing tests
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
   generation

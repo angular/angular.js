@@ -58,4 +58,30 @@ describe('a', function() {
 
     expect(element.text()).toBe('hello@you');
   });
+
+
+  it('should not link and hookup an event if href is present at compile', function() {
+    var jq = jQuery || jqLite;
+    element = jq('<a href="//a.com">hello@you</a>');
+    var linker = $compile(element);
+
+    spyOn(jq.prototype, 'on');
+
+    linker($rootScope);
+
+    expect(jq.prototype.on).not.toHaveBeenCalled();
+  });
+
+
+  it('should not link and hookup an event if name is present at compile', function() {
+    var jq = jQuery || jqLite;
+    element = jq('<a name="bobby">hello@you</a>');
+    var linker = $compile(element);
+
+    spyOn(jq.prototype, 'on');
+
+    linker($rootScope);
+
+    expect(jq.prototype.on).not.toHaveBeenCalled();
+  });
 });

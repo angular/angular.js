@@ -1079,4 +1079,17 @@ describe('angular', function() {
     }
   });
 
+  describe('isElement', function() {
+    it('should return a boolean value', inject(function($compile, $document, $rootScope) {
+      var element = $compile('<p>Hello, world!</p>')($rootScope),
+          body = $document.find('body')[0],
+          expected = [false, false, false, false, false, false, false, true, true],
+          tests = [null, undefined, "string", 1001, {}, 0, false, body, element];
+      angular.forEach(tests, function(value, idx) {
+        var result = angular.isElement(value);
+        expect(typeof result).toEqual('boolean');
+        expect(result).toEqual(expected[idx]);
+      });
+    }));
+  });
 });

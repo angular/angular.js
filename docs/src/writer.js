@@ -3,7 +3,7 @@
  * for testability
  */
 var pathUtils = require('path');
-var qfs = require('q-fs');
+var qfs = require('q-io/fs');
 var Q = require('qq');
 var OUTPUT_DIR = pathUtils.join('build','docs');
 var TEMPLATES_DIR = pathUtils.join('docs','src','templates');
@@ -76,7 +76,7 @@ function symlink(from, to, type) {
   // qfs will normalize the path arguments for us here
   return qfs.exists(to).then(function(exists) {
     if (!exists) {
-      return qfs.symbolicLink(to, from, type);
+      return qfs.symbolicLink(to, from, type || 'file');
     }
   });
 }

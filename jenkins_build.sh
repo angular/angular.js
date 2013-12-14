@@ -1,8 +1,11 @@
 #!/bin/bash
 
+echo "#################################"
+echo "####  Jenkins Build  ############"
+echo "#################################"
+
 # Enable tracing and exit on first failure
 set -xe
-
 
 # Define reasonable set of browsers in case we are running manually from commandline
 if [[ -z "$BROWSERS" ]]

@@ -411,3 +411,55 @@ describe('HTML', function() {
     });
   });
 });
+
+describe('decodeEntities', function() {
+  var handler, text,
+      origHiddenPre = window.hiddenPre;
+
+  beforeEach(function() {
+    text = '';
+    handler = {
+      start: function() {},
+      chars: function(text_){
+        text = text_;
+      },
+      end: function() {},
+      comment: function() {}
+    };
+    module('ngSanitize');
+  });
+
+  afterEach(function() {
+    window.hiddenPre = origHiddenPre;
+  });
+
+  it('should use innerText if textContent is not available (IE<9)', function() {
+    window.hiddenPre = {
+      innerText: 'INNER_TEXT'
+    };
+    inject(function($sanitize) {
+      htmlParser('<tag>text</tag>', handler);
+      expect(text).toEqual('INNER_TEXT');
+    });
+  });
+  it('should use textContent if available', function() {
+    window.hiddenPre = {
+      textContent: 'TEXT_CONTENT',
+      innerText: 'INNER_TEXT'
+    };
+    inject(function($sanitize) {
+      htmlParser('<tag>text</tag>', handler);
+      expect(text).toEqual('TEXT_CONTENT');
+    });
+  });
+  it('should use textContent even if empty', function() {
+    window.hiddenPre = {
+      textContent: '',
+      innerText: 'INNER_TEXT'
+    };
+    inject(function($sanitize) {
+      htmlParser('<tag>text</tag>', handler);
+      expect(text).toEqual('');
+    });
+  });
+});

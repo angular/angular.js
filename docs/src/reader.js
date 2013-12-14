@@ -7,7 +7,7 @@ exports.collect = collect;
 
 var ngdoc = require('./ngdoc.js'),
     Q = require('qq'),
-    qfs = require('q-fs'),
+    qfs = require('q-io/fs'),
     PATH = require('path');
 
 var NEW_LINE = /\n\r?/;

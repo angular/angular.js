@@ -931,7 +931,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 createBoundTranscludeFn(scope, childTranscludeFn || transcludeFn)
               );
             } else {
-              nodeLinkFn(childLinkFn, childScope, node, undefined, boundTranscludeFn);
+              nodeLinkFn(childLinkFn, childScope, node, $rootElement, boundTranscludeFn);
             }
           } else if (childLinkFn) {
             childLinkFn(scope, node.childNodes, undefined, boundTranscludeFn);
@@ -1219,7 +1219,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                         });
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
-            $compileNode.html(''); // clear contents
+            $compileNode.empty(); // clear contents
             childTranscludeFn = compile($template, transcludeFn);
           }
         }
@@ -1400,7 +1400,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 optional = (match[2] == '?'),
                 mode = match[1], // @, =, or &
                 lastValue,
-                parentGet, parentSet;
+                parentGet, parentSet, compare;
 
             isolateScope.$$isolateBindings[scopeName] = mode + attrName;
 
@@ -1423,6 +1423,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   return;
                 }
                 parentGet = $parse(attrs[attrName]);
+                if (parentGet.literal) {
+                  compare = equals;
+                } else {
+                  compare = function(a,b) { return a === b; };
+                }
                 parentSet = parentGet.assign || function() {
                   // reset the change, or we will throw this exception on every $digest
                   lastValue = isolateScope[scopeName] = parentGet(scope);
@@ -1433,19 +1438,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 lastValue = isolateScope[scopeName] = parentGet(scope);
                 isolateScope.$watch(function parentValueWatch() {
                   var parentValue = parentGet(scope);
-
-                  if (parentValue !== isolateScope[scopeName]) {
+                  if (!compare(parentValue, isolateScope[scopeName])) {
                     // we are out of sync and need to copy
-                    if (parentValue !== lastValue) {
+                    if (!compare(parentValue, lastValue)) {
                       // parent changed and it has precedence
-                      lastValue = isolateScope[scopeName] = parentValue;
+                      isolateScope[scopeName] = parentValue;
                     } else {
                       // if the parent can be assigned then do so
-                      parentSet(scope, parentValue = lastValue = isolateScope[scopeName]);
+                      parentSet(scope, parentValue = isolateScope[scopeName]);
                     }
                   }
-                  return parentValue;
-                });
+                  return lastValue = parentValue;
+                }, null, parentGet.literal);
                 break;
 
               case '&':
@@ -1647,7 +1651,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
               : origAsyncDirective.templateUrl;
 
-      $compileNode.html('');
+      $compileNode.empty();
 
       $http.get($sce.getTrustedResourceUrl(templateUrl), {cache: $templateCache}).
         success(function(content) {

@@ -322,11 +322,22 @@ describe('jqLite', function() {
     });
 
 
-    it('should emit $destroy event if an element is removed via html()', inject(function(log) {
+    it('should emit $destroy event if an element is removed via html(\'\')', inject(function(log) {
       var element = jqLite('<div><span>x</span></div>');
       element.find('span').on('$destroy', log.fn('destroyed'));
 
       element.html('');
+
+      expect(element.html()).toBe('');
+      expect(log).toEqual('destroyed');
+    }));
+
+
+    it('should emit $destroy event if an element is removed via empty()', inject(function(log) {
+      var element = jqLite('<div><span>x</span></div>');
+      element.find('span').on('$destroy', log.fn('destroyed'));
+
+      element.empty();
 
       expect(element.html()).toBe('');
       expect(log).toEqual('destroyed');
@@ -786,13 +797,23 @@ describe('jqLite', function() {
     });
 
 
-    it('should read/write value', function() {
+    it('should read/write a value', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.length).toEqual(1);
       expect(element[0].innerHTML).toEqual('abc');
       expect(element.html()).toEqual('abc');
       expect(element.html('xyz') == element).toBeTruthy();
       expect(element.html()).toEqual('xyz');
+    });
+  });
+
+
+  describe('empty', function() {
+    it('should write a value', function() {
+      var element = jqLite('<div>abc</div>');
+      expect(element.length).toEqual(1);
+      expect(element.empty() == element).toBeTruthy();
+      expect(element.html()).toEqual('');
     });
   });
 
@@ -1334,6 +1355,12 @@ describe('jqLite', function() {
       var innerDiv = root.find('div');
       expect(innerDiv.length).toEqual(1);
       expect(innerDiv.html()).toEqual('text');
+    });
+
+    it('should find child by name and not care about text nodes', function() {
+      var divs = jqLite('<div><span>aa</span></div>text<div><span>bb</span></div>');
+      var innerSpan = divs.find('span');
+      expect(innerSpan.length).toEqual(2);
     });
   });
 

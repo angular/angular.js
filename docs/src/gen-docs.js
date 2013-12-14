@@ -74,10 +74,10 @@ function writeTheRest(writesFuture) {
   var versions = ngdoc.ngVersions();
   var currentVersion = ngdoc.ngCurrentVersion();
 
-  writesFuture.push(writer.symlink('../../docs/content/notes', 'build/docs/notes', 'dir'));
-  writesFuture.push(writer.symlinkTemplate('css', 'dir'));
-  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'dir'));
-  writesFuture.push(writer.symlinkTemplate('js', 'dir'));
+  writesFuture.push(writer.symlink('../../docs/content/notes', 'build/docs/notes', 'directory'));
+  writesFuture.push(writer.symlinkTemplate('css', 'directory'));
+  writesFuture.push(writer.symlink('../../docs/img', 'build/docs/img', 'directory'));
+  writesFuture.push(writer.symlinkTemplate('js', 'directory'));
 
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 

@@ -3,7 +3,7 @@
 */
 
 exports.appCache = appCache;
-var fs = require('q-fs');
+var fs = require('q-io/fs');
 var Q = require('qq');
 function identity($) {return $;}
 
