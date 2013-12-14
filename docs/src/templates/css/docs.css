@@ -343,6 +343,10 @@ ul.events > li > h3 {
   z-index:1031;
 }
 
+.search-close, a:hover {
+  text-decoration:none;
+}
+
 .tutorial-index-page,
 .tutorial-the-end-page {
   padding-top:50px;
