@@ -1192,7 +1192,7 @@ function angularInit(element, bootstrap) {
  * They must use {@link api/ng.directive:ngApp ngApp}.
  *
  * @param {Element} element DOM element which is the root of angular application.
- * @param {Array<String|Function|Array>=} modules an array of modules to load into the application.
+ * @param {Array.<String|Function|Array>=} modules an array of modules to load into the application.
  *     Each item in the array should be the name of a predefined module or a (DI annotated)
  *     function that will be invoked by the injector as a run block.
  *     See: {@link angular.module modules}
@@ -1306,7 +1306,7 @@ function assertNotHasOwnProperty(name, context) {
  * Return the value accessible from the object by path. Any undefined traversals are ignored
  * @param {Object} obj starting object
  * @param {string} path path to traverse
- * @param {boolean=true} bindFnToScope
+ * @param {boolean} bindFnToScope defaults to true
  * @returns value as accessible by path
  */
 //TODO(misko): this function needs to be removed

@@ -57,7 +57,7 @@
  * Register filter factory function.
  *
  * @param {String} name Name of the filter.
- * @param {function} fn The filter factory function which is injectable.
+ * @param {function()} fn The filter factory function which is injectable.
  */
 
 
