@@ -1,40 +1,38 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-    echo "Please specify the version bump type: patch|minor|major"
-    exit 1
-fi
+echo "#################################"
+echo "#### Cut release ################"
+echo "#################################"
 
-set -e # fail if any command fails
-cd `dirname $0`/../..
+if [ "$1" != "patch" -a "$1" != "minor" -a "$1" != "major" ]; then
+  echo "Please specify the next version type: patch|minor|major"
+  exit 1
+fi
 BUMP_TYPE=$1
 
-# bump versions: remove "-snapshot" suffix
-sed -i .tmp -e 's/"version": "\(.*\)-snapshot"/"version": "\1"/' package.json
+# Enable tracing and exit on first failure
+set -xe
+# Normalize working dir to script dir
+cd `dirname $0`/../..
+
+
+# Bump versions: remove "-snapshot" suffix
+./scripts/jenkins/bump-remove-snapshot.sh
 
 # Build
 ./jenkins_build.sh
-VERSION=`cat build/version.txt`
 
-# Commit and tag
-git add package.json
-git commit -m "chore(release): v$VERSION"
-git tag -m "v$VERSION" v$VERSION
+# Bump versions: Increment version and add "-snapshot"
+./scripts/jenkins/bump-increment.sh $BUMP_TYPE
 
-# bump versions: increment version number and add "-snapshot"
-grunt bump:$BUMP_TYPE
-NEXT_VERSION=$(node -e "console.log(require('./package.json').version)" | sed -e 's/\r//g')
-sed -i .tmp -e 's/"version": "\(.*\)"/"version": "\1-snapshot"/' package.json
-git add package.json
-git commit -m "chore(release): start v$NEXT_VERSION"
-
+echo "-- push to Github"
 # push to github
-# TODO git push
+git push
 
 # Update code.angularjs.org
 ./scripts/code.angularjs.org/publish.sh
 
-# Push to bower
+# Update bower
 ./scripts/bower/publish.sh
 
 

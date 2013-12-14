@@ -1,14 +1,25 @@
 #!/bin/bash
 
-set -e # fail if any command fails
+echo "#################################"
+echo "#### Update master ##############"
+echo "#################################"
+
+# Enable tracing and exit on first failure
+set -xe
+
 cd `dirname $0`/../..
 
-# Build
+echo "#################################"
+echo "####  Jenkins Build  ############"
+echo "#################################"
 ./jenkins_build.sh
 
-# Update code.angularjs.org
-VERSION=`cat build/version.txt`
-curl -G --data-urlencode 'ver=$VERSION' http://code.angularjs.org/fetchLatestSnapshot.php
+echo "#################################"
+echo "## Update code.angular.js.org ###"
+echo "#################################"
+./scripts/code.angularjs.org/publish.sh
 
-# Push to bower
+echo "#################################"
+echo "#### Update bower ###############"
+echo "#################################"
 ./scripts/bower/publish.sh

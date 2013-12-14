@@ -1,19 +1,21 @@
 #!/bin/bash
 
-#
-# update all the things
-#
+echo "#################################"
+echo "#### Update bower ###############"
+echo "#################################"
 
-set -e # fail if any command fails
-
+# Enable tracing and exit on first failure
+set -xe
+# Normalize working dir to script dir
 cd `dirname $0`
+
 SCRIPT_DIR=`pwd`
 
+# export so that node.js can read those env settings
 export TMP_DIR=../../tmp
-
 export BUILD_DIR=../../build
 
-NEW_VERSION=$(node -e "console.log(require(process.env.BUILD_DIR+'/version.json').full)" | sed -e 's/\r//g')
+NEW_VERSION=`cat $BUILD_DIR/version.txt`
 
 REPOS=(
   angular           \
@@ -34,6 +36,7 @@ REPOS=(
 #
 for repo in "${REPOS[@]}"
 do
+  echo "-- Cloning bower-$repo"
   git clone git@github.com:angular/bower-$repo.git $TMP_DIR/bower-$repo
 done
 
@@ -46,6 +49,7 @@ for repo in "${REPOS[@]}"
 do
   if [ -f $BUILD_DIR/$repo.js ] # ignore i18l
     then
+      echo "-- Updating files in bower-$repo"
       cd $TMP_DIR/bower-$repo
       git reset --hard HEAD
       git checkout master
@@ -78,12 +82,15 @@ echo $NEW_VERSION
 
 for repo in "${REPOS[@]}"
 do
+  echo "-- Updating version in bower-$repo from $OLD_VERSION to $NEW_VERSION"
   cd $TMP_DIR/bower-$repo
   sed -i '' -e "s/$OLD_VERSION/$NEW_VERSION/g" bower.json
   git add -A
+
+  echo "-- Committing, tagging and pushing bower-$repo"
   git commit -m "v$NEW_VERSION"
   git tag v$NEW_VERSION
-  # TODO git push origin master
-  # TODO git push origin v$NEW_VERSION
+  git push origin master
+  git push origin v$NEW_VERSION
   cd $SCRIPT_DIR
 done
