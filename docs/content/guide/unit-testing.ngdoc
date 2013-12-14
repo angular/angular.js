@@ -65,7 +65,7 @@ function MyClass() {
 
 A problem surfaces in tests when we would like to instantiate a `MockXHR` that would
 allow us to return fake data and simulate network failures. By calling `new XHR()` we are
-permanently bound to the actual XHR and there is no  way to replace it. Yes, we could monkey
+permanently bound to the actual XHR and there is no way to replace it. Yes, we could monkey
 patch, but that is a bad idea for many reasons which are outside the scope of this document.
 
 Here's an example of how the class above becomes hard to test when resorting to monkey patching:
@@ -133,7 +133,7 @@ function MyClass() {
 
 However, where does the serviceRegistry come from? If it is:
 * `new`-ed up, the test has no chance to reset the services for testing.
-*  a global look-up then the service returned is global as well (but resetting is easier, since
+* a global look-up then the service returned is global as well (but resetting is easier, since
 only one global variable exists to be reset).
 
 The class above is hard to test since we have to change the global state:
@@ -296,7 +296,7 @@ Now we can add a directive to our app.
 app.directive('aGreatEye', function () {
     return {
         restrict: 'E',
-        replace:  true,
+        replace: true,
         template: '<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>'
     };
 });
