@@ -296,8 +296,10 @@ describe('ngMock', function() {
       expect(counter).toBe(1);
 
       $interval.flush(1000);
-
       expect(counter).toBe(2);
+
+      $interval.flush(2000);
+      expect(counter).toBe(4);
     }));
 
 
@@ -691,6 +693,30 @@ describe('ngMock', function() {
       expect(count).toBe(1);
       $timeout.flush(123);
       expect(count).toBe(2);
+    }));
+
+    it('should resolve timeout functions following the timeline', inject(function($timeout) {
+      var count1 = 0, count2 = 0;
+      var iterate1 = function() {
+        count1++;
+        $timeout(iterate1, 100);
+      };
+      var iterate2 = function() {
+        count2++;
+        $timeout(iterate2, 150);
+      };
+
+      $timeout(iterate1, 100);
+      $timeout(iterate2, 150);
+      $timeout.flush(150);
+      expect(count1).toBe(1);
+      expect(count2).toBe(1);
+      $timeout.flush(50);
+      expect(count1).toBe(2);
+      expect(count2).toBe(1);
+      $timeout.flush(400);
+      expect(count1).toBe(6);
+      expect(count2).toBe(4);
     }));
   });
 
