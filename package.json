@@ -28,6 +28,7 @@
     "karma-junit-reporter": "~0.2.1",
     "karma-sauce-launcher": "~0.1.1",
     "karma-script-launcher": "~0.1.0",
+    "karma-coverage": "~0.1.4",
     "yaml-js": "~0.0.8",
     "marked": "0.2.9",
     "rewire": "1.1.3",

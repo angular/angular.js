@@ -27,6 +27,9 @@ before_script:
 script:
   - ./scripts/travis/build.sh
 
+after_success:
+  - ./scripts/travis/coverage.sh
+
 after_script:
   - ./scripts/travis/print_logs.sh
   - ./scripts/travis/upload.sh
