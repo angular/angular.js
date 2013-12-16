@@ -429,6 +429,17 @@ describe('parser', function() {
         expect(scope.b).toEqual(234);
       });
 
+        it('should evaluate assignments in ternary operator', function() {
+          scope.$eval('a = 1 ? 2 : 3');
+          expect(scope.a).toBe(2);
+
+          scope.$eval('0 ? a = 2 : a = 3');
+          expect(scope.a).toBe(3);
+
+          scope.$eval('1 ? a = 2 : a = 3');
+          expect(scope.a).toBe(2);
+        });
+
       it('should evaluate function call without arguments', function() {
         scope['const'] =  function(a,b){return 123;};
         expect(scope.$eval("const()")).toEqual(123);
