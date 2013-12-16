@@ -507,9 +507,7 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-Instead of using `angular.element(aDomElement).scope()` you need to use
-`angular.element(aDomElement).isolateScope()` to retrieve the directive's isolate scope.
-</div>
+See the {@link api/angular.element element API} for details.</div>
 
 <div class="alert alert-success">
 **Best Practice:** Use the `scope` option to create isolate scopes when making components that you
