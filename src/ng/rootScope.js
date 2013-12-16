@@ -395,7 +395,7 @@ function $RootScopeProvider(){
        * </pre>
        *
        *
-       * @param {string|Function(scope)} obj Evaluated as {@link guide/expression expression}. The
+       * @param {string|function(Object)} obj Evaluated as {@link guide/expression expression}. The
        *    expression value should evaluate to an object or an array which is observed on each
        *    {@link ng.$rootScope.Scope#methods_$digest $digest} cycle. Any shallow change within the
        *    collection will trigger a call to the `listener`.

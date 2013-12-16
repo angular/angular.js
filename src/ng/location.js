@@ -410,7 +410,7 @@ LocationHashbangInHtml5Url.prototype =
    * hash object. Hash object may contain an array of values, which will be decoded as duplicates in
    * the url.
    *
-   * @param {(string|Array<string>)=} paramValue If `search` is a string, then `paramValue` will override only a
+   * @param {(string|Array.<string>)=} paramValue If `search` is a string, then `paramValue` will override only a
    * single search parameter. If `paramValue` is an array, it will set the parameter as a
    * comma-separated value. If `paramValue` is `null`, the parameter will be deleted.
    *
