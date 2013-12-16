@@ -447,6 +447,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
     element.on('compositionend', function() {
       composing = false;
+      listener();
     });
   }
 
