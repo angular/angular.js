@@ -9,12 +9,9 @@ set -xe
 # Normalize working dir to script dir
 cd `dirname $0`
 
-
-# export so that node.js can read those env settings
-export TMP_DIR=../../tmp
-export REPO_DIR=$TMP_DIR/code.angularjs.org
-export BUILD_DIR=../../build
-
+TMP_DIR=../../tmp
+REPO_DIR=$TMP_DIR/code.angularjs.org
+BUILD_DIR=../../build
 SCRIPT_DIR=`pwd`
 NEW_VERSION=`cat $BUILD_DIR/version.txt`
 
