@@ -509,6 +509,17 @@ describe('input', function() {
     });
   }
 
+  it('should update the model on "compositionend"', function() {
+    compileInput('<input type="text" ng-model="name" name="alias" />');
+    if (!(msie < 9)) {
+      browserTrigger(inputElm, 'compositionstart');
+      changeInputValueTo('caitp');
+      expect(scope.name).toBeUndefined();
+      browserTrigger(inputElm, 'compositionend');
+      expect(scope.name).toEqual('caitp');
+    }
+  });
+
   describe('"change" event', function() {
     function assertBrowserSupportsChangeEvent(inputEventSupported) {
       // Force browser to report a lack of an 'input' event
