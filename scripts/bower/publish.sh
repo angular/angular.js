@@ -10,11 +10,8 @@ set -xe
 cd `dirname $0`
 
 SCRIPT_DIR=`pwd`
-
-# export so that node.js can read those env settings
-export TMP_DIR=../../tmp
-export BUILD_DIR=../../build
-
+TMP_DIR=../../tmp
+BUILD_DIR=../../build
 NEW_VERSION=`cat $BUILD_DIR/version.txt`
 
 REPOS=(
@@ -68,23 +65,18 @@ cp $BUILD_DIR/angular-csp.css $TMP_DIR/bower-angular
 
 
 #
-# get the old version number
-#
-
-OLD_VERSION=$(node -e "console.log(require(process.env.TMP_DIR+'/bower-angular/bower').version)" | sed -e 's/\r//g')
-echo $OLD_VERSION
-echo $NEW_VERSION
-
-#
 # update bower.json
 # tag each repo
 #
 
 for repo in "${REPOS[@]}"
 do
-  echo "-- Updating version in bower-$repo from $OLD_VERSION to $NEW_VERSION"
+  echo "-- Updating version in bower-$repo to $NEW_VERSION"
   cd $TMP_DIR/bower-$repo
-  sed -i '' -e "s/$OLD_VERSION/$NEW_VERSION/g" bower.json
+  sed -i .tmp -E 's/"(version)":[ ]*".*"/"\1": "'$NEW_VERSION'"/g' bower.json
+  sed -i .tmp -E 's/"(angular.*)":[ ]*".*"/"\1": "'$NEW_VERSION'"/g' bower.json
+  # delete tmp files
+  rm *.tmp
   git add -A
 
   echo "-- Committing, tagging and pushing bower-$repo"
