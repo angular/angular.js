@@ -2947,5 +2947,55 @@ describe("ngAnimate", function() {
         expect(capturedAnimation).toBe('leave');
       });
     });
+
+    it('should animate only the specified CSS className', function() {
+      var captures = {};
+      module(function($animateProvider) {
+        $animateProvider.classNameFilter(/prefixed-animation/);
+        $animateProvider.register('.capture', function() {
+          return {
+            enter : buildFn('enter'),
+            leave : buildFn('leave')
+          };
+
+          function buildFn(key) {
+            return function(element, className, done) {
+              captures[key] = true;
+              (done || className)();
+            }
+          }
+        });
+      });
+      inject(function($rootScope, $compile, $rootElement, $document, $timeout, $templateCache, $sniffer, $animate) {
+        if(!$sniffer.transitions) return;
+
+        var element = $compile('<div class="capture"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        var enterDone = false;
+        $animate.enter(element, $rootElement, null, function() {
+          enterDone = true;
+        });
+
+        $rootScope.$digest();
+        $timeout.flush();
+
+        expect(captures['enter']).toBeUndefined();
+        expect(enterDone).toBe(true);
+
+        element.addClass('prefixed-animation');
+
+        var leaveDone = false;
+        $animate.leave(element, function() {
+          leaveDone = true; 
+        });
+        $rootScope.$digest();
+        $timeout.flush();
+
+        expect(captures['leave']).toBe(true);
+        expect(leaveDone).toBe(true);
+      });
+    });
   });
 });

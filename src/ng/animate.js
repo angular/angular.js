@@ -61,6 +61,27 @@ var $AnimateProvider = ['$provide', function($provide) {
     $provide.factory(key, factory);
   };
 
+  /**
+   * @ngdoc function
+   * @name ng.$animateProvider#classNameFilter
+   * @methodOf ng.$animateProvider
+   *
+   * @description
+   * Sets and/or returns the CSS class regular expression that is checked when performing
+   * an animation. Upon bootstrap the classNameFilter value is not set at all (which matches
+   * all CSS classes) and will therefore enable $animate to attempt to perform an animation on
+   * any element. When setting the classNameFilter value, animations can only be performed
+   * on elements that only match the filter expression.
+   *
+   * @param {RegExp=} expression The className expression which will be checked against all animations
+   * @return {RegExp} The current CSS className expression value
+   */
+  this.classNameFilter = function(expression) {
+    return arguments.length == 1 ?
+      (this.$$classNameFilter = expression) :
+      this.$$classNameFilter;
+  };
+
   this.$get = ['$timeout', function($timeout) {
 
     /**
