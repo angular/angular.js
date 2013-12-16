@@ -13,6 +13,7 @@ var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
 var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)$/;
+var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 
 var inputType = {
 
@@ -222,6 +223,73 @@ var inputType = {
     </doc:example>
     */
   'datetime-local': dateTimeLocalInputType,
+
+   /**
+    * @ngdoc inputType
+    * @name ng.directive:input.week
+    *
+    * @description
+    * HTML5 or text input with week-of-the-year validation and transformation to Date. In browsers that do not yet support
+    * the HTML5 week input, a text element will be used. The text must be entered in a valid ISO-8601
+    * week format (yyyy-W##), for example: `2013-W02`. Will also accept a valid ISO
+    * week string or Date object as model input, but will always output a Date object to the model.
+    *
+    * @param {string} ngModel Assignable angular expression to data-bind to.
+    * @param {string=} name Property name of the form under which the control is published.
+    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+    * @param {string=} required Sets `required` validation error key if the value is not entered.
+    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+    *    `required` when you want to data-bind to the `required` attribute.
+    * @param {string=} ngChange Angular expression to be executed when input changes due to user
+    *    interaction with the input element.
+    *
+    * @example
+    <doc:example>
+    <doc:source>
+    <script>
+    function Ctrl($scope) {
+          $scope.value = '2013-W01';
+        }
+    </script>
+    <form name="myForm" ng-controller="Ctrl as dateCtrl">
+    Pick a date between in 2013:
+    <input type="date" name="input" ng-model="value"
+    placeholder="yyyy-MM-dd" min="2012-W32" max="2013-W52" required />
+    <span class="error" ng-show="myForm.input.$error.required">
+    Required!</span>
+    <span class="error" ng-show="myForm.input.$error.week">
+    Not a valid date!</span>
+    <tt>value = {{value}}</tt><br/>
+    <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+    <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+    <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+    <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+    </form>
+    </doc:source>
+    <doc:scenario>
+    it('should initialize to model', function() {
+          expect(binding('value')).toEqual('2013-W01');
+          expect(binding('myForm.input.$valid')).toEqual('true');
+        });
+
+    it('should be invalid if empty', function() {
+          input('value').enter('');
+          expect(binding('value')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+
+    it('should be invalid if over max', function() {
+          input('value').enter('2015-W01');
+          expect(binding('value')).toEqual('');
+          expect(binding('myForm.input.$valid')).toEqual('false');
+        });
+    </doc:scenario>
+    </doc:example>
+    */
+  'week': weekInputType,
+   
   /**
    * @ngdoc inputType
    * @name ng.directive:input.number
@@ -660,6 +728,119 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$parsers.push(maxLengthValidator);
     ctrl.$formatters.push(maxLengthValidator);
   }
+}
+
+
+function weekInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
+   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+   ctrl.$parsers.push(function(value) {
+      if(ctrl.$isEmpty(value)) {
+         ctrl.$setValidity('week', true);
+         return value;
+      }
+
+      if(WEEK_REGEXP.test(value)) {
+         ctrl.$setValidity('week', true);
+         return new Date(getTime(value).time);
+      }
+
+      ctrl.$setValidity('week', false);
+      return undefined;
+   });
+
+   ctrl.$formatters.push(function(value) {
+      if(isDate(value)) {
+         return $filter('date')(value, 'yyyy-Www');
+      }
+      return ctrl.$isEmpty(value) ? '' : ''+value;
+   });
+
+   if(attr.min) {
+      var minValidator = function(value) {
+         var valTime = getTime(value),
+            minTime = getTime(attr.min);
+
+         var valid = ctrl.$isEmpty(value) ||
+            valTime.time >= minTime.time;
+
+         ctrl.$setValidity('min', valid);
+         return valid ? value : undefined;
+      };
+
+      ctrl.$parsers.push(minValidator);
+      ctrl.$formatters.push(minValidator);
+   }
+
+   if(attr.max) {
+      var maxValidator = function(value) {
+         debugger;
+         var valTime = getTime(value),
+            maxTime = getTime(attr.max);
+
+         var valid = ctrl.$isEmpty(value) ||
+            valTime.time <= maxTime.time;
+
+         ctrl.$setValidity('max', valid);
+         return valid ? value : undefined;
+      };
+
+      ctrl.$parsers.push(maxValidator);
+      ctrl.$formatters.push(maxValidator);
+   }
+
+   function getFirstThursday(year) {
+      var d = 1, date;
+      while(true) {
+         date = new Date(year, 0, d++);
+         if(date.getDay() === 4) {
+            return date;
+         }
+      }
+   }
+
+   function getThisThursday(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate() + (4 - date.getDay()));
+   }
+
+   var MILLISECONDS_PER_WEEK = 6.048e8;
+
+   function getWeek(date) {
+      var firstThurs = getFirstThursday(date.getFullYear()),
+        thisThurs = getThisThursday(date),
+        diff = +thisThurs - +firstThurs;
+
+      return 1 + Math.round(diff / MILLISECONDS_PER_WEEK);
+   }
+
+   function getTime(isoWeek) {
+      if(isDate(isoWeek)) {
+         return {
+            year: isoWeek.getFullYear(),
+            week: getWeek(isoWeek),
+            time: +isoWeek
+         };
+      }
+
+      if(isString(isoWeek)) {
+         WEEK_REGEXP.lastIndex = 0;
+         var parts = WEEK_REGEXP.exec(isoWeek);
+         if(parts) {
+            var year = +parts[1],
+               week = +parts[2],
+               firstThurs = getFirstThursday(year),
+               addDays = (week - 1) * 7;
+
+            return {
+               time: +new Date(year, 0, firstThurs.getDate() + addDays),
+               week: week,
+               year: year
+            };
+         }
+      }
+
+      return NaN;
+   }
 }
 
 function dateTimeLocalInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
