@@ -2,9 +2,8 @@
 
 Script for updating code.angularjs.org repo from current local build.
 
-Requires `node` (for parsing `bower.json`)
-
-Note: This should only be run for a release build, not a snapshot build!
+Note: For a snapshot build, this will fetch the data from the ci server
+and NOT take the local build!
 
 ## Instructions
 
