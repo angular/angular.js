@@ -83,6 +83,7 @@ DOM.prototype = {
 
       var id = idFromCurrentHeaders(self.currentHeaders);
       self.anchors.push(id);
+      attrs = attrs.replace(/\sid=["'].+?["']/, '');
       return '<h' + level + attrs + ' id="' + id + '">' + content + '</h' + level + '>';
     });
 

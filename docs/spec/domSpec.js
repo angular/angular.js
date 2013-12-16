@@ -9,8 +9,13 @@ describe('dom', function() {
   });
 
   describe('html', function() {
-    it('should add ids to all h tags', function() {
+    it('should add ids to h tags', function() {
       dom.html('<h1>Some Header</h1>');
+      expect(dom.toString()).toContain('<h1 id="some-header">Some Header</h1>');
+    });
+
+    it('should override existing h tag ids', function() {
+      dom.html('<h1 id="header">Some Header</h1>');
       expect(dom.toString()).toContain('<h1 id="some-header">Some Header</h1>');
     });
 
