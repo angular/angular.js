@@ -752,6 +752,94 @@ describe('input', function() {
 
   // INPUT TYPES
 
+   describe('week', function (){
+      it('should set the view if the model is valid ISO8601 week', function() {
+         compileInput('<input type="week" ng-model="secondWeek"/>');
+
+         scope.$apply(function(){
+            scope.secondWeek = '2013-W02';
+         });
+
+         expect(inputElm.val()).toBe('2013-W02');
+      });
+
+      it('should set the view if the model is a valid Date object', function (){
+         compileInput('<input type="week" ng-model="secondWeek"/>');
+
+         scope.$apply(function(){
+            scope.secondWeek = new Date(2013, 0, 11);
+         });
+
+         expect(inputElm.val()).toBe('2013-W02');
+      });
+
+      it('should set the model undefined if the input is an invalid week string', function () {
+         compileInput('<input type="week" ng-model="value"/>');
+
+         scope.$apply(function(){
+            scope.value = new Date(2013, 0, 11);
+         });
+
+
+         expect(inputElm.val()).toBe('2013-W02');
+
+         try {
+            //set to text for browsers with datetime-local validation.
+            inputElm[0].setAttribute('type', 'text');
+         } catch(e) {
+            //for IE8
+         }
+
+         changeInputValueTo('stuff');
+         expect(inputElm.val()).toBe('stuff');
+         expect(scope.value).toBeUndefined();
+         expect(inputElm).toBeInvalid();
+      });
+
+
+
+      describe('min', function (){
+         beforeEach(function (){
+            compileInput('<input type="week" ng-model="value" name="alias" min="2013-W01" />');
+            scope.$digest();
+         });
+
+         it('should invalidate', function (){
+            changeInputValueTo('2012-W12');
+            expect(inputElm).toBeInvalid();
+            expect(scope.value).toBeFalsy();
+            expect(scope.form.alias.$error.min).toBeTruthy();
+         });
+
+         it('should validate', function (){
+            changeInputValueTo('2013-W03');
+            expect(inputElm).toBeValid();
+            expect(+scope.value).toBe(+new Date(2013, 0, 17));
+            expect(scope.form.alias.$error.min).toBeFalsy();
+         });
+      });
+
+      describe('max', function(){
+         beforeEach(function (){
+            compileInput('<input type="week" ng-model="value" name="alias" max="2013-W01" />');
+            scope.$digest();
+         });
+
+         it('should validate', function (){
+            changeInputValueTo('2012-W01');
+            expect(inputElm).toBeValid();
+            expect(+scope.value).toBe(+new Date(2012, 0, 5));
+            expect(scope.form.alias.$error.max).toBeFalsy();
+         });
+
+         it('should invalidate', function (){
+            changeInputValueTo('2013-W03');
+            expect(inputElm).toBeInvalid();
+            expect(scope.value).toBeUndefined();
+            expect(scope.form.alias.$error.max).toBeTruthy();
+         });
+      });
+   });
 
    describe('datetime-local', function () {
       it('should set the view if the model is valid ISO8601 local datetime', function() {
