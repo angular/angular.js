@@ -79,8 +79,9 @@
  * removeClass: .ng-hide - happens after the ngShow expression evaluates to a non truthy value and just before the contents are set to hidden
  *
  * @element ANY
- * @param {expression} ngShow If the {@link guide/expression expression} is truthy
- *     then the element is shown or hidden respectively.
+ * @param {expression} ngShow If the {@link guide/expression expression} is truthy or falsy
+ *     then the element is shown or hidden respectively. 
+ *     Falsy values include (case insensitive) `'f'`, `'0'`, `'false'`, `'no'`, `'n'` and `'[]'`.
  *
  * @example
   <example animations="true">
@@ -228,8 +229,9 @@ var ngShowDirective = ['$animate', function($animate) {
  * addClass: .ng-hide - happens after the ngHide expression evaluates to a non truthy value and just before the contents are set to visible
  *
  * @element ANY
- * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
- *     the element is shown or hidden respectively.
+ * @param {expression} ngHide If the {@link guide/expression expression} is truthy or falsy
+ *     then the element is hidden or shown respectively. 
+ *     Falsy values include (case insensitive) `'f'`, `'0'`, `'false'`, `'no'`, `'n'` and `'[]'`.
  *
  * @example
   <example animations="true">
