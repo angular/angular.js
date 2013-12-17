@@ -35,7 +35,7 @@ function shallowClearAndCopy(src, dst) {
   });
 
   for (var key in src) {
-    if (src.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+    if (src.hasOwnProperty(key) && key.charAt(0) !== '$' && key.charAt(1) !== '$') {
       dst[key] = src[key];
     }
   }
