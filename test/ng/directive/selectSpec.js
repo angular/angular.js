@@ -1215,6 +1215,30 @@ describe('select', function() {
       });
 
 
+      it('should treat an empty array as invalid when `multiple` attribute used', function() {
+        createSelect({
+          'ng-model': 'value',
+          'ng-options': 'item.name for item in values',
+          'ng-required': 'required',
+          'multiple': ''
+        }, true);
+
+        scope.$apply(function() {
+          scope.value = [];
+          scope.values = [{name: 'A', id: 1}, {name: 'B', id: 2}];
+          scope.required = true;
+        });
+        expect(element).toBeInvalid();
+
+        scope.$apply(function() {
+          // ngModelWatch does not set objectEquality flag
+          // array must be replaced in order to trigger $formatters
+          scope.value = [scope.values[0]];
+        });
+        expect(element).toBeValid();
+      });
+
+
       it('should allow falsy values as values', function() {
         createSelect({
           'ng-model': 'value',
