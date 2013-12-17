@@ -335,7 +335,7 @@ describe('$sniffer', function() {
   });
 
   describe('history', function() {
-      it('should be false on Webkit versions older then 334.x.x', function() {
+      it('should be false on Webkit versions older then 534.x.x', function() {
           module(function($provide) {
               var doc = {
                   body : {
