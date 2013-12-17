@@ -587,7 +587,7 @@ function annotate(fn) {
  * Here we decorate the {@link ng.$log $log} service to convert warnings to errors by intercepting
  * calls to {@link ng.$log#error $log.warn()}.
  * <pre>
- *   $provider.decorator('$log', ['$delegate', function($delegate) {
+ *   $provide.decorator('$log', ['$delegate', function($delegate) {
  *     $delegate.warn = $delegate.error;
  *     return $delegate;
  *   }]);
