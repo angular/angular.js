@@ -59,9 +59,6 @@
         padding:10px;
       }
 
-      /&#42;
-        The transition styles can also be placed on the CSS base class above
-      &#42;/
       .animate-if.ng-enter, .animate-if.ng-leave {
         -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
