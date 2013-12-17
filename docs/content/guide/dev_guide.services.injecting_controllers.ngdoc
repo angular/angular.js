@@ -113,11 +113,11 @@ dependencies with the `$inject` property.
 
 ## Related Topics
 
-{@link dev_guide.services.understanding_services Understanding Angular Services}
-{@link dev_guide.services.creating_services Creating Angular Services}
-{@link dev_guide.services.managing_dependencies Managing Service Dependencies}
-{@link dev_guide.services.testing_services Testing Angular Services}
+* {@link dev_guide.services.understanding_services Understanding Angular Services}
+* {@link dev_guide.services.creating_services Creating Angular Services}
+* {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
+* {@link dev_guide.services.testing_services Testing Angular Services}
 
-## Related API
+## Related APIs
 
-{@link ng Angular Service API}
+* {@link ng Angular Service API}
