@@ -21,6 +21,8 @@ function $SnifferProvider() {
         android =
           int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
+        webkit =
+            int((/[a-z]*?webkit\/(\d+)/i.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         document = $document[0] || {},
         documentMode = document.documentMode,
         vendorPrefix,
@@ -62,8 +64,10 @@ function $SnifferProvider() {
       // older webit browser (533.9) on Boxee box has exactly the same problem as Android has
       // so let's not use the history API also
       // We are purposefully using `!(android < 4)` to cover the case when `android` is undefined
+      // older webkit browsers (<= 533.x) have problem with the history state, ie. Safari 5.0.2
+      // so check if webkit isn't lower than 534
       // jshint -W018
-      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee),
+      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee && !(webkit < 534)),
       // jshint +W018
       hashchange: 'onhashchange' in $window &&
                   // IE8 compatible mode lies
