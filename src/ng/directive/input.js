@@ -435,7 +435,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         timeout = $browser.defer(function() {
           listener();
           timeout = null;
-        });
+        },5); // Adding 5 milliseconds delay for iOS7
       }
     };
 
