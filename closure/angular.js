@@ -762,7 +762,9 @@ angular.Module.requires;
  *   $parent: angular.Scope,
  *   $root: angular.Scope,
  *   $watch: function(
- *       (string|Function), (string|Function)=, boolean=):function()
+ *       (string|Function), (string|Function)=, boolean=):function(),
+ *   $watchCollection: function(
+ *       (string|Function), (string|Function)=):function()
  *   }}
  */
 angular.Scope;
@@ -833,6 +835,13 @@ angular.Scope.$root;
  * @return {function()}
  */
 angular.Scope.$watch = function(exp, opt_listener, opt_objectEquality) {};
+
+/**
+ * @param {string|Function} exp
+ * @param {(string|Function)=} opt_listener
+ * @return {function()}
+ */
+angular.Scope.$watchCollection = function(exp, opt_listener) {};
 
 /**
  * @typedef {{
