@@ -212,7 +212,7 @@ launcher shoots unicorns into space without any protective shielding. But on som
 atmosphere is so thick that we must wrap every unicorn in tinfoil before sending it on its
 intergalactic trip, otherwise they would burn while passing through the atmosphere. It would then
 be great if we could configure the launcher to use the tinfoil shielding for each launch in apps
-that need it. We can make it configurable it like so:
+that need it. We can make it configurable like so:
 
 
 ```javascript
