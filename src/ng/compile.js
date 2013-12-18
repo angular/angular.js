@@ -818,6 +818,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var compositeLinkFn =
               compileNodes($compileNodes, transcludeFn, $compileNodes,
                            maxPriority, ignoreDirective, previousCompileContext);
+      safeAddClass($compileNodes, 'ng-scope');
       return function publicLinkFn(scope, cloneConnectFn, transcludeControllers){
         assertArg(scope, 'scope');
         // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
@@ -832,12 +833,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         // Attach scope only to non-text nodes.
         for(var i = 0, ii = $linkNode.length; i<ii; i++) {
-          var node = $linkNode[i];
-          if (node.nodeType == 1 /* element */ || node.nodeType == 9 /* document */) {
+          var node = $linkNode[i],
+              nodeType = node.nodeType;
+          if (nodeType === 1 /* element */ || nodeType === 9 /* document */) {
             $linkNode.eq(i).data('$scope', scope);
           }
         }
-        safeAddClass($linkNode, 'ng-scope');
+
         if (cloneConnectFn) cloneConnectFn($linkNode, scope);
         if (compositeLinkFn) compositeLinkFn(scope, $linkNode, $linkNode);
         return $linkNode;
@@ -871,9 +873,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function compileNodes(nodeList, transcludeFn, $rootElement, maxPriority, ignoreDirective,
                             previousCompileContext) {
       var linkFns = [],
-          nodeLinkFn, childLinkFn, directives, attrs, linkFnFound;
+          attrs, directives, nodeLinkFn, childNodes, childLinkFn, linkFnFound;
 
-      for(var i = 0; i < nodeList.length; i++) {
+      for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
 
         // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
@@ -885,16 +887,19 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                       null, [], [], previousCompileContext)
             : null;
 
+        if (nodeLinkFn && nodeLinkFn.scope) {
+          safeAddClass(jqLite(nodeList[i]), 'ng-scope');
+        }
+
         childLinkFn = (nodeLinkFn && nodeLinkFn.terminal ||
-                      !nodeList[i].childNodes ||
-                      !nodeList[i].childNodes.length)
+                      !(childNodes = nodeList[i].childNodes) ||
+                      !childNodes.length)
             ? null
-            : compileNodes(nodeList[i].childNodes,
+            : compileNodes(childNodes,
                  nodeLinkFn ? nodeLinkFn.transclude : transcludeFn);
 
-        linkFns.push(nodeLinkFn);
-        linkFns.push(childLinkFn);
-        linkFnFound = (linkFnFound || nodeLinkFn || childLinkFn);
+        linkFns.push(nodeLinkFn, childLinkFn);
+        linkFnFound = linkFnFound || nodeLinkFn || childLinkFn;
         //use the previous context only for the first element in the virtual group
         previousCompileContext = null;
       }
@@ -906,9 +911,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         var nodeLinkFn, childLinkFn, node, $node, childScope, childTranscludeFn, i, ii, n;
 
         // copy nodeList so that linking doesn't break due to live list updates.
-        var stableNodeList = [];
-        for (i = 0, ii = nodeList.length; i < ii; i++) {
-          stableNodeList.push(nodeList[i]);
+        var nodeListLength = nodeList.length,
+            stableNodeList = new Array(nodeListLength);
+        for (i = 0; i < nodeListLength; i++) {
+          stableNodeList[i] = nodeList[i];
         }
 
         for(i = 0, n = 0, ii = linkFns.length; i < ii; n++) {
@@ -921,7 +927,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (nodeLinkFn.scope) {
               childScope = scope.$new();
               $node.data('$scope', childScope);
-              safeAddClass($node, 'ng-scope');
             } else {
               childScope = scope;
             }
