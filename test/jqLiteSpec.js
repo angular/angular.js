@@ -460,6 +460,20 @@ describe('jqLite', function() {
     }));
 
 
+    it('should keep data if an element is removed via detach()', function() {
+      var root = jqLite('<div><span>abc</span></div>'),
+          span = root.find('span'),
+          data = span.data();
+
+      span.data('foo', 'bar');
+      span.detach();
+
+      expect(data).toEqual({foo: 'bar'});
+
+      span.remove();
+    });
+
+
     it('should retrieve all data if called without params', function() {
       var element = jqLite(a);
       expect(element.data()).toEqual({});
@@ -1581,6 +1595,16 @@ describe('jqLite', function() {
       var root = jqLite('<div><span>abc</span></div>');
       var span = root.find('span');
       expect(span.remove()).toEqual(span);
+      expect(root.html()).toEqual('');
+    });
+  });
+
+
+  describe('detach', function() {
+    it('should detach', function() {
+      var root = jqLite('<div><span>abc</span></div>');
+      var span = root.find('span');
+      expect(span.detach()).toEqual(span);
       expect(root.html()).toEqual('');
     });
   });
