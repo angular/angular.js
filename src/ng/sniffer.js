@@ -85,6 +85,7 @@ function $SnifferProvider() {
       vendorPrefix: vendorPrefix,
       transitions : transitions,
       animations : animations,
+      android: android,
       msie : msie,
       msieDocumentMode: documentMode
     };
