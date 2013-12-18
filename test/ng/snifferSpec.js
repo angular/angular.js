@@ -303,6 +303,7 @@ describe('$sniffer', function() {
       });
       inject(function($sniffer) {
         expect($sniffer.transitions).toBe(true);
+        expect($sniffer.android).toBe(2);
       });
     });
 
