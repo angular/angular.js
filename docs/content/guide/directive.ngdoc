@@ -344,6 +344,7 @@ element as a customer component.
 
 
 ### Isolating the Scope of a Directive
+<a name="isolated_scope"></a>
 
 Our `myCustomer` directive above is great, but it has a fatal flaw. We can only use it once within a
 given scope.
@@ -506,7 +507,7 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-</div>
+See the {@link api/angular.element element API} for details.</div>
 
 <div class="alert alert-success">
 **Best Practice:** Use the `scope` option to create isolate scopes when making components that you

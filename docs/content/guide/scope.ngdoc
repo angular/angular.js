@@ -19,7 +19,8 @@ watch {@link guide/expression expressions} and propagate events.
     realm" (controllers, services, Angular event handlers).
 
   - Scopes can be nested to isolate application components while providing access to shared model
-    properties. A scope (prototypically) inherits properties from its parent scope.
+    properties. A scope (prototypically) inherits properties from its parent scope unless it
+    doesn't use an {@link guide/directive#isolated_scope isolated scope}.
 
   - Scopes provide context against which {@link guide/expression expressions} are evaluated. For
     example `{{username}}` expression is meaningless, unless it is evaluated against a specific
@@ -306,6 +307,7 @@ api/ng.directive:ngController ng-controller} and {@link
 api/ng.directive:ngRepeat ng-repeat}, create new child scopes
 and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
 element by using an `angular.element(aDomElement).scope()` method call.
+See the {@link guide/directive#isolated_scope directives guide} for details when using isolate scopes.
 
 ### Controllers and Scopes
 
