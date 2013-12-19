@@ -81,7 +81,7 @@ of which depend on other services that are provided by the Angular framework:
     }]);
   }
 
-  // get the main service to kick of the application
+  // get the main service to kick off the application
   angular.injector([batchLogModule]).get('routeTemplateMonitor');
 </pre>
 
