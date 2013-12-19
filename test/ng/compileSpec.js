@@ -4246,7 +4246,7 @@ describe('$compile', function() {
     
     it('should work with the "href" attribute', inject(function($compile, $rootScope) {
       $rootScope.value = 'test';
-      element = $compile('<span ng-attr-href="test/{{value}}"></span>')($rootScope);
+      element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toBe('test/test');
     }));
