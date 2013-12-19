@@ -223,31 +223,14 @@ function $HttpProvider() {
      * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
      * called for such responses.
      *
-     * # Calling $http from outside AngularJS
-     * The `$http` service will not actually send the request until the next `$digest()` is
-     * executed. Normally this is not an issue, since almost all the time your call to `$http` will
-     * be from within a `$apply()` block.
-     * If you are calling `$http` from outside Angular, then you should wrap it in a call to
-     * `$apply` to cause a $digest to occur and also to handle errors in the block correctly.
-     *
-     * ```
-     * $scope.$apply(function() {
-     *   $http(...);
-     * });
-     * ```
-     *
      * # Writing Unit Tests that use $http
-     * When unit testing you are mostly responsible for scheduling the `$digest` cycle. If you do
-     * not trigger a `$digest` before calling `$httpBackend.flush()` then the request will not have
-     * been made and `$httpBackend.expect(...)` expectations will fail.  The solution is to run the
-     * code that calls the `$http()` method inside a $apply block as explained in the previous
-     * section.
+     * When unit testing (using {@link api/ngMock ngMock}), it is necessary to call
+     * {@link api/ngMock.$httpBackend#methods_flush $httpBackend.flush()} to flush each pending
+     * request using trained responses.
      *
      * ```
      * $httpBackend.expectGET(...);
-     * $scope.$apply(function() {
-     *   $http.get(...);
-     * });
+     * $http.get(...);
      * $httpBackend.flush();
      * ```
      *
