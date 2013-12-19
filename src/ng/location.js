@@ -541,7 +541,8 @@ function locationGetterSetter(property, preprocess) {
  */
 function $LocationProvider(){
   var hashPrefix = '',
-      html5Mode = false;
+      html5Mode = false,
+      rewriteLinks = true;
 
   /**
    * @ngdoc property
@@ -572,6 +573,23 @@ function $LocationProvider(){
       return this;
     } else {
       return html5Mode;
+    }
+  };
+
+  /**
+   * @ngdoc property
+   * @name ng.$locationProvider#rewriteLinks
+   * @methodOf ng.$locationProvider
+   * @description
+   * @param {boolean=} allowRewrite Automatically rewrite links on the page.
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.rewriteLinks = function(allowRewrite) {
+    if (isDefined(allowRewrite)) {
+      rewriteLinks = allowRewrite;
+      return this;
+    } else {
+      return rewriteLinks;
     }
   };
 
@@ -624,7 +642,7 @@ function $LocationProvider(){
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
+      if (!rewriteLinks || event.ctrlKey || event.metaKey || event.which == 2) return;
 
       var elm = jqLite(event.target);
 
