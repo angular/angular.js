@@ -1,3 +1,61 @@
+<a name="1.2.6"></a>
+# 1.2.6 taco-salsafication (2013-12-19)
+
+
+## Bug Fixes
+
+- **$animate:** use a scheduled timeout in favor of a fallback property to close transitions
+  ([54637a33](https://github.com/angular/angular.js/commit/54637a335f885110efaa702a3bab29c77644b36c),
+   [#5255](https://github.com/angular/angular.js/issues/5255), [#5241](https://github.com/angular/angular.js/issues/5241), [#5405](https://github.com/angular/angular.js/issues/5405))
+- **$compile:** remove invalid IE exceptional case for `href`
+  ([c7a1d1ab](https://github.com/angular/angular.js/commit/c7a1d1ab0b663edffc1ac7b54deea847e372468d),
+   [#5479](https://github.com/angular/angular.js/issues/5479))
+- **$location:** parse xlink:href for SVGAElements
+  ([bc3ff2ce](https://github.com/angular/angular.js/commit/bc3ff2cecd0861766a9e8606f3cc2c582d9875df),
+   [#5472](https://github.com/angular/angular.js/issues/5472), [#5198](https://github.com/angular/angular.js/issues/5198), [#5199](https://github.com/angular/angular.js/issues/5199), [#4098](https://github.com/angular/angular.js/issues/4098), [#1420](https://github.com/angular/angular.js/issues/1420))
+- **$log:** should work in IE8
+  ([4f5758e6](https://github.com/angular/angular.js/commit/4f5758e6669222369889c9e789601d25ff885530),
+   [#5400](https://github.com/angular/angular.js/issues/5400))
+- **$parse:** return `undefined` if an intermetiate property's value is `null`
+  ([26d43cac](https://github.com/angular/angular.js/commit/26d43cacdc106765bd928d41600352198f887aef),
+   [#5480](https://github.com/angular/angular.js/issues/5480))
+- **closure:** add type definition for `Scope#$watchCollection`
+  ([8f329ffb](https://github.com/angular/angular.js/commit/8f329ffb829410e1fd8f86a766929134e736e3e5),
+   [#5475](https://github.com/angular/angular.js/issues/5475))
+- **forEach:** allow looping over result of `querySelectorAll` in IE8
+  ([274a6734](https://github.com/angular/angular.js/commit/274a6734ef1fff543cc50388a0958d1988baeb57))
+- **input:** do not hold input for composition on Android
+  ([3dc18037](https://github.com/angular/angular.js/commit/3dc18037e8db8766641a4d39f0fee96077db1fcb),
+   [#5308](https://github.com/angular/angular.js/issues/5308))
+- **jqLite:** support unbind self within handler
+  ([2f91cfd0](https://github.com/angular/angular.js/commit/2f91cfd0d2986899c38641100c1851b2f9d3888a))
+- **ngRepeat:** allow multiline expressions
+  ([cbb3ce2c](https://github.com/angular/angular.js/commit/cbb3ce2c309052b951d0cc87e4c6daa9c48a3dd8),
+   [#5000](https://github.com/angular/angular.js/issues/5000))
+- **select:** invalidate when `multiple`, `required`, and model is `[]`
+  ([5c97731a](https://github.com/angular/angular.js/commit/5c97731a22ed87d64712e673efea0e8a05eae65f),
+   [#5337](https://github.com/angular/angular.js/issues/5337))
+
+
+## Features
+
+- **jqLite:** provide support for `element.one()`
+  ([937caab6](https://github.com/angular/angular.js/commit/937caab6475e53a7ea0206e992f8a52449232e78))
+- **ngAnimate:** provide configuration support to match specific className values to trigger animations
+  ([cef084ad](https://github.com/angular/angular.js/commit/cef084ade9072090259d8c679751cac3ffeaed51),
+   [#5357](https://github.com/angular/angular.js/issues/5357), [#5283](https://github.com/angular/angular.js/issues/5283))
+
+
+## Performance Improvements
+
+- **compile:** add class 'ng-scope' before cloning and other micro-optimizations
+  ([f3a796e5](https://github.com/angular/angular.js/commit/f3a796e522afdbd3b640d14426edb2fbfab463c5),
+   [#5471](https://github.com/angular/angular.js/issues/5471))
+- **$parse:** use a faster path when the number of path parts is low
+  ([f4462319](https://github.com/angular/angular.js/commit/864b2596b246470cca9d4e223eaed720f4462319))
+- use faster check for `$$` prefix
+  ([06c5cfc7](https://github.com/angular/angular.js/commit/cb29632a5802e930262919b3db64ca4806c5cfc7))
+
 <a name="1.2.5"></a>
 # 1.2.5 singularity-expansion (2013-12-13)
 
