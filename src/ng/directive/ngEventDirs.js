@@ -311,7 +311,12 @@ forEach(
  * copy. (Event object is available as `$event`)
  *
  * @example
- * See {@link ng.directive:ngClick ngClick}
+   <doc:example>
+     <doc:source>
+      <input ng-copy="copied=true" ng-init="copied=false" value='copy me'>
+      copied: {{copied}}
+     </doc:source>
+   </doc:example>
  */
 
 /**
@@ -341,5 +346,10 @@ forEach(
  * paste. (Event object is available as `$event`)
  *
  * @example
- * See {@link ng.directive:ngClick ngClick}
+   <doc:example>
+     <doc:source>
+      <input ng-paste="paste=true" ng-init="paste=false" placeholder='paste here'>
+      pasted: {{paste}}
+     </doc:source>
+   </doc:example>
  */
