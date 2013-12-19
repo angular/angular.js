@@ -12,6 +12,12 @@ BUMP_TYPE=$1
 
 # Enable tracing and exit on first failure
 set -xe
+
+# Jump onto the master branch and make sure we are using the latest
+git checkout -f master
+git merge --ff-only origin/master
+
+
 # Normalize working dir to script dir
 cd `dirname $0`/../..
 
@@ -27,12 +33,10 @@ cd `dirname $0`/../..
 
 echo "-- push to Github"
 # push to github
-git push
+git push --all
 
 # Update code.angularjs.org
 ./scripts/code.angularjs.org/publish.sh
 
 # Update bower
 ./scripts/bower/publish.sh
-
-

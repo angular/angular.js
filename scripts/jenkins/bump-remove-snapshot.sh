@@ -16,5 +16,5 @@ echo "-- local version: $VERSION"
 
 echo "-- commit and tag with v$VERSION"
 git add package.json
-git commit -m "chore(release): v$VERSION"
+git commit -m "chore(release): cut v$VERSION release"
 git tag -m "v$VERSION" v$VERSION
