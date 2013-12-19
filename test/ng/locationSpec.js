@@ -1279,6 +1279,19 @@ describe('$location', function() {
     });
 
 
+    it ('should not rewrite links when rewriting links is disabled', function() {
+      configureService('/a?b=c', true, true, '', 'some content', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
     it('should rewrite full url links to same domain and base path', function() {
       configureService({linkHref: 'http://host.com/base/new', html5Mode: true});
       inject(
@@ -1793,11 +1806,13 @@ describe('$location', function() {
 
 
   describe('html5Mode', function() {
-    it('should set enabled and requireBase when called with object', function() {
+    it('should set enabled,  requireBase and rewriteLinks when called with object', function() {
       module(function($locationProvider) {
+        $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false});
         expect($locationProvider.html5Mode()).toEqual({
-          enabled: false,
-          requireBase: true
+          enabled: true,
+          requireBase: false,
+          rewriteLinks: false
         });
       });
 
@@ -1809,12 +1824,14 @@ describe('$location', function() {
       module(function($locationProvider) {
         $locationProvider.html5Mode({
           enabled: 'duh',
-          requireBase: 'probably'
+          requireBase: 'probably',
+          rewriteLinks: 'nope'
         });
 
         expect($locationProvider.html5Mode()).toEqual({
           enabled: false,
-          requireBase: true
+          requireBase: true,
+          rewriteLinks: true
         });
       });
 
@@ -1830,7 +1847,8 @@ describe('$location', function() {
 
         expect($locationProvider.html5Mode()).toEqual({
           enabled: false,
-          requireBase: true
+          requireBase: true,
+          rewriteLinks: true
         });
       });
 
@@ -1838,23 +1856,12 @@ describe('$location', function() {
     });
 
 
-    it('should default to enabled:false and requireBase:true', function() {
+    it('should default to enabled:false, requireBase:true and rewriteLinks:true', function() {
       module(function($locationProvider) {
         expect($locationProvider.html5Mode()).toEqual({
           enabled: false,
-          requireBase: true
-        });
-      });
-
-      inject(function(){});
-    });
-
-
-    it('should return html5Mode object when called without value', function() {
-      module(function($locationProvider) {
-        expect($locationProvider.html5Mode()).toEqual({
-          enabled: false,
-          requireBase: true
+          requireBase: true,
+          rewriteLinks: true
         });
       });
 
