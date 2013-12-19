@@ -1229,6 +1229,31 @@ describe('$location', function() {
       });
       browserTrigger(button, 'click');
     }));
+
+
+    it('should not throw when clicking an SVGAElement link', function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!');
+        }
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+        var template = '<svg><g><a xlink:href="#!/view1"><circle r="50"></circle></a></g></svg>';
+        var element = $compile(template)($rootScope);
+
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        expect(function() {
+          browserTrigger(av1, 'click');
+        }).not.toThrow();
+      });
+    });
   });
 
 
