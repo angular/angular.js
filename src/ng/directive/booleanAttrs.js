@@ -155,6 +155,7 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
  *
+   @priority 100
  * @example
     <doc:example>
       <doc:source>
@@ -205,6 +206,7 @@
     </doc:example>
  *
  * @element INPUT
+ * @priority 100
  * @param {expression} ngChecked If the {@link guide/expression expression} is truthy, 
  *     then special attribute "checked" will be set on the element
  */
@@ -224,6 +226,7 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
 
+   @priority 100
  * @example
     <doc:example>
       <doc:source>
@@ -258,6 +261,8 @@
  * The `ngSelected` directive solves this problem for the `selected` atttribute.
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
+ * 
+   @priority 100
  * @example
     <doc:example>
       <doc:source>
@@ -295,7 +300,7 @@
  * This complementary directive is not removed by the browser and so provides
  * a permanent reliable place to store the binding information.
 
- *
+   @priority 100
  * @example
      <doc:example>
        <doc:source>
