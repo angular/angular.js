@@ -624,7 +624,8 @@ function $LocationProvider(){
   var hashPrefix = '',
       html5Mode = {
         enabled: false,
-        requireBase: true
+        requireBase: true,
+        rewriteLinks: true
       };
 
   /**
@@ -648,15 +649,17 @@ function $LocationProvider(){
    * @name $locationProvider#html5Mode
    * @description
    * @param {(boolean|Object)=} mode If boolean, sets `html5Mode.enabled` to value.
-   *   If object, sets `enabled` and `requireBase` to respective values.
-   *   - **enabled** – `{boolean}` – Sets `html5Mode.enabled`. If true, will rely on
-   *     `history.pushState` to change urls where supported. Will fall back to hash-prefixed paths
-   *     in browsers that do not support `pushState`.
-   *   - **requireBase** - `{boolean}` - Sets `html5Mode.requireBase` (default: `true`). When
-   *     html5Mode is enabled, specifies whether or not a <base> tag is required to be present. If
-   *     `enabled` and `requireBase` are true, and a base tag is not present, an error will be
-   *     thrown when `$location` is injected. See the
-   *     {@link guide/$location $location guide for more information}
+   *   If object, sets `enabled`, `requireBase` and `rewriteLinks` to respective values. Supported
+   *   properties:
+   *   - **enabled** – `{boolean}` – (default: false) If true, will rely on `history.pushState` to
+   *     change urls where supported. Will fall back to hash-prefixed paths in browsers that do not
+   *     support `pushState`.
+   *   - **requireBase** - `{boolean}` - (default: `true`) When html5Mode is enabled, specifies
+   *     whether or not a <base> tag is required to be present. If `enabled` and `requireBase` are
+   *     true, and a base tag is not present, an error will be thrown when `$location` is injected.
+   *     See the {@link guide/$location $location guide for more information}
+   *   - **rewriteLinks** - `{boolean}` - (default: `false`) When html5Mode is enabled, disables
+   *     url rewriting for relative linksTurns off url rewriting for relative links.
    *
    * @returns {Object} html5Mode object if used as getter or itself (chaining) if used as setter
    */
@@ -665,12 +668,19 @@ function $LocationProvider(){
       html5Mode.enabled = mode;
       return this;
     } else if (isObject(mode)) {
-      html5Mode.enabled = isBoolean(mode.enabled) ?
-          mode.enabled :
-          html5Mode.enabled;
-      html5Mode.requireBase = isBoolean(mode.requireBase) ?
-          mode.requireBase :
-          html5Mode.requireBase;
+
+      if (isBoolean(mode.enabled)) {
+        html5Mode.enabled =  mode.enabled;
+      }
+
+      if (isBoolean(mode.requireBase)) {
+        html5Mode.requireBase = mode.requireBase;
+      }
+
+      if (isBoolean(mode.rewriteLinks)) {
+        html5Mode.rewriteLinks =  mode.rewriteLinks;
+      }
+
       return this;
     } else {
       return html5Mode;
@@ -763,7 +773,7 @@ function $LocationProvider(){
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
+      if (!html5Mode.rewriteLinks || event.ctrlKey || event.metaKey || event.which == 2) return;
 
       var elm = jqLite(event.target);
 
