@@ -4,6 +4,7 @@ var path = require('path');
 
 module.exports = function(grunt) {
   //grunt plugins
+  grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
@@ -106,45 +107,38 @@ module.exports = function(grunt) {
     },
 
     jshint: {
+      options: {
+        jshintrc: true,
+      },
       ng: {
         files: { src: files['angularSrc'] },
-        options: { jshintrc: 'src/.jshintrc' }
       },
       ngAnimate: {
         files: { src: 'src/ngAnimate/**/*.js' },
-        options: { jshintrc: 'src/ngAnimate/.jshintrc' }
       },
       ngCookies: {
         files: { src: 'src/ngCookies/**/*.js' },
-        options: { jshintrc: 'src/ngCookies/.jshintrc' }
       },
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
-        options: { jshintrc: 'src/ngLocale/.jshintrc' }
       },
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
-        options: { jshintrc: 'src/ngMock/.jshintrc' }
       },
       ngResource: {
         files: { src: 'src/ngResource/**/*.js' },
-        options: { jshintrc: 'src/ngResource/.jshintrc' }
       },
       ngRoute: {
         files: { src: 'src/ngRoute/**/*.js' },
-        options: { jshintrc: 'src/ngRoute/.jshintrc' }
       },
       ngSanitize: {
         files: { src: 'src/ngSanitize/**/*.js' },
-        options: { jshintrc: 'src/ngSanitize/.jshintrc' }
       },
       ngScenario: {
         files: { src: 'src/ngScenario/**/*.js' },
-        options: { jshintrc: 'src/ngScenario/.jshintrc' }
       },
       ngTouch: {
         files: { src: 'src/ngTouch/**/*.js' },
-        options: { jshintrc: 'src/ngTouch/.jshintrc' }
       }
     },
 
@@ -275,6 +269,15 @@ module.exports = function(grunt) {
     write: {
       versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
       versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
+    },
+
+    bump: {
+      options: {
+        files: ['package.json'],
+        commit: false,
+        createTag: false,
+        push: false
+      }
     }
   });
 
@@ -294,6 +297,6 @@ module.exports = function(grunt) {
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('package-without-bower', ['clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'test:docgen']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint']);
   grunt.registerTask('default', ['package']);
 };

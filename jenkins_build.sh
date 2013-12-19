@@ -1,8 +1,11 @@
 #!/bin/bash
 
+echo "#################################"
+echo "####  Jenkins Build  ############"
+echo "#################################"
+
 # Enable tracing and exit on first failure
 set -xe
-
 
 # Define reasonable set of browsers in case we are running manually from commandline
 if [[ -z "$BROWSERS" ]]
@@ -25,10 +28,11 @@ rm -f angular.js.size
 npm install --color false
 grunt ci-checks package --no-color
 
+# DOCS generator unit tests #
+grunt test:docgen --no-color
 
 # UNIT TESTS #
 grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
-
 
 # END TO END TESTS #
 grunt test:e2e --browsers $BROWSERS_E2E --reporters=dots,junit --no-colors --no-color

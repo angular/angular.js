@@ -222,7 +222,7 @@ var pc = new PasswordCtrl();
 input.val('abc');
 pc.grade();
 expect(span.text()).toEqual('weak');
-$('body').html('');
+$('body').empty();
 </pre>
 
 In angular the controllers are strictly separated from the DOM manipulation logic and this results in

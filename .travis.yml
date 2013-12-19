@@ -3,26 +3,28 @@ node_js:
   - 0.10
 
 env:
+  matrix:
+    - JOB=unit
+    - JOB=e2e
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
-    - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
     - BROWSER_STACK_USERNAME=VojtaJina
     - BROWSER_STACK_ACCESS_KEY=HAfHZaypxAc3PEUrUU9a
     - LOGS_DIR=/tmp/angular-build/logs
+    - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
 
 before_script:
   - mkdir -p $LOGS_DIR
-  - ./lib/browser-stack/start-tunnel.sh
+  - ./lib/sauce/sauce_connect_setup.sh
   - npm install -g grunt-cli
   - grunt bower
   - grunt bower
   - grunt package-without-bower
-  - grunt ci-checks
-  - ./lib/sauce/sauce_connect_block.sh
+  - ./scripts/travis/wait_for_browser_provider.sh
 
 script:
-  - ./travis_build.sh
+  - ./scripts/travis/build.sh
 
 after_script:
-  - ./travis_print_logs.sh
+  - ./scripts/travis/print_logs.sh

@@ -170,26 +170,26 @@ describe('$compile', function() {
       // First with only elements at the top level
       element = jqLite('<div><div></div></div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Next with non-empty text nodes at the top level
       // (in this case the compiler will wrap them in a <span>)
       element = jqLite('<div>xxx</div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Next with comment nodes at the top level
       element = jqLite('<div><!-- comment --></div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
 
       // Finally with empty text nodes at the top level
       element = jqLite('<div>   \n<div></div>   </div>');
       $compile(element.contents())($rootScope);
-      element.html('');
+      element.empty();
       expect(calcCacheSize()).toEqual(0);
     });
 
@@ -969,6 +969,32 @@ describe('$compile', function() {
           });
         });
 
+        it('should resolve widgets after cloning in append mode without $templateCache', function() {
+          module(function($exceptionHandlerProvider) {
+            $exceptionHandlerProvider.mode('log');
+          });
+          inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
+                          $exceptionHandler) {
+            $httpBackend.expect('GET', 'cau.html').respond('<span>{{name}}</span>');
+            $rootScope.name = 'Elvis';
+            var template = $compile('<div class="cau"></div>');
+            var e1;
+            var e2;
+
+            e1 = template($rootScope.$new(), noop); // clone
+            expect(e1.text()).toEqual('');
+
+            $httpBackend.flush();
+
+            e2 = template($rootScope.$new(), noop); // clone
+            $rootScope.$digest();
+            expect(e1.text()).toEqual('Elvis');
+            expect(e2.text()).toEqual('Elvis');
+
+            dealoc(e1);
+            dealoc(e2);
+          });
+        });
 
         it('should resolve widgets after cloning in inline mode', function() {
           module(function($exceptionHandlerProvider) {
@@ -1004,6 +1030,33 @@ describe('$compile', function() {
             expect($exceptionHandler.errors.length).toEqual(2);
             expect($exceptionHandler.errors[0][0].message).toEqual('cError');
             expect($exceptionHandler.errors[1][0].message).toEqual('lError');
+
+            dealoc(e1);
+            dealoc(e2);
+          });
+        });
+
+        it('should resolve widgets after cloning in inline mode without $templateCache', function() {
+          module(function($exceptionHandlerProvider) {
+            $exceptionHandlerProvider.mode('log');
+          });
+          inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
+                          $exceptionHandler) {
+            $httpBackend.expect('GET', 'cau.html').respond('<span>{{name}}</span>');
+            $rootScope.name = 'Elvis';
+            var template = $compile('<div class="i-cau"></div>');
+            var e1;
+            var e2;
+
+            e1 = template($rootScope.$new(), noop); // clone
+            expect(e1.text()).toEqual('');
+
+            $httpBackend.flush();
+
+            e2 = template($rootScope.$new(), noop); // clone
+            $rootScope.$digest();
+            expect(e1.text()).toEqual('Elvis');
+            expect(e2.text()).toEqual('Elvis');
 
             dealoc(e1);
             dealoc(e2);
@@ -2386,6 +2439,24 @@ describe('$compile', function() {
         expect(componentScope.refAlias).toBe($rootScope.name);
       }));
 
+      it('should not break if local and origin both change to the same value', inject(function() {
+        $rootScope.name = 'aaa';
+
+        compile('<div><span my-component ref="name">');
+
+        //change both sides to the same item withing the same digest cycle
+        componentScope.ref = 'same';
+        $rootScope.name = 'same';
+        $rootScope.$apply();
+
+        //change origin back to it's previous value
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        expect($rootScope.name).toBe('aaa');
+        expect(componentScope.ref).toBe('aaa');
+      }));
+
       it('should complain on non assignable changes', inject(function() {
         compile('<div><span my-component ref="\'hello \' + name">');
         $rootScope.name = 'world';
@@ -2421,6 +2492,62 @@ describe('$compile', function() {
 
         expect(lastRefValueInParent).toBe('new');
       }));
+
+      describe('literal objects', function() {
+        it('should copy parent changes', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({name: 'a'});
+
+          $rootScope.name = 'b';
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({name: 'b'});
+        }));
+
+        it('should not change the component when parent does not change', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          var lastComponentValue = componentScope.reference;
+          $rootScope.$apply();
+          expect(componentScope.reference).toBe(lastComponentValue);
+        }));
+
+        it('should complain when the component changes', inject(function() {
+          compile('<div><span my-component reference="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          componentScope.reference = {name: 'b'};
+          expect(function() {
+            $rootScope.$apply();
+          }).toThrowMinErr("$compile", "nonassign", "Expression '{name: name}' used with directive 'myComponent' is non-assignable!");
+
+        }));
+
+        it('should work for primitive literals', inject(function() {
+          test('1', 1);
+          test('null', null);
+          test('undefined', undefined);
+          test("'someString'", 'someString');
+
+
+          function test(literalString, literalValue) {
+            compile('<div><span my-component reference="'+literalString+'">');
+
+            $rootScope.$apply();
+            expect(componentScope.reference).toBe(literalValue);
+            dealoc(element);
+
+          }
+
+        }));
+
+      });
+
     });
 
 
@@ -4116,7 +4243,13 @@ describe('$compile', function() {
       expect(element.attr('test2')).toBe('Misko');
       expect(element.attr('test3')).toBe('Misko');
     }));
-
+    
+    it('should work with the "href" attribute', inject(function($compile, $rootScope) {
+      $rootScope.value = 'test';
+      element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('href')).toBe('test/test');
+    }));
 
     it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";

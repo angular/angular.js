@@ -21,6 +21,7 @@ var TYPES = {
   docs: true,
   style: true,
   refactor: true,
+  perf: true,
   test: true,
   chore: true,
   revert: true

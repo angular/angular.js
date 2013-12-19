@@ -144,6 +144,27 @@
 .content h4,
 .content h5 {
   margin-top: 1em;
+  letter-spacing: -0.06em;
+}
+
+.content h2 {
+  font-size: 36px;
+  margin-bottom: .5em;
+}
+
+.content h3 {
+  font-size: 24px;
+  border-top: 1px solid #eee;
+  padding-top: .5em;
+}
+
+.content h4 {
+  font-size: 16px;
+  margin-top: 1.5em;
+}
+
+.content ul {
+  margin-top: .5em;
 }
 
 ul.parameters > li > p,
@@ -520,6 +541,10 @@ pre ol li {
 
 .definition-table.spaced {
   margin-bottom:30px;
+}
+
+.definition-table td {
+  vertical-align: top;
 }
 
 .component-heading {

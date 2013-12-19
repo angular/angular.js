@@ -28,7 +28,7 @@ function escape(text) {
 function setHtmlIe8SafeWay(element, html) {
   var newElement = angular.element('<pre>' + html + '</pre>');
 
-  element.html('');
+  element.empty();
   element.append(newElement.contents());
   return element;
 }
@@ -215,17 +215,7 @@ directive.ngEmbedApp = ['$templateCache', '$browser', '$rootScope', '$location',
           }];
           this.html5Mode = angular.noop;
         });
-        $provide.decorator('$timeout', ['$rootScope', '$delegate', function($rootScope, $delegate) {
-          return angular.extend(function(fn, delay) {
-            if (delay && delay > 50) {
-              return setTimeout(function() {
-                $rootScope.$apply(fn);
-              }, delay);
-            } else {
-              return $delegate.apply(this, arguments);
-            }
-          }, $delegate);
-        }]);
+
         $provide.decorator('$rootScope', ['$delegate', function($delegate) {
           embedRootScope = $delegate;
 

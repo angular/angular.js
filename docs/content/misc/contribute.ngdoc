@@ -23,7 +23,7 @@ for how to contribute your own code to AngularJS.
 Before you can build AngularJS, you must install and configure the following dependencies on your
 machine:
 
-* {@link http://git-scm.com/ Git}: The {@link http://help.github.com/mac-git-installation Github Guide to
+* {@link http://git-scm.com/ Git}: The {@link https://help.github.com/articles/set-up-git Github Guide to
 Installing Git} is a good source of information.
 
 * {@link http://nodejs.org Node.js}: We use Node to generate the documentation, run a
@@ -46,6 +46,8 @@ and included in your {@link http://docs.oracle.com/javase/tutorial/essential/env
   npm install -g bower
   ```
 
+**Note:** You may need to use sudo (for OSX, *nix, BSD etc) or run your command shell as Administrator (for Windows) to install Grunt &amp;
+Bower globally.
 
 ## Forking Angular on Github
 

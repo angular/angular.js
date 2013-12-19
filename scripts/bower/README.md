@@ -1,22 +1,14 @@
 # Angular Bower Script
 
-Script for updating the Angular bower repos from a code.angularjs.org package
-
-Requires `node` (for parsing `bower.json`) and `wget` (for fetching the `angular.zip` from `code.angularjs.org`)
-
+Script for updating the Angular bower repos from current local build.
 
 ## Instructions
 
-You need to run `./init.sh` the first time you use this script to clone all the repos.
-
-For subsequent updates:
+`grunt package`: Build angular locally
 
 ```shell
-./publish.sh NEW_VERSION
+./publish.sh
 ```
-
-Where `NEW_VERSION` is a version number like `1.2.3`.
-
 
 ## License
 MIT

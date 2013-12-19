@@ -1,3 +1,103 @@
+<a name="1.2.5"></a>
+# 1.2.5 singularity-expansion (2013-12-13)
+
+
+## Bug Fixes
+
+- **$compile:** allow literals in isolate scope references
+  ([43072e38](https://github.com/angular/angular.js/commit/43072e3812e32b89b97ad03144577cba50d4b776),
+   [#5296](https://github.com/angular/angular.js/issues/5296))
+- **angular-mocks:** use copy of mock data in $httpBackend
+  ([f69dc162](https://github.com/angular/angular.js/commit/f69dc16241c8b631123ad0b09674f0a5e0ff32fe))
+- **closure:** add missing FormController extern definitions
+  ([1d5e18b0](https://github.com/angular/angular.js/commit/1d5e18b062c3e33b2a8d96aa58d905ed2cd48649),
+   [#5303](https://github.com/angular/angular.js/issues/5303))
+- **ngInclude:** add template to DOM before linking other directives
+  ([30a8b7d0](https://github.com/angular/angular.js/commit/30a8b7d0b5d4882c2bf3b20eb696a02f5b667726),
+   [#5247](https://github.com/angular/angular.js/issues/5247))
+- **ngView:** add template to DOM before linking other directives
+  ([f8944efe](https://github.com/angular/angular.js/commit/f8944efe70b81e02704df9b53ea2546c80c73d3b))
+
+
+## Performance Improvements
+
+- **$injector:** remove invoke optimization that doesn't work
+  ([05e4fd34](https://github.com/angular/angular.js/commit/05e4fd3488b89e670c36869f18defe26deac2efa),
+   [#5388](https://github.com/angular/angular.js/issues/5388))
+- **$resource:** use shallow copy instead of angular.copy
+  ([fcd2a813](https://github.com/angular/angular.js/commit/fcd2a8131a3cb3e59a616bf31e61510b5c3a97d3),
+   [#5300](https://github.com/angular/angular.js/issues/5300))
+- **a:** do not link when href or name exists in template
+  ([f3de5b6e](https://github.com/angular/angular.js/commit/f3de5b6eac90baf649506072162f36dbc6d2f028),
+   [#5362](https://github.com/angular/angular.js/issues/5362))
+- **jqLite:** implement and use the `empty` method in place of `html(‘’)`
+  ([3410f65e](https://github.com/angular/angular.js/commit/3410f65e790a81d457b4f4601a1e760a6f8ede5e),
+   [#4457](https://github.com/angular/angular.js/issues/4457))
+
+## Breaking Changes
+
+- **angular-mocks:** due to [f69dc162](https://github.com/angular/angular.js/commit/f69dc16241c8b631123ad0b09674f0a5e0ff32fe),
+  some tests that rely on identity comparison rather than equality comparison in checking mock http responses will be broken,
+  since now each mock response is a copy of the original response. This is usually fixable by changing a `.toBe()` comparison
+  to `toEqual()` inside of tests.
+
+<a name="1.2.4"></a>
+# 1.2.4 wormhole-blaster (2013-12-06)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - ensure animations work with directives that share a transclusion
+  ([958d3d56](https://github.com/angular/angular.js/commit/958d3d56b1899a2cfc7b18c0292e5a1d8c64d0a5),
+   [#4716](https://github.com/angular/angular.js/issues/4716), [#4871](https://github.com/angular/angular.js/issues/4871), [#5021](https://github.com/angular/angular.js/issues/5021), [#5278](https://github.com/angular/angular.js/issues/5278))
+  - ensure ms durations are properly rounded
+  ([93901bdd](https://github.com/angular/angular.js/commit/93901bdde4bb9f0ba114ebb33b8885808e1823e1),
+   [#5113](https://github.com/angular/angular.js/issues/5113), [#5162](https://github.com/angular/angular.js/issues/5162))
+- **$compile:**
+  - update cloned elements if the template arrives after the cloning
+  ([b0972a2e](https://github.com/angular/angular.js/commit/b0972a2e75909e41dbac6e4413ada7df2d51df3a))
+  - ensure the isolated local watch `lastValue` is always in sync
+  ([2d0f6ccb](https://github.com/angular/angular.js/commit/2d0f6ccba896fe34141d6d4f59eef6fba580c5c2),
+   [#5182](https://github.com/angular/angular.js/issues/5182))
+- **$rootScope:**
+  - ensure that when the $destroy event is broadcast on $rootScope that it does something
+  ([d802ed1b](https://github.com/angular/angular.js/commit/d802ed1b3680cfc1751777fac465b92ee29944dc),
+   [#5169](https://github.com/angular/angular.js/issues/5169))
+  - ensure the phase is cleared within a digest if an exception is raised by a watcher
+  ([d3c486dd](https://github.com/angular/angular.js/commit/d3c486dd6dfa8d5dca32a3e28aa685fb7260c878))
+- **$sanitize:** don't rely on YARR regex engine executing immediately in order to prevent object mutation
+  ([81b81856](https://github.com/angular/angular.js/commit/81b81856ee43d2876927c4e1f774affa87e99707),
+   [#5193](https://github.com/angular/angular.js/issues/5193), [#5192](https://github.com/angular/angular.js/issues/5192))
+- **closure:** closure compiler shouldn't rename .defaults.transformRequest
+  ([f01087f8](https://github.com/angular/angular.js/commit/f01087f802839637843115cbcf99702e09d866f6))
+- **input:** ensure ngModelWatch() triggers second digest pass when appropriate
+  ([b6d54393](https://github.com/angular/angular.js/commit/b6d5439343b9801f7f2a009d0de09cba9aa21a1d),
+   [#5258](https://github.com/angular/angular.js/issues/5258), [#5282](https://github.com/angular/angular.js/issues/5282))
+- **isElement:** return boolean value rather than `truthy` value.
+  ([2dbb6f9a](https://github.com/angular/angular.js/commit/2dbb6f9a54eb5ff5847eed11c85ac4cf119eb41c),
+   [#4519](https://github.com/angular/angular.js/issues/4519), [#4534](https://github.com/angular/angular.js/issues/4534))
+- **jqLite:** ignore incompatible nodes on find()
+  ([1169b544](https://github.com/angular/angular.js/commit/1169b5445691e1495354d235a3badf05240e3904),
+   [#4120](https://github.com/angular/angular.js/issues/4120))
+- **ngInit:** evaluate ngInit before ngInclude
+  ([0e50810c](https://github.com/angular/angular.js/commit/0e50810c53428f4c1f5bfdba9599df54cb7a6c6e),
+   [#5167](https://github.com/angular/angular.js/issues/5167), [#5208](https://github.com/angular/angular.js/issues/5208))
+- **ngSanitize:** prefer textContent to innerText to avoid layout trashing
+  ([bf1972dc](https://github.com/angular/angular.js/commit/bf1972dc1e8ffbeaddfa53df1d49bc5a2177f09c))
+
+
+## Performance Improvements
+
+- **$parse:** micro-optimization for ensureSafeObject function
+  ([689dfb16](https://github.com/angular/angular.js/commit/689dfb167924a61aef444ce7587fb987d8080990),
+   [#5246](https://github.com/angular/angular.js/issues/5246))
+- **Scope:** short-circuit after dirty-checking last dirty watcher
+  ([d070450c](https://github.com/angular/angular.js/commit/d070450cd2b3b3a3aa34b69d3fa1f4cc3be025dd),
+   [#5272](https://github.com/angular/angular.js/issues/5272), [#5287](https://github.com/angular/angular.js/issues/5287))
+
+
+
 <a name="1.2.3"></a>
 # 1.2.3 unicorn-zapper (2013-11-27)
 

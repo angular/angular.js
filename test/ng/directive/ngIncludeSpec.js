@@ -47,7 +47,7 @@ describe('ngInclude', function() {
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(body.text()).toEqual('misko');
-    body.html('');
+    body.empty();
   }));
 
 
@@ -60,7 +60,7 @@ describe('ngInclude', function() {
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(element.text()).toEqual('Alibaba');
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 
@@ -74,7 +74,7 @@ describe('ngInclude', function() {
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
         /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 
@@ -88,7 +88,7 @@ describe('ngInclude', function() {
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
         /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).html('');
+    jqLite(document.body).empty();
   }));
 
 
@@ -523,6 +523,46 @@ describe('ngInclude and transcludes', function() {
       expect(testElement[0].nodeName).toBe('DIV');
     });
 
+  });
+
+  it('should link directives on the same element after the content has been loaded', function() {
+    var contentOnLink;
+    module(function() {
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            contentOnLink = element.text();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('someContent');
+      element = $compile('<div><div ng-include="\'include.html\'" test></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(contentOnLink).toBe('someContent');
+    });
+  });
+
+  it('should add the content to the element before compiling it', function() {
+    var root;
+    module(function() {
+      directive('test', function() {
+        return {
+          link: function(scope, element) {
+            root = element.parent().parent();
+          }
+        };
+      });
+    });
+    inject(function($compile, $rootScope, $httpBackend) {
+      $httpBackend.expectGET('include.html').respond('<span test></span>');
+      element = $compile('<div><div ng-include="\'include.html\'"></div>')($rootScope);
+      $rootScope.$apply();
+      $httpBackend.flush();
+      expect(root[0]).toBe(element[0]);
+    });
   });
 });
 

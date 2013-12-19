@@ -762,7 +762,9 @@ angular.Module.requires;
  *   $parent: angular.Scope,
  *   $root: angular.Scope,
  *   $watch: function(
- *       (string|Function), (string|Function)=, boolean=):function()
+ *       (string|Function), (string|Function)=, boolean=):function(),
+ *   $watchCollection: function(
+ *       (string|Function), (string|Function)=):function()
  *   }}
  */
 angular.Scope;
@@ -833,6 +835,13 @@ angular.Scope.$root;
  * @return {function()}
  */
 angular.Scope.$watch = function(exp, opt_listener, opt_objectEquality) {};
+
+/**
+ * @param {string|Function} exp
+ * @param {(string|Function)=} opt_listener
+ * @return {function()}
+ */
+angular.Scope.$watchCollection = function(exp, opt_listener) {};
 
 /**
  * @typedef {{
@@ -1053,6 +1062,10 @@ angular.$http;
  */
 angular.$http.Config;
 
+angular.$http.Config.transformRequest;
+
+angular.$http.Config.transformResponse;
+
 // /**
 //  * This extern is currently incomplete as delete is a reserved word.
 //  * To use delete, index $http.
@@ -1158,6 +1171,13 @@ angular.$http.HttpPromise.error = function(callback) {};
  *   }}
  */
 angular.$http.Response;
+
+angular.$HttpProvider;
+
+/**
+ * @type {angular.$http.Config}
+ */
+angular.$HttpProvider.defaults;
 
 /******************************************************************************
  * $injector Service
@@ -1431,6 +1451,11 @@ angular.NgModelController.prototype.$viewValue;
 angular.FormController = function() {};
 
 /**
+ * @param {*} control
+ */
+angular.FormController.prototype.$addControl = function(control) {};
+
+/**
  * @type {boolean}
  */
 angular.FormController.prototype.$dirty;
@@ -1446,9 +1471,37 @@ angular.FormController.prototype.$error;
 angular.FormController.prototype.$invalid;
 
 /**
+ * @type {string}
+ */
+angular.FormController.prototype.$name;
+
+/**
  * @type {boolean}
  */
 angular.FormController.prototype.$pristine;
+
+/**
+ * @param {*} control
+ */
+angular.FormController.prototype.$removeControl = function(control) {};
+
+/**
+ * @type {function()}
+ */
+angular.FormController.prototype.$setDirty = function() {};
+
+/**
+ * @type {function()}
+ */
+angular.FormController.prototype.$setPristine = function() {};
+
+/**
+ * @param {string} validationToken
+ * @param {boolean} isValid
+ * @param {*} control
+ */
+angular.FormController.prototype.$setValidity = function(
+    validationToken, isValid, control) {};
 
 /**
  * @type {boolean}
@@ -1698,7 +1751,8 @@ angular.$routeProvider.when = function(path, route) {};
  *   resolve: (Object.<string, (
  *       string|Function|Array.<string|Function>|angular.$q.Promise
  *       )>|undefined),
- *   redirectTo: (string|function()|undefined),
+ *   redirectTo: (
+ *       string|function(Object.<string>, string, Object): string|undefined),
  *   reloadOnSearch: (boolean|undefined)
  *   }}
  */
@@ -1721,7 +1775,7 @@ angular.$routeProvider.Params.templateUrl;
  */
 angular.$routeProvider.Params.resolve;
 
-/** @type {string|function()} */
+/** @type {string|function(Object.<string>, string, Object): string} */
 angular.$routeProvider.Params.redirectTo;
 
 /** @type {boolean} */
