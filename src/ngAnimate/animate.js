@@ -288,9 +288,12 @@ angular.module('ngAnimate', ['ng'])
         });
       });
 
-      function isAcceptedClassName(className) {
-        var exp = $animateProvider.classNameFilter();
-        return !(exp instanceof RegExp) || exp.test(className);
+      var isAnimatableClassName = function() { return true; };
+      var classNameFilter = $animateProvider.classNameFilter();
+      if(classNameFilter) {
+        isAnimatableClassName = function(className) {
+          return classNameFilter.test(className);
+        }
       }
 
       function lookup(name) {
@@ -582,7 +585,7 @@ angular.module('ngAnimate', ['ng'])
 
         //transcluded directives may sometimes fire an animation using only comment nodes
         //best to catch this early on to prevent any animation operations from occurring
-        if(!node || !isAcceptedClassName(classes)) {
+        if(!node || !isAnimatableClassName(classes)) {
           fireDOMOperation();
           closeAnimation();
           return;
