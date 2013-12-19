@@ -894,16 +894,16 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           if (pathVal == null) return pathVal;
           pathVal = pathVal[key0];
 
-          if (!key1 || pathVal == null) return pathVal;
+          if (pathVal == null) return key1 ? undefined : pathVal;
           pathVal = pathVal[key1];
 
-          if (!key2 || pathVal == null) return pathVal;
+          if (pathVal == null) return key2 ? undefined : pathVal;
           pathVal = pathVal[key2];
 
-          if (!key3 || pathVal == null) return pathVal;
+          if (pathVal == null) return key3 ? undefined : pathVal;
           pathVal = pathVal[key3];
 
-          if (!key4 || pathVal == null) return pathVal;
+          if (pathVal == null) return key4 ? undefined : pathVal;
           pathVal = pathVal[key4];
 
           return pathVal;
@@ -924,7 +924,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key1 || pathVal == null) return pathVal;
+          if (pathVal == null) return key1 ? undefined : pathVal;
 
           pathVal = pathVal[key1];
           if (pathVal && pathVal.then) {
@@ -936,7 +936,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key2 || pathVal == null) return pathVal;
+          if (pathVal == null) return key2 ? undefined : pathVal;
 
           pathVal = pathVal[key2];
           if (pathVal && pathVal.then) {
@@ -948,7 +948,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key3 || pathVal == null) return pathVal;
+          if (pathVal == null) return key3 ? undefined : pathVal;
 
           pathVal = pathVal[key3];
           if (pathVal && pathVal.then) {
@@ -960,7 +960,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key4 || pathVal == null) return pathVal;
+          if (pathVal == null) return key4 ? undefined : pathVal;
 
           pathVal = pathVal[key4];
           if (pathVal && pathVal.then) {
@@ -980,7 +980,7 @@ function simpleGetterFn1(key0, fullExp) {
   ensureSafeMemberName(key0, fullExp);
 
   return function simpleGetterFn1(scope, locals) {
-    if (scope == null) return scope;
+    if (scope == null) return undefined;
     return ((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
   };
 }
@@ -990,10 +990,9 @@ function simpleGetterFn2(key0, key1, fullExp) {
   ensureSafeMemberName(key1, fullExp);
 
   return function simpleGetterFn2(scope, locals) {
-    if (scope == null) return scope;
+    if (scope == null) return undefined;
     scope = ((locals && locals.hasOwnProperty(key0)) ? locals : scope)[key0];
-
-    return scope == null ? scope : scope[key1];
+    return scope == null ? undefined : scope[key1];
   };
 }
 
@@ -1036,7 +1035,7 @@ function getterFn(path, options, fullExp) {
     var code = 'var p;\n';
     forEach(pathKeys, function(key, index) {
       ensureSafeMemberName(key, fullExp);
-      code += 'if(s == null) return s;\n' +
+      code += 'if(s == null) return undefined;\n' +
               's='+ (index
                       // we simply dereference 's' on any .dot notation
                       ? 's'
