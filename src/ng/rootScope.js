@@ -315,7 +315,7 @@ function $RootScopeProvider(){
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality) {
-        if (isFunction(watchExp.$$beWatched)) {
+        if (watchExp.$$beWatched) {
           return watchExp.$$beWatched(this, listener, objectEquality, watchExp);
         }
         var scope = this,

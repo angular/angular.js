@@ -2,13 +2,12 @@
 
 describe('$interpolate', function() {
 
-  it('should return a function when there are no bindings and textOnly is undefined',
+  it('should return a function when there are no bindings and mustHaveExpression is undefined',
       inject(function($interpolate) {
     expect(typeof $interpolate('some text')).toBe('function');
   }));
 
-
-  it('should return undefined when there are no bindings and textOnly is set to true',
+  it('should return null when there are no bindings and mustHaveExpression is set to true',
       inject(function($interpolate) {
     expect($interpolate('some text', true)).toBeNull();
   }));
@@ -318,6 +317,40 @@ describe('$interpolate', function() {
       });
       expect(nbCalls).toBe(4);
     }));
-  })
 
+    it('should call the listener only once per whole text change', inject(function ($rootScope, $interpolate) {
+      var nbCalls = 0, value;
+      $rootScope.$watch($interpolate("{{a}}-{{b}}"), function (_value){
+        nbCalls++;
+        value = _value;
+      });
+
+      $rootScope.$apply();
+      expect(nbCalls).toBe(1);
+      expect(value).toBe('-');
+
+      $rootScope.$apply('a=1;b=1');
+      expect(nbCalls).toBe(2);
+      expect(value).toBe('1-1');
+
+      // one changes
+      $rootScope.$apply('a=2');
+      expect(nbCalls).toBe(3);
+      expect(value).toBe('2-1');
+
+      $rootScope.$apply('b=2');
+      expect(nbCalls).toBe(4);
+      expect(value).toBe('2-2');
+
+      // both change
+      $rootScope.$apply('a=3;b=3');
+      expect(nbCalls).toBe(5);
+      expect(value).toBe('3-3');
+
+      // nothing changes
+      $rootScope.$apply();
+      expect(nbCalls).toBe(5);
+      expect(value).toBe('3-3');
+    }));
+  });
 });
