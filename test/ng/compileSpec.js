@@ -4243,7 +4243,13 @@ describe('$compile', function() {
       expect(element.attr('test2')).toBe('Misko');
       expect(element.attr('test3')).toBe('Misko');
     }));
-
+    
+    it('should work with the "href" attribute', inject(function($compile, $rootScope) {
+      $rootScope.value = 'test';
+      element = $compile('<span ng-attr-href="test/{{value}}"></span>')($rootScope);
+      $rootScope.$digest();
+      expect(element.attr('href')).toBe('test/test');
+    }));
 
     it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
       $rootScope.name = "Misko";
