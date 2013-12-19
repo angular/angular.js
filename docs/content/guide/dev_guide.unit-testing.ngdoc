@@ -163,7 +163,7 @@ function MyClass(xhr) {
 This is the preferred method since the code makes no assumptions about the origin of `xhr` and cares
 instead about whoever created the class  responsible for passing it in. Since the creator of the
 class should be different code than the user of the class, it separates the responsibility of
-creation from the logic. This is dependency-injection is in a nutshell.
+creation from the logic. This is dependency-injection in a nutshell.
 
 The class above is testable, since in the test we can write:
 <pre>
