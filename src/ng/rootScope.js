@@ -1029,7 +1029,59 @@ function $RootScopeProvider(){
         } while ((current = next));
 
         return event;
+      },
+
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$timeout
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Returns a promise as {@link ng.$timeout} that will be cancelled when
+       * the scope is destroyed.
+       *
+       * @param {function()} fn A function, whose execution should be delayed.
+       * @param {number=} [delay=0] Delay in milliseconds.
+       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
+       *   will invoke `fn` within the {@link ng.$rootScope.Scope#methods_$apply $apply} block.
+       * @returns {Promise} Promise that will be resolved when the timeout is reached. The value this
+       *   promise will be resolved with is the return value of the `fn` function.
+       *
+       */
+      $timeout: function() {
+        var timeout = $injector.get('$timeout'),
+            promise = timeout.apply(null, arguments);
+        this.$on("$destroy", function (){timeout.cancel(promise);});
+        return promise;
+      },
+
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$interval
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Returns a promise as {@link ng.$interval} that will be cancelled when
+       * the scope is destroyed.
+       *
+       * @param {function()} fn A function that should be called repeatedly.
+       * @param {number} delay Number of milliseconds between each function call.
+       * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
+       *   indefinitely.
+       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
+       *   will invoke `fn` within the {@link ng.$rootScope.Scope#methods_$apply $apply} block.
+       * @returns {promise} A promise which will be notified on each iteration.
+       *
+       */
+      $interval: function() {
+        var interval = $injector.get('$interval'),
+            promise = interval.apply(null, arguments);
+        this.$on("$destroy", function (){interval.cancel(promise);});
+        return promise;
       }
+
     };
 
     var $rootScope = new Scope();

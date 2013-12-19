@@ -1402,6 +1402,72 @@ describe('Scope', function() {
         }));
       });
     });
+
+    describe('$timeout/$interval', function() {
+      describe('scope.$timeout', function() {
+        var scope = null;
+
+        beforeEach(inject(function($rootScope) {
+          scope = $rootScope.$new();
+        }));
+
+        it('should delegate to $timeout', inject(function($timeout) {
+          var counter = 0;
+          scope.$timeout(function() { counter++; });
+
+          expect(counter).toBe(0);
+
+          $timeout.flush();
+          expect(counter).toBe(1);
+        }));
+
+        it('should cancel timer on $destroy', inject(function($rootScope, $timeout) {
+          var counter = 0;
+          scope.$timeout(function() { counter++; });
+          $timeout(noop);
+
+          expect(counter).toBe(0);
+
+          scope.$destroy();
+          scope.$digest();
+
+          $timeout.flush();
+          expect(counter).toBe(0);
+        }));
+      });
+
+      describe('scope.$interval', function() {
+        var scope = null;
+
+        beforeEach(inject(function($rootScope) {
+          scope = $rootScope.$new();
+        }));
+
+        it('should delegate to $interval', inject(function($interval) {
+          var counter = 0;
+          scope.$interval(function() { counter++; }, 1000);
+
+          expect(counter).toBe(0);
+
+          $interval.flush(1000);
+          expect(counter).toBe(1);
+        }));
+
+        it('should cancel timer on $destroy', inject(function($rootScope, $interval) {
+          var counter = 0;
+          scope.$interval(function() { counter++; }, 1000);
+          $interval(noop, 1000);
+
+          expect(counter).toBe(0);
+
+          scope.$destroy();
+          scope.$digest();
+
+          $interval.flush(1000);
+          expect(counter).toBe(0);
+        }));
+      });
+    });
   });
 
   describe("doc examples", function() {
