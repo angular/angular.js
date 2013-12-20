@@ -401,7 +401,7 @@ angular.module('ngResource', ['ng']).
         });
 
         // strip trailing slashes and set the url
-        url = url.replace(/\/+$/, '');
+        url = url.replace(/\/+$/, '') || '/';
         // then replace collapse `/.` if found in the last URL path segment before the query
         // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
         url = url.replace(/\/\.(?=\w+($|\?))/, '.');
