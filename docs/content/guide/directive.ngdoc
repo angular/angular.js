@@ -737,7 +737,7 @@ own behavior to it.
 </example>
 
 We want to run the function we pass by invoking it from the directive's scope, but have it run
-in the context of the scope where its registered.
+in the context of the scope where it's registered.
 
 We saw earlier how to use `=attr` in the `scope` option, but in the above example, we're using
 `&attr` instead.  The `&` binding allows a directive to trigger evaluation of an expression in
