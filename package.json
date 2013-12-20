@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "version": "1.2.7-snapshot",
-  "cdnVersion": "1.2.5",
+  "cdnVersion": "1.2.6",
   "codename": "emoji-clairvoyance",
   "repository": {
     "type": "git",
