@@ -1234,14 +1234,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           directiveValue = (isFunction(directive.template))
               ? directive.template($compileNode, templateAttrs)
               : directive.template;
+          var elementTemplate = isElement(directiveValue);
 
-          directiveValue = denormalizeTemplate(directiveValue);
+          if (!elementTemplate) {
+            directiveValue = denormalizeTemplate(directiveValue);
+          }
 
           if (directive.replace) {
             replaceDirective = directive;
-            $template = jqLite('<div>' +
-                                 trim(directiveValue) +
-                               '</div>').contents();
+            if (elementTemplate) {
+              $template = jqLite(directiveValue).clone();
+            } else {
+              $template = jqLite('<div>' +
+                                   trim(directiveValue) +
+                                 '</div>').contents();
+            }
+
             compileNode = $template[0];
 
             if ($template.length != 1 || compileNode.nodeType !== 1) {
@@ -1270,7 +1278,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             ii = directives.length;
           } else {
-            $compileNode.html(directiveValue);
+            if (elementTemplate) {
+              $compileNode.html('').append(jqLite(directiveValue).clone());
+            } else {
+              $compileNode.html(directiveValue);
+            }
           }
         }
 
