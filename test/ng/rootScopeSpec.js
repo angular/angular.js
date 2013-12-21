@@ -1116,6 +1116,72 @@ describe('Scope', function() {
       }));
     });
 
+    describe('$onRootScope', function() {
+
+      it('should add listener for both $emit and $broadcast events that are triggered on $rootScope', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        child.$onRootScope('abc', eventFn);
+        expect(log).toEqual('');
+
+        $rootScope.$emit('abc');
+        expect(log).toEqual('X');
+
+        $rootScope.$broadcast('abc');
+        expect(log).toEqual('XX');
+      }));
+
+
+      it('should return a function that deregisters the listener', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new(),
+            listenerRemove;
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        listenerRemove = child.$onRootScope('abc', eventFn);
+        expect(log).toEqual('');
+        expect(listenerRemove).toBeDefined();
+
+        $rootScope.$emit('abc');
+        $rootScope.$broadcast('abc');
+        expect(log).toEqual('XX');
+
+        log = '';
+        listenerRemove();
+        $rootScope.$emit('abc');
+        $rootScope.$broadcast('abc');
+        expect(log).toEqual('');
+      }));
+
+      it('should remove listener when local scope gets destroyed', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        child.$onRootScope('abc', eventFn);
+        expect(log).toEqual('');
+
+        $rootScope.$emit('abc');
+        expect(log).toEqual('X');
+
+        child.$destroy();
+
+        $rootScope.$emit('abc');
+        expect(log).toEqual('X');
+      }));
+
+    });
 
     describe('$emit', function() {
       var log, child, grandChild, greatGrandChild;

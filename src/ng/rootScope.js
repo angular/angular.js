@@ -890,6 +890,43 @@ function $RootScopeProvider(){
         };
       },
 
+      /**
+       * @ngdoc function
+       * @name ng.$rootScope.Scope#$onRootScope
+       * @methodOf ng.$rootScope.Scope
+       * @function
+       *
+       * @description
+       * Listens on events of a given type. See {@link ng.$rootScope.Scope#methods_$emit $emit} for
+       * discussion of event life cycle. This method is similar to the $on method with the only difference
+       * that it subscribes to events emitted on the $rootScope. This allows to use $rootScope.$emit for
+       * application wide events rather than $rootScope.$broadcast. For an in detail explanation of why
+       * to use $rootScope.$emit rather than $rootScope.$broadcast please read this answer on StackOverflow:
+       * http://stackoverflow.com/questions/11252780/whats-the-correct-way-to-communicate-between-controllers-in-angularjs/19498009#19498009
+       *
+       * The event listener function format is: `function(event, args...)`. The `event` object
+       * passed into the listener has the following attributes:
+       *
+       *   - `targetScope` - `{Scope}`: the scope on which the event was `$emit`-ed or
+       *     `$broadcast`-ed.
+       *   - `currentScope` - `{Scope}`: the current scope which is handling the event.
+       *   - `name` - `{string}`: name of the event.
+       *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel
+       *     further event propagation (available only for events that were `$emit`-ed).
+       *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag
+       *     to true.
+       *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
+       *
+       * @param {string} name Event name to listen on.
+       * @param {function(event, args...)} listener Function to call when the event is emitted.
+       * @returns {function()} Returns a deregistration function for this listener.
+       */
+      $onRootScope: function(name, listener) {
+        var unsubscribe = this.$root.$on(name, listener);
+        this.$on('$destroy', unsubscribe);
+
+        return unsubscribe;
+      },
 
       /**
        * @ngdoc function
