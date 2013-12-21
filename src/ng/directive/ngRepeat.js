@@ -201,21 +201,28 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     priority: 1000,
     terminal: true,
     $$tlb: true,
-    link: function($scope, $element, $attr, ctrl, $transclude){
-        var expression = $attr.ngRepeat;
-        var match = expression.match(/^\s*(.+)\s+in\s+([\r\n\s\S]*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
-          trackByExp, trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
-          lhs, rhs, valueIdentifier, keyIdentifier,
-          hashFnLocals = {$id: hashKey};
+    link: function($scope, $element, $attr, ctrl, $transclude) {
+        var expression = $attr.ngRepeat,
+            match = expression.match(/^\s*(.+)\s+in\s+([\r\n\s\S]*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
+            lhs, rhs, trackByExp,
+            valueIdentifier, keyIdentifier,
+            trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
+            hashFnLocals = {$id: hashKey};
 
-        if (!match) {
-          throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
-            expression);
-        }
+        if (!match) throw ngRepeatMinErr('iexp',
+        "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.", expression);
 
         lhs = match[1];
         rhs = match[2];
         trackByExp = match[4];
+
+        match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
+
+        if (!match) throw ngRepeatMinErr('iidexp',
+        "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.", lhs);
+
+        valueIdentifier = match[3] || match[1];
+        keyIdentifier = match[2];
 
         if (trackByExp) {
           trackByExpGetter = $parse(trackByExp);
@@ -224,6 +231,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
             hashFnLocals[valueIdentifier] = value;
             hashFnLocals.$index = index;
+
             return trackByExpGetter($scope, hashFnLocals);
           };
         } else {
@@ -234,14 +242,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             return key;
           };
         }
-
-        match = lhs.match(/^(?:([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\))$/);
-        if (!match) {
-          throw ngRepeatMinErr('iidexp', "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
-                                                                    lhs);
-        }
-        valueIdentifier = match[3] || match[1];
-        keyIdentifier = match[2];
 
         // Store a list of elements from previous run. This is a hash where key is the item from the
         // iterator, and the value is objects with following properties.
