@@ -33,10 +33,10 @@ In addition it provides an {@link api/ng.directive:ngModel.NgModelController API
 
 <script>
   function Controller($scope) {
-    $scope.master= {};
+    $scope.master = {};
 
     $scope.update = function(user) {
-      $scope.master= angular.copy(user);
+      $scope.master = angular.copy(user);
     };
 
     $scope.reset = function() {
