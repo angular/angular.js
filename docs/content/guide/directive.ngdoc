@@ -737,7 +737,7 @@ in the context of the scope where its registered.
 We saw earlier how to use `=prop` in the `scope` option, but in the above example, we're using
 `&prop` instead. `&` bindings expose a function to an isolated scope allowing the isolated scope
 to invoke it, but maintaining the original scope of the function. So when a user clicks the
-`x` in the dialog, it runs `Ctrl`'s `close` function.
+`x` in the dialog, it runs `Ctrl`'s `hideDialog` function.
 
 <div class="alert alert-success">
 **Best Practice:** use `&prop` in the `scope` option when you want your directive
