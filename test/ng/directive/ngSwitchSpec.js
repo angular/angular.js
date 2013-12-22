@@ -35,6 +35,34 @@ describe('ngSwitch', function() {
     expect(element.text()).toEqual('true:misko');
   }));
 
+  it('should evaluate expressions to match switch value', inject(function($rootScope, $compile) {
+    $rootScope.obj = {"key": "value"};
+    $rootScope.array = ["leog", ".me"];
+    $rootScope.$apply();
+    element = $compile(
+      '<div ng-switch="select">' +
+        '<div ng-switch-when="obj.key">obj.key:{{obj.key}}</div>' +
+        '<div ng-switch-when="array[0]">array[0]:{{array[0]}}</div>' +
+        '<div ng-switch-when="array[1]">array[1]:{{array[1]}}</div>' +
+        '<div ng-switch-when="array[0]+array[1]">array[0]+array[1]:{{array[0]+array[1]}}</div>' +
+      '</div>')($rootScope);
+    expect(element.html()).toEqual('<!-- ngSwitchWhen: obj.key -->' +
+                                   '<!-- ngSwitchWhen: array[0] -->' +
+                                   '<!-- ngSwitchWhen: array[1] -->' +
+                                   '<!-- ngSwitchWhen: array[0]+array[1] -->');
+    $rootScope.select = $rootScope.obj.key;
+    $rootScope.$apply();
+    expect(element.text()).toEqual('obj.key:value');
+    $rootScope.select = $rootScope. array[0];
+    $rootScope.$apply();
+    expect(element.text()).toEqual('array[0]:leog');
+    $rootScope.select = $rootScope.array[1];
+    $rootScope.$apply();
+    expect(element.text()).toEqual('array[1]:.me');
+    $rootScope.select = $rootScope.array[0]+$rootScope.array[1];
+    $rootScope.$apply();
+    expect(element.text()).toEqual('array[0]+array[1]:leog.me');
+  }));
 
   it('should show all switch-whens that match the current value', inject(function($rootScope, $compile) {
     element = $compile(
