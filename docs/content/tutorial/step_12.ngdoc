@@ -230,7 +230,7 @@ __`app/css/animations.css`.__
   -moz-animation: 0.5s fade-in;
   -o-animation: 0.5s fade-in;
   animation: 0.5s fade-in;
-  z-index: 100;
+  z-index: 99;
 }
 
 .view-frame.ng-leave {
@@ -238,7 +238,7 @@ __`app/css/animations.css`.__
   -moz-animation: 0.5s fade-out;
   -o-animation: 0.5s fade-out;
   animation: 0.5s fade-out;
-  z-index:99;
+  z-index:100;
 }
 
 &#64;keyframes fade-in {
