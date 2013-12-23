@@ -906,6 +906,7 @@ describe('parser', function() {
             expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
             expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+            expect($parse('a.b.c')({a: null}, {a: {b: {c: 1}}})).toEqual(1);
           }));
         });
 
@@ -974,6 +975,55 @@ describe('parser', function() {
             expect($parse('true.toString()').constant).toBe(false);
             expect($parse('foo(1, 2, 3)').constant).toBe(false);
             expect($parse('"name" + id').constant).toBe(false);
+          }));
+        });
+
+        describe('nulls in expressions', function() {
+          // simpleGetterFn1
+          it('should return null for `a` where `a` is null', inject(function($rootScope) {
+            $rootScope.a = null;
+            expect($rootScope.$eval('a')).toBe(null);
+          }));
+
+          it('should return undefined for `a` where `a` is undefined', inject(function($rootScope) {
+            expect($rootScope.$eval('a')).toBeUndefined();
+          }));
+
+          // simpleGetterFn2
+          it('should return undefined for properties of `null` constant', inject(function($rootScope) {
+            expect($rootScope.$eval('null.a')).toBeUndefined();
+          }));
+
+          it('should return undefined for properties of `null` values', inject(function($rootScope) {
+            $rootScope.a = null;
+            expect($rootScope.$eval('a.b')).toBeUndefined();
+          }));
+
+          it('should return null for `a.b` where `b` is null', inject(function($rootScope) {
+            $rootScope.a = { b: null };
+            expect($rootScope.$eval('a.b')).toBe(null);
+          }));
+
+          // cspSafeGetter && pathKeys.length < 6 || pathKeys.length > 2
+          it('should return null for `a.b.c.d.e` where `e` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: null } } } };
+            expect($rootScope.$eval('a.b.c.d.e')).toBe(null);
+          }));
+
+          it('should return undefined for `a.b.c.d.e` where `d` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: null } } };
+            expect($rootScope.$eval('a.b.c.d.e')).toBeUndefined();
+          }));
+
+          // cspSafeGetter || pathKeys.length > 6
+          it('should return null for `a.b.c.d.e.f.g` where `g` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: { f: { g: null } } } } } };
+            expect($rootScope.$eval('a.b.c.d.e.f.g')).toBe(null);
+          }));
+
+          it('should return undefined for `a.b.c.d.e.f.g` where `f` is null', inject(function($rootScope) {
+            $rootScope.a = { b: { c: { d: { e: { f: null } } } } };
+            expect($rootScope.$eval('a.b.c.d.e.f.g')).toBeUndefined();
           }));
         });
       });

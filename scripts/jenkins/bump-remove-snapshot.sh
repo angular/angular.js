@@ -10,11 +10,11 @@ set -xe
 cd `dirname $0`/../..
 
 echo "-- old version: `grep '"version"' package.json`"
-sed -i .tmp -e 's/"version": "\(.*\)-snapshot"/"version": "\1"/' package.json
-VERSION=$(node -e "console.log(require('./package.json').version)" | sed -e 's/\r//g')
+sed -i .tmp -E 's/"version": "(.*)-snapshot"/"version": "\1"/' package.json
+VERSION=`sed -En 's/.*"version"[ ]*:[ ]*"(.*)".*/\1/p' package.json`
 echo "-- local version: $VERSION"
 
 echo "-- commit and tag with v$VERSION"
 git add package.json
-git commit -m "chore(release): v$VERSION"
+git commit -m "chore(release): cut v$VERSION release"
 git tag -m "v$VERSION" v$VERSION

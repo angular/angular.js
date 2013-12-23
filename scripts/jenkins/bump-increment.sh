@@ -17,8 +17,8 @@ cd `dirname $0`/../..
 
 echo "-- increment version "
 grunt bump:$BUMP_TYPE
-NEXT_VERSION=$(node -e "console.log(require('./package.json').version)" | sed -e 's/\r//g')
-sed -i .tmp -e 's/"version": "\(.*\)"/"version": "\1-snapshot"/' package.json
+NEXT_VERSION=`sed -En 's/.*"version"[ ]*:[ ]*"(.*)".*/\1/p' package.json`
+sed -i .tmp -E 's/"version": "(.*)"/"version": "\1-snapshot"/' package.json
 echo "-- new version: `grep '"version"' package.json`"
 echo "-- commit"
 git add package.json

@@ -18,8 +18,12 @@ watch {@link guide/expression expressions} and propagate events.
     propagate any model changes through the system into the view from outside of the "Angular
     realm" (controllers, services, Angular event handlers).
 
-  - Scopes can be nested to isolate application components while providing access to shared model
-    properties. A scope (prototypically) inherits properties from its parent scope.
+  - Scopes can be nested to limit access to the properties of application components while providing
+    access to shared model properties. Nested scopes are either "child scopes" or "isolate scopes".
+    A "child scope" (prototypically) inherits properties from its parent scope. An "isolate scope"
+    does not. See {@link
+    guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive isolated
+    scopes} for more information.
 
   - Scopes provide context against which {@link guide/expression expressions} are evaluated. For
     example `{{username}}` expression is meaningless, unless it is evaluated against a specific
@@ -259,8 +263,8 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
      For mutations to be properly observed, you should make them only within the {@link
      api/ng.$rootScope.Scope#methods_$apply scope.$apply()}. (Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
-     or asynchronous work with {@link api/ng.$http $http} or {@link
-     api/ng.$timeout $timeout} services.
+     or asynchronous work with {@link api/ng.$http $http}, {@link api/ng.$timeout $timeout}
+     or {@link api/ng.$interval $interval} services.
 
   4. **Mutation observation**
 
@@ -306,6 +310,8 @@ api/ng.directive:ngController ng-controller} and {@link
 api/ng.directive:ngRepeat ng-repeat}, create new child scopes
 and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
 element by using an `angular.element(aDomElement).scope()` method call.
+See the {@link guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive
+directives guide} for more information about isolate scopes.
 
 ### Controllers and Scopes
 

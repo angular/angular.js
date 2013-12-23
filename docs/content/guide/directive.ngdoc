@@ -506,6 +506,8 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
+See the {@link guide/directive#creating-custom-directives_demo_isolating-the-scope-of-a-directive
+"Isolating the Scope of a Directive"} section for more information about isolate scopes.
 </div>
 
 <div class="alert alert-success">
@@ -528,8 +530,10 @@ where:
 * `attrs` is an object with the normalized attribute names and their corresponding values.
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
-changes the time formatting string that our directive binds to. We also want to remove the timeout
-if the directive is deleted so we don't introduce a memory leak.
+changes the time formatting string that our directive binds to. We will use the `$interval` service
+to call a handler on a regular basis. This is easier than using `$timeout` but also works better with
+end 2 end testing, where we want to ensure that all $timeouts have completed before completing the test.
+We also want to remove the `$interval` if the directive is deleted so we don't introduce a memory leak.
 
 <example module="docsTimeDirective">
   <file name="script.js">
@@ -537,7 +541,7 @@ if the directive is deleted so we don't introduce a memory leak.
       .controller('Ctrl2', function($scope) {
         $scope.format = 'M/d/yy h:mm:ss a';
       })
-      .directive('myCurrentTime', function($timeout, dateFilter) {
+      .directive('myCurrentTime', function($interval, dateFilter) {
 
         function link(scope, element, attrs) {
           var format,
@@ -552,20 +556,14 @@ if the directive is deleted so we don't introduce a memory leak.
             updateTime();
           });
 
-          function scheduleUpdate() {
-            // save the timeoutId for canceling
-            timeoutId = $timeout(function() {
-              updateTime(); // update DOM
-              scheduleUpdate(); // schedule the next update
-            }, 1000);
-          }
-
           element.on('$destroy', function() {
-            $timeout.cancel(timeoutId);
+            $interval.cancel(timeoutId);
           });
 
-          // start the UI update process.
-          scheduleUpdate();
+          // start the UI update process; save the timeoutId for canceling
+          timeoutId = $interval(function() {
+            updateTime(); // update DOM
+          }, 1000);
         }
 
         return {
@@ -583,7 +581,7 @@ if the directive is deleted so we don't introduce a memory leak.
 
 There are a couple of things to note here.
 Just like the `module.controller` API, the function argument in `module.directive` is dependency
-injected. Because of this, we can use `$timeout` and `dateFilter` inside our directive's `link`
+injected. Because of this, we can use `$interval` and `dateFilter` inside our directive's `link`
 function.
 
 We register an event `element.on('$destroy', ...)`. What fires this `$destroy` event?
