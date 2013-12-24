@@ -112,7 +112,7 @@
  *
  *   Because `finally` is a reserved word in JavaScript and reserved keywords are not supported as
  *   property names by ES3, you'll need to invoke the method like `promise['finally'](callback)` to
- *   make your code IE8 compatible.
+ *   make your code with certain browsers such as Android Browser or IE8.
  *
  * # Chaining promises
  *
