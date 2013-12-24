@@ -171,7 +171,7 @@ var ngSwitchWhenDirective = ngDirective({
   compile: function(element, attrs) {
     return function(scope, element, attr, ctrl, $transclude) {
         var expr = scope.$eval(attrs.ngSwitchWhen),
-            ngSwitchWhen = expr !== undefined ? expr : attrs.ngSwitchWhen;
+            ngSwitchWhen = typeof expr === "string" ? expr : attrs.ngSwitchWhen;
         ctrl.cases['!' + ngSwitchWhen] = (ctrl.cases['!' + ngSwitchWhen] || []);
         ctrl.cases['!' + ngSwitchWhen].push({ transclude: $transclude, element: element });
     };
