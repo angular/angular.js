@@ -15,6 +15,7 @@
     "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-connect": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
+    "load-grunt-tasks": "~0.2.1",
     "jasmine-node": "~1.11.0",
     "q": "~0.9.2",
     "q-io": "~1.10.6",
