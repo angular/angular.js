@@ -162,10 +162,10 @@ var ngShowDirective = ['$animate', function($animate) {
  *
  * <pre>
  * <!-- when $scope.myValue is truthy (element is hidden) -->
- * <div ng-hide="myValue"></div>
+ * <div ng-hide="myValue" class="ng-hide"></div>
  *
  * <!-- when $scope.myValue is falsy (element is visible) -->
- * <div ng-hide="myValue" class="ng-hide"></div>
+ * <div ng-hide="myValue" ></div>
  * </pre>
  *
  * When the ngHide expression evaluates to true then the .ng-hide CSS class is added to the class attribute
