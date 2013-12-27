@@ -421,7 +421,7 @@ describe('$httpBackend', function() {
     // TODO(vojta): test whether it fires "async-end" on both success and error
   });
 
-  describe('file protocol', function() {
+  describe('protocols that return 0 status code', function() {
 
     function respond(status, content) {
       xhr = MockXhr.$$lastInstance;
@@ -435,7 +435,7 @@ describe('$httpBackend', function() {
     it('should convert 0 to 200 if content', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
-      $backend('GET', 'file:///whatever/index.html', null, callback);
+      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
 
       expect(callback).toHaveBeenCalled();
@@ -446,7 +446,7 @@ describe('$httpBackend', function() {
     it('should convert 0 to 404 if no content', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
-      $backend('GET', 'file:///whatever/index.html', null, callback);
+      $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, '');
 
       expect(callback).toHaveBeenCalled();
@@ -462,10 +462,10 @@ describe('$httpBackend', function() {
         hash : "#/C:/",
         host : "",
         hostname : "",
-        href : "file:///C:/base#!/C:/foo",
+        href : "someProtocol:///C:/base#!/C:/foo",
         pathname : "/C:/foo",
         port : "",
-        protocol : "file:",
+        protocol : "someProtocol:",
         search : "",
         setAttribute: angular.noop
       };
