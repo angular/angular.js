@@ -1402,6 +1402,56 @@ describe('Scope', function() {
         }));
       });
     });
+
+
+    describe('$dispatch', function() {
+      it('should not propagate', inject(function($rootScope) {
+        var child = $rootScope.$new(), child2 = child.$new(),
+            spy = jasmine.createSpy('eventListener');
+        $rootScope.$on('abc', spy);
+        child2.$on('abc', spy);
+        child.$dispatch('abc');
+        expect(spy).not.toHaveBeenCalled();
+      }));
+
+      it('should trigger all listeners', inject(function($rootScope) {
+        var spy = jasmine.createSpy('eventListener1'), spy2 = jasmine.createSpy('eventListener2');
+        $rootScope.$on('abc', spy);
+        $rootScope.$on('abc', spy2);
+        $rootScope.$dispatch('abc');
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+      }));
+
+
+      describe('listener', function() {
+        it('should receive event object', inject(function($rootScope) {
+          var scope = $rootScope, event;
+
+          scope.$on('fooEvent', function(e) {
+            event = e;
+          });
+          scope.$dispatch('fooEvent');
+
+          expect(event.name).toBe('fooEvent');
+          expect(event.targetScope).toBe(scope);
+          expect(event.currentScope).toBe(scope);
+        }));
+
+
+        it('should support passing messages as varargs', inject(function($rootScope) {
+          var scope = $rootScope, args;
+
+          scope.$on('fooEvent', function() {
+            args = arguments;
+          });
+          scope.$dispatch('fooEvent', 'do', 're', 'me', 'fa');
+
+          expect(args.length).toBe(5);
+          expect(sliceArgs(args, 1)).toEqual(['do', 're', 'me', 'fa']);
+        }));
+      });
+    });
   });
 
   describe("doc examples", function() {
