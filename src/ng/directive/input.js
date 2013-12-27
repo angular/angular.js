@@ -12,6 +12,8 @@ var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\
 var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 
+
+
 var inputType = {
 
   /**
@@ -603,9 +605,14 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
-
+  var testedValid;
   var urlValidator = function(value) {
-    if (ctrl.$isEmpty(value) || URL_REGEXP.test(value)) {
+    if (isArray(value)) {
+      testedValid = every(value, function(val){return URL_REGEXP.test(val)})
+    } else {
+      testedValid = URL_REGEXP.test(value)
+    }
+    if (ctrl.$isEmpty(value) || testedValid) {
       ctrl.$setValidity('url', true);
       return value;
     } else {
@@ -622,7 +629,13 @@ function emailInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   var emailValidator = function(value) {
-    if (ctrl.$isEmpty(value) || EMAIL_REGEXP.test(value)) {
+    var testedValid;
+    if (isArray(value)) {
+      testedValid = every(value, function(val){return EMAIL_REGEXP.test(val)})
+    } else {
+      testedValid = EMAIL_REGEXP.test(value)
+    }
+    if (ctrl.$isEmpty(value) || testedValid) {
       ctrl.$setValidity('email', true);
       return value;
     } else {
