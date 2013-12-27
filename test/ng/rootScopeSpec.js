@@ -1091,6 +1091,32 @@ describe('Scope', function() {
       }));
 
 
+      it('should add listener for both $emit and $broadcast events for each name', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 'X';
+        }
+
+				// Space separated notation
+        child.$on('abc xyz', eventFn);
+        expect(log).toEqual('');
+
+        child.$emit('abc');
+				child.$broadcast('xyz');
+        expect(log).toEqual('XX');
+
+				// Array notation
+				log = '';
+				child.$on(['xxx', 'yyy'], eventFn);
+				expect(log).toEqual('');
+        child.$emit('xxx');
+				child.$broadcast('yyy');
+        expect(log).toEqual('XX');
+      }));
+
+
       it('should return a function that deregisters the listener', inject(function($rootScope) {
         var log = '',
             child = $rootScope.$new(),
@@ -1112,6 +1138,44 @@ describe('Scope', function() {
         listenerRemove();
         child.$emit('abc');
         child.$broadcast('abc');
+        expect(log).toEqual('');
+      }));
+
+
+      it('should return a function that deregisters the listeners', inject(function($rootScope) {
+        var log = '',
+            child = $rootScope.$new(),
+            listenersRemove,
+						arrayRemove;
+
+        function eventFn() {
+          log += 'X';
+        }
+
+        listenersRemove = child.$on('abc xyz', eventFn);
+				arrayRemove = child.$on(['xxx', 'yyy'], eventFn);
+
+        expect(log).toEqual('');
+        expect(listenersRemove).toBeDefined();
+
+        child.$emit('abc');
+        child.$broadcast('xyz');
+        expect(log).toEqual('XX');
+
+        log = '';
+        listenersRemove();
+        child.$emit('abc');
+        child.$broadcast('xyz');
+        expect(log).toEqual('');
+
+        child.$emit('xxx');
+        child.$broadcast('yyy');
+        expect(log).toEqual('XX');
+
+        log = '';
+        arrayRemove();
+        child.$emit('xxx');
+        child.$broadcast('yyy');
         expect(log).toEqual('');
       }));
     });
