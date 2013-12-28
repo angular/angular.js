@@ -730,6 +730,27 @@ describe('Scope', function() {
       first.$apply();
       expect(log).toBe('1232323');
     }));
+
+    it('should decrement anscestor $$listenerCount entries', inject(function($rootScope) {
+      var EVENT = 'fooEvent',
+          spy = jasmine.createSpy('listener'),
+          firstSecond = first.$new();
+
+      firstSecond.$on(EVENT, spy);
+      firstSecond.$on(EVENT, spy);
+      middle.$on(EVENT, spy);
+
+      expect($rootScope.$$listenerCount[EVENT]).toBe(3);
+      expect(first.$$listenerCount[EVENT]).toBe(2);
+
+      firstSecond.$destroy();
+
+      expect($rootScope.$$listenerCount[EVENT]).toBe(1);
+      expect(first.$$listenerCount[EVENT]).toBeUndefined();
+
+      $rootScope.$broadcast(EVENT);
+      expect(spy.callCount).toBe(1);
+    }));
   });
 
 
@@ -1107,13 +1128,34 @@ describe('Scope', function() {
         child.$emit('abc');
         child.$broadcast('abc');
         expect(log).toEqual('XX');
+        expect($rootScope.$$listenerCount['abc']).toBe(1);
 
         log = '';
         listenerRemove();
         child.$emit('abc');
         child.$broadcast('abc');
         expect(log).toEqual('');
+        expect($rootScope.$$listenerCount['abc']).toBeUndefined();
       }));
+
+
+      it('should increment ancestor $$listenerCount entries', inject(function($rootScope) {
+        var child1 = $rootScope.$new(),
+            child2 = child1.$new(),
+            spy = jasmine.createSpy();
+
+        $rootScope.$on('event1', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 1});
+
+        child1.$on('event1', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 2});
+        expect(child1.$$listenerCount).toEqual({event1: 1});
+
+        child2.$on('event2', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 2, event2: 1});
+        expect(child1.$$listenerCount).toEqual({event1: 1, event2: 1});
+        expect(child2.$$listenerCount).toEqual({event2: 1});
+      }))
     });
 
 
@@ -1357,6 +1399,23 @@ describe('Scope', function() {
         it('should not not fire any listeners for other events', inject(function($rootScope) {
           $rootScope.$broadcast('fooEvent');
           expect(log).toBe('');
+        }));
+        
+        
+        it('should not descend past scopes with a $$listerCount of 0 or undefined', 
+            inject(function($rootScope) {
+          var EVENT = 'fooEvent',
+              spy = jasmine.createSpy('listener');
+
+          // Precondition: There should be no listeners for fooEvent.
+          expect($rootScope.$$listenerCount[EVENT]).toBeUndefined();
+
+          // Add a spy listener to a child scope.
+          $rootScope.$$childHead.$$listeners[EVENT] = [spy];
+
+          // $rootScope's count for 'fooEvent' is undefined, so spy should not be called.
+          $rootScope.$broadcast(EVENT);
+          expect(spy).not.toHaveBeenCalled();
         }));
 
 
