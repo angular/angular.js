@@ -1320,9 +1320,9 @@ angular.module('ngAnimate', ['ng'])
         beforeAddClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-add'));
           if(cancellationMethod) {
+            unblockTransitions(element);
+            unblockKeyframeAnimations(element);
             afterReflow(element, function() {
-              unblockTransitions(element);
-              unblockKeyframeAnimations(element);
               animationCompleted();
             });
             return cancellationMethod;
@@ -1337,9 +1337,9 @@ angular.module('ngAnimate', ['ng'])
         beforeRemoveClass : function(element, className, animationCompleted) {
           var cancellationMethod = animateBefore(element, suffixClasses(className, '-remove'));
           if(cancellationMethod) {
+            unblockTransitions(element);
+            unblockKeyframeAnimations(element);
             afterReflow(element, function() {
-              unblockTransitions(element);
-              unblockKeyframeAnimations(element);
               animationCompleted();
             });
             return cancellationMethod;
