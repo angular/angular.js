@@ -56,6 +56,29 @@ describe('ngView', function() {
   });
 
 
+  it('should instantiate controller for empty template', function() {
+    var log = [], controllerScope,
+        Ctrl = function($scope) {
+          controllerScope = $scope;
+          log.push('ctrl-init');
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl});
+    });
+
+    inject(function($route, $rootScope, $templateCache, $location) {
+      $templateCache.put('/tpl.html', [200, '', {}]);
+      $location.path('/some');
+      $rootScope.$digest();
+
+      expect(controllerScope.$parent).toBe($rootScope);
+      expect(controllerScope).toBe($route.current.scope);
+      expect(log).toEqual(['ctrl-init']);
+    });
+  });
+
+
   it('should instantiate controller with an alias', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
