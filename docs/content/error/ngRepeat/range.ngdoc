@@ -1,0 +1,24 @@
+@ngdoc error
+@name ngRepeat:range
+@fullName Invalid Range
+@description
+
+Occurs when there is an error with the $range function of an {@link api/ng.directive:ngRepeat ngRepeat}'s expression.
+
+To resolve, specify a valid range in the form of $range(_from_, _to_) where both _from_ and _to_ evaluate to integers.
+
+Examples of *invalid* syntax:
+
+```
+<div ng-repeat="i in $range('0', '3')"></div>
+<div ng-repeat="char in $range('a', 'z')"></div>
+```
+
+Examples of *valid* syntax:
+
+```
+<div ng-repeat="i in $range(0, 3)"></div>
+<div ng-repeat="i in $range(from, to)"></div>
+```
+
+Please consult the api documentation of {@link api/ng.directive:ngRepeat ngRepeat} to learn more about valid syntax.

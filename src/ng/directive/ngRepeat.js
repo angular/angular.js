@@ -88,6 +88,11 @@
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
+ *   * `variable in $range(from, to)` - where `from` and `to` specify the range of an integer array inclusively,
+ *     and `variable` being the current element.
+ *
+ *     For example: `number in $range(-3, 3)`.
+ *
  *   * `variable in expression track by tracking_expression` – You can also provide an optional tracking function
  *     which can be used to associate the objects in the collection with the DOM elements. If no tracking function
  *     is specified the ng-repeat associates elements by identity in the collection. It is an error to have
@@ -196,8 +201,9 @@
     </example>
  */
 var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
-  var NG_REMOVED = '$$NG_REMOVED';
-  var ngRepeatMinErr = minErr('ngRepeat');
+  var NG_REMOVED = '$$NG_REMOVED',
+      ngRepeatMinErr = minErr('ngRepeat');
+
   return {
     transclude: 'element',
     priority: 1000,
@@ -208,11 +214,13 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
             lhs, rhs, trackByExp,
             valueIdentifier, keyIdentifier,
+            rangeFrom, rangeTo, rangeArray,
             trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn,
-            hashFnLocals = {$id: hashKey};
+            hashFnLocals = {$id: hashKey},
+            watchExpression;
 
         if (!match) throw ngRepeatMinErr('iexp',
-        "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.", expression);
+        "Expected expression in the form of '_item_ in _collection_[ track by _id_]', but got '{0}'.", expression);
 
         lhs = match[1];
         rhs = match[2];
@@ -225,6 +233,34 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
 
         valueIdentifier = match[3] || match[1];
         keyIdentifier = match[2];
+
+        if (/^\$range/.test(rhs)) {
+            watchExpression = function() {
+                return $scope.$eval(rhs, {
+                    $range: function(from, to) {
+                        var diff,
+                            step;
+
+                        if (!isNumber(from) || !isNumber(to)) throw ngRepeatMinErr('range',
+                        "Expected expression in the form of '$range(_from_, _to_)' with valid parameters, but got $range({0}, {1}).", from, to);
+
+                        from = Math.round(from);
+                        to = Math.round(to);
+                        diff = Math.abs(to - from);
+                        step = to > from ? 1 : -1;
+
+                        // return the cached array if the range didn't change
+                        if (from !== rangeFrom || to !== rangeTo) {
+                            for (rangeArray = []; rangeArray.push(from) <= diff; from += step) {continue;}
+                        }
+
+                        return rangeArray;
+                    }
+                });
+            };
+        } else {
+            watchExpression = rhs;
+        }
 
         if (trackByExp) {
           trackByExpGetter = $parse(trackByExp);
@@ -253,7 +289,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
         var lastBlockMap = {};
 
         //watch props
-        $scope.$watchCollection(rhs, function ngRepeatAction(collection){
+        $scope.$watchCollection(watchExpression, function ngRepeatAction(collection){
           var index, length,
               previousNode = $element[0],     // current position of the node
               nextNode,

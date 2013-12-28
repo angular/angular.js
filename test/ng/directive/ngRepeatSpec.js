@@ -119,6 +119,79 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('age:20|codename:20|dogname:Bingo|prodname:Bingo|wealth:20|');
   });
 
+  describe('$range', function() {
+    it('should iterate over a range of integers', function() {
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="i in $range(from, to)">{{i}}/</li>' +
+        '</ul>')(scope);
+
+      scope.from = -3;
+      scope.to = 3;
+      scope.$digest();
+
+      expect(element.text()).toEqual('-3/-2/-1/0/1/2/3/');
+    });
+
+    it('should handle both ascending and descending orders as well as reversion of order', function() {
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="i in $range(from, to)">{{i}}/</li>' +
+        '</ul>')(scope);
+
+      scope.from = 0;
+      scope.to = 5;
+      scope.$digest();
+
+      expect(element.text()).toEqual('0/1/2/3/4/5/');
+
+      scope.from = 3;
+      scope.to = -3;
+      scope.$digest();
+
+      expect(element.text()).toEqual('3/2/1/0/-1/-2/-3/');
+    });
+
+    it('should work with filter', function() {
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="i in $range(from, to) | filter: positive">{{i}}/</li>' +
+        '</ul>')(scope);
+
+      scope.positive = function(x) {return x > 0;};
+      scope.from = -1;
+      scope.to = 2;
+      scope.$digest();
+
+      expect(element.text()).toEqual('1/2/');
+
+      scope.from = 5;
+      scope.to = -3;
+      scope.$digest();
+
+      expect(element.text()).toEqual('5/4/3/2/1/');
+    });
+
+    it("should throw an exception if the range can't be parsed", function() {
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="i in $range(from, to)">{{i}}/</li>' +
+        '</ul>')(scope);
+
+      scope.from = 0;
+      scope.to = 2;
+      scope.$digest();
+
+      expect(element.text()).toEqual('0/1/2/');
+
+      scope.from = 'what';
+      scope.to = 'to';
+      scope.$digest();
+
+      expect($exceptionHandler.errors.shift().message).toMatch(/^\[ngRepeat:range\] Expected expression in the form of '\$range\(_from_, _to_\)' with valid parameters, but got \$range\(what, to\)./);
+    });
+  });
+
   describe('track by', function() {
     it('should track using expression function', function() {
       element = $compile(
@@ -390,7 +463,7 @@ describe('ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
-        toMatch(/^\[ngRepeat:iexp\] Expected expression in form of '_item_ in _collection_\[ track by _id_\]' but got 'i dont parse'\./);
+        toMatch(/^\[ngRepeat:iexp\] Expected expression in the form of '_item_ in _collection_\[ track by _id_\]', but got 'i dont parse'\./);
   });
 
 
