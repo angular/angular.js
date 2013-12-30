@@ -1,6 +1,9 @@
 'use strict';
 
-/* global -nullFormCtrl */
+/* global 
+  -nullFormCtrl,
+  -ATTEMPTED_CLASS
+*/
 var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
@@ -8,7 +11,8 @@ var nullFormCtrl = {
   $setDirty: noop,
   $setPristine: noop,
   $setAttempted: noop
-};
+},
+ATTEMPTED_CLASS = 'ng-attempted';
 
 /**
  * @ngdoc object
@@ -365,6 +369,12 @@ var formDirectiveFactory = function(isNgForm) {
                 $timeout(function() {
                   removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
                 }, 0, false);
+              });
+              
+              formElement.on('submit', function() {
+                scope.$apply(function() {
+                  controller.$setAttempted(controller.$invalid);
+                });
               });
             }
 
