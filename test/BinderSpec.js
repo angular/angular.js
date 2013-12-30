@@ -272,7 +272,7 @@ describe('Binder', function() {
     $rootScope.hidden = 'false';
     $rootScope.$apply();
 
-    assertVisible(element);
+    assertHidden(element);
 
     $rootScope.hidden = '';
     $rootScope.$apply();
@@ -291,7 +291,7 @@ describe('Binder', function() {
     $rootScope.show = 'false';
     $rootScope.$apply();
 
-    assertHidden(element);
+    assertVisible(element);
 
     $rootScope.show = '';
     $rootScope.$apply();
