@@ -316,6 +316,9 @@ describe('form', function() {
 
       child.$setDirty();
       expect(parent.$dirty).toBeTruthy();
+      
+      child.$setAttempted(true);
+      expect(parent.$attempted).toBeTruthy();
     });
 
 
@@ -591,6 +594,27 @@ describe('form', function() {
       expect(nestedInput).toBePristine();
       expect(nestedInputCtrl.$pristine).toBe(true);
       expect(nestedInputCtrl.$dirty).toBe(false);
+    });
+  });
+  
+  describe('$setAttempted', function() {
+    beforeEach(function() {
+      doc = $compile(
+          '<form name="form" ng-submit="submitted = true">' +
+            '<input type="text" ng-model="name" required />' +
+            '<input type="submit" />' +
+          '</form>')(scope);
+
+      scope.$digest();
+    });
+    
+    it('should not init in attempted state', function() {
+      expect(scope.form.$attempted).toBe(false);
+    });
+    
+    it('should be in attempted state when invalid and submitted', function() {
+      browserTrigger(doc, 'submit');
+      expect(scope.form.$attempted).toBe(true);
     });
   });
 });
