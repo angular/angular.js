@@ -438,7 +438,7 @@ angular.module('ngAnimate', ['ng'])
           cancelChildAnimations(element);
           this.enabled(false, element);
           $rootScope.$$postDigest(function() {
-            performAnimation('leave', 'ng-leave', element, null, null, function() {
+            performAnimation('leave', 'ng-leave', element, null, null, function(element) {
               $delegate.leave(element);
             }, doneCallback);
           });
@@ -515,7 +515,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         addClass : function(element, className, doneCallback) {
-          performAnimation('addClass', className, element, null, null, function() {
+          performAnimation('addClass', className, element, null, null, function(element) {
             $delegate.addClass(element, className);
           }, doneCallback);
         },
@@ -551,7 +551,7 @@ angular.module('ngAnimate', ['ng'])
          * @param {function()=} doneCallback the callback function that will be called once the animation is complete
         */
         removeClass : function(element, className, doneCallback) {
-          performAnimation('removeClass', className, element, null, null, function() {
+          performAnimation('removeClass', className, element, null, null, function(element) {
             $delegate.removeClass(element, className);
           }, doneCallback);
         },
@@ -601,16 +601,49 @@ angular.module('ngAnimate', ['ng'])
         CSS code. Element, parentElement and afterElement are provided DOM elements for the animation
         and the onComplete callback will be fired once the animation is fully complete.
       */
-      function performAnimation(animationEvent, className, element, parentElement, afterElement, domOperation, doneCallback) {
-        var currentClassName, classes, node = extractElementNode(element);
-        if(node) {
-          currentClassName = node.className;
-          classes = currentClassName + ' ' + className;
+      function performAnimation(animationEvent, className, contents, parentElement, afterElement, domOperation, doneCallback) {
+
+        var i, elementsCount = 0, content;
+
+        var args = Array.prototype.slice.call(arguments, 0);
+
+        args[6] = subElmDone;
+
+        for (i = 0; i < contents.length; i++) {
+          content = args[2] = angular.element(contents[i]);
+          if(content[0].nodeType == ELEMENT_NODE) {
+            elementsCount++;
+            // jshint -W040
+            performAnimationForElement.apply(this, args);
+          } else if (domOperation) {
+            // Fire DOM operation straightaway
+            domOperation(content);
+          }
         }
+
+        if (!elementsCount) {
+          doneCallback && $timeout(doneCallback, 0, false);
+        }
+
+        function subElmDone() {
+          // This method is always invoked asynchronously
+          if (++subElmDone.doneCount == elementsCount) {
+            doneCallback && doneCallback();
+          }
+        }
+
+        subElmDone.doneCount = 0;
+
+      }
+
+      function performAnimationForElement(animationEvent, className, element, parentElement, afterElement, domOperation, doneCallback) {
+        var node = element[0],
+            currentClassName = node.className,
+            classes = currentClassName + ' ' + className;
 
         //transcluded directives may sometimes fire an animation using only comment nodes
         //best to catch this early on to prevent any animation operations from occurring
-        if(!node || !isAnimatableClassName(classes)) {
+        if(!isAnimatableClassName(classes)) {
           fireDOMOperation();
           fireBeforeCallbackAsync();
           fireAfterCallbackAsync();
@@ -838,7 +871,7 @@ angular.module('ngAnimate', ['ng'])
         function fireDOMOperation() {
           if(!fireDOMOperation.hasBeenRun) {
             fireDOMOperation.hasBeenRun = true;
-            domOperation();
+            domOperation(element);
           }
         }
 
