@@ -11,6 +11,15 @@ module.exports = function(config) {
     junitReporter: {
       outputFile: 'test_out/jqlite.xml',
       suite: 'jqLite'
+    },
+
+    preprocessors: {
+      'src/**/*.js': ['coverage']
+    },
+
+    coverageReporter: {
+      type : 'html',
+      dir : 'build/coverage'
     }
   });
 };
