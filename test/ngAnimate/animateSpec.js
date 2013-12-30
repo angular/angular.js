@@ -1305,8 +1305,6 @@ describe("ngAnimate", function() {
 
           ss.addRule('.ng-enter', '-webkit-transition:9s linear all;' +
                                           'transition:9s linear all;');
-          ss.addRule('.ng-enter', '-webkit-transition:9s linear all;' +
-                                          'transition:9s linear all;');
 
           var parent = jqLite('<div><span></span></div>');
           var element = parent.find('span');
