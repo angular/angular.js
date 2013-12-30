@@ -404,6 +404,9 @@ describe('form', function() {
 
       child.$setDirty();
       expect(parent.$dirty).toBeTruthy();
+      
+      child.$setSubmitted();
+      expect(parent.$submitted).toBeTruthy();
     });
 
 
@@ -679,6 +682,33 @@ describe('form', function() {
       expect(nestedInput).toBePristine();
       expect(nestedInputCtrl.$pristine).toBe(true);
       expect(nestedInputCtrl.$dirty).toBe(false);
+    });
+  });
+  
+  describe('$setSubmitted', function() {
+    beforeEach(function() {
+      doc = $compile(
+          '<form name="form" ng-submit="submitted = true">' +
+            '<input type="text" ng-model="name" required />' +
+            '<input type="submit" />' +
+          '</form>')(scope);
+
+      scope.$digest();
+    });
+    
+    it('should not init in submitted state', function() {
+      expect(scope.form.$submitted).toBe(false);
+    });
+    
+    it('should be in submitted state when submitted', function() {
+      browserTrigger(doc, 'submit');
+      expect(scope.form.$submitted).toBe(true);
+    });
+
+    it('should revert submitted back to false when $setPristine is called on the form', function() {
+      scope.form.$submitted = true
+      scope.form.$setPristine();
+      expect(scope.form.$submitted).toBe(false);
     });
   });
 });
