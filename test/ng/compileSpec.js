@@ -187,9 +187,14 @@ describe('$compile', function() {
       if (msie < 9) return;
 
       element = jqLite('<div>{{1+2}}</div>');
-      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
 
-      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      try {
+        element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+      } catch(e) {
+      } finally {
+        if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      }
+
       expect(element[0].childNodes[1].textContent).toBe('fake node');
 
       $compile(element)($rootScope);
