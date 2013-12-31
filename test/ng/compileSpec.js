@@ -202,9 +202,14 @@ describe('$compile', function() {
       if (msie < 9) return;
 
       element = jqLite('<div>{{1+2}}</div>');
-      element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
 
-      if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      try {
+        element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
+      } catch(e) {
+      } finally {
+        if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
+      }
+
       expect(element[0].childNodes[1].textContent).toBe('fake node');
 
       $compile(element)($rootScope);
@@ -4243,7 +4248,7 @@ describe('$compile', function() {
       expect(element.attr('test2')).toBe('Misko');
       expect(element.attr('test3')).toBe('Misko');
     }));
-    
+
     it('should work with the "href" attribute', inject(function($compile, $rootScope) {
       $rootScope.value = 'test';
       element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
