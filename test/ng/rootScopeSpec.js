@@ -258,6 +258,31 @@ describe('Scope', function() {
     }));
 
 
+    it('should prevent infinite loop when creating and resolving a promise in a watched expression', function() {
+      module(function($rootScopeProvider) {
+          $rootScopeProvider.digestTtl(10);
+      });
+      inject(function($rootScope, $q) {
+          var d = $q.defer();
+
+          d.resolve('Hello, world.');
+          $rootScope.$watch(function () {
+              var $d2 = $q.defer();
+              $d2.resolve('Goodbye.');
+              $d2.promise.then(function () { });
+              return d.promise;
+          }, function () { return 0; });
+
+          expect(function() {
+              $rootScope.$digest();
+          }).toThrowMinErr('$rootScope', 'infdig', '10 $digest() iterations reached. Aborting!\n'+
+                  'Watchers fired in the last 5 iterations: []');
+
+          expect($rootScope.$$phase).toBeNull();
+      });
+      });
+
+
     it('should not fire upon $watch registration on initial $digest', inject(function($rootScope) {
       var log = '';
       $rootScope.a = 1;
