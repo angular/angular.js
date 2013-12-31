@@ -1,10 +1,12 @@
 'use strict';
 
 function createXhr(method) {
+  /* global ActiveXObject */
   // IE8 doesn't support PATCH method, but the ActiveX object does
-  return (msie <= 8 && lowercase(method) === 'patch')
+  try { return (msie <= 8 && lowercase(method) === 'patch')
       ? new ActiveXObject('Microsoft.XMLHTTP')
-      : new window.XMLHttpRequest;
+      : new window.XMLHttpRequest();
+  } catch (e) { throw minErr('$httpBackend')('noxhr', "This browser does not support XMLHttpRequest."); }
 }
 
 
