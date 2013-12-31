@@ -1019,6 +1019,7 @@ function $HttpProvider() {
     function buildUrl(url, params) {
 
         /* this is a test */
+        var test = true;
 
         if (!params) return url;
           var parts = [];
