@@ -32,8 +32,10 @@ cd `dirname $0`/../..
 ./scripts/jenkins/bump-increment.sh $BUMP_TYPE
 
 echo "-- push to Github"
-# push to github
-git push --all
+# push the commits to github
+git push origin master
+# push the release tag
+git push origin v`cat build/version.txt`
 
 # Update code.angularjs.org
 ./scripts/code.angularjs.org/publish.sh
