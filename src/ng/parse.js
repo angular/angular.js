@@ -894,20 +894,16 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           if (pathVal == null) return pathVal;
           pathVal = pathVal[key0];
 
-          if (!key1) return pathVal;
-          if (pathVal == null) return key1 ? undefined : pathVal;
+          if (pathVal == null || !key1) return key1 ? undefined : pathVal;
           pathVal = pathVal[key1];
 
-          if (!key2) return pathVal;
-          if (pathVal == null) return key2 ? undefined : pathVal;
+          if (pathVal == null || !key2) return key2 ? undefined : pathVal;
           pathVal = pathVal[key2];
 
-          if (!key3) return pathVal;
-          if (pathVal == null) return key3 ? undefined : pathVal;
+          if (pathVal == null || !key3) return key3 ? undefined : pathVal;
           pathVal = pathVal[key3];
 
-          if (!key4) return pathVal;
-          if (pathVal == null) return key4 ? undefined : pathVal;
+          if (pathVal == null || !key4) return key4 ? undefined : pathVal;
           pathVal = pathVal[key4];
 
           return pathVal;
@@ -928,8 +924,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key1) return pathVal;
-          if (pathVal == null) return key1 ? undefined : pathVal;
+          if (pathVal == null || !key1) return key1 ? undefined : pathVal;
 
           pathVal = pathVal[key1];
           if (pathVal && pathVal.then) {
@@ -941,8 +936,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key2) return pathVal;
-          if (pathVal == null) return key2 ? undefined : pathVal;
+          if (pathVal == null || !key2) return key2 ? undefined : pathVal;
 
           pathVal = pathVal[key2];
           if (pathVal && pathVal.then) {
@@ -954,8 +948,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key3) return pathVal;
-          if (pathVal == null) return key3 ? undefined : pathVal;
+          if (pathVal == null || !key3) return key3 ? undefined : pathVal;
 
           pathVal = pathVal[key3];
           if (pathVal && pathVal.then) {
@@ -967,8 +960,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (!key4) return pathVal;
-          if (pathVal == null) return key4 ? undefined : pathVal;
+          if (pathVal == null || !key4) return key4 ? undefined : pathVal;
 
           pathVal = pathVal[key4];
           if (pathVal && pathVal.then) {
