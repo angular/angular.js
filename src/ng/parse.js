@@ -894,15 +894,19 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           if (pathVal == null) return pathVal;
           pathVal = pathVal[key0];
 
+          if (!key1) return pathVal;
           if (pathVal == null) return key1 ? undefined : pathVal;
           pathVal = pathVal[key1];
 
+          if (!key2) return pathVal;
           if (pathVal == null) return key2 ? undefined : pathVal;
           pathVal = pathVal[key2];
 
+          if (!key3) return pathVal;
           if (pathVal == null) return key3 ? undefined : pathVal;
           pathVal = pathVal[key3];
 
+          if (!key4) return pathVal;
           if (pathVal == null) return key4 ? undefined : pathVal;
           pathVal = pathVal[key4];
 
@@ -924,6 +928,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
+          if (!key1) return pathVal;
           if (pathVal == null) return key1 ? undefined : pathVal;
 
           pathVal = pathVal[key1];
@@ -936,6 +941,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
+          if (!key2) return pathVal;
           if (pathVal == null) return key2 ? undefined : pathVal;
 
           pathVal = pathVal[key2];
@@ -948,6 +954,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
+          if (!key3) return pathVal;
           if (pathVal == null) return key3 ? undefined : pathVal;
 
           pathVal = pathVal[key3];
@@ -960,6 +967,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
+          if (!key4) return pathVal;
           if (pathVal == null) return key4 ? undefined : pathVal;
 
           pathVal = pathVal[key4];
@@ -1218,8 +1226,6 @@ function $ParseProvider() {
 
 
   this.$get = ['$filter', '$sniffer', '$log', function($filter, $sniffer, $log) {
-    $parseOptions.csp = $sniffer.csp;
-
     promiseWarning = function promiseWarningFn(fullExp) {
       if (!$parseOptions.logPromiseWarnings || promiseWarningCache.hasOwnProperty(fullExp)) return;
       promiseWarningCache[fullExp] = true;
@@ -1237,6 +1243,9 @@ function $ParseProvider() {
             return cache[exp];
           }
 
+          // The csp option has to be set here because in tests the $sniffer service sets its csp
+          // property after $get has executed.
+          $parseOptions.csp = $sniffer.csp;
           var lexer = new Lexer($parseOptions);
           var parser = new Parser(lexer, $filter, $parseOptions);
           parsedExpression = parser.parse(exp, false);

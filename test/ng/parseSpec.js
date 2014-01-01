@@ -344,6 +344,25 @@ describe('parser', function() {
           expect(scope.$eval("a.b.c.d.e.f.g.h.i.j.k.l.m.n", scope)).toBe('nooo!');
         });
 
+        forEach([2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 42, 99], function(pathLength) {
+          it('should resolve nested paths of length ' + pathLength, function() {
+            // Create a nested object {x2: {x3: {x4: ... {x[n]: 42} ... }}}.
+            var obj = 42;
+            for (var i = pathLength; i >= 2; i--) {
+              var newObj = {}
+              newObj['x' + i] = obj;
+              obj = newObj;
+            }
+            // Assign to x1 and build path 'x1.x2.x3. ... .x[n]' to access the final value.
+            scope.x1 = obj;
+            var path = 'x1';
+            for (var i = 2; i <= pathLength; i++) {
+              path += '.x' + i;
+            }
+            expect(scope.$eval(path)).toBe(42);
+          });
+        });
+
         it('should be forgiving', function() {
           scope.a = {b: 23};
           expect(scope.$eval('b')).toBeUndefined();
