@@ -4384,3 +4384,6 @@ with the `$route` service
 [module]: http://docs-next.angularjs.org/api/angular.mock.module
 [guide2.di]: http://docs-next.angularjs.org/guide/dev_guide.di
 [jqLite2]: http://docs.angularjs.org/#!/api/angular.element
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CHANGELOG.md?pixel)](https://github.com/igrigorik/ga-beacon)
