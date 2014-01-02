@@ -1093,14 +1093,14 @@ describe('parser', function() {
         var $log;
         var PROMISE_WARNING_REGEXP = /\[\$parse\] Promise found in the expression `[^`]+`. Automatic unwrapping of promises in Angular expressions is deprecated\./;
 
-        beforeEach(module(function($parseProvider) {
-          $parseProvider.unwrapPromises(true);
-        }));
-
         beforeEach(function() {
           // Needed for the $parse service to pick up the CSP setting at injection time.
           window.document.securityPolicy = {isActive : cspEnabled};
         });
+
+        beforeEach(module(function($parseProvider) {
+          $parseProvider.unwrapPromises(true);
+        }));
 
         beforeEach(inject(function($rootScope, $q, _$log_) {
           scope = $rootScope;
