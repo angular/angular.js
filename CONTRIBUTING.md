@@ -258,3 +258,6 @@ You can find out more detailed information about contributing in the
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
