@@ -90,6 +90,18 @@ describe('$httpBackend', function() {
     expect(callback).toHaveBeenCalledOnce();
   });
 
+  // onreadystatechange might by called multiple times
+  // with readyState === 4 on mobile webkit caused by
+  // xhrs that are resolved while the app is in the background (see #5426).
+  it('should remove onreadystatechange when it is called with readyState=4 to ignore multiple calls', function() {
+    $backend('GET', 'URL', null, callback);
+    xhr = MockXhr.$$lastInstance;
+
+    xhr.status = 200;
+    xhr.readyState = 4;
+    xhr.onreadystatechange();
+    expect(xhr.onreadystatechange).toBeUndefined();
+  });
 
   it('should set only the requested headers', function() {
     $backend('POST', 'URL', null, noop, {'X-header1': 'value1', 'X-header2': 'value2'});
