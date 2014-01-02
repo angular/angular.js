@@ -20,6 +20,16 @@ describe('ngShow / ngHide', function() {
     }));
 
 
+    // https://github.com/angular/angular.js/issues/5414
+    it('should show if the expression is a function with a no arguments', inject(function($rootScope, $compile) {
+      element = jqLite('<div ng-show="exp"></div>');
+      element = $compile(element)($rootScope);
+      $rootScope.exp = function(){};
+      $rootScope.$digest();
+      expect(element).toBeShown();
+    }));
+
+
     it('should make hidden element visible', inject(function($rootScope, $compile) {
       element = jqLite('<div class="ng-hide" ng-show="exp"></div>');
       element = $compile(element)($rootScope);
