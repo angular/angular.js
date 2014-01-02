@@ -353,6 +353,7 @@ function $RootScopeProvider(){
 
         return function() {
           arrayRemove(array, watcher);
+          lastDirtyWatch = null;
         };
       },
 

@@ -405,6 +405,53 @@ describe('Scope', function() {
           $rootScope.$apply('remove = true');
         }).not.toThrow();
       }));
+
+
+      it('should not mess up the digest loop if deregistration happens during digest', inject(
+          function($rootScope, log) {
+
+        // we are testing this due to regression #5525 which is related to how the digest loops lastDirtyWatch
+        // short-circuiting optimization works
+
+        // scenario: watch1 deregistering watch1
+        var scope = $rootScope.$new();
+        var deregWatch1 = scope.$watch(log.fn('watch1'), function() { deregWatch1(); log('watchAction1'); });
+        scope.$watch(log.fn('watch2'), log.fn('watchAction2'));
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
+                             'watch2', 'watch3']);
+        scope.$destroy();
+        log.reset();
+
+
+        // scenario: watch1 deregistering watch2
+        scope = $rootScope.$new();
+        scope.$watch(log.fn('watch1'), function() { deregWatch2(); log('watchAction1'); });
+        var deregWatch2 = scope.$watch(log.fn('watch2'), log.fn('watchAction2'));
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch1', 'watch3', 'watchAction3',
+                             'watch1', 'watch3']);
+        scope.$destroy();
+        log.reset();
+
+
+        // scenario: watch2 deregistering watch1
+        scope = $rootScope.$new();
+        deregWatch1 = scope.$watch(log.fn('watch1'), log.fn('watchAction1'));
+        scope.$watch(log.fn('watch2'), function() { deregWatch1(); log('watchAction2'); });
+        scope.$watch(log.fn('watch3'), log.fn('watchAction3'));
+
+        $rootScope.$digest();
+
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch2', 'watchAction2', 'watch3', 'watchAction3',
+                             'watch2', 'watch3']);
+      }));
     });
 
 
