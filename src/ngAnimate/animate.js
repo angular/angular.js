@@ -1141,7 +1141,7 @@ angular.module('ngAnimate', ['ng'])
           var propertyStyle = timings.transitionPropertyStyle;
           if(propertyStyle.indexOf('all') == -1) {
             style += CSS_PREFIX + 'transition-property: ' + propertyStyle + ';';
-            style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + 's;';
+            style += CSS_PREFIX + 'transition-duration: ' + timings.transitionDurationStyle + ';';
             appliedStyles.push(CSS_PREFIX + 'transition-property');
             appliedStyles.push(CSS_PREFIX + 'transition-duration');
           }
