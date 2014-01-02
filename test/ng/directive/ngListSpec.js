@@ -130,6 +130,12 @@ describe('ngList', function() {
       helper.changeInputValueTo('a\nb');
       expect($rootScope.list).toEqual(['a','b']);
     });
+
+    it('should support splitting on whitespace', function() {
+      helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list=" "></textarea>');
+      helper.changeInputValueTo('a b');
+      expect($rootScope.list).toEqual(['a','b']);
+    })
   });
 });
 
