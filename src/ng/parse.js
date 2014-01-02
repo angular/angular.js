@@ -895,19 +895,19 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           pathVal = pathVal[key0];
 
           if (!key1) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key1];
 
           if (!key2) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key2];
 
           if (!key3) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key3];
 
           if (!key4) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key4];
 
           return pathVal;
@@ -930,7 +930,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key1) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key1];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -943,7 +943,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key2) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key2];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -956,7 +956,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key3) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key3];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -969,7 +969,7 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           }
 
           if (!key4) return pathVal;
-          else if (pathVal == null) return undefined;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key4];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
