@@ -204,13 +204,17 @@ describe('parser', function() {
 
       describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
+        beforeEach(function() {
+          // Needed for the $parse service to pick up the CSP setting at injection time.
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
         beforeEach(module(function ($parseProvider) {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
         }));
 
-        beforeEach(inject(function ($rootScope, $sniffer) {
+        beforeEach(inject(function ($rootScope) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
         }));
 
         it('should parse expressions', function() {
@@ -1093,6 +1097,11 @@ describe('parser', function() {
           $parseProvider.unwrapPromises(true);
         }));
 
+        beforeEach(function() {
+          // Needed for the $parse service to pick up the CSP setting at injection time.
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
         beforeEach(inject(function($rootScope, $q, _$log_) {
           scope = $rootScope;
 
@@ -1167,9 +1176,14 @@ describe('parser', function() {
         }));
 
 
-        beforeEach(inject(function($rootScope, $sniffer, $q) {
+        beforeEach(function() {
+          // Needed for the $parse service to pick up the CSP setting at injection time.
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+
+        beforeEach(inject(function($rootScope, $q) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
 
           q = $q;
           deferred = q.defer();
