@@ -349,7 +349,7 @@ describe('parser', function() {
             // Create a nested object {x2: {x3: {x4: ... {x[n]: 42} ... }}}.
             var obj = 42;
             for (var i = pathLength; i >= 2; i--) {
-              var newObj = {}
+              var newObj = {};
               newObj['x' + i] = obj;
               obj = newObj;
             }
