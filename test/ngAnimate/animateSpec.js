@@ -1126,6 +1126,7 @@ describe("ngAnimate", function() {
             $rootScope.$digest();
             $timeout.flush();
 
+            expect(elements[0].attr('style')).toMatch(/transition-duration: 1\d*s,\s*3\d*s;/);
             expect(elements[0].attr('style')).not.toContain('transition-delay');
             expect(elements[1].attr('style')).toMatch(/transition-delay: 2\.1\d*s,\s*4\.1\d*s/);
             expect(elements[2].attr('style')).toMatch(/transition-delay: 2\.2\d*s,\s*4\.2\d*s/);
