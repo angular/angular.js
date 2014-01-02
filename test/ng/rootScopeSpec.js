@@ -323,41 +323,6 @@ describe('Scope', function() {
     }));
 
 
-    it('should return a function that allows listeners to be unregistered', inject(
-        function($rootScope) {
-      var listener = jasmine.createSpy('watch listener'),
-          listenerRemove;
-
-      listenerRemove = $rootScope.$watch('foo', listener);
-      $rootScope.$digest(); //init
-      expect(listener).toHaveBeenCalled();
-      expect(listenerRemove).toBeDefined();
-
-      listener.reset();
-      $rootScope.foo = 'bar';
-      $rootScope.$digest(); //triger
-      expect(listener).toHaveBeenCalledOnce();
-
-      listener.reset();
-      $rootScope.foo = 'baz';
-      listenerRemove();
-      $rootScope.$digest(); //trigger
-      expect(listener).not.toHaveBeenCalled();
-    }));
-
-    it('should allow a watch to be unregistered while in a digest', inject(function($rootScope) {
-      var remove1, remove2;
-      $rootScope.$watch('remove', function() {
-        remove1();
-        remove2();
-      });
-      remove1 = $rootScope.$watch('thing', function() {});
-      remove2 = $rootScope.$watch('thing', function() {});
-      expect(function() {
-        $rootScope.$apply('remove = true');
-      }).not.toThrow();
-    }));
-
     it('should allow a watch to be added while in a digest', inject(function($rootScope) {
       var watch1 = jasmine.createSpy('watch1'),
           watch2 = jasmine.createSpy('watch2');
@@ -401,6 +366,47 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(log).toEqual([]);
     }));
+
+
+    describe('$watch deregistration', function() {
+
+      it('should return a function that allows listeners to be deregistered', inject(
+          function($rootScope) {
+        var listener = jasmine.createSpy('watch listener'),
+            listenerRemove;
+
+        listenerRemove = $rootScope.$watch('foo', listener);
+        $rootScope.$digest(); //init
+        expect(listener).toHaveBeenCalled();
+        expect(listenerRemove).toBeDefined();
+
+        listener.reset();
+        $rootScope.foo = 'bar';
+        $rootScope.$digest(); //triger
+        expect(listener).toHaveBeenCalledOnce();
+
+        listener.reset();
+        $rootScope.foo = 'baz';
+        listenerRemove();
+        $rootScope.$digest(); //trigger
+        expect(listener).not.toHaveBeenCalled();
+      }));
+
+
+      it('should allow a watch to be deregistered while in a digest', inject(function($rootScope) {
+        var remove1, remove2;
+        $rootScope.$watch('remove', function() {
+          remove1();
+          remove2();
+        });
+        remove1 = $rootScope.$watch('thing', function() {});
+        remove2 = $rootScope.$watch('thing', function() {});
+        expect(function() {
+          $rootScope.$apply('remove = true');
+        }).not.toThrow();
+      }));
+    });
+
 
     describe('$watchCollection', function() {
       var log, $rootScope, deregister;
@@ -1183,7 +1189,7 @@ describe('Scope', function() {
           expect($rootScope.$$listenerCount).toEqual({event1: 2});
           expect(child1.$$listenerCount).toEqual({event1: 1});
           expect(child2.$$listenerCount).toEqual({});
-        }))
+        }));
       });
     });
 
