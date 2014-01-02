@@ -2801,14 +2801,14 @@ describe("ngAnimate", function() {
       $animate.removeClass(element, 'base-class one two');
 
       //still true since we're before the reflow
-      expect(element.hasClass('base-class')).toBe(true);
+      expect(element.hasClass('base-class')).toBe(false);
 
       //this will cancel the remove animation
       $animate.addClass(element, 'base-class one two');
 
       //the cancellation was a success and the class was added right away
       //since there was no successive animation for the after animation
-      expect(element.hasClass('base-class')).toBe(true);
+      expect(element.hasClass('base-class')).toBe(false);
 
       //the reflow...
       $timeout.flush();
@@ -3048,5 +3048,70 @@ describe("ngAnimate", function() {
         expect(leaveDone).toBe(true);
       });
     });
+
+    it('should respect the most relevant CSS transition property if defined in multiple classes',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.base-class', '-webkit-transition:1s linear all;' +
+                                        'transition:1s linear all;');
+
+      ss.addRule('.base-class.on', '-webkit-transition:5s linear all;' +
+                                           'transition:5s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="base-class"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var ready = false;
+      $animate.addClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
+      $timeout.flush(1);
+      expect(ready).toBe(false);
+
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 5 });
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+
+      ready = false;
+      $animate.removeClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 1 });
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+    }));
+
+    it('should not apply a transition upon removal of a class that has a transition',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.base-class.on', '-webkit-transition:5s linear all;' +
+                                           'transition:5s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="base-class on"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var ready = false;
+      $animate.removeClass(element, 'on', function() {
+        ready = true;
+      });
+
+      $timeout.flush(1);
+      expect(ready).toBe(true);
+    }));
   });
 });
