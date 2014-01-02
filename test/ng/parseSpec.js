@@ -204,13 +204,24 @@ describe('parser', function() {
 
       describe('csp: ' + cspEnabled + ", unwrapPromises: " + unwrapPromisesEnabled, function() {
 
-        beforeEach(module(function ($parseProvider) {
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
+
+        beforeEach(module(function ($parseProvider, $provide) {
           $parseProvider.unwrapPromises(unwrapPromisesEnabled);
         }));
 
-        beforeEach(inject(function ($rootScope, $sniffer) {
+        beforeEach(inject(function ($rootScope) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
         }));
 
         it('should parse expressions', function() {
@@ -342,6 +353,25 @@ describe('parser', function() {
         it('should resolve deeply nested paths (important for CSP mode)', function() {
           scope.a = {b: {c: {d: {e: {f: {g: {h: {i: {j: {k: {l: {m: {n: 'nooo!'}}}}}}}}}}}}};
           expect(scope.$eval("a.b.c.d.e.f.g.h.i.j.k.l.m.n", scope)).toBe('nooo!');
+        });
+
+        forEach([2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 42, 99], function(pathLength) {
+          it('should resolve nested paths of length ' + pathLength, function() {
+            // Create a nested object {x2: {x3: {x4: ... {x[n]: 42} ... }}}.
+            var obj = 42;
+            for (var i = pathLength; i >= 2; i--) {
+              var newObj = {};
+              newObj['x' + i] = obj;
+              obj = newObj;
+            }
+            // Assign to x1 and build path 'x1.x2.x3. ... .x[n]' to access the final value.
+            scope.x1 = obj;
+            var path = 'x1';
+            for (var i = 2; i <= pathLength; i++) {
+              path += '.x' + i;
+            }
+            expect(scope.$eval(path)).toBe(42);
+          });
         });
 
         it('should be forgiving', function() {
@@ -1069,6 +1099,17 @@ describe('parser', function() {
 
         var $log;
         var PROMISE_WARNING_REGEXP = /\[\$parse\] Promise found in the expression `[^`]+`. Automatic unwrapping of promises in Angular expressions is deprecated\./;
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
 
         beforeEach(module(function($parseProvider) {
           $parseProvider.unwrapPromises(true);
@@ -1142,15 +1183,27 @@ describe('parser', function() {
 
       describe('csp ' + cspEnabled, function() {
 
+        var originalSecurityPolicy;
+
+
+        beforeEach(function() {
+          originalSecurityPolicy = window.document.securityPolicy;
+          window.document.securityPolicy = {isActive : cspEnabled};
+        });
+
+        afterEach(function() {
+          window.document.securityPolicy = originalSecurityPolicy;
+        });
+
+
         beforeEach(module(function($parseProvider) {
           $parseProvider.unwrapPromises(true);
           $parseProvider.logPromiseWarnings(false);
         }));
 
 
-        beforeEach(inject(function($rootScope, $sniffer, $q) {
+        beforeEach(inject(function($rootScope, $q) {
           scope = $rootScope;
-          $sniffer.csp = cspEnabled;
 
           q = $q;
           deferred = q.defer();
