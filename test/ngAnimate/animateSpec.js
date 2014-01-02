@@ -538,6 +538,27 @@ describe("ngAnimate", function() {
           expect(completed).toBe(true);
         }));
 
+        it("should skip class-based animations if animations are directly disabled on the same element", function() {
+          var capture;
+          module(function($animateProvider) {
+            $animateProvider.register('.capture', function() {
+              return {
+                addClass : function(element, className, done) {
+                  capture = true;
+                  done();
+                }
+              };
+            });
+          });
+          inject(function($animate, $rootScope, $sniffer, $timeout) {
+            $animate.enabled(true);
+            $animate.enabled(false, element);
+
+            $animate.addClass(element, 'capture');
+            expect(element.hasClass('capture')).toBe(true);
+            expect(capture).not.toBe(true);
+          });
+        });
 
         it("should fire the cancel/end function with the correct flag in the parameters",
           inject(function($animate, $rootScope, $sniffer, $timeout) {

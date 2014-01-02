@@ -610,9 +610,14 @@ angular.module('ngAnimate', ['ng'])
         }
 
         var animations = [];
+
         //only add animations if the currently running animation is not structural
         //or if there is no animation running at all
-        if(!ngAnimateState.running || !(isClassBased && ngAnimateState.structural)) {
+        var allowAnimations = isClassBased ?
+          !ngAnimateState.disabled && (!ngAnimateState.running || !ngAnimateState.structural) :
+          true;
+
+        if(allowAnimations) {
           forEach(matches, function(animation) {
             //add the animation to the queue to if it is allowed to be cancelled
             if(!animation.allowCancel || animation.allowCancel(element, animationEvent, className)) {
