@@ -24,7 +24,7 @@
  * @function
  *
  * @description
- * Compiles a piece of HTML string or DOM into a template and produces a template function, which
+ * Compiles an HTML string or DOM into a template and produces a template function, which
  * can then be used to link {@link ng.$rootScope.Scope `scope`} and the template together.
  *
  * The compilation is a process of walking the DOM tree and matching DOM elements to
