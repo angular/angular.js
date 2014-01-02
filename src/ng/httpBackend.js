@@ -70,6 +70,11 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, rawDocument)
       // always async
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
+          // onreadystatechange might by called multiple times
+          // with readyState === 4 on mobile webkit caused by
+          // xhrs that are resolved while the app is in the background (see #5426).
+          xhr.onreadystatechange = undefined;
+
           var responseHeaders = null,
               response = null;
 
