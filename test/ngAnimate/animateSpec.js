@@ -2665,6 +2665,37 @@ describe("ngAnimate", function() {
       expect(element.hasClass('red')).toBe(true);
     }));
 
+    it("should avoid mixing up substring classes during add and remove operations", function() {
+      var currentAnimation, currentFn;
+      module(function($animateProvider) {
+        $animateProvider.register('.on', function() {
+          return {
+            beforeAddClass : function(element, className, done) {
+              currentAnimation = 'addClass';
+              currentFn = done;
+            },
+            beforeRemoveClass : function(element, className, done) {
+              currentAnimation = 'removeClass';
+              currentFn = done;
+            }
+          };
+        });
+      });
+      inject(function($compile, $rootScope, $animate, $sniffer, $timeout) {
+        var element = $compile('<div class="animation-enabled only"></div>')($rootScope);
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $animate.addClass(element, 'on');
+        expect(currentAnimation).toBe('addClass');
+        currentFn();
+
+        $animate.removeClass(element, 'on');
+        $animate.addClass(element, 'on');
+
+        expect(currentAnimation).toBe('addClass');
+      });
+    });
 
     it('should enable and disable animations properly on the root element', function() {
       var count = 0;
