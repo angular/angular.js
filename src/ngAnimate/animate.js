@@ -898,16 +898,21 @@ angular.module('ngAnimate', ['ng'])
         }
       }
 
-      function cancelChildAnimations(element) {
-        var node = extractElementNode(element);
-        forEach(node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
-          element = angular.element(element);
-          var data = element.data(NG_ANIMATE_STATE);
-          if(data) {
-            cancelAnimations(data.animations);
-            cleanup(element);
+      function cancelChildAnimations(contents) {
+        var node;
+        for (var i = 0; i < contents.length; i++) {
+          node = contents[i];
+          if (node.nodeType == ELEMENT_NODE) {
+            forEach(node.querySelectorAll('.' + NG_ANIMATE_CLASS_NAME), function(element) {
+              element = angular.element(element);
+              var data = element.data(NG_ANIMATE_STATE);
+              if(data) {
+                cancelAnimations(data.animations);
+                cleanup(element);
+              }
+            });
           }
-        });
+        }
       }
 
       function cancelAnimations(animations) {

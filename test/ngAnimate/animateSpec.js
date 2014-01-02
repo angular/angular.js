@@ -2582,6 +2582,93 @@ describe("ngAnimate", function() {
     });
 
 
+    it("should cancel all child animations when a leave or move animation is triggered on multiple parent elements", function() {
+
+      var step, animationState;
+      module(function($animateProvider) {
+        $animateProvider.register('.animan', function($timeout) {
+          return {
+            enter : function(element, done) {
+              animationState = 'enter';
+              step = done;
+              return function(cancelled) {
+                animationState = cancelled ? 'enter-cancel' : animationState;
+              }
+            },
+            addClass : function(element, className, done) {
+              animationState = 'addClass';
+              step = done;
+              return function(cancelled) {
+                animationState = cancelled ? 'addClass-cancel' : animationState;
+              }
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $timeout, $sniffer) {
+        var element = html($compile('<div class="parent1"></div><div class="parent2"></div>')($rootScope));
+        var container = html($compile('<div class="container"></div>')($rootScope));
+        var child1   = html($compile('<div class="animan child1"></div>')($rootScope));
+        var child2   = html($compile('<div class="animan child2"></div>')($rootScope));
+
+        ss.addRule('.animan.ng-enter, .animan.something-add',  '-webkit-transition: width 1s, background 1s 1s;' +
+                                                               'transition: width 1s, background 1s 1s;');
+
+        $rootElement.append(element);
+        jqLite(document.body).append($rootElement);
+
+        $animate.enter(child1, element.eq(0));
+        $animate.enter(child2, element.eq(1));
+        $rootScope.$digest();
+
+        expect(animationState).toBe('enter');
+        if($sniffer.transitions) {
+          expect(child1.hasClass('ng-enter')).toBe(true);
+          expect(child2.hasClass('ng-enter')).toBe(true);
+          $timeout.flush();
+          expect(child1.hasClass('ng-enter-active')).toBe(true);
+          expect(child2.hasClass('ng-enter')).toBe(true);
+        }
+
+        $animate.move(element, container);
+        if($sniffer.transitions) {
+          expect(child1.hasClass('ng-enter')).toBe(false);
+          expect(child1.hasClass('ng-enter-active')).toBe(false);
+          expect(child2.hasClass('ng-enter')).toBe(false);
+          expect(child2.hasClass('ng-enter-active')).toBe(false);
+        }
+
+        expect(animationState).toBe('enter-cancel');
+
+        $rootScope.$digest();
+        $timeout.flush();
+
+        $animate.addClass(child1, 'something');
+        $animate.addClass(child2, 'something');
+        if($sniffer.transitions) {
+          $timeout.flush();
+        }
+        expect(animationState).toBe('addClass');
+        if($sniffer.transitions) {
+          expect(child1.hasClass('something-add')).toBe(true);
+          expect(child1.hasClass('something-add')).toBe(true);
+          expect(child2.hasClass('something-add-active')).toBe(true);
+          expect(child2.hasClass('something-add-active')).toBe(true);
+        }
+
+        $animate.leave(container);
+        expect(animationState).toBe('addClass-cancel');
+        if($sniffer.transitions) {
+          expect(child1.hasClass('something-add')).toBe(false);
+          expect(child1.hasClass('something-add-active')).toBe(false);
+          expect(child2.hasClass('something-add')).toBe(false);
+          expect(child2.hasClass('something-add-active')).toBe(false);
+        }
+      });
+    });
+
+
     it("should wait until a queue of animations are complete before performing a reflow",
       inject(function($rootScope, $compile, $timeout, $sniffer, $animate) {
 
