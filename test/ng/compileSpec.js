@@ -2387,7 +2387,7 @@ describe('$compile', function() {
         expect(componentScope.attrAlias).toEqual(componentScope.attr);
       }));
 
-      it('should copy simple attribute with spaces', inject(function() {
+      it('should copy simple attribute value with spaces', inject(function() {
         compile('<div><span my-component attr=" some text ">');
 
         expect(componentScope.attr).toEqual(' some text ');
