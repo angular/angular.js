@@ -894,16 +894,20 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
           if (pathVal == null) return pathVal;
           pathVal = pathVal[key0];
 
-          if (pathVal == null) return key1 ? undefined : pathVal;
+          if (!key1) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key1];
 
-          if (pathVal == null) return key2 ? undefined : pathVal;
+          if (!key2) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key2];
 
-          if (pathVal == null) return key3 ? undefined : pathVal;
+          if (!key3) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key3];
 
-          if (pathVal == null) return key4 ? undefined : pathVal;
+          if (!key4) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key4];
 
           return pathVal;
@@ -924,8 +928,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (pathVal == null) return key1 ? undefined : pathVal;
 
+          if (!key1) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key1];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -936,8 +941,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (pathVal == null) return key2 ? undefined : pathVal;
 
+          if (!key2) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key2];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -948,8 +954,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (pathVal == null) return key3 ? undefined : pathVal;
 
+          if (!key3) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key3];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
@@ -960,8 +967,9 @@ function cspSafeGetterFn(key0, key1, key2, key3, key4, fullExp, options) {
             }
             pathVal = pathVal.$$v;
           }
-          if (pathVal == null) return key4 ? undefined : pathVal;
 
+          if (!key4) return pathVal;
+          if (pathVal == null) return undefined;
           pathVal = pathVal[key4];
           if (pathVal && pathVal.then) {
             promiseWarning(fullExp);
