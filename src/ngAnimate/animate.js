@@ -647,10 +647,11 @@ angular.module('ngAnimate', ['ng'])
           return;
         }
 
+        var ONE_SPACE = ' ';
         //this value will be searched for class-based CSS className lookup. Therefore,
         //we prefix and suffix the current className value with spaces to avoid substring
         //lookups of className tokens
-        var futureClassName = ' ' + currentClassName + ' ';
+        var futureClassName = ONE_SPACE + currentClassName + ONE_SPACE;
         if(ngAnimateState.running) {
           //if an animation is currently running on the element then lets take the steps
           //to cancel that animation and fire any required callbacks
@@ -671,8 +672,8 @@ angular.module('ngAnimate', ['ng'])
             //will be invalid. Therefore the same string manipulation that would occur within the
             //DOM operation will be performed below so that the class comparison is valid...
             futureClassName = ngAnimateState.event == 'removeClass' ?
-              futureClassName.replace(ngAnimateState.className, '') :
-              futureClassName + ngAnimateState.className + ' ';
+              futureClassName.replace(ONE_SPACE + ngAnimateState.className + ONE_SPACE, ONE_SPACE) :
+              futureClassName + ngAnimateState.className + ONE_SPACE;
           }
         }
 
@@ -680,7 +681,7 @@ angular.module('ngAnimate', ['ng'])
         //(on addClass) or doesn't contain (on removeClass) the className being animated.
         //The reason why this is being called after the previous animations are cancelled
         //is so that the CSS classes present on the element can be properly examined.
-        var classNameToken = ' ' + className + ' ';
+        var classNameToken = ONE_SPACE + className + ONE_SPACE;
         if((animationEvent == 'addClass'    && futureClassName.indexOf(classNameToken) >= 0) ||
            (animationEvent == 'removeClass' && futureClassName.indexOf(classNameToken) == -1)) {
           fireDOMOperation();
