@@ -609,5 +609,10 @@ describe('browser', function() {
       fakeDocument.basePath = 'http://host.com/base/path/index.html';
       expect(browser.baseHref()).toEqual('/base/path/index.html');
     });
+
+    it('should remove domain from <base href> beginning with \'//\'', function() {
+      fakeDocument.basePath = '//google.com/base/path/';
+      expect(browser.baseHref()).toEqual('/base/path/');
+    });
   });
 });
