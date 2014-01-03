@@ -674,6 +674,22 @@ describe("resource", function() {
       });
 
 
+      it('should add $abort method to the result object', function(){
+        $httpBackend.expect('POST', '/CreditCard/123!charge?amount=10', '{"auth":"abc"}').respond({success: 'ok'});
+        var errorCallback = jasmine.createSpy();
+        var cc = CreditCard.charge({id:123, amount:10}, {auth:'abc'});
+        cc.$promise.then(callback, errorCallback);
+
+        expect(cc.$abort).toEqual(jasmine.any(Function));
+        cc.$abort();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(callback).not.toHaveBeenCalled();
+        expect(errorCallback).toHaveBeenCalled();
+      });
+
+
       it('should return promise from action method calls', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
         var cc = new CreditCard({name: 'Mojo'});
@@ -836,6 +852,22 @@ describe("resource", function() {
         $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnce();
         expect(ccs.$resolved).toBe(true);
+      });
+
+
+      it('should add $abort method to the result object', function(){
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var errorCallback = jasmine.createSpy();
+        var ccs = CreditCard.query({key: 'value'});
+        ccs.$promise.then(callback, errorCallback);
+
+        expect(ccs.$abort).toEqual(jasmine.any(Function));
+        ccs.$abort();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(callback).not.toHaveBeenCalled();
+        expect(errorCallback).toHaveBeenCalled();
       });
     });
 
