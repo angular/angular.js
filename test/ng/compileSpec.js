@@ -1128,6 +1128,26 @@ describe('$compile', function() {
         });
 
 
+        it('should copy classes from pre-template node into linked element', function() {
+          module(function() {
+            directive('test', valueFn({
+              templateUrl: 'test.html',
+              replace: true
+            }));
+          });
+          inject(function($compile, $templateCache, $rootScope) {
+            var child;
+            $templateCache.put('test.html', '<p class="template-class">Hello</p>');
+            element = $compile('<div test></div>')($rootScope, function(node) {
+              node.addClass('clonefn-class');
+            });
+            $rootScope.$digest();
+            expect(element).toHaveClass('template-class');
+            expect(element).toHaveClass('clonefn-class');
+          });
+        });
+
+
         describe('delay compile / linking functions until after template is resolved', function(){
           var template;
           beforeEach(module(function() {
