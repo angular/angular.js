@@ -46,7 +46,7 @@ function currencyFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
   return function(amount, currencySymbol){
     if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP).
                 replace(/\u00A4/g, currencySymbol);
   };
 }
@@ -99,7 +99,6 @@ function currencyFilter($locale) {
    </doc:example>
  */
 
-
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
@@ -122,7 +121,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   var hasExponent = false;
   if (numStr.indexOf('e') !== -1) {
     var match = numStr.match(/([\d\.]+)e(-?)(\d+)/);
-    if (match && match[2] == '-' && match[3] > fractionSize + 1) {
+    if (match && match[2] == '-' && match[3] > (fractionSize || pattern.maxFrac) + 1) {
       numStr = '0';
     } else {
       formatedText = numStr;
