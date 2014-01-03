@@ -330,7 +330,7 @@ describe('$httpBackend', function() {
         script.onload();
       }
 
-      expect(callbacks[callbackId]).toBeUndefined();
+      expect(callbacks[callbackId]).toBe(angular.noop);
       expect(fakeDocument.body.removeChild).toHaveBeenCalledOnceWith(script);
     });
 
@@ -397,7 +397,7 @@ describe('$httpBackend', function() {
     });
 
 
-    it('should abort request on timeout', function() {
+    it('should abort request on timeout and replace callback with noop', function() {
       callback.andCallFake(function(status, response) {
         expect(status).toBe(-1);
       });
@@ -406,9 +406,14 @@ describe('$httpBackend', function() {
       expect(fakeDocument.$$scripts.length).toBe(1);
       expect(fakeTimeout.delays[0]).toBe(2000);
 
+      var script = fakeDocument.$$scripts.shift(),
+        callbackId = script.src.match(SCRIPT_URL)[2];
+
       fakeTimeout.flush();
       expect(fakeDocument.$$scripts.length).toBe(0);
       expect(callback).toHaveBeenCalledOnce();
+
+      expect(callbacks[callbackId]).toBe(angular.noop);
     });
 
 
