@@ -2,7 +2,7 @@
   "name": "angularjs",
   "version": "1.2.8-snapshot",
   "cdnVersion": "1.2.7",
-  "codename": "interdimensional-cartography ",
+  "codename": "interdimensional-cartography",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
