@@ -177,22 +177,6 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should allow expressions over multiple lines', function() {
-      scope.isTrue = function() {
-        return true;
-      };
-      element = $compile(
-          '<ul>' +
-            '<li ng-repeat="item in items\n' +
-            '| filter:isTrue">{{item.name}}</li>' +
-          '</ul>')(scope);
-      scope.items = [{name: 'igor'}];
-      scope.$digest();
-
-      expect(element.find('li').text()).toBe('igor');
-    });
-
-
     it('should track using provided function when a filter is present', function() {
       scope.newArray = function (items) {
         var newArray = [];
@@ -351,6 +335,38 @@ describe('ngRepeat', function() {
       expect(element.find('input')[1].checked).toBe(true);
       expect(element.find('input')[2].checked).toBe(true);
     });
+  });
+
+
+  it('should allow expressions over multiple lines', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items\n' +
+        '| filter:isTrue">{{item.name}}/</li>' +
+      '</ul>')(scope);
+
+    scope.isTrue = function() {return true;};
+    scope.items = [{name: 'igor'}, {name: 'misko'}];
+
+    scope.$digest();
+
+    expect(element.text()).toEqual('igor/misko/');
+  });
+
+
+  it('should strip white space characters correctly', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item   \t\n  \t  in  \n \t\n\n \nitems \t\t\n | filter:\n\n{' +
+        '\n\t name:\n\n \'ko\'\n\n}\n\n | orderBy: \t \n \'name\' \n\n' +
+        'track \t\n  by \n\n\t $index \t\n ">{{item.name}}/</li>' +
+      '</ul>')(scope);
+
+    scope.items = [{name: 'igor'}, {name: 'misko'}];
+
+    scope.$digest();
+
+    expect(element.text()).toEqual('misko/');
   });
 
 
