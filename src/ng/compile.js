@@ -1711,9 +1711,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 linkNode = $compileNode[0];
 
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
+              var oldClasses = beforeTemplateLinkNode.className;
               // it was cloned therefore we have to clone as well.
               linkNode = jqLiteClone(compileNode);
               replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
+
+              // Copy in CSS classes from original node
+              safeAddClass(jqLite(linkNode), oldClasses);
             }
             if (afterTemplateNodeLinkFn.transclude) {
               childBoundTranscludeFn = createBoundTranscludeFn(scope, afterTemplateNodeLinkFn.transclude);
