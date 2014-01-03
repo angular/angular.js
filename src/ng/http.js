@@ -1017,7 +1017,11 @@ function $HttpProvider() {
 
 
     function buildUrl(url, params) {
-          if (!params) return url;
+
+        /* this is a test */
+        var test = true;
+
+        if (!params) return url;
           var parts = [];
           forEachSorted(params, function(value, key) {
             if (value === null || isUndefined(value)) return;
