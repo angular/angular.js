@@ -53,7 +53,7 @@ describe('$httpBackend', function() {
         })
       }
     };
-    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeDocument);
+    $backend = createHttpBackend($browser, createMockXhr, fakeTimeout, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -250,7 +250,7 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, SyncXhr);
+    $backend = createHttpBackend($browser, function() { return new SyncXhr() });
     $backend('GET', '/url', null, callback);
     expect(callback).toHaveBeenCalledOnce();
   });
@@ -426,7 +426,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content', function() {
-      $backend = createHttpBackend($browser, MockXhr);
+      $backend = createHttpBackend($browser, createMockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -437,7 +437,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 404 if no content', function() {
-      $backend = createHttpBackend($browser, MockXhr);
+      $backend = createHttpBackend($browser, createMockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -465,7 +465,7 @@ describe('$httpBackend', function() {
 
       try {
 
-        $backend = createHttpBackend($browser, MockXhr);
+        $backend = createHttpBackend($browser, createMockXhr);
 
         $backend('GET', '/whatever/index.html', null, callback);
         respond(0, '');
@@ -480,7 +480,7 @@ describe('$httpBackend', function() {
 
 
     it('should return original backend status code if different from 0', function () {
-      $backend = createHttpBackend($browser, MockXhr);
+      $backend = createHttpBackend($browser, createMockXhr);
 
       // request to http://
       $backend('POST', 'http://rest_api/create_whatever', null, callback);
