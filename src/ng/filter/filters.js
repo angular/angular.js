@@ -66,9 +66,9 @@ function currencyFilter($locale) {
  * @param {(object)=} options Object with overrides for current locale NUMBER_FORMATS
  * If this is not provided then the fraction size is computed from the current locale's number
  * formatting pattern. In the case of the default locale, it will be 3.
- * @returns {string} Number localized using your current locale, rounded to decimalPlaces 
- * and places a (options|$local)groupSeparator after each third digit. 
- * 
+ * @returns {string} Number localized using your current locale, rounded to decimalPlaces
+ * and places a (options|$local)groupSeparator after each third digit.
+ *
  *
  * @example
    <doc:example>
@@ -111,7 +111,6 @@ function currencyFilter($locale) {
              pattern: {
                'gSize': 3,
                'lgSize': 3,
-               'macFrac': 0,
                'maxFrac': 2,
                'minFrac': 2,
                'minInt': 1,
@@ -154,10 +153,10 @@ numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
   return function(number, fractionSize, options) {
-    return formatNumber(number, 
-      options.pattern || formats.PATTERNS[0], 
-      options.groupSeparator || formats.GROUP_SEP, 
-      options.decimalSeparator || formats.DECIMAL_SEP,
+    return formatNumber(number,
+      options && options.pattern || formats.PATTERNS[0],
+      options && options.groupSeparator || formats.GROUP_SEP,
+      options && options.decimalSeparator || formats.DECIMAL_SEP,
       fractionSize);
   };
 }
