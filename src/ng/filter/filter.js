@@ -25,21 +25,21 @@
  *     property of the object. That's equivalent to the simple substring match with a `string`
  *     as described above.
  *
- *   - `function`: A predicate function can be used to write arbitrary filters. The function is
+ *   - `function(value)`: A predicate function can be used to write arbitrary filters. The function is
  *     called for each element of `array`. The final result is an array of those elements that
  *     the predicate returned true for.
  *
- * @param {function(expected, actual)|true|undefined} comparator Comparator which is used in
+ * @param {function(actual, expected)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
  *     the object in the array) should be considered a match.
  *
  *   Can be one of:
  *
- *     - `function(expected, actual)`:
+ *     - `function(actual, expected)`:
  *       The function will be given the object value and the predicate value to compare and
  *       should return true if the item should be included in filtered result.
  *
- *     - `true`: A shorthand for `function(expected, actual) { return angular.equals(expected, actual)}`.
+ *     - `true`: A shorthand for `function(actual, expected) { return angular.equals(expected, actual)}`.
  *       this is essentially strict comparison of expected and actual.
  *
  *     - `false|undefined`: A short hand for a function which will look for a substring match in case
