@@ -75,7 +75,9 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
           // onreadystatechange might by called multiple times
           // with readyState === 4 on mobile webkit caused by
           // xhrs that are resolved while the app is in the background (see #5426).
-          xhr.onreadystatechange = undefined;
+          //
+          // we must delete the property instead of setting it to undefined/null to make IE8 happy.
+          delete xhr.onreadystatechange;
 
           var responseHeaders = null,
               response = null;
