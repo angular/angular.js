@@ -656,21 +656,30 @@ function $LocationProvider(){
       $browser.url($location.absUrl(), true);
     }
 
+    function browserUrlChange(newUrl) {
+      if ($rootScope.$broadcast('$locationChangeStart', newUrl,
+                                $location.absUrl()).defaultPrevented) {
+        $browser.url($location.absUrl());
+        return;
+      }
+      $rootScope.$evalAsync(function() {
+        var oldUrl = $location.absUrl();
+
+        $location.$$parse(newUrl);
+        afterLocationChange(oldUrl);
+      });
+    }
+
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if ($location.absUrl() != newUrl) {
-        if ($rootScope.$broadcast('$locationChangeStart', newUrl,
-                                  $location.absUrl()).defaultPrevented) {
-          $browser.url($location.absUrl());
-          return;
+        if ($rootScope.$$phase) {
+          browserUrlChange(newUrl);
+        } else {
+          $rootScope.$apply(function() {
+            browserUrlChange(newUrl);
+          });
         }
-        $rootScope.$evalAsync(function() {
-          var oldUrl = $location.absUrl();
-
-          $location.$$parse(newUrl);
-          afterLocationChange(oldUrl);
-        });
-        if (!$rootScope.$$phase) $rootScope.$digest();
       }
     });
 
