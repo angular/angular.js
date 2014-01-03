@@ -769,7 +769,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {function(interpolatedValue)} fn Function that will be called whenever
                 the interpolated value of the attribute changes.
        *        See the {@link guide/directive#Attributes Directives} guide for more info.
-       * @returns {function()} the `fn` parameter.
+       * @returns {function()} Returns a deregistration function for this observer.
        */
       $observe: function(key, fn) {
         var attrs = this,
@@ -783,7 +783,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             fn(attrs[key]);
           }
         });
-        return fn;
+
+        return function() {
+          arrayRemove(listeners, fn);
+        };
       }
     };
 

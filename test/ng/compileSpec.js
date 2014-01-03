@@ -1749,15 +1749,14 @@ describe('$compile', function() {
 
 
   describe('interpolation', function() {
-    var observeSpy, directiveAttrs;
+    var observeSpy, directiveAttrs, deregisterObserver;
 
     beforeEach(module(function() {
       directive('observer', function() {
         return function(scope, elm, attr) {
           directiveAttrs = attr;
           observeSpy = jasmine.createSpy('$observe attr');
-
-          expect(attr.$observe('someAttr', observeSpy)).toBe(observeSpy);
+          deregisterObserver = attr.$observe('someAttr', observeSpy);
         };
       });
       directive('replaceSomeAttr', valueFn({
@@ -1852,6 +1851,18 @@ describe('$compile', function() {
         $rootScope.value = 'bound-value';
       });
       expect(observeSpy).toHaveBeenCalledOnceWith('bound-value');
+    }));
+
+
+    it('should return a deregistration function while observing an attribute', inject(function($rootScope, $compile) {
+      $compile('<div some-attr="{{value}}" observer></div>')($rootScope);
+      
+      $rootScope.$apply('value = "first-value"');
+      expect(observeSpy).toHaveBeenCalledWith('first-value');
+
+      deregisterObserver();
+      $rootScope.$apply('value = "new-value"');
+      expect(observeSpy).not.toHaveBeenCalledWith('new-value');
     }));
 
 
