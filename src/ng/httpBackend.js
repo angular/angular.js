@@ -71,14 +71,14 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       // response is in the cache. the promise api will ensure that to the app code the api is
       // always async
       xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-          // onreadystatechange might by called multiple times
-          // with readyState === 4 on mobile webkit caused by
-          // xhrs that are resolved while the app is in the background (see #5426).
-          //
-          // we must delete the property instead of setting it to undefined/null to make IE8 happy.
-          delete xhr.onreadystatechange;
-
+        // onreadystatechange might by called multiple times with readyState === 4 on mobile webkit caused by
+        // xhrs that are resolved while the app is in the background (see #5426).
+        // since calling completeRequest sets the `xhr` variable to null, we just check if it's not null before
+        // continuing
+        //
+        // we can't set xhr.onreadystatechange to undefined or delete it because that breaks IE8 (method=PATCH) and
+        // Safari respectively.
+        if (xhr && xhr.readyState == 4) {
           var responseHeaders = null,
               response = null;
 
