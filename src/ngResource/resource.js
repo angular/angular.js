@@ -504,7 +504,7 @@ angular.module('ngResource', ['ng']).
           });
 
           // If parameters do not contain `timeout` which is a promise, create it,
-          // so that later this call can be aborted by resolving this promise
+          // so that later this call can be aborted by resolving this promise.
           var timeout = httpConfig.timeout;
           var timeoutDeferred;
           if (!timeout || !timeout.then) {
