@@ -20,6 +20,8 @@
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
  *
+ * Creating aliases for these properties is possible with {@link api/ng.directive:ngInit `ngInit`}.
+ * This may be useful when, for instance, nesting ngRepeats.
  *
  * # Special repeat start and end points
  * To repeat a series of elements instead of just one parent element, ngRepeat (as well as other ng directives) supports extending
