@@ -130,9 +130,12 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * core Angular.)  You may also bypass sanitization for values you know are safe. To do so, bind to
  * an explicitly trusted value via {@link ng.$sce#methods_trustAsHtml $sce.trustAsHtml}.  See the example
  * under {@link ng.$sce#Example Strict Contextual Escaping (SCE)}.
+ * 
+ * Remember to include the Sanitize module, which is not included in the angular.js file. You can find it on Google Api's.'
  *
  * Note: If a `$sanitize` service is unavailable and the bound value isn't explicitly trusted, you
  * will have an exception (instead of an exploit.)
+ * This means it will not show anything if the ngSanitize module is not loaded.
  *
  * @element ANY
  * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.
