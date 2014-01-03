@@ -25,7 +25,7 @@ GitHub}:
 
 The custom service is defined in `app/js/services.js` so we need to include this file in our layout
 template. Additionally, we also need to load the `angular-resource.js` file, which contains the
-`ngResource` module and in it the `$resource` service, that we'll soon use:
+`ngResource` module and init the `$resource` service, that we'll soon use:
 
 __`app/index.html`.__
 <pre>
