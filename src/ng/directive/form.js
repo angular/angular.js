@@ -1,13 +1,18 @@
 'use strict';
 
-/* global -nullFormCtrl */
+/* global 
+  -nullFormCtrl,
+  -ATTEMPTED_CLASS
+*/
 var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
   $setValidity: noop,
   $setDirty: noop,
-  $setPristine: noop
-};
+  $setPristine: noop,
+  $setAttempted: noop
+},
+ATTEMPTED_CLASS = 'ng-attempted';
 
 /**
  * @ngdoc object
@@ -60,6 +65,7 @@ function FormController(element, attrs) {
   form.$pristine = true;
   form.$valid = true;
   form.$invalid = false;
+  form.$attempted = false;
 
   parentForm.$addControl(form);
 
@@ -206,8 +212,21 @@ function FormController(element, attrs) {
       control.$setPristine();
     });
   };
+  
+  /**
+   * @ngdoc function
+   * @name ng.directive:form.FormController#$setAttempted
+   * @methodOf ng.directive:form.FormController
+   *
+   * @description
+   * Sets the form to its submission attempted state.
+   */
+  form.$setAttempted = function (value) {
+    value ? element.addClass(ATTEMPTED_CLASS) : element.removeClass(ATTEMPTED_CLASS);
+    form.$attempted = value;
+    parentForm.$setAttempted(value);
+  };
 }
-
 
 /**
  * @ngdoc directive
@@ -253,6 +272,7 @@ function FormController(element, attrs) {
  *  - `ng-invalid` Is set if the form is invalid.
  *  - `ng-pristine` Is set if the form is pristine.
  *  - `ng-dirty` Is set if the form is dirty.
+ *  - `ng-attempted` Is set if the form was submitted in invalid state.
  *
  *
  * # Submitting a form and preventing the default action
@@ -349,6 +369,12 @@ var formDirectiveFactory = function(isNgForm) {
                 $timeout(function() {
                   removeEventListenerFn(formElement[0], 'submit', preventDefaultListener);
                 }, 0, false);
+              });
+              
+              formElement.on('submit', function() {
+                scope.$apply(function() {
+                  controller.$setAttempted(controller.$invalid);
+                });
               });
             }
 
