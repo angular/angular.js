@@ -22,7 +22,7 @@ describe('filters', function() {
     var pattern;
 
     beforeEach(function() {
-      pattern = { minInt: 1,
+      pattern = {
                   minFrac: 0,
                   maxFrac: 3,
                   posPre: '',
@@ -143,6 +143,45 @@ describe('filters', function() {
       expect(number(1234.567, 0)).toEqual("1,235");
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
+    });
+
+    it('should do basic filter with modified options', function() {
+      var options =  {
+         pattern: {
+           'gSize': 2,
+           'lgSize': 4,
+           'maxFrac': 4,
+           'minFrac': 3,
+           'negPre': '^-',
+           'negSuf': '^',
+           'posPre': '|',
+           'posSuf': '|'
+         },
+         groupSeparator: '^',
+         decimalSeparator: '-'
+       }
+      expect(number(0, 0, options)).toEqual('|0|');
+      expect(number(-999, undefined, options)).toEqual('^-999-000^');
+      expect(number(123, undefined, options)).toEqual('|123-000|');
+      expect(number(1234567, undefined, options)).toEqual('|1^23^4567-000|');
+      expect(number(1234, undefined, options)).toEqual('|1234-000|');
+      expect(number(1234.56789, undefined, options)).toEqual('|1234-5679|');
+      expect(number(Number.NaN, undefined, options)).toEqual('');
+      expect(number("1234.5678")).toEqual('1,234.568');
+      expect(number(1/0, undefined, options)).toEqual("");
+      expect(number(1,        2, options)).toEqual("|1-00|");
+      expect(number(.1,       2, options)).toEqual("|0-10|");
+      expect(number(.01,      2, options)).toEqual("|0-01|");
+      expect(number(.001,     3, options)).toEqual("|0-001|");
+      expect(number(.0001,    3, options)).toEqual("|0-000|");
+      expect(number(9,        2, options)).toEqual("|9-00|");
+      expect(number(.9,       2, options)).toEqual("|0-90|");
+      expect(number(.99,      2, options)).toEqual("|0-99|");
+      expect(number(.999,     3, options)).toEqual("|0-999|");
+      expect(number(.9999,    3, options)).toEqual("|1-000|");
+      expect(number(1234.567, 0, options)).toEqual("|1235|");
+      expect(number(1234.567, 1, options)).toEqual("|1234-6|");
+      expect(number(1234.567, 2, options)).toEqual("|1234-57|");
     });
 
     it('should filter exponentially large numbers', function() {

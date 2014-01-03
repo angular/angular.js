@@ -63,9 +63,12 @@ function currencyFilter($locale) {
  *
  * @param {number|string} number Number to format.
  * @param {(number|string)=} fractionSize Number of decimal places to round the number to.
+ * @param {(object)=} options Object with overrides for current locale NUMBER_FORMATS
  * If this is not provided then the fraction size is computed from the current locale's number
  * formatting pattern. In the case of the default locale, it will be 3.
- * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
+ * @returns {string} Number localized using your current locale, rounded to decimalPlaces
+ * and places a (options|$local)groupSeparator after each third digit.
+ *
  *
  * @example
    <doc:example>
@@ -97,14 +100,61 @@ function currencyFilter($locale) {
        });
      </doc:scenario>
    </doc:example>
+ * Example with optional options parameter
+   <doc:example>
+     <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.val = 1234.56789;
+           $scope.filterOptions = {
+             pattern: {
+               'gSize': 3,
+               'lgSize': 3,
+               'maxFrac': 2,
+               'minFrac': 2,
+               'negPre': '(&',
+               'negSuf': ')',
+               'posPre': '&',
+               'posSuf': ''
+             },
+             groupSeparator: '^',
+             decimalSeparator: '-'
+           }
+         }
+       </script>
+       <div ng-controller="Ctrl">
+         Enter number: <input ng-model='val'><br>
+         Default formatting: {{val | number:3:filterOptions}}<br>
+         No fractions: {{val | number:0:filterOptions}}<br>
+         Negative number: {{-val | number:4:filterOptions}}
+       </div>
+     </doc:source>
+     <doc:scenario>
+       it('should format numbers', function() {
+         expect(binding('val | number:3:filterOptions')).toBe('&1^234-568');
+         expect(binding('val | number:0:filterOptions')).toBe('&1^235');
+         expect(binding('-val | number:4:filterOptions')).toBe('(&1^234-5679)');
+       });
+
+       it('should update', function() {
+         input('val').enter('3374.333');
+         expect(binding('val | number:3:filterOptions')).toBe('&3^374-333');
+         expect(binding('val | number:0:filterOptions')).toBe('&3^374');
+         expect(binding('-val | number:4:filterOptions')).toBe('(&3^374-3330)');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 
 
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(number, fractionSize) {
-    return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
+  return function(number, fractionSize, options) {
+    return formatNumber(number,
+      options && options.pattern || formats.PATTERNS[0],
+      options && options.groupSeparator || formats.GROUP_SEP,
+      options && options.decimalSeparator || formats.DECIMAL_SEP,
       fractionSize);
   };
 }
