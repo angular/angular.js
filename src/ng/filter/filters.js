@@ -100,8 +100,7 @@ function currencyFilter($locale) {
        });
      </doc:scenario>
    </doc:example>
- */
- /* @example
+ * Example with optional options parameter
    <doc:example>
      <doc:source>
        <script>
@@ -113,7 +112,6 @@ function currencyFilter($locale) {
                'lgSize': 3,
                'maxFrac': 2,
                'minFrac': 2,
-               'minInt': 1,
                'negPre': '(&',
                'negSuf': ')',
                'posPre': '&',
@@ -126,23 +124,23 @@ function currencyFilter($locale) {
        </script>
        <div ng-controller="Ctrl">
          Enter number: <input ng-model='val'><br>
-         Default formatting: {{val | number}}<br>
-         No fractions: {{val | number:0}}<br>
-         Negative number: {{-val | number:4}}
+         Default formatting: {{val | number:3:filterOptions}}<br>
+         No fractions: {{val | number:0:filterOptions}}<br>
+         Negative number: {{-val | number:4:filterOptions}}
        </div>
      </doc:source>
      <doc:scenario>
        it('should format numbers', function() {
-         expect(binding('val | number')).toBe('1,234.568');
-         expect(binding('val | number:0')).toBe('1,235');
-         expect(binding('-val | number:4')).toBe('-1,234.5679');
+         expect(binding('val | number:3:filterOptions')).toBe('&1^234-568');
+         expect(binding('val | number:0:filterOptions')).toBe('&1^235');
+         expect(binding('-val | number:4:filterOptions')).toBe('(&1^234-5679)');
        });
 
        it('should update', function() {
          input('val').enter('3374.333');
-         expect(binding('val | number')).toBe('3,374.333');
-         expect(binding('val | number:0')).toBe('3,374');
-         expect(binding('-val | number:4')).toBe('-3,374.3330');
+         expect(binding('val | number:3:filterOptions')).toBe('&3^374-333');
+         expect(binding('val | number:0:filterOptions')).toBe('&3^374');
+         expect(binding('-val | number:4:filterOptions')).toBe('(&3^374-3330)');
        });
      </doc:scenario>
    </doc:example>
