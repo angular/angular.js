@@ -169,6 +169,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   function preventGhostClick(x, y) {
     if (!touchCoordinates) {
       $rootElement[0].addEventListener('click', onClick, true);
+      $rootElement[0].addEventListener('mousedown', onClick, true);
       $rootElement[0].addEventListener('touchstart', onTouchStart, true);
       touchCoordinates = [];
     }
