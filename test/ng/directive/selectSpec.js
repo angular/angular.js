@@ -708,6 +708,31 @@ describe('select', function() {
       expect(sortedHtml(options[0])).toEqual('<option value="regularProperty">visible</option>');
     });
 
+    it('should allow expressions over multiple lines', function() {
+      scope.isNotFoo = function(item) {
+        return item.name !== 'Foo';
+      };
+
+      createSelect({
+        'ng-options': 'key.id\n' +
+          'for key in object\n' +
+          '| filter:isNotFoo',
+        'ng-model': 'selected'
+      });
+
+      scope.$apply(function() {
+        scope.object = [{'id': 1, 'name': 'Foo'},
+                        {'id': 2, 'name': 'Bar'},
+                        {'id': 3, 'name': 'Baz'}];
+        scope.selected = scope.object[0];
+      });
+
+      var options = element.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[1])).toEqual('<option value="0">2</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="1">3</option>');
+    });
+
     describe('binding', function() {
 
       it('should bind to scope value', function() {
