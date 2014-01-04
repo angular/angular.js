@@ -291,7 +291,15 @@ function $HttpProvider() {
      * `$httpProvider.defaults.headers.get = { 'My-Header' : 'value' }.
      *
      * The defaults can also be set at runtime via the `$http.defaults` object in the same
-     * fashion. In addition, you can supply a `headers` property in the config object passed when
+     * fashion. For example:
+     *
+     * ```
+     * module.run(function($http) {
+     *   $http.defaults.headers.common.Authentication = 'Basic YmVlcDpib29w'
+     * });
+     * ```
+     *
+     * In addition, you can supply a `headers` property in the config object passed when
      * calling `$http(config)`, which overrides the defaults without changing them globally.
      *
      *
@@ -315,7 +323,9 @@ function $HttpProvider() {
      * properties. These properties are by default an array of transform functions, which allows you
      * to `push` or `unshift` a new transformation function into the transformation chain. You can
      * also decide to completely override any default transformations by assigning your
-     * transformation functions to these properties directly without the array wrapper.
+     * transformation functions to these properties directly without the array wrapper.  These defaults
+     * are again available on the $http factory at run-time, which may be useful if you have run-time 
+     * services you wish to be involved in your transformations.
      *
      * Similarly, to locally override the request/response transforms, augment the
      * `transformRequest` and/or `transformResponse` properties of the configuration object passed
@@ -529,7 +539,8 @@ function $HttpProvider() {
      * for added security.
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
-     * properties of either $httpProvider.defaults, or the per-request config object.
+     * properties of either $httpProvider.defaults at config-time, $http.defaults at run-time,
+     * or the per-request config object.
      *
      *
      * @param {object} config Object describing the request to be made and how it should be
