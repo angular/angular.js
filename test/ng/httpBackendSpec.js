@@ -264,21 +264,45 @@ describe('$httpBackend', function() {
   });
 
 
-  it('should set responseType and return xhr.response', function() {
-    $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
+  describe('responseType', function() {
 
-    var xhrInstance = MockXhr.$$lastInstance;
-    expect(xhrInstance.responseType).toBe('blob');
+    it('should set responseType and return xhr.response', function() {
+      $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
 
-    callback.andCallFake(function(status, response) {
-      expect(response).toBe(xhrInstance.response);
+      var xhrInstance = MockXhr.$$lastInstance;
+      expect(xhrInstance.responseType).toBe('blob');
+
+      callback.andCallFake(function(status, response) {
+        expect(response).toBe(xhrInstance.response);
+      });
+
+      xhrInstance.response = {some: 'object'};
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
+      expect(callback).toHaveBeenCalledOnce();
     });
 
-    xhrInstance.response = {some: 'object'};
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
 
-    expect(callback).toHaveBeenCalledOnce();
+    it('should read responseText if response was not defined', function() {
+      //  old browsers like IE8, don't support responseType, so they always respond with responseText
+
+      $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
+
+      var xhrInstance = MockXhr.$$lastInstance;
+      var responseText = '{"some": "object"}';
+      expect(xhrInstance.responseType).toBe('blob');
+
+      callback.andCallFake(function(status, response) {
+        expect(response).toBe(responseText);
+      });
+
+      xhrInstance.responseText = responseText;
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
+      expect(callback).toHaveBeenCalledOnce();
+    });
   });
 
 
