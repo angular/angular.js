@@ -60,6 +60,17 @@ describe('Filter: filter', function() {
     expect(filter(items, {first:'misko', last:'hevery'})[0]).toEqual(items[0]);
   });
 
+  it('should match any properties for given "$" property', function() {
+    var items = [{first: 'tom', last: 'hevery'},
+                 {first: 'adam', last: 'hevery', alias: 'tom', done: false},
+                 {first: 'john', last: 'clark', middle: 'tommy'}];
+    expect(filter(items, {$: 'tom'}).length).toBe(3);
+    expect(filter(items, {$: 'a'}).length).toBe(2);
+    expect(filter(items, {$: false}).length).toBe(1);
+    expect(filter(items, {$: 10}).length).toBe(0);
+    expect(filter(items, {$: 'hevery'})[0]).toEqual(items[0]);
+  });
+
   it('should support boolean properties', function() {
     var items = [{name: 'tom', current: true},
 	             {name: 'demi', current: false},
