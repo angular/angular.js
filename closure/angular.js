@@ -1667,12 +1667,6 @@ angular.$q.Promise;
  */
 angular.$q.Promise.then = function(successCallback, opt_errorCallback) {};
 
-/**
- * @param {?function(?)} callback
- * @return {angular.$q.Promise}
- */
-angular.$q.Promise.finally = function(callback) {};
-
 /******************************************************************************
  * $route Service
  *****************************************************************************/
