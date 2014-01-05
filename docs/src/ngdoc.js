@@ -548,7 +548,7 @@ Doc.prototype = {
       minerrMsg;
 
     var gitTagFromFullVersion = function(version) {
-      var match = version.match(/-(\w{7})/);
+      var match = version.match(/sha\.(\w{7})/);
 
       if (match) {
         // git sha
