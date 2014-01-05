@@ -173,23 +173,12 @@ function filterFilter() {
       case "object":
         // jshint +W086
         for (var key in expression) {
-          if (key == '$') {
-            (function() {
-              if (!expression[key]) return;
-              var path = key;
-              predicates.push(function(value) {
-                return search(value, expression[path]);
-              });
-            })();
-          } else {
-            (function() {
-              if (typeof(expression[key]) == 'undefined') { return; }
-              var path = key;
-              predicates.push(function(value) {
-                return search(getter(value,path), expression[path]);
-              });
-            })();
-          }
+          (function(path) {
+            if (typeof expression[path] == 'undefined') return;
+            predicates.push(function(value) {
+              return search(path == '$' ? value : getter(value, path), expression[path]);
+            });
+          })(key);
         }
         break;
       case 'function':
