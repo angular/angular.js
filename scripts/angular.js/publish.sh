@@ -18,19 +18,12 @@ function init {
 }
 
 function prepare() {
-
-  if ! git symbolic-ref --short HEAD; then
-    # We are on a detached branch, e.g. jenkins checks out shas instead of branches
-    # Jump onto the master branch and make sure we are using the latest
-    git checkout -f master
-    git merge --ff-only origin/master
-  fi
-
   ./scripts/angular.js/finalize-version.sh
 
   # Build
   if [[ $NO_TEST == "true" ]]; then
-    grunt package
+    npm install --color false
+    grunt ci-checks package --no-color
   else
     ./jenkins_build.sh
   fi
