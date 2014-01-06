@@ -5,16 +5,13 @@ echo "#### Cut release ################"
 echo "#################################"
 
 ARG_DEFS=(
-  "--next_version_type=(patch|minor|major)"
+  "--next-version-type=(patch|minor|major)"
   "--next-version-name=(.+)"
-  "[--no-test=true]"
+  "[--no-test=(true|false)]"
 )
 
 function init {
   NG_ARGS=("$@")
-  if [[ $NO_TEST ]]; then
-    NG_ARGS+=(--no_test=true)
-  fi
 }
 
 function phase {
