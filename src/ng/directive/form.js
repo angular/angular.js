@@ -249,10 +249,10 @@ function FormController(element, attrs) {
  *
  *
  * # CSS classes
- *  - `ng-valid` Is set if the form is valid.
- *  - `ng-invalid` Is set if the form is invalid.
- *  - `ng-pristine` Is set if the form is pristine.
- *  - `ng-dirty` Is set if the form is dirty.
+ *  - `ng-valid` is set if the form is valid.
+ *  - `ng-invalid` is set if the form is invalid.
+ *  - `ng-pristine` is set if the form is pristine.
+ *  - `ng-dirty` is set if the form is dirty.
  *
  *
  * # Submitting a form and preventing the default action
