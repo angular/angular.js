@@ -97,7 +97,7 @@ locale, it is fine to rely on the default currency symbol. However, if you antic
 in other locales might use your app, you should provide your own currency symbol to make sure the
 actual value is understood.
 
-For example, if you want to display account balance of 1000 dollars with the following binding
+For example, if you want to display an account balance of 1000 dollars with the following binding
 containing currency filter: `{{ 1000 | currency }}`, and your app is currently in en-US locale.
 '$1000.00' will be shown. However, if someone in a different local (say, Japan) views your app, her
 browser will specify the locale as ja, and the balance of '¥1000.00' will be shown instead. This
