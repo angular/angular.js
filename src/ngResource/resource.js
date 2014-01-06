@@ -162,6 +162,14 @@ function shallowClearAndCopy(src, dst) {
  *   - **`stripTrailingSlashes`** – {boolean} – If true then the trailing
  *   slashes from any calculated URL will be stripped. (Defaults to true.)
  *
+ *   - **`constructor`** – {Object} – You can specified the custom constructor
+ *   with this optional argument:
+ *     <pre>
+          function User() {}
+          var Resource = $resource('/user/:userId', {userId: '@id'}, {constructor: User});
+          console.assert(Resource === User);
+       </pre>
+ *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:
  *   ```js
@@ -471,6 +479,11 @@ angular.module('ngResource', ['ng']).
 
       function resourceFactory(url, paramDefaults, actions, options) {
         var route = new Route(url, options);
+
+        options = (options || {});
+        if (options.hasOwnProperty('constructor') && typeof options.constructor === 'function') {
+          Resource = options.constructor;
+        }
 
         actions = extend({}, provider.defaults.actions, actions);
 
