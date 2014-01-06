@@ -73,7 +73,6 @@ directory.</p></li>
       <p>Additionally install <a href="http://karma-runner.github.io/">Karma</a> and its plugins if you
       don't have it already:</p>
       <pre>
-      npm install -g karma
       npm install
       </pre></li>
       <li><p>You will need an http server running on your system. Mac and Linux machines typically
