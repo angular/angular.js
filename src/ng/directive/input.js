@@ -320,10 +320,11 @@ var inputType = {
          </script>
          <form name="myForm" ng-controller="Ctrl">
            <input type="radio" ng-model="color" value="red">  Red <br/>
-           <input type="radio" ng-model="color" value="green"> Green <br/>
+           <input type="radio" ng-model="color" value="green" ng-value="green"> Green <br/>
            <input type="radio" ng-model="color" value="blue"> Blue <br/>
            <tt>color = {{color}}</tt><br/>
           </form>
+          Note that `ng-value="green"` sets the default checked radio box to be the one with `green` as value.
         </doc:source>
         <doc:scenario>
           it('should change state', function() {
