@@ -18,6 +18,8 @@ writer.makeDir('build/docs/', true).then(function() {
 }).then(function() {
   return writer.makeDir('build/docs/components/font-awesome');
 }).then(function() {
+  return writer.makeDir('build/docs/e2etests');
+}).then(function() {
   console.log('Generating AngularJS Reference Documentation...');
   return reader.collect();
 }).then(function generateHtmlDocPartials(docs_) {
@@ -53,6 +55,10 @@ writer.makeDir('build/docs/', true).then(function() {
     var id = doc.id.replace('angular.Module', 'angular.IModule');
 
     fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
+    // If it has a sample Protractor test, output that as well.
+    if (doc.protractorTests.length) {
+      fileFutures.push(writer.output('ptore2e/' + doc.section + '/' + id + '_test.js', ngdoc.writeProtractorTest(doc)));
+    }
   });
 
   ngdoc.checkBrokenLinks(docs);

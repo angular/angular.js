@@ -6,7 +6,8 @@ var makeUnique = {
   'script.js': true,
   'unit.js': true,
   'spec.js': true,
-  'scenario.js': true
+  'scenario.js': true,
+  'protractorTest.js': true
 }
 
 function ids(list) {
@@ -14,7 +15,7 @@ function ids(list) {
 };
 
 
-exports.Example = function(scenarios) {
+exports.Example = function(scenarios, protractorTests) {
   this.module = '';
   this.deps = ['angular.js'];
   this.html = [];
@@ -24,6 +25,8 @@ exports.Example = function(scenarios) {
   this.unit = [];
   this.scenario = [];
   this.scenarios = scenarios;
+  this.protractorTest = [];
+  this.protractorTests = protractorTests;
 }
 
 exports.Example.prototype.setModule = function(module) {
@@ -44,6 +47,10 @@ exports.Example.prototype.addSource = function(name, content) {
   var ext = name == 'scenario.js' ? 'scenario' : name.split('.')[1],
       id = name;
 
+  if (name == 'protractorTest.js') {
+    ext = 'protractorTest';
+  }
+
   if (makeUnique[name] && usedIds[id]) {
     id = name + '-' + (seqCount++);
   }
@@ -55,6 +62,9 @@ exports.Example.prototype.addSource = function(name, content) {
   }
   if (ext == 'scenario') {
     this.scenarios.push(content);
+  }
+  if (ext == 'protractorTest') {
+    this.protractorTests.push(content);
   }
 };
 
@@ -92,6 +102,7 @@ exports.Example.prototype.toHtmlEdit = function() {
   out.push(' source-edit-json="' + ids(this.json) + '"');
   out.push(' source-edit-unit="' + ids(this.unit) + '"');
   out.push(' source-edit-scenario="' + ids(this.scenario) + '"');
+  out.push(' source-edit-protractor="' + ids(this.protractorTest) + '"');
   out.push('></div>\n');
   return out.join('');
 };
@@ -107,6 +118,7 @@ exports.Example.prototype.toHtmlTabs = function() {
   htmlTabs(this.json);
   htmlTabs(this.unit);
   htmlTabs(this.scenario);
+  htmlTabs(this.protractorTest);
   out.push('</div>');
   return out.join('');
 
@@ -119,7 +131,8 @@ exports.Example.prototype.toHtmlTabs = function() {
       if (name === 'index.html') {
         wrap = ' ng-html-wrap="' + self.module + ' ' + self.deps.join(' ') + '"';
       }
-      if (name == 'scenario.js') name = 'End to end test';
+      if (name == 'scenario.js') name = 'ngScenario e2e test';
+      if (name == 'protractorTest.js') name = 'Protractor e2e test';
 
       out.push(
         '<div class="tab-pane" title="' + name + '">\n' +
