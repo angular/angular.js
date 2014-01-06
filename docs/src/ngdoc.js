@@ -35,6 +35,7 @@ var lookupMinerrMsg = function (doc) {
 exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
+exports.writeProtractorTest = writeProtractorTest;
 exports.merge = merge;
 exports.checkBrokenLinks = checkBrokenLinks;
 exports.Doc = Doc;
@@ -155,6 +156,7 @@ function Doc(text, file, line) {
     this.line = line;
   }
   this.scenarios = this.scenarios || [];
+  this.protractorTests = this.protractorTests || [];
   this.requires = this.requires || [];
   this.param = this.param || [];
   this.properties = this.properties || [];
@@ -292,7 +294,7 @@ Doc.prototype = {
         replace(/<example(?:\s+module="([^"]*)")?(?:\s+deps="([^"]*)")?(\s+animations="true")?>([\s\S]*?)<\/example>/gmi,
           function(_, module, deps, animations, content) {
 
-          var example = new Example(self.scenarios);
+          var example = new Example(self.scenarios, self.protractorTests);
           if(animations) {
             example.enableAnimations();
             example.addDeps('angular-animate.js');
@@ -329,7 +331,7 @@ Doc.prototype = {
         }).
         replace(/^<doc:example(\s+[^>]*)?>([\s\S]*)<\/doc:example>/mi, function(_, attrs, content) {
           var html, script, scenario,
-            example = new Example(self.scenarios);
+            example = new Example(self.scenarios, self.protractorTests);
 
           example.setModule((attrs||'module=""').match(/^\s*module=["'](.*)["']\s*$/)[1]);
           content.
@@ -347,6 +349,8 @@ Doc.prototype = {
             }).
             replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi, function(_, before, content){
               example.addSource('scenario.js', content);
+            }).replace(/(<doc:protractor>)([\s\S]*)(<\/doc:protractor>)/mi, function(_, before, content){
+              example.addSource('protractorTest.js', content);
             });
 
           return placeholder(example.toHtml());
@@ -1104,6 +1108,22 @@ function scenarios(docs){
       specs.push('');
     });
   }
+}
+
+function writeProtractorTest(doc){
+  var lines = [];
+  lines.push('describe("' + doc.section + '/' + doc.id + '", function() {');
+  lines.push('  beforeEach(function() {');
+  lines.push('    browser.get("index-nocache.html#!/' + doc.section + '/' + doc.id + '");');
+  lines.push('  });');
+  lines.push('');
+  doc.protractorTests.forEach(function(test){
+    lines.push(indentCode(trim(test), 2));
+    lines.push('');
+  });
+  lines.push('});');
+  lines.push('');
+  return lines.join('\n');
 }
 
 
