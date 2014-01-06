@@ -659,12 +659,23 @@ angular.module('ngAnimate', ['ng'])
           cleanup(element);
           cancelAnimations(ngAnimateState.animations);
 
+          //in the event that the CSS is class is quickly added and removed back
+          //then we don't want to wait until after the reflow to add/remove the CSS
+          //class since both class animations may run into a race condition.
+          //The code below will check to see if that is occurring and will
+          //immediately remove the former class before the reflow so that the
+          //animation can snap back to the original animation smoothly
+          var isFullyClassBasedAnimation = isClassBased && !ngAnimateState.structural;
+          var isRevertingClassAnimation = isFullyClassBasedAnimation &&
+                                          ngAnimateState.className == className &&
+                                          animationEvent != ngAnimateState.event;
+
           //if the class is removed during the reflow then it will revert the styles temporarily
           //back to the base class CSS styling causing a jump-like effect to occur. This check
           //here ensures that the domOperation is only performed after the reflow has commenced
-          if(ngAnimateState.beforeComplete) {
+          if(ngAnimateState.beforeComplete || isRevertingClassAnimation) {
             (ngAnimateState.done || noop)(true);
-          } else if(isClassBased && !ngAnimateState.structural) {
+          } else if(isFullyClassBasedAnimation) {
             //class-based animations will compare element className values after cancelling the
             //previous animation to see if the element properties already contain the final CSS
             //class and if so then the animation will be skipped. Since the domOperation will
@@ -812,10 +823,10 @@ angular.module('ngAnimate', ['ng'])
       function cancelAnimations(animations) {
         var isCancelledFlag = true;
         forEach(animations, function(animation) {
-          if(!animations.beforeComplete) {
+          if(!animation.beforeComplete) {
             (animation.beforeEnd || noop)(isCancelledFlag);
           }
-          if(!animations.afterComplete) {
+          if(!animation.afterComplete) {
             (animation.afterEnd || noop)(isCancelledFlag);
           }
         });
