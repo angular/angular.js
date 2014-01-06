@@ -10,7 +10,7 @@ ARG_DEFS=(
   "--action=(prepare|publish)"
  "--next-version-type=(patch|minor|major)"
  "--next-version-name=(.+)"
- "[--no_test=true]"
+ "[--no-test=(true|false)]"
 )
 
 function init {
@@ -29,7 +29,7 @@ function prepare() {
   ./scripts/angular.js/finalize-version.sh
 
   # Build
-  if [[ $NO_TEST ]]; then
+  if [[ $NO_TEST == "true" ]]; then
     grunt package
   else
     ./jenkins_build.sh
