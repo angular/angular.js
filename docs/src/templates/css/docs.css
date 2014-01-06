@@ -167,6 +167,11 @@
   margin-top: .5em;
 }
 
+.content h6 {
+  text-transform:none;
+  color:black;
+}
+
 ul.parameters > li > p,
 .returns > p {
   display: inline;
