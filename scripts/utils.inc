@@ -217,8 +217,8 @@ function git_push_dryrun_proxy {
   export ORIGIN_GIT=$(which git)
 
   function git {
-	  local var
-	  ARGS=("$@")
+	  local ARGS=("$@")
+	  local RC
 	  if [[ $1 == "push" ]]; then
 	    ARGS+=("--dry-run" "--porcelain")
 	    echo "####### START GIT PUSH DRYRUN #######"
@@ -228,9 +228,11 @@ function git_push_dryrun_proxy {
       echo "${ARGS[@]}"
 	  fi
 	  $ORIGIN_GIT "${ARGS[@]}"
+	  RC=$?
 	  if [[ $1 == "push" ]]; then
 	    echo "####### END GIT PUSH DRYRUN #######"
 	  fi
+	  return $RC
   }
 
   export -f git
@@ -240,11 +242,11 @@ function main {
   # normalize the working dir to the directory of the script
   cd $(dirname $0);SCRIPT_DIR=$(pwd)
 
-  ARG_DEFS+=("[--git-push-dryrun=true]" "[--verbose=true]")
+  ARG_DEFS+=("[--git-push-dryrun=(true|false)]" "[--verbose=(true|false)]")
   parseArgs "$@"
 
   # --git_push_dryrun argument
-  if [[ $GIT_PUSH_DRYRUN ]]; then
+  if [[ $GIT_PUSH_DRYRUN == "true" ]]; then
     git_push_dryrun_proxy
   fi
 
@@ -252,7 +254,7 @@ function main {
   set -e
 
   # --verbose argument
-  if [[ $VERBOSE ]]; then
+  if [[ $VERBOSE == "true" ]]; then
     set -x
   fi
 

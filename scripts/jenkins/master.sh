@@ -5,13 +5,13 @@ echo "#### Update master ##############"
 echo "#################################"
 
 ARG_DEFS=(
-  "[--no-test=true]"
+  "[--no-test=(true|false)]"
 )
 
 function build {
   cd ../..
 
-  if [[ $NO_TEST ]]; then
+  if [[ $NO_TEST == "true" ]]; then
     grunt package
   else
     ./jenkins_build.sh
