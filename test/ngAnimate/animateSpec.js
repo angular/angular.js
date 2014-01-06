@@ -2673,10 +2673,16 @@ describe("ngAnimate", function() {
             beforeAddClass : function(element, className, done) {
               currentAnimation = 'addClass';
               currentFn = done;
+              return function(cancelled) {
+                currentAnimation = cancelled ? null : currentAnimation;
+              }
             },
             beforeRemoveClass : function(element, className, done) {
               currentAnimation = 'removeClass';
               currentFn = done;
+              return function(cancelled) {
+                currentAnimation = cancelled ? null : currentAnimation;
+              }
             }
           };
         });
@@ -2690,10 +2696,12 @@ describe("ngAnimate", function() {
         expect(currentAnimation).toBe('addClass');
         currentFn();
 
+        currentAnimation = null;
+
         $animate.removeClass(element, 'on');
         $animate.addClass(element, 'on');
 
-        expect(currentAnimation).toBe('addClass');
+        expect(currentAnimation).toBe(null);
       });
     });
 
@@ -3112,6 +3120,52 @@ describe("ngAnimate", function() {
 
       $timeout.flush(1);
       expect(ready).toBe(true);
+    }));
+
+    it('should avoid skip animations if the same CSS class is added / removed synchronously before the reflow kicks in',
+      inject(function($sniffer, $compile, $rootScope, $rootElement, $animate, $timeout) {
+
+      if (!$sniffer.transitions) return;
+
+      ss.addRule('.water-class', '-webkit-transition:2s linear all;' +
+                                         'transition:2s linear all;');
+
+      $animate.enabled(true);
+
+      var element = $compile('<div class="water-class on"></div>')($rootScope);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      var signature = '';
+      $animate.removeClass(element, 'on', function() {
+        signature += 'A';
+      });
+      $animate.addClass(element, 'on', function() {
+        signature += 'B';
+      });
+
+      $timeout.flush(1);
+      expect(signature).toBe('AB');
+
+      signature = '';
+      $animate.removeClass(element, 'on', function() {
+        signature += 'A';
+      });
+      $animate.addClass(element, 'on', function() {
+        signature += 'B';
+      });
+      $animate.removeClass(element, 'on', function() {
+        signature += 'C';
+      });
+
+      $timeout.flush(1);
+      expect(signature).toBe('AB');
+
+      $timeout.flush(10);
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2000 });
+      $timeout.flush(1);
+
+      expect(signature).toBe('ABC');
     }));
   });
 });
